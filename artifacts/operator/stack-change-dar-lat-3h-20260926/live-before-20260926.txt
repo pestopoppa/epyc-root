@@ -1,0 +1,26 @@
+# :8074 architect_critic live readback, 2026-09-26T23:38:59Z. Read-only: /proc/<pid>/{cmdline,environ,status,task/*/status,numa_maps}.
+pid: 2030855
+started: Thu Sep 24 18:47:34 2026
+exe: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+argv: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf --host 127.0.0.1 --port 8074 -np 1 -c 262144 -t 96 -ub 2048 --flash-attn on --jinja -ctk f16 -ctv f16 --mlock --no-mmap --cache-ram 32768 -md /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf --spec-type draft-mtp --spec-draft-n-max 4 --draft-p-min 0.5 --reasoning off --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic --device none --device-draft none 
+env (OMP/KMP/GGML/LD_LIBRARY_PATH only; other keys omitted):
+  LD_LIBRARY_PATH=/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib
+  OMP_PROC_BIND=spread
+  OMP_PLACES=cores
+  OMP_WAIT_POLICY=active
+  OMP_DYNAMIC=false
+  KMP_BLOCKTIME=10
+  GGML_IQK=1
+GGML_NUMA_REPACK_INTERLEAVE present in environ: 0
+status Threads:	290
+status Cpus_allowed_list:	0
+status Mems_allowed_list:	0-3
+per-task Cpus_allowed_list:
+      194 0-95
+        1 95
+  single-CPU-pinned tasks: 96 (one per CPU 0-95: the OMP team incl. main)
+resident pages by node (numa_maps):
+  N0 25.2 GiB (4 KiB-page count x 4 KiB)
+  N1 23.6 GiB (4 KiB-page count x 4 KiB)
+  N2 25.3 GiB (4 KiB-page count x 4 KiB)
+  N3 25.1 GiB (4 KiB-page count x 4 KiB)

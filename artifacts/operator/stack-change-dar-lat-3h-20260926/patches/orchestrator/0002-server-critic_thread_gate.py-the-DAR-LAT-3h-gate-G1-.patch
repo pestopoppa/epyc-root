@@ -1,0 +1,485 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 23:30:19 +0000
+Subject: [PATCH 2/5] server: critic_thread_gate.py, the DAR-LAT-3h gate G1
+ driver (PROPOSED)
+
+Measures three launch arms of the production :8074 argv on port 18074:
+L (-t 96, live env), R96 (-t 96 + recipe GGML knobs), R48 (-t 48 + recipe
+knobs = the full codified recipe). 12 launches, 4 per arm, balanced blocks.
+Workloads: W1 the 24-prompt production mix (champion harness shape), W2 a
+~4k-token critique shape, W3 a frontdoor :8070 co-run probe.
+
+The pre-registered rule (decide) picks R48, else R96, else L, on wall time
+(the critic's region-lock hold time, i.e. frontdoor's cost of a consult),
+TTFT and coherence. It kills only the PIDs it spawns and verifies each is
+dead. INERT: nothing imports it; it is run by the inference owner after the
+operator signs.
+
+Unsigned. Part of the DAR-LAT-3h stack-change package
+(epyc-root artifacts/operator/stack-change-dar-lat-3h-20260926/).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ scripts/server/critic_thread_gate.py  | 369 ++++++++++++++++++++++++++
+ tests/unit/test_critic_thread_gate.py |  74 ++++++
+ 2 files changed, 443 insertions(+)
+ create mode 100644 scripts/server/critic_thread_gate.py
+ create mode 100644 tests/unit/test_critic_thread_gate.py
+
+diff --git a/scripts/server/critic_thread_gate.py b/scripts/server/critic_thread_gate.py
+new file mode 100644
+index 00000000..e0ab0522
+--- /dev/null
++++ b/scripts/server/critic_thread_gate.py
+@@ -0,0 +1,369 @@
++#!/usr/bin/env python3
++"""DAR-LAT-3h gate G1: architect_critic served at -t 48 vs -t 96, recipe env vs live env.
++
++WHAT IT DECIDES
++---------------
++The live critic (:8074, Qwen3.8-Flash-Next UD-IQ4_XS) runs `-t 96` with the fleet's
++canonical env. Its codified recipe says `-t 48` plus three GGML knobs beyond the canonical GGML_IQK=1. No served
++48-vs-96 comparison exists on the production kernel, so this gate measures three arms,
++each a fresh LAUNCH of the production argv on an experiment port:
++
++  L    -t 96, env copied from the live process            (the incumbent, exactly)
++  R96  -t 96, live env + the recipe's GGML knobs          (env change only)
++  R48  -t 48, live env + the recipe's GGML knobs          (the full codified recipe)
++
++The pre-registered rule (`decide`) picks R48, else R96, else L. It is frozen here and
++in the package's PACKAGE.md §4; the operator signs the thresholds.
++
++WHY WALL TIME IS THE PRIMARY METRIC
++-----------------------------------
++The critic's cpuset is 0-95 in every arm, so it holds all four CPU region locks for the
++whole request whatever its thread count. No CPU role can be placed while it runs.
++Frontdoor's cost of a consult is therefore the critic's request WALL TIME. Decode tok/s
++and TTFT are reported beside it; the frontdoor co-run probe (W3) measures what the
++overlap costs if anything bypasses the lock.
++
++HOW TO RUN (by the session that owns the inference, after signature, in a quiet window)
++------------------------------------------------------------------------------------
++  scripts/region-lock run --cpu-list 0-191 -- \
++    .venv/bin/python scripts/server/critic_thread_gate.py run \
++      --live-pid <pid of :8074> --prompts <PACKAGE>/gate/prompts-24mix.json \
++      --out /mnt/raid0/llm/epyc-inference-research/data/dar-lat-3h-gate-<UTC>
++  .venv/bin/python scripts/server/critic_thread_gate.py summarize --out <same dir>
++
++`run` launches and kills ONLY the PIDs it spawns, and verifies each is dead. It sends
++HTTP to its own experiment port and, for W3 only, to frontdoor :8070 directly.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import os
++import signal
++import statistics
++import subprocess
++import sys
++import threading
++import time
++import urllib.error
++import urllib.request
++from pathlib import Path
++
++EXPERIMENT_PORT = 18074
++FRONTDOOR_PORT = 8070
++LINEUP_PORTS = (8070, 8080, 8180, 8074, 8083, 8086)
++PREFIX = ["numactl", "--interleave=all", "--", "taskset", "-c", "0-95"]
++
++# The codified recipe's GGML knobs beyond the canonical GGML_IQK=1
++# (epyc-inference-research scripts/lib/qwen38_flash_next_recipe.py CHAMPION_GGML_ENV).
++# All three are compiled into production v10 (strings on libggml*/libllama*, 2026-09-26).
++RECIPE_ENV = {
++    "GGML_FUSED_DECODE_OFF": "1",
++    "GGML_FA_SPLIT_KV": "0",
++    "GGML_NOHUGEPAGE_PROCESS": "1",
++}
++ARMS = {
++    "L": {"threads": 96, "recipe_env": False},
++    "R96": {"threads": 96, "recipe_env": True},
++    "R48": {"threads": 48, "recipe_env": True},
++}
++# 12 launches, 4 per arm; every arm holds every position of a block at least once.
++SCHEDULE = ["L", "R96", "R48", "R96", "R48", "L", "R48", "L", "R96", "R48", "R96", "L"]
++MAX_REQUEUES = 2
++
++# Pre-registered thresholds (PACKAGE.md §4). Ratios are candidate / reference.
++WALL_MARGIN = 1.03   # candidate's mean per-launch median wall time may exceed the reference by <= 3%
++TTFT_MARGIN = 1.10   # candidate's mean per-launch median TTFT may exceed the reference by <= 10%
++MIN_LAUNCHES = 3     # an arm with fewer clean launches makes the verdict INCONCLUSIVE
++
++
++# ── pure helpers (unit-tested) ────────────────────────────────────────────────
++
++def rewrite_argv(live_argv: list[str], threads: int, port: int = EXPERIMENT_PORT) -> list[str]:
++    """Production argv with only -t and --port changed and the slot-save dir dropped.
++
++    Dropping --slot-save-path keeps an experiment arm from writing into the production
++    critic's slot directory. Nothing else is touched, so an arm IS the production launch.
++    """
++    out: list[str] = []
++    i = 0
++    seen_t = seen_port = False
++    while i < len(live_argv):
++        tok = live_argv[i]
++        if tok in ("-t", "--threads"):
++            out += [tok, str(threads)]
++            seen_t = True
++            i += 2
++        elif tok == "--port":
++            out += [tok, str(port)]
++            seen_port = True
++            i += 2
++        elif tok == "--slot-save-path":
++            i += 2
++        else:
++            out.append(tok)
++            i += 1
++    if not (seen_t and seen_port):
++        raise ValueError("live argv has no -t or no --port; refusing to guess the launch")
++    return out
++
++
++def arm_env(live_env: dict[str, str], arm: str) -> dict[str, str]:
++    env = dict(live_env)
++    for k in RECIPE_ENV:
++        env.pop(k, None)
++    if ARMS[arm]["recipe_env"]:
++        env.update(RECIPE_ENV)
++    return env
++
++
++def coherent(text: str, finish: str | None) -> bool:
++    words = text.split()
++    if len(words) < 5:
++        return False
++    grams = [tuple(words[i:i + 4]) for i in range(max(1, len(words) - 3))]
++    return len(set(grams)) / len(grams) >= 0.3 and finish in ("stop", "length")
++
++
++def launch_stats(rows: list[dict]) -> dict:
++    ok = [r for r in rows if r.get("ok")]
++    return {
++        "n": len(rows),
++        "ok": len(ok),
++        "coherent": sum(1 for r in ok if r.get("coherent")),
++        "wall_s_median": statistics.median(r["wall_s"] for r in ok) if ok else None,
++        "ttft_ms_median": statistics.median(r["prompt_ms"] for r in ok) if ok else None,
++        "decode_tps_tokw": (sum(r["predicted_n"] for r in ok) / (sum(r["predicted_ms"] for r in ok) / 1000.0))
++        if ok and sum(r["predicted_ms"] for r in ok) > 0 else None,
++    }
++
++
++def decide(per_arm: dict[str, list[dict]]) -> dict:
++    """Apply the pre-registered rule to per-arm lists of clean launch stats."""
++    def mean(arm: str, key: str) -> float:
++        return statistics.fmean(s[key] for s in per_arm[arm])
++
++    short = [a for a in ARMS if len(per_arm.get(a, [])) < MIN_LAUNCHES]
++    if short:
++        return {"outcome": "INCONCLUSIVE", "reason": f"fewer than {MIN_LAUNCHES} clean launches: {short}"}
++    coh = {a: min(s["coherent"] for s in per_arm[a]) for a in ARMS}
++
++    def non_inferior(cand: str, ref: str) -> tuple[bool, dict]:
++        w = mean(cand, "wall_s_median") / mean(ref, "wall_s_median")
++        t = mean(cand, "ttft_ms_median") / mean(ref, "ttft_ms_median")
++        c = coh[cand] >= coh[ref] - 1
++        return (w <= WALL_MARGIN and t <= TTFT_MARGIN and c), {
++            "wall_ratio": round(w, 4), "ttft_ratio": round(t, 4), "coherent_min": [coh[cand], coh[ref]]}
++
++    r48_vs_r96 = non_inferior("R48", "R96")
++    r48_vs_l = non_inferior("R48", "L")
++    r96_vs_l = non_inferior("R96", "L")
++    detail = {"R48_vs_R96": r48_vs_r96[1], "R48_vs_L": r48_vs_l[1], "R96_vs_L": r96_vs_l[1],
++              "decode_tps_mean": {a: round(mean(a, "decode_tps_tokw"), 3) for a in ARMS}}
++    if r48_vs_r96[0] and r48_vs_l[0]:
++        return {"outcome": "R48", **detail}
++    if r96_vs_l[0]:
++        return {"outcome": "R96", **detail}
++    return {"outcome": "L", **detail}
++
++
++# ── live helpers ──────────────────────────────────────────────────────────────
++
++def _http(port: int, path: str, body: dict | None = None, timeout: float = 1800) -> dict:
++    req = urllib.request.Request(
++        f"http://127.0.0.1:{port}{path}",
++        data=None if body is None else json.dumps(body).encode(),
++        headers={"Content-Type": "application/json"},
++    )
++    with urllib.request.urlopen(req, timeout=timeout) as resp:
++        return json.load(resp)
++
++
++def _busy_ports() -> list[int]:
++    busy = []
++    for port in LINEUP_PORTS:
++        try:
++            slots = _http(port, "/slots", timeout=5)
++        except Exception:
++            continue
++        if any(s.get("is_processing") for s in slots if isinstance(s, dict)):
++            busy.append(port)
++    return busy
++
++
++def _read_proc(pid: int) -> tuple[list[str], dict[str, str]]:
++    argv = Path(f"/proc/{pid}/cmdline").read_bytes().split(b"\0")
++    env = Path(f"/proc/{pid}/environ").read_bytes().split(b"\0")
++    return ([a.decode() for a in argv if a],
++            dict(e.decode().split("=", 1) for e in env if b"=" in e))
++
++
++def _affinity(pid: int) -> dict:
++    per_task: dict[str, int] = {}
++    for task in Path(f"/proc/{pid}/task").iterdir():
++        for line in (task / "status").read_text().splitlines():
++            if line.startswith("Cpus_allowed_list:"):
++                key = line.split(":", 1)[1].strip()
++                per_task[key] = per_task.get(key, 0) + 1
++    return per_task
++
++
++def _chat(port: int, text: str, max_tokens: int, timeout: float = 1800) -> dict:
++    body = {"messages": [{"role": "user", "content": text}], "max_tokens": max_tokens,
++            "temperature": 0, "cache_prompt": False,
++            "chat_template_kwargs": {"enable_thinking": False}}
++    t0 = time.monotonic()
++    try:
++        r = _http(port, "/v1/chat/completions", body, timeout=timeout)
++    except (urllib.error.URLError, TimeoutError, OSError) as exc:
++        return {"ok": False, "error": repr(exc), "wall_s": time.monotonic() - t0}
++    wall = time.monotonic() - t0
++    tim = r.get("timings") or {}
++    choice = (r.get("choices") or [{}])[0]
++    text_out = (choice.get("message") or {}).get("content") or ""
++    return {"ok": True, "wall_s": wall, "prompt_ms": tim.get("prompt_ms"),
++            "predicted_ms": tim.get("predicted_ms"), "predicted_n": tim.get("predicted_n"),
++            "draft_n": tim.get("draft_n"), "draft_n_accepted": tim.get("draft_n_accepted"),
++            "finish": choice.get("finish_reason"), "coherent": coherent(text_out, choice.get("finish_reason")),
++            "head": text_out[:80]}
++
++
++def _workloads(prompts: list[dict]) -> list[tuple[str, str, int]]:
++    # W1: the 24-prompt production mix at the champion harness's shape (max_tokens 200).
++    w1 = [("W1", p["prompt"], 200) for p in prompts]
++    # W2: critique shape. The whole mix as a plan to critique, four rotations, ~4k-token prompts.
++    w2 = []
++    for k in range(4):
++        rot = prompts[k * 6:] + prompts[:k * 6]
++        plan = "\n\n".join(f"Step {i + 1}: {p['prompt']}" for i, p in enumerate(rot))
++        w2.append(("W2", "Critique this plan. Name its three weakest steps and why.\n\n" + plan, 400))
++    return w1 + w2
++
++
++def _stop(proc: subprocess.Popen) -> None:
++    if proc.poll() is None:
++        os.killpg(proc.pid, signal.SIGTERM)
++        try:
++            proc.wait(timeout=60)
++        except subprocess.TimeoutExpired:
++            os.killpg(proc.pid, signal.SIGKILL)
++            proc.wait(timeout=30)
++    if Path(f"/proc/{proc.pid}").exists():
++        raise SystemExit(f"arm pid {proc.pid} still present after SIGKILL; stop and investigate")
++
++
++def run(args: argparse.Namespace) -> int:
++    out = Path(args.out)
++    out.mkdir(parents=True, exist_ok=True)
++    prompts = json.loads(Path(args.prompts).read_text())
++    live_argv, live_env = _read_proc(args.live_pid)
++    if f"{args.live_port}" not in live_argv:
++        raise SystemExit(f"pid {args.live_pid} is not the :{args.live_port} server")
++    (out / "live.json").write_text(json.dumps({"argv": live_argv, "env_keys": sorted(live_env),
++                                                "affinity": _affinity(args.live_pid)}, indent=1))
++    queue = list(SCHEDULE)
++    requeues = 0
++    idx = 0
++    while queue:
++        arm = queue.pop(0)
++        idx += 1
++        tag = f"{idx:02d}-{arm}"
++        busy = _busy_ports()
++        if busy:
++            print(f"{tag}: lineup ports busy {busy}; waiting 60 s", flush=True)
++            time.sleep(60)
++            queue.insert(0, arm)
++            idx -= 1
++            continue
++        argv = PREFIX + rewrite_argv(live_argv, ARMS[arm]["threads"])
++        log = open(out / f"{tag}.server.log", "w")
++        proc = subprocess.Popen(argv, env=arm_env(live_env, arm), stdout=log, stderr=subprocess.STDOUT,
++                                start_new_session=True)
++        rec = {"tag": tag, "arm": arm, "pid": proc.pid, "argv": argv, "started": time.time()}
++        try:
++            deadline = time.monotonic() + 900
++            while time.monotonic() < deadline:
++                try:
++                    if _http(EXPERIMENT_PORT, "/health", timeout=5).get("status") == "ok":
++                        break
++                except Exception:
++                    pass
++                if proc.poll() is not None:
++                    raise RuntimeError(f"arm exited during load (rc {proc.returncode})")
++                time.sleep(5)
++            else:
++                raise RuntimeError("arm not healthy within 900 s")
++            _, env_rb = _read_proc(proc.pid)
++            rec["env_readback"] = {k: env_rb.get(k) for k in RECIPE_ENV}
++            rec["affinity"] = _affinity(proc.pid)
++            _chat(EXPERIMENT_PORT, "Say ready.", 8)                      # warm-up, discarded
++            rows = []
++            with open(out / f"{tag}.rows.jsonl", "w") as fh:
++                for wl, text, mt in _workloads(prompts):
++                    row = {"workload": wl, **_chat(EXPERIMENT_PORT, text, mt)}
++                    rows.append(row)
++                    fh.write(json.dumps(row) + "\n")
++                    fh.flush()
++            # W3: frontdoor co-run probe. Frontdoor alone, then frontdoor while the arm decodes.
++            probe = "Summarise the causes of the French Revolution in three sentences."
++            rec["w3_frontdoor_solo"] = _chat(FRONTDOOR_PORT, probe, 64, timeout=300)
++            bg: dict = {}
++            t = threading.Thread(target=lambda: bg.update(_chat(EXPERIMENT_PORT, _workloads(prompts)[-1][1], 64, 600)))
++            t.start()
++            time.sleep(2)
++            rec["w3_frontdoor_corun"] = _chat(FRONTDOOR_PORT, probe, 64, timeout=300)
++            t.join()
++            rec["w3_arm_corun"] = bg
++            rec["busy_after"] = _busy_ports()
++            rec["stats"] = {w: launch_stats([r for r in rows if r["workload"] == w]) for w in ("W1", "W2")}
++            rec["clean"] = not rec["busy_after"] and all(r.get("ok") for r in rows)
++        except Exception as exc:                                          # recorded, re-queued
++            rec["error"] = repr(exc)
++            rec["clean"] = False
++        finally:
++            _stop(proc)
++            log.close()
++            rec["stopped"] = time.time()
++        (out / f"{tag}.launch.json").write_text(json.dumps(rec, indent=1))
++        print(json.dumps({k: rec.get(k) for k in ("tag", "clean", "error", "stats")}), flush=True)
++        if not rec["clean"] and requeues < MAX_REQUEUES * len(ARMS):
++            queue.append(arm)
++            requeues += 1
++    return 0
++
++
++def summarize(args: argparse.Namespace) -> int:
++    out = Path(args.out)
++    per_arm: dict[str, list[dict]] = {a: [] for a in ARMS}
++    for f in sorted(out.glob("*.launch.json")):
++        rec = json.loads(f.read_text())
++        if rec.get("clean"):
++            per_arm[rec["arm"]].append(rec["stats"]["W1"] | {"W2": rec["stats"]["W2"]})
++    verdict = decide(per_arm)
++    verdict["launches"] = {a: len(v) for a, v in per_arm.items()}
++    verdict["thresholds"] = {"wall_margin": WALL_MARGIN, "ttft_margin": TTFT_MARGIN, "min_launches": MIN_LAUNCHES}
++    # W2 (critique shape) is reported with the same rule, as a second reading; W1 decides.
++    per_arm_w2 = {a: [s["W2"] for s in v] for a, v in per_arm.items()}
++    verdict["w2_reading"] = decide(per_arm_w2)
++    (out / "verdict.json").write_text(json.dumps(verdict, indent=1))
++    print(json.dumps(verdict, indent=1))
++    return 0
++
++
++def main(argv: list[str] | None = None) -> int:
++    ap = argparse.ArgumentParser(description=__doc__.split("\n", 1)[0])
++    sub = ap.add_subparsers(dest="cmd", required=True)
++    r = sub.add_parser("run")
++    r.add_argument("--live-pid", type=int, required=True)
++    r.add_argument("--live-port", type=int, default=8074)
++    r.add_argument("--prompts", required=True)
++    r.add_argument("--out", required=True)
++    s = sub.add_parser("summarize")
++    s.add_argument("--out", required=True)
++    args = ap.parse_args(argv)
++    return run(args) if args.cmd == "run" else summarize(args)
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+diff --git a/tests/unit/test_critic_thread_gate.py b/tests/unit/test_critic_thread_gate.py
+new file mode 100644
+index 00000000..28b5c437
+--- /dev/null
++++ b/tests/unit/test_critic_thread_gate.py
+@@ -0,0 +1,74 @@
++"""Pure parts of the DAR-LAT-3h gate driver: argv rewrite, env arms, decision rule."""
++
++from __future__ import annotations
++
++import pytest
++
++from scripts.server import critic_thread_gate as g
++
++LIVE = ["/k/llama-server", "-m", "/m.gguf", "--port", "8074", "-np", "1", "-t", "96",
++        "--slot-save-path", "/cache/architect_critic", "--mlock"]
++
++
++def test_rewrite_changes_only_threads_and_port_and_drops_slot_dir() -> None:
++    out = g.rewrite_argv(LIVE, 48)
++    assert out == ["/k/llama-server", "-m", "/m.gguf", "--port", "18074", "-np", "1", "-t", "48", "--mlock"]
++
++
++def test_rewrite_refuses_argv_without_threads() -> None:
++    with pytest.raises(ValueError):
++        g.rewrite_argv(["/k/llama-server", "--port", "8074"], 48)
++
++
++def test_arm_env_adds_recipe_knobs_only_for_recipe_arms() -> None:
++    live = {"OMP_PLACES": "cores", "GGML_IQK": "1", "GGML_FA_SPLIT_KV": "1"}
++    assert g.arm_env(live, "L") == {"OMP_PLACES": "cores", "GGML_IQK": "1"}
++    assert g.arm_env(live, "R48") == {"OMP_PLACES": "cores", "GGML_IQK": "1", **g.RECIPE_ENV}
++
++
++def test_schedule_is_balanced() -> None:
++    assert sorted(g.SCHEDULE) == sorted(["L", "R96", "R48"] * 4)
++    for block in range(4):
++        assert sorted(g.SCHEDULE[block * 3:block * 3 + 3]) == ["L", "R48", "R96"]
++
++
++def _stats(wall: float, ttft: float, coherent: int = 24) -> dict:
++    return {"wall_s_median": wall, "ttft_ms_median": ttft, "coherent": coherent, "decode_tps_tokw": 30.0}
++
++
++def _arms(live: float, r96: float, r48: float, ttft48: float = 100.0) -> dict:
++    return {"L": [_stats(live, 100)] * 4, "R96": [_stats(r96, 100)] * 4, "R48": [_stats(r48, ttft48)] * 4}
++
++
++def test_r48_wins_at_parity() -> None:
++    assert g.decide(_arms(10.0, 10.0, 10.25))["outcome"] == "R48"
++
++
++def test_r48_loses_on_wall_time_then_r96() -> None:
++    assert g.decide(_arms(10.0, 10.0, 10.5))["outcome"] == "R96"
++
++
++def test_r48_loses_on_ttft() -> None:
++    assert g.decide(_arms(10.0, 10.0, 10.0, ttft48=115.0))["outcome"] == "R96"
++
++
++def test_everything_loses_keeps_live() -> None:
++    assert g.decide(_arms(10.0, 10.5, 10.5))["outcome"] == "L"
++
++
++def test_too_few_launches_is_inconclusive() -> None:
++    arms = _arms(10.0, 10.0, 10.0)
++    arms["R48"] = arms["R48"][:2]
++    assert g.decide(arms)["outcome"] == "INCONCLUSIVE"
++
++
++def test_coherence_regression_blocks() -> None:
++    arms = _arms(10.0, 10.0, 9.0)
++    arms["R48"] = [_stats(9.0, 100, coherent=20)] * 4
++    assert g.decide(arms)["outcome"] == "R96"
++
++
++def test_coherent_classifier() -> None:
++    assert g.coherent("The plan fails because step two assumes the cache is warm.", "stop")
++    assert not g.coherent("", "stop")
++    assert not g.coherent("a b c d " * 50, "length")

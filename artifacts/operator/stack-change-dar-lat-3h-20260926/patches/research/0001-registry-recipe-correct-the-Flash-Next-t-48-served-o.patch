@@ -1,0 +1,100 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 23:33:14 +0000
+Subject: [PATCH] registry+recipe: correct the Flash-Next "-t 48 served
+ optimum" claim; recipe.env parity (DAR-LAT-3h, PROPOSED)
+
+Applies in every outcome of the DAR-LAT-3h gate.
+
+- scripts/lib/qwen38_flash_next_recipe.py: THREADS stays 48 (the champion
+  measurement recipe), but its comment no longer claims a served optimum over
+  96. No served 48-vs-96 comparison existed; the 48 rests on pre-BIOS bare
+  llama-bench (D4/C5 2026-09-02, tg128 t48 10.09 vs t96 9.67, one window).
+- model_registry.yaml server_mode.architect_critic.recipe: same correction
+  on `threads`; explains why live ran -t 96 (C3's orchestrator half never
+  landed); names gate G1 as the deciding measurement.
+- recipe.env gains GGML_FUSED_DECODE_OFF=1, which the module's
+  CHAMPION_GGML_ENV and optimal_cpu_serving.env already carry.
+- optimal_cpu_serving.threads comment: same correction.
+
+Recipe module tests: 55 passed.
+
+Unsigned. Part of the DAR-LAT-3h stack-change package
+(epyc-root artifacts/operator/stack-change-dar-lat-3h-20260926/).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ orchestration/model_registry.yaml       | 19 +++++++++++++++----
+ scripts/lib/qwen38_flash_next_recipe.py | 10 +++++++++-
+ 2 files changed, 24 insertions(+), 5 deletions(-)
+
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index c0bfe097..5146e6b3 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1805,9 +1805,15 @@ server_mode:
+       recipe_id: qwen38-flash-next-cpu-mtp
+       module: epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py
+       surface: cpu-decode
+-      threads: 48        # NOT 96, on a 0-95 cpuset. This is the SERVED decode optimum for this
+-                         # model (scripts/lib/qwen38_flash_next_recipe.py THREADS, "NOT 96: the
+-                         # served decode optimum on this model").
++      threads: 48        # on a 0-95 cpuset. = scripts/lib/qwen38_flash_next_recipe.py THREADS.
++                         # ⚠ CORRECTED 2026-09-26 (DAR-LAT-3h): this used to say "the SERVED decode
++                         # optimum". No served 48-vs-96 comparison existed; the 48 rests on pre-BIOS
++                         # bare llama-bench (D4/C5, tg128 t48 10.09 vs t96 9.67). The live :8074 ran
++                         # -t 96 because stack_topology.yaml never named this shape (C3's orchestrator
++                         # half never landed). Gate G1 of the DAR-LAT-3h stack-change package
++                         # (epyc-root, operator artifact dir stack-change-dar-lat-3h-20260926)
++                         # decides; its receipt replaces this note. epyc-orchestrator tests/unit/
++                         # test_critic_shape_recipe_parity.py now diffs this row against the topology.
+       cpu_shape: NUMA_FULL_T48
+       # ── C3 RESOLVED (operator ruling: "add the needed cpu shape") ─────────────────
+       # An earlier draft recorded -t 48 on a 0-95 cpuset as an UNRESOLVED CONFLICT with
+@@ -1837,10 +1843,15 @@ server_mode:
+       no_mmap: true
+       flash_attn: on
+       env:
++        # 2026-09-26 (DAR-LAT-3h): declared here since 2026-09-22 and NEVER READ by the launcher,
++        # so the live :8074 carried none of it. epyc-orchestrator stack_env._ROLE_ENV_BLOCKS
++        # ["architect_critic"] now emits it, and test_stack_env_recipe_parity.py diffs the two.
+         GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2, ADOPTED 2026-09-08 (operator-ruled).
+                                        # UNIT = SESSION, set AT LAUNCH. cpu-decode ONLY —
+                                        # R23-58 measured a bounded null on the GPU surface.
+         GGML_FA_SPLIT_KV: "0"          # BE-2: makes 1-row decode and n-row verify row-exact
++        GGML_FUSED_DECODE_OFF: "1"     # added 2026-09-26: in the module's CHAMPION_GGML_ENV and
++                                       # optimal_cpu_serving.env, missing from this pointer
+       measured_at_context: 8192        # ⚠ CONTEXT = 8192 in the recipe. serving_shape above
+                                        # declares 262144 — a 32x extrapolation of a shape that
+                                        # was never served. See .md C4.
+@@ -8649,7 +8660,7 @@ roles:
+         recipe_revision: 2026-09-14
+         kernel: "ef81196d5 / build 10241 (llama.cpp-experimental champion) — NOT production v10"
+         prefix: "taskset -c 0-95 numactl --interleave=all"
+-        threads: 48            # NOT 96 — the served decode optimum on this model
++        threads: 48            # the champion measurement's -t; NOT a measured served optimum over 96 (see server_mode.architect_critic.recipe.threads)
+         flags: >-
+           --no-webui -np 1 -c 8192 -t 48 --no-mmap -fa on -ctk f16 -ctv f16
+           -md <MTP_HEAD_GGUF> --spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5
+diff --git a/scripts/lib/qwen38_flash_next_recipe.py b/scripts/lib/qwen38_flash_next_recipe.py
+index 9f4f1da9..3f6d36df 100644
+--- a/scripts/lib/qwen38_flash_next_recipe.py
++++ b/scripts/lib/qwen38_flash_next_recipe.py
+@@ -687,7 +687,15 @@ CHAMPION_KNOBS = {
+ # ---------------------------------------------------------------------------
+ # 5. SERVER FLAGS
+ # ---------------------------------------------------------------------------
+-THREADS = 48                     # NOT 96: the served decode optimum on this model
++# THREADS is the champion MEASUREMENT recipe's -t: every served headline below was taken at 48.
++# It was long annotated "NOT 96: the served decode optimum on this model". That OVERSTATED the
++# record (corrected 2026-09-26, DAR-LAT-3h): no served 48-vs-96 comparison existed. The 48 rests on
++# pre-BIOS bare llama-bench sweeps (D4/C5, 2026-09-02, build 10196: tg128 t48 10.09 vs t96 9.67,
++# pp512 172.6 vs 147.2, one window, no ABA). Production serving -t is decided by the DAR-LAT-3h
++# package's gate G1 (epyc-root, operator artifact dir stack-change-dar-lat-3h-20260926) and recorded
++# in the master registry's server_mode.architect_critic.recipe. R23-64 (autokernel-rebuild-program)
++# owns the champion-side t48/t64/t96 re-sweep.
++THREADS = 48
+ CONTEXT = 8192
+ PARALLEL_SLOTS = 1
+ 

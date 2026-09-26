@@ -1,0 +1,143 @@
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index 8e977f8c..f0c3aa36 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `19e2307b5e1a49c82010f3ab855ebbdbc1d5eb1f0926c1709f958ec084e50bb7`
+-- orchestration/model_registry.yaml: `ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f`
+-- orchestration/model_descriptors.yaml: `914641c2d7f9eb92c6a0ecad1226272bb5dbd2b64de60efcf95fa2894abc01e5`
++- orchestration/derived/stack_priors.yaml: `4b8f9307758031248fdb667c2b6e0240dfabbd075b1c23a77d169b3d93936669`
++- orchestration/model_registry.yaml: `c5b5e9423343eb516ae9f0ec743b0bac09ce49afea06af251e08d77ab389efc4`
++- orchestration/model_descriptors.yaml: `524dcc93fca281d0ad455026281446cbdbc198b5eaee76bcaf3b166d23727e8a`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index a799e22d..4442ae08 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-26T18:09:39Z'
++compiled_at: '2026-09-26T23:46:55Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f
+-    repo_commit: 5af57377
++    sha256: c5b5e9423343eb516ae9f0ec743b0bac09ce49afea06af251e08d77ab389efc4
++    repo_commit: 20c7d902
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 914641c2d7f9eb92c6a0ecad1226272bb5dbd2b64de60efcf95fa2894abc01e5
+-    repo_commit: 5af57377
++    sha256: 524dcc93fca281d0ad455026281446cbdbc198b5eaee76bcaf3b166d23727e8a
++    repo_commit: 20c7d902
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+     sha256: f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
+-    repo_commit: 5af57377
++    repo_commit: 20c7d902
+   stack_numa:
+     path: scripts/server/stack_numa.py
+-    sha256: 8a9e4eade957c71b9694160668f982deff31960d3ec5ad0f2d8fc50369b3c703
+-    repo_commit: 5af57377
++    sha256: e7ec10075d8e7ca9f2be032bc32388d2d39adc5daa60d9ed4dc8774cdcaa5a5d
++    repo_commit: 20c7d902
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+     sha256: 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
+-    repo_commit: 5af57377
++    repo_commit: 20c7d902
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+-    sha256: 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
+-    repo_commit: 5af57377
++    sha256: 34e05fbc0bedc9159a222a078464641b10891373ade75f794411359237d64662
++    repo_commit: 20c7d902
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: 3077f9d977bd20ba9f5868fd56ec7a32303bf7ecb1bd69102ea1bcf04f2d2e81
+-    repo_commit: 5af57377
++    sha256: 9e963a71288172c74fbf1d45d652cfa4a7c77ea5945d910d735f00fa98d2a14c
++    repo_commit: 20c7d902
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: 5af57377
++    repo_commit: 20c7d902
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: 5af57377
++    repo_commit: 20c7d902
+ roles:
+   architect_critic:
+     role: architect_critic
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 1a2445ad..5f7e8382 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-26T18:09:39Z'
++compiled_at: '2026-09-26T23:46:54Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: 5af57377
+-    sha256: ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f
++    repo_commit: 20c7d902
++    sha256: c5b5e9423343eb516ae9f0ec743b0bac09ce49afea06af251e08d77ab389efc4
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: 7640269b
+-    sha256: 1f68de64b594eb9bb7b1601b193f6ee3e65efa7cbf22e6a3c86c25cb8eff3989
++    path: /mnt/raid0/llm/worktrees/dar-lat-3h-research-20260926/orchestration/model_registry.yaml
++    repo_commit: cf2476b0
++    sha256: 625f0ad30a01c060882b8f3489bf1ad11089a481fc3915f2068908a1063f4ccd
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index f6d60b75..001523a0 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,7 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/worktrees/dar-lat-3h-research-20260926/orchestration/model_registry.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-26T18:09:38+00:00
+-# Cache key:   a29cd4186cd7e278...
++# Compiled at: 2026-09-26T23:46:54+00:00
++# Cache key:   233a7e685990008c...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -1907,6 +1907,7 @@ server_mode:
+       env:
+         GGML_NOHUGEPAGE_PROCESS: '1'
+         GGML_FA_SPLIT_KV: '0'
++        GGML_FUSED_DECODE_OFF: '1'
+       measured_at_context: 8192
+       measured_on_kernel: ef81196d5 / build 10241 (llama.cpp-experimental champion)
+       measured_artifact: IQ4_XS-uniform single-file (98,392,912,256 B)

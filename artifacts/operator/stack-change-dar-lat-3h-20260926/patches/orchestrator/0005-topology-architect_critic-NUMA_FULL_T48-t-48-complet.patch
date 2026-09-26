@@ -1,0 +1,124 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sat, 26 Sep 2026 23:31:45 +0000
+Subject: [PATCH 5/5] topology: architect_critic -> NUMA_FULL_T48 (-t 48),
+ completing C3 (DAR-LAT-3h, PROPOSED)
+
+Applies only on gate G1 outcome R48. Makes the launcher emit the codified
+recipe's -t 48 on the unchanged 0-95 cpuset / interleave=all / four-region
+lock, completing lineup-change C3 (operator-ruled 2026-09-22), whose
+orchestrator half never landed.
+
+- stack_topology.yaml: architect_critic instance NUMA_FULL -> NUMA_FULL_T48.
+- stack_templates/default.yaml: numa FULL_T48, threads 48 (restates the
+  topology; test_default_template_topology_parity passes), ram_gb 69 -> 90
+  (69 was the retired 122B), stale 122B header text corrected.
+- New test_critic_shape_recipe_parity.py: the topology's shape and -t must
+  equal the registry recipe's cpu_shape/threads (the pointer nothing read).
+
+Changes topology_fingerprint, so the contention-matrix pairs naming :8074 go
+stale and are re-benched by package gate G3. topology_check.py: PASS.
+
+Unsigned. Part of the DAR-LAT-3h stack-change package
+(epyc-root artifacts/operator/stack-change-dar-lat-3h-20260926/).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ orchestration/stack_topology.yaml             |  9 +++++++-
+ stack_templates/default.yaml                  | 19 ++++++++-------
+ tests/unit/test_critic_shape_recipe_parity.py | 23 +++++++++++++++++++
+ 3 files changed, 42 insertions(+), 9 deletions(-)
+ create mode 100644 tests/unit/test_critic_shape_recipe_parity.py
+
+diff --git a/orchestration/stack_topology.yaml b/orchestration/stack_topology.yaml
+index 208b2e19..9fd72fca 100644
+--- a/orchestration/stack_topology.yaml
++++ b/orchestration/stack_topology.yaml
+@@ -222,8 +222,15 @@ numa_config:
+   # Qwen3.8-Flash-Next UD-IQ4_XS on this instance (:8074) since 2026-09-22.
+   # The 122B is retired from the lineup.
+   architect_critic:
++    # 2026-09-26 DAR-LAT-3h (PROPOSED; applies only on gate G1 outcome R48): NUMA_FULL ->
++    # NUMA_FULL_T48, completing lineup-change C3 (operator-ruled 2026-09-22). Same cpuset
++    # (0-95), same four-region lock, same interleave=all; -t 96 -> 48 to match the codified
++    # recipe (epyc-inference-research scripts/lib/qwen38_flash_next_recipe.py THREADS).
++    # The measurement that decides it is the package's G1 receipt. Changing -t changes
++    # topology_fingerprint, so the contention-matrix pairs naming :8074 must be re-benched
++    # (package gate G3).
+     instances:
+-      - {cpu_shape: NUMA_FULL, port: 8074}   # 1×96t physical cores, all 4 NUMA nodes
++      - {cpu_shape: NUMA_FULL_T48, port: 8074}   # 0-95 cpuset, 48 threads, all 4 NUMA nodes
+     mlock: true
+     numa_pre_evict_gib: 40   # INF-70/C7 CPU role: force even interleave (see header)
+     numactl_policy: interleave=all   # wraps launch with `numactl --interleave=all --`
+diff --git a/stack_templates/default.yaml b/stack_templates/default.yaml
+index 9c32de11..4644da89 100644
+--- a/stack_templates/default.yaml
++++ b/stack_templates/default.yaml
+@@ -14,8 +14,9 @@
+ #     freed — they must not be revived here.
+ #   * architect_general and worker_vision are MI210 roles: the model is on the
+ #     GPU and only 8 HOST threads are pinned, on GPU_HOST_LANE (184-191).
+-#   * architect_critic (:8074) is the whole-machine 122B that vacated
+-#     architect_general; coder_escalation now aliases architect_general, and
++#   * architect_critic (:8074) is the whole-machine CPU critic (Qwen3.8-Flash-Next since
++#     2026-09-22; the 122B it replaced is retired) on the full cpuset that
++#     architect_general vacated; coder_escalation now aliases architect_general, and
+ #     vision_escalation aliases worker_vision (both are the SAME server process
+ #     as their target, not a second instance).
+ #
+@@ -143,16 +144,18 @@ roles:
+         p_split: 0
+ 
+   architect_critic:
+-    # 2026-07-31/08-01: the 122B that used to sit on architect_general. Whole
+-    # machine, CPU-resident. Terminal rung of the escalation ladder.
+-    model: Qwen3.8-Flash-Next-UD-IQ4_XS   # 2026-09-22: was Qwen3.5-122B-A10B (retired)
++    # Whole machine (0-95), CPU-resident. Terminal rung of the escalation ladder.
++    # 2026-09-22: Qwen3.8-Flash-Next replaced the retired Qwen3.5-122B-A10B.
++    # 2026-09-26 DAR-LAT-3h: numa/threads restate stack_topology.yaml (NUMA_FULL_T48);
++    # ram_gb 69 was the 122B, 90 is the registry's memory_gb for this model.
++    model: Qwen3.8-Flash-Next-UD-IQ4_XS
+     quant: UD-IQ4_XS
+     tier: HOT
+-    ram_gb: 69
++    ram_gb: 90
+     full:
+       port: 8074
+-      numa: FULL
+-      threads: 96
++      numa: FULL_T48
++      threads: 48
+ 
+   ingest_long_context:
+     # 2026-09-22 lineup change: Qwen3-Next-80B-A3B retired. The role moved onto
+diff --git a/tests/unit/test_critic_shape_recipe_parity.py b/tests/unit/test_critic_shape_recipe_parity.py
+new file mode 100644
+index 00000000..05fba3ab
+--- /dev/null
++++ b/tests/unit/test_critic_shape_recipe_parity.py
+@@ -0,0 +1,23 @@
++"""architect_critic's declared cpu_shape must be the one its registry recipe names.
++
++The master registry's `recipe.cpu_shape: NUMA_FULL_T48` was a pointer nothing read, so
++stack_topology.yaml kept NUMA_FULL and the live critic ran -t 96 against a recipe of 48
++for four days (DAR-LAT-3h). This recomputes both sides and diffs them.
++"""
++
++from __future__ import annotations
++
++from pathlib import Path
++
++import yaml
++
++from scripts.server.stack_numa import _CPU_SHAPES, NUMA_CONFIG, NUMA_INSTANCE_SHAPES
++
++LEAN = Path(__file__).resolve().parents[2] / "orchestration" / "model_registry.yaml"
++
++
++def test_critic_topology_shape_matches_registry_recipe() -> None:
++    recipe = yaml.safe_load(LEAN.read_text())["server_mode"]["architect_critic"]["recipe"]
++    assert NUMA_INSTANCE_SHAPES["architect_critic"] == (recipe["cpu_shape"],)
++    threads = NUMA_CONFIG["architect_critic"]["instances"][0][2]
++    assert threads == _CPU_SHAPES[recipe["cpu_shape"]][1] == int(recipe["threads"])
