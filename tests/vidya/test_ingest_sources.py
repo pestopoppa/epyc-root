@@ -171,11 +171,17 @@ def _typed_decisions(tmp: Path) -> Path:
     return _helpers("test_typed_decisions_measurement_adapter").write_corpus(tmp)
 
 
+def _research_screen(tmp: Path) -> Path:
+    h = _helpers("test_research_screen_adapter")
+    return h.seal(tmp, h.body(tmp, "selector_replay"))
+
+
 def _ak_actor_seat(tmp: Path) -> Path:
     return _helpers("test_autokernel_actor_seat_adapter").write_fixture(tmp)
 
 
 BUILDERS = {
+    "research-screen": _research_screen,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
     "contention-gate": _contention_gate,

@@ -1,0 +1,22 @@
+{
+  "schema": "epyc.selector_replay.historical_inventory.v1",
+  "sources": [
+    {
+      "path": "/workspace/repos/epyc-orchestrator/orchestration/autopilot_journal.jsonl",
+      "bytes": 18257825,
+      "lines": 883,
+      "sha256": "1c5a665922de5c81c53cc6dd4218a9597123c1a1d42347344104683758f70dbc"
+    },
+    {
+      "path": "/workspace/repos/epyc-orchestrator/orchestration/autopilot_journal_1.jsonl",
+      "bytes": 19801823,
+      "lines": 507,
+      "sha256": "9f9fd39b8ed1db90b073782b9fe4c57a368b6c6e9c9bef6d4819b4b98aec408a"
+    }
+  ],
+  "capture_commit_reference": "fb7871ea29908f5a6051e854d957e32d20b72508",
+  "cross_check": {
+    "path": "orchestration/reports/readjudicate_sequential_20260728.json",
+    "sha256": "527e5c1433e72080581225d7b3564f8ed9de481e23d080c31ed86694950cbf26"
+  }
+}

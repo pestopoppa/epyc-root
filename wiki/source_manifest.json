@@ -4,15 +4,33 @@
     "handoff-active": 174,
     "handoff-blocked": 2,
     "handoff-completed": 198,
-    "progress": 496,
+    "progress": 497,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-26T05:30:14Z",
-  "mode": "touch",
-  "scan_time": "2026-09-26T05:30:14Z",
+  "last_touch": {
+    "advanced": {
+      "added": 1,
+      "changed": 6,
+      "removed": 0
+    },
+    "at": "2026-09-26T06:21:37Z",
+    "scope_paths": [
+      "handoffs/active/autopilot-continuous-optimization.md",
+      "handoffs/active/autopilot-sequential-allocation.md",
+      "handoffs/active/canonical-judge-suite-revamp.md",
+      "handoffs/active/eval-tower-verification.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "progress/2026-09/2026-09-26.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-26T06:21:37Z",
   "schema_version": 1,
-  "source_set_hash": "b8aaac985b51b65eccb566cf257fd9e54dd0068d26bc47b260a96701a66e402b",
+  "source_set_hash": "465a6c7e989a177ffbba0b715c6344eb4fad46c8ae447cc397b2f71cf5f9aa24",
   "sources": [
     {
       "content_hash": "8595f5d9339b0046d8720c31a58567e781bd250c32406bdc381c523e28197e7d",
@@ -151,10 +169,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3943174558a472c401e42507cc2b03e9d333c5bf685adbbb4ca094a7c4922870",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "93c297c7dda0399ca8bca97704ee0bb285dfdc216042fc5dfe8b9c4ff8e8c541",
+      "modified": "2026-09-26T06:14:14Z",
       "path": "handoffs/active/autopilot-continuous-optimization.md",
-      "size": 84625,
+      "size": 86584,
       "title": "AutoPilot: Continuous Recursive Optimization",
       "type": "handoff-active"
     },
@@ -175,10 +193,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e5bb147d9fb1af7de83d854cc7bd5f69e9be076cc0bf709859a0b31961f0c93a",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "ad58089b93e49f97a73e5a82920dc38835ffb13b6bb13c6daf36bd199064336d",
+      "modified": "2026-09-26T06:14:14Z",
       "path": "handoffs/active/autopilot-sequential-allocation.md",
-      "size": 32309,
+      "size": 33015,
       "title": "Autopilot Sequential Verdicts \u2014 the allocation rule, not the effect, was the binding constraint",
       "type": "handoff-active"
     },
@@ -231,10 +249,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "eb40f63cd96dd314159951145ccb0ee6c1af8eb92edbf5cf9e53713c79001dfe",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "719e691a1e93692c58534ebdc99956086d04768e91b9dcaef7811598321a9b1f",
+      "modified": "2026-09-26T05:36:54Z",
       "path": "handoffs/active/canonical-judge-suite-revamp.md",
-      "size": 48752,
+      "size": 49237,
       "title": "Canonical Judge Suite Revamp \u2014 Replace a Saturated Instrument with Execution-Verified Ones",
       "type": "handoff-active"
     },
@@ -455,10 +473,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "e5bc17519a1d5c40e293a206d1adf4d0142a46f260beaf5c360b1f6343046c3d",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "c58abd32f1566aa7192375f93fcdcbf2d85d8cd871db97ffe4ac2e9084e69c7c",
+      "modified": "2026-09-26T05:33:34Z",
       "path": "handoffs/active/eval-tower-verification.md",
-      "size": 129511,
+      "size": 129796,
       "title": "Eval Tower Verification Framework",
       "type": "handoff-active"
     },
@@ -647,10 +665,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fa7330a9c1eedcbe229b29e317bba64a2ad33388fc9a6415a0853fcef43712e4",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "5b11a8465afaf56dc391b6c8d9ae1628f08ff37901f3603863c06f797d5afa4a",
+      "modified": "2026-09-26T05:41:55Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 57951,
+      "size": 58450,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -1359,10 +1377,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "172e1bff1194f8197c47706291fa74adbcdffaa676041d414b7d3d4b19f1c281",
-      "modified": "2026-09-26T05:26:51Z",
+      "content_hash": "b8bd9cb2d9d6cd3afa576d354a3653adb9623869a5db4508de7f6f13e31e2816",
+      "modified": "2026-09-26T05:38:46Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 269884,
+      "size": 270687,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -8095,6 +8113,14 @@
       "type": "progress"
     },
     {
+      "content_hash": "ee93840c8a05d191f390b7f300d2e18dcfa8c6b97c633711d5e8fcc55a430fcd",
+      "modified": "2026-09-26T06:14:14Z",
+      "path": "progress/2026-09/2026-09-26.md",
+      "size": 5241,
+      "title": "2026-09-26",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-09-25T13:40:48Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -8975,7 +9001,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1120,
+  "total_new": 1121,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",

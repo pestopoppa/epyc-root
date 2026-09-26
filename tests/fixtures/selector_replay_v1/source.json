@@ -1,0 +1,56 @@
+{
+  "budgets": {
+    "evaluator_calls": 12,
+    "proposer_cost": 0,
+    "proposer_tokens": 0,
+    "wall_seconds": 0
+  },
+  "continuation_design": "same_task_seed_evaluator",
+  "files": {
+    "candidate_graph": "candidate-graph.json",
+    "journal": "journal.jsonl",
+    "outcomes": "outcomes.json"
+  },
+  "holdout_id": "fixture-later-d3-d4",
+  "identities": {
+    "archive_id": "fixture-archive-v1",
+    "decoding_id": "fixture-no-decoding",
+    "endpoint_id": "fixture-endpoint-v1",
+    "model_id": "fixture-no-model",
+    "policy_revision": "fixture-current-v1",
+    "scheduler_id": "fixture-scheduler-v1",
+    "scorer_revision": "fixture-score-v1",
+    "selector_id": "fixture-selector-v1"
+  },
+  "profiles": {
+    "dgm": {
+      "g_D": "precomputed_per_candidate",
+      "kappa_D": 1,
+      "seed": 19,
+      "source_profile": "synthetic-dgm-profile-v1",
+      "valid_child_rule": "observed_valid_children_zero_floor_one"
+    },
+    "hgm": {
+      "outcome_mapping": "identity_unit_interval",
+      "prior_alpha": 1,
+      "prior_beta": 1,
+      "pseudo_descendant_semantics": "beta_fractional_success_failure",
+      "seed": 23
+    },
+    "shinka": {
+      "rank_alpha": 1,
+      "seed": 17,
+      "source_profile": "synthetic-shinka-profile-v1",
+      "weighted_lambda": 10
+    }
+  },
+  "provenance": {
+    "holdout": "predeclared_chronological",
+    "holdout_declared_at": "2026-08-31T00:00:00Z",
+    "menu": "observed_raw",
+    "outcome": "paired_recorded",
+    "parent": "recorded_edge"
+  },
+  "schema": "epyc.selector_replay.source.v1",
+  "source_kind": "synthetic_fixture"
+}

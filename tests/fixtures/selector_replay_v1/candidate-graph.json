@@ -1,0 +1,292 @@
+{
+  "decisions": [
+    {
+      "current_parent": "a",
+      "decision_id": "d1",
+      "eligible_candidates": [
+        {
+          "candidate_id": "a",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d1-a-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d1-a-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.7,
+          "feature_timestamp": "2026-09-01T00:00:01Z",
+          "offspring": 0,
+          "score": 0.7,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "b",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d1-b-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d1-b-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            }
+          ],
+          "dgm_g": 0.9,
+          "feature_timestamp": "2026-09-01T00:00:01Z",
+          "offspring": 0,
+          "score": 0.9,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "c",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d1-c-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            },
+            {
+              "descendant_id": "d1-c-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.8,
+          "feature_timestamp": "2026-09-01T00:00:01Z",
+          "offspring": 1,
+          "score": 0.8,
+          "valid_children": 1
+        }
+      ],
+      "evaluator_id": "fixture-evaluator-v1",
+      "seed": 1,
+      "split": "development",
+      "task_id": "task-1",
+      "timestamp": "2026-09-01T00:00:01Z"
+    },
+    {
+      "current_parent": "a",
+      "decision_id": "d2",
+      "eligible_candidates": [
+        {
+          "candidate_id": "a",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d2-a-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d2-a-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.7,
+          "feature_timestamp": "2026-09-01T00:00:02Z",
+          "offspring": 0,
+          "score": 0.7,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "b",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d2-b-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d2-b-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            }
+          ],
+          "dgm_g": 0.9,
+          "feature_timestamp": "2026-09-01T00:00:02Z",
+          "offspring": 0,
+          "score": 0.9,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "c",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d2-c-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            },
+            {
+              "descendant_id": "d2-c-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.8,
+          "feature_timestamp": "2026-09-01T00:00:02Z",
+          "offspring": 1,
+          "score": 0.8,
+          "valid_children": 1
+        }
+      ],
+      "evaluator_id": "fixture-evaluator-v1",
+      "seed": 2,
+      "split": "development",
+      "task_id": "task-2",
+      "timestamp": "2026-09-01T00:00:02Z"
+    },
+    {
+      "current_parent": "a",
+      "decision_id": "d3",
+      "eligible_candidates": [
+        {
+          "candidate_id": "a",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d3-a-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d3-a-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.7,
+          "feature_timestamp": "2026-09-01T00:00:03Z",
+          "offspring": 0,
+          "score": 0.7,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "b",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d3-b-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d3-b-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            }
+          ],
+          "dgm_g": 0.9,
+          "feature_timestamp": "2026-09-01T00:00:03Z",
+          "offspring": 0,
+          "score": 0.9,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "c",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d3-c-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            },
+            {
+              "descendant_id": "d3-c-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.8,
+          "feature_timestamp": "2026-09-01T00:00:03Z",
+          "offspring": 1,
+          "score": 0.8,
+          "valid_children": 1
+        }
+      ],
+      "evaluator_id": "fixture-evaluator-v1",
+      "holdout_block": "block-3",
+      "parent_cluster_id": "cluster-3",
+      "seed": 3,
+      "split": "holdout",
+      "task_id": "task-3",
+      "timestamp": "2026-09-01T00:00:03Z"
+    },
+    {
+      "current_parent": "a",
+      "decision_id": "d4",
+      "eligible_candidates": [
+        {
+          "candidate_id": "a",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d4-a-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d4-a-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.7,
+          "feature_timestamp": "2026-09-01T00:00:04Z",
+          "offspring": 0,
+          "score": 0.7,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "b",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d4-b-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            },
+            {
+              "descendant_id": "d4-b-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 0
+            }
+          ],
+          "dgm_g": 0.9,
+          "feature_timestamp": "2026-09-01T00:00:04Z",
+          "offspring": 0,
+          "score": 0.9,
+          "valid_children": 0
+        },
+        {
+          "candidate_id": "c",
+          "descendant_outcomes": [
+            {
+              "descendant_id": "d4-c-desc-0",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            },
+            {
+              "descendant_id": "d4-c-desc-1",
+              "observed_at": "2026-08-31T00:00:00Z",
+              "value": 1
+            }
+          ],
+          "dgm_g": 0.8,
+          "feature_timestamp": "2026-09-01T00:00:04Z",
+          "offspring": 1,
+          "score": 0.8,
+          "valid_children": 1
+        }
+      ],
+      "evaluator_id": "fixture-evaluator-v1",
+      "holdout_block": "block-4",
+      "parent_cluster_id": "cluster-4",
+      "seed": 4,
+      "split": "holdout",
+      "task_id": "task-4",
+      "timestamp": "2026-09-01T00:00:04Z"
+    }
+  ]
+}

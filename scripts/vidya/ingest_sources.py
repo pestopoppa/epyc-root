@@ -90,6 +90,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("research-screen", "research_screen", _files("*.research-screen.json", "**/*.research-screen.json"),
+           note="producer-sealed shared screen receipts: selector_replay or typed_decision_shadow",
+           task="VB-RI-SCREEN-1 / VB-DGM-1 / VB-TDP-EXT"),
     Source("kv-quant-27b-v10-measurement", "kv_quant_27b_v10",
            _files("belief_measurements.jsonl", "*/belief_measurements.jsonl",
                   "*/*/belief_measurements.jsonl"),
