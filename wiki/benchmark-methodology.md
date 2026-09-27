@@ -6488,11 +6488,11 @@ are complete; any selector-effect claim now requires prospective capture during 
 - **"All gates passed" certified little on this host.** In epyc-orchestrator, `shellcheck`, `shfmt` and
   `markdownlint` are not installed; NextPLAID `:8088` is down; and `check-numerics` runs a script that has never
   existed in git history. It is the vacuous-pass class. A gate should fail loudly when its tool is missing rather
-  than skip (NIB2-80).
+  than skip (NIB2-86, filed as NIB2-80).
 
 ### Source References
 
-- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — HYG-4 (checker fix), NIB2-80 (hollow gates), NIB2-81 (research venv lacks pytest).
+- [non-inference-backlog.md](../handoffs/active/non-inference-backlog.md) — HYG-4 (checker fix), NIB2-86 (hollow gates; filed as NIB2-80), NIB2-87 (research venv lacks pytest; filed as NIB2-81).
 - [mi210-big-model-and-acceleration-roadmap.md](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md) — PF1-pre (runner retired in place).
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final.
 - epyc-root `scripts/validate/check_ratification_receipts.py`, `scripts/validate/ratification_receipt_exemptions.json`.

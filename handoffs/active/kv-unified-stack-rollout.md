@@ -9,7 +9,7 @@ the opencode limit (KVU-1a, operator), and the follow-ups below.
 **Priority**: HIGH. :8083 caps every request at 98,304 tokens today, and that ceiling emptied DS41 run 8's planner reply.
 **Categories**: inference_serving, kv_cache, orchestration, stack_lifecycle
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md) (row RTG-57)
-**Depends on**: RTG-19 (single-source stack pipeline, SSU-F3 capacity model), RTG-36 (stack-change governance),
+**Depends on**: RTG-19 (single-source stack pipeline; its SSU-F3 capacity accounting is done, 2026-09-23), RTG-36 (stack-change governance),
 INF-41 (speech VRAM in the capacity gate, OP-48). Downstream, not a dependency: INF-77 DS41-C25 (run 9) waits
 on KVU-1.
 **Related**: [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) DS41-C25,
@@ -147,7 +147,7 @@ is olympiad-style reasoning.
   checkpoint` fires on :8083 (audit #8 / T14). This is the only partial-prefix reuse the hybrids get.
 - [ ] **KVU-1d — replace the `vram_non_kv_gib` UNVALIDATED line** (still open after bring-up: research
   `75ee1b8e` declares 32.80 as UNVALIDATED, and the package's proof step 2 reading was not written back) with KFD − 6.375 from the M-1 reading. Record the
-  reading through SSU-F3's prepared claim tuple (RTG-19).
+  reading through SSU-F3's prepared claim tuple (RTG-19; SSU-F3 itself is done).
 - [x] **KVU-1e — M-4: np4 aggregate under concurrent load, live.** ✅ 2026-09-24 — live :8083 (np4, kvu, depth
   4), fixed-length 1024-token generations (`ignore_eos`), 2 waves per level: aggregate 40.2 / 39.9 tok/s at
   concurrency 1, 71.4 / 67.8 at 2, 95.3 / 93.1 at 4; per-request median 40.5 / 40.2, 36.4 / 34.9, 27.6 / 26.1.
@@ -318,7 +318,9 @@ is olympiad-style reasoning.
   shim and `SHIM_NPROCS` from the launch manifest.
 
 ## Not filed here (explicit)
-- SSU-F3 structural capacity model (RS, draft KV, compute terms): owned by RTG-19. INF-41 aux VRAM in the gate:
+- SSU-F3 structural capacity model (RS, draft KV, compute terms): RTG-19's SSU-F3 is done (2026-09-23,
+  `artifacts/operator/vram-gap-27b-20260923.md`); the open follow-on is SSU-F10 (per-buffer VRAM logging on every GPU
+  role). INF-41 aux VRAM in the gate:
   owned by OP-48 / INF-41.
 - Package §10 items that the overflow branch already fixes: the 20,000-char routing threshold (now tokens and
   capacity-fenced), the 32768 compaction fallback, and 400 / "Context size has been exceeded." handling.
