@@ -8,9 +8,9 @@ are done (2026-09-27); the runner is written. Nothing has run.
 behind it; see the freeze list at the end.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-13).
-**Depends on:** the role-swap stack-change package (amended and VALID, awaiting the operator's terminal signature;
-ARCHSWAP-1 to ARCHSWAP-4 below), HS-4 P4 `/v1` escalation parity
-(UFH-01), RI-21 (routing-intelligence.md).
+**Depends on:** the ARCHSWAP role-swap stack-change package (workspace-8d; amended, VALID, awaiting the operator's
+terminal signature, OP-68; ARCHSWAP-1 to ARCHSWAP-4 below), RI-21 (routing-intelligence.md, RTG-30). TE-1 delivered
+the HS-4 P4 /v1 escalation subset this experiment needed from UFH-01.
 
 ## Start here
 
@@ -228,7 +228,8 @@ code for a rider), and only if the window has its estimated time left.
   Frontdoor → CoderEscalationNode → ArchitectNode (`src/graph/nodes.py:250`, `:595`, `:615`).
   - After the swap, prove with `orchestrator_route_explain` that A2's escalation lands on the Flash-Next server, and
     that no hop ends on a role missing from `_ROLE_TO_NODE`. RI-21 is that defect: fix it (a one-line map entry plus a
-    test), do not file it.
+    test), do not file it. RI-21 stays open in `routing-intelligence.md` until the swap: the ARCHSWAP role swap resolves
+    it (the escalation map and the graph both end at `architect_general`), and ARCHSWAP-5 ticks it after the swap.
   - This fails if escalation lands on the 27B.
   ✅ 2026-09-27 — a test proves an escalated call reaches the registry-resolved `architect_general` server. Research
   `2b59bebe` added the runner at `scripts/benchmark/thesis_ufh13/` (plan / pilot / run / score, per-question

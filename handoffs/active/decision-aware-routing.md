@@ -1,6 +1,6 @@
 # Decision-Aware Routing for Q-Scorer
 
-**Status**: REFRESHED 2026-07-03 (Fable 5 follow-up) — current-traffic DAR-1 replay completed 2026-07-03 and kept the routing-expansion gate CLOSED (22,992 routing decisions, 98.6% regret-identifiable, 0.00% gate regret; report in `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-07-03.md`). Current dispositions: **DAR-2 contrastive is live-ON in production**; **DAR-3 (SPO+/epsilon-greedy) and DAR-6 are FROZEN per fable5-findings-02** until a future replay proves >=5% regret; **DAR-4 bilinear is retained** as the candidate descriptor-conditioned predictor (findings-02 §3). The April-era body below is historical record.
+**Status**: ACTIVE, mostly waiting — DAR-2 contrastive is live-ON; DAR-3/DAR-6 FROZEN (fable5-02); DAR-3/4/5 re-aimed 2026-07-21 (§ RESCOPE); the reward carries the wall-clock axis since era E18 (2026-09-24); DAR-LAT is ❄ FROZEN behind UFH-13 (2026-09-27). Completed DAR-1/DAR-2/DAR-1.5 record: § Completed Scope.
 **Created**: 2026-04-14 (from deep-dive research on intake-366)
 **Updated**: 2026-07-03 (current-window DAR-1 replay; prior body updates through 2026-04)
 **Priority**: HIGH
@@ -8,17 +8,20 @@
 **Tracked in**: [routing-and-optimization-index.md](routing-and-optimization-index.md) P13
 **Cross-claim (2026-06-12)**: DAR-1 replay deliverable + the ≥5%/<5% fork are closed in [routing-truth-restoration.md](../completed/routing-truth-restoration.md) W8; this handoff retains the future learned-routing research items only if a later gate re-opens them.
 
-## Start here (2026-09-26)
+## Start here (2026-09-27)
 
-**2026-09-27: DAR-LAT is FROZEN (operator, narrowed plan) apart from the UFH-13 thesis experiment.** DAR-LAT-3h is ✅:
-G1 chose T96 and nothing was applied (live `:8074` `-t 96` is the measured-better shape; see DAR-LAT-3h below). The
-paragraph that follows is the pre-freeze plan; each DAR-LAT box carries its own unfreeze trigger.
+- DAR-LAT is ❄ FROZEN behind UFH-13's TE-6 verdict, with a per-box unfreeze trigger; DAR-LAT-3h is ✅.
+- Operator narrowed plan 2026-09-27: hold new DAR work for UFH-13. The first unfrozen box after the verdict is DAR-SPLIT-1, then the `stage`/`producer_role` split.
+- Operator-owned: the ">=5% regret" ruling and the E9 routing-reward era signature.
+- Standing, never flip: no production epsilon-greedy; do not close DAR-3/4/5 as signal-bound; any reward redesign carries the speed axis.
+- Do not dispatch the DAR-3 SPO+ boxes.
 
-The live work is the **latency-term track** at the end of this file, in § *Research Intake Update — 2026-09-26*.
-Next is **DAR-LAT-1** (the `SlotCapacity` + `expected_wait_s` snapshot on the admission ledger), then DAR-LAT-2 at
-weight 0. DAR-LAT-3 is the decision-grade A/B under P-SERVE-SEL-1 (ratified and landed `3573028b`). Its gate 3g is
-blocked on the `:8074` thread/recipe reconciliation (DAR-LAT-3h). The sections between here and there are the
-April-July DAR-1..6 record. DAR-3/4/5 were rescoped on 2026-07-21 (§ *RESCOPE*) and stay gated.
+## Completed Scope
+
+| Scope | Where |
+|---|---|
+| DAR-1, DAR-1 current-traffic replays, DAR-2, DAR-1.5 (phases + audit deliverable), the 2026-07-21 reward-saturation tables and root-cause evidence, the wall-clock speed-axis requirement (landed as E18), and the DAR-LAT-3h full box text | [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md) |
+| April dependency graph, research-intake updates 2026-04-18 / 04-26 / 04-28 / 05-27, the superseded Status line and Start here (nothing dispatchable) | [archived history](../archived/decision-aware-routing-history-through-2026-09-27.md) |
 
 ## Problem / Context
 
@@ -59,71 +62,9 @@ The intractability concerns from intake-366 (differentiating through LP/MIP solv
 
 ## Implementation Phases
 
-### DAR-1: Offline Regret Analysis — ✅ 2026-04-15
+DAR-1 (offline regret, ✅ 2026-04-15), the DAR-1 current-traffic replays (✅ 2026-06-12, 2026-07-03), DAR-2 contrastive (✅ 2026-04-15, live-ON via `CONTRASTIVE_Q_UPDATES`) and the DAR-1.5 REINFORCE-pathology audit (✅ 2026-05-07) moved to the [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md); see § *Completed Scope*.
 
-Script: `scripts/analysis/dar1_regret_analysis.py`. Results from 7,211 routing decisions (Apr 10-14):
-
-- **96% uniform Q-values** (<0.001 spread) — Q-scorer has barely learned preferences
-- Selection score spread is non-trivial (median 0.107) — comes from cost/similarity terms, not Q-values
-- 25% trivial spread (<0.01), 75% have meaningful differentiation via cost terms
-- 3,355 learned decisions vs 3,856 rules/classifier decisions
-- **Implication**: Q-values are not driving routing decisions — cost and similarity dominate. This confirms the predict-then-optimize pathology: the Q-values are decorative, not decision-driving.
-
-**Next step**: DAR-2 contrastive training has limited Q-signal to work with. Two paths:
-1. Accumulate more routing memories via seeding (need 500+ updated memories; currently 419 with update_count > 0)
-2. Proceed with DAR-2 anyway — contrastive loss will sharpen the few memories that DO have signal, and new routing decisions will accumulate contrastive-trained Q-values faster than current TD learning
-
-### DAR-1 Current-Traffic Replay — ✅ 2026-06-12
-
-Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-06-12.md`.
-
-Replay window: 2026-06-05..2026-06-12 progress JSONL. Result: 12,057 routing decisions analyzed, 11,249 matched task outcomes, 8,145 regret-identifiable decisions, 0.00% identifiable mean regret, 99.1% uniform Q-values, 95.2% trivial selection-score spread.
-
-Gate verdict: DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing expansion remain frozen. Historical rules/classifier rows lacked candidate action IDs, so `epyc-orchestrator` `1dfbc22` added `action_topk` telemetry for future replays.
-
-### DAR-1 Current-Traffic Replay — ✅ 2026-07-03
-
-Report: `epyc-orchestrator/orchestration/reports/dar1_regret_replay_2026-07-03.md`.
-
-Replay window: 2026-06-13..2026-07-03 progress JSONL. Result: 22,992 routing decisions analyzed, 20,477 matched task outcomes, 22,677 regret-identifiable decisions (98.6%), 0.00% gate regret, 99.6% uniform Q-values, 95.4% trivial selection-score spread, and 27,335 try-cheap-first counter rows.
-
-Gate verdict: unchanged. DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broader learned-routing expansion remain frozen because no >=5% mean decision-regret signal was proven.
-
-### DAR-2: Contrastive Q-Score Update — ✅ 2026-04-15
-
-- [x] Added `_compute_contrastive_adjustment()` method to `q_scorer.py` (~65 lines)
-- [x] Contrastive term is additive to reward signal in `_score_task()`, NOT a modification to `_compute_reward()`
-- [x] Feature flag `CONTRASTIVE_Q_UPDATES` (ON by default, disable with env var `CONTRASTIVE_Q_UPDATES=0`)
-- [x] Routing memories use contrastive-adjusted reward; escalation memories use base reward
-- [x] Bounded: max adjustment ±0.1, margin=0.05. With α=0.1, max extra Q-shift per update = 0.01
-- [x] Skips memories at default Q=0.5 (the 96% unlearned) — only fires when alternatives have learned Q-values
-- [x] Full logging: `DAR-2 contrastive: adj=X.XXXX reward=Y.YYY→Z.ZZZ task=...`
-- [x] 5,285 tests pass (flag ON and OFF), 0 regressions. GitNexus re-indexed.
-- [x] `episodic.db.backup-20260415` created before activation
-- [x] Add dedicated unit test for `_compute_contrastive_adjustment()` with mock store — **DONE 2026-04-17**: `TestComputeContrastiveAdjustment` class with 13 tests in `tests/unit/test_q_scorer.py`
-
-**Implementation**: Added in `_score_task()` between reward computation and `_update_routing_memory()`. The method retrieves top-10 similar routing memories, compares selected model's Q-value against alternatives with learned Q-values, and computes a bounded adjustment that sharpens the decision boundary. Zero adjustment when ranking is already correct with sufficient margin.
-
-**Files**: `q_scorer.py` (L31 flag, L271-282 integration, L457-520 method)
-
-### DAR-1.5: REINFORCE-Pathology Audit (NEW 2026-04-26 — analytical, no code)
-
-**Source**: deep-dive [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) Section 2.2.
-
-**Trigger**: Trinity's Table 4 shows REINFORCE collapses to **0.253 LCB / 0.459 Math500** at the same training budget where sep-CMA-ES achieves **0.615 / 0.880**. The paper attributes this to the loss surface being block-ε-separable — pure policy-gradient methods get drowned in off-block noise. DAR-3 (SPO+) and DAR-4 (bilinear scorer) are NOT pure REINFORCE — they use closed-form gradients on contrastive losses — but the question is whether the same geometry hurts them in a milder form.
-
-**Goal**: a written analytical audit (no code, no rerun) answering: do the gradients used in DAR-2 (contrastive Q-update, ALREADY LANDED), DAR-3 (SPO+), and DAR-4 (bilinear scorer) share REINFORCE's vulnerability to off-block noise on a block-ε-separable loss? If yes for any of DAR-3/DAR-4, document the mitigation before implementation begins.
-
-- [x] **DAR-1.5.1** ✅ 2026-05-07 — Gradient forms tabulated. Per-action Q-table (DAR-2/3 substrate) is `ε_H=0` block-diagonal trivially; bilinear scorer (DAR-4) has high `ε_H` by design via shared W. See "DAR-1.5 audit deliverable" sub-section below for the table.
-- [x] **DAR-1.5.2** ✅ 2026-05-07, resolved by P4.2 on 2026-06-27 — Cross-reference written. P4.2 later resolved the conditional branch: full-rank dominates, so DAR-4 proceeds full-rank for the current trained-label surface.
-- [x] **DAR-1.5.3** ✅ 2026-05-07 — Mitigations enumerated per architecture. Per-action Q-table: none needed. Bilinear: (b) rank-restrict W ≤ k as cheapest first defense if P4.2 confirms separability. (a/c/d) documented as follow-ups.
-- [x] **DAR-1.5.4** ✅ 2026-05-07 — Decision-gate verdict: **DAR-3 PROCEED unconditionally** (per-action substrate has ε_H=0 by construction); **DAR-4 CONDITIONAL on P4.2** (rank-restrict if separability confirmed, full-rank if falsified); **DAR-4b PROCEED** (inference-time blending, no training); **DAR-5 conditional on DAR-4 + P4.2** (adds more shared parameterization, inherits constraint).
-
-**Effort**: 1 session, analytical only. No infra, no code. Deliverable is a markdown sub-section appended to this handoff.
-
-**Why this matters even if it changes nothing**: it produces a *first-principles* answer to "does Trinity's REINFORCE result transfer to us?" — which the project repeatedly needs when reasoning about new optimizer choices. Cheap insurance against making the wrong optimizer call later.
-
-### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions)
+### DAR-3: SPO+ with Exploration (~100 lines, 3-4 sessions) — superseded by § RESCOPE (do not dispatch)
 
 **Motivation note (intake-495 BaRP)**: BaRP frames this as the train/test mismatch fix — production logs only record the chosen specialist's outcome, not counterfactuals for un-routed models. DAR-3 SPO+ adopts the bandit-feedback *rationale* (don't require labels for un-chosen specialists) with a convex surrogate loss instead of REINFORCE. The 10% epsilon-greedy exploration step is what manufactures counterfactual data; SPO+ is what learns from it without REINFORCE's high-variance gradient.
 
@@ -159,6 +100,9 @@ Gate verdict: unchanged. DAR-3/SPO+, DAR-6 swarm expansion, Package I, and broad
 - [ ] Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing history needed
 
 **Files**: New `bilinear_scorer.py`, `retriever.py`, `q_scorer.py` (config), `episodic_store.py`
+
+- DAR-1.5 verdict (2026-05-07; P4.2 resolved 2026-06-27): DAR-4 proceeds full-rank; sep-CMA-ES only for cold-start/no-label surfaces. Gate artifact: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/p42_block_separability/report_20260627_sample80k.json`.
+- Feature candidate (intake-408#06): add `is_reasoning_model` to `ModelFeatures`.
 
 ### DAR-4b: Inference-Time Preference Vector + Cost Scaling τ (~50–100 lines, 1–2 sessions)
 
@@ -210,7 +154,7 @@ If DAR-3 / DAR-4 / DAR-4b / DAR-5 underdeliver on the zero-predictive-spread pat
 
 The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Options 2 and 3 are recorded for completeness, not roadmap commitments.
 
-### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run)
+### DAR-6: Swarm-Fanout Mode for High-Injection-Risk Prompts (intake-614/615, ~1–2 days + one eval run) — ❄ FROZEN (fable5-02)
 
 **Source**: arxiv:2510.24801 (intake-615) — peer-ranked consensus across heterogeneous models reportedly shows 0.12% adversarial-degradation vs 6.20% for single-model baseline on prompt injection. If even a third of that delta survives independent replication on our suite, swarm-fanout is a routing **mode**, not just a research curiosity.
 
@@ -240,47 +184,6 @@ The realistic CPU-feasible escalation is option 1 (Trinity-style sep-CMA-ES). Op
 - Mid-stream / chunk-level peer verification ([`peer-verifier-speculation-spike.md`](../completed/peer-verifier-speculation-spike.md) covers that; spike resolved NO-GO 2026-05-27, archived 2026-06-12 with 4 re-eval triggers).
 - Replicating Fortytwo's reputation-staking / Sybil resistance (single-user single-host stack — out of scope).
 - Multi-model fan-out for general (non-injection) prompts — that's a latency burn without a clear quality justification at our scale.
-
-## Dependency Graph
-
-```
-DAR-1 (offline regret analysis)    ──independent──
-DAR-2 (contrastive Q-score)        ──depends on DAR-1 confirming regret > threshold──
-DAR-3 (SPO+ with exploration)      ──depends on DAR-2 producing ranked Q-values──
-DAR-4 (model-feature-conditioned)  ──independently developable in parallel with DAR-2/3──
-```
-
-## Research Intake Update — 2026-04-18
-
-### Episodic Memory Benchmark: Routing Intelligence Signal (intake-408/409 deep-dive)
-
-The Tulving Episodic Memory Benchmark (arXiv 2501.13121, ICLR 2025) tested 21 models on 100K-token narratives requiring entity tracking and temporal ordering. Two metrics: Simple Recall (F1) and Chronological Awareness (Kendall τ). Key routing-relevant findings:
-
-**Reasoning models catastrophically fail at long-context episodic memory:**
-
-| Model | Recall (10K→100K) | Chronological (10K→100K) | Architecture |
-|-------|-------------------|--------------------------|--------------|
-| DeepSeek-R1 | 0.988→0.572 (-42%) | 0.964→0.147 (-85%) | MoE, reasoning |
-| o1 | 0.978→0.384 (-61%) | 0.948→0.052 (-95%) | reasoning |
-| GPT-4o | 0.908→0.670 (-26%) | 0.182→0.204 (+12%) | base |
-| Gemini-2.5-Pro | 0.982→0.968 (-1%) | 0.948→0.796 (-16%) | base |
-
-**Routing implications:**
-- Chronological awareness varies **10x** across models (0.033 to 0.817) — a stronger differentiator than recall for routing decisions
-- Reasoning models excel at short-context episodic tasks but collapse at 100K — their effective context utilization windows are much shorter than advertised context lengths
-- For long-document temporal reasoning tasks, routing to reasoning-focused models is **actively harmful** (o1 scores worse than GPT-4o-mini)
-- MoE vs dense architecture shows no clear signal — model size and training approach dominate
-- **RAG chunk granularity matters**: chapter-level RAG matches in-context (0.82 vs 0.81 F1), paragraph-level RAG degrades to 0.60. Event-boundary-aligned chunking is critical.
-
-**Actionable for DAR-4**: The `is_moe` binary feature in the bilinear scorer model features is less informative than a `reasoning_model` binary flag. Consider adding `is_reasoning_model` to `ModelFeatures` — it strongly predicts long-context episodic performance.
-
-**Provenance pin (2026-09-07, `intake-408#06`, dive-verified).** Corrected "24 models" to **21** above.
-The per-model 10K→100K deltas in the table are correct and are now pinned to
-`epbench/experiments/additional_o1_o3_gemini_deepseek_ranking.ipynb` @ `892b22af097d4389d4f1b9cd47b5c51fdacd9bef`.
-The routing signal stands and is now citable rather than asserted: **chronological awareness spans
-0.033–0.817 across 21 models (10×) against recall's 0.300–0.968 (3×)**, and reasoning models invert
-between scales (deepseek-reasoner 0.988 short → 0.572 long; o1 0.978 → 0.384). Record this as the
-justification for the `is_reasoning_model` feature, with the notebook provenance attached.
 
 ## Cross-Cutting Concerns
 
@@ -312,116 +215,6 @@ The BaRP (arxiv:2510.07429) lightweight policy network and LLM Bandit (arxiv:250
 - The zero predictive spread diagnostic came from Package B Phase 4 with n=635. If the underlying issue is data sparsity rather than architectural, DAR-1 regret analysis will reveal this — regret would be near-zero because there are too few samples to establish reliable counterfactuals.
 - DAR-3 exploration routing (10% random) will temporarily degrade routing quality during data collection. Must run in shadow mode or during low-priority tasks.
 - DAR-4 bilinear scorer assumes model features are informative predictors of per-prompt quality. If all models perform similarly on most prompts (low variance), the feature-conditioned approach adds complexity without benefit.
-
-## Research Intake Update — 2026-04-26
-
-### New Related Research
-
-- **[intake-474] "TRINITY: An Evolved LLM Coordinator"** (arxiv:2512.04695, ICLR 2026, openreview:5HaRjXai12)
-  - Authors: Jinglue Xu, Qi Sun, Peter Schwendeman, Stefan Nielsen, Edoardo Cetin, Yujin Tang
-  - Relevance: Fourth peer in this handoff's Research Context table alongside xRouter / RouteLLM / Router-R1 — same problem (lightweight policy that selects among LLMs), qualitatively different optimizer.
-  - Key technique: ≈0.6B base LM + ≈10K-parameter head, trained with **separable CMA-ES** (an evolutionary strategy) instead of RL/SFT. Penultimate-token hidden state is mapped to agent-role logits for multi-turn role-typed delegation (Thinker / Worker / Verifier).
-  - Reported results: 86.2% on LiveCodeBench (claimed coordinator-system record at submission); consistent gains over individual constituent models on coding/math/reasoning/domain-knowledge benchmarks; OOD generalization without SFT or RL.
-  - Delta from current approach (DAR): DAR is reshaping the *learning objective* of the existing TD-trained Q-scorer (predict-then-optimize → decision-aware). Trinity drops the TD/RL frame entirely and trains the routing head with a black-box ES against an end-task fitness signal — directly side-stepping the credit-assignment / Q-magnitude problem that DAR-1 diagnosed. If DAR-2/3/4 underdeliver on the zero-predictive-spread pathology, sep-CMA-ES on the existing routing head is the natural escalation path that does NOT require multi-GPU RL infra (xRouter / Router-R1's blocker) and is CPU-feasible at our scale (10K params, no gradient). Caveat: author-acknowledged limitation is the abstract-vs-grounded-execution gap, which Trinity does NOT solve — that part stays inside our orchestrator.
-  - Recommended follow-up: spike sep-CMA-ES as an alternative trainer for the existing `routing_classifier.py` MLP head when distillation labels are sparse. Add Trinity to the handoff's Research Context table.
-  - **Deep-dive**: [`research/deep-dives/trinity-evolved-llm-coordinator-methodology.md`](../../research/deep-dives/trinity-evolved-llm-coordinator-methodology.md) — read before extending DAR-2/3/4. Specifically section 2.2 ("ES side-steps the credit-assignment problem DAR is trying to solve") and action #4 ("Re-examine DAR-2/3/4 for hidden REINFORCE-class pathology" — analytical check on whether SPO+/bilinear gradients share REINFORCE's off-block-noise weakness on block-ε-separable losses).
-
-## Research Intake Update — 2026-04-28
-
-### New Related Research
-
-- **[intake-493] "Learning to Orchestrate Agents in Natural Language with the Conductor"** (arxiv:2512.04388, ICLR 2026, Sakana AI)
-  - **Framing**: competitive intelligence on the optimizer-choice axis. NOTE: Trinity uses **sep-CMA-ES** (evolutionary strategy), not RL — earlier framing of "RL counterpart" was imprecise.
-  - Relevance: Conductor (7B + GRPO) and Trinity (0.6B + sep-CMA-ES + 10K head) are two distinct points in the published optimizer-design space, both adjacent to DAR's question of "what objective trains the routing head". They are not the two *extremes*, just two published data points; many other formulations exist (BaRP intake-495 — bandit-feedback REINFORCE; LLM Bandit intake-496 — PPO+IRT). DAR remains a TD-trained-Q-scorer-loss-reshape problem.
-  - Key technique: end-to-end GRPO with terminal task reward (no labelled trajectories), 2× H100 80GB, randomized agent-pool training, recursive self-as-worker for test-time scaling.
-  - Reported results (concrete): LCB V6 +1.03 pp vs GPT-5 (within noise); GPQA-D +2.7 pp; open-source-only inference +~10 pp vs Claude Sonnet 4 (strongest ablation).
-  - Delta from DAR scope: Conductor demonstrates that with sufficient base-model capacity (7B), terminal-reward RL can recover joint coordination decisions without explicit Q-objective shaping — this is competitive intelligence, not a target for DAR. **Implication for DAR-2/3/4**: if predict-then-optimize loss reshaping continues to underdeliver, the realistic CPU-feasible escalation is *Trinity-style sep-CMA-ES on the existing routing head* (10K params, no gradient), NOT a 7B GPU-class RL coordinator. Document this branching as one option among several in the DAR phase plan.
-  - Caveats (Tier 2b): code/weights promised in supplementary, not yet public; six-author overlap with Trinity means not independent corroboration; LCB +1.03 pp is within noise; terminal-reward RL does not directly address inter-agent verification failures (MAST, arxiv:2503.13657, 36.9% of multi-agent breakdowns).
-
-- **[intake-495] "Learning to Route LLMs from Bandit Feedback (BaRP)"** (arxiv:2510.07429 — earlier internal references at `2510.08429` are TYPOS pointing to ClauseLens)
-  - Relevance: directly named in this handoff at L177 as the next escalation path if DAR-2/3 underperform. BaRP solves the exact train/test mismatch DAR cares about: production logs only record the chosen specialist's outcome, not counterfactuals — BaRP trains under bandit feedback rather than full-information offline labels.
-  - Key pattern to lift: **bandit-feedback training** (don't require labels for un-chosen specialists) + **2-D performance-cost preference vector** dialed at inference time without retraining. Both are concrete additions to the existing learned router; do NOT replace the Phase-1 MLP wholesale.
-  - Reported results: aggregate +16.84% score and -50% monetary cost vs GraphRouter on RouterBench-derived ID; +25.99% on OOD vs offline routers.
-  - Caveat (Tier 2b): RouterBench is MMLU-skewed; OOD evaluated on public benchmarks the candidates likely saw; REINFORCE is high-variance on small pools — LinUCB / Thompson sampling may match without policy-gradient instability and the paper does not ablate this.
-- **[intake-496] "LLM Bandit"** (arxiv:2502.02743, Yang Li, Feb 2025)
-  - Relevance: companion bandit-routing paper. Direct hit on the "every model swap requires a full benchmark sweep" pain — IRT-based 20-50-prompt cold-start would compress that to hours.
-  - Key pattern to lift: **IRT score predictor** + **model identity vectors** + **stratified-by-discrimination cold-start prompt selection**. Do not adopt the full PPO+GAE apparatus; that's heavyweight for our small pool.
-  - Caveat (Tier 2b): single-author, no major-lab signal, slightly outside freshness window. Cost reductions only measured vs RouteLLM (not GraphRouter / RouterDC / BaRP). Short-output benchmarks may not transfer to autopilot multi-turn workload.
-
-## DAR-1.5 audit deliverable — REINFORCE-Pathology Cross-Check (2026-05-07)
-
-**Status**: ANALYTICAL DELIVERABLE COMPLETE. Captured here per the handoff's "Deliverable is a markdown sub-section appended to this handoff" directive. Cross-reference with [`learned-routing-controller.md`](learned-routing-controller.md) P4.2 + the Trinity deep-dive Section 2.2.
-
-### Premise
-
-Trinity (intake-474) reports that REINFORCE collapses to **0.253 LCB / 0.459 Math500** under the same compute budget where sep-CMA-ES achieves **0.615 / 0.880**. The paper attributes this to the loss surface being *block-ε-separable* (Section 1.5 of deep-dive: scaled Hessian `H_S(θ) = S^(1/2) H(θ) S^(1/2)` is uniformly nearly block-diagonal with inter-block coupling `ε_H` ∈ [0, 1)). Pure policy-gradient methods get drowned in off-block noise on this geometry; diagonal CMA gets `Ω(1/n)` per-iteration contraction after stabilization.
-
-The question DAR-1.5 must answer: **do the gradient forms used in DAR-2 / DAR-3 / DAR-4 share REINFORCE's vulnerability to off-block noise on a block-ε-separable loss?**
-
-### DAR-1.5.1 — Gradient forms per loss
-
-| Loss | Functional form | Gradient form | Parameter coupling pattern |
-|---|---|---|---|
-| **REINFORCE** (Trinity baseline) | `L = -E[A · log π(a\|s; θ)]` | `∇L = -∇log π(a\|s; θ) · A` (A = scalar advantage) | Couples ALL parameters of the policy network through ∇log π. On a deep network: `ε_H ≈ 1` (every layer couples everything). On a per-action softmax: `ε_H > 0` via partition function. |
-| **DAR-2 contrastive Q** (LANDED) | `L_contrast = max(0, Q[alt] + margin − Q[chosen])` | `∇L = -∇Q[chosen] + ∇Q[alt]` when margin violated | Q is a **per-action discrete table**: `Q[a] = θ[a]`. Gradient touches ONLY the two scalar entries θ[chosen] and θ[alt]. **`ε_H = 0` exactly — block-diagonal trivially.** |
-| **DAR-3 SPO+** (planned) | `L_SPO+ = Σⱼ max(0, 2c_hat[j] − c_true[j]) − c_hat[i*] + c_true[i*]` | `∇L = Σⱼ 2 ∇c_hat[j] · 𝟙{2c_hat[j] > c_true[j]} − ∇c_hat[i*]` | If `c_hat[j] = θ[j]` (per-action table, our existing Q-scorer): same as DAR-2, **`ε_H = 0` block-diagonal**. If `c_hat[j] = f(θ_shared, x_j)` (parameterized scoring, e.g. layered atop DAR-4): off-block coupling appears via shared `θ_shared`. |
-| **DAR-4 bilinear scorer** (planned) | `Q(prompt, model) = σ(v_m^T W v_p + b)` | `∇L_W = (∂L/∂z) · σ'(z) · v_m v_p^T` (rank-1 outer product) | **Single shared W matrix used for all actions.** A single (m, p) update perturbs every other (m', p') pair through the shared `W`. **`ε_H ≈ 1` by design** — bilinear coupling is the architectural choice, not an accident. |
-
-The key insight: **REINFORCE's pathology is parameter coupling × high-variance scalar advantage**, not the loss form per se. Block-ε-friendliness is determined by the **structural coupling pattern of the scorer**, not the loss:
-
-- **Per-action Q-table** (DAR-2 today, DAR-3 if kept on the same substrate): `ε_H = 0` exactly. Each θ[a] is structurally independent. No off-block noise can hurt the update.
-- **Shared parameterization** (DAR-4 bilinear, or any deep network): `ε_H > 0`. Updates couple across actions through shared parameters. The same geometry that hurts REINFORCE on deep policies hurts ANY gradient-based method on the same architecture — the coupling pattern is what matters, not whether the gradient comes from policy-gradient or a closed-form contrastive surrogate.
-
-### DAR-1.5.2 — Cross-reference with LRC P4.2
-
-`learned-routing-controller.md` P4.2 ("block-ε-separability diagnostic, medium cost") is **COMPLETE as of 2026-06-27**. The 80K-row offline diagnostic trained the existing 2-layer routing head under full-rank, block-diagonal-10, and diagonal-only connectivity. Result: full-rank `81.09%` validation accuracy, block-10 `56.55%`, diagonal `49.33%` (matching the majority baseline). This falsifies the "block-10 ≈ full-rank" premise for the current episodic-label classifier.
-
-**DAR-1.5 conclusions become load-bearing if and only if P4.2 confirms our landscape IS block-ε-separable**:
-
-- P4.2 says "full-rank dominates by ≥2 points" by a wide margin (`+24.54pp` over block-10) → our current routing-label landscape requires shared structure → DAR-4 bilinear's shared parameterization is appropriate; rank-restriction / sep-CMA-ES are not the default mitigation for this surface.
-
-DAR-1.5's rank-restriction branch is now closed negative for the current trained-label classifier. Re-open it only for a materially different cold-start/no-label surface.
-
-### DAR-1.5.3 — Mitigations (if P4.2 confirms block-ε-separability)
-
-Per loss/architecture:
-
-| Component | Pathology risk | Mitigation |
-|---|---|---|
-| DAR-2 contrastive Q (LANDED) | None (`ε_H = 0` exactly by per-action table) | None needed |
-| DAR-3 SPO+ on per-action table | None (inherits per-action structure) | None needed |
-| DAR-3 SPO+ on bilinear scorer | Same as DAR-4 (coupling from shared W) | Not currently planned to layer SPO+ over bilinear; if it ever happens, apply DAR-4's mitigations |
-| DAR-4 bilinear scorer | High coupling by design — `W` shared across all (m, p) pairs | (a) **L1 / nuclear-norm regularization on W** to favor low-rank solutions empirically. (b) **Rank-restrict W** to rank ≤ k (e.g., k=8 matching Trinity's effective block count). (c) **Outer sep-CMA-ES loop on W** — Trinity's recipe directly applied. (d) **Accept and proceed** if P4.2 evidence is borderline. |
-
-Recommended preference order: (b) rank-restriction is the cheapest first defense and aligns with Trinity's empirical evidence (block-diagonal-10 head retained competitive performance on Math500). (a) regularization is a follow-up if (b) underperforms. (c) sep-CMA-ES is the heaviest mitigation, only justified if (a) and (b) both underdeliver — and would graduate DAR-4 from "decision-aware loss reshape" to the full Trinity-style optimizer rewrite tracked under LRC P4.4.
-
-### DAR-1.5.4 — Decision gate before DAR-3
-
-Per the handoff's gate criterion ("if DAR-1.5 flags a high-confidence pathology and P4.2 confirmed block-ε-separability, pause DAR-3/4 and reconsider"):
-
-- **DAR-3 (SPO+ on existing per-action Q-table)**: ✅ **PROCEED as planned, NO mitigation required**. The per-action table architecture has `ε_H = 0` exactly; no coupling pattern can carry the off-block-noise pathology. Trinity's REINFORCE result does NOT transfer to DAR-3 because the failure mode is architectural (deep-policy parameter sharing), and our existing Q-scorer is structurally a discrete lookup, not a deep parameterized policy.
-- **DAR-4 (bilinear scorer)**: ✅ **PROCEED full-rank for the current trained-label surface**. P4.2 says NOT block-ε-separable; the W-coupling is the signal to learn, not a pathology to mitigate.
-- **DAR-4b (preference vector + cost τ)**: ✅ **PROCEED as planned**. DAR-4b is inference-time blending of an already-trained scorer; gradient form is N/A (no training in DAR-4b). Whatever DAR-4 produces gets re-weighted at serve time.
-- **DAR-5 (IRT + learned model identity vectors)**: 🟡 **CONDITIONAL on DAR-4 outcome, but not blocked by P4.2 for the current surface**. DAR-5 adds more shared parameterization; P4.2 does not argue against that coupling here.
-
-### Why this matters even if it changes nothing
-
-The audit produces a *first-principles* answer to a question the project repeatedly hits when reasoning about new optimizer choices: "does Trinity's REINFORCE result transfer to us?" The conclusion is sharper than "maybe":
-
-- **For per-action Q-table architectures** (DAR-2, DAR-3): NO. Block-diagonal by construction. Trinity's negative result for REINFORCE does not transfer.
-- **For shared-parameterization architectures** (DAR-4 bilinear, DAR-5, future deep policies): YES, conditionally. If our landscape is block-ε-separable (P4.2 question), shared parameterization is fighting the geometry, and the entire family of gradient-based methods (REINFORCE, SPO+, contrastive) on that architecture suffers similar pathology.
-
-The unblocking insight: **the architectural choice (per-action vs shared) determines `ε_H`, and `ε_H` determines whether ANY gradient-based optimizer is appropriate.** Trinity's optimizer-vs-architecture confound is unwound: their negative result for REINFORCE is really a negative result for *gradient methods on coupled architectures over block-ε-separable geometry*. ES wins because it doesn't propagate gradients through the coupling.
-
-### Recommended follow-ups
-
-1. **Proceed with full-rank DAR-4 as the default trained-label architecture**; do not add rank restriction unless a future surface produces different P4.2 evidence.
-2. **Keep sep-CMA-ES scoped to true cold-start/no-label surfaces**, not the current routing-label classifier.
-3. **Use the P4.2 report as the cited gate artifact**: `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/p42_block_separability/report_20260627_sample80k.json`.
-
-### Status
-
-DAR-1.5 audit COMPLETE 2026-05-07; P4.2 gate resolved 2026-06-27. Decision-gate verdict: **DAR-3 unblocked** (no mitigation), **DAR-4 full-rank for the current trained-label surface**, **DAR-5 not blocked by P4.2 but still conditional on DAR-4 evidence**.
 
 ## Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.5)
 
@@ -458,19 +251,6 @@ Decision tree (after J10 analysis):
 - ❌ any gate fails → stay shadow-only; recalibrate (re-weight the logged components / adjust threshold) on a **frozen shadow-calibration set**; do NOT enforce.
 
 Mitigation: shadow→enforce is a deliberate second flag flip (shadow logging alone never changes routing); keep a frozen calibration set; re-run calibration after any DAR-3/DAR-4 change (audit #4, avoid feedback loop); separate aleatoric vs epistemic components so "ask/approve" vs "route-to-stronger-model" interventions stay distinct. Operator decision tree mirrored in [`bulk-inference-campaign.md`](bulk-inference-campaign.md) Package J.
-
-## Research Intake Update — 2026-05-27
-
-### New Related Research
-
-- **[intake-614] Fortytwo Network — chunk-ranking pipeline for agentic workloads (unpublished founder claim)**
-  - Relevance: chunk-ranking, if disclosed, is a candidate mid-stream quality gate — rank partial completions from multiple models against milestones during a single tool-calling turn, rather than retrying full completions post-hoc. Maps onto DAR's escalation question: instead of "should we escalate this whole prompt to a stronger model based on uncertainty?", a chunk-rank gate could ask "should we keep, swap, or branch the model mid-generation based on a peer's ranking of the chunk so far?"
-  - Status: claim has no paper, no blog, no code as of 2026-05-27 — the published Fortytwo paper (intake-615) is post-hoc pairwise on full completions only. Track for disclosure; do not design against it yet.
-  - Founder-claimed result: 16-way parallel inference on vision tasks at "negligible" per-stream throughput hit. Unverified.
-- **[intake-615] "Fortytwo: Swarm Inference with Peer-Ranked Consensus"** (arxiv:2510.24801)
-  - Relevance: the post-hoc full-completion version of the above — could inform a DAR escalation mode where high-uncertainty prompts are dispatched to N≥2 models concurrently and the Bradley-Terry winner returned, in lieu of (or alongside) the current single-model escalate-to-stronger flow.
-  - Reported result: +17.21pp on GPQA-Diamond over majority voting; 0.12% vs 6.20% prompt-injection degradation.
-  - Open question: latency cost — at our stack a 2-way concurrent serve already halves per-stream throughput; need explicit roofline before considering.
 
 ## Research Intake Update — 2026-06-03
 
@@ -542,38 +322,7 @@ Consequences for the frozen phases, stated plainly:
 
 Pre-registered disposition was: *"if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound`."* **The audit SPLITS: condition 1 fires, condition 2 does not. The close-as-signal-bound disposition therefore DOES NOT FIRE.**
 
-Method: reward recovered by inverting `initial_q = 0.5 + reward*0.5` ⟹ `reward = 2q − 1`, over the 659,785 `update_count=0` rows (the 99.69% that were never TD-updated, i.e. still at write-time reward).
-
-**Condition 1 — reward IS saturated. MET.**
-| reward | count | share |
-|---|---:|---:|
-| +1.0 | 587,509 | **89.05%** |
-| −0.4 | 47,802 | 7.25% |
-| 0.0 | 7,460 | 1.13% |
-| +0.9 | 5,216 | 0.79% |
-| +0.7 | 2,614 | 0.40% |
-| all others | <700 | <0.1% |
-
-Per-decision reward entropy (0.1-bin) = **0.6877 bits**; binary (r==1 vs else) = **0.4985 bits**. Effectively trimodal — success / neutral / penalty — not a graded signal.
-
-**Condition 2 — but the reward DOES separate roles. NOT MET.** Role-conditional means (`action_type='routing'`):
-| role | n | mean reward |
-|---|---:|---:|
-| ingest_long_context | 59,724 | +0.9398 |
-| architect_general | 61,435 | +0.9305 |
-| worker_vision | 31,100 | +0.9193 |
-| coder_escalation | 86,868 | +0.9118 |
-| frontdoor | 287,686 | +0.8518 |
-| worker_general | 127,183 | +0.7788 |
-
-Spread = 0.2212 ⟹ **11.06pp**, or **8.05pp** excluding the degenerate `toolrunner` (n=616, all r=1.0). Either way ≫ the 2pp threshold. Standard errors are ≤0.0019, so the ordering is not noise. (`action_type` split: routing +0.8641 vs escalation +0.4319 over 4,382 rows — escalation carries far more signal per row.)
-
-**The decisive number — matched within-objective comparison** (controls the task-mix confound in the marginal above). 621 objectives seen under ≥2 roles at ≥5 obs each, covering 385,917 decisions:
-- Within-objective best-worst role reward gap: **mean 11.61pp, MEDIAN 0.00pp**
-- Objectives where the gap exceeds 5pp: **136 / 621 = 21.9%**
-- Non-saturated decisions in the matched set: **37,026 / 385,917 = 9.6%**
-
-**Interpretation — this reframes the program more usefully than either prior hypothesis.** The signal is neither absent (so "signal-bound, close it" is wrong) nor uniformly present (so "train a better global policy" is also wrong). It is **concentrated**: for roughly 78% of objectives the median role gap is *literally zero* — the routing decision does not matter — and essentially all discriminative information lives in a ~10-22% minority. A global policy trained across all traffic is dominated by the majority where every action is equally correct, which is a sufficient mechanical explanation for the five-null streak WITHOUT needing the policy class to be wrong. This is also why the marginal counterfactual estimate (8.1-8.4pp split-half) understates the achievable gain: it averages the decisive minority against a majority where the ceiling is zero.
+Result: reward entropy 0.6877 bits (saturated) but role spread 11.06pp; within-objective gap mean 11.61pp / median 0.00pp; 136/621 = 21.9% of objectives decisive (a floor). Tables in the [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
 
 **Revised disposition (supersedes the pre-registered one):**
 - [x] Reward-saturation audit executed — entropy 0.6877 bits (saturated) but role-conditional spread 11.06pp (separating). Split verdict; close-as-signal-bound does NOT fire. ✅ 2026-07-21
@@ -596,63 +345,13 @@ Combined implication: the triage-gate framing survives, but its target sharpens.
 
 ## ROOT CAUSE FOUND — 2026-07-21: the cost/speed half of the reward was dead due to a key-name mismatch
 
-The reward-saturation audit above established *that* the reward was saturated. This establishes **why**, and it is not a design gap — the speed axis was designed, implemented, and never executed.
-
-`compute_reward` (`orchestration/repl_memory/q_reward.py`) gates all three cost dimensions **plus** the teacher shaping behind one lookup:
-
-```python
-role = cost_metrics.get("role", "")
-baseline_tps = config.baseline_tps_by_role.get(role, 0)
-...
-if baseline_tps > 0 and tokens_gen > 0 and elapsed > 0:   # latency penalty
-if role in config.baseline_quality_by_role:               # quality-gap penalty
-if role in config.memory_cost_by_role:                    # memory-tier penalty
-```
-
-`cost_metrics` is the TASK_COMPLETED entry's `data` dict (`q_scorer.py:812`). Measured over **20,521 production `task_completed` entries** (last 14 progress-log files):
-
-| key | present |
-|---|---:|
-| `role` — **the key that is read** | **0** |
-| `producer_role` — the key that is written | **20,521** |
-| `regret` (teacher shaping) | 0 |
-| `speedup_vs_teacher` (teacher shaping) | 0 |
-
-So `baseline_tps` resolved to 0, every guard failed, and `reward` collapsed to `base_reward`. The outer `if cost_metrics` passed — the dict was non-empty — so nothing ever looked wrong.
-
-**Fixed** (`epyc-orchestrator` `q_reward.py`): read `role` → `producer_role` → `final_answer_role`. `producer_role` values map cleanly onto `baseline_tps_by_role` keys (frontdoor 24.3, worker_general 38.46, architect_general 12.19, …; only the 49 `mock` rows miss). Five regression tests added (`tests/unit/test_q_reward_role_key.py`), two of which fail against the pre-fix code.
-
-**Replayed against 20,526 real historical completions:**
-
-| | at exactly r=+1.0 | mean | entropy (0.1-bin) |
-|---|---:|---:|---:|
-| before | **100.0%** | +1.0000 | **0.0000 bits** |
-| after | **0.2%** | +0.5601 | **2.4580 bits** |
-
-Role-conditional means post-fix: worker_vision +0.967, ingest_long_context +0.898, frontdoor +0.607, worker_general +0.524, coder_escalation +0.470, **architect_general +0.253** (lowest — slowest baseline at 12.19 tps and most expensive, so it takes all three penalties). Role spread **0.7147**, versus 0.2212 in the stored data.
-
-**This is the mechanical explanation for the five-null streak.** Every learned-routing experiment (P4.1.3, P4.2, P4.5, P4.6, DAR-4b) was fitting a target that carried zero bits. No policy class, loss function, or feature set can extract signal from a constant.
+compute_reward read role, telemetry wrote producer_role, so every cost dimension was skipped (0/20,521 rows carried role). The fix reads role → producer_role → final_answer_role; replay 0.0000 → 2.4580 bits. Evidence in the [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
 
 ### Retroactive rescoring is possible
 
 - **94.5%** of `task_completed` entries carry usable speed telemetry (`tokens_generated` 99.8%, `generation_ms` 99.8%, `prompt_eval_ms` 99.8%, `http_overhead_ms` 99.8%).
 - **20,516 `task_started`/`task_completed` pairs** carry timestamps, so **true wall-clock task duration is recoverable** — 85 days of progress logs are retained.
 - Rescoring is therefore a replay over `logs/progress/*.jsonl`, not a re-run. It creates an instrument-era boundary: pre-fix stored `q_value`s and post-fix rewards are **not comparable**, and the era must be recorded before any mixed-era comparison is made.
-
-### The speed axis must be wall-clock, not tokens/sec (operator requirement)
-
-Dimension 1 as written is throughput-relative: `expected_elapsed = tokens_generated / baseline_tps` against `generation_ms`. **That is gameable through tools** and measurably blind. Wall-clock vs model-compute over 19,433 tasks: **median 1.60x, p90 9.09x**. Per role:
-
-| role | n | wall p50 | model p50 | overhead |
-|---|---:|---:|---:|---:|
-| worker_vision | 1,775 | 11.9s | **0.4s** | **5.38x** |
-| worker_general | 9,547 | 12.4s | 3.2s | 1.93x |
-| frontdoor | 3,904 | 6.8s | 3.4s | 1.63x |
-| coder_escalation | 2,493 | 6.9s | 3.3s | 1.20x |
-| ingest_long_context | 748 | 8.5s | 6.7s | 1.12x |
-| architect_general | 2,009 | 11.3s | 9.4s | 1.10x |
-
-`worker_vision` spends 0.4s generating inside 11.9s of wall clock. A tokens/sec penalty scores it as fast; a task-execution-speed penalty would not. The gap is orchestration and tool time — exactly what autopilot's speed × quality objective is supposed to price, and exactly what the current dimension cannot see.
 
 - [x] Root-caused the reward saturation to a `role` vs `producer_role` key mismatch; fixed with regression tests; replayed on 20,526 historical completions (0.0000 → 2.4580 bits). ✅ 2026-07-21
 - [x] Add a **wall-clock task-duration** term as the speed axis, derived from `task_started`→`task_completed`, and demote the tokens/sec term to a secondary signal. Per-role p50/p90 baselines above are computable from the retained logs — derive them under a protocol id rather than hand-setting constants.
@@ -700,6 +399,8 @@ Selection has no latency or load term today. The only cost is historical elapsed
 learned live estimate (intake-1796#02). The regime left open is ours: single-instance, TTFT-bound, preferred tier
 saturated (intake-1798#05; intake-1797#04). The terms land at weight 0 like DAR-4b: they do not reopen the
 DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 decides.
+
+### DAR-LAT — ❄ FROZEN 2026-09-27 behind UFH-13 (do not dispatch; each box carries its unfreeze trigger)
 
 - [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
   Role-keyed over the role's backend URLs:
@@ -773,24 +474,11 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
         live argv is the one to hold; the registry `recipe:` text still says 48 (SSU-F11; not applied, see RESULT.md).
     - VB-SEL-LOADAB wired.
     ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
-  - [x] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** Use the
-    `stack-change` skill (zero inference). Live `-t 96` vs recipe `threads: 48`, and `n_ctx` 262144 vs the validated
-    8192. Trace which surface emits 96 (the suspect is `stack_templates/default.yaml:155`). Present the options: align
-    serving to the recipe, or re-derive the recipe for the 96-thread serving shape (CPU co-tenancy with speech is a
-    known cost, CURRENT-CAMPAIGN.md:22). Give a recommendation and a before/after decode gate. One package for the
-    operator's signature; never an ad-hoc relaunch. Filed 2026-09-26 (workspace-8d wrap-up).
-    ✅ 2026-09-27 — package v2 signed (`RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926`), G1 run 2026-09-27 ~17:41-18:57Z,
-    15/15 launches clean, coherence equal across arms. **Outcome T96**:
-    - premise holds: T96 vs L wall 0.988×, TTFT 0.950× (`GGML_FUSED_DECODE_OFF` inert under MTP);
-    - 48-thread parity fails: T48 vs T96 1.0385× / 1.055×, T48N vs T96N 1.032× / 1.068× (bar: wall ≤ 1.03×);
-    - THP shim not adopted: T96N vs T96 wall 1.009× (bar: ≤ 0.98×).
-    **Disposition: recorded only, NOTHING APPLIED** — the T96 row adds only the inert knob and live `:8074` already runs
-    `-t 96`, so no reload and no contention recert. The 2026-09-22 C3 ruling (`NUMA_FULL_T48`) is superseded;
-    `NOHUGEPAGE_PROCESS` is settled as no gain on v10 at the served shape. The `lane/dar-lat-3h-v2-*` outcome lanes are
-    NOT to be merged. Evidence, W2 reading and decode tables:
-    [`RESULT.md`](../../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md), `g1-result/verdict.json`.
-    **DAR-LAT is now FROZEN** (narrowed plan) apart from the UFH-13 thesis experiment; the boxes above and below keep
-    their `❄ FROZEN 2026-09-27` markers and unfreeze triggers.
+  - [x] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** ✅ 2026-09-27 —
+    package v2 signed (`RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926`); G1 chose T96; **NOTHING APPLIED** (live `:8074`
+    already runs `-t 96`). The `lane/dar-lat-3h-v2-*` lanes are NOT to be merged. Result:
+    [`RESULT.md`](../../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md) and `g1-result/verdict.json`.
+    Full box text: [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
   - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
     out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
     `server_mode.architect_critic.recipe.env_not_serving`.

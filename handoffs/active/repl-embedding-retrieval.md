@@ -220,7 +220,7 @@ MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), compared on concurrency × tasks/h
   ✅ 2026-09-27 — promoted to its own handoff, UFH-13
   [`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md). The run
   is defined there as arm A0: the pinned MMLU-Pro 200 + GPQA 195 manifest (sha256 `1532906b…adb1`), cap 16384, through
-  OpenCode → `/v1`. Its decision rule awaits the operator (OP-66).
+  /v1 (--transport v1, TE-3a). Its decision rule was pre-registered 2026-09-27 (OP-66 closed).
 - [ ] **REPL-EMB-B.2 — speed baseline (after B.1; the operator deferred speed comparison)**: large MoE hybrid
   across CPU+RAM and both MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), measured on concurrency × tasks/hr ×
   aggregate tok/s. Related scoped baselines: `reviewer-latency-and-sampling-budget.md` LB-7 (review plane),

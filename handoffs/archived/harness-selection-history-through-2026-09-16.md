@@ -227,3 +227,9 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 ## Research Intake Update — 2026-09-17 (HS-E1: harness-null-pool evidence for HS-4)
 
 _Via /research-intake Stage 4 (operator-approved plan 2026-09-17). External evidence only; HS-4 stays operator-owned and nothing here gates selection._
+
+## Superseded Status line (as of 2026-09-26)
+
+_Replaced at the 2026-09-27 wrap-up; preserved verbatim._
+
+**Status**: active — HS-4 DECIDED 2026-09-16 (operator: thin off-the-shelf shell, Hermes features built inside the orchestrator; shell settled = OpenCode, pi fallback — [`hs4-shell-and-orchestrator-features-20260916.md`](../../docs/design/hs4-shell-and-orchestrator-features-20260916.md)); Phase 0: P0.1/P0.2 code landed (orch `ed554da2`, `b44ab3a8`), P0-MCP landed (orch `54b6439d`; root `.mcp.json` `ed1dfd57`), P0.3 audit + plugin done (pin `350c726a`), **P0.4 live acceptance PASSED 2026-09-26 ~19:05Z** (10/10 checks incl. A5 token parity, SC86 rows written; evidence [`artifacts/harness/hs4-p04-20260926-r3/verdict.json`](../../artifacts/harness/hs4-p04-20260926-r3/verdict.json)) against the API reloaded at 19:01:51Z with orch `5697828c`; P0.4 remainder: republish the Harness Card (HS-7) and freeze the pin at tag `v1.18.31` = `014614d3` (HS-5b), then the P0-split
