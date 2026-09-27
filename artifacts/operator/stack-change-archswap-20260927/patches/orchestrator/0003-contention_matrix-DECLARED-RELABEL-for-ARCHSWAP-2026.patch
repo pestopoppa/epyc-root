@@ -1,7 +1,7 @@
 From 28cbe113342a14b421b3fef6b6582cc376c21fcd Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
 Date: Sun, 27 Sep 2026 19:13:42 +0000
-Subject: [PATCH 3/3] contention_matrix: DECLARED RELABEL for ARCHSWAP-20260927
+Subject: [PATCH 3/7] contention_matrix: DECLARED RELABEL for ARCHSWAP-20260927
  (no re-measurement)
 
 architect_general <-> architect_critic swapped inside the stamped pairs /

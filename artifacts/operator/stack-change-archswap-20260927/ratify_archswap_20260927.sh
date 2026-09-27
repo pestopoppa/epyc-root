@@ -34,8 +34,8 @@ PYTHON="/usr/bin/python3"
 # an ancestor of origin/<lane>)
 LANES=(
   "$RESEARCH|lane/archswap-20260927|86a33a54c150ca5f417376ff70be8b790068d06a|61af24fa"
-  "$ORCH|lane/archswap-20260927|b020a1a843d043c6aa0f558449346d665f253834|48a012c3 b0d3317e 28cbe113"
-  "$ROOTREPO|lane/archswap-20260927|dd32d8528eb0677f64876e937201b5b48d0c8ee1|3acce399"
+  "$ORCH|lane/archswap-20260927|280059ccc2fc733ac6e9f286a46f0aae098f17f8|48a012c3 b0d3317e 28cbe113 667c78d4 c81f6b60 9d3eae6c e08ec06d"
+  "$ROOTREPO|lane/archswap-20260927|e8abf01d0631c7e8408b14410d4dd0a98be2ecc2|3acce399"
 )
 
 # repo|path ...  — every path this package's patches touch. If ANY of them differs
@@ -80,12 +80,15 @@ TOUCHED=(
   "$ORCH|scripts/toon/ab_test_harness.py"
   "$ORCH|scripts/voice/speech_layouts.yaml"
   "$ORCH|src/api/routes/chat.py"
+  "$ORCH|src/api/routes/chat_pipeline/proactive_stage.py"
   "$ORCH|src/api/routes/chat_pipeline/scout_stage.py"
+  "$ORCH|src/api/routes/chat_review.py"
   "$ORCH|src/api/routes/dashboard.html"
   "$ORCH|src/api/routes/dashboard.py"
   "$ORCH|src/api/routes/dashboard_snapshot.py"
   "$ORCH|src/api/routes/dashboard_topology.py"
   "$ORCH|src/api/routes/health.py"
+  "$ORCH|src/api/routes/v1_escalation.py"
   "$ORCH|src/backends/context_limits.py"
   "$ORCH|src/classifiers/factual_risk.py"
   "$ORCH|src/config/models.py"
@@ -101,12 +104,15 @@ TOUCHED=(
   "$ORCH|src/services/escalation_prewarmer.py"
   "$ORCH|stack_templates/default.yaml"
   "$ORCH|tests/test_autopilot_review_integration.py"
+  "$ORCH|tests/test_review_decision_plane.py"
   "$ORCH|tests/unit/test_approval_gate.py"
   "$ORCH|tests/unit/test_autokernel_enrollment_cross_repo.py"
   "$ORCH|tests/unit/test_build_server_command_helpers.py"
+  "$ORCH|tests/unit/test_chat_routes.py"
   "$ORCH|tests/unit/test_config.py"
   "$ORCH|tests/unit/test_config_consolidation.py"
   "$ORCH|tests/unit/test_config_lineup_liveness.py"
+  "$ORCH|tests/unit/test_consultation.py"
   "$ORCH|tests/unit/test_contention_device_model.py"
   "$ORCH|tests/unit/test_debug_scorer_hard_fail.py"
   "$ORCH|tests/unit/test_default_template_topology_parity.py"
@@ -115,18 +121,22 @@ TOUCHED=(
   "$ORCH|tests/unit/test_eval_tower_concurrency_metrics.py"
   "$ORCH|tests/unit/test_fleet_layer_build.py"
   "$ORCH|tests/unit/test_full_slot_demotion.py"
+  "$ORCH|tests/unit/test_graph_router_integration.py"
   "$ORCH|tests/unit/test_inference_mixin.py"
   "$ORCH|tests/unit/test_kv_compress_adaptive.py"
   "$ORCH|tests/unit/test_proactive_delegator.py"
   "$ORCH|tests/unit/test_quarter_stack_smoke.py"
   "$ORCH|tests/unit/test_registry_chat_template_kwargs.py"
   "$ORCH|tests/unit/test_registry_validator.py"
+  "$ORCH|tests/unit/test_repl_routing.py"
+  "$ORCH|tests/unit/test_roles.py"
   "$ORCH|tests/unit/test_seeding_orchestrator.py"
   "$ORCH|tests/unit/test_stack_change_pipeline_simulated_fixtures.py"
   "$ORCH|tests/unit/test_stack_env.py"
   "$ORCH|tests/unit/test_stack_manifest_imports.py"
   "$ORCH|tests/unit/test_stack_numa.py"
   "$ORCH|tests/unit/test_stack_numa_evict.py"
+  "$ORCH|tests/unit/test_v1_escalation.py"
   "$ROOTREPO|.claude/skills/kernel-promotion/promotion_gates.yaml"
   "$ROOTREPO|docs/reference/speech/cpu-speech-contention-20260924.md"
   "$ROOTREPO|scripts/harness/task_delegation_probe.py"
@@ -134,22 +144,29 @@ TOUCHED=(
 )
 
 PINS=(
-  "363ce1ebbb2275da92627a6fe8e99b02a02b7cef3d600a1875fccbaf804b631f PACKAGE.md"
+  "63f88985a1a7add2b0580d2a6afb8e499bfe3c769a37fdc95752d2fc1c8863fc PACKAGE.md"
   "760fa555ef3530654df16c9885736d0a04c17177a365c8de3da155765fe076c7 evidence/assert_alias_clean.txt"
   "10a20ff4d3802aa21ba51bf38b3fdf545b36a01390b4a5ec997e5712a9bcbb81 evidence/classify.txt"
   "689a82db4c173bb54e784e47e283e6aa377ff6479ac2006d7c87d55780b283b7 evidence/pipeline-check-baseline.txt"
   "12b0b41bdfa59b5a70732297a2faa0fb1c5dbbc2dadf9299443c5f8b4799d872 evidence/pipeline-check-relabeled-state.txt"
   "e18e7f58c5e843d27888cc3111d64296bce1640e56be414e42ec65ea83031224 evidence/pipeline-update.txt"
-  "829a0ae5ce3b747234f8c8a917542e040e256344d05c23183afaf1797dd08d09 evidence/tests.txt"
+  "2a8931c33338c23a371bff3f8b569b53c6b29a8ef6daf4df2f86c402fdb1704f evidence/tests.txt"
   "0973b8c1949fe932e06e6ef319394a5268ea75c5a92ef3f29b877058e0c4eaf3 evidence/url_diff.txt"
   "9214506d9a66d266ce12311acec5bc2dd353ea9dc879b1306004b4d9d1e46b2b evidence/urls-after-static.tsv"
   "62cd85e5880306106dbd055fd84cb3222dd3b52bb118c3a9bd7871c55b63a641 evidence/urls-before-static.tsv"
   "62cd85e5880306106dbd055fd84cb3222dd3b52bb118c3a9bd7871c55b63a641 evidence/urls-before.tsv"
-  "ad950f0e7b5e1a18552a90486679659e36b4a0d7900c30994272ded1f60079a0 patches/orchestrator/0001-stack-ARCHSWAP-20260927-architect_general-Flash-Next.patch"
-  "d5d6d933da182e39a55ab9fa054b261408529805237e538db7f909ddf327fe13 patches/orchestrator/0002-derived-regenerate-lean-registry-descriptors-stack-p.patch"
-  "a96038a0e356eba3c49ee74b4061b8d122c467187220a818ac069e7e063b7706 patches/orchestrator/0003-contention_matrix-DECLARED-RELABEL-for-ARCHSWAP-2026.patch"
+  "89708ee091fb103bf57030b9cc766f901ab211cad557fd87ca746085aa11134c patches/orchestrator/0001-stack-ARCHSWAP-20260927-architect_general-Flash-Next.patch"
+  "5a5e6d9f5a4ad67f5bcb3bc42eca42e3f283e2f1edcdfd344a0d7f4b56d2aa4a patches/orchestrator/0002-derived-regenerate-lean-registry-descriptors-stack-p.patch"
+  "fe5483a4698901cb271cfee1e2028c6da9a0578dbd32fd2f2922653ec51f72be patches/orchestrator/0003-contention_matrix-DECLARED-RELABEL-for-ARCHSWAP-2026.patch"
+  "1c687634465011c52631037c69e3ef76a5ecf7da91ef8c850d5cb4e084db87a9 patches/orchestrator/0004-roles-ARCHSWAP-20260927-review-and-plan-work-stay-on.patch"
+  "7974b6021c6f21e1cbfe48245b3225a123bc3434eb2417ce5607656c8d28df7c patches/orchestrator/0005-derived-regenerate-for-the-reviewer-planner-bindings.patch"
+  "a05e9cfb472d622a899a199f0ce9f4d47fca5f8352f2f8cebf47b1c5d95fdfbd patches/orchestrator/0006-v1_escalation-ARCHSWAP-20260927-auto-verdict-follows.patch"
+  "2659b6994b55b79134a68aacccca3bd6157bcce24c4daaf3ef25da8134415905 patches/orchestrator/0007-derived-regenerate-after-merging-origin-main-into-th.patch"
+  "138f6017a5cfa4c4d19814363f240349e40872be23ac772962d6d2d6a9f812b3 patches/orchestrator/NET.diff"
   "3453ea0da2759edf9dce02648e8489a9d14b246a685fc942ed1e462845345772 patches/research/0001-registry-ARCHSWAP-20260927-Flash-Next-becomes-archit.patch"
+  "515116c237f42006939ebc62c3a3ea92ded83cc918c03e23fbec2648e3487b6c patches/research/NET.diff"
   "b6126e9321a26402f1530ace26df441e62688a5f82a66fa89b6debdd7eac2024 patches/root/0001-archswap-rebind-root-consumers-that-meant-the-27B-th.patch"
+  "86a043877459292169c0d512896bbdfc24df431669b8b549882aee01365142ad patches/root/NET.diff"
   "d0865a51240fb69508e8cbdad569ba18df8dbfab526ff4c9a8856023c333d3a5 tools/relabel_contention_matrix.py"
   "b7f927b81e6aa11d1b25b8733558b608ecf59dca601856c96292a984f42de5ae tools/relabel_state.py"
   "59f46d65253559421d26673e4197587fb7c2b419f479f1a850757b271d16cff0 tools/transform_registry.py"
@@ -250,7 +267,14 @@ doc = {
     "pinned_sha256": {p.split(" ", 1)[1]: p.split(" ", 1)[0] for p in pins},
     "decision": "operator-decided 2026-09-27: swap architect roles — Qwen3.8-Flash-Next (:8074) -> architect_general, Qwen3.8-27B Q8 (:8083) -> architect_critic",
     "aliases": "operator ruling 2026-09-27: coder_escalation + ingest_long_context stay on the :8083 27B (host role architect_critic); not an option",
-    "acknowledged": ["A-1 routine graph escalation reaches the whole-machine-lock CPU role (supersedes the 2026-07-30 role definition and the D2 premise for architect_general)", "A-2 GPU-sized inline planning/review traffic now lands on Flash-Next", "A-3 prewarm/scouts bypass cpu_region_lock on :8074", "A-4 by-name callers of architect_general now reach Flash-Next"],
+    "acknowledged": {
+        "status": "approved in chat 2026-09-27 as amended; the approval, its wording and the session URL are recorded in PACKAGE.md section 4",
+        "A-1": "routine graph escalation reaches the whole-machine-lock CPU role (supersedes the 2026-07-30 role definition and the D2 premise for architect_general)",
+        "A-2": "AMENDED: review work (plan review, answer verdict, review_before_commit) AND plan decomposition (proactive_stage decomposition + repair) stay on the MI210 27B via DEFAULT_REVIEWER_ROLE / DEFAULT_PLANNER_ROLE = architect_critic; only escalation moves: routine escalation and risk_abstain_target_role go to architect_general (Flash-Next)",
+        "A-3": "prewarm/scout cpu_region_lock bypass on :8074 — fixed by a separate orchestrator commit based on lane/archswap-20260927, merged before the bring-up API reload",
+        "A-4": "by-name callers of architect_general now reach Flash-Next",
+        "A-5": "pre-existing: ingest_long_context in serial_roles while its host is not",
+    },
     "options_chosen": {
         "O-2_thinking": think_opt,
         "O-3_bringup": bringup_opt,

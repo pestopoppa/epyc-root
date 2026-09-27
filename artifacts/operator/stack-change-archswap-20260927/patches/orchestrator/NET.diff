@@ -1,115 +1,3 @@
-From 48a012c346fb9f03509bbde1a0c3e9dcf2e8dbbf Mon Sep 17 00:00:00 2001
-From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
-Date: Sun, 27 Sep 2026 19:13:39 +0000
-Subject: [PATCH 1/7] =?UTF-8?q?stack:=20ARCHSWAP-20260927=20=E2=80=94=20ar?=
- =?UTF-8?q?chitect=5Fgeneral=20->=20Flash-Next=20:8074,=20architect=5Fcrit?=
- =?UTF-8?q?ic=20->=2027B=20:8083=20(UNSIGNED=20package)?=
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-
-Operator-decided 2026-09-27. Role LABELS swap over two unchanged processes; the
-coder_escalation / ingest_long_context aliases stay on the :8083 27B (operator
-ruling) and are re-pointed explicitly to its new host label architect_critic.
-
-- Binding follows the process: stack_topology numa_config, launch_manifest
-  port_map / hot list / role_launch_meta, stack_templates (alias_to:
-  architect_critic), stack_env blocks + arch_aliases, URL fallback and
-  runtime-selected alias tables (models.py, health.py), dashboard GPU set,
-  eval_tower GPU lanes + GPU judge default, kv_compress layer rows, autopilot /
-  prewarmer ports, seeding reload map, role_restart.architect_* knobs,
-  factual_risk tiers, host-role lists.
-- src/roles.py: escalation now ends at architect_general (Flash-Next) —
-  coder_escalation / thinking_reasoning / architect_critic -> architect_general;
-  fallback worker_math -> [critic], ingest -> [general] (no same-fleet edges).
-- Graph paths (nodes.py ArchitectNode, chat_delegation) unchanged: they target
-  ARCHITECT_GENERAL by name and so reach Flash-Next. RI-21 deliberately open.
-- Tests updated for the new bindings.
-
-Package: epyc-root artifacts/operator/stack-change-archswap-20260927 (not applied).
-
-Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
----
- .env.example                                  |   5 +-
- README.md                                     |  10 +-
- .../chapters/02-orchestration-architecture.md |   9 +-
- docs/gpu-shadow-lane.md                       |   6 +-
- orchestration/interaction_skills.yaml         |  13 +-
- orchestration/launch_manifest.yaml            |  71 +++++++----
- orchestration/repl_memory/q_scorer.py         |   5 +-
- orchestration/review_plane_knobs.yaml         |  39 +++---
- orchestration/stack_topology.yaml             |  30 +++--
- scripts/autokernel_actor_cli.py               |   3 +
- scripts/autopilot/autopilot.py                |   5 +-
- scripts/autopilot/config_applicator.py        |  41 ++++---
- scripts/autopilot/eval_tower.py               |  27 ++++-
- scripts/autopilot/kv_compress.py              |   7 +-
- .../autopilot/operator_seed_strategies.yaml   |   2 +-
- scripts/benchmark/debug_scorer.py             |  18 ++-
- scripts/benchmark/seeding_orchestrator.py     |   5 +-
- scripts/server/contention_matrix.py           |   6 +-
- scripts/server/gpu_shadow_lane_preflight.py   |  13 +-
- scripts/server/gpu_shadow_lane_stage0.py      |   7 +-
- scripts/server/gpu_shadow_lane_tenancy.py     |   3 +
- scripts/server/orchestrator_stack.py          |  11 +-
- scripts/server/realized_fleet.py              |   2 +-
- scripts/server/stack_env.py                   |  24 +++-
- scripts/server/stack_manifest.py              |   7 +-
- scripts/server/stack_numa.py                  |   4 +
- scripts/server/stack_numa_evict.py            |   3 +-
- scripts/toon/ab_test_harness.py               |   3 +-
- scripts/voice/speech_layouts.yaml             |   4 +-
- src/api/routes/chat.py                        |   5 +
- src/api/routes/chat_pipeline/scout_stage.py   |   4 +-
- src/api/routes/dashboard.html                 |   4 +-
- src/api/routes/dashboard.py                   |  18 ++-
- src/api/routes/dashboard_snapshot.py          |   5 +-
- src/api/routes/dashboard_topology.py          |   3 +-
- src/api/routes/health.py                      |   3 +-
- src/backends/context_limits.py                |   6 +-
- src/classifiers/factual_risk.py               |  14 ++-
- src/config/models.py                          |  26 ++--
- src/fleet.py                                  |  11 +-
- src/graph/approval_gate.py                    |   4 +
- src/graph/langgraph/nodes.py                  |   8 +-
- src/llm_primitives/inference.py               |   3 +-
- src/proactive_delegation/delegator.py         |   7 +-
- src/registry/stack_priors.py                  |   8 +-
- src/roles.py                                  | 112 ++++++++++++------
- src/scheduling/contention.py                  |   3 +-
- src/scheduling/device_model.py                |   3 +-
- src/services/escalation_prewarmer.py          |  11 +-
- stack_templates/default.yaml                  |  51 ++++----
- tests/test_autopilot_review_integration.py    |   4 +-
- tests/unit/test_approval_gate.py              |  12 +-
- .../test_autokernel_enrollment_cross_repo.py  |  10 +-
- .../unit/test_build_server_command_helpers.py |  54 +++++----
- tests/unit/test_config.py                     |   6 +-
- tests/unit/test_config_consolidation.py       |  11 +-
- tests/unit/test_config_lineup_liveness.py     |   3 +-
- tests/unit/test_contention_device_model.py    |  17 ++-
- tests/unit/test_debug_scorer_hard_fail.py     |   4 +-
- .../test_default_template_topology_parity.py  |  11 +-
- tests/unit/test_escalation_prewarmer.py       |  13 +-
- .../test_ev6b_cross_family_fail_closed.py     |   6 +-
- .../test_eval_tower_concurrency_metrics.py    |   9 +-
- tests/unit/test_fleet_layer_build.py          |   5 +-
- tests/unit/test_full_slot_demotion.py         |   9 +-
- tests/unit/test_inference_mixin.py            |   5 +-
- tests/unit/test_kv_compress_adaptive.py       |   5 +-
- tests/unit/test_proactive_delegator.py        |  37 +++---
- tests/unit/test_quarter_stack_smoke.py        |   7 +-
- .../test_registry_chat_template_kwargs.py     |  12 +-
- tests/unit/test_registry_validator.py         |   5 +-
- tests/unit/test_seeding_orchestrator.py       |   3 +-
- ...tack_change_pipeline_simulated_fixtures.py |  39 +++---
- tests/unit/test_stack_env.py                  |   7 +-
- tests/unit/test_stack_manifest_imports.py     |   4 +-
- tests/unit/test_stack_numa.py                 |   8 +-
- tests/unit/test_stack_numa_evict.py           |  14 ++-
- 77 files changed, 693 insertions(+), 319 deletions(-)
-
 diff --git a/.env.example b/.env.example
 index f79b9b6e..dc76e4a9 100644
 --- a/.env.example
@@ -178,6 +66,30 @@ index fa394392..7988bd87 100644
  **Note**: `architect_coding` was eliminated 2026-05-06 and removed from the fallback map. <!-- stack-change-guard: allow historical retired-role note -->
  
  `BackendHealthTracker.classify_failure()` maps error messages to `FailoverReason` (circuit_open, timeout, connection_error, oom). Feature flag: `model_fallback`.
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index d42f8e58..abc7485a 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,14 +9,14 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `f3b37f4f7bdf261b92b03e708cab37d1a400a48a1ce9ec0f540d03cb6d9395c8`
+-- orchestration/model_registry.yaml: `ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f`
+-- orchestration/model_descriptors.yaml: `cc844327883d48eaefb1835ea44b63bdabcac11c82064439572c4785cfb3a61a`
++- orchestration/derived/stack_priors.yaml: `fab350ed81742d12a25d15dddc07d84b91efeb8412c6ab388e2b2b26a3facafc`
++- orchestration/model_registry.yaml: `26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7`
++- orchestration/model_descriptors.yaml: `cc2417d3047079580411a569054583cae330f9378604f1b4629a5c792aa72b90`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+-| architect_critic | 8074 | Qwen3.8-Flash-Next-UD-IQ4_XS | hot | draft-mtp (lookup=false, draft_max=4) | draft=mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf | 52.7 | live_stack; binding=server_mode.direct; status=compiled |
+-| architect_general | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
++| architect_critic | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
++| architect_general | 8074 | Qwen3.8-Flash-Next-UD-IQ4_XS | hot | draft-mtp (lookup=false, draft_max=4) | draft=mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf | 52.7 | live_stack; binding=server_mode.direct; status=compiled |
+ | coder_escalation | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
+ | frontdoor | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.direct; status=compiled |
+ | ingest_long_context | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
 diff --git a/docs/gpu-shadow-lane.md b/docs/gpu-shadow-lane.md
 index 474d043e..eddaa4e8 100644
 --- a/docs/gpu-shadow-lane.md
@@ -202,8 +114,710 @@ index 474d043e..eddaa4e8 100644
  
  **P2-3 correction (2026-07-28):** the second row was missing from this spec and
  from the recert set. `architect_general` occupies all 96 physical cores — it is
+diff --git a/orchestration/contention_matrix.yaml b/orchestration/contention_matrix.yaml
+index 404e09bb..30e693dd 100644
+--- a/orchestration/contention_matrix.yaml
++++ b/orchestration/contention_matrix.yaml
+@@ -40,20 +40,26 @@ host_provenance:
+ binary:
+   llama_server_path: "/mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server"
+   git_commit: ""
+-topology_hash: "4893e37e5d603c80"
++# ARCHSWAP-20260927 DECLARED RELABEL (tools/relabel_contention_matrix.py, epyc-root
++# artifacts/operator/stack-change-archswap-20260927). The role labels architect_general <->
++# architect_critic were swapped inside `pairs`/`unknown_pairs` ONLY; the (cpu_list, port,
++# threads) of every relabeled instance was asserted equal to the post-swap NUMA_CONFIG, and no
++# measured value, date or provenance changed. topology_hash restamped 4893e37e5d603c80 -> 5d772b2c4698b2ae.
++# A relabel is not a re-measurement: re-run contention_matrix.py when placement next changes.
++topology_hash: "5d772b2c4698b2ae"
+ default_floor: 0.85
+ 
+ pairs:
+-  - roles: ['architect_critic', 'worker_vision']
+-    instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_critic", "threads": 96}
++  - roles: ['architect_general', 'worker_vision']
++    instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_general", "threads": 96}
+     instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
+     seq_aggregate_tps: 55.82
+     parallel_aggregate_tps: 4.36
+     ratio: 0.08
+     samples: 1
+     verdict: "block"
+-  - roles: ['architect_general', 'worker_vision']
+-    instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_general", "threads": 8}
++  - roles: ['architect_critic', 'worker_vision']
++    instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
+     instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
+     seq_aggregate_tps: 45.2
+     parallel_aggregate_tps: 47.1
+@@ -68,17 +74,17 @@ pairs:
+     ratio: 1.41
+     samples: 1
+     verdict: "allow"
+-  - roles: ['architect_general', 'frontdoor']
+-    instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_general", "threads": 8}
++  - roles: ['architect_critic', 'frontdoor']
++    instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
+     instance_b: {"cpu_list": "0-47,96-143", "instance_idx": 1, "label": "half0", "port": 8080, "regions": ["q0", "q1"], "role": "frontdoor", "threads": 48}
+     seq_aggregate_tps: 34.15
+     parallel_aggregate_tps: 57.68
+     ratio: 1.69
+     samples: 1
+     verdict: "allow"
+-  - roles: ['architect_critic', 'architect_general']
+-    instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_critic", "threads": 96}
+-    instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_general", "threads": 8}
++  - roles: ['architect_general', 'architect_critic']
++    instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_general", "threads": 96}
++    instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
+     seq_aggregate_tps: 10.49
+     parallel_aggregate_tps: 55.65
+     ratio: 5.3
+@@ -86,7 +92,7 @@ pairs:
+     verdict: "allow"
+ 
+ unknown_pairs:
+-  - roles: ['architect_critic', 'frontdoor']
++  - roles: ['architect_general', 'frontdoor']
+     reason: "overlap_substituted (overlap_measured): no disjoint live placement exists for this role pair; an overlapping-geometry number must not enter the role-keyed gate as the pair's verdict — re-bench the geometry you want with `bench-nway` from a manifest"
+ 
+ 
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index 9f53c601..4acbbd0b 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,239 +48,57 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-27T05:13:02Z'
++compiled_at: '2026-09-27T21:08:02Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f
+-    repo_commit: a6426199
++    sha256: 26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7
++    repo_commit: 4f77d1f5
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: cc844327883d48eaefb1835ea44b63bdabcac11c82064439572c4785cfb3a61a
+-    repo_commit: a6426199
++    sha256: cc2417d3047079580411a569054583cae330f9378604f1b4629a5c792aa72b90
++    repo_commit: 4f77d1f5
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+-    sha256: f57ab87bc91f1a21826d03109349f49b0c70ed1dd3b052c4597d5e893c94aef7
+-    repo_commit: a6426199
++    sha256: 5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610
++    repo_commit: 4f77d1f5
+   stack_numa:
+     path: scripts/server/stack_numa.py
+-    sha256: 8a9e4eade957c71b9694160668f982deff31960d3ec5ad0f2d8fc50369b3c703
+-    repo_commit: a6426199
++    sha256: edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32
++    repo_commit: 4f77d1f5
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+-    sha256: 0d859839ffa6d165a3d4669ee3af78c28712f473ba701083fd41e59752f083cd
+-    repo_commit: a6426199
++    sha256: 66fe456dc9c3fe323239571d4f32794c93391741986bffb875a925729b54b8c1
++    repo_commit: 4f77d1f5
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+-    sha256: 73a9fa42fa2977ecead1a2e7edaf1d956be722ac0a3cae6a4d1b6643295b27c6
+-    repo_commit: a6426199
++    sha256: 33f3f36a285659bdd63477dfbe1bd86f734a04137257674001a83e79f76a0bac
++    repo_commit: 4f77d1f5
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: bcac0512eea7678fc173934450ef1a8ddecf6884210ca44ff1e8e12a7dc40a1f
+-    repo_commit: a6426199
++    sha256: a58ef568b46899e60c25ba35365a262d886baca7ff40399d58b09e60166f1985
++    repo_commit: 4f77d1f5
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: a6426199
++    repo_commit: 4f77d1f5
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: a6426199
++    repo_commit: 4f77d1f5
+ roles:
+   architect_critic:
+     role: architect_critic
+     deployment_status: live_stack
+     status: compiled
+-    model_id: qwen3.8-flash-next-ud-iq4_xs
+-    display_name: Qwen3.8-Flash-Next-UD-IQ4_XS
+-    serving:
+-      endpoint: http://localhost:8074
+-      server_role: architect_critic
+-      binding: server_mode.direct
+-      ports:
+-      - 8074
+-      slots: 1
+-      tier: hot
+-      effective_context_tokens: 262144
+-      binary: llama.cpp
+-      binary_dir: null
+-      numa_policy: single_96t
+-      shared_mmap: true
+-      launch:
+-        entries:
+-        - port: 8074
+-          primary_role: architect_critic
+-          mode: default
+-          alias: false
+-          cpu_shape_class: full
+-          slots: 1
+-        primary_roles:
+-        - architect_critic
+-        modes:
+-        - default
+-        requirements:
+-          model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+-          draft_model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+-        runtime:
+-          binary_family: llama.cpp
+-          binary_path: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
+-          binary_dir: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin
+-          ld_library_path: []
+-          env_policy: canonical
+-          kmp_blocktime: null
+-          cache:
+-            context_tokens: 262144
+-            slots: 1
+-            slots_by_port:
+-              8074: 1
+-            ubatch: 2048
+-            kv_type_k: f16
+-            kv_type_v: f16
+-            kv_hadamard: false
+-            kv_unified: null
+-            draft_kv_type_k: null
+-            draft_kv_type_v: null
+-            no_mmap: true
+-            mlock: true
+-            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+-          flags:
+-            flash_attn: true
+-            jinja: true
+-            device: null
+-            device_draft: null
+-            n_gpu_layers: null
+-            image_min_tokens: null
+-            cache_ram: 32768
+-            chat_template_file: null
+-            reasoning: 'off'
+-            override_kv: []
+-            spec:
+-              enabled: true
+-              type: draft-mtp
+-              disabled_by: null
+-              draft_model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+-              draft_max: 4
+-              draft_min: null
+-              draft_p_min: 0.5
+-              draft_p_split: null
+-              threads_draft: null
+-              ngram_mod_n_min: null
+-              ngram_mod_n_max: null
+-              ngram_mod_n_match: null
+-    policy:
+-      lock_class: exclusive
+-      contention_class: heavy
+-      tap_safe_non_stream: true
+-      high_cost: true
+-      model_mem_gb: 87.25
+-      source: stack_priors.compile
+-      thresholds:
+-        tap_safe_non_stream_min_mem_gb: 64.0
+-        high_cost_min_mem_gb: 60.0
+-    priors:
+-      throughput_tps: 52.7
+-      quality_overall: null
+-      quality_by_axis:
+-        local:
+-          mmlu_pro: 0.755
+-          gpqa: 0.6513
+-      quality_for_role: null
+-      quality_advisories:
+-      - No whole-suite quality prior; domain evidence only (gpqa, mmlu_pro). quality_overall is null BY DESIGN — read the per-axis evidence instead of expecting a scalar.
+-      memory_cost: 1.0
+-    acceleration:
+-      spec_type: draft-mtp
+-      draft_compat:
+-      - mtp-qwen3.8-flash-next-shared-q8_0
+-      enable_thinking: false
+-      thinking_control:
+-        mode: toggle_off
+-        source: chat_template_kwargs.enable_thinking
+-      kv:
+-        k: null
+-        v: null
+-      draft_max: 4
+-      draft_p_min: 0.5
+-      k: 4
+-      p_split: 0
+-      lookup: false
+-    model:
+-      family: qwen3.8-flash-next-ud-iq4_xs
+-      arch: qwen4exp
+-      params_b: null
+-      active_b: null
+-      quant: UD-IQ4_XS
+-      mem_gb: 87.25
+-      ctx_max: 262144
+-      ctx_model_max: null
+-      modalities:
+-      - text
+-      n_layers: 48
+-      attention_layers: 12
+-    evidence:
+-      precedence:
+-        serving: server_mode/stack_manifest outrank roles metadata
+-        memory_cost: server_mode.tier
+-        spec: docs/reference/stack-truth-precedence.md
+-      descriptor_server_roles:
+-      - architect_critic
+-      alias_overrides: []
+-      quality:
+-      - date: null
+-        protocol: registry performance block
+-        value:
+-          baseline_tps: 27.893
+-          optimized_tps: 43.281
+-          speedup: 1.55x
+-          measurement_scope: -c 8192, -np 1, IQ4_XS-uniform, build 10241 — NOT the served shape
+-          quality_score: null
+-          general_suite_quality:
+-            suite_mmlu_pro:
+-              accuracy: 0.755
+-              n: 200
+-              truncated: 0
+-              max_tokens: 8192
+-            suite_gpqa:
+-              accuracy: 0.6513
+-              n: 195
+-              truncated: 0
+-              max_tokens: 16384
+-            measured_on: 2026-09-23
+-            kernel: production-consolidated-v10 (ffc1bac82, build 10303)
+-            instrument_class: serving
+-            scope: 'Live :8074 IN ITS DEPLOYED CONFIGURATION (-t 96, -c 262144, -np 1, f16/f16, --spec-draft-n-max 4, unsloth UD-IQ4_XS 3-shard). NOT a llama-bench arm and NOT the recipe''s measured shape
+-              -- the served process does not run its own recipe (SSU-F11: threads 48 and the recipe env block are declared and never read). So these are never comparable to optimized_tps above, which was
+-              taken at -t 48 on build 10241 with the THP shim.'
+-            cap_convergence: 'THE TOKEN CAP IS PART OF THE CLAIM, and these are the CONVERGED figures: the cap was raised per suite until truncation reached zero, so pooled == untruncated and nothing is
+-              scored wrong merely for being cut off. At the promotion gate''s conventional 64-token cap this same model on these same 200 items scores 0.5650 with 46 truncated, which reads as a regression
+-              against the retired Qwen3.5-122B''s 0.6450 and is not one: that model truncated 0/200 at the same cap because it answers with a letter while this one derives in the visible channel. NEVER
+-              quote a capped figure against an uncapped one. See promotion_gates.yaml gates.quality.truncation_audit.'
+-            incumbent_comparison: Qwen3.5-122B (retired) recorded mmlu_pro 0.6450 / gpqa 0.5692 at max_tokens 64 with 0 truncated. Those are its GATE numbers and were never re-run at a raised cap, so the
+-              comparison is like-for-like only in that both sides are untruncated; treat the incumbent's as a lower bound of unknown tightness.
+-          measurement_category: OBSERVATION
+-          measurement_date: '2026-09-08'
+-          contention_note: 'This role''s single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent
+-            and accepted for this role, but it is the real cost of tier:hot — not the 69 GB — which is now 90 GiB. ⚠ 2026-09-22: THIS IS WHY ingest_long_context WAS NOT ALIASED HERE. An earlier draft merged
+-            it onto this instance, which would have put routine traffic (Stage 1 of three_stage_summarization) behind the whole-machine lock. The D2 ruling (2026-07-31) narrowed the `reasoning` escalation
+-            chain to explicit_request ONLY so routine traffic could never summon it, and D2''s named prerequisite — `region_lock_wait_s_by_holder` telemetry — still does not exist anywhere in the codebase.
+-            Operator ruling C2 sent ingest_long_context to the GPU 27B instead. This instance remains single-role, and the `reasoning` chain remains the only routed path to it.'
+-      speed:
+-      - date: '2026-09-14'
+-        protocol: server_mode throughput
+-        value_tps: 52.7
+-    known_gaps: []
+-  architect_general:
+-    role: architect_general
+-    deployment_status: live_stack
+-    status: compiled
+     model_id: qwen3.8-27b-q8_0
+     display_name: Qwen3.8-27B-Q8_0
+     serving:
+       endpoint: http://localhost:8083
+-      server_role: architect_general
++      server_role: architect_critic
+       binding: server_mode.direct
+       ports:
+       - 8083
+@@ -294,13 +112,13 @@ roles:
+       launch:
+         entries:
+         - port: 8083
+-          primary_role: architect_general
++          primary_role: architect_critic
+           mode: default
+           alias: false
+           cpu_shape_class: gpu_host_lane
+           slots: 4
+         primary_roles:
+-        - architect_general
++        - architect_critic
+         modes:
+         - default
+         requirements:
+@@ -329,7 +147,7 @@ roles:
+             draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+-            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
++            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+           flags:
+             flash_attn: true
+             jinja: true
+@@ -412,7 +230,7 @@ roles:
+         memory_cost: server_mode.tier
+         spec: docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+-      - architect_general
++      - architect_critic
+       - coder_escalation
+       - ingest_long_context
+       alias_overrides: []
+@@ -460,7 +278,7 @@ roles:
+       - date: null
+         protocol: registry performance block
+         value:
+-          inherits_from: architect_general
++          inherits_from: architect_critic
+           baseline_tps: 30.87
+           optimized_tps: 47.79
+           optimized_tps_long_context: 36.71
+@@ -498,6 +316,188 @@ roles:
+         protocol: server_mode throughput
+         value_tps: 47.79
+     known_gaps: []
++  architect_general:
++    role: architect_general
++    deployment_status: live_stack
++    status: compiled
++    model_id: qwen3.8-flash-next-ud-iq4_xs
++    display_name: Qwen3.8-Flash-Next-UD-IQ4_XS
++    serving:
++      endpoint: http://localhost:8074
++      server_role: architect_general
++      binding: server_mode.direct
++      ports:
++      - 8074
++      slots: 1
++      tier: hot
++      effective_context_tokens: 262144
++      binary: llama.cpp
++      binary_dir: null
++      numa_policy: single_96t
++      shared_mmap: true
++      launch:
++        entries:
++        - port: 8074
++          primary_role: architect_general
++          mode: default
++          alias: false
++          cpu_shape_class: full
++          slots: 1
++        primary_roles:
++        - architect_general
++        modes:
++        - default
++        requirements:
++          model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
++          draft_model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
++        runtime:
++          binary_family: llama.cpp
++          binary_path: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
++          binary_dir: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin
++          ld_library_path: []
++          env_policy: canonical
++          kmp_blocktime: null
++          cache:
++            context_tokens: 262144
++            slots: 1
++            slots_by_port:
++              8074: 1
++            ubatch: 2048
++            kv_type_k: f16
++            kv_type_v: f16
++            kv_hadamard: false
++            kv_unified: null
++            draft_kv_type_k: null
++            draft_kv_type_v: null
++            no_mmap: true
++            mlock: true
++            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
++          flags:
++            flash_attn: true
++            jinja: true
++            device: null
++            device_draft: null
++            n_gpu_layers: null
++            image_min_tokens: null
++            cache_ram: 32768
++            chat_template_file: null
++            reasoning: 'off'
++            override_kv: []
++            spec:
++              enabled: true
++              type: draft-mtp
++              disabled_by: null
++              draft_model_path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
++              draft_max: 4
++              draft_min: null
++              draft_p_min: 0.5
++              draft_p_split: null
++              threads_draft: null
++              ngram_mod_n_min: null
++              ngram_mod_n_max: null
++              ngram_mod_n_match: null
++    policy:
++      lock_class: exclusive
++      contention_class: heavy
++      tap_safe_non_stream: true
++      high_cost: true
++      model_mem_gb: 87.25
++      source: stack_priors.compile
++      thresholds:
++        tap_safe_non_stream_min_mem_gb: 64.0
++        high_cost_min_mem_gb: 60.0
++    priors:
++      throughput_tps: 52.7
++      quality_overall: null
++      quality_by_axis:
++        local:
++          mmlu_pro: 0.755
++          gpqa: 0.6513
++      quality_for_role: null
++      quality_advisories:
++      - No whole-suite quality prior; domain evidence only (gpqa, mmlu_pro). quality_overall is null BY DESIGN — read the per-axis evidence instead of expecting a scalar.
++      memory_cost: 1.0
++    acceleration:
++      spec_type: draft-mtp
++      draft_compat:
++      - mtp-qwen3.8-flash-next-shared-q8_0
++      enable_thinking: false
++      thinking_control:
++        mode: toggle_off
++        source: chat_template_kwargs.enable_thinking
++      kv:
++        k: null
++        v: null
++      draft_max: 4
++      draft_p_min: 0.5
++      k: 4
++      p_split: 0
++      lookup: false
++    model:
++      family: qwen3.8-flash-next-ud-iq4_xs
++      arch: qwen4exp
++      params_b: null
++      active_b: null
++      quant: UD-IQ4_XS
++      mem_gb: 87.25
++      ctx_max: 262144
++      ctx_model_max: null
++      modalities:
++      - text
++      n_layers: 48
++      attention_layers: 12
++    evidence:
++      precedence:
++        serving: server_mode/stack_manifest outrank roles metadata
++        memory_cost: server_mode.tier
++        spec: docs/reference/stack-truth-precedence.md
++      descriptor_server_roles:
++      - architect_general
++      alias_overrides: []
++      quality:
++      - date: null
++        protocol: registry performance block
++        value:
++          baseline_tps: 27.893
++          optimized_tps: 43.281
++          speedup: 1.55x
++          measurement_scope: -c 8192, -np 1, IQ4_XS-uniform, build 10241 — NOT the served shape
++          quality_score: null
++          general_suite_quality:
++            suite_mmlu_pro:
++              accuracy: 0.755
++              n: 200
++              truncated: 0
++              max_tokens: 8192
++            suite_gpqa:
++              accuracy: 0.6513
++              n: 195
++              truncated: 0
++              max_tokens: 16384
++            measured_on: 2026-09-23
++            kernel: production-consolidated-v10 (ffc1bac82, build 10303)
++            instrument_class: serving
++            scope: 'Live :8074 IN ITS DEPLOYED CONFIGURATION (-t 96, -c 262144, -np 1, f16/f16, --spec-draft-n-max 4, unsloth UD-IQ4_XS 3-shard). NOT a llama-bench arm and NOT the recipe''s measured shape
++              -- the served process does not run its own recipe (SSU-F11: threads 48 and the recipe env block are declared and never read). So these are never comparable to optimized_tps above, which was
++              taken at -t 48 on build 10241 with the THP shim.'
++            cap_convergence: 'THE TOKEN CAP IS PART OF THE CLAIM, and these are the CONVERGED figures: the cap was raised per suite until truncation reached zero, so pooled == untruncated and nothing is
++              scored wrong merely for being cut off. At the promotion gate''s conventional 64-token cap this same model on these same 200 items scores 0.5650 with 46 truncated, which reads as a regression
++              against the retired Qwen3.5-122B''s 0.6450 and is not one: that model truncated 0/200 at the same cap because it answers with a letter while this one derives in the visible channel. NEVER
++              quote a capped figure against an uncapped one. See promotion_gates.yaml gates.quality.truncation_audit.'
++            incumbent_comparison: Qwen3.5-122B (retired) recorded mmlu_pro 0.6450 / gpqa 0.5692 at max_tokens 64 with 0 truncated. Those are its GATE numbers and were never re-run at a raised cap, so the
++              comparison is like-for-like only in that both sides are untruncated; treat the incumbent's as a lower bound of unknown tightness.
++          measurement_category: OBSERVATION
++          measurement_date: '2026-09-08'
++          contention_note: 'This role''s single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent
++            and accepted for this role, but it is the real cost of tier:hot — not the 69 GB — which is now 90 GiB. ⚠ 2026-09-22: THIS IS WHY ingest_long_context WAS NOT ALIASED HERE. An earlier draft merged
++            it onto this instance, which would have put routine traffic (Stage 1 of three_stage_summarization) behind the whole-machine lock. The D2 ruling (2026-07-31) narrowed the `reasoning` escalation
++            chain to explicit_request ONLY so routine traffic could never summon it, and D2''s named prerequisite — `region_lock_wait_s_by_holder` telemetry — still does not exist anywhere in the codebase.
++            Operator ruling C2 sent ingest_long_context to the GPU 27B instead. This instance remains single-role, and the `reasoning` chain remains the only routed path to it.'
++      speed:
++      - date: '2026-09-14'
++        protocol: server_mode throughput
++        value_tps: 52.7
++    known_gaps: []
+   coder_escalation:
+     role: coder_escalation
+     deployment_status: live_stack
+@@ -506,7 +506,7 @@ roles:
+     display_name: Qwen3.8-27B-Q8_0
+     serving:
+       endpoint: http://localhost:8083
+-      server_role: architect_general
++      server_role: architect_critic
+       binding: stack_manifest.alias->server_mode.direct
+       ports:
+       - 8083
+@@ -520,13 +520,13 @@ roles:
+       launch:
+         entries:
+         - port: 8083
+-          primary_role: architect_general
++          primary_role: architect_critic
+           mode: default
+           alias: true
+           cpu_shape_class: gpu_host_lane
+           slots: 4
+         primary_roles:
+-        - architect_general
++        - architect_critic
+         modes:
+         - default
+         requirements:
+@@ -555,7 +555,7 @@ roles:
+             draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+-            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
++            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+           flags:
+             flash_attn: true
+             jinja: true
+@@ -638,7 +638,7 @@ roles:
+         memory_cost: server_mode.tier
+         spec: docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+-      - architect_general
++      - architect_critic
+       - coder_escalation
+       - ingest_long_context
+       alias_overrides: []
+@@ -686,7 +686,7 @@ roles:
+       - date: null
+         protocol: registry performance block
+         value:
+-          inherits_from: architect_general
++          inherits_from: architect_critic
+           baseline_tps: 30.87
+           optimized_tps: 47.79
+           optimized_tps_long_context: 36.71
+@@ -948,7 +948,7 @@ roles:
+     display_name: Qwen3.8-27B-Q8_0
+     serving:
+       endpoint: http://localhost:8083
+-      server_role: architect_general
++      server_role: architect_critic
+       binding: stack_manifest.alias->server_mode.direct
+       ports:
+       - 8083
+@@ -962,13 +962,13 @@ roles:
+       launch:
+         entries:
+         - port: 8083
+-          primary_role: architect_general
++          primary_role: architect_critic
+           mode: default
+           alias: true
+           cpu_shape_class: gpu_host_lane
+           slots: 4
+         primary_roles:
+-        - architect_general
++        - architect_critic
+         modes:
+         - default
+         requirements:
+@@ -997,7 +997,7 @@ roles:
+             draft_kv_type_v: null
+             no_mmap: true
+             mlock: false
+-            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_general
++            slot_save_path: /mnt/raid0/llm/cache/kv_slots/architect_critic
+           flags:
+             flash_attn: true
+             jinja: true
+@@ -1080,7 +1080,7 @@ roles:
+         memory_cost: server_mode.tier
+         spec: docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+-      - architect_general
++      - architect_critic
+       - coder_escalation
+       - ingest_long_context
+       alias_overrides: []
+@@ -1128,7 +1128,7 @@ roles:
+       - date: null
+         protocol: registry performance block
+         value:
+-          inherits_from: architect_general
++          inherits_from: architect_critic
+           baseline_tps: 30.87
+           optimized_tps: 47.79
+           optimized_tps_long_context: 36.71
+@@ -1393,7 +1393,7 @@ roles:
+         memory_cost: server_mode.tier
+         spec: docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+-      - architect_general
++      - architect_critic
+       - coder_escalation
+       - ingest_long_context
+       alias_overrides: []
+@@ -1441,7 +1441,7 @@ roles:
+       - date: null
+         protocol: registry performance block
+         value:
+-          inherits_from: architect_general
++          inherits_from: architect_critic
+           baseline_tps: 30.87
+           optimized_tps: 47.79
+           optimized_tps_long_context: 36.71
+@@ -1487,7 +1487,7 @@ roles:
+     display_name: Qwen3.8-Flash-Next-UD-IQ4_XS
+     serving:
+       endpoint: http://localhost:8074
+-      server_role: architect_critic
++      server_role: architect_general
+       binding: server_mode.model_role
+       ports:
+       - 8074
+@@ -1560,7 +1560,7 @@ roles:
+         memory_cost: server_mode.tier
+         spec: docs/reference/stack-truth-precedence.md
+       descriptor_server_roles:
+-      - architect_critic
++      - architect_general
+       alias_overrides: []
+       quality:
+       - date: null
 diff --git a/orchestration/interaction_skills.yaml b/orchestration/interaction_skills.yaml
-index 69057ef1..75929e9f 100644
+index 69057ef1..5a7aeaf7 100644
 --- a/orchestration/interaction_skills.yaml
 +++ b/orchestration/interaction_skills.yaml
 @@ -1,5 +1,12 @@
@@ -220,17 +834,28 @@ index 69057ef1..75929e9f 100644
    #
    # CORRECTED 2026-07-31: an earlier version of this comment said architect_critic
    # was "deliberately NOT a routed role". That was wrong. It is BOTH consultable
-@@ -78,6 +85,10 @@ interaction_skills:
+@@ -25,7 +32,8 @@ interaction_skills:
+   #
+   # NOTE ON max_queue_wait_ms / max_output_tokens: the long queue wait is
+   # deliberate — this is a considered consult, not an inline check like
+-  # architect_general.review_before_commit (400 tokens, 2 s wait).
++  # architect_critic.review_before_commit (400 tokens, 2 s wait; moved from
++  # architect_general by ARCHSWAP-20260927).
+   architect_critic:
+     critique_plan:
+       kind: consult
+@@ -78,7 +86,10 @@ interaction_skills:
        tools_budget: 0
        cache_ttl_seconds: 3600
  
-+  # architect_general — SERVED BY Qwen3.8-Flash-Next UD-IQ4_XS on the full CPU
-+  # instance (:8074, serial, whole-machine region-lock holder) since the
-+  # 2026-09-27 ARCHITECT SWAP; the MI210 27B (:8083) before it. The 2 s queue wait
-+  # below was sized for the 27B GPU process.
-   architect_general:
+-  architect_general:
++    # ARCHSWAP-20260927: review/plan work stays on the 27B. review_before_commit MOVED
++    # here from architect_general. It is REVIEW work, the
++    # caller resolves the consultant through src.roles.resolve_reviewer_role() (default
++    # architect_critic), and its 2 s max_queue_wait_ms was sized for this MI210 27B.
      review_before_commit:
        kind: consult
+       description: "Advisory review of a coder draft before it commits."
 diff --git a/orchestration/launch_manifest.yaml b/orchestration/launch_manifest.yaml
 index d284a63b..bf0ee987 100644
 --- a/orchestration/launch_manifest.yaml
@@ -394,6 +1019,485 @@ index d284a63b..bf0ee987 100644
      #   * cpuset is honoured exactly: the bench guard may refuse it, never re-pin it
      #     (orchestrator_stack._aux_spawn_prefix).
      #   * Latency: ~2 s per utterance of any length on CPU (30 s window padding) vs
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index d084d666..79a99be8 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-27T05:13:01Z'
++compiled_at: '2026-09-27T21:08:01Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: a6426199
+-    sha256: ebce52ee43a2a203030130e96e92cb621e65856986f2396041ab61d5fef78e2f
++    repo_commit: 4f77d1f5
++    sha256: 26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: 7640269b
+-    sha256: 1f68de64b594eb9bb7b1601b193f6ee3e65efa7cbf22e6a3c86c25cb8eff3989
++    path: /mnt/raid0/llm/tmp/archswap-20260927/research/orchestration/model_registry.yaml
++    repo_commit: 61af24fa
++    sha256: 3a19aaae84596c20be0c8a8e40791b53a1bd3c38315a43b17d0ad5f7934dbe2d
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+@@ -361,12 +361,12 @@ models:
+   - text
+   role_bindings:
+     roles:
+-    - architect_general
++    - architect_critic
+     - coder_escalation
+     - ingest_long_context
+     - qwen38_27b_q8_local
+     server_roles:
+-    - architect_general
++    - architect_critic
+     - coder_escalation
+     - ingest_long_context
+     runtime_aliases: []
+@@ -425,7 +425,7 @@ models:
+     - date: null
+       protocol: registry performance block
+       value:
+-        inherits_from: architect_general
++        inherits_from: architect_critic
+         baseline_tps: 30.87
+         optimized_tps: 47.79
+         optimized_tps_long_context: 36.71
+@@ -490,7 +490,7 @@ models:
+     mlock: false
+     ports:
+     - 8083
+-    server_role: architect_general
++    server_role: architect_critic
+     requirements: {}
+   known_gaps: []
+   architecture:
+@@ -510,10 +510,10 @@ models:
+   - text
+   role_bindings:
+     roles:
+-    - architect_critic
++    - architect_general
+     - qwen38_flash_next_ud_iq4xs_local
+     server_roles:
+-    - architect_critic
++    - architect_general
+     runtime_aliases: []
+     shared_mmap: true
+   quality:
+@@ -595,7 +595,7 @@ models:
+     mlock: true
+     ports:
+     - 8074
+-    server_role: architect_critic
++    server_role: architect_general
+     requirements: {}
+   known_gaps: []
+   architecture:
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index f6d60b75..bec06afc 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-26T18:09:38+00:00
+-# Cache key:   a29cd4186cd7e278...
++# Compiled at: 2026-09-27T18:57:44+00:00
++# Cache key:   124f808d4f4b3d45...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -395,8 +395,8 @@ escalation_chains:
+     chain:
+     - worker_general
+     - frontdoor
+-    - architect_general
+     - architect_critic
++    - architect_general
+     triggers:
+     - error_categories:
+       - timeout
+@@ -404,18 +404,18 @@ escalation_chains:
+     - explicit_request: true
+     max_escalations: 3
+   reasoning:
+-    description: Boosted-reasoning escalation — terminal hop is the 122B adversarial critic
++    description: Boosted-reasoning escalation — terminal hop is Qwen3.8-Flash-Next (architect_general since the 2026-09-27 ARCHSWAP; was the critic)
+     chain:
+     - frontdoor
+-    - architect_general
+     - architect_critic
++    - architect_general
+     triggers:
+     - explicit_request: true
+     max_escalations: 2
+ routing_hints:
+ - if: '''boosted reasoning'' in objective or ''deep reasoning'' in objective'
+   use:
+-  - architect_critic
++  - architect_general
+ - if: '''critique'' in objective or ''adversarial review'' in objective'
+   use:
+   - architect_critic
+@@ -485,10 +485,10 @@ routing_hints:
+   notes: Frontdoor detects vague requirements needing formalization
+ - if: escalation.max_level == 'B3' and task_type == 'code'
+   use:
+-  - architect_critic
++  - architect_general
+ - if: escalation.max_level == 'B3' and 'reasoning' in objective
+   use:
+-  - architect_critic
++  - architect_general
+ - if: escalation.max_level == 'B3'
+   use:
+   - architect_general
+@@ -1733,8 +1733,9 @@ server_mode:
+       enable_thinking: false
+     model_role: qwen38_27b_q8_local
+     description: 'Coding escalation — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0. 2026-07-31: MOVED off frontdoor''s :8070 shared 35B process onto
+-      architect_general''s :8083 GPU process; alias, launches no server of its own. Quality on this model NOT yet measured for the coder suite. Former Qwen2.5-Coder-32B-Q4 preserved as qwen25_coder_32b_q4km.'
+-    alias_of: architect_general
++      architect_general''s :8083 GPU process; alias, launches no server of its own. 2026-09-27 ARCHSWAP: the :8083 host role is now architect_critic (same process, same model). Quality on this model NOT
++      yet measured for the coder suite. Former Qwen2.5-Coder-32B-Q4 preserved as qwen25_coder_32b_q4km.'
++    alias_of: architect_critic
+     benchmark_date: null
+     benchmark_score: null
+     model: Qwen3.8-27B-Q8_0.gguf
+@@ -1747,7 +1748,7 @@ server_mode:
+     tier: hot
+     acceleration:
+       type: none
+-      inherits_spec_from: architect_general
++      inherits_spec_from: architect_critic
+       lookup: false
+       corpus_retrieval: true
+     throughput: 47.79
+@@ -1809,7 +1810,7 @@ server_mode:
+     acceleration:
+       type: baseline
+     throughput: 112.2
+-  architect_general:
++  architect_critic:
+     no_mmap: true
+     url: http://localhost:8083
+     port: 8083
+@@ -1860,7 +1861,7 @@ server_mode:
+     - 8083
+     throughput: 47.79
+     previous_model: Qwen3-235B-A22B-Q4_K_M.gguf
+-  architect_critic:
++  architect_general:
+     no_mmap: true
+     url: http://localhost:8074
+     port: 8074
+@@ -1923,16 +1924,16 @@ server_mode:
+     kv_quant:
+       k: q8_0
+       v: q8_0
+-    alias_of: architect_general
++    alias_of: architect_critic
+     model_role: qwen38_27b_q8_local
+     chat_template_kwargs:
+       enable_thinking: true
+       reasoning_effort: medium
+-    description: 'Long-context ingest alias — resolves to the architect_general process (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct model and not a distinct server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M
+-      (RETIRED), which ran three dedicated CPU instances on :8085/:8185/:8285.'
++    description: 'Long-context ingest alias — resolves to the :8083 process (architect_general until 2026-09-27, architect_critic since the ARCHSWAP) (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct
++      model and not a distinct server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M (RETIRED), which ran three dedicated CPU instances on :8085/:8185/:8285.'
+     alias_note: '⚠ THE ROLE''S DEFINING PROPERTY DOES NOT FULLY SURVIVE THE SWAP. The 27B''s ctx_max is 262144, so the model can carry the role''s declared context in principle, but the DEPLOYED context
+       on :8083 is a UNIFIED 196608-token pool (2026-09-24 -kvu): a lone request may use all of it, two concurrent requests share it. Raising it is an OPERATOR call, not an arithmetic impossibility: on the
+-      2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead of 3.15 — see server_mode.architect_general.serving_shape. 196608 is the allocation the operator took. Any caller that
++      2026-09-22 corrected KV rate -c 262144 would fit with ~1.0 GiB of margin instead of 3.15 — see server_mode.architect_critic.serving_shape. 196608 is the allocation the operator took. Any caller that
+       relies on 262144 must be re-pointed or must accept truncation.'
+     previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf
+     agent_file_compression_operating_point: medium
+@@ -1942,7 +1943,7 @@ server_mode:
+     device: ROCm0
+     acceleration:
+       type: none
+-      inherits_spec_from: architect_general
++      inherits_spec_from: architect_critic
+       spec_type: draft-mtp
+       draft_max: 4
+       lookup: false
+@@ -2038,11 +2039,11 @@ roles:
+     - general
+     acceleration:
+       type: none
+-      inherits_spec_from: architect_general
++      inherits_spec_from: architect_critic
+       lookup: false
+       corpus_retrieval: true
+     performance:
+-      inherits_from: architect_general
++      inherits_from: architect_critic
+       baseline_tps: 30.87
+       optimized_tps: 47.79
+       optimized_tps_long_context: 36.71
+@@ -2084,8 +2085,8 @@ roles:
+       '
+   ingest_long_context:
+     tier: B
+-    description: 'Large document ingestion, synthesis & summarization. 2026-09-22: ALIAS on architect_general''s :8083 MI210 process (Qwen3.8-27B dense Q8) — was three dedicated CPU instances of Qwen3-Next-80B-A3B-Instruct
+-      Q4_K_M on :8085/:8185/:8285, RETIRED.'
++    description: 'Large document ingestion, synthesis & summarization. 2026-09-22: ALIAS on the :8083 MI210 process (host role architect_critic since the 2026-09-27 ARCHSWAP) (Qwen3.8-27B dense Q8) — was
++      three dedicated CPU instances of Qwen3-Next-80B-A3B-Instruct Q4_K_M on :8085/:8185/:8285, RETIRED.'
+     agent_file_compression_operating_point: medium
+     model:
+       name: Qwen3.8-27B-Q8_0
+@@ -2096,7 +2097,7 @@ roles:
+       attention_layers: 64
+       mtp_capable: true
+       ctx_max: 262144
+-      shared_gguf_with: architect_general
++      shared_gguf_with: architect_critic
+       use_chat_api: true
+       disable_thinking: false
+       reasoning: auto
+@@ -2108,7 +2109,7 @@ roles:
+     - architect
+     acceleration:
+       type: none
+-      inherits_spec_from: architect_general
++      inherits_spec_from: architect_critic
+       spec_type: draft-mtp
+       draft_max: 4
+     performance:
+@@ -2140,98 +2141,8 @@ roles:
+       '
+   architect_general:
+     tier: A
+-    description: 'System architecture, invariants, acceptance tests - emits IR only. 2026-08-22: E-7 stamps at terse template 1443ea9ab4bb — math 85.0%, mmlu_pro 27.5%, gpqa_diamond 47.5%, cruxeval 22.5%,
+-      gpqa_diamond_cot 75.0% (45/60 @4096). 2026-07-31: dense 27B Q8 MTP on MI210 (ROCm0) — Qwen3.6-27B from 2026-07-31, Qwen3.8-27B-Q8_0 since 2026-08-20; PRIMARY for the :8083 process, with coder_escalation
+-      and (since 2026-09-22) ingest_long_context aliased onto it.'
+-    agent_file_compression_operating_point: none
+-    model:
+-      name: Qwen3.8-27B-Q8_0
+-      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-      quant: Q8_0
+-      size_gb: 27.05
+-      architecture: qwen35
+-      attention_layers: 64
+-      n_embd: 5120
+-      ctx_max: 262144
+-      use_chat_api: true
+-      disable_thinking: false
+-      reasoning: auto
+-      max_tokens_multiplier: 4
+-      previous_model: 'Qwen3.5-122B-A10B UD-Q4_K_M (2026-07-31: 122B vacated to the new architect_critic role, CPU :8074). Prior: Qwen3-235B-A22B-Q4_K_M (swapped 2026-03-19).'
+-    candidate_roles:
+-    - architect
+-    - general
+-    - coder
+-    acceleration:
+-      type: speculative_decoding
+-      spec_type: draft-mtp
+-      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-      draft_max: 4
+-      k: 4
+-      p_split: 0
+-      lookup: false
+-      notes: '2026-07-31: architect MTP via the MTP-embedded Qwen3.6-27B variant (draft = same GGUF as model; launcher omits -md for same-realpath drafts). Served on MI210 (ROCm0) with -ngl all -fa on.
+-        The 122B NEXTN history moved with the model to architect_critic.
+-
+-        '
+-      benchmarked: 2026-07-31
+-    performance:
+-      superseded_model_history:
+-        model: Qwen3-235B-A22B-Q4_K_M
+-        note: category=BASELINE / historical. Never a headline, never a decision input.
+-        baseline_tps: 5.3
+-        moe4_baseline_tps: 3.87
+-        moe4_spec_tps: 8.21
+-        full_spec_tps: 6.08
+-      superseded_model_history_122b:
+-        model: Qwen3.5-122B-A10B UD-Q4_K_M
+-        note: Relocated to roles.architect_critic. Retained here only as the swap breadcrumb.
+-        qwen35_122b_probe_b_tps: 12.19
+-        optimized_tps: 24.0
+-        optimized_tps_long_context: 15.76
+-        quality_score: 2.57/3
+-        spec_acceptance_moe4: 54.8%
+-        spec_acceptance_full: 52.7%
+-      baseline_tps: 30.87
+-      optimized_tps: 47.79
+-      optimized_tps_long_context: 36.71
+-      optimized_tps_attest: '[published stack measurement record §01, 2026-07-31, production-optimal rows]'
+-      contended_tps: 19.81
+-      speedup: 1.55x
+-      vram_gib: 36.7
+-      swe_verified_pct: null
+-      swe_verified_raw: null
+-      swe_verified_instrument: 'VOIDED 2026-08-22: was ''SWE-bench Verified, oracle-file, v4 tail replay, n=40, 2026-07-27'' measured on Qwen3.6-27B-MTP (arm A3). The role now serves Qwen3.8-27B + terse
+-        template; SWE not re-measured.'
+-      swe_verified_comparators: 'VOIDED with the row above. Historical: A1 37.5% (15/40) · A4 32.5% (13/40).'
+-      swe_verified_shape_caveat: VOIDED with the row above.
+-      swe_verified_transfer_basis: VOIDED with the row above.
+-      math_suite: 34/40 (85.0%)
+-      mmlu_pro_suite: 11/40 (27.5%)
+-      gpqa_diamond_suite: 19/40 (47.5%)
+-      cruxeval_suite: 9/40 (22.5%)
+-      gpqa_diamond_cot_suite: 45/60 (75.0%)
+-      quality_score: null
+-      benchmark_date: 2026-08-22
+-    memory:
+-      residency: hot
+-      pinned: false
+-    paged_attention:
+-      recommended: false
+-      reason: '2026-07-31: the 69GB host-RAM-bandwidth rationale was the 122B''s. The 27B is VRAM-resident under -ngl all; revisit only with GPU-side evidence.'
+-    generation_defaults:
+-      n_tokens: -1
+-      temperature: 0.1
+-    system_prompt_suffix: 'Be maximally concise. Use bullet points, not prose.
+-
+-      Output structured plans, not narrative.
+-
+-      Other agents will elaborate — stop once the decision is clear.
+-
+-      '
+-  architect_critic:
+-    tier: B
+-    description: Adversarial plan critic — fatal flaws, unstated assumptions, and an explicit DELETE lens; emits structured critique only
++    description: 'System architecture, invariants, acceptance tests - emits IR only. 2026-09-27 ARCHSWAP (operator-decided): served by Qwen3.8-Flash-Next UD-IQ4_XS on the full CPU instance (:8074, the process
++      that was architect_critic) so the graph''s existing escalation paths reach the strongest model. Top of the escalation chain. The 27B''s E-7 stamps moved with the 27B to roles.architect_critic.'
+     agent_file_compression_operating_point: aggressive
+     backend:
+       type: local
+@@ -2314,6 +2225,96 @@ roles:
+     generation_defaults:
+       n_tokens: -1
+       temperature: 0.1
++    system_prompt_suffix: 'Be maximally concise. Use bullet points, not prose.
++
++      Output structured plans, not narrative.
++
++      Other agents will elaborate — stop once the decision is clear.
++
++      '
++  architect_critic:
++    tier: B
++    description: Adversarial plan critic — fatal flaws, unstated assumptions, and an explicit DELETE lens; emits structured critique only — 2026-09-27 ARCHSWAP (operator-decided), served by Qwen3.8-27B
++      Q8 on the MI210 (:8083, the process that was architect_general; host of coder_escalation + ingest_long_context). Reached by direct request and the critique_plan consult skill; not an escalation target.
++    agent_file_compression_operating_point: none
++    model:
++      name: Qwen3.8-27B-Q8_0
++      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++      quant: Q8_0
++      size_gb: 27.05
++      architecture: qwen35
++      attention_layers: 64
++      n_embd: 5120
++      ctx_max: 262144
++      use_chat_api: true
++      disable_thinking: false
++      reasoning: auto
++      max_tokens_multiplier: 4
++      previous_model: 'Qwen3.5-122B-A10B UD-Q4_K_M (2026-07-31: 122B vacated to the new architect_critic role, CPU :8074). Prior: Qwen3-235B-A22B-Q4_K_M (swapped 2026-03-19).'
++    candidate_roles:
++    - architect
++    - general
++    - coder
++    acceleration:
++      type: speculative_decoding
++      spec_type: draft-mtp
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++      draft_max: 4
++      k: 4
++      p_split: 0
++      lookup: false
++      notes: '2026-07-31: architect MTP via the MTP-embedded Qwen3.6-27B variant (draft = same GGUF as model; launcher omits -md for same-realpath drafts). Served on MI210 (ROCm0) with -ngl all -fa on.
++        The 122B NEXTN history moved with the model to architect_critic.
++
++        '
++      benchmarked: 2026-07-31
++    performance:
++      superseded_model_history:
++        model: Qwen3-235B-A22B-Q4_K_M
++        note: category=BASELINE / historical. Never a headline, never a decision input.
++        baseline_tps: 5.3
++        moe4_baseline_tps: 3.87
++        moe4_spec_tps: 8.21
++        full_spec_tps: 6.08
++      superseded_model_history_122b:
++        model: Qwen3.5-122B-A10B UD-Q4_K_M
++        note: Relocated to roles.architect_critic. Retained here only as the swap breadcrumb.
++        qwen35_122b_probe_b_tps: 12.19
++        optimized_tps: 24.0
++        optimized_tps_long_context: 15.76
++        quality_score: 2.57/3
++        spec_acceptance_moe4: 54.8%
++        spec_acceptance_full: 52.7%
++      baseline_tps: 30.87
++      optimized_tps: 47.79
++      optimized_tps_long_context: 36.71
++      optimized_tps_attest: '[published stack measurement record §01, 2026-07-31, production-optimal rows]'
++      contended_tps: 19.81
++      speedup: 1.55x
++      vram_gib: 36.7
++      swe_verified_pct: null
++      swe_verified_raw: null
++      swe_verified_instrument: 'VOIDED 2026-08-22: was ''SWE-bench Verified, oracle-file, v4 tail replay, n=40, 2026-07-27'' measured on Qwen3.6-27B-MTP (arm A3). The role now serves Qwen3.8-27B + terse
++        template; SWE not re-measured.'
++      swe_verified_comparators: 'VOIDED with the row above. Historical: A1 37.5% (15/40) · A4 32.5% (13/40).'
++      swe_verified_shape_caveat: VOIDED with the row above.
++      swe_verified_transfer_basis: VOIDED with the row above.
++      math_suite: 34/40 (85.0%)
++      mmlu_pro_suite: 11/40 (27.5%)
++      gpqa_diamond_suite: 19/40 (47.5%)
++      cruxeval_suite: 9/40 (22.5%)
++      gpqa_diamond_cot_suite: 45/60 (75.0%)
++      quality_score: null
++      benchmark_date: 2026-08-22
++    memory:
++      residency: hot
++      pinned: false
++    paged_attention:
++      recommended: false
++      reason: '2026-07-31: the 69GB host-RAM-bandwidth rationale was the 122B''s. The 27B is VRAM-resident under -ngl all; revisit only with GPU-side evidence.'
++    generation_defaults:
++      n_tokens: -1
++      temperature: 0.1
+     system_prompt_suffix: 'Attack the plan, do not improve it.
+ 
+       Name fatal flaws and unstated assumptions, not stylistic objections.
+@@ -2743,7 +2744,7 @@ roles:
+   qwen38_flash_next_ud_iq4xs_local:
+     tier: A
+     description: 'Qwen3.8-Flash-Next UD-IQ4_XS exact local artifact (3 shards). 2026-09-22: PROMOTED from research-campaign artifact to the PRODUCTION model backing architect_critic (:8074, CPU), single-role:
+-      ingest_long_context is NOT aliased here — operator ruling C2 sent it to architect_general''s :8083 GPU Qwen3.8-27B (server_mode.ingest_long_context.alias_of, server_mode.architect_general.shared_with).
++      ingest_long_context is NOT aliased here — operator ruling C2 sent it to architect_general''s :8083 GPU Qwen3.8-27B (server_mode.ingest_long_context.alias_of, server_mode.architect_critic.shared_with).
+       ⚠ THIS IS NOT THE ARTIFACT THE CAMPAIGN MEASURED — the codified recipe''s TRUNK_GGUF is the IQ4_XS-uniform SINGLE FILE (98,392,912,256 B, sha256 4bfb9849...f8957). Reconciling served-vs-anchor is
+       PROD-3''s open job and the recipe module says so itself. Every performance figure attached to this model was taken on the uniform file.'
+     model:
+@@ -2776,7 +2777,7 @@ roles:
+         mtp-shared-Q8_0-headIQ4_XS.gguf: B12 candidate, 1.097x wall vs borrowed q6_K — NO-GO
+         mtp-shared-Q8_0-headQ4_K.gguf: B12 candidate, 1.077x wall vs borrowed q6_K — NO-GO
+     candidate_roles:
+-    - architect_critic
++    - architect_general
+     - ingest_long_context
+     - architect
+     - critic
+@@ -2850,7 +2851,7 @@ roles:
+       file_bytes: 29047086048
+       provenance: unsloth/Qwen3.8-27B-GGUF
+     candidate_roles:
+-    - architect_general
++    - architect_critic
+     - coder_escalation
+     - architect
+     - general
 diff --git a/orchestration/repl_memory/q_scorer.py b/orchestration/repl_memory/q_scorer.py
 index b8df68e0..e971bb73 100644
 --- a/orchestration/repl_memory/q_scorer.py
@@ -1161,21 +2265,113 @@ index 4dd32180..e711b2d2 100644
  # Evidence: epyc-inference-research artifacts/speech_cpu_realtime_20260924/
  #   (README.md; raw/whisper_bench_encoder_matrix.txt; raw/concurrent*.stdout)
 diff --git a/src/api/routes/chat.py b/src/api/routes/chat.py
-index fdf286b9..ebc4f326 100644
+index fdf286b9..c7d10c6e 100644
 --- a/src/api/routes/chat.py
 +++ b/src/api/routes/chat.py
-@@ -1131,6 +1131,11 @@ async def _handle_chat(
+@@ -1131,8 +1131,17 @@ async def _handle_chat(
                  def _review_before_commit(review_context: str) -> tuple[dict, dict]:
                      from src.orchestration.consultation import consult
  
-+                    # ARCHSWAP-20260927: the consultant stays the ROLE architect_general
-+                    # (meant to be the strongest model), which since the 2026-09-27
-+                    # ARCHITECT SWAP is Qwen3.8-Flash-Next on the full CPU instance
-+                    # (:8074, serial, whole-machine region lock) — no longer the MI210
-+                    # 27B the skill's 2 s max_queue_wait_ms was sized for.
++                    from src.roles import resolve_reviewer_role
++
++                    # ARCHSWAP-20260927: review/plan work stays on the 27B. This is
++                    # REVIEW work, so it follows the reviewer binding (default
++                    # architect_critic = the MI210 27B the skill's 2 s max_queue_wait_ms
++                    # was sized for), not the consultant role architect_general (now CPU
++                    # Flash-Next). The skill is declared under architect_critic in
++                    # orchestration/interaction_skills.yaml; a reviewer override must
++                    # name a role that carries it.
                      return consult(
-                         consultant_role="architect_general",
+-                        consultant_role="architect_general",
++                        consultant_role=str(resolve_reviewer_role()),
                          requester_role=str(initial_role),
+                         skill="review_before_commit",
+                         context=review_context,
+diff --git a/src/api/routes/chat_pipeline/proactive_stage.py b/src/api/routes/chat_pipeline/proactive_stage.py
+index 62921f3d..6f649cd2 100644
+--- a/src/api/routes/chat_pipeline/proactive_stage.py
++++ b/src/api/routes/chat_pipeline/proactive_stage.py
+@@ -25,6 +25,7 @@ from src.api.structured_logging import task_extra
+ from src.features import features
+ from src.llm_primitives import LLMPrimitives
+ from src.structured_output.repair import RepairResult, parse_with_repair, primitives_completer
++from src.roles import resolve_planner_role
+ from src.task_ir import canonicalize_task_ir
+ 
+ log = logging.getLogger(__name__)
+@@ -137,7 +138,7 @@ async def _decompose_plan_steps(
+ ) -> list[dict]:
+     """TD-21.20: fish first via the unchanged `_parse_plan_steps` (byte-
+     identical happy path, 0 repair calls); on a miss, ONE repair turn back to
+-    the SAME `architect_general` role instead of the old silent `[]`
++    the SAME planner role (`resolve_planner_role()`) instead of the old silent `[]`
+     fall-through. Every outcome is counted under
+     `STRUCTURED_OUTPUT_REPAIR_COUNTS` (site `_PLAN_STEPS_REPAIR_SITE`); a
+     terminal repair failure is ALSO logged explicitly here (not left to the
+@@ -150,7 +151,9 @@ async def _decompose_plan_steps(
+     if steps:
+         return steps
+ 
+-    complete = primitives_completer(primitives, "architect_general")
++    # ARCHSWAP-20260927: review/plan work stays on the 27B — the repair turn goes back
++    # to the SAME planner binding that produced the plan (resolve_planner_role).
++    complete = primitives_completer(primitives, str(resolve_planner_role()))
+ 
+     def _repair() -> RepairResult:
+         return parse_with_repair(
+@@ -238,9 +241,13 @@ async def _execute_proactive(
+         extra=task_extra(task_id=routing.task_id, stage="execute", mode="proactive"),
+     )
+ 
+-    # Ask architect to decompose into parallel steps
++    # Ask the planner to decompose into parallel steps. ARCHSWAP-20260927:
++    # review/plan work stays on the 27B (resolve_planner_role, default
++    # architect_critic); only escalation targets architect_general.
+     from src.prompt_builders import build_task_decomposition_prompt
+ 
++    planner_role = str(resolve_planner_role())
++
+     plan_prompt = build_task_decomposition_prompt(
+         request.prompt,
+         request.context or "",
+@@ -250,7 +257,7 @@ async def _execute_proactive(
+         if _should_inline_plan_call_for_test(primitives):
+             plan_json_str = primitives.llm_call(
+                 plan_prompt,
+-                role="architect_general",
++                role=planner_role,
+                 n_tokens=256,
+             )
+         else:
+@@ -258,7 +265,7 @@ async def _execute_proactive(
+             plan_json_str = await asyncio.to_thread(
+                 primitives.llm_call,
+                 plan_prompt,
+-                role="architect_general",
++                role=planner_role,
+                 n_tokens=256,
+             )
+     except Exception as e:
+@@ -331,8 +338,8 @@ async def _execute_proactive(
+             details=f"Proactive delegation: {n_subtasks} subtasks, {elapsed:.3f}s",
+             completion_meta={
+                 "producer_role": "proactive_delegation",
+-                "delegation_lineage": result.roles_used or ["architect_general"],
+-                "final_answer_role": (result.roles_used or ["architect_general"])[-1],
++                "delegation_lineage": result.roles_used or [str(resolve_planner_role())],
++                "final_answer_role": (result.roles_used or [str(resolve_planner_role())])[-1],
+                 **llm_completion_meta(primitives),
+                 # M-11a2b
+                 **work_completion_meta(answer=answer),
+@@ -363,7 +370,7 @@ async def _execute_proactive(
+         real_mode=True,
+         cache_stats=cache_stats,
+         routed_to="proactive_delegation",
+-        role_history=result.roles_used or ["architect_general"],
++        role_history=result.roles_used or [str(resolve_planner_role())],
+         routing_strategy="proactive",
+         mode="proactive",
+         tokens_generated=primitives.total_tokens_generated,
 diff --git a/src/api/routes/chat_pipeline/scout_stage.py b/src/api/routes/chat_pipeline/scout_stage.py
 index 597dc942..3a71bb83 100644
 --- a/src/api/routes/chat_pipeline/scout_stage.py
@@ -1191,6 +2387,67 @@ index 597dc942..3a71bb83 100644
  without putting the architect into REPL mode (operator ruling 2026-09-24,
  ``seeding_types.ARCHITECT_MODES``).
  
+diff --git a/src/api/routes/chat_review.py b/src/api/routes/chat_review.py
+index 0aa04dac..a4a853db 100644
+--- a/src/api/routes/chat_review.py
++++ b/src/api/routes/chat_review.py
+@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING
+ from src.config import get_config as _get_config
+ from src.constants import TASK_IR_OBJECTIVE_LEN
+ from src.roles import Role, chain_name_to_role
++from src.roles import resolve_reviewer_role as _resolve_reviewer_role
+ from src.task_ir import canonicalize_task_ir
+ from src.prompt_builders import (
+     build_review_verdict_prompt,
+@@ -103,9 +104,15 @@ def _architect_verdict(
+     primitives: "LLMPrimitives",
+     worker_digests: list[dict] | None = None,
+     context_digest: str = "",
++    role: str | None = None,
+ ) -> str | None:
+     """Get architect's hyper-concise verdict on an answer.
+ 
++    ``role`` defaults to the reviewer binding (``resolve_reviewer_role()``,
++    ``architect_critic`` since ARCHSWAP-20260927: review/plan work stays on the 27B).
++    An explicit ``role`` is for callers that PIN the consultant (the /v1 TE-1
++    ``x_escalation=architect_general`` experiment arm).
++
+     The architect emits ONLY a short verdict (~20-50 tokens at 6.75 t/s → ~6s).
+     Returns None if OK, or "WRONG: <corrections>" if incorrect.
+ 
+@@ -126,9 +133,12 @@ def _architect_verdict(
+         worker_digests=worker_digests,
+     )
+     try:
++        # ARCHSWAP-20260927: the verdict is REVIEW work, so it follows the reviewer
++        # binding (default architect_critic, the MI210 27B) rather than the
++        # consultant role architect_general (now CPU Flash-Next).
+         result = primitives.llm_call(
+             prompt,
+-            role="architect_general",
++            role=role or str(_resolve_reviewer_role()),
+             n_tokens=80,  # Hard cap — verdict only
+         )
+         text = result.strip()
+@@ -294,7 +304,8 @@ def _architect_plan_review(
+         return None
+ 
+     # RD-1/RD-5/TM-3: the reviewer role is resolved via the config-level binding
+-    # inside the service (default → architect_general, so no behavior change).
++    # inside the service (default → architect_critic since ARCHSWAP-20260927, i.e. the
++    # same MI210 27B that reviewed before the swap).
+     # review_plan() emits an always-on shadow trace event regardless of whether the
+     # plan_review feature acts — this is the DECOUPLED shadow-emission path: the
+     # trace flows even though the plan_review flag itself requires memrl (features.py
+@@ -438,7 +449,7 @@ def _store_plan_review_episode(
+             ProgressEntry(
+                 event_type=EventType.PLAN_REVIEWED,
+                 task_id=task_id,
+-                agent_role="architect_general",
++                agent_role=str(_resolve_reviewer_role()),
+                 data=_review_context,
+                 outcome="success" if review.is_ok else "corrected",
+             )
 diff --git a/src/api/routes/dashboard.html b/src/api/routes/dashboard.html
 index dd3ddd89..35d80d59 100644
 --- a/src/api/routes/dashboard.html
@@ -1251,7 +2508,7 @@ index 8b5f211d..a346c451 100644
          # `substrate_source` says WHICH evidence produced the value: "process"
          # (binary path / /proc), "role-kind" (the mi210 testbed kind), or —
 diff --git a/src/api/routes/dashboard_snapshot.py b/src/api/routes/dashboard_snapshot.py
-index 446b7f97..5ac88b81 100644
+index 446b7f97..11d0d61b 100644
 --- a/src/api/routes/dashboard_snapshot.py
 +++ b/src/api/routes/dashboard_snapshot.py
 @@ -33,7 +33,10 @@ logger = logging.getLogger(__name__)
@@ -1266,6 +2523,15 @@ index 446b7f97..5ac88b81 100644
      "coder_escalation": 900.0,
  }
  
+@@ -215,7 +218,7 @@ def scan_orchestrator_tasks(
+                     plan_reviews[tid] = {
+                         "plan_review_decision": data.get("decision") or "",
+                         "plan_review_feedback": (data.get("feedback") or "")[:200],
+-                        "plan_review_role": e.get("agent_role") or "architect_general",
++                        "plan_review_role": e.get("agent_role") or "architect_critic",  # ARCHSWAP-20260927: reviewer default
+                     }
+                 elif ev in ("task_completed", "task_failed", "escalation_triggered"):
+                     terminal_events[tid] = {
 diff --git a/src/api/routes/dashboard_topology.py b/src/api/routes/dashboard_topology.py
 index b9953e62..21ab1ff6 100644
 --- a/src/api/routes/dashboard_topology.py
@@ -1294,6 +2560,65 @@ index 0a66a501..67627a01 100644
      "vision_escalation": "worker_vision",
      "worker_summarize": "frontdoor",
      "worker_explore": "worker_general",
+diff --git a/src/api/routes/v1_escalation.py b/src/api/routes/v1_escalation.py
+index bf711ede..11dc0fb1 100644
+--- a/src/api/routes/v1_escalation.py
++++ b/src/api/routes/v1_escalation.py
+@@ -8,7 +8,7 @@ experiment never changes other /v1 traffic. Only an explicit ``auto`` or
+ ``architect_general`` escalates, and only with the flag on.
+ 
+ ``auto`` keeps /chat's targets verbatim (quality escalation -> coder_escalation,
+-review verdict -> architect_general). ``architect_general`` keeps /chat's
++review verdict -> the reviewer binding, architect_critic since ARCHSWAP-20260927). ``architect_general`` keeps /chat's
+ TRIGGERS but pins every consultant call to that role: after the pending role
+ swap coder_escalation stays on the 27B while architect_general becomes
+ Flash-Next, so an arm that must measure Flash-Next as the consultant (UFH-13
+@@ -33,8 +33,9 @@ order /chat calls them:
+   2. ``review_gate`` — ``chat_review._should_review`` (MemRL: the answering
+      role's mean Q-value for this answer is below
+      ``chat.review_low_q_threshold``; never for an architect role or an answer
+-     under 50 chars) -> ``chat_review._architect_verdict`` (``architect_general``,
+-     80-token verdict) -> on ``WRONG``, ``chat_review._fast_revise``
++     under 50 chars) -> ``chat_review._architect_verdict`` (80-token verdict; the
++     reviewer binding, ``architect_critic`` since ARCHSWAP-20260927, under ``auto``;
++     the pinned consultant under ``x_escalation=architect_general``) -> on ``WRONG``, ``chat_review._fast_revise``
+      (``worker_general`` rewrites the answer with the corrections; recorded as
+      ``review_gate_revision``, which is NOT a consultant call).
+ 
+@@ -408,14 +409,21 @@ def _escalate_answer(
+         and not answer.startswith("[ERROR")
+         and chat_review._should_review(state, task_id, role, answer)
+     ):
+-        # _architect_verdict always asks architect_general, the only pinnable
+-        # consultant (PINNED_TARGETS), so auto and pinned agree on this call.
++        # ARCHSWAP-20260927: /chat's verdict goes to the REVIEWER binding
++        # (resolve_reviewer_role(), default architect_critic = the 27B), so ``auto``
++        # keeps that target verbatim. A pinned consultant (``x_escalation=
++        # architect_general``, UFH-13 A2) pins this call too, as it pins every
++        # consultant call, and the step records the role actually asked.
++        from src.roles import resolve_reviewer_role
++
++        verdict_role = plan.target_role or str(resolve_reviewer_role())
+         before = _counters(primitives)
+-        with _tagged_trace(plan, primitives, TRIGGER_REVIEW, role, CONSULTANT_ROLE):
++        with _tagged_trace(plan, primitives, TRIGGER_REVIEW, role, verdict_role):
+             verdict = chat_review._architect_verdict(
+                 question=question,
+                 answer=answer,
+                 primitives=primitives,
++                role=verdict_role,
+             )
+         wrong = bool(verdict) and verdict.upper().startswith("WRONG")
+         _record_step(
+@@ -423,7 +431,7 @@ def _escalate_answer(
+             primitives,
+             trigger=TRIGGER_REVIEW,
+             from_role=role,
+-            to_role=CONSULTANT_ROLE,
++            to_role=verdict_role,
+             before=before,
+             outcome="wrong" if wrong else "ok_or_unavailable",
+         )
 diff --git a/src/backends/context_limits.py b/src/backends/context_limits.py
 index f2eb69aa..ee427c1f 100644
 --- a/src/backends/context_limits.py
@@ -1520,7 +2845,7 @@ index 36b6fcec..a635d36c 100644
      and nothing is offloaded to it. ``-ngl all`` is a valid llama-server value on
      this kernel (the GPU shadow-lane builder already emits it), so the string form is
 diff --git a/src/roles.py b/src/roles.py
-index 4d752e69..1d183217 100644
+index 4d752e69..19a3ec92 100644
 --- a/src/roles.py
 +++ b/src/roles.py
 @@ -104,25 +104,39 @@ class Role(str, Enum):
@@ -1612,7 +2937,74 @@ index 4d752e69..1d183217 100644
  # Operator ruling 2026-09-25 (INF-78 scoped exception): the architect MAY run in REPL
  # mode for task-scoped requests (`task_root` set, i.e. AutoKernel planner/author calls
  # confined to a lane worktree). Every other architect request stays direct/delegated.
-@@ -474,28 +497,36 @@ _ESCALATION_MAP: dict[Role, Role] = {
+@@ -353,9 +376,17 @@ def architect_repl_allowed(role: object, *, task_root: object = None) -> bool:
+ # the string aliases below survive only so ``Role("reviewer")`` remains a stable
+ # enum-resolution fallback (they point at the same default the resolver returns).
+ #
+-# The default binding is ARCHITECT_GENERAL → resolving with no override / no env /
+-# no config attribute yields exactly the pre-RD-1 behavior (zero behavior change).
+-DEFAULT_REVIEWER_ROLE: Role = Role.ARCHITECT_GENERAL
++# ARCHSWAP-20260927: review/plan work stays on the 27B. The default binding is
++# ARCHITECT_CRITIC — the Qwen3.8-27B Q8 on the MI210 (:8083), the process that served
++# architect_general until the swap — so reviews keep running on the model/process they
++# always ran on. Only ESCALATION moves: it targets architect_general, now
++# Qwen3.8-Flash-Next on the CPU (:8074).
++# This constant is the persistent source of truth: no registry key and no launch env
++# sets the reviewer (ORCHESTRATOR_REVIEWER_ROLE is an override, unset in the stack),
++# and DelegationConfig has no reviewer_role field. Every review call site resolves
++# through resolve_reviewer_role(): the plan review (ArchitectReviewService), the answer
++# verdict (chat_review) and review_before_commit (chat.py).
++DEFAULT_REVIEWER_ROLE: Role = Role.ARCHITECT_CRITIC
+ 
+ # Operator/stack-level binding knob. Kept as an env var (+ a forward-compatible
+ # ``delegation.reviewer_role`` config attribute read via ``getattr``) so the
+@@ -384,6 +415,36 @@ _LEGACY_ROLE_ALIASES: dict[str, Role] = {
+ }
+ 
+ 
++# ── Planner role binding (ARCHSWAP-20260927) ─────────────────────────────────
++#
++# Inline per-request planning — proactive_stage's plan decomposition and its repair
++# turn — was hard-coded to the literal "architect_general". It is not escalation, so
++# it stays on the 27B with review: it resolves through this binding instead of
++# following the architect_general label to CPU Flash-Next. Same shape as the reviewer
++# binding: explicit override > ORCHESTRATOR_PLANNER_ROLE env > DEFAULT_PLANNER_ROLE.
++DEFAULT_PLANNER_ROLE: Role = Role.ARCHITECT_CRITIC
++PLANNER_ROLE_ENV = "ORCHESTRATOR_PLANNER_ROLE"
++
++
++def resolve_planner_role(override: "Role | str | None" = None) -> Role:
++    """Resolve the inline-planning role binding (default ``architect_critic``).
++
++    An unknown binding string falls back to the default rather than raising, so a
++    misconfiguration never breaks planning.
++    """
++    candidate: "Role | str | None" = override
++    if candidate is None:
++        env_val = os.environ.get(PLANNER_ROLE_ENV)
++        if env_val:
++            candidate = env_val.strip()
++    if candidate is None:
++        return DEFAULT_PLANNER_ROLE
++    if isinstance(candidate, Role):
++        return candidate
++    role = Role.from_string(str(candidate))
++    return role if role is not None else DEFAULT_PLANNER_ROLE
++
++
+ def resolve_reviewer_role(
+     override: "Role | str | None" = None,
+     config: object | None = None,
+@@ -396,7 +457,7 @@ def resolve_reviewer_role(
+       3. ``config.delegation.reviewer_role`` attribute, if present (forward-compatible
+          with a future ``DelegationConfig.reviewer_role`` field — read via ``getattr``
+          so no config-schema edit is required in this module)
+-      4. ``DEFAULT_REVIEWER_ROLE`` (``architect_general``)
++      4. ``DEFAULT_REVIEWER_ROLE`` (``architect_critic`` since ARCHSWAP-20260927)
+ 
+     Returns a valid :class:`Role`; an unknown binding string falls back to the
+     default rather than raising, so a misconfiguration never breaks review.
+@@ -474,28 +535,36 @@ _ESCALATION_MAP: dict[Role, Role] = {
      Role.TOOLRUNNER: Role.CODER_ESCALATION,
      # Frontdoor escalates to coder
      Role.FRONTDOOR: Role.CODER_ESCALATION,
@@ -1666,7 +3058,7 @@ index 4d752e69..1d183217 100644
      # Draft models don't escalate (they support other models)
  }
  
-@@ -507,6 +538,8 @@ _FALLBACK_MAP: dict[Role, list[Role]] = {
+@@ -507,6 +576,8 @@ _FALLBACK_MAP: dict[Role, list[Role]] = {
      # SAME PROCESS ON THE SAME PORT — an infrastructure fallback that retries the
      # exact backend whose circuit just opened. architect_critic is a different
      # model on a different device, so it is a real fallback.
@@ -1675,7 +3067,7 @@ index 4d752e69..1d183217 100644
      Role.ARCHITECT_GENERAL: [Role.ARCHITECT_CRITIC],
      Role.ARCHITECT_CRITIC: [Role.ARCHITECT_GENERAL],
      # Still valid: frontdoor is a separate CPU process with a separate GGUF.
-@@ -518,14 +551,23 @@ _FALLBACK_MAP: dict[Role, list[Role]] = {
+@@ -518,14 +589,23 @@ _FALLBACK_MAP: dict[Role, list[Role]] = {
      # WORKER_MATH -> WORKER_GENERAL and INGEST_LONG_CONTEXT -> ARCHITECT_GENERAL
      # both retried the process whose circuit had just opened. Each role now falls
      # back to a different serving process:
@@ -1863,6 +3255,46 @@ index 4f691cdb..7b2ee229 100644
          if spec.kind == "enum":
              assert spec.allowed_values
          else:
+diff --git a/tests/test_review_decision_plane.py b/tests/test_review_decision_plane.py
+index 004275d1..c91e0177 100644
+--- a/tests/test_review_decision_plane.py
++++ b/tests/test_review_decision_plane.py
+@@ -81,10 +81,11 @@ def _review(decision=ReviewDecision.REJECT, evidence=None, tripwire=False, **kw)
+ 
+ 
+ class TestReviewerRoleBinding:
+-    def test_default_resolves_to_architect_general(self, monkeypatch):
++    def test_default_resolves_to_architect_critic(self, monkeypatch):
++        # ARCHSWAP-20260927: reviews stay on the MI210 27B (operator, 2026-09-27).
+         monkeypatch.delenv("ORCHESTRATOR_REVIEWER_ROLE", raising=False)
+         assert resolve_reviewer_role() is DEFAULT_REVIEWER_ROLE
+-        assert resolve_reviewer_role() is Role.ARCHITECT_GENERAL
++        assert resolve_reviewer_role() is Role.ARCHITECT_CRITIC
+ 
+     def test_env_override_targets_different_model(self, monkeypatch):
+         monkeypatch.setenv("ORCHESTRATOR_REVIEWER_ROLE", "coder_escalation")
+@@ -99,10 +100,10 @@ class TestReviewerRoleBinding:
+         assert resolve_reviewer_role(override="worker_math") is Role.WORKER_MATH
+ 
+     def test_service_default_role_unchanged(self, monkeypatch):
+-        """Default service role is still architect_general (zero behavior change)."""
++        """Default service role is architect_critic — the 27B that reviewed before ARCHSWAP-20260927."""
+         monkeypatch.delenv("ORCHESTRATOR_REVIEWER_ROLE", raising=False)
+         svc = _service()
+-        assert svc.architect_role == "architect_general"
++        assert svc.architect_role == "architect_critic"
+ 
+     def test_service_reviewer_role_override(self):
+         svc = _service(reviewer_role="coder_escalation")
+@@ -244,7 +245,7 @@ class TestAlwaysOnEmission:
+         for ev in events:
+             assert json.loads(ev.detail_json)["assigned_role"] == "verifier"
+             # Orthogonality: the model role stays the reviewer's model binding.
+-            assert ev.role == "architect_general"
++            assert ev.role == "architect_critic"  # ARCHSWAP-20260927 reviewer default (the 27B)
+ 
+     def test_write_through_to_temp_db(self, tmp_path):
+         """Real emit.py write-through lands a durable row (no injected sink)."""
 diff --git a/tests/unit/test_approval_gate.py b/tests/unit/test_approval_gate.py
 index 2c9ab2ae..374bae11 100644
 --- a/tests/unit/test_approval_gate.py
@@ -2045,6 +3477,19 @@ index 7dcb53fe..8539285c 100644
      assert before == after
 -    assert before == str(DECLARED_SLOTS["architect_general"])
 +    assert before == str(DECLARED_SLOTS["architect_critic"])
+diff --git a/tests/unit/test_chat_routes.py b/tests/unit/test_chat_routes.py
+index 346f552f..e9b31020 100644
+--- a/tests/unit/test_chat_routes.py
++++ b/tests/unit/test_chat_routes.py
+@@ -1076,7 +1076,7 @@ class TestEditModeFailClosed:
+             )
+ 
+         def _fake_consult(**kwargs):
+-            assert kwargs["consultant_role"] == "architect_general"
++            assert kwargs["consultant_role"] == "architect_critic"  # ARCHSWAP-20260927: review follows the reviewer binding
+             assert kwargs["requester_role"] == "coder_escalation"
+             assert kwargs["skill"] == "review_before_commit"
+             assert "VALUE = 2" in kwargs["context"]
 diff --git a/tests/unit/test_config.py b/tests/unit/test_config.py
 index 02e1ae59..b11e037f 100644
 --- a/tests/unit/test_config.py
@@ -2101,6 +3546,85 @@ index 6ac492f8..f58c5172 100644
          "worker_vision": [8086],
      }
      # Every host named by the alias table must be represented in the fixture —
+diff --git a/tests/unit/test_consultation.py b/tests/unit/test_consultation.py
+index ad26a07d..d78adfd9 100644
+--- a/tests/unit/test_consultation.py
++++ b/tests/unit/test_consultation.py
+@@ -51,7 +51,7 @@ class _FakePrimitives:
+ 
+ 
+ def test_load_review_before_commit_skill() -> None:
+-    skill = load_interaction_skill("architect_general", "review_before_commit")
++    skill = load_interaction_skill("architect_critic", "review_before_commit")
+ 
+     assert skill.kind == "consult"
+     assert skill.max_output_tokens == 400
+@@ -66,17 +66,17 @@ def test_load_review_before_commit_skill() -> None:
+ 
+ 
+ def test_build_consult_prompt_names_roles_and_schema() -> None:
+-    skill = load_interaction_skill("architect_general", "review_before_commit")
++    skill = load_interaction_skill("architect_critic", "review_before_commit")
+ 
+     prompt = build_consult_prompt(
+         requester_role="coder_escalation",
+-        consultant_role="architect_general",
++        consultant_role="architect_critic",
+         skill=skill,
+         context="draft",
+     )
+ 
+     assert "coder_escalation" in prompt
+-    assert "architect_general" in prompt
++    assert "architect_critic" in prompt
+     assert "review_before_commit" in prompt
+     assert "JSON schema" in prompt
+ 
+@@ -85,7 +85,7 @@ def test_consult_calls_llm_with_schema_and_scheduler_context() -> None:
+     primitives = _FakePrimitives()
+ 
+     advisory, stats = consult(
+-        "architect_general",
++        "architect_critic",
+         "coder_escalation",
+         "review_before_commit",
+         "draft context",
+@@ -102,7 +102,7 @@ def test_consult_calls_llm_with_schema_and_scheduler_context() -> None:
+             "max_queue_wait_ms": 2000,
+         }
+     ]
+-    assert primitives.calls[0]["role"] == "architect_general"
++    assert primitives.calls[0]["role"] == "architect_critic"
+     assert primitives.calls[0]["n_tokens"] == 400
+     assert primitives.calls[0]["json_schema"]["type"] == "object"
+ 
+@@ -112,7 +112,7 @@ def test_consult_rejects_schema_violations() -> None:
+ 
+     with pytest.raises(ConsultationDenied) as exc_info:
+         consult(
+-            "architect_general",
++            "architect_critic",
+             "coder_escalation",
+             "review_before_commit",
+             "draft context",
+@@ -127,7 +127,7 @@ def test_consult_translates_contention_to_consultation_denied() -> None:
+ 
+     with pytest.raises(ConsultationDenied) as exc_info:
+         consult(
+-            "architect_general",
++            "architect_critic",
+             "coder_escalation",
+             "review_before_commit",
+             "draft context",
+@@ -205,7 +205,7 @@ def test_consult_injects_dcp_augmented_context(monkeypatch) -> None:
+     primitives = _FakePrimitives()
+ 
+     consult(
+-        "architect_general",
++        "architect_critic",
+         "coder_escalation",
+         "review_before_commit",
+         "draft context",
 diff --git a/tests/unit/test_contention_device_model.py b/tests/unit/test_contention_device_model.py
 index 766452b2..3a684b84 100644
 --- a/tests/unit/test_contention_device_model.py
@@ -2314,6 +3838,19 @@ index 197064dd..3ba50eb3 100644
          role_urls.update({alias: getattr(cfg, alias) for alias in fd_aliases})
          backends = _build(role_urls)
      finally:
+diff --git a/tests/unit/test_graph_router_integration.py b/tests/unit/test_graph_router_integration.py
+index cfe4469f..d2719833 100644
+--- a/tests/unit/test_graph_router_integration.py
++++ b/tests/unit/test_graph_router_integration.py
+@@ -183,7 +183,7 @@ class TestHybridRouterGraphBlending:
+ 
+         router = HybridRouter(retriever=retriever, rule_based_router=rule_router)
+         assert router._parse_routing_action("plan_review:drop") == []
+-        assert router._parse_routing_action("reviewer:direct") == ["architect_general"]
++        assert router._parse_routing_action("reviewer:direct") == ["architect_critic"]  # ARCHSWAP-20260927 reviewer default
+ 
+     def test_with_graph_router(self, retriever, rule_router):
+         """With graph_router, blending happens before routing decision."""
 diff --git a/tests/unit/test_inference_mixin.py b/tests/unit/test_inference_mixin.py
 index df227132..38f15c15 100755
 --- a/tests/unit/test_inference_mixin.py
@@ -2474,6 +4011,78 @@ index 929afc8b..e6c01ce1 100644
      assert rv._topology_fleet_ports({"instances": [("0-1", 1234, 2)]}) == [1234]
      assert rv._topology_fleet_ports(
          {"instances": [("0-1", 1, 2), ("2-3", 2, 2)], "full_instance_idx": 0}
+diff --git a/tests/unit/test_repl_routing.py b/tests/unit/test_repl_routing.py
+index 05978326..eaedcf11 100755
+--- a/tests/unit/test_repl_routing.py
++++ b/tests/unit/test_repl_routing.py
+@@ -72,7 +72,7 @@ class TestResolveRoleAlias:
+         # Test directly via the method
+         assert repl._resolve_role_alias("researcher_agent") == "worker_general"
+         assert repl._resolve_role_alias("coder_agent") == "coder_escalation"
+-        assert repl._resolve_role_alias("reviewer_agent") == "architect_general"
++        assert repl._resolve_role_alias("reviewer_agent") == "architect_critic"  # ARCHSWAP-20260927 reviewer default
+ 
+     def test_resolve_unknown_returns_original(self):
+         """Test unknown aliases return original value."""
+@@ -126,8 +126,8 @@ class TestEscalate:
+         result = repl.execute("escalate('Need review', 'reviewer_agent')")
+ 
+         assert result.error is None
+-        # reviewer_agent should resolve to architect_general
+-        assert repl.artifacts.get("_escalation_target") == "architect_general"
++        # reviewer_agent should resolve to architect_critic (the reviewer default since ARCHSWAP-20260927)
++        assert repl.artifacts.get("_escalation_target") == "architect_critic"
+ 
+     def test_escalate_returns_message(self):
+         """Test escalate() returns acknowledgment message."""
+diff --git a/tests/unit/test_roles.py b/tests/unit/test_roles.py
+index 28a9b56f..fb5c3025 100755
+--- a/tests/unit/test_roles.py
++++ b/tests/unit/test_roles.py
+@@ -119,7 +119,7 @@ class TestRoleEnum:
+         assert Role.from_string("coder") == Role.CODER_ESCALATION
+         assert Role.from_string("coder_agent") == Role.CODER_ESCALATION
+         assert Role.from_string("researcher") == Role.WORKER_GENERAL
+-        assert Role.from_string("reviewer") == Role.ARCHITECT_GENERAL
++        assert Role.from_string("reviewer") == Role.ARCHITECT_CRITIC  # ARCHSWAP-20260927: reviewer default = the 27B
+         assert Role.from_string("worker_explore") == Role.WORKER_GENERAL
+         assert Role.from_string("worker_fast") == Role.WORKER_GENERAL
+ 
+@@ -383,3 +383,34 @@ class TestChainNameMapping:
+         """Test role_to_chain_name returns value for unmapped roles."""
+         # Thinking reasoning should map to coder
+         assert role_to_chain_name(Role.THINKING_REASONING) == "coder"
++
++
++class TestArchswapPlannerAndReviewerBindings:
++    """ARCHSWAP-20260927: review/plan work stays on the 27B; only escalation moves."""
++
++    def test_planner_default_is_architect_critic(self, monkeypatch):
++        from src.roles import DEFAULT_PLANNER_ROLE, resolve_planner_role
++
++        monkeypatch.delenv("ORCHESTRATOR_PLANNER_ROLE", raising=False)
++        assert DEFAULT_PLANNER_ROLE is Role.ARCHITECT_CRITIC
++        assert resolve_planner_role() is Role.ARCHITECT_CRITIC
++
++    def test_planner_env_override_and_unknown_fallback(self, monkeypatch):
++        from src.roles import resolve_planner_role
++
++        monkeypatch.setenv("ORCHESTRATOR_PLANNER_ROLE", "architect_general")
++        assert resolve_planner_role() is Role.ARCHITECT_GENERAL
++        monkeypatch.setenv("ORCHESTRATOR_PLANNER_ROLE", "no_such_role")
++        assert resolve_planner_role() is Role.ARCHITECT_CRITIC
++        assert resolve_planner_role(override="worker_math") is Role.WORKER_MATH
++
++    def test_reviewer_default_is_architect_critic(self, monkeypatch):
++        from src.roles import resolve_reviewer_role
++
++        monkeypatch.delenv("ORCHESTRATOR_REVIEWER_ROLE", raising=False)
++        assert resolve_reviewer_role(config=object()) is Role.ARCHITECT_CRITIC
++
++    def test_escalation_terminal_is_architect_general(self):
++        assert Role.CODER_ESCALATION.escalates_to() is Role.ARCHITECT_GENERAL
++        assert Role.ARCHITECT_CRITIC.escalates_to() is Role.ARCHITECT_GENERAL
++        assert Role.ARCHITECT_GENERAL.escalates_to() is None
 diff --git a/tests/unit/test_seeding_orchestrator.py b/tests/unit/test_seeding_orchestrator.py
 index a3d4673d..95752f5e 100644
 --- a/tests/unit/test_seeding_orchestrator.py
@@ -2692,6 +4301,37 @@ index 6e9cf2c4..31e7aef1 100644
      out = capsys.readouterr().out
      assert calls == []
      assert "[numa-pre-evict]" not in out
--- 
-2.51.0
-
+diff --git a/tests/unit/test_v1_escalation.py b/tests/unit/test_v1_escalation.py
+index ac8a7b88..4755cfb7 100644
+--- a/tests/unit/test_v1_escalation.py
++++ b/tests/unit/test_v1_escalation.py
+@@ -51,6 +51,7 @@ TOOL_CALL = {
+ TIMINGS = {
+     "frontdoor": (40.0, 160.0, 17, 91),
+     "architect_general": (1250.0, 3750.5, 12, 300),
++    "architect_critic": (1250.0, 3750.5, 12, 300),
+     "coder_escalation": (900.0, 2100.0, 40, 280),
+     "worker_general": (100.0, 400.0, 30, 150),
+ }
+@@ -167,6 +168,8 @@ def _install(env, *, client_result=None, answers=None) -> dict[str, Any]:
+     holder: dict[str, Any] = {}
+     default_answers = {
+         "architect_general": "WRONG: it is nitrogen, about 78% by volume",
++        # ARCHSWAP-20260927: under ``auto`` the verdict goes to the reviewer binding.
++        "architect_critic": "WRONG: it is nitrogen, about 78% by volume",
+         "worker_general": REVISED_ANSWER,
+         "coder_escalation": QUALITY_ANSWER,
+         "frontdoor": '"the answer"',
+@@ -358,9 +361,11 @@ def test_explicit_auto_escalates_with_chat_default_targets(env):
+     receipt = r.json()["x_orchestrator_metadata"]["escalation"]
+     assert receipt["requested"] == "auto" and receipt["enabled"] is True
+     assert receipt["target"] == "chat_default"
++    # ARCHSWAP-20260927: /chat's default verdict target is the reviewer binding
++    # (architect_critic, the 27B); only a pinned consultant sends it to architect_general.
+     assert [c["role"] for c in holder["fake"].calls] == [
+         "frontdoor",
+-        "architect_general",
++        "architect_critic",
+         "worker_general",
+     ]
+ 

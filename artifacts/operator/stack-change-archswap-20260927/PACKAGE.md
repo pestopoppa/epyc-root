@@ -96,7 +96,13 @@ That gap is exactly what arm A2 measures. It is recorded here and is not a gate.
 - The fleet / `_KV_CONTEXT_ROLES` / model-path preflight / gpu-shadow-lane `PRODUCTION_ROLE_NAMES` host lists.
 - `DEFAULT_LLM_JUDGE_ROLE` (eval_tower, debug_scorer) now points to **`architect_critic`**. It is documented as "the disjoint GPU judge", and keeping it on the 27B keeps the measurement instrument unchanged (CJ-11).
 
-**Comment-only:** chat.py `consultant_role="architect_general"` (kept; the consultant is meant to be the strongest model), `speech_layouts.yaml`, docs.
+**Reviewer/planner (A-2 as amended):**
+- `DEFAULT_REVIEWER_ROLE` and the new `DEFAULT_PLANNER_ROLE` = `architect_critic`.
+- The verdict and `review_before_commit` go through `resolve_reviewer_role()`; the `review_before_commit` skill moved to `architect_critic`.
+- `proactive_stage` goes through `resolve_planner_role()`.
+- `v1_escalation`: the verdict target follows `auto` / pin.
+
+**Comment-only:** `speech_layouts.yaml`, docs.
 
 **Tests updated** (27 files).
 
@@ -146,23 +152,36 @@ A stale matrix would fail closed: the contention gate would queue background tra
 
 **O-3: Bring-up (default `B1`, then B2 at the owners' boundaries).** See §7.
 
-**Acknowledged by signing (no option; the signature records it):**
-- **A-1.** The swap makes the whole-machine-lock CPU role the **routine graph-escalation terminal**. This supersedes, for this role name, both:
+**Acknowledgements A-1 to A-5: operator-approved in chat on 2026-09-27** (session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ), with one amendment: *"keep reviews on the 27B, so ONLY ESCALATION changes"*. The signature covers A-1 to A-5 as amended.
+- **A-1 (approved).** The swap makes the whole-machine-lock CPU role the **routine graph-escalation terminal**. For this role name it supersedes both:
   - the 2026-07-30 role definition ("not expected to carry routine traffic");
   - the D2 premise that only `explicit_request` summons it.
 
   `region_lock_wait_s_by_holder` telemetry still does not exist.
-- **A-2.** Inline traffic that was sized for the GPU architect now lands on the serial CPU role:
-  - proactive plan decomposition and repair (256 tok);
-  - the chat_review verdict (80 tok);
-  - `DEFAULT_REVIEWER_ROLE`;
-  - review_before_commit (off by default);
-  - `risk_abstain_target_role`.
+- **A-2 (approved as amended): review AND plan decomposition stay on the MI210 27B; only escalation moves to Flash-Next.**
+  - **Review.** The persistent source of truth is the code default `src/roles.py` `DEFAULT_REVIEWER_ROLE = Role.ARCHITECT_CRITIC`:
+    - no registry key or stack launch env sets the reviewer;
+    - `ORCHESTRATOR_REVIEWER_ROLE` is an override that is unset in the stack;
+    - `DelegationConfig` has no `reviewer_role` field.
 
-  This is consistent with "the consultant is the strongest model". A zero-code override exists for the reviewer: `ORCHESTRATOR_REVIEWER_ROLE=architect_critic`.
-- **A-3.** The escalation prewarm (`n_predict=0`, ~500-token prefill) and the scouts bypass `cpu_region_lock`, so they now touch the 0-95 instance unlocked. They can contend with AutoKernel CPU measurement windows.
-- **A-4.** Callers that name `architect_general` expecting the 27B now get Flash-Next. The ones found were rebound (§3). INF-78 `autokernel_actor_cli --role architect_general` callers must pass `architect_critic` to keep the GPU planner. DS41 itself binds by port and is unaffected.
-- **A-5 (pre-existing, not caused here).** `ingest_long_context` is in `serial_roles` while its host is not.
+    Every review call site resolves through `resolve_reviewer_role()`:
+    - the plan review (`ArchitectReviewService`, used by `chat_review._architect_plan_review` and the proactive delegator);
+    - the 80-token answer verdict (`chat_review`, formerly the literal `architect_general`);
+    - `review_before_commit` (`chat.py`, formerly the literal `architect_general`). Its interaction skill moved to `architect_critic` in `orchestration/interaction_skills.yaml`.
+    - The `PLAN_REVIEWED` progress event records the resolved reviewer, and `Role("reviewer")` follows the default.
+  - **Plan decomposition.** The code does **not** couple planning to the reviewer: `proactive_stage` used the literal `architect_general` for the 256-token decomposition and its repair turn. It now resolves through a new single persistent default in the same shape:
+    - `src/roles.py` `DEFAULT_PLANNER_ROLE = Role.ARCHITECT_CRITIC`;
+    - `resolve_planner_role()`, with the override order explicit > `ORCHESTRATOR_PLANNER_ROLE` env > default.
+
+    The decomposition call, the repair turn and the proactive lineage fallback all use it. No new literal was added.
+  - **Escalation → `architect_general` (Flash-Next):**
+    - `_ESCALATION_MAP`;
+    - the graph's `ArchitectNode` and `chat_delegation`;
+    - the registry escalation chains;
+    - `risk_abstain_target_role` (`architect_general`, an escalation target).
+- **A-3 (approved; fix sequenced).** The escalation prewarm (`n_predict=0`, ~500-token prefill) and the scouts bypass `cpu_region_lock`, so after the swap they would touch the 0-95 instance unlocked. **A separate orchestrator commit fixes this.** It is based on `lane/archswap-20260927` and lands **after the swap commits and BEFORE the bring-up API reload** (§7 step 5), so the bypass is never live unfixed. §7 step 1 merges that commit with the swap lane. The API reload must not run until it is on main.
+- **A-4 (approved).** Callers that name `architect_general` expecting the 27B now get Flash-Next. The ones found were rebound (§3). INF-78 `autokernel_actor_cli --role architect_general` callers must pass `architect_critic` to keep the GPU planner. DS41 binds by port and is unaffected.
+- **A-5 (approved; pre-existing, not caused here).** `ingest_long_context` is in `serial_roles` while its host is not.
 
 ## 4a. What the registry schema supports today (for the refactor to be filed)
 
@@ -228,13 +247,21 @@ Ordering:
 
 ## 6a. Lanes and commits (all pushed; nothing on any main)
 
-| Repo | Lane | Base (origin/main) | Commits |
+| Repo | Lane | Base (origin/main merged in) | Lane commits |
 |---|---|---|---|
-| epyc-inference-research | `lane/archswap-20260927` | `86a33a54` | `61af24fa` registry + 27B-argv scripts |
-| epyc-orchestrator | `lane/archswap-20260927` | `b020a1a8` | `48a012c3` hand sources + tests · `b0d3317e` derived regen · `28cbe113` matrix relabel |
-| epyc-root | `lane/archswap-20260927` | `db398a70`, merged with origin/main `dd32d852` | `3acce399` root consumers · then this package |
+| epyc-inference-research | `lane/archswap-20260927` | `86a33a54` (touched paths unchanged on main since) | `61af24fa` registry + 27B-argv scripts |
+| epyc-orchestrator | `lane/archswap-20260927` | `280059cc` (merge `4f77d1f5`) | `48a012c3` hand sources + tests · `b0d3317e` derived · `28cbe113` matrix relabel · `667c78d4` reviewer + planner bindings · `c81f6b60` derived · `9d3eae6c` v1_escalation verdict target · `e08ec06d` derived |
+| epyc-root | `lane/archswap-20260927` | `e8abf01d` | `3acce399` root consumers · package commits |
 
-`patches/` carries the same commits as `git format-patch` output.
+`patches/<repo>/` holds the lane-only commits as `git format-patch` output. It also has `NET.diff`, the whole lane against its merged-in main.
+
+**The A-3 fix bases on the orchestrator branch `lane/archswap-20260927`** (head at the time of signing, as pinned in the ratify script) and lands before the §7-step-5 API reload.
+
+**TE-1 interaction (orchestrator main `9959e8db`/`280059cc`, merged into the lane).**
+- `/v1` escalation with `x_escalation=auto` reproduces /chat's targets. After this package, that makes the answer verdict go to the **reviewer** (`architect_critic`).
+- `x_escalation=architect_general` (UFH-13 arm A2) pins every consultant call. That now explicitly includes the verdict (`_architect_verdict(role=...)`).
+- The receipt records the role actually asked.
+- The UFH-13 runner's A0/A1/A2 definitions are unchanged.
 
 ## 7. Apply and bring-up (after the receipt exists; run by the session owning the inference)
 
@@ -243,7 +270,7 @@ Preconditions:
 - No eval or measurement is running against the API. If one is, SIGSTOP its runner around step 6.
 - Both `/mnt/raid0/llm/cache/kv_slots/architect_{general,critic}` are empty. They were 0 files on 2026-09-27; if not empty, move them to a dated quarantine directory.
 
-1. Merge the three lanes ff-only to main (research, orchestrator, root) at the pinned commits. The orchestrator lane already carries the regenerated derived files and the relabeled matrix.
+1. Merge the three lanes ff-only to main (research, orchestrator, root) at the pinned commits. (The lane's `model_descriptors.yaml` provenance names the lane master path, because its hash chain is part of what `check` verifies. Step 2 rewrites it against the canonical master; do not hand-normalize it.) The orchestrator lane already carries the regenerated derived files and the relabeled matrix. **Merge the A-3 prewarm/scout fix commit together with the orchestrator lane** (it is based on `lane/archswap-20260927`). Step 5 is forbidden until that fix is on orchestrator main.
 2. Bootstrap, then run `update` (idempotent; should report no change on the pinned commits):
    ```bash
    cd /mnt/raid0/llm/epyc-orchestrator

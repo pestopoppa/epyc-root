@@ -1,7 +1,7 @@
 From b0d3317e717459ec5791bf265b06ee8e56d31359 Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
 Date: Sun, 27 Sep 2026 19:13:42 +0000
-Subject: [PATCH 2/3] derived: regenerate lean registry, descriptors, stack
+Subject: [PATCH 2/7] derived: regenerate lean registry, descriptors, stack
  priors, summary for ARCHSWAP-20260927
 
 stack_change_pipeline.py update --numa-mode both against the research lane master
