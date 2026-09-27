@@ -5551,30 +5551,30 @@ These source-derived follow-ons remain durable trigger records. They do not laun
 - **AK-KAPSO-1:** activate when EPYC introduces a public-selection/private-final-score problem. Freeze the public candidate set and scorer before exactly one private call; retain candidate bytes, public scores, selected identity, private-scorer revision, config, seed/repeat/run ID, and request/response receipts. The preserved KAPSO release supplies no historical campaign receipts. Sources: intake-1631#record, intake-1645#record, intake-1671#record.
 - **AK-OEE-OBS-1:** activate when a live evolutionary campaign asks finite-horizon open-endedness diagnostics to influence a decision. Each producer event then binds artifacts, lineage, insertion/replacement, recurrence, frozen and online descriptors, replay/persistence, criterion, horizon, representation, noise filter, Taylor class, MODES dimensions, and uncertainty, with neutral, frozen-agent, shuffled-lineage, and equal-budget controls. Claims remain finite-horizon observations with no unbounded-evolution label or promotion authority. Sources: intake-1673#record, intake-1674#record, intake-1696#record, intake-1697#record, intake-1698#record, intake-1700#record, intake-1702#record, intake-1703#record.
 
-## Research Intake Update — 2026-09-26 (gfx90a MMQ seed set from the GEMM-ladder dives; GATED)
+## Research Intake Update — 2026-09-26 (gfx90a MMQ seed set from the GEMM-ladder dives; gate lifted 2026-09-27)
 
-**GATED by the operator directive of 2026-09-08 (no pure kernel research until a fully consolidated champion).** These
+**Gate lifted 2026-09-27:** the operator confirmed the 2026-09-08 directive's condition is met — the v10 FREEZE (FREEZE-V10, ratified 2026-09-22, `production-consolidated-v10` @ `ffc1bac82`) is the consolidated champion. Originally GATED by the operator directive of 2026-09-08 (no pure kernel research until a fully consolidated champion). These
 are durable seeds for the GPU MMQ route, not a relaunch. Every seed must first pass INF03-REGAUDIT-1 statically, and
 every measurement must use shapes that actually dispatch to MMQ on CDNA2: dense Q8_0/Q6_K/K-quants at ne11 <= 128
 (Q4_K/Q5_K <= 256), Q4_0/1 and Q5_0/1 at any batch, or MoE with more than 64 experts. pp512 on a dense Q8_0 never
 reaches MMQ. Target code: ggml-cuda/mmq.cuh `mul_mat_q_process_tile` :818-891, mmq-vec-dot.cuh, mmq-config-cdna.cuh.
 Sources: intake-1822#record, intake-1823#record, intake-1826#record.
 
-- [ ] **AK-MMQ-H3 — GATED. Pinned MFMA/VALU interleave in vec_dot_*_mma, with `__builtin_amdgcn_iglp_opt(0|1)` as
+- [ ] **AK-MMQ-H3 — Pinned MFMA/VALU interleave in vec_dot_*_mma, with `__builtin_amdgcn_iglp_opt(0|1)` as
   the zero-authoring first arm, then hand-set `sched_group_barrier` groups.** Also issue the final MFMAs before
   `__syncthreads`, the gfx90a analogue of a split barrier. Falsifier: the ISA shows MFMAs sunk after s_barrier or
   unchanged order, or the MMQ kernel time does not move beyond the noise floor at ne11 in {16,32,64}.
-- [ ] **AK-MMQ-H7 — GATED. Register-staged prefetch of the next K iteration's x/y tiles across the barrier** (enabled
+- [ ] **AK-MMQ-H7 — Register-staged prefetch of the next K iteration's x/y tiles across the barrier** (enabled
   by gfx90a FeatureBackOffBarrier). Only for instances with VGPR headroom: J<=48, or K-quants whose J=64 loop is rolled.
   Falsifier: INF03-REGAUDIT-1 shows new spills or a vmcnt(0) at the barrier, or no time change.
-- [ ] **AK-MMQ-H8 — GATED. y-tile fill via dword `llvm.amdgcn.raw.buffer.load.lds` plus a second y buffer** (the y
+- [ ] **AK-MMQ-H8 — y-tile fill via dword `llvm.amdgcn.raw.buffer.load.lds` plus a second y buffer** (the y
   fill is a lane-linear copy, mmq.cuh:853-878). The y double buffer drops 2 of 4 barriers per 256-K iteration. LDS
   fits for Q8_0/Q8_1/Q6_K layouts at J=64 (57,600 B) but not for Q2_K. Prior: the MMVQ prefetch that used the same
   intrinsic was net-negative. Falsifier: MMQ time within noise, or a correctness failure.
-- [ ] **AK-MMQ-H10 — GATED. Remove the J=64 spill tax.** For types that spill at J=64 (Q8_0, Q5_0, MXFP4, IQ4_*,
+- [ ] **AK-MMQ-H10 — Remove the J=64 spill tax.** IN PROGRESS 2026-09-27 (operator-approved): per-type J cap on `experimental/mmq-jcap-20260927` (fresh from v10), static gate via `gfx90a_isa_audit.py diff`; GPU correctness + timing in the next CPU window. For types that spill at J=64 (Q8_0, Q5_0, MXFP4, IQ4_*,
   Q2_K), either select J=48 at 49-64 columns or restructure vec_dot to stay under 256 VGPR. Falsifier: spills unchanged,
   or the extra column tile costs more than the reloads saved.
-- [ ] **AK-MMQ-H5 — GATED. nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128;
+- [ ] **AK-MMQ-H5 — nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128;
   occupancy 2 is infeasible at I=128 because the x tile alone is 38,912 B). Each cell sits on one side of the ROCm 6.2
   AGPR rule: 256-thread arms get AGPR form with a 512 budget and copies; the rule changes on ROCm 7.14+. Record agpr,
   copies, spills and compiler with every cell.

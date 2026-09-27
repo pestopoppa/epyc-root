@@ -2353,6 +2353,7 @@ OBSERVATION grade: register counts, not throughput. Source row added to `scripts
   in-hot-loop spill reloads, in-loop v_accvgpr_read/write and the toolchain's MFMA-form regime (ROCm 6.2 rule vs
   #159493 default) to the native record before INF03-REGAUDIT-1 or INF03-AGPR-1 produce governed reads. OBSERVATION
   grade; no new grading rule.
+  - Producer landed 2026-09-27: research e603216f (`claim_projection`, schema `epyc.gfx90a.isa_audit.v1`; pre-hook docs emit 0). Root adapter drafted (`adapters/gfx90a_static_register.py`, draft at the session scratchpad `isa-audit/`), not yet wired.
 
 ## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16)
 

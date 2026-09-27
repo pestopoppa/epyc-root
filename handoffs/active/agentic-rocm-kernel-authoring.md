@@ -1208,14 +1208,21 @@ async b128 loads and WMMA do not exist here. MMQ at J=64 already spills at the 2
 candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA kernels is a ROCm 6.2 compiler default
 (intake-1826#record).
 
-- [ ] **INF03-REGAUDIT-1 — Standing zero-GPU static register/ISA audit for gfx90a HIP kernels.** Promote the
+- [x] **INF03-REGAUDIT-1 — Standing zero-GPU static register/ISA audit for gfx90a HIP kernels.** ✅ 2026-09-27 — landed as research `scripts/kernel_rnd/gfx90a_isa_audit.py` (e603216f; `diff` exits 1 on new/larger spills, more hot-loop reloads or accvgpr copies, AGPRs appearing, lower occupancy). First audit `data/gfx90a-isa-audit-20260926/` (v10 f26a166b + v9). Confirms Q8_0 J=64 at 256 VGPR/37 spills, spill-free at J≤48; corrects the dive: MMQ has two hot k-loops (Q8_0 10/12 reloads; need_check=1 up to 34), Q2_K spills at J=48, FA-MMA reloads ~2x undercounted (DKQ=256 656–756/iter). v9→v10 regressed several MMQ types (Q5_0 15→46, Q1_0 21→61, Q4_0 nc=1 0→32, Q8_0 32→37 spills). Promote the
   intake-1823 dive scripts (`/mnt/raid0/llm/tmp/dive-intake-1823/ourbuild/`: split_fatbin.py, analyze_kernels.py,
   loop_analysis.py, agpr_rule_check.py) into the research repo with a README. Per kernel, emit: symbol, workgroup
   size, agpr_count / accum_offset, total and arch VGPR, vgpr_spill_count, private bytes, in-hot-loop spill reloads,
   in-loop v_accvgpr_read/write, s_waitcnt drains per iteration, and MFMA placement relative to s_barrier. Scope: MMQ,
   MMA-FA, rocWMMA FA, mul_mat_f. It is the accept gate for any MMQ/FA register-affecting candidate: no timing
   before it passes. Reads existing binaries only. Belief-kernel write side: SC84 amendment (P6).
-- [ ] **INF03-AGPR-1 — GATED (operator directive 2026-09-08). NH-1 MFMA-form arm on ROCm 6.2.** On an experimental
+- [ ] **INF03-REGAUDIT-2 — make the ISA gate a hard step before timing.** Add `gfx90a_isa_audit.py diff <incumbent>
+  <candidate> --families mmq,fattn_mma,fattn_wmma,mmf` to the kernel-promotion runbook/skill and the INF03-AGPR-1 arm
+  protocol: must exit 0, or each FAIL is accepted by name in the package. Store both audit JSONs with
+  `--category`/`--source-commit` so they feed SC84.
+- [ ] **INF03-REGAUDIT-3 — investigate the v9→v10 MMQ spill regressions** (Q5_0 J=64 15→46, Q1_0 21→61, Q4_0
+  need_check=1 0→32, Q8_0 32→37; Q2_K improved 346→35). Bisect which v10 change raised register pressure; feeds the
+  J-cap (AK-MMQ-H10) and any MMQ forward-port.
+- [ ] **INF03-AGPR-1 — NH-1 MFMA-form arm on ROCm 6.2** (gate lifted 2026-09-27: v10 FREEZE is the consolidated champion; audit supports excluding MMA-FA DKQ≥192, already at 512 VGPR with hundreds of reloads/iteration). On an experimental
   branch from the v10 tip, change the <=256-thread `__launch_bounds__(N,1)` of mul_mat_f (mmf.cuh) and rocWMMA FA
   (fattn-wmma-f16.cu) to `(N,2)`, with a separate `amdgpu_num_vgpr(128)` arm (waves_per_eu also raises the scheduler's
   occupancy target). Compile for gfx90a with ROCm 6.2. Accept only if INF03-REGAUDIT-1 shows agpr=0, zero in-loop
