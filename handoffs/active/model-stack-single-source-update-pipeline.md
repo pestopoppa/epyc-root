@@ -669,6 +669,12 @@ supplies the value under test cannot fail on it.
   recipe's — `-t 96` where the recipe measured `-t 48`, without the THP shim. The recipe's recorded
   43.281 t/s decode was measured at `t=48` WITH the shim on the champion build, so it cannot be
   expected to describe this process, and the two must never be quoted against each other.
+  **2026-09-27 — the `threads: 48` / `NUMA_FULL_T48` claim is SUPERSEDED by measurement.** DAR-LAT-3h's signed G1
+  (v10, served shape) chose **T96**: 48 threads failed parity (wall 1.0385×, TTFT 1.055× vs 96) and the THP shim gave
+  no gain (1.009×). So the 2026-09-22 C3 ruling's premise ("48 is the served decode optimum") no longer holds, live
+  `-t 96` is the right shape, and nothing was applied. The recipe text still says 48 because the correcting research
+  lane was not merged either; when this task makes `recipe:` load-bearing, it must derive 96, not 48. Evidence:
+  `artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md`.
   **Blocker: none.**
 
 - [x] **SSU-F12 — the host-only `worker` alias leaked into two consumers after the 2026-09-22 cutover.**

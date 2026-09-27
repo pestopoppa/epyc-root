@@ -10,6 +10,10 @@
 
 ## Start here (2026-09-26)
 
+**2026-09-27: DAR-LAT is FROZEN (operator, narrowed plan) apart from the UFH-13 thesis experiment.** DAR-LAT-3h is ✅:
+G1 chose T96 and nothing was applied (live `:8074` `-t 96` is the measured-better shape; see DAR-LAT-3h below). The
+paragraph that follows is the pre-freeze plan; each DAR-LAT box carries its own unfreeze trigger.
+
 The live work is the **latency-term track** at the end of this file, in § *Research Intake Update — 2026-09-26*.
 Next is **DAR-LAT-1** (the `SlotCapacity` + `expected_wait_s` snapshot on the admission ledger), then DAR-LAT-2 at
 weight 0. DAR-LAT-3 is the decision-grade A/B under P-SERVE-SEL-1 (ratified and landed `3573028b`). Its gate 3g is
@@ -765,14 +769,28 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
         the stack template's `threads: 96` (`stack_templates/default.yaml:155`). Production `n_ctx` 262144 also
         differs from the recipe's validated 8192. This is a production launch change, so it is reconciled only by a
         signed `stack-change` package (the lineup/recipe owner), never an ad-hoc relaunch; 3g stays blocked until then.
+        **2026-09-27: resolved in substance by DAR-LAT-3h G1 (T96):** live `-t 96` is the measured-better shape, so the
+        live argv is the one to hold; the registry `recipe:` text still says 48 (SSU-F11; not applied, see RESULT.md).
     - VB-SEL-LOADAB wired.
     ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
-  - [ ] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** Use the
+  - [x] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** Use the
     `stack-change` skill (zero inference). Live `-t 96` vs recipe `threads: 48`, and `n_ctx` 262144 vs the validated
     8192. Trace which surface emits 96 (the suspect is `stack_templates/default.yaml:155`). Present the options: align
     serving to the recipe, or re-derive the recipe for the 96-thread serving shape (CPU co-tenancy with speech is a
     known cost, CURRENT-CAMPAIGN.md:22). Give a recommendation and a before/after decode gate. One package for the
     operator's signature; never an ad-hoc relaunch. Filed 2026-09-26 (workspace-8d wrap-up).
+    ✅ 2026-09-27 — package v2 signed (`RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926`), G1 run 2026-09-27 ~17:41-18:57Z,
+    15/15 launches clean, coherence equal across arms. **Outcome T96**:
+    - premise holds: T96 vs L wall 0.988×, TTFT 0.950× (`GGML_FUSED_DECODE_OFF` inert under MTP);
+    - 48-thread parity fails: T48 vs T96 1.0385× / 1.055×, T48N vs T96N 1.032× / 1.068× (bar: wall ≤ 1.03×);
+    - THP shim not adopted: T96N vs T96 wall 1.009× (bar: ≤ 0.98×).
+    **Disposition: recorded only, NOTHING APPLIED** — the T96 row adds only the inert knob and live `:8074` already runs
+    `-t 96`, so no reload and no contention recert. The 2026-09-22 C3 ruling (`NUMA_FULL_T48`) is superseded;
+    `NOHUGEPAGE_PROCESS` is settled as no gain on v10 at the served shape. The `lane/dar-lat-3h-v2-*` outcome lanes are
+    NOT to be merged. Evidence, W2 reading and decode tables:
+    [`RESULT.md`](../../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md), `g1-result/verdict.json`.
+    **DAR-LAT is now FROZEN** (narrowed plan) apart from the UFH-13 thesis experiment; the boxes above and below keep
+    their `❄ FROZEN 2026-09-27` markers and unfreeze triggers.
   - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
     out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
     `server_mode.architect_critic.recipe.env_not_serving`.

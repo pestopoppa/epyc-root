@@ -1,0 +1,117 @@
+{
+ "outcome": "T96",
+ "threads": 96,
+ "shim_adopted": false,
+ "T96_vs_L": {
+  "wall_ratio": 0.9879,
+  "ttft_ratio": 0.9499,
+  "coherent_min": [
+   20,
+   20
+  ]
+ },
+ "T48_vs_T96": {
+  "wall_ratio": 1.0385,
+  "ttft_ratio": 1.0548,
+  "coherent_min": [
+   20,
+   20
+  ]
+ },
+ "T48N_vs_T96N": {
+  "wall_ratio": 1.0323,
+  "ttft_ratio": 1.068,
+  "coherent_min": [
+   20,
+   20
+  ]
+ },
+ "T96N_vs_T96": {
+  "wall_ratio": 1.0094,
+  "ttft_ratio": 1.0199,
+  "coherent_min": [
+   20,
+   20
+  ]
+ },
+ "T48N_vs_T48": {
+  "wall_ratio": 1.0033,
+  "ttft_ratio": 1.0327,
+  "coherent_min": [
+   20,
+   20
+  ]
+ },
+ "decode_tps_mean": {
+  "L": 43.374,
+  "T96": 44.644,
+  "T96N": 44.612,
+  "T48": 43.796,
+  "T48N": 43.268
+ },
+ "launches": {
+  "L": 3,
+  "T96": 3,
+  "T96N": 3,
+  "T48": 3,
+  "T48N": 3
+ },
+ "thresholds": {
+  "wall_margin": 1.03,
+  "ttft_margin": 1.1,
+  "shim_gain": 0.98,
+  "min_launches": 3
+ },
+ "w2_reading": {
+  "outcome": "T96",
+  "threads": 96,
+  "shim_adopted": false,
+  "T96_vs_L": {
+   "wall_ratio": 0.9899,
+   "ttft_ratio": 0.9807,
+   "coherent_min": [
+    4,
+    4
+   ]
+  },
+  "T48_vs_T96": {
+   "wall_ratio": 1.0532,
+   "ttft_ratio": 1.1134,
+   "coherent_min": [
+    4,
+    4
+   ]
+  },
+  "T48N_vs_T96N": {
+   "wall_ratio": 1.0566,
+   "ttft_ratio": 1.1119,
+   "coherent_min": [
+    4,
+    4
+   ]
+  },
+  "T96N_vs_T96": {
+   "wall_ratio": 1.0351,
+   "ttft_ratio": 1.0434,
+   "coherent_min": [
+    4,
+    4
+   ]
+  },
+  "T48N_vs_T48": {
+   "wall_ratio": 1.0385,
+   "ttft_ratio": 1.042,
+   "coherent_min": [
+    4,
+    4
+   ]
+  },
+  "decode_tps_mean": {
+   "L": 32.054,
+   "T96": 32.134,
+   "T96N": 31.484,
+   "T48": 33.237,
+   "T48N": 32.023
+  }
+ }
+}
