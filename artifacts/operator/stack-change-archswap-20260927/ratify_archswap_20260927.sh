@@ -35,7 +35,7 @@ PYTHON="/usr/bin/python3"
 LANES=(
   "$RESEARCH|lane/archswap-20260927|86a33a54c150ca5f417376ff70be8b790068d06a|61af24fa"
   "$ORCH|lane/archswap-20260927|b020a1a843d043c6aa0f558449346d665f253834|48a012c3 b0d3317e 28cbe113"
-  "$ROOTREPO|lane/archswap-20260927|db398a70ddefd9b71fd4cd7c06a3f34c21b3fa97|3acce399"
+  "$ROOTREPO|lane/archswap-20260927|dd32d8528eb0677f64876e937201b5b48d0c8ee1|3acce399"
 )
 
 # repo|path ...  — every path this package's patches touch. If ANY of them differs
@@ -134,7 +134,7 @@ TOUCHED=(
 )
 
 PINS=(
-  "2448186201a15e81d9b7006887a1805efa8c0ba0077c7eab5ed48862e0db919e PACKAGE.md"
+  "363ce1ebbb2275da92627a6fe8e99b02a02b7cef3d600a1875fccbaf804b631f PACKAGE.md"
   "760fa555ef3530654df16c9885736d0a04c17177a365c8de3da155765fe076c7 evidence/assert_alias_clean.txt"
   "10a20ff4d3802aa21ba51bf38b3fdf545b36a01390b4a5ec997e5712a9bcbb81 evidence/classify.txt"
   "689a82db4c173bb54e784e47e283e6aa377ff6479ac2006d7c87d55780b283b7 evidence/pipeline-check-baseline.txt"
@@ -181,6 +181,12 @@ if [[ "$MODE" == "attest" ]]; then
   esac
   THINKING_OPTION="${THINKING_OPTION:-follow-model}"
   BRINGUP_OPTION="${BRINGUP_OPTION:-B1}"
+  # The project's one shared guard (scripts/operator/lib/ratify_operator.sh, 5ef39690): refuses an
+  # unset name, a system account, the invoking login and any agent/session id. Exits 65.
+  [[ -f "$ROOT/scripts/operator/lib/ratify_operator.sh" ]] || fail "shared operator guard missing: $ROOT/scripts/operator/lib/ratify_operator.sh"
+  # shellcheck source=/dev/null
+  source "$ROOT/scripts/operator/lib/ratify_operator.sh"
+  ratify_require_operator
   [[ "$THINKING_OPTION" == "follow-model" ]] \
     || fail "THINKING_OPTION=$THINKING_OPTION: only follow-model is prepared; follow-role needs a REFRESHED package (PACKAGE.md O-2)"
   [[ "$BRINGUP_OPTION" == "B1" || "$BRINGUP_OPTION" == "B2" ]] || fail "BRINGUP_OPTION must be B1 or B2"

@@ -232,7 +232,7 @@ Ordering:
 |---|---|---|---|
 | epyc-inference-research | `lane/archswap-20260927` | `86a33a54` | `61af24fa` registry + 27B-argv scripts |
 | epyc-orchestrator | `lane/archswap-20260927` | `b020a1a8` | `48a012c3` hand sources + tests · `b0d3317e` derived regen · `28cbe113` matrix relabel |
-| epyc-root | `lane/archswap-20260927` | `db398a70` | `3acce399` root consumers · then this package |
+| epyc-root | `lane/archswap-20260927` | `db398a70`, merged with origin/main `dd32d852` | `3acce399` root consumers · then this package |
 
 `patches/` carries the same commits as `git format-patch` output.
 
