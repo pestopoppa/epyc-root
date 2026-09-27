@@ -1,0 +1,143 @@
+{
+  "schema": "hs19a-acceptance/v1",
+  "pass": true,
+  "profile": "subagents",
+  "parent_session_id": "ses_f1f6698d9ffe5Vn20UYRZ2jQK1",
+  "child_session_ids": [
+    "ses_f1f6641d4ffebRIg7LQh7aAegL"
+  ],
+  "window": [
+    1790474544.2479553,
+    1790474583.8569596
+  ],
+  "tap_events": "/mnt/raid0/llm/tmp/inference_tap_events.jsonl",
+  "progress_log_dir": "/mnt/raid0/llm/epyc-orchestrator/logs/progress",
+  "checks": [
+    {
+      "check": "parent-session-exported",
+      "ok": true,
+      "detail": "parent ses_f1f6698d9ffe5Vn20UYRZ2jQK1: export present"
+    },
+    {
+      "check": "S1-one-linked-child",
+      "ok": true,
+      "detail": "parent task parts: 1 (1 completed); child ids: ['ses_f1f6641d4ffebRIg7LQh7aAegL']; child export: present, parentID 'ses_f1f6698d9ffe5Vn20UYRZ2jQK1'; compaction/subtask parts parent none, child none; child task calls: 0"
+    },
+    {
+      "check": "S2-tap-keyed-parent-and-child",
+      "ok": true,
+      "detail": "2 call(s) keyed to parent ses_f1f6698d9ffe5Vn20UYRZ2jQK1, 2 to child ses_f1f6641d4ffebRIg7LQh7aAegL; 0 with a wrong x_user_id or x_tool_mode; 0 keyed to another session; 0 without request_keys (unkeyed calls are advisory without --strict-window)"
+    },
+    {
+      "check": "S3-parent-link-recorded",
+      "ok": true,
+      "detail": "2 child call(s) checked, 2 carrying x_agent_name (export agent 'general'); depth basis ['observed']; no problems"
+    },
+    {
+      "check": "S4-child-served-by-selection",
+      "ok": true,
+      "detail": "parent roles ['frontdoor']; child roles ['frontdoor']; child within parent's roles: True"
+    },
+    {
+      "check": "S4-no-force-pin",
+      "ok": true,
+      "detail": "x_force_* keys on tap calls in window: none"
+    },
+    {
+      "check": "S4-one-logical-model",
+      "ok": true,
+      "detail": "5 assistant message(s)/task model(s) checked; not epyc-orchestrator/orchestrator: none"
+    },
+    {
+      "check": "S5-parent-tokens-match-tap",
+      "ok": true,
+      "detail": "session prompt/completion 15521/125 over 2 step(s); tap server_terminal 15521/125 over 2 call(s), 0 without a server prompt count"
+    },
+    {
+      "check": "S5-child-tokens-match-tap",
+      "ok": true,
+      "detail": "session prompt/completion 12557/46 over 2 step(s); tap server_terminal 12557/46 over 2 call(s), 0 without a server prompt count"
+    },
+    {
+      "check": "S4-config-lint-subagents",
+      "ok": true,
+      "detail": "PASS /mnt/raid0/llm/tmp/hs19a-20260927/evidence/opencode.jsonc + /workspace/harness/opencode-plugin/config/opencode.env (profile subagents)"
+    },
+    {
+      "check": "S6-session-log-link",
+      "ok": true,
+      "detail": "1 session_created/harness_subagent_link row(s) linking ses_f1f6641d4ffebRIg7LQh7aAegL -> ses_f1f6698d9ffe5Vn20UYRZ2jQK1 in /mnt/raid0/llm/epyc-orchestrator/logs/progress; depth 1, name 'general'"
+    },
+    {
+      "check": "T1-answer-correct",
+      "ok": true,
+      "detail": "final answer 'CODENAME=amber-heron-47'; expected codename amber-heron-47"
+    },
+    {
+      "check": "T2-repo-unmodified",
+      "ok": true,
+      "detail": "clean"
+    },
+    {
+      "check": "run-no-error-events",
+      "ok": true,
+      "detail": "0 error event(s)"
+    },
+    {
+      "check": "run-exit-zero",
+      "ok": true,
+      "detail": "opencode run exited 0"
+    },
+    {
+      "check": "opencode-version-pinned",
+      "ok": true,
+      "detail": "1.18.31"
+    },
+    {
+      "check": "sc86-belief-capture",
+      "ok": true,
+      "detail": "written: /mnt/raid0/llm/tmp/hs19a-20260927/evidence/opencode_shell_run.beliefs.jsonl"
+    }
+  ],
+  "token_counts": {
+    "input_tokens": 28078,
+    "input_tokens_source": "tap_server_terminal",
+    "cached_prompt_tokens": 14036,
+    "cached_prompt_tokens_source": "opencode_session",
+    "per_session": {
+      "parent": {
+        "session_prompt_tokens": 15521,
+        "session_completion_tokens": 125,
+        "cached_prompt_tokens": 7778,
+        "cached_prompt_tokens_source": "opencode_session",
+        "tap": {
+          "calls": 2,
+          "measured_calls": 2,
+          "prompt_tokens": 15521,
+          "completion_tokens": 125
+        },
+        "input_tokens": 15521,
+        "input_tokens_source": "tap_server_terminal"
+      },
+      "child": {
+        "session_prompt_tokens": 12557,
+        "session_completion_tokens": 46,
+        "cached_prompt_tokens": 6258,
+        "cached_prompt_tokens_source": "opencode_session",
+        "tap": {
+          "calls": 2,
+          "measured_calls": 2,
+          "prompt_tokens": 12557,
+          "completion_tokens": 46
+        },
+        "input_tokens": 12557,
+        "input_tokens_source": "tap_server_terminal"
+      }
+    }
+  },
+  "belief_capture": {
+    "status": "written",
+    "path": "/mnt/raid0/llm/tmp/hs19a-20260927/evidence/opencode_shell_run.beliefs.jsonl"
+  },
+  "note": "The pass/fail verdict is an acceptance check. The SC86 belief rows are Judged/Located observations until SC86b codifies a shell-run protocol."
+}

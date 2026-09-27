@@ -235,7 +235,7 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
     - [x] **HS-19a.5 — acceptance runner, prepared (not run).** ✅ 2026-09-27 — `scripts/harness/hs19a_acceptance.py`
       (`plan` / `prepare` / `verify`, offline tests in `tests/harness/test_hs19a_acceptance.py`), with the SC86
       belief write-side hook as in P0.4.
-    - [ ] **HS-19a.6 — live run (inference; the main session runs it in a coordinated window).** Preconditions:
+    - [x] **HS-19a.6 — live run (inference; the main session runs it in a coordinated window).** Preconditions:
       orch `f58db8be` or later deployed by an API reload, with `v1_subagent_link` on (runtime-flags overlay or
       `ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1`). Then, from `/workspace` after the root lane lands (run.sh bakes in the checkout's
       paths), `python3 scripts/harness/hs19a_acceptance.py prepare --out /mnt/raid0/llm/tmp/hs19a-<date>`, run
@@ -251,6 +251,7 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
     run today only when a request lists targets, which in practice means AutoKernel requests only. Decide the trigger
     (a typed advisor, request shape, or retrieval miss), the budget, and how scout results reach the REPL hierarchy.
     Coordinate with INF-78 (OAB-8 scouts) and UFH-12 REPL-EMB-5.1 (the SEARCH primitive); do not fork either.
+      ✅ 2026-09-27 — PASS 18/18 (run ~02:05Z in the AutoKernel CPU window; API reloaded with v1_subagent_link on, orch 86b412ff). Frontdoor DID call `task`: one `general` child (depth 1) answered `CODENAME=amber-heron-47`; parent + child keyed in the tap, child served by normal selection (frontdoor), no x_force_*, one logical model, A5 token parity per session (15521/125 and 12557/46). S6 first failed because ProgressLogger buffered 10 rows per worker; fixed (orch 9d711b32: log_durable + flush race fix; root 82e36e4c: bounded poll) and re-verified offline after the next API reload flushed the row. Evidence: artifacts/harness/hs19a-20260927/.
 
 
 **Standing rule.** The orchestrator stays the sole caller of models; no orchestrator feature may depend on MCP sampling (deprecated in protocol 2026-07-28, earliest removal in the first revision released on or after 2027-07-28; never enabled by pinned OpenCode; and OpenCode's only provider is the orchestrator, so "borrowing the harness's model" loops back to us). [intake-1791#0, intake-1791#4]
