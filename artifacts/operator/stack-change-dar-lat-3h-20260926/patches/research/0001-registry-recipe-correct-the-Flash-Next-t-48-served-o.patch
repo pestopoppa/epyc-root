@@ -2,35 +2,38 @@ From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
 Date: Sat, 26 Sep 2026 23:33:14 +0000
 Subject: [PATCH] registry+recipe: correct the Flash-Next "-t 48 served
- optimum" claim; recipe.env parity (DAR-LAT-3h, PROPOSED)
+ optimum" claim; serving env = FUSED_DECODE_OFF only (DAR-LAT-3h v2, PROPOSED)
 
-Applies in every outcome of the DAR-LAT-3h gate.
+Applies in every outcome of DAR-LAT-3h gate G1 except INVALID-PREMISE and
+INCONCLUSIVE. It is the T48 outcome as-is. Amended after the operator's
+2026-09-26 split, which followed a GGML_* env audit.
 
 - scripts/lib/qwen38_flash_next_recipe.py: THREADS stays 48 (the champion
-  measurement recipe), but its comment no longer claims a served optimum over
-  96. No served 48-vs-96 comparison existed; the 48 rests on pre-BIOS bare
-  llama-bench (D4/C5 2026-09-02, tg128 t48 10.09 vs t96 9.67, one window).
-- model_registry.yaml server_mode.architect_critic.recipe: same correction
-  on `threads`; explains why live ran -t 96 (C3's orchestrator half never
-  landed); names gate G1 as the deciding measurement.
-- recipe.env gains GGML_FUSED_DECODE_OFF=1, which the module's
-  CHAMPION_GGML_ENV and optimal_cpu_serving.env already carry.
-- optimal_cpu_serving.threads comment: same correction.
+  measurement recipe). Its comment no longer claims a served optimum over 96:
+  no served 48-vs-96 comparison existed, and the 48 rests on pre-BIOS bare
+  llama-bench (D4/C5, tg128 t48 10.09 vs t96 9.67).
+- server_mode.architect_critic.recipe: the same correction on `threads`.
+- recipe.env (the SERVING env the launcher emits) = GGML_FUSED_DECODE_OFF=1
+  only. It rides along, inert under MTP.
+- New recipe.env_not_serving holds GGML_NOHUGEPAGE_PROCESS=1 (its own G1
+  factor; conflicting CHAMP-2 vs CHAMPION-3 evidence) and GGML_FA_SPLIT_KV=0
+  (correctness-affecting, a long-context perf risk at n_ctx 262144; task
+  DAR-LAT-3i). Nothing reads it.
 
-Recipe module tests: 55 passed.
+Supersedes cf2476b0 on lane/dar-lat-3h-20260926.
 
 Unsigned. Part of the DAR-LAT-3h stack-change package
-(epyc-root artifacts/operator/stack-change-dar-lat-3h-20260926/).
+(epyc-root, operator artifact dir stack-change-dar-lat-3h-20260926).
 
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
 ---
- orchestration/model_registry.yaml       | 19 +++++++++++++++----
- scripts/lib/qwen38_flash_next_recipe.py | 10 +++++++++-
- 2 files changed, 24 insertions(+), 5 deletions(-)
+ orchestration/model_registry.yaml       | 34 +++++++++++++++++++------
+ scripts/lib/qwen38_flash_next_recipe.py | 10 +++++++-
+ 2 files changed, 35 insertions(+), 9 deletions(-)
 
 diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
-index c0bfe097..5146e6b3 100644
+index c0bfe097..3e554df0 100644
 --- a/orchestration/model_registry.yaml
 +++ b/orchestration/model_registry.yaml
 @@ -1805,9 +1805,15 @@ server_mode:
@@ -52,23 +55,34 @@ index c0bfe097..5146e6b3 100644
        cpu_shape: NUMA_FULL_T48
        # ── C3 RESOLVED (operator ruling: "add the needed cpu shape") ─────────────────
        # An earlier draft recorded -t 48 on a 0-95 cpuset as an UNRESOLVED CONFLICT with
-@@ -1837,10 +1843,15 @@ server_mode:
+@@ -1837,10 +1843,22 @@ server_mode:
        no_mmap: true
        flash_attn: on
        env:
-+        # 2026-09-26 (DAR-LAT-3h): declared here since 2026-09-22 and NEVER READ by the launcher,
-+        # so the live :8074 carried none of it. epyc-orchestrator stack_env._ROLE_ENV_BLOCKS
-+        # ["architect_critic"] now emits it, and test_stack_env_recipe_parity.py diffs the two.
-         GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2, ADOPTED 2026-09-08 (operator-ruled).
-                                        # UNIT = SESSION, set AT LAUNCH. cpu-decode ONLY —
-                                        # R23-58 measured a bounded null on the GPU surface.
-         GGML_FA_SPLIT_KV: "0"          # BE-2: makes 1-row decode and n-row verify row-exact
-+        GGML_FUSED_DECODE_OFF: "1"     # added 2026-09-26: in the module's CHAMPION_GGML_ENV and
-+                                       # optimal_cpu_serving.env, missing from this pointer
+-        GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2, ADOPTED 2026-09-08 (operator-ruled).
+-                                       # UNIT = SESSION, set AT LAUNCH. cpu-decode ONLY —
+-                                       # R23-58 measured a bounded null on the GPU surface.
+-        GGML_FA_SPLIT_KV: "0"          # BE-2: makes 1-row decode and n-row verify row-exact
++        # 2026-09-26 (DAR-LAT-3h, operator split after the GGML_* env audit): the SERVING env this
++        # recipe asks the launcher to emit. epyc-orchestrator stack_env._ROLE_ENV_BLOCKS
++        # ["architect_critic"] carries it, test_stack_env_recipe_parity.py diffs the two, and the
++        # pipeline's declared_env_attestation step checks the live /proc/<pid>/environ.
++        GGML_FUSED_DECODE_OFF: "1"     # the recipe's graph path. Inert while MTP serves (the fused
++                                       # path needs !embeddings_nextn); G1 arm T96-vs-L checks that.
++      # Knobs of the champion MEASUREMENT recipe that are NOT serving env (yet). Not read by anything.
++      env_not_serving:
++        GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2 THP shim (+5.23%, lower launch sd) vs v10 common.cpp
++                                       # CHAMPION-3 (+1.48% with it OFF): conflicting, neither at the
++                                       # served shape on v10. Own factor in DAR-LAT-3h gate G1; moves
++                                       # into `env` only on a G1 outcome ending in N.
++        GGML_FA_SPLIT_KV: "0"          # BE-2 row-exact reduction order. Correctness-affecting, and a
++                                       # perf risk at long context (single-row decode loses KV-axis
++                                       # parallelism) while the critic serves n_ctx 262144. Task
++                                       # DAR-LAT-3i: long-context decode arm + numerics/quality check.
        measured_at_context: 8192        # ⚠ CONTEXT = 8192 in the recipe. serving_shape above
                                         # declares 262144 — a 32x extrapolation of a shape that
                                         # was never served. See .md C4.
-@@ -8649,7 +8660,7 @@ roles:
+@@ -8649,7 +8667,7 @@ roles:
          recipe_revision: 2026-09-14
          kernel: "ef81196d5 / build 10241 (llama.cpp-experimental champion) — NOT production v10"
          prefix: "taskset -c 0-95 numactl --interleave=all"

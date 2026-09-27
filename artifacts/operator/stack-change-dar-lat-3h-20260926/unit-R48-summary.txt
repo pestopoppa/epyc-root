@@ -1,2 +1,0 @@
-FAILED tests/unit/test_scheduling_contention.py::test_real_matrix_against_live_numa_config
-= 1 failed, 15347 passed, 57 skipped, 6 xfailed, 37 warnings in 260.98s (0:04:20) =

@@ -1,0 +1,2 @@
+failed
+architect_critic:8074 pid 2030855 (architect_critic): declared GGML_NUMA_REPACK_INTERLEAVE='0' but live has it MISSING

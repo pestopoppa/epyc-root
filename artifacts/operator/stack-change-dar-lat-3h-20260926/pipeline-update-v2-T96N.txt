@@ -3,17 +3,17 @@ numa_mode: ok
 shared_with_derivations: ok
   detail: port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all recompute from server_mode.*.shared_with
 lean_registry: ok
-  detail: recompiled from master: /mnt/raid0/llm/worktrees/dar-lat-3h-research-t96-20260926/orchestration/model_registry.yaml -> /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/orchestration/model_registry.yaml
+  detail: recompiled from master: /mnt/raid0/llm/worktrees/dar-lat-3h-v2-research-t96n-20260927/orchestration/model_registry.yaml -> /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/orchestration/model_registry.yaml
   detail: 16 roles projected through the active manifest
 descriptors: updated
-  detail: wrote 4 descriptor(s): /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/orchestration/model_descriptors.yaml
+  detail: wrote 4 descriptor(s): /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/orchestration/model_descriptors.yaml
 stack_priors: updated
-  detail: wrote 16 role prior(s): /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/orchestration/derived/stack_priors.yaml
+  detail: wrote 16 role prior(s): /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/orchestration/derived/stack_priors.yaml
   detail: numa mode source: explicit:--numa-mode
 procedure_enums: updated
-  detail: synced: /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/orchestration/procedure.schema.json
+  detail: synced: /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/orchestration/procedure.schema.json
 operator_summary: updated
-  detail: wrote generated operator summary: /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-R96/docs/generated/current_stack_summary.md
+  detail: wrote generated operator summary: /mnt/raid0/llm/worktrees/dar-lat-3h-v2-orch-20260927/docs/generated/current_stack_summary.md
 guard: ok
 guard_all_surfaces: warnings
   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-role coverage or migrate fixture to stack priors]
@@ -54,6 +54,8 @@ runtime_attestation: failed
   error: live process drift: known stack port 9000 has unmanaged listener pid(s) 2005824
   error: live process drift: known stack port 9001 has unmanaged listener pid(s) 2024574
   error: live process drift: known stack port 9002 has unmanaged listener pid(s) 2006079
+declared_env_attestation: skipped
+  warn: COULD-NOT-CHECK: no managed live process in this tree's state file (a lane worktree has none); this is not a pass
 simulated_fixtures: reference
   detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
 promotion_gate: reference

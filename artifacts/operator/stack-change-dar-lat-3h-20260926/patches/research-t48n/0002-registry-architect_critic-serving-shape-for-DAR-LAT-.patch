@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Sun, 27 Sep 2026 00:06:21 +0000
+Subject: [PATCH] registry: architect_critic serving shape for DAR-LAT-3h G1
+ outcome T48N ONLY (v2, PROPOSED)
+
+Merge ONLY if the signed gate G1 verdict.json names outcome T48N. Branches from
+cbaeee2d (lane/dar-lat-3h-v2-20260927), which is the T48 outcome as-is.
+
+- recipe.env += GGML_NOHUGEPAGE_PROCESS=1 (the THP shim, adopted by G1).
+
+Unsigned. Part of the DAR-LAT-3h stack-change package
+(epyc-root, operator artifact dir stack-change-dar-lat-3h-20260926).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ orchestration/model_registry.yaml | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 3e554df0..2d7c0298 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1849,12 +1849,11 @@ server_mode:
+         # pipeline's declared_env_attestation step checks the live /proc/<pid>/environ.
+         GGML_FUSED_DECODE_OFF: "1"     # the recipe's graph path. Inert while MTP serves (the fused
+                                        # path needs !embeddings_nextn); G1 arm T96-vs-L checks that.
++        GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2 THP shim. ADOPTED for serving by DAR-LAT-3h gate G1
++                                       # (outcome ending in N: >= 2% wall-time gain at the chosen -t,
++                                       # THP_enabled 0 verified per launch). The G1 receipt is the citation.
+       # Knobs of the champion MEASUREMENT recipe that are NOT serving env (yet). Not read by anything.
+       env_not_serving:
+-        GGML_NOHUGEPAGE_PROCESS: "1"   # CHAMP-2 THP shim (+5.23%, lower launch sd) vs v10 common.cpp
+-                                       # CHAMPION-3 (+1.48% with it OFF): conflicting, neither at the
+-                                       # served shape on v10. Own factor in DAR-LAT-3h gate G1; moves
+-                                       # into `env` only on a G1 outcome ending in N.
+         GGML_FA_SPLIT_KV: "0"          # BE-2 row-exact reduction order. Correctness-affecting, and a
+                                        # perf risk at long context (single-row decode loses KV-axis
+                                        # parallelism) while the critic serves n_ctx 262144. Task
