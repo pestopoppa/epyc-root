@@ -603,6 +603,15 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   shape (a `planner` agent with fan-out *guidance*, the hidden-`scout` description, a prompt that never names `task`) both
   frontdoor and 27B-think self-served 0/3. DS41-C20c's non-delegation was SETUP (prompt shape), not the model. If the AK
   seat should fan out, instruct it explicitly (or keep fan-out orchestrator-owned per OAB-8 / HS-19c, the operator ruling).
+- [ ] **OAB-34 — actor calls end `output_capped_empty` at the 16384-token output cap.** Reported by ak-ds41-main on
+  2026-09-27 for the planner (planner and critic output are capped at 16384 since the `ak-author-medium` lane). The loop
+  record read during the wrap-up shows the same class on the a1-medium author in run 10k `batch-000000` ("3 step(s) hit
+  the 16384-token output cap", report missing, uncharged). A capped step with no final report wastes the whole call.
+  Measure the cap-hit rate per role from `actor_metrics` (`output_capped_empty`, `output_capped_steps`). Then pick
+  one: raise the per-step cap for the affected role within the context budget; instruct the seat to emit its report
+  before long reasoning; or salvage the last complete JSON block. Acceptance: the cap-hit rate per role is recorded
+  here, and the chosen fix drives `output_capped_empty` to ~0 over the next batches without raising
+  `budget_exhausted`. Tie the per-role budget to OAB-32.
 - [ ] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** Add a scripted
   OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
   config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.

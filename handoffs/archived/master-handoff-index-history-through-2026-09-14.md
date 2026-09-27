@@ -25,3 +25,15 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 ## Resolved 2026-09-26
 
 - **OP-61** — DECIDED 2026-09-26 at the research-intake Stage-3 plan approval (intake/orch-prior-art-20260926): KTransformers runtime DECLINED for now; MI210 port investigation OPEN. Implementation: [`fable5-window2-findings-02-heterogeneous-gpu.md`](../active/fable5-window2-findings-02-heterogeneous-gpu.md) R-A10 → F7, F6. (OP-61 never reached the queue, so there is no verbatim row to preserve.)
+
+## Resolved 2026-09-23 (row removed at the operator-invoked wrap-up of 2026-09-27, ak-ds41-main)
+
+- **OP-53** — Resolved 2026-09-23 without a pid allowlist: the competing-inference gate was rewritten to ask whether an
+  unowned INFERENCE_LIKE process did WORK during the measured span (cumulative `utime+stime` brackets, allowance pinned
+  ~100x above idle), not whether one exists. Research `a46c9d3d`; DS41-C2b-gate ✅ 2026-09-23 in
+  [`../completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md`](../completed/deepseek-v41-flash-evaluation-completed-through-2026-09-24.md).
+  The DS41 campaign has run on it since (runs 10-10k). The queue row survived four days after its resolution.
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-53 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](../active/deepseek-v41-flash-evaluation.md) | 2026-09-23 |

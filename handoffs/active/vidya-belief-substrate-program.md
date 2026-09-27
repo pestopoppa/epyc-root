@@ -2997,4 +2997,11 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   - Cold/partial-cache launches project with their label and never merge into hot C.
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
 - [ ] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
+- [ ] **VB-DS41-C57 — project the DS41-C57 barrier-sleep probe records (INF-77, 2026-09-27).** Source row in
+  `scripts/vidya/adapters/README.md`. Raw per-arm artifacts under `/mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/`
+  (`probe*/NN-ARM/`, `probe_table*.tsv`, `gomp/`). One locator per launch × arm; carry binary digest (anchor-gen-001-prof,
+  anchor-gen-001, anchor-gen-002 `c0ef39613`), argv/env hash (OMP_PLACES, load threads), vcs and tok/s per request.
+  OBSERVATION grade (1-2 launches per arm); never merge into the loop's matched-floor rows. The follow-on DS41-C59
+  runtime-arm compare rides the loop's evaluation-event path and needs no new adapter. Copy the raw dir into a
+  durable location first — `/mnt/raid0/llm/tmp` is scratch.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.

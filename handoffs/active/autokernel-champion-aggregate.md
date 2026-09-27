@@ -729,6 +729,18 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         through every consolidation. Origin: INC-20260925. The operator ratifies; no session edits `CLAUDE.md` for
         this.
 
+  - [ ] **V6R-4c — the fast loader's AUTO reader team must equal the compute thread count.** Found by INF-77 DS41-C57
+        (2026-09-27, `/mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/`). `llama-model-loader.cpp:1689` sizes the auto pread
+        team as `min(32, max_threads)`. Under GNU libgomp with `OMP_PLACES=cores` over 96 places, a 32-thread team
+        ahead of the 48-thread compute team leaves libgomp throttled, and every decode barrier sleeps: about -11% tok/s
+        and up to 13% request spread on DS41. The isolated long-wait micro-bench reproduces it (`gomp/results3.txt`).
+        Fix on an experimental branch from the current champion tip, in the `90c12df42` lineage: default the auto team to
+        `n_threads` (the compute `-t`), keeping `--load-threads` / `LLAMA_ARG_LOAD_THREADS` as the override. Acceptance:
+        bit-exact load (tokens plus KL on logits, as for V6R-4); load time within noise of today's auto setting; and DS41
+        under `OMP_PLACES=cores` spins (median OMP voluntary switches ~0) with no `--load-threads` flag. Check whether
+        production v10 carries the fast loader; production resolves libomp with `KMP_BLOCKTIME=10`, so it is expected to
+        be unaffected, but that is unmeasured. Rides V6R-4a into v11. Until it lands, DS41 carries the recipe arm (DS41-C59).
+
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 
 | branch @ commit | disposition | why | condition if ever folded |

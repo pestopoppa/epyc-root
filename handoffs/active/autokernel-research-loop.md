@@ -5574,6 +5574,17 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
 - [x] **AK-MMQ-H10 — Remove the J=64 spill tax.** ✅ 2026-09-27 — **NEGATIVE, rejected.** Candidate `experimental/mmq-jcap-20260927` (`36e83c0f2`, per-type J cap, static gate PASS: hot-loop spill reloads 431→0). GPU window 02:06-02:46Z: correctness 2350/2350 both arms; llama-bench Qwen3.8-27B Q8_0 (1 ABAB round, `-ub 2048`) at the affected shapes p=64 **-12.6%**, p=112 **-9.1%**, p=128 **-9.9%**; null controls p=5/48/96/256 within ±1.5%. Removing the spills does not pay for the extra tiles (J=32x2 / J=48x3 re-read src0 1.5-2x). Keep J=64; attack register pressure instead (AK-MMQ-H3/H7, INF03-REGAUDIT-3 v9→v10 regression). Raw: `/mnt/raid0/llm/tmp/mmq-jcap-ab-20260927T020637Z/`. Window-script defects found: kernel-perf CSV carried no timing columns; the MoE arm aborted on `--autokernel-harden` output invariance (production arm A itself is non-deterministic on MoE); `verify_ggml_linkage.sh` compares unresolved paths (false FAIL on the symlinked kernel store). For types that spill at J=64 (Q8_0, Q5_0, MXFP4, IQ4_*,
   Q2_K), either select J=48 at 49-64 columns or restructure vec_dot to stay under 256 VGPR. Falsifier: spills unchanged,
   or the extra column tile costs more than the reloads saved.
+  - [ ] **AK-MMQ-H10a — the J-cap window's kernel-perf CSV carries no timing columns.** The GPU window script (research
+    `3d6c4187` / `6b8feb9e`) wrote a kernel-perf CSV without per-kernel time, so the ABAB verdict had to come from
+    llama-bench alone. Emit per-kernel time (mean and n) per arm, so a kernel-level delta can be read beside the
+    end-to-end one. Acceptance: a re-run of the window's correctness+timing phases on the incumbent yields a CSV with
+    timing columns for the MMQ kernels.
+  - [ ] **AK-MMQ-H10b — the MoE `--autokernel-harden` arm is non-deterministic on production.** The MoE arm aborted on
+    the harden output-invariance check, and production arm A itself failed invariance on MoE. So the check cannot
+    tell a candidate defect from baseline MoE non-determinism. Establish whether production MoE output varies across
+    harden seeds (routing ties, atomics, split-K), then either pin the source of variance for the harden arm or scope
+    the invariance check to dense shapes with a recorded reason. Raw: `/mnt/raid0/llm/tmp/mmq-jcap-ab-20260927T020637Z/`.
+  - The third defect, `verify_ggml_linkage.sh` comparing unresolved paths, is filed as NIB2-85 (it affects every caller).
 - [ ] **AK-MMQ-H5 — nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128;
   occupancy 2 is infeasible at I=128 because the x tile alone is 38,912 B). Each cell sits on one side of the ROCm 6.2
   AGPR rule: 256-thread arms get AGPR form with a 512 budget and copies; the rule changes on ROCm 7.14+. Record agpr,

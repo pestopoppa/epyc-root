@@ -11,7 +11,16 @@
   compounded. The anchor is now anchor-gen-001, `cafb59c3bf67`. The keep is unconfirmed at serving (DS41-C47).
 - DS41-C45 (continue past a keep) and DS41-C49 (carry-forward) landed; run 10j relaunched ~19:10Z on research `846bef21`.
 - The epoch clause is ratified as P-AK-SEARCH-1-A3.1 (DS41-C40); the code switch (DS41-C44) landed in `136ad3d0`.
-- **Next (start here)**: run 10j on anchor-gen-001 — DS41-C47 (serving-gate confirm of keep 1), DS41-C51 (NRI-1 numa_maps falsifier), DS41-C46 (gcc `-j64` reproducibility); then C50, C48, C42.
+- **Second keep 2026-09-27 08:11Z on run 10k**: `akm-ds41-dense-q8-tb-prefetch`, +3.440% paired. The anchor is now
+  anchor-gen-002, `c0ef3961` (pushed to the fork). Compounded bench vs the champion of record reads +7.111% with 2 keeps
+  (it read +7.304% with 1), so host noise dominates the compounded figure. The serving gate's threshold trigger is armed
+  (`fires_next: true` in `store/loop-status.json`). Q4_K X4_T (`akm-q4k-x4t-avx512`) was retired at 3/3 author attempts.
+- **DS41-C57 resolved 2026-09-27**: the CPU-0 theory was refuted. The real ~+11% tax is sleeping libgomp barriers,
+  caused by the fast loader's auto 32-thread reader team running before the 48-thread compute team under 96
+  `OMP_PLACES=cores` places. The fix is a declared runtime arm (DS41-C59) plus a loader-default code fix (V6R-4c in
+  `autokernel-champion-aggregate.md`).
+- **Next (start here)**: DS41-C59 (declared runtime-arm swap `--load-threads 48` at the next DS41 boundary) and
+  DS41-C47 (serving gate on the 2-keep chain); then DS41-C51, DS41-C46, C50, C48, and C42's durable trigger.
 - Bring-up retrospective: `docs/design/autokernel-local-actor-bringup-retro-20260926.md`.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
@@ -320,6 +329,9 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     - (c) keep 400 and reclaim disk.
   - Recommendation: (b), because it cannot go stale as the disk fills.
   - Acceptance: a relaunch with no override passes on today's disk.
+  - 2026-09-27: run 10k refused on disk (`state-run10k-refused-disk`); the trigger was lowered **by hand to 300 GiB**
+    for the relaunch. On operator approval, 24 of this session's worktrees were removed (330 → 381 GiB free). Audit:
+    `/mnt/raid0/llm/tmp/disk-leak-audit-20260927.md`. The hand override is not the fix; (b) is still open.
 - [ ] DS41-C43 — **Re-base the C6 ladder arithmetic on the 2026-09-26 readbw.** C6's "~165 GB/s gemv-pattern
   ceiling" comes from INF-70 C0 (2026-09-02). That predates the 2026-09-21 BIOS change.
   - On the full screen, today's gemv-2560 is 377.5 GB/s at 48 threads and 475.9 at 96.
@@ -349,6 +361,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     instrument excursion"). That is four times the keep's own delta, on the same code.
   - Until the serving gate fires (13.81% compounded, or every 4 keeps), quote the keep as "+4.535% paired A/B,
     unconfirmed at serving".
+  - 2026-09-27: keep 2 (`akm-ds41-dense-q8-tb-prefetch`, +3.440% paired, anchor-gen-002 `c0ef3961`) joined the chain.
+    The compounded bench fell from +7.304% (1 keep) to +7.111% (2 keeps), which is noise, not a regression. The
+    loop's status reads fire threshold 3.885% with `fires_next: true`. Quote both keeps as paired A/B, unconfirmed
+    at serving. The DS41-C57 barrier-sleep regime (up to 13% request spread) may also explain the +19.4% A/A excursion;
+    re-read the A/A after DS41-C59 lands.
   - Acceptance:
     - the serving gate's verdict on the chain containing this keep is recorded here;
     - the A/A excursion is explained (host drift, launch variance, or instrument) or bounded by a repeat A/A.
@@ -375,23 +392,33 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   Stage-2 dives landed as intake-1822/1823 (renumbered from 1783/1784); the dives did not change the CPU set (not
   ladder-derived; stands on its own merit); add a static spill check of the gemm4xN disassembly before timing any
   register-raising variant (intake-1823#record).
-- [ ] DS41-C53 — **Correctness oracle must exercise non-constant per-block scales.** Verify the AK kernel-mutation
+  - Loop tries so far: B-side software prefetch in `gemm4xN` kept 2026-09-27 as `akm-ds41-dense-q8-tb-prefetch`
+    (+3.440% paired, anchor-gen-002). The GGML_IQK_Q8_0 runtime arm has not been proposed yet.
+- [x] DS41-C53 — **Correctness oracle must exercise non-constant per-block scales.** Verify the AK kernel-mutation
   oracle's fixtures use varying Q8_0 `d` and Q4_K `d/dmin`/sub-scales. intake-1825 §5.3 reports a scale-layout bug on
   gfx90a that constant-scale fixtures hid (intake-1825#record). Read-only check; fix the fixture if constant.
-- [ ] DS41-C54 — **Observation first: `attn_wo_a` grouped projection at nt=1.** From an existing DS41 profile, read
+  ✅ 2026-09-26 — research `f2f6d54c`: the CPU quant oracle fixture now varies every per-block scale.
+- [x] DS41-C54 — **Observation first: `attn_wo_a` grouped projection at nt=1.** From an existing DS41 profile, read
   the `attn_wo_a` node share and path: a 3D batched Q8_0 `ggml_mul_mat` over groups with a permuted src1,
   `src/models/deepseek41.cpp:1219-1224`. If material, admit a dedicated M=1 grouped-GEMV route to the AK scope. The GPU
   analogue in intake-1825 §8.3 is self-reported; CPU transfer is unproven.
+  ✅ 2026-09-27 — **NEGATIVE** (`store/inbox/51-ds41-attn-wo-a-grouped-projection-20260926.md`). The share clears 2%
+  but none of it is grouped-specific. At serving N=3 the node already runs the shared `gemm4xN<3>` after the Q8_0
+  src1 conversion makes it contiguous. A dedicated M=1 grouped GEMV targets nt=1, which serving does not run; its
+  only specific nt=1 cost is one extra barrier (~0.15%). No route admitted.
 - [x] DS41-C55 — **ak-check passed vacuously after a keep.** ✅ 2026-09-26 — research `a17284a2`. With the anchor build
   at `store/anchor-gen-001` (outside the source tree), `anchor_root_of()`'s `.git` walk returned the store, every changed
   TU read "no compile command", and ak-check returned NOTHING/exit 0: authors got no feedback and the best-of winner check
   passed a Q4_K patch that critic2 proved wrong (run 10j, ~3.9 h round). Root now from CMakeCache `CMAKE_HOME_DIRECTORY`;
   an unmappable changed source is status `error` (exit 2), never a pass. Applied live (the shim runs ak_check.py by path).
-- [ ] DS41-C56 — **Medium-author wall cost: 2 h timeout + uncharged retry.** Run 10j round 1: a1-medium timed out at 7200 s,
+- [x] DS41-C56 — **Medium-author wall cost: 2 h timeout + uncharged retry.** Run 10j round 1: a1-medium timed out at 7200 s,
   was retried as a harness failure, and spent another 6667 s (total ~3.9 h) while a0-off gave up at 61 min. Decide a
   per-member wall budget for best-of (e.g. cap medium at ~60-75 min, or stop retrying a timed-out member when the other
   member already finished) and measure its effect on panel yield vs wall.
-- [ ] DS41-C57 — **Host contention on CPU 0 inflates thread-0-bound nodes (inferred).** The hc RMS_NORM node is ~42 µs wall
+  ✅ 2026-09-27 — research `164cfb0e` (`13ad4317`, operator 2026-09-27): best-of author wall budgets 45/75/90 min, no
+  in-round retry of a timed-out member, early cancel once the panel is decided. The yield-vs-wall effect is read from
+  the loop's own actor metrics as batches accrue; it is not a separate experiment.
+- [x] DS41-C57 — **Host contention on CPU 0 inflates thread-0-bound nodes (inferred).** The hc RMS_NORM node is ~42 µs wall
   but only 12-15 µs of its own work (chain ~10 µs, cold/cross-NUMA input +1-4 µs, barrier ~2.3 µs); ~25 µs is threads 0-2 slow
   or late. DS41's OMP `spread` puts threads 0/1/2 on CPUs 0/2/4; CPU 0 carries 14.6% lifetime sys time (vs 1.8% on 2/4) and
   ~3x the interrupts, and co-resident production CPU llama-servers pin their main thread to CPU 0 plus one compute thread per
@@ -399,10 +426,63 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   `GGML_CPU_PROF_NNODES_EQ=5966 GGML_CPU_PROF_THREADS=1` with `/proc/stat` user/sys/irq sampled on CPUs 0/2/4. If confirmed,
   A/B DS41 with `OMP_PLACES` starting at CPU 2 (spread kept) — a recipe/epoch change needing operator sign-off — and review
   production CPU-server pinning. Evidence: `/mnt/raid0/llm/tmp/normsplit-route-20260927/bench/`, note draft 53.
+  ✅ 2026-09-27 — **the CPU-0 theory is REFUTED; root cause found.** Findings and decision packages:
+  `/mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/DS41-C57-findings-and-decision-packages.md` (21 launches in two CPU windows,
+  under the CPU region claim, every PID verified dead).
+  - The ~10 µs of dead time per hc node is libgomp barrier **sleep**: 60-95k voluntary switches per OMP thread.
+  - Cause: the fast loader's AUTO reader team (`llama-model-loader.cpp:1689`, `min(32, max)`) runs 32 threads before the
+    48-thread compute team under `OMP_PLACES=cores` (96 places), which leaves libgomp throttled for the process.
+    Arms with or without CPU 0 sleep alike when there are 96 places. `--load-threads 48` spins, and so does a
+    48-place list.
+  - Spinning arms: 22.4-22.6 tok/s, request spread ≤0.3%. Sleeping arms: 19.6-20.6 tok/s, spread up to 13%. That is
+    about **+11%**. `GGML_REPACK_THREADS=48` and `OMP_NUM_THREADS=48` still sleep.
+  - CPU 0 itself costs ≤0.2% (run-queue wait). Production runs LLVM libomp with `KMP_BLOCKTIME=10`, so this libgomp
+    defect is not expected there; that is unmeasured.
+  - Follow-ups: DS41-C59 (runtime arm), V6R-4c (loader default), DS41-C60 (on-CPU hc-norm gap), DS41-C61 (production
+    root-thread sampling), VB-DS41-C57 (vidya).
+- [ ] DS41-C59 — **Declared runtime-arm swap at the next DS41 boundary: `--load-threads 48`.** The DS41-C57 fix, taken
+  through the loop's own keep-grade runtime-arm path (research `4d676163`, `--runtime-arms`, `--runtime-arm-evidence
+  keep_grade`), as ratified in P-AK-SEARCH-1-A4 (root `101ed1b0`: bit-exact runtime recipes only, adoption is an epoch
+  boundary).
+  - Primary arm: `--load-threads 48` (`LLAMA_ARG_LOAD_THREADS=48`), with `OMP_PLACES=cores` and everything else unchanged.
+    Measured once (1 launch): 22.59 tok/s, spinning.
+  - Fallback arm A2: `OMP_PLACES={2}:47:2,{1}`. 22.45 tok/s over 2 launches, spinning. It moves every thread off its
+    historical CPU.
+  - Declare both at a batch boundary (no mid-batch relaunch). The matched compare against the current recipe decides.
+  - Acceptance: the adoption receipt (evidence=keep_grade, floor sha, raw samples) is recorded here. The new epoch's
+    floors are recalibrated, and older rows are labelled as the sleeping-barrier regime.
+- [ ] DS41-C60 — **The ~20 µs on-CPU hc-norm gap in serving.** Thread-0 compute on the hc RMS_NORM is 32-33 µs in
+  every C57 arm (spinning or not), against ~12 µs in the isolated micro-bench. Run-queue wait is ≤0.2% and stime ≤2%,
+  so the time is on-CPU work. Candidates: producer spread across CCDs/quadrants and `numactl --interleave=all` placing
+  the input remote. Observation first, from the existing C57 per-node profiles, before any route or recipe change.
+- [ ] DS41-C61 — **Production CPU root-thread sampling (C57 decision package B, P0).** The root threads of :8074 and
+  :8070 are hard-pinned to CPU 0 (:8080's to 0/96), and whisper can land there. Sample the root threads' schedstat
+  run-queue wait under real concurrent traffic in the next production-affecting window; two samples during load. Any
+  placement change goes through `stack-change` and the operator's signature. Proposal P1 (distinct root places) is
+  expected to be worth <0.5%.
 - [x] DS41-C58 — **RMS_NORM within-row split route: built, bound too small.** ✅ 2026-09-27 — research `6b73fce2`
   (`cpu_norm_rowsplit` route, bit-identity + float64 reference, GDB witness incl. the fused variant). Measured: the bit-exact
   split saves ~0.1% (every task re-runs the serial 20480-add chain); a multi-accumulator sum (1-ulp, tolerance route) caps at
   ~0.5-0.6%. Not placed as a hypothesis (note 53 stays DRAFT); the real cost is DS41-C57.
+- [x] DS41-C62 — **`float_tinyblas_plan` route for the hc_mixes F16 GEMM.** ✅ 2026-09-27 — research `29b2b350`
+  (`565d6f3b`; its commit subject says "DS41-C55", a label collision with the ak-check item above). hc_mixes (F16
+  [20480, 24], 80 nodes per verify) ran a 3-thread tile plan with 45 threads idle, 4.6-5.2% of the cycle. The route
+  admits only the class `tinyBLAS::matmul` tile plan (bit-exact for F32/F16/BF16), with a GDB witness and float
+  reference arms. Inbox note `52-ds41-hc-mixes-20260926.md` drives the planner.
+- [x] DS41-C63 — **CPU windows: the loop yields its CPU-region claim during actor phases.** ✅ 2026-09-27 — research
+  `5aadf3a4` (`90dd8201`, operator proposal relayed by workspace-8d). `--cpu-window-yield on` (default) releases the
+  claim while no lane holds the tail and re-acquires it for every tail session and measurement window. The window is
+  published to `/mnt/raid0/llm/autokernel/cpu-window.json` (state, est_close_at, cpus_reserved_by_loop, heartbeat).
+  Used the same day to hand CPU windows to workspace-8d (UFH-12, HS-4, HS-19a).
+- [x] DS41-C64 — **ak-check refuses cores a peer measurement holds.** ✅ 2026-09-27 — research `c85370d4`. Before a
+  compile or op-test, ak-check reads region-lock occupancy read-only. If another role holds its cores, it waits up to
+  `AK_CHECK_PEER_WAIT_S` (600 s), then refuses naming the peer (`peer_wait_s`, `refused_peer` in the metrics).
+- [x] DS41-C65 — **Keep-grade evidence for declared runtime arms.** ✅ 2026-09-27 — research `4d676163`
+  (`--runtime-arm-evidence keep_grade`, the default with `--runtime-arms`). A declared bit-exact arm is measured by
+  `serving.compare` against the current recipe's matched floor; a decisive keep writes the selection artifact and
+  adoption receipt and opens a new runtime-surface epoch. The governing rule is P-AK-SEARCH-1-A4, ratified on operator
+  authorization (root `101ed1b0`). The operator chose to leave as written the older gap where 5-pair keep-grade source
+  keeps sit below the "search-grade requires ALL of" text. DS41-C59 is its first use.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
