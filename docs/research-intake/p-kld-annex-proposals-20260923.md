@@ -14,9 +14,9 @@ intake entry and ledger row it came from, and states the reason. Every source is
 | intake-1508 | HF discussion brandonmusic/GLM-5.3-Flash-tr3-4bpw #1 | Worked example of a KV-cache treatment reported as a weight format |
 | intake-1510 | arXiv 2606.19558 "Displacement Is Not Direction" | Corroborates V6/V8 (KLD gates damage, cannot rank near-baseline quality); authors' own quants in the cohort |
 | intake-1511 | rtx6kpro `models/kimi-k3/distribution-fidelity-1024x2048.md` @2960b922 | Upstream of the V2 `body` estimand; tooling gaps vs V1/V7 |
-| intake-1519 | arXiv 2407.09141 "Accuracy is Not All You Need" | Flips definition and flip floor; its MT-Bench headline is a pairing error (overturned) |
+| intake-1519#record | arXiv 2407.09141 "Accuracy is Not All You Need" | Flips definition and flip floor; its MT-Bench headline is a pairing error (overturned) |
 | intake-1520 | arXiv 2608.11212 (route flips in quantized MoE) | Upstream of V4 wording (rtx6kpro cites it) — **not independent corroboration** |
-| intake-1524 | arXiv 2606.05688 (VSRAQ) | Only published weight-domain route-set agreement measurement (occurrence only) |
+| intake-1524#record | arXiv 2606.05688 (VSRAQ) | Only published weight-domain route-set agreement measurement (occurrence only) |
 
 No proposal conflicts with the staged annex; all are refinements or clarifications. Grouped by annex section:
 

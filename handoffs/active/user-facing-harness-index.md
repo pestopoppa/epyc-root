@@ -13,7 +13,7 @@ whether it moves UFH-13; frozen boxes carry a `❄ FROZEN 2026-09-27` marker in 
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| UFH-13 | thesis experiment (TOP) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | TE-3 freeze manifest; ARCHSWAP amend + sign + apply → TE-reload → TE-pilot → TE-5 run | UFH-01, RTG-30 |
+| UFH-13 | thesis experiment (TOP) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | OP-68 sign ARCHSWAP → ARCHSWAP-2 merge + A-3 fix → ARCHSWAP-3 reload (= TE-reload) → TE-3 freeze → TE-pilot → TE-5 | RTG-30 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-4 P0.4b/c — republish the Harness Card (HS-7) and freeze OpenCode at tag v1.18.31=014614d3; then P0-split | RTG-09 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |

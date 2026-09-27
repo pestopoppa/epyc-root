@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-68 | **ARCHSWAP-20260927 signature (terminal).** The architect role swap (Flash-Next → `architect_general` for escalation; the 27B → `architect_critic`, keeping review and plan decomposition) was approved in chat as amended (A-1..A-5); `--validate-only` returns VALID. The auto-mode classifier blocks agent execution under your name, so run from a terminal: `cd /mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927 && RATIFY_OPERATOR="pestopoppa" THINKING_OPTION=follow-model BRINGUP_OPTION=B1 ./ratify_archswap_20260927.sh --attest RATIFY-ARCHSWAP-20260927`. Gates the UFH-13 bring-up (ARCHSWAP-2/3 → TE-pilot). | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) → ARCHSWAP-1 | 2026-09-27 |
 | OP-67 | **Terminal countersignature for four agent-executed or unattributed ratifications.** They are P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX (it recorded `operator: "node"`) and DAR-LAT-3h. Each was approved in chat on 2026-09-26/27 and executed by the agent (workspace-8d). They stand as CHAT-CONFIRMED. To countersign, run from a terminal: `bash scripts/operator/countersign_20260927.sh` (it asks you to type COUNTERSIGN). | [COUNTERSIGN-20260927.md](../../artifacts/operator/countersign/COUNTERSIGN-20260927.md) | 2026-09-27 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
@@ -100,10 +101,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 60 | 877 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 464 | 17 | 2026-07-29 |
+| research-evaluation | 43 | 465 | 17 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 520 | 28 | 2026-07-29 |
-| user-facing-harness | 11 | 90 | 16 | 2026-07-29 |
+| routing-and-optimization | 50 | 522 | 28 | 2026-07-29 |
+| user-facing-harness | 11 | 93 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
