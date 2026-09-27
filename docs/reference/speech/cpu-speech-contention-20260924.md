@@ -112,7 +112,7 @@ mask. It is a possible source of stragglers (quiet STT RTF spread 0.22–0.39).
 
 ## 6. GPU-side facts voice work depends on (MI210, 65,520 MiB)
 
-- **Voice turns route their reasoning step to `architect_general` (`:8083`, the 27B on the GPU),** not the CPU
+- **Voice turns route their reasoning step to the 27B on the GPU (`:8083`) — role `architect_critic` since ARCHSWAP-20260927 (it was `architect_general` when this was written),** not the CPU
   frontdoor. This applies to voice turns only; it is an operator requirement recorded in RTG-57 KVU-11. A CPU
   frontdoor generation is exactly what collapses CPU speech (§4).
 - **`:8083` shape:** `-np 4 -c 196608 --kv-unified`, MTP draft depth 4, F16 draft KV. O-2 (q8_0 draft KV) was

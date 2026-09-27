@@ -64,7 +64,9 @@ gates:
     required: true
     accepts: [quality, cpu_quality, gpu_quality]
     suites: [mmlu_pro, gpqa]
-    roles: [worker_general, architect_critic]
+    # ARCHSWAP-20260927: the CPU Flash-Next role is now architect_general (was architect_critic);
+    # the gate follows the CPU MODEL, so the role name moved with it.
+    roles: [worker_general, architect_general]
     n:
       mmlu_pro: 200
       gpqa: 195            # the suite holds 195 items; 200 was requested, 195 exist
