@@ -2354,6 +2354,7 @@ OBSERVATION grade: register counts, not throughput. Source row added to `scripts
   #159493 default) to the native record before INF03-REGAUDIT-1 or INF03-AGPR-1 produce governed reads. OBSERVATION
   grade; no new grading rule.
   - Producer landed 2026-09-27: research e603216f (`claim_projection`, schema `epyc.gfx90a.isa_audit.v1`; pre-hook docs emit 0). Root adapter drafted (`adapters/gfx90a_static_register.py`, draft at the session scratchpad `isa-audit/`), not yet wired.
+  - PARKED 2026-09-27 (operator): read side wired at root `341fef03` (`scripts/vidya/adapters/gfx90a_static_register.py`, `SOURCE_KIND = epyc.gfx90a.isa_audit.v1`, Source `gfx90a-static-register` in `ingest_sources.py`, `cli.py ingest gfx90a-static-register --path <audit dir>`, 28 tests in `tests/vidya/test_gfx90a_static_register_adapter.py`); nothing ingested — every audit on disk is pre-hook and yields 0 tuples; resume by pulling the shared research checkout to ≥ `e603216f`, running `gfx90a_isa_audit.py audit … --category {BASELINE|CANDIDATE} --source-commit <sha> --json <dir>/audit_<arm>.json` for INF03-REGAUDIT-1 / INF03-AGPR-1 / AK-QL-7/8, then `cli.py ingest gfx90a-static-register --path <dir>`, and tick SC84a on the first governed row.
 
 ## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16)
 
