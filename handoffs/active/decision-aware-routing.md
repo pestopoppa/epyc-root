@@ -768,6 +768,22 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     serving to the recipe, or re-derive the recipe for the 96-thread serving shape (CPU co-tenancy with speech is a
     known cost, CURRENT-CAMPAIGN.md:22). Give a recommendation and a before/after decode gate. One package for the
     operator's signature; never an ad-hoc relaunch. Filed 2026-09-26 (workspace-8d wrap-up).
+  - [ ] **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
+    out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
+    `server_mode.architect_critic.recipe.env_not_serving`.
+    - Why it is separate:
+      - It changes numerics (BE-2: a row-exact reduction order for 1-row decode vs n-row MTP verify).
+      - It is a perf risk at long context: single-row decode loses KV-axis parallelism.
+      - The critic serves `n_ctx` 262144, and DAR-LAT-3h's G1 exercises only up to ~4k-token prompts.
+    - Does not block 3g: the DAR-LAT-3h package does not set the knob.
+    - Needs, all on production v10 at the served argv, as launch-unit arms (`FA_SPLIT_KV` unset vs `=0`) under a
+      region claim in a quiet window:
+      1. A long-context decode arm: tok/s at KV depths up to the served context (at least 64k and 128k, plus the
+         deepest the host fits), and TTFT.
+      2. A numerics check: greedy output agreement, first-divergence position, and MTP acceptance α.
+      3. Per-suite quality non-inferiority on the DAR-LAT-3a item sets.
+    - Adopt only if the knob is non-inferior on speed at every depth and on quality. The change ships as its own
+      `stack-change` package, which adds it to the critic's `stack_env` block.
   - [ ] **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
     prerequisite that fails during a block; re-queue the block, never drop it. Per-request receipts + raw outputs.
   - [ ] **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window

@@ -1,20 +1,35 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
-Date: Sat, 26 Sep 2026 23:30:19 +0000
+Date: Sun, 27 Sep 2026 00:11:27 +0000
 Subject: [PATCH 2/5] server: critic_thread_gate.py, the DAR-LAT-3h gate G1
- driver (PROPOSED)
+ driver, v2 (PROPOSED)
 
-Measures three launch arms of the production :8074 argv on port 18074:
-L (-t 96, live env), R96 (-t 96 + recipe GGML knobs), R48 (-t 48 + recipe
-knobs = the full codified recipe). 12 launches, 4 per arm, balanced blocks.
-Workloads: W1 the 24-prompt production mix (champion harness shape), W2 a
-~4k-token critique shape, W3 a frontdoor :8070 co-run probe.
+Amended after the operator's 2026-09-26 split, which followed a GGML_* env
+audit. G1 decides threads (48 vs 96) and the THP shim
+(GGML_NOHUGEPAGE_PROCESS=1) INDEPENDENTLY. GGML_FA_SPLIT_KV is dropped
+(task DAR-LAT-3i).
 
-The pre-registered rule (decide) picks R48, else R96, else L, on wall time
-(the critic's region-lock hold time, i.e. frontdoor's cost of a consult),
-TTFT and coherence. It kills only the PIDs it spawns and verifies each is
-dead. INERT: nothing imports it; it is run by the inference owner after the
-operator signs.
+Arms, each a fresh launch of the live :8074 argv on port 18074 (only -t,
+--port and the slot dir differ):
+- L: -t 96, live env.
+- T96, T48: + GGML_FUSED_DECODE_OFF=1.
+- T96N, T48N: + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS.
+15 launches, 3 per arm, in three blocks that each hold every arm once.
+
+Pre-registered rule (decide):
+1. Premise: T96 must be non-inferior to L (FUSED_DECODE_OFF is inert under
+   MTP), else INVALID-PREMISE.
+2. -t 48 iff T48 ~ T96 AND T48N ~ T96N (parity at both shim levels, the
+   consultant principle).
+3. The shim is adopted iff it is >= 2% faster in wall time at the chosen -t
+   and non-inferior on TTFT and coherence.
+4. Fewer than 3 clean launches in any arm gives INCONCLUSIVE.
+Non-inferior = wall <= 1.03x, TTFT <= 1.10x, coherent >= ref - 1.
+
+Mechanism check: THP_enabled is read from /proc/<pid>/status on every
+launch; shim arms must read 0 and the others 1, else the launch is not clean
+and is re-queued. The driver kills only its own PIDs. INERT: nothing imports
+it.
 
 Unsigned. Part of the DAR-LAT-3h stack-change package
 (epyc-root artifacts/operator/stack-change-dar-lat-3h-20260926/).
@@ -22,42 +37,60 @@ Unsigned. Part of the DAR-LAT-3h stack-change package
 Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
 ---
- scripts/server/critic_thread_gate.py  | 369 ++++++++++++++++++++++++++
- tests/unit/test_critic_thread_gate.py |  74 ++++++
- 2 files changed, 443 insertions(+)
+ scripts/server/critic_thread_gate.py  | 426 ++++++++++++++++++++++++++
+ tests/unit/test_critic_thread_gate.py |  95 ++++++
+ 2 files changed, 521 insertions(+)
  create mode 100644 scripts/server/critic_thread_gate.py
  create mode 100644 tests/unit/test_critic_thread_gate.py
 
 diff --git a/scripts/server/critic_thread_gate.py b/scripts/server/critic_thread_gate.py
 new file mode 100644
-index 00000000..e0ab0522
+index 00000000..46fa9ec8
 --- /dev/null
 +++ b/scripts/server/critic_thread_gate.py
-@@ -0,0 +1,369 @@
+@@ -0,0 +1,426 @@
 +#!/usr/bin/env python3
-+"""DAR-LAT-3h gate G1: architect_critic served at -t 48 vs -t 96, recipe env vs live env.
++"""DAR-LAT-3h gate G1: architect_critic threads (48 vs 96) and the THP shim, decided independently.
 +
 +WHAT IT DECIDES
 +---------------
 +The live critic (:8074, Qwen3.8-Flash-Next UD-IQ4_XS) runs `-t 96` with the fleet's
-+canonical env. Its codified recipe says `-t 48` plus three GGML knobs beyond the canonical GGML_IQK=1. No served
-+48-vs-96 comparison exists on the production kernel, so this gate measures three arms,
-+each a fresh LAUNCH of the production argv on an experiment port:
++canonical env. Its codified recipe says `-t 48`, plus GGML knobs. After the 2026-09-26
++env audit (operator decision), the package carries only two of those knobs:
++  GGML_FUSED_DECODE_OFF=1    rides along in every candidate arm. Under MTP it should be
++                             inert (the fused path needs !embeddings_nextn); arm T96 vs L
++                             tests exactly that premise.
++  GGML_NOHUGEPAGE_PROCESS=1  (THP shim) has conflicting evidence: CHAMP-2 +5.23% vs v10
++                             common.cpp's CHAMPION-3 +1.48% with it OFF. Neither was taken
++                             on v10 at the served shape, so it gets its OWN factor here.
++  GGML_FA_SPLIT_KV=0         DROPPED. It needs a long-context decode arm at the served
++                             262144 ctx plus a numerics check: task DAR-LAT-3i.
 +
-+  L    -t 96, env copied from the live process            (the incumbent, exactly)
-+  R96  -t 96, live env + the recipe's GGML knobs          (env change only)
-+  R48  -t 48, live env + the recipe's GGML knobs          (the full codified recipe)
++Five arms, each a fresh LAUNCH of the production argv on an experiment port:
 +
-+The pre-registered rule (`decide`) picks R48, else R96, else L. It is frozen here and
-+in the package's PACKAGE.md §4; the operator signs the thresholds.
++  L      -t 96, env copied from the live process       (the incumbent, exactly)
++  T96    -t 96, + FUSED_DECODE_OFF
++  T96N   -t 96, + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS
++  T48    -t 48, + FUSED_DECODE_OFF
++  T48N   -t 48, + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS
++
++The threads x shim arms form a 2x2, so each factor is judged with the other held fixed.
++The pre-registered rule is `decide`. It is frozen here and in the package's PACKAGE.md §4,
++and the operator signs the thresholds.
 +
 +WHY WALL TIME IS THE PRIMARY METRIC
 +-----------------------------------
 +The critic's cpuset is 0-95 in every arm, so it holds all four CPU region locks for the
 +whole request whatever its thread count. No CPU role can be placed while it runs.
 +Frontdoor's cost of a consult is therefore the critic's request WALL TIME. Decode tok/s
-+and TTFT are reported beside it; the frontdoor co-run probe (W3) measures what the
++and TTFT are reported beside it. The frontdoor co-run probe (W3) measures what the
 +overlap costs if anything bypasses the lock.
++
++MECHANISM CHECK
++---------------
++Each launch records THP_enabled from /proc/<pid>/status. A shim arm must read 0 and a
++non-shim arm must read 1. A launch that disagrees is not clean and is re-queued, so the
++shim factor is never judged on a launch where the knob did not take effect.
 +
 +HOW TO RUN (by the session that owns the inference, after signature, in a quiet window)
 +------------------------------------------------------------------------------------
@@ -91,26 +124,31 @@ index 00000000..e0ab0522
 +LINEUP_PORTS = (8070, 8080, 8180, 8074, 8083, 8086)
 +PREFIX = ["numactl", "--interleave=all", "--", "taskset", "-c", "0-95"]
 +
-+# The codified recipe's GGML knobs beyond the canonical GGML_IQK=1
-+# (epyc-inference-research scripts/lib/qwen38_flash_next_recipe.py CHAMPION_GGML_ENV).
-+# All three are compiled into production v10 (strings on libggml*/libllama*, 2026-09-26).
-+RECIPE_ENV = {
-+    "GGML_FUSED_DECODE_OFF": "1",
-+    "GGML_FA_SPLIT_KV": "0",
-+    "GGML_NOHUGEPAGE_PROCESS": "1",
-+}
++FUSED = {"GGML_FUSED_DECODE_OFF": "1"}
++SHIM = {"GGML_NOHUGEPAGE_PROCESS": "1"}
++# Keys an arm controls. Any live value of these is removed before an arm's own are added.
++CONTROLLED = ("GGML_FUSED_DECODE_OFF", "GGML_NOHUGEPAGE_PROCESS", "GGML_FA_SPLIT_KV")
 +ARMS = {
-+    "L": {"threads": 96, "recipe_env": False},
-+    "R96": {"threads": 96, "recipe_env": True},
-+    "R48": {"threads": 48, "recipe_env": True},
++    "L": {"threads": 96, "env": {}},
++    "T96": {"threads": 96, "env": {**FUSED}},
++    "T96N": {"threads": 96, "env": {**FUSED, **SHIM}},
++    "T48": {"threads": 48, "env": {**FUSED}},
++    "T48N": {"threads": 48, "env": {**FUSED, **SHIM}},
 +}
-+# 12 launches, 4 per arm; every arm holds every position of a block at least once.
-+SCHEDULE = ["L", "R96", "R48", "R96", "R48", "L", "R48", "L", "R96", "R48", "R96", "L"]
++# 15 launches, 3 per arm, in three blocks that each hold every arm once. The rotation
++# puts each arm in a different position in each block.
++SCHEDULE = [
++    "L", "T96", "T96N", "T48", "T48N",
++    "T48", "T48N", "L", "T96", "T96N",
++    "T96N", "T48", "T48N", "L", "T96",
++]
 +MAX_REQUEUES = 2
 +
 +# Pre-registered thresholds (PACKAGE.md §4). Ratios are candidate / reference.
-+WALL_MARGIN = 1.03   # candidate's mean per-launch median wall time may exceed the reference by <= 3%
-+TTFT_MARGIN = 1.10   # candidate's mean per-launch median TTFT may exceed the reference by <= 10%
++WALL_MARGIN = 1.03   # non-inferiority: candidate mean per-launch median wall <= 1.03x reference
++TTFT_MARGIN = 1.10   # non-inferiority: candidate mean per-launch median TTFT <= 1.10x reference
++SHIM_GAIN = 0.98     # the shim is ADOPTED only if it is >= 2% faster in wall time (benefit required;
++                     # a default-off knob with conflicting evidence is not added at parity)
 +MIN_LAUNCHES = 3     # an arm with fewer clean launches makes the verdict INCONCLUSIVE
 +
 +
@@ -147,11 +185,15 @@ index 00000000..e0ab0522
 +
 +def arm_env(live_env: dict[str, str], arm: str) -> dict[str, str]:
 +    env = dict(live_env)
-+    for k in RECIPE_ENV:
++    for k in CONTROLLED:
 +        env.pop(k, None)
-+    if ARMS[arm]["recipe_env"]:
-+        env.update(RECIPE_ENV)
++    env.update(ARMS[arm]["env"])
 +    return env
++
++
++def expected_thp_enabled(arm: str) -> int:
++    """THP_enabled in /proc/<pid>/status: 0 when the shim (PR_SET_THP_DISABLE) took effect."""
++    return 0 if "GGML_NOHUGEPAGE_PROCESS" in ARMS[arm]["env"] else 1
 +
 +
 +def coherent(text: str, finish: str | None) -> bool:
@@ -176,7 +218,17 @@ index 00000000..e0ab0522
 +
 +
 +def decide(per_arm: dict[str, list[dict]]) -> dict:
-+    """Apply the pre-registered rule to per-arm lists of clean launch stats."""
++    """Apply the pre-registered rule to per-arm lists of clean launch stats.
++
++    1. PREMISE: T96 must be non-inferior to L. T96 differs from L only by
++       GGML_FUSED_DECODE_OFF=1, which should be inert under MTP. If it is not,
++       the verdict is INVALID-PREMISE and nothing is applied.
++    2. THREADS: 48 if T48 is non-inferior to T96 AND T48N to T96N, i.e. parity
++       at both shim levels (the consultant principle: at equal wall time, fewer
++       threads spinning over shared cores wins). Otherwise 96.
++    3. SHIM: at the chosen thread count t, adopt NOHUGEPAGE_PROCESS only if TtN
++       wall <= 0.98x Tt, and TtN is non-inferior to Tt on TTFT and coherence.
++    """
 +    def mean(arm: str, key: str) -> float:
 +        return statistics.fmean(s[key] for s in per_arm[arm])
 +
@@ -185,23 +237,32 @@ index 00000000..e0ab0522
 +        return {"outcome": "INCONCLUSIVE", "reason": f"fewer than {MIN_LAUNCHES} clean launches: {short}"}
 +    coh = {a: min(s["coherent"] for s in per_arm[a]) for a in ARMS}
 +
-+    def non_inferior(cand: str, ref: str) -> tuple[bool, dict]:
-+        w = mean(cand, "wall_s_median") / mean(ref, "wall_s_median")
-+        t = mean(cand, "ttft_ms_median") / mean(ref, "ttft_ms_median")
-+        c = coh[cand] >= coh[ref] - 1
-+        return (w <= WALL_MARGIN and t <= TTFT_MARGIN and c), {
-+            "wall_ratio": round(w, 4), "ttft_ratio": round(t, 4), "coherent_min": [coh[cand], coh[ref]]}
++    def ratios(cand: str, ref: str) -> dict:
++        return {"wall_ratio": round(mean(cand, "wall_s_median") / mean(ref, "wall_s_median"), 4),
++                "ttft_ratio": round(mean(cand, "ttft_ms_median") / mean(ref, "ttft_ms_median"), 4),
++                "coherent_min": [coh[cand], coh[ref]]}
 +
-+    r48_vs_r96 = non_inferior("R48", "R96")
-+    r48_vs_l = non_inferior("R48", "L")
-+    r96_vs_l = non_inferior("R96", "L")
-+    detail = {"R48_vs_R96": r48_vs_r96[1], "R48_vs_L": r48_vs_l[1], "R96_vs_L": r96_vs_l[1],
-+              "decode_tps_mean": {a: round(mean(a, "decode_tps_tokw"), 3) for a in ARMS}}
-+    if r48_vs_r96[0] and r48_vs_l[0]:
-+        return {"outcome": "R48", **detail}
-+    if r96_vs_l[0]:
-+        return {"outcome": "R96", **detail}
-+    return {"outcome": "L", **detail}
++    def non_inferior(r: dict) -> bool:
++        return (r["wall_ratio"] <= WALL_MARGIN and r["ttft_ratio"] <= TTFT_MARGIN
++                and r["coherent_min"][0] >= r["coherent_min"][1] - 1)
++
++    detail = {
++        "T96_vs_L": ratios("T96", "L"),
++        "T48_vs_T96": ratios("T48", "T96"),
++        "T48N_vs_T96N": ratios("T48N", "T96N"),
++        "T96N_vs_T96": ratios("T96N", "T96"),
++        "T48N_vs_T48": ratios("T48N", "T48"),
++        "decode_tps_mean": {a: round(mean(a, "decode_tps_tokw"), 3) for a in ARMS},
++    }
++    if not non_inferior(detail["T96_vs_L"]):
++        return {"outcome": "INVALID-PREMISE",
++                "reason": "GGML_FUSED_DECODE_OFF=1 was not inert (T96 inferior to L); apply nothing", **detail}
++    threads = 48 if (non_inferior(detail["T48_vs_T96"]) and non_inferior(detail["T48N_vs_T96N"])) else 96
++    shim = detail[f"T{threads}N_vs_T{threads}"]
++    adopt_shim = (shim["wall_ratio"] <= SHIM_GAIN and shim["ttft_ratio"] <= TTFT_MARGIN
++                  and shim["coherent_min"][0] >= shim["coherent_min"][1] - 1)
++    return {"outcome": f"T{threads}{'N' if adopt_shim else ''}", "threads": threads,
++            "shim_adopted": adopt_shim, **detail}
 +
 +
 +# ── live helpers ──────────────────────────────────────────────────────────────
@@ -243,6 +304,13 @@ index 00000000..e0ab0522
 +                key = line.split(":", 1)[1].strip()
 +                per_task[key] = per_task.get(key, 0) + 1
 +    return per_task
++
++
++def _thp_enabled(pid: int) -> int | None:
++    for line in Path(f"/proc/{pid}/status").read_text().splitlines():
++        if line.startswith("THP_enabled:"):
++            return int(line.split(":", 1)[1])
++    return None
 +
 +
 +def _chat(port: int, text: str, max_tokens: int, timeout: float = 1800) -> dict:
@@ -331,8 +399,10 @@ index 00000000..e0ab0522
 +            else:
 +                raise RuntimeError("arm not healthy within 900 s")
 +            _, env_rb = _read_proc(proc.pid)
-+            rec["env_readback"] = {k: env_rb.get(k) for k in RECIPE_ENV}
++            rec["env_readback"] = {k: env_rb.get(k) for k in CONTROLLED}
 +            rec["affinity"] = _affinity(proc.pid)
++            rec["thp_enabled"] = _thp_enabled(proc.pid)
++            rec["thp_expected"] = expected_thp_enabled(arm)
 +            _chat(EXPERIMENT_PORT, "Say ready.", 8)                      # warm-up, discarded
 +            rows = []
 +            with open(out / f"{tag}.rows.jsonl", "w") as fh:
@@ -353,7 +423,8 @@ index 00000000..e0ab0522
 +            rec["w3_arm_corun"] = bg
 +            rec["busy_after"] = _busy_ports()
 +            rec["stats"] = {w: launch_stats([r for r in rows if r["workload"] == w]) for w in ("W1", "W2")}
-+            rec["clean"] = not rec["busy_after"] and all(r.get("ok") for r in rows)
++            rec["clean"] = (not rec["busy_after"] and all(r.get("ok") for r in rows)
++                            and rec["thp_enabled"] == rec["thp_expected"])
 +        except Exception as exc:                                          # recorded, re-queued
 +            rec["error"] = repr(exc)
 +            rec["clean"] = False
@@ -378,7 +449,8 @@ index 00000000..e0ab0522
 +            per_arm[rec["arm"]].append(rec["stats"]["W1"] | {"W2": rec["stats"]["W2"]})
 +    verdict = decide(per_arm)
 +    verdict["launches"] = {a: len(v) for a, v in per_arm.items()}
-+    verdict["thresholds"] = {"wall_margin": WALL_MARGIN, "ttft_margin": TTFT_MARGIN, "min_launches": MIN_LAUNCHES}
++    verdict["thresholds"] = {"wall_margin": WALL_MARGIN, "ttft_margin": TTFT_MARGIN,
++                             "shim_gain": SHIM_GAIN, "min_launches": MIN_LAUNCHES}
 +    # W2 (critique shape) is reported with the same rule, as a second reading; W1 decides.
 +    per_arm_w2 = {a: [s["W2"] for s in v] for a, v in per_arm.items()}
 +    verdict["w2_reading"] = decide(per_arm_w2)
@@ -405,11 +477,11 @@ index 00000000..e0ab0522
 +    sys.exit(main())
 diff --git a/tests/unit/test_critic_thread_gate.py b/tests/unit/test_critic_thread_gate.py
 new file mode 100644
-index 00000000..28b5c437
+index 00000000..2ae3f8d9
 --- /dev/null
 +++ b/tests/unit/test_critic_thread_gate.py
-@@ -0,0 +1,74 @@
-+"""Pure parts of the DAR-LAT-3h gate driver: argv rewrite, env arms, decision rule."""
+@@ -0,0 +1,95 @@
++"""Pure parts of the DAR-LAT-3h gate driver: argv rewrite, env arms, THP expectation, decision rule."""
 +
 +from __future__ import annotations
 +
@@ -431,52 +503,73 @@ index 00000000..28b5c437
 +        g.rewrite_argv(["/k/llama-server", "--port", "8074"], 48)
 +
 +
-+def test_arm_env_adds_recipe_knobs_only_for_recipe_arms() -> None:
++def test_arm_envs() -> None:
 +    live = {"OMP_PLACES": "cores", "GGML_IQK": "1", "GGML_FA_SPLIT_KV": "1"}
 +    assert g.arm_env(live, "L") == {"OMP_PLACES": "cores", "GGML_IQK": "1"}
-+    assert g.arm_env(live, "R48") == {"OMP_PLACES": "cores", "GGML_IQK": "1", **g.RECIPE_ENV}
++    assert g.arm_env(live, "T48") == {"OMP_PLACES": "cores", "GGML_IQK": "1", "GGML_FUSED_DECODE_OFF": "1"}
++    assert g.arm_env(live, "T96N") == {"OMP_PLACES": "cores", "GGML_IQK": "1", "GGML_FUSED_DECODE_OFF": "1",
++                                       "GGML_NOHUGEPAGE_PROCESS": "1"}
++    # FA_SPLIT_KV is dropped from the package (DAR-LAT-3i): no arm sets it.
++    assert all("GGML_FA_SPLIT_KV" not in arm["env"] for arm in g.ARMS.values())
 +
 +
-+def test_schedule_is_balanced() -> None:
-+    assert sorted(g.SCHEDULE) == sorted(["L", "R96", "R48"] * 4)
-+    for block in range(4):
-+        assert sorted(g.SCHEDULE[block * 3:block * 3 + 3]) == ["L", "R48", "R96"]
++def test_thp_expectation() -> None:
++    assert [g.expected_thp_enabled(a) for a in ("L", "T96", "T96N", "T48", "T48N")] == [1, 1, 0, 1, 0]
 +
 +
-+def _stats(wall: float, ttft: float, coherent: int = 24) -> dict:
++def test_schedule_is_balanced_blocks() -> None:
++    assert sorted(g.SCHEDULE) == sorted(list(g.ARMS) * 3)
++    for block in range(3):
++        assert sorted(g.SCHEDULE[block * 5:block * 5 + 5]) == sorted(g.ARMS)
++
++
++def _stats(wall: float, ttft: float = 100.0, coherent: int = 24) -> dict:
 +    return {"wall_s_median": wall, "ttft_ms_median": ttft, "coherent": coherent, "decode_tps_tokw": 30.0}
 +
 +
-+def _arms(live: float, r96: float, r48: float, ttft48: float = 100.0) -> dict:
-+    return {"L": [_stats(live, 100)] * 4, "R96": [_stats(r96, 100)] * 4, "R48": [_stats(r48, ttft48)] * 4}
++def _arms(L=10.0, T96=10.0, T96N=10.0, T48=10.0, T48N=10.0) -> dict:
++    return {a: [_stats(w)] * 3 for a, w in {"L": L, "T96": T96, "T96N": T96N, "T48": T48, "T48N": T48N}.items()}
 +
 +
-+def test_r48_wins_at_parity() -> None:
-+    assert g.decide(_arms(10.0, 10.0, 10.25))["outcome"] == "R48"
++def test_parity_everywhere_gives_48_without_shim() -> None:
++    assert g.decide(_arms())["outcome"] == "T48"
 +
 +
-+def test_r48_loses_on_wall_time_then_r96() -> None:
-+    assert g.decide(_arms(10.0, 10.0, 10.5))["outcome"] == "R96"
++def test_48_needs_parity_at_both_shim_levels() -> None:
++    assert g.decide(_arms(T48N=10.5))["outcome"] == "T96"
 +
 +
-+def test_r48_loses_on_ttft() -> None:
-+    assert g.decide(_arms(10.0, 10.0, 10.0, ttft48=115.0))["outcome"] == "R96"
++def test_48_slower_gives_96() -> None:
++    assert g.decide(_arms(T48=10.5, T48N=10.5))["outcome"] == "T96"
 +
 +
-+def test_everything_loses_keeps_live() -> None:
-+    assert g.decide(_arms(10.0, 10.5, 10.5))["outcome"] == "L"
++def test_shim_adopted_only_on_a_real_gain_at_the_chosen_threads() -> None:
++    assert g.decide(_arms(T48N=9.7, T96N=9.7))["outcome"] == "T48N"
++    assert g.decide(_arms(T48N=9.9, T96N=9.9))["outcome"] == "T48"          # 1% is not enough
++    assert g.decide(_arms(T48=10.5, T48N=10.5, T96N=9.7))["outcome"] == "T96N"
++
++
++def test_shim_with_worse_ttft_is_not_adopted() -> None:
++    arms = _arms()
++    arms["T48N"] = [_stats(9.5, ttft=120.0)] * 3
++    arms["T96N"] = [_stats(9.5, ttft=120.0)] * 3
++    assert g.decide(arms)["outcome"] == "T48"
++
++
++def test_fused_decode_off_not_inert_invalidates() -> None:
++    assert g.decide(_arms(T96=10.5))["outcome"] == "INVALID-PREMISE"
 +
 +
 +def test_too_few_launches_is_inconclusive() -> None:
-+    arms = _arms(10.0, 10.0, 10.0)
-+    arms["R48"] = arms["R48"][:2]
++    arms = _arms()
++    arms["T48N"] = arms["T48N"][:2]
 +    assert g.decide(arms)["outcome"] == "INCONCLUSIVE"
 +
 +
-+def test_coherence_regression_blocks() -> None:
-+    arms = _arms(10.0, 10.0, 9.0)
-+    arms["R48"] = [_stats(9.0, 100, coherent=20)] * 4
-+    assert g.decide(arms)["outcome"] == "R96"
++def test_coherence_regression_blocks_48() -> None:
++    arms = _arms()
++    arms["T48"] = [_stats(9.0, coherent=20)] * 3
++    assert g.decide(arms)["outcome"] == "T96"
 +
 +
 +def test_coherent_classifier() -> None:
