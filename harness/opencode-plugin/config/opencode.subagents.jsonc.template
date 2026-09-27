@@ -1,0 +1,142 @@
+// OpenCode config template: HS-19a "Linked" SUBAGENTS PROFILE (opt-in, stage 1 of the
+// harness-subagent ladder, operator-approved 2026-09-27). The live default is
+// opencode.jsonc.template; this file does NOT replace it.
+// Audited against OpenCode @ 350c726aa (packages/opencode v1.18.31).
+// Report: docs/reference/harness-candidates/opencode-p03-audit-20260916.md (E7, E8, E9)
+//
+// It is the live template with exactly these differences, each marked "HS-19a" below:
+//   1. permission.task is a scoped allow (general only) and subagent_depth is 1;
+//   2. the `general` sub-agent is re-enabled, with its own task rule "deny" (explore and
+//      title stay disabled);
+//   3. the plugin option "stampAgentName": true.
+// Unchanged on purpose: ONE logical model (no agent carries a `model`; a task child runs on the
+// parent's model, tool/task.ts:181-184, and the orchestrator selects the real model for every
+// call), compaction off, share disabled, autoupdate false, websearch deny, webfetch ask, MCP
+// enabled:false. The same opencode.env serves both profiles; it keeps
+// OPENCODE_EXPERIMENTAL_BACKGROUND_SUBAGENTS=0 (no background children, E9).
+// The orchestrator records the parent/child link only with its v1_subagent_link flag on
+// (ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1). OpenCode sends the parent id natively as the
+// x-parent-session-id header (session/llm/request.ts:201); no config can set it.
+//
+// Install: copy to <project>/opencode.jsonc (or point OPENCODE_CONFIG at it), export the
+// variables in opencode.env, then run
+//   node --test 'harness/opencode-plugin/test/*.test.ts'
+//   node harness/opencode-plugin/scripts/lint-config.ts --profile subagents <file> harness/opencode-plugin/config/opencode.env
+// OpenCode substitutes {env:VAR} when it loads the file (src/config/variable.ts:33-40).
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // ---- One provider, one model, custom-provider mode --------------------------------
+  // The provider ID is also the providerOptions namespace that the plugin writes into.
+  // Keep it free of "." and not starting with "opencode" (the plugin refuses both).
+  "enabled_providers": ["epyc-orchestrator"],
+  "model": "epyc-orchestrator/orchestrator",
+  // Title and other "small" calls resolve to this model. Point it at the same model
+  // so no small-model search can happen (provider/provider.ts:1939-2006).
+  "small_model": "epyc-orchestrator/orchestrator",
+  "provider": {
+    "epyc-orchestrator": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "EPYC orchestrator",
+      "options": {
+        "baseURL": "{env:EPYC_ORCHESTRATOR_BASE_URL}",
+        // Orchestrator turns can exceed the 300 s header default. false disables the timeout.
+        "headerTimeout": false,
+        "chunkTimeout": 600000,
+        // Plugin-independent OpenCode marker for the /v1 session guard, which answers 422 to
+        // an OpenCode request with no x_session_id. provider.ts:1782-1858 passes these headers
+        // to the SDK factory, so every call made with this SDK carries them. That includes
+        // paths that never run the plugin, such as `agent create` (agent/agent.ts:435).
+        // Session calls also get `User-Agent: opencode/<build>` from session/llm/request.ts:199,
+        // and that call-level value replaces this one. Either way the value contains
+        // "opencode". The SDK appends "ai-sdk/openai-compatible/2.0.41".
+        // Keep the version in step with the audited pin.
+        "headers": { "User-Agent": "opencode/1.18.31 epyc-orchestrator" }
+      },
+      "models": {
+        "orchestrator": {
+          "name": "EPYC orchestrator (routed)",
+          "tool_call": true,
+          "temperature": true,
+          // /v1 caps max_tokens at 32768 (orchestrator src/api/models/openai.py:90).
+          // OpenCode sends min(limit.output, 32000).
+          // limit.context must match the window the orchestrator advertises. 0 disables
+          // OpenCode's overflow maths entirely; set it from /v1/models when P1 lands.
+          "limit": { "context": 131072, "output": 32000 }
+          // Do NOT put x_* keys under per-model "options". The plugin owns them (static
+          // keys go in the plugin options below), so there is one source of truth.
+        }
+      }
+    }
+  },
+
+  // ---- The epyc-orchestrator plugin ------------------------------------------------
+  "plugin": [
+    [
+      "{env:EPYC_ROOT}/harness/opencode-plugin/src/index.ts",
+      {
+        "userId": "{env:EPYC_USER_ID}",
+        "providerIDs": ["epyc-orchestrator"],
+        "stampPrefixes": ["orchestrator_", "memory_"],
+        "staticKeys": {
+          "x_show_routing": true
+        },
+        // HS-19a: send the OpenCode agent name ("build", "general") as x_agent_name. Advisory
+        // metadata for the orchestrator's session log; identity stays x_session_id.
+        "stampAgentName": true
+      }
+    ]
+  ],
+
+  // ---- Shell-side autonomy OFF: features live in the orchestrator (HS-4 §2) ---------
+  "compaction": { "auto": false, "prune": false },
+  "share": "disabled",
+  "autoupdate": false,
+  "snapshot": true,
+  "agent": {
+    // Removing the title agent makes SessionPrompt.ensureTitle return before any request
+    // (session/prompt.ts:216-217).
+    "title": { "disable": true },
+    // HS-19a: `general` is the one enabled sub-agent. It carries no `model` (the lint refuses
+    // one on any agent), so its child session runs on the parent's logical model.
+    // Enabling it also opens the user-typed "@general" subtask path (E8, bypassAgentCheck);
+    // subagent_depth still bounds that path.
+    // Its own task rule is "deny": agent rules are appended after the user block
+    // (agent/agent.ts:293), so the child never even sees the task tool. Without it the child
+    // would see the "general": "allow" rule, and a depth-limit error inside the child fails the
+    // parent's task call (tool/task.ts:220-223). subagent_depth:1 is the second bound.
+    //
+    // explore stays DISABLED. It is not a read-only boundary in this config: its "*": deny
+    // is merged BEFORE the user permission block (agent/agent.ts:196-209), so it keeps bash
+    // (which can write) and regains task/skill from the rules below. A second task target
+    // also gives the model a choice that the stage-1 link test does not need.
+    "general": { "permission": { "task": "deny" } },
+    "explore": { "disable": true }
+  },
+  // HS-19a: one level of sub-agent. A child that calls task fails at depth 1 (tool/task.ts:104-117).
+  "subagent_depth": 1,
+  "permission": {
+    // Unmatched rules fall back to "ask", and `opencode run` auto-rejects asks.
+    // HS-19a: scoped allow. Rules are last-match-wins (permission/index.ts:32), so "*" deny
+    // comes first and only subagent_type "general" is allowed.
+    "task": { "*": "deny", "general": "allow" },
+    "webfetch": "ask",
+    "websearch": "deny",
+    "skill": "allow"
+    // external_directory stays at its default ("ask"). The container/worktree jail is
+    // the boundary (package §4).
+  },
+
+  // ---- Skills: versioned in-repo folder only (HS-4 §3.7) ----------------------------
+  "skills": { "paths": ["{env:EPYC_ROOT}/harness/opencode-skills"] },
+
+  // ---- MCP: orchestrator tools (names become "<server>_<tool>") ----------------------
+  "mcp": {
+    "orchestrator": {
+      "type": "local",
+      "command": ["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"],
+      "cwd": "{env:EPYC_ORCHESTRATOR_REPO}",
+      "enabled": false
+    }
+  }
+}

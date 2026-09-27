@@ -137,3 +137,42 @@ test("fail-closed: bad options never throw at load, but break OUR requests loudl
     if (saved !== undefined) process.env.EPYC_USER_ID = saved
   }
 })
+
+test("chat.params (HS-19a): parent and task child both keyed; child carries its agent name", async () => {
+  const hooks = (await server(fakeInput, { userId: "u1", stampAgentName: true })) as AnyHooks
+  // Parent turn (agent "build"), then the task tool's child session (agent "general").
+  // OpenCode runs the child through the same llm.stream -> prepare -> chat.params path with the
+  // child's sessionID; the parent id rides the native x-parent-session-id header, not a body key.
+  const parent = await trigger([hooks], "chat.params",
+    { sessionID: "ses_parent", agent: "build", model: model("epyc-orchestrator"), provider: {}, message: {} },
+    { options: {} })
+  const child = await trigger([hooks], "chat.params",
+    { sessionID: "ses_child", agent: "general", model: model("epyc-orchestrator"), provider: {}, message: {} },
+    { options: {} })
+  assert.deepEqual(parent.options, { x_session_id: "ses_parent", x_user_id: "u1", x_tool_mode: "client", x_agent_name: "build" })
+  assert.deepEqual(child.options, { x_session_id: "ses_child", x_user_id: "u1", x_tool_mode: "client", x_agent_name: "general" })
+})
+
+test("chat.params: stampAgentName absent keeps the pre-HS-19a key set", async () => {
+  const hooks = (await server(fakeInput, { userId: "u1" })) as AnyHooks
+  const out = await trigger([hooks], "chat.params",
+    { sessionID: "ses_child", agent: "general", model: model("epyc-orchestrator"), provider: {}, message: {} },
+    { options: {} })
+  assert.equal(JSON.stringify(out.options), '{"x_session_id":"ses_child","x_user_id":"u1","x_tool_mode":"client"}')
+})
+
+test("fail-closed: a non-boolean stampAgentName breaks OUR requests loudly", async () => {
+  const errSpy = console.error
+  console.error = () => {}
+  try {
+    const hooks = (await server(fakeInput, { userId: "u1", stampAgentName: "yes" })) as AnyHooks
+    await assert.rejects(
+      trigger([hooks], "chat.params",
+        { sessionID: "s", agent: "build", model: model("epyc-orchestrator"), provider: {}, message: {} },
+        { options: {} }),
+      /stampAgentName must be a boolean/,
+    )
+  } finally {
+    console.error = errSpy
+  }
+})

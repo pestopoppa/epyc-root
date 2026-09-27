@@ -194,6 +194,14 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
   leaves three linked questions that no HS-16/17/18 or HS-OD-8/9 item covers. Prepare one decision package with
   options, tradeoffs and a recommendation for each (zero inference), then hold the discussion. It does not reopen
   HS-4's thin-shell / one-router decision:
+  - **Operator decisions (2026-09-27, verbatim intent).** (1) The ORCHESTRATOR owns model selection for harness
+    subagents; the harness never pins a model. OpenCode's config uses one logical model,
+    `epyc-orchestrator/orchestrator`, for `model` and `small_model`; a `task` subagent is just a concurrent request
+    to that provider, not a new process. (2) The only pin is `x_force_model`, set by us for evaluation and
+    debugging, never by the harness in normal use. (3) Build order: stage 1 Linked → 2 Scheduled → 2.5 shared
+    context by pointer → 3 full shared REPLs. Canvas: https://claude.ai/artifact/UnjtMaouUFYs9xz5umnwPd. Stage 1
+    was approved and built 2026-09-27; spec
+    [`hs19a-linked-subagents-20260927.md`](../../docs/design/hs19a-linked-subagents-20260927.md).
   - [ ] **HS-19a — OpenCode's `task` tool as a control interface (T1/Q7).** HS-4's template denies `permission.task`,
     sets `subagent_depth` 0 and disables `general`/`explore` so that the orchestrator owns fan-out. The draft
     reconciliation re-enables `task` but lands it in an orchestrator control door (MCP dispatch / attach / read /
@@ -201,6 +209,39 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
     request pipeline, so plugin hooks and `x_*` stamping still apply. Evidence against relying on it alone: the 27B,
     when offered `task`, never used it (DS41-C20c, n=1). If adopted, the HS-17 timeout and HS-16's parent link become
     prerequisites.
+    **Stage 1 "Linked" (operator-approved 2026-09-27): record the subagent tree, change nothing else.** Every piece
+    is default-OFF; with it off, live behaviour is byte-identical. Spec:
+    [`hs19a-linked-subagents-20260927.md`](../../docs/design/hs19a-linked-subagents-20260927.md).
+    - [x] **HS-19a.1 — spec.** ✅ 2026-09-27 — `docs/design/hs19a-linked-subagents-20260927.md`.
+    - [x] **HS-19a.2 — orchestrator link (flag `v1_subagent_link`, default off).** ✅ 2026-09-27 — orch
+      `f58db8be` on main (code landed, not deployed; the API has not been reloaded and the flag is off).
+      `/v1` resolves session and parent ids with HS-16's header fallback (body → `x-dynamo-*` → `X-Session-Id` /
+      `x-parent-session-id`) and records `parent_session_id`, `parent_session_id_source`, `subagent_depth`,
+      `subagent_depth_basis`, `x_agent_name` in the tap `request_keys`, plus one `session_created` /
+      `harness_subagent_link` row per new child in the progress log. It returns 422 for malformed, self-parent,
+      cycle and re-link values. Model selection is unchanged. Module `src/api/routes/v1_subagent_link.py`; tests
+      `tests/unit/test_v1_subagent_link.py`. This also builds HS-16's header-fallback and parent-recording half,
+      behind this flag. HS-16's lifecycle half (plugin `event` hook check, `x_session_final`, `session_end_source`)
+      is still open under HS-16.
+    - [x] **HS-19a.3 — opt-in config profile.** ✅ 2026-09-27 —
+      `harness/opencode-plugin/config/opencode.subagents.jsonc.template`: `task` allowed for the `general` agent only
+      (`{"*":"deny","general":"allow"}`), `subagent_depth` 1, and `general` itself denies `task`, so a child
+      cannot fan out again. `explore` stays disabled: user permission rules merge after its `"*":deny`, so it
+      would keep bash and is not read-only here. One logical model for every agent; compaction, share and
+      autoupdate off; the same egress-off env file; plugin `stampAgentName: true` (sends `x_agent_name`). The
+      live template is unchanged and still denies `task`.
+    - [x] **HS-19a.4 — lint for both profiles.** ✅ 2026-09-27 — `lint-config.ts --profile default|subagents`.
+      A new rule in both profiles forbids per-agent `model` overrides and any `x_force_*` in the config.
+    - [x] **HS-19a.5 — acceptance runner, prepared (not run).** ✅ 2026-09-27 — `scripts/harness/hs19a_acceptance.py`
+      (`plan` / `prepare` / `verify`, offline tests in `tests/harness/test_hs19a_acceptance.py`), with the SC86
+      belief write-side hook as in P0.4.
+    - [ ] **HS-19a.6 — live run (inference; the main session runs it in a coordinated window).** Preconditions:
+      orch `f58db8be` or later deployed by an API reload, with `v1_subagent_link` on (runtime-flags overlay or
+      `ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1`). Then, from `/workspace` after the root lane lands (run.sh bakes in the checkout's
+      paths), `python3 scripts/harness/hs19a_acceptance.py prepare --out /mnt/raid0/llm/tmp/hs19a-<date>`, run
+      `bash <out>/evidence/run.sh` (it calls `verify`), and read `verdict.json`. It must show one `task` part and one child session,
+      keyed parent and child tap calls, the parent link on every child call, the child served by normal
+      selection with no pin (its role is recorded, not gated), A5 token parity per session, the session-log row, and SC86 rows written.
   - [ ] **HS-19b — a hierarchy of shared REPLs (Q2).** Today each request gets one isolated REPL. Decide whether a
     child sees a live parent view or a snapshot, who merges what is published upward, and how OAB-12 pull budgets add
     up across levels. Draft: read-only parent views, explicit publish, one accounting tree. The design must rest on

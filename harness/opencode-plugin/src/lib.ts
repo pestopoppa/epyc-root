@@ -10,8 +10,24 @@
 
 export const PLUGIN_ID = "epyc-orchestrator"
 
-/** Keys this plugin owns. Config may not set them as static keys. */
-export const DYNAMIC_KEYS = ["x_session_id", "x_user_id", "x_tool_mode"] as const
+/**
+ * Keys this plugin owns. Config may not set them as static keys.
+ *
+ * x_agent_name is stamped only with `stampAgentName: true` (HS-19a). x_parent_session_id is
+ * never set by this plugin: the parent link comes from OpenCode's native `x-parent-session-id`
+ * header (session/llm/request.ts:201), so no config can forge or pin it.
+ */
+export const DYNAMIC_KEYS = [
+  "x_session_id",
+  "x_user_id",
+  "x_tool_mode",
+  "x_agent_name",
+  "x_parent_session_id",
+] as const
+
+/** Advisory agent-name shape for x_agent_name. A name that fails it is omitted, never sent. */
+export const AGENT_NAME_RE = /^[A-Za-z0-9][A-Za-z0-9._-]*$/
+export const AGENT_NAME_MAX = 64
 
 export const DEFAULT_PROVIDER_IDS = ["epyc-orchestrator"]
 /**
@@ -32,6 +48,12 @@ export interface EpycOptions {
   readonly staticKeys: Readonly<Record<string, Scalar>>
   /** MCP tool-name prefixes whose arguments receive `session_id`. */
   readonly stampPrefixes: readonly string[]
+  /**
+   * HS-19a: also send x_agent_name = the chat.params `agent` (the OpenCode agent name, e.g.
+   * "build" or "general"). Default false. Advisory metadata for the orchestrator's session
+   * log, not identity: identity stays x_session_id.
+   */
+  readonly stampAgentName: boolean
 }
 
 export class EpycPluginConfigError extends Error {
@@ -71,7 +93,7 @@ export function parseOptions(raw: unknown, env: Record<string, string | undefine
   const opts = raw === undefined ? {} : raw
   if (!isRecord(opts)) throw new EpycPluginConfigError("options must be an object")
 
-  const known = new Set(["providerIDs", "userId", "staticKeys", "stampPrefixes"])
+  const known = new Set(["providerIDs", "userId", "staticKeys", "stampPrefixes", "stampAgentName"])
   for (const key of Object.keys(opts)) {
     if (!known.has(key)) throw new EpycPluginConfigError(`unknown option "${key}"`)
   }
@@ -113,13 +135,25 @@ export function parseOptions(raw: unknown, env: Record<string, string | undefine
     }
   }
 
+  const stampAgentName = opts.stampAgentName === undefined ? false : opts.stampAgentName
+  if (typeof stampAgentName !== "boolean") {
+    throw new EpycPluginConfigError("stampAgentName must be a boolean")
+  }
+
   return {
     providerIDs,
     userId: userIdRaw.trim(),
     toolMode: "client",
     staticKeys,
     stampPrefixes,
+    stampAgentName,
   }
+}
+
+/** The agent name if it is safe to send as x_agent_name, else undefined (omitted, not thrown). */
+export function agentNameKey(agent: unknown): string | undefined {
+  if (typeof agent !== "string" || agent.length === 0 || agent.length > AGENT_NAME_MAX) return undefined
+  return AGENT_NAME_RE.test(agent) ? agent : undefined
 }
 
 export function appliesToProvider(opts: EpycOptions, providerID: string): boolean {
@@ -129,17 +163,25 @@ export function appliesToProvider(opts: EpycOptions, providerID: string): boolea
 /**
  * The x_* keys for one request. Static keys go first so the dynamic ones always win.
  * (parseOptions already refuses a collision; the ordering is defence in depth.)
+ *
+ * `agent` is used only when `stampAgentName` is on. With it off, the result is exactly the
+ * pre-HS-19a key set, in the same order.
  */
-export function requestKeys(opts: EpycOptions, sessionID: string): Record<string, Scalar> {
+export function requestKeys(opts: EpycOptions, sessionID: string, agent?: unknown): Record<string, Scalar> {
   if (typeof sessionID !== "string" || sessionID === "") {
     throw new EpycPluginConfigError("chat.params delivered an empty sessionID; refusing to send an unkeyed request")
   }
-  return {
+  const keys: Record<string, Scalar> = {
     ...opts.staticKeys,
     x_session_id: sessionID,
     x_user_id: opts.userId,
     x_tool_mode: opts.toolMode,
   }
+  if (opts.stampAgentName) {
+    const name = agentNameKey(agent)
+    if (name !== undefined) keys.x_agent_name = name
+  }
+  return keys
 }
 
 /**
@@ -154,14 +196,18 @@ export function requestKeys(opts: EpycOptions, sessionID: string): Record<string
  */
 export function applyChatParams(
   opts: EpycOptions,
-  input: { sessionID: string; model: { providerID: string } },
+  input: { sessionID: string; agent?: unknown; model: { providerID: string } },
   output: { options: Record<string, unknown> },
 ): boolean {
   if (!appliesToProvider(opts, input.model.providerID)) return false
   if (!isRecord(output.options)) {
     throw new EpycPluginConfigError("chat.params output.options is not an object; OpenCode hook contract changed")
   }
-  Object.assign(output.options, requestKeys(opts, input.sessionID))
+  // With stampAgentName on, the plugin owns x_agent_name: a value that arrived through agent or
+  // model options (request.ts:91 merges them in before this hook) must not survive a name we
+  // decline to stamp. With it off, options pass through exactly as before HS-19a.
+  if (opts.stampAgentName) delete output.options.x_agent_name
+  Object.assign(output.options, requestKeys(opts, input.sessionID, input.agent))
   return true
 }
 

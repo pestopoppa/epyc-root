@@ -1,7 +1,9 @@
 import { test } from "node:test"
 import assert from "node:assert/strict"
 import {
+  agentNameKey,
   applyChatParams,
+  DYNAMIC_KEYS,
   EpycPluginConfigError,
   parseOptions,
   requestKeys,
@@ -106,4 +108,63 @@ test("stampToolArgs: in place, overwrites model-supplied session_id, fails close
   assert.throws(() => stampToolArgs(o, { tool: "memory_search", sessionID: "ses_C" }, { args: null }), /not an object/)
   assert.throws(() => stampToolArgs(o, { tool: "memory_search", sessionID: "ses_C" }, { args: [] }), /not an object/)
   assert.throws(() => stampToolArgs(o, { tool: "memory_search", sessionID: "" }, { args: {} }), /empty sessionID/)
+})
+
+// ── HS-19a: stampAgentName (opt-in, default off) ─────────────────────────────────
+
+test("stampAgentName: default false; must be a boolean", () => {
+  assert.equal(parseOptions(base).stampAgentName, false)
+  assert.equal(parseOptions({ ...base, stampAgentName: true }).stampAgentName, true)
+  assert.equal(parseOptions({ ...base, stampAgentName: false }).stampAgentName, false)
+  for (const bad of ["true", 1, null, {}]) {
+    assert.throws(() => parseOptions({ ...base, stampAgentName: bad }), /stampAgentName must be a boolean/)
+  }
+})
+
+test("stampAgentName absent: emitted keys are byte-identical to the pre-HS-19a set", () => {
+  const o = parseOptions({ ...base, staticKeys: { x_show_routing: true } })
+  const expected = '{"x_show_routing":true,"x_session_id":"ses_1","x_user_id":"daniele","x_tool_mode":"client"}'
+  assert.equal(JSON.stringify(requestKeys(o, "ses_1")), expected)
+  assert.equal(JSON.stringify(requestKeys(o, "ses_1", "general")), expected, "agent ignored when off")
+  const output = { options: { reasoningEffort: "low", x_agent_name: "from-options" } as Record<string, unknown> }
+  applyChatParams(o, { sessionID: "ses_1", agent: "general", model: { providerID: "epyc-orchestrator" } }, output)
+  assert.equal(
+    JSON.stringify(output.options),
+    '{"reasoningEffort":"low","x_agent_name":"from-options","x_show_routing":true,"x_session_id":"ses_1","x_user_id":"daniele","x_tool_mode":"client"}',
+    "with the option off, options pass through exactly as before",
+  )
+})
+
+test("stampAgentName on: x_agent_name = chat.params agent, after the identity keys", () => {
+  const o = parseOptions({ ...base, stampAgentName: true })
+  assert.equal(
+    JSON.stringify(requestKeys(o, "ses_child", "general")),
+    '{"x_session_id":"ses_child","x_user_id":"daniele","x_tool_mode":"client","x_agent_name":"general"}',
+  )
+  const output = { options: {} as Record<string, unknown> }
+  applyChatParams(o, { sessionID: "ses_P", agent: "build", model: { providerID: "epyc-orchestrator" } }, output)
+  assert.equal(output.options.x_agent_name, "build")
+  assert.equal(output.options.x_parent_session_id, undefined, "the plugin never sets the parent link")
+})
+
+test("stampAgentName on: a bad or empty agent name is omitted, never thrown, never stale", () => {
+  const o = parseOptions({ ...base, stampAgentName: true })
+  for (const bad of ["", " general", "-lead", "a/b", "x".repeat(65), "gen eral", undefined, 7, null]) {
+    assert.equal(agentNameKey(bad), undefined, String(bad))
+    const keys = requestKeys(o, "ses_1", bad)
+    assert.equal("x_agent_name" in keys, false, String(bad))
+    const output = { options: { x_agent_name: "stale" } as Record<string, unknown> }
+    applyChatParams(o, { sessionID: "ses_1", agent: bad, model: { providerID: "epyc-orchestrator" } }, output)
+    assert.equal("x_agent_name" in output.options, false, `stale value survived for ${String(bad)}`)
+  }
+  for (const good of ["build", "general", "a", "Agent_1.v2-x", "x".repeat(64)]) assert.equal(agentNameKey(good), good)
+})
+
+test("x_agent_name and x_parent_session_id are plugin-owned: config cannot set them", () => {
+  assert.ok((DYNAMIC_KEYS as readonly string[]).includes("x_agent_name"))
+  assert.ok((DYNAMIC_KEYS as readonly string[]).includes("x_parent_session_id"))
+  for (const k of ["x_agent_name", "x_parent_session_id"]) {
+    assert.throws(() => parseOptions({ ...base, staticKeys: { [k]: "spoof" } }), /owned by the plugin/)
+    assert.throws(() => parseOptions({ ...base, stampAgentName: true, staticKeys: { [k]: "spoof" } }), /owned by the plugin/)
+  }
 })

@@ -2,7 +2,8 @@
  * epyc-orchestrator: OpenCode server plugin (HS-4 P0.3).
  *
  * Stamps session identity onto every model request and onto orchestrator/memory
- * MCP tool calls. It is written against the documented v1 `Hooks` API
+ * MCP tool calls. With `stampAgentName: true` (HS-19a subagents profile) it also sends the
+ * OpenCode agent name as x_agent_name. It is written against the documented v1 `Hooks` API
  * (@opencode-ai/plugin 1.18.31), so it is an integration, not a patch.
  *
  * Load it from opencode.json(c) as a path plugin. Path plugins must export `id`
@@ -49,7 +50,9 @@ export const server: Plugin = async (_input, rawOptions) => {
         if (ids.includes(input.model.providerID)) throw configError
         return
       }
-      applyChatParams(ready(), input, output)
+      // input.agent is the OpenCode agent name (session/llm/request.ts:118); it becomes
+      // x_agent_name only with the stampAgentName option (HS-19a, default off).
+      applyChatParams(ready(), { sessionID: input.sessionID, agent: input.agent, model: input.model }, output)
     },
     "tool.execute.before": async (input, output) => {
       if (configError) {

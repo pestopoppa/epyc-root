@@ -557,10 +557,17 @@ def resolve_token_counts(session: dict[str, Any],
 
 def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
                     start: float, end: float, passed: bool,
-                    tokens: dict[str, Any] | None = None) -> dict[str, Any]:
+                    tokens: dict[str, Any] | None = None, *,
+                    task: str = "calc-add-fix",
+                    run_id: str | None = None,
+                    suite: dict[str, str] | None = None,
+                    producer: str = "scripts/harness/hs4_p04_acceptance.py",
+                    record_extra: dict[str, Any] | None = None) -> dict[str, Any]:
     """SC86 hook: write the run sidecar and call the belief writer (P0.5).
 
     One task, one trial. The attempt passes when the fixture test passes.
+    The keyword arguments let a sibling acceptance runner (HS-19a) reuse this
+    hook unchanged; their defaults are the P0.4 values.
     """
     if args.no_belief_capture:
         return {"status": "skipped", "reason": "--no-belief-capture"}
@@ -581,14 +588,15 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
     cached_tokens = tokens["cached_prompt_tokens"]
     records = evid / "attempts.jsonl"
     records.write_text(json.dumps({
-        "task": "calc-add-fix", "trial": 0, "session_id": session_id,
+        "task": task, "trial": 0, "session_id": session_id,
         "passed": passed, "input_tokens": prompt_tokens, "cached_prompt_tokens": cached_tokens,
         "input_tokens_source": tokens["input_tokens_source"],
         "cached_prompt_tokens_source": tokens["cached_prompt_tokens_source"],
+        **(record_extra or {}),
     }, sort_keys=True) + "\n")
     run = {
         "schema": cap.RUN_SCHEMA,
-        "run_id": f"hs4-p04-{session_id}",
+        "run_id": run_id or f"hs4-p04-{session_id}",
         "started_at": _utc(start),
         "finished_at": _utc(end),
         "arm_role": "BASELINE",
@@ -603,7 +611,8 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
             "build_info": args.build_info,
             "enable_thinking": args.enable_thinking == "true",
         },
-        "task_suite": {"name": "hs4-p04-calc-fixture", "fingerprint": task_suite_fingerprint()},
+        "task_suite": suite or {"name": "hs4-p04-calc-fixture",
+                                "fingerprint": task_suite_fingerprint()},
         "counts": {
             "tasks": 1, "trials_per_task": 1, "attempts": 1,
             "passed_attempts": int(passed),
@@ -614,8 +623,7 @@ def capture_beliefs(args, evid: Path, session: dict[str, Any], session_id: str,
     (evid / cap.RUN_SIDECAR_NAME).write_text(json.dumps(run, indent=2, sort_keys=True) + "\n")
     try:
         out = cap.write_belief_measurements(
-            evid, producer="scripts/harness/hs4_p04_acceptance.py", run=run,
-            emitted_at=args.emitted_at)
+            evid, producer=producer, run=run, emitted_at=args.emitted_at)
     except cap.CaptureError as exc:
         return {"status": "refused", "reason": str(exc)}
     return {"status": "written", "path": str(out)}

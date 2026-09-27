@@ -11,6 +11,7 @@
     "test": "node --test 'test/*.test.ts'",
     "test:contract": "EPYC_OPENCODE_CONTRACT=1 node --test 'test/*.test.ts'",
     "lint:config": "node scripts/lint-config.ts config/opencode.jsonc.template config/opencode.env",
+    "lint:config:subagents": "node scripts/lint-config.ts --profile subagents config/opencode.subagents.jsonc.template config/opencode.env",
     "typecheck": "tsc -p tsconfig.json"
   }
 }
