@@ -548,7 +548,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 _FILE_SOURCES = (
     "exl3-measurement", "exl3-verifier",
     "research-screen",
-    "kv-quant-27b-v10-measurement", "embedder-placement-gate",
+    "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",
     "kb-rag-qlen", "inf70-arms", "contention-gate", "contention-matrix", "beam", "tulving",
     "chat-template-ab", "occ1", "tale-budget", "review-f1", "opencode-shell",
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",

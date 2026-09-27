@@ -111,6 +111,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            note="UFH-12 placement gate sidecars (`<record>.belief_measurements.jsonl`); the "
                 "2026-09-26 Phase-0 records have none and yield no claims",
            task="VB-UFH12-PLACEMENT"),
+    Source("gfx90a-static-register", "gfx90a_static_register",
+           _files("audit_*.json", "audit_*.json.gz", "*isa_audit*.json", "*isa_audit*.json.gz"),
+           note="gfx90a static register/ISA audits (research `gfx90a_isa_audit.py audit --json`, "
+                "schema epyc.gfx90a.isa_audit.v1); pre-hook audits (no `category`, e.g. research "
+                "data/gfx90a-isa-audit-20260926) yield no claims; no default, pass --path",
+           task="SC84 / SC84a (VB-VGPR-STATIC)"),
     Source("kb-rag-qlen", "kb_rag_query_length",
            _files("*query_length*.json", "**/*query_length*.json"),
            note="persisted `query_length_report.py --out` snapshots", task="VB-KBRAG-QLEN-R"),
