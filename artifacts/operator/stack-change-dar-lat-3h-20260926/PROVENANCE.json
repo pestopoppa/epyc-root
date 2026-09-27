@@ -3,10 +3,10 @@
   "package_version": "v2",
   "taken_at": "2026-09-27T03:30:00Z",
   "scratch": "lane worktrees (git) + detached scratch worktrees /mnt/raid0/llm/worktrees/dar-lat-3h-scratch-orch-{base,R48,R96,L} + /mnt/raid0/llm/tmp/stack-change-dar-lat-3h-20260926",
-  "orchestrator_base": "f58db8be (origin/main) + 7c426412 (env fix, lane/strip-preserve-v2-20260927; main push refused)",
+  "orchestrator_base": "cfd77e6d (origin/main; env fix landed as 5fd6bbdb)", "refreshed_at": "2026-09-27",
   "orchestrator_lane_heads": {
-    "lane/dar-lat-3h-v2-20260927": "2e5e5544",
-    "lane/dar-lat-3h-v2-t48-20260927": "379dca64"
+    "lane/dar-lat-3h-v2-20260927": "5bbd7492",
+    "lane/dar-lat-3h-v2-t48-20260927": "375ab5f7"
   },
   "research_base": "e603216f (origin/main)",
   "research_lane_heads": {

@@ -6,18 +6,16 @@ The split-off follow-up is **DAR-LAT-3i** (`GGML_FA_SPLIT_KV`).
 **Rollback anchor**: the live configuration, recorded in `live-before-20260926.txt`.
 
 **v2 (operator decision 2026-09-26, after the GGML_* env audit): the package is SPLIT.**
-- The launcher env fix is **no longer in this package**. It lands on orchestrator main on its own as a quiet correction, with the
-  recurrence guard (§5.4). The commit is `7c426412` on `lane/strip-preserve-v2-20260927`, a fast-forward of main
-  `f58db8be`. **The main push was refused by a permission check (2026-09-27); main is NOT yet at 7c426412.**
-  The v2 orchestrator lanes are built on 7c426412, so they carry it either way. P0 requires it on main before apply.
+- The launcher env fix is **no longer in this package**. It **landed** on orchestrator main on its own as a quiet
+  correction: `5fd6bbdb` (content of lane commit 7c426412), followed by the derived regen `cfd77e6d`. The recurrence
+  guard lands with it (§5.4). The v2 orchestrator lanes are rebased onto main `cfd77e6d` (refresh 2026-09-27).
 - `GGML_FA_SPLIT_KV=0` is **dropped** and becomes task DAR-LAT-3i.
 - `GGML_FUSED_DECODE_OFF=1` rides along. It is inert under MTP, and G1 checks that premise.
 - `GGML_NOHUGEPAGE_PROCESS=1` (the THP shim) is now **its own G1 factor**, judged independently of threads.
 - Serving proof reads `THP_enabled` from `/proc/<pid>/status`.
 - The v1 lanes (`lane/dar-lat-3h-20260926`, `-t96-`, `-live-`) are **superseded**. Do not merge them.
 
-Nothing here has touched a real tree or the live stack. The separately approved env-fix landing reached its lane
-only (see above). Live
+Nothing here has touched a real tree or the live stack; the env fix was landed separately by the main session. Live
 reads were read-only: `/proc/<pid>/{cmdline,environ,status,task/*/status,numa_maps}`, `ss`, and `strings` on the v10
 libraries. No process was started, stopped or signalled, and no inference request was sent.
 
@@ -86,10 +84,10 @@ says: "Do not assume 48 still wins". **The evidence is insufficient**, so a pre-
 
 | G1 outcome | `-t` | critic GGML env | Orchestrator merge | Research merge | Reload |
 |---|---|---|---|---|---|
-| **T48** | 48 | FUSED_DECODE_OFF | `lane/dar-lat-3h-v2-t48-20260927` @ `379dca64` | `lane/dar-lat-3h-v2-20260927` @ `cbaeee2d` | architect_critic |
-| **T48N** | 48 | FUSED + NOHUGEPAGE | `lane/dar-lat-3h-v2-20260927` @ `2e5e5544` | `lane/dar-lat-3h-v2-t48n-20260927` @ `af4f5675` | architect_critic |
-| **T96** | 96 | FUSED_DECODE_OFF | `lane/dar-lat-3h-v2-20260927` through `ee21ed4e` | `lane/dar-lat-3h-v2-t96-20260927` @ `a969d2f9` | architect_critic |
-| **T96N** | 96 | FUSED + NOHUGEPAGE | `lane/dar-lat-3h-v2-20260927` through `4a4bbd8f` | `lane/dar-lat-3h-v2-t96n-20260927` @ `48f7ebf6` | architect_critic |
+| **T48** | 48 | FUSED_DECODE_OFF | `lane/dar-lat-3h-v2-t48-20260927` @ `375ab5f7` | `lane/dar-lat-3h-v2-20260927` @ `cbaeee2d` | architect_critic |
+| **T48N** | 48 | FUSED + NOHUGEPAGE | `lane/dar-lat-3h-v2-20260927` @ `5bbd7492` | `lane/dar-lat-3h-v2-t48n-20260927` @ `af4f5675` | architect_critic |
+| **T96** | 96 | FUSED_DECODE_OFF | `lane/dar-lat-3h-v2-20260927` through `074f5683` | `lane/dar-lat-3h-v2-t96-20260927` @ `a969d2f9` | architect_critic |
+| **T96N** | 96 | FUSED + NOHUGEPAGE | `lane/dar-lat-3h-v2-20260927` through `e2febde0` | `lane/dar-lat-3h-v2-t96n-20260927` @ `48f7ebf6` | architect_critic |
 | INVALID-PREMISE | — | — | nothing | nothing | none. FUSED_DECODE_OFF was not inert; report it |
 | INCONCLUSIVE | — | — | nothing | nothing | none. Re-run G1 in another window |
 
@@ -98,7 +96,7 @@ says: "Do not assume 48 still wins". **The evidence is insufficient**, so a pre-
 ### Measurement gates (pre-registered; thresholds signed with the package)
 
 **G1 — threads × THP-shim launch ABA, before apply.** The driver is `scripts/server/critic_thread_gate.py`
-(orch `565a7c15`).
+(orch `8b7e24e3`).
 - Arms: each is a fresh launch of the **live :8074 argv** on port 18074. Only `-t` and `--port` change, and
   `--slot-save-path` is dropped. The prefix is the same `numactl --interleave=all -- taskset -c 0-95`.
 
@@ -148,25 +146,26 @@ fresh again.
 Tests (pinned `taskset -c 72-79 nice -n 10`):
 - Targeted stack/env/launch/numa/topology/critic/template/pipeline suites: T96 and T96N heads 1,846 passed; T48
   and T48N heads 1,846 passed, 1 failed.
-- The landing commit's full `tests/unit`: 15,468 passed, 0 failed.
+- The landed env fix's full `tests/unit` on main: 15,513 passed (main session). On main, the shared-clone pipeline
+  check is all ok, including `runtime_attestation` and `declared_env_attestation`.
 - The one failure is `test_real_matrix_against_live_numa_config`, which is exactly G3.
 
 ## 5. Patch set (lane branches, pushed, not applied)
 
 | # | Patch | Repo · branch · commit | Content | Outcomes |
 |---|---|---|---|---|
-| O1 | `patches/orchestrator/0001-*` | epyc-orchestrator · `lane/dar-lat-3h-v2-20260927` · `f98d210b` | `NUMA_FULL_T48` shape + split thread invariant. **Inert** | all applying |
-| O2 | `0002-*` | same · `565a7c15` | G1 driver v2 (5 arms, rule, THP readback) + 14 tests. **Inert** | all applying |
-| O3 | `0003-*` | same · `ee21ed4e` | critic `stack_env` = FUSED_DECODE_OFF; recipe-env parity test, both directions (`env_not_serving` must not leak); critic in `DELIBERATE_GGML_BLOCKS`; derived regenerated | all applying |
-| O4 | `0004-*` | same · `4a4bbd8f` | + NOHUGEPAGE_PROCESS; derived regenerated vs T96N | T96N, T48N |
-| O5 | `0005-*` | same · `2e5e5544` | topology `NUMA_FULL_T48`, template, shape↔recipe parity test; derived regenerated vs T48N | T48N |
-| O5′ | `patches/orchestrator-t48/0004-*` | `lane/dar-lat-3h-v2-t48-20260927` · `379dca64` | O5 on top of O3 (no shim) | T48 |
+| O1 | `patches/orchestrator/0001-*` | epyc-orchestrator · `lane/dar-lat-3h-v2-20260927` · `16f93a56` | `NUMA_FULL_T48` shape + split thread invariant. **Inert** | all applying |
+| O2 | `0002-*` | same · `8b7e24e3` | G1 driver v2 (5 arms, rule, THP readback) + 14 tests. **Inert** | all applying |
+| O3 | `0003-*` | same · `074f5683` | critic `stack_env` = FUSED_DECODE_OFF; recipe-env parity test, both directions (`env_not_serving` must not leak); critic in `DELIBERATE_GGML_BLOCKS`; derived regenerated | all applying |
+| O4 | `0004-*` | same · `e2febde0` | + NOHUGEPAGE_PROCESS; derived regenerated vs T96N | T96N, T48N |
+| O5 | `0005-*` | same · `5bbd7492` | topology `NUMA_FULL_T48`, template, shape↔recipe parity test; derived regenerated vs T48N | T48N |
+| O5′ | `patches/orchestrator-t48/0004-*` | `lane/dar-lat-3h-v2-t48-20260927` · `375ab5f7` | O5 on top of O3 (no shim) | T48 |
 | R1 | `patches/research/0001-*` | epyc-inference-research · `lane/dar-lat-3h-v2-20260927` · `cbaeee2d` | corrects the claim; `recipe.env` = FUSED; `recipe.env_not_serving` = {NOHUGEPAGE (G1), FA_SPLIT_KV (3i)} | T48 as-is; base of the rest |
 | R2 | `patches/research-t48n/*` | `…-v2-t48n-20260927` · `af4f5675` | + NOHUGEPAGE in `env` | T48N |
 | R3 | `patches/research-t96/*` | `…-v2-t96-20260927` · `a969d2f9` | threads 96, `NUMA_FULL` | T96 |
 | R4 | `patches/research-t96n/*` | `…-v2-t96n-20260927` · `48f7ebf6` | both | T96N |
 
-### 5.4 Landing separately (NOT in this package): the launcher env fix + recurrence guard, `7c426412` (pending main fast-forward)
+### 5.4 Landed separately (NOT in this package): the launcher env fix + recurrence guard, orch main `5fd6bbdb`
 
 - **Root cause.** b060dd56 (2026-07-31) gave every role a `binary_dir`. The compiler labels a backend-derived
   `binary_dir` `env_policy: canonical` precisely so that it does not change env policy. The launcher, however, keyed
@@ -200,7 +199,8 @@ Tests (pinned `taskset -c 72-79 nice -n 10`):
 
 - **P0 preconditions**, checked from region holders and captured PIDs, never name patterns:
   - The receipt exists.
-  - Orchestrator main contains `7c426412`, the env fix and recurrence guard (`git merge-base --is-ancestor`).
+  - Orchestrator main contains `5fd6bbdb`, the env fix and recurrence guard (landed 2026-09-27; the ratify script
+    checks it).
   - A bus-granted whole-host quiet window (INVARIANTS #8; MEAS-6 forbids a concurrent GPU chain). AutoPilot is
     quiesced by its owner. No bench, AutoKernel CPU arm or GPU loop is running.
   - `:8074 /slots` shows `is_processing: false`, and admission shows `in_flight == 0` for architect_critic. Nothing
@@ -209,7 +209,7 @@ Tests (pinned `taskset -c 72-79 nice -n 10`):
 - **P1 G1**: `scripts/region-lock run --cpu-list 0-191 -- .venv/bin/python scripts/server/critic_thread_gate.py run
   --live-pid <:8074 pid> --prompts <this dir>/gate/prompts-24mix.json --out
   /mnt/raid0/llm/epyc-inference-research/data/dar-lat-3h-gate-<UTC>`, then `summarize`. Run it from an orchestrator
-  worktree at `565a7c15` or later. `verdict.json` names the outcome.
+  worktree at `8b7e24e3` or later. `verdict.json` names the outcome.
 - **P2 apply the outcome's pair (§3)**:
   1. Merge in a detach worktree on `origin/main` and push with the push lock.
   2. `git pull --ff-only` both shared clones.
@@ -233,7 +233,7 @@ Tests (pinned `taskset -c 72-79 nice -n 10`):
 ## 7. Rollback
 
 1. On orchestrator main, `git revert` the merged O5/O5′, O4 and O3, newest first. O1 and O2 are inert and may stay.
-   The env fix `7c426412` stays; it is independent and neutral.
+   The env fix `5fd6bbdb` stays; it is independent and neutral.
 2. On research main, revert the merged outcome commit, then R1 if the operator wants the recipe wording back.
 3. `update`, then `reload architect_critic`.
 4. Verify with P4 (`-t 96`, `GGML_IQK` only, `THP_enabled` 1). The hash returns to 4893e37e, so the old matrix is

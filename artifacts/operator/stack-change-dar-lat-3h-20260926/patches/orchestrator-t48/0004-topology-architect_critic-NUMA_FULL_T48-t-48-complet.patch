@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
-Date: Sun, 27 Sep 2026 01:11:10 +0000
+Date: Sun, 27 Sep 2026 01:42:08 +0000
 Subject: [PATCH] topology: architect_critic -> NUMA_FULL_T48 (-t 48),
  completing C3 (DAR-LAT-3h v2, outcomes T48/T48N ONLY)
 

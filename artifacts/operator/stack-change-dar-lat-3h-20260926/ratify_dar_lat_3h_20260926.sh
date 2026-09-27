@@ -27,13 +27,12 @@ ORCH="/mnt/raid0/llm/epyc-orchestrator"
 RESEARCH="/mnt/raid0/llm/epyc-inference-research"
 PYTHON="/usr/bin/python3"
 
-# repo|lane|commits (every commit must be an ancestor of origin/<lane>). v2 (2026-09-27):
-# the v1 lanes are superseded, and the env fix 7c426412 lands separately (it is the base
-# of the orchestrator v2 lanes).
+# repo|lane|commits (every commit must be an ancestor of origin/<lane>). Refreshed
+# 2026-09-27 onto orchestrator main cfd77e6d; the v1 lanes are superseded.
 LANES=(
-  "$ORCH|lane/strip-preserve-v2-20260927|7c426412"
-  "$ORCH|lane/dar-lat-3h-v2-20260927|7c426412 f98d210b 565a7c15 ee21ed4e 4a4bbd8f 2e5e5544"
-  "$ORCH|lane/dar-lat-3h-v2-t48-20260927|ee21ed4e 379dca64"
+  "$ORCH|main|5fd6bbdb cfd77e6d"
+  "$ORCH|lane/dar-lat-3h-v2-20260927|cfd77e6d 16f93a56 8b7e24e3 074f5683 e2febde0 5bbd7492"
+  "$ORCH|lane/dar-lat-3h-v2-t48-20260927|074f5683 375ab5f7"
   "$RESEARCH|lane/dar-lat-3h-v2-20260927|cbaeee2d"
   "$RESEARCH|lane/dar-lat-3h-v2-t48n-20260927|cbaeee2d af4f5675"
   "$RESEARCH|lane/dar-lat-3h-v2-t96-20260927|cbaeee2d a969d2f9"
@@ -43,14 +42,14 @@ LANES=(
 # Pinned content. A package edited after preparation must be re-pinned by its
 # preparer, not signed as-is.
 PINS=(
-  "9ece6bd409a09f20bc4c048e678df0bc3a3e40d2590a948a346dd5842f597eba PACKAGE.md"
+  "4ae206954741a737d10efd719d4b9167fdcce65a7632873505919a57cdf40cf5 PACKAGE.md"
   "ea154096eb110850ab5be5e4f574e995e5dbf17540dcbb9461b8cc38c0855783 gate/prompts-24mix.json"
-  "5b302df2c8eac8b2e2656c54f927f1976456acb6561c63fc816ba3a4b15ed5e2 patches/orchestrator-t48/0004-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch"
+  "49d507333cb75fcf61271aa0ecbc188fe6ef8cfbecb621db18203d03350b06c1 patches/orchestrator-t48/0004-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch"
   "204bb488fe692a0dd7a8b51e32bad01bedd0d95155d04c703c80dd8e94385d4f patches/orchestrator/0001-stack_numa-NUMA_FULL_T48-shape-split-thread-invarian.patch"
   "ad995bb9124c4fe496914d83cbc687cf36d74c10191c232ac35b48730e3aa9d0 patches/orchestrator/0002-server-critic_thread_gate.py-the-DAR-LAT-3h-gate-G1-.patch"
-  "dc0954861ea603dd9b130e63fa390ceef9891e599f2206e34ac560adb3c42235 patches/orchestrator/0003-stack_env-architect_critic-serving-env-GGML_FUSED_DE.patch"
-  "452e532a5bb42476c393e0c844585dd30b1cfed0a9d20f7c6a37f5721964dd60 patches/orchestrator/0004-stack_env-architect_critic-GGML_NOHUGEPAGE_PROCESS-1.patch"
-  "a90ce52727c171ffbeb84a89b252a2273694d438f633a185479342e849a21faa patches/orchestrator/0005-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch"
+  "d7bb546098fe39e0bad9ecfd6795412652ecf8997af965c9238d0b2e02a5629d patches/orchestrator/0003-stack_env-architect_critic-serving-env-GGML_FUSED_DE.patch"
+  "0f899f067408fedf30252fe040af1d164360edb8b6f39fb7af8b42afadeeb7aa patches/orchestrator/0004-stack_env-architect_critic-GGML_NOHUGEPAGE_PROCESS-1.patch"
+  "eedfef24055436278f6791fa9306a4be5bebaaa8b50f4db92098ffd36b3932cc patches/orchestrator/0005-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch"
   "3cc1b64a1d6914bbbba45607d545e3c09973c38ad797d1672f55afc07b85acd5 patches/research-t48n/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch"
   "3932ac4ebe21abbbb22c2f9c580a92c880df870a93c2a845133184d7ff1069ae patches/research-t96/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch"
   "c6997496b363da349fd1ca3d8b8ed47680fc73ba398fc1b9956adde3e8a72802 patches/research-t96n/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch"
@@ -89,13 +88,6 @@ for entry in "${LANES[@]}"; do
   done
 done
 
-# The env fix is a precondition of APPLY (PACKAGE.md section 6 P0), not of signing. Say where it stands.
-if git -C "$ORCH" fetch -q origin main && git -C "$ORCH" merge-base --is-ancestor 7c426412 FETCH_HEAD; then
-  printf 'ok  env fix 7c426412 is on origin/main\n'
-else
-  printf 'NOTE: env fix 7c426412 is NOT yet on origin/main (its push was refused; see PACKAGE.md). Apply waits for it.\n'
-fi
-
 if [[ "$MODE" == "validate" ]]; then
   printf 'VALID: package, patches, prompt set and lane commits verified. Nothing written.\n'
   exit 0
@@ -118,7 +110,7 @@ doc = {
     "package_version": "v2 (operator split after the GGML_* env audit, 2026-09-26)",
     "signed_gates": {
         "G1_threads_x_thp_shim": {
-            "driver": "epyc-orchestrator scripts/server/critic_thread_gate.py @ 565a7c15",
+            "driver": "epyc-orchestrator scripts/server/critic_thread_gate.py @ 8b7e24e3",
             "arms": {"L": "-t 96, live env", "T96": "-t 96 + FUSED_DECODE_OFF",
                      "T96N": "-t 96 + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS",
                      "T48": "-t 48 + FUSED_DECODE_OFF", "T48N": "-t 48 + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS"},
@@ -133,18 +125,18 @@ doc = {
         "G3_contention_recert": "T48/T48N only: contention_matrix.py run in the same window; check_contention_matrix_fresh.py OK",
     },
     "outcome_merge_pair": {
-        "T48": {"epyc-orchestrator": "lane/dar-lat-3h-v2-t48-20260927 @ 379dca64",
+        "T48": {"epyc-orchestrator": "lane/dar-lat-3h-v2-t48-20260927 @ 375ab5f7",
                 "epyc-inference-research": "lane/dar-lat-3h-v2-20260927 @ cbaeee2d", "reload": "architect_critic"},
-        "T48N": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 @ 2e5e5544",
+        "T48N": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 @ 5bbd7492",
                  "epyc-inference-research": "lane/dar-lat-3h-v2-t48n-20260927 @ af4f5675", "reload": "architect_critic"},
-        "T96": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through ee21ed4e",
+        "T96": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through 074f5683",
                 "epyc-inference-research": "lane/dar-lat-3h-v2-t96-20260927 @ a969d2f9", "reload": "architect_critic"},
-        "T96N": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through 4a4bbd8f",
+        "T96N": {"epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through e2febde0",
                  "epyc-inference-research": "lane/dar-lat-3h-v2-t96n-20260927 @ 48f7ebf6", "reload": "architect_critic"},
         "INVALID-PREMISE": "apply nothing; GGML_FUSED_DECODE_OFF was not inert",
         "INCONCLUSIVE": "apply nothing; re-run G1 in another window",
     },
-    "apply_precondition": "epyc-orchestrator main contains 7c426412 (env fix + recurrence guard)",
+    "env_fix_landed": "epyc-orchestrator main 5fd6bbdb (+ derived regen cfd77e6d), verified on origin/main by this script",
     "superseded_lanes": ["lane/dar-lat-3h-20260926", "lane/dar-lat-3h-t96-20260926", "lane/dar-lat-3h-live-20260926"],
     "scope_excluded": ["GGML_FA_SPLIT_KV (task DAR-LAT-3i)", "n_ctx (lineup-change C4 stands)", "CPU speech co-tenancy (operator ruling 2026-09-24: no change)"],
     "applies_nothing": True,
