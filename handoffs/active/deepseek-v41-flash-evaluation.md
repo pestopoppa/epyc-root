@@ -391,6 +391,18 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   was retried as a harness failure, and spent another 6667 s (total ~3.9 h) while a0-off gave up at 61 min. Decide a
   per-member wall budget for best-of (e.g. cap medium at ~60-75 min, or stop retrying a timed-out member when the other
   member already finished) and measure its effect on panel yield vs wall.
+- [ ] DS41-C57 — **Host contention on CPU 0 inflates thread-0-bound nodes (inferred).** The hc RMS_NORM node is ~42 µs wall
+  but only 12-15 µs of its own work (chain ~10 µs, cold/cross-NUMA input +1-4 µs, barrier ~2.3 µs); ~25 µs is threads 0-2 slow
+  or late. DS41's OMP `spread` puts threads 0/1/2 on CPUs 0/2/4; CPU 0 carries 14.6% lifetime sys time (vs 1.8% on 2/4) and
+  ~3x the interrupts, and co-resident production CPU llama-servers pin their main thread to CPU 0 plus one compute thread per
+  CPU on 0-95. May also feed the +19.4% A/A excursion. Probe (CPU window, needs inference): pinned profile
+  `GGML_CPU_PROF_NNODES_EQ=5966 GGML_CPU_PROF_THREADS=1` with `/proc/stat` user/sys/irq sampled on CPUs 0/2/4. If confirmed,
+  A/B DS41 with `OMP_PLACES` starting at CPU 2 (spread kept) — a recipe/epoch change needing operator sign-off — and review
+  production CPU-server pinning. Evidence: `/mnt/raid0/llm/tmp/normsplit-route-20260927/bench/`, note draft 53.
+- [x] DS41-C58 — **RMS_NORM within-row split route: built, bound too small.** ✅ 2026-09-27 — research `6b73fce2`
+  (`cpu_norm_rowsplit` route, bit-identity + float64 reference, GDB witness incl. the fused variant). Measured: the bit-exact
+  split saves ~0.1% (every task re-runs the serial 20480-add chain); a multi-accumulator sum (1-ulp, tolerance route) caps at
+  ~0.5-0.6%. Not placed as a hypothesis (note 53 stays DRAFT); the real cost is DS41-C57.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
