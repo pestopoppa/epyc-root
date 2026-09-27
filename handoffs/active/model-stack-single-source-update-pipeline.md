@@ -724,6 +724,32 @@ supplies the value under test cannot fail on it.
   inference window. Emit producer-authored belief rows from the first run, as the SSU-F2 CPU bench does
   (root `CLAUDE.md` → *Belief Kernel*).
 
+- [ ] **SSU-F17 — key servers by model instance and bind every role to a server id.** **Sequenced after UFH-13
+  (operator 2026-09-27)**: approved in chat (session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ) to run
+  AFTER the thesis experiment (`thesis-experiment-orchestrator-vs-strongest-model.md`), not before or during it.
+  - **The limit today.** `server_mode.<key>` is both a role name and a process declaration, so a server has no name
+    except its owning role's. An alias binds role → role through `server_mode.<host role>.shared_with`, and
+    `alias_of` is documentation only. When a role label moves between processes, every alias must be re-pointed by
+    hand across about 8 restated surfaces. ARCHSWAP-20260927 had to do exactly that.
+  - **The change.**
+    - Add a server namespace keyed by model instance (e.g. `servers.qwen38_27b_q8_gpu0 {port, model, shape, ...}`).
+    - Every role, host or alias, binds to a server id.
+    - Retire the role → role binding through `server_mode.<host role>.shared_with` and the documentation-only
+      `alias_of`, with their validators and derived restatements (`shared_with_first_n`, the alias `server_mode`
+      rows that must equal the host's port).
+    - Roles stay distinct prompt and tier profiles: `orchestration/prompts/roles/{role}.md` and per-role
+      `chat_template_kwargs` stay per role.
+  - **Done when** a role swap like ARCHSWAP is a two-line change to two roles' server ids and no alias moves.
+  - **Evidence.** ARCHSWAP PACKAGE §4a,
+    `/mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927/PACKAGE.md` (root
+    `lane/archswap-20260927`). Code refs (orch `280059cc`): `src/registry/stack_priors.py:900-907`
+    (`_server_for_role`), `src/registry/registry_compiler.py:117-119`, `src/registry/model_descriptors.py:1285-1300`,
+    `scripts/validate/check_shared_with_derivations.py:400-442` (`check_alias_of_coherence`).
+  - Overlaps SSU-F4 (derive instead of restate): once roles bind to server ids, the `shared_with` alias lists that
+    SSU-F4 would derive no longer exist.
+  - It changes the registry schema, so it runs as a `stack-change` package with one operator signature.
+  - Blocker: sequencing only (UFH-13's verdict, TE-6).
+
 ### SSU-F2 outcome — the Flash-Next "quality gap" was a measurement artifact (2026-09-23)
 
 The CPU-shape architect quality bench exists (`architect_bench_cpu_{lib,arm,phase}.sh` +
