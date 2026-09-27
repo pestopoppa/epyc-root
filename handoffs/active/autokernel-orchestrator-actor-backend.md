@@ -143,6 +143,7 @@ dominates the wall (~58k tokens at ~30 tok/s); every arm compacted once because 
   orchestrator `b9e004e3`, API pid 2517073 since 14:40:38Z). Arms: 27B plain seat vs 27B orchestrator REPL +
   scouts + context variable. Pause run 10 through its control listener for it, or run it concurrently and
   alternate arms; the CPU is never left idle (operator 2026-09-25).
+  - PARKED 2026-09-27 (operator): every prerequisite is deployed (orchestrator `b9e004e3`: OAB-1/2/3/7/8), but `/mnt/raid0/llm/tmp/ak-seat-ab/driver.py` has NO `orch` arm yet (only the 2026-09-24 plain and bounded results exist), and zero paired runs have been made; resume by adding the `orch` arm to driver.py (27B :8083, KV mode pinned per OAB-4a) and running three ABAB pairs in a campaign-idle GPU window.
 - [ ] **OAB-4a — pin and record :8083's KV mode in every OAB-4 arm** (filed 2026-09-24, RTG-57). Unified vs
   split KV changes outputs at the same seed, because float summation order changes. It also moves the per-request
   ceiling from 98,304 to 196,608 tokens once the `-kvu` package lands. An arm pair that straddles the :8083 reload
@@ -429,6 +430,7 @@ Not measured:
   - OAB-12 pull caps exist in the seat or the orchestrator;
   - the planner model changes;
   - the planner runs on a slot small enough that inline compacts again (≤ 98k).
+  - PARKED 2026-09-27 (operator): no re-run. The operator's revisit is folded into OAB-4's first `orch` run with the context variable on. The orchestrator-side pull cap (`context_pull_budget_bytes`, `88e22777`) exists, and the seat-side cap does not. The 2026-09-25 driver still lacks ABBA order and per-section byte counts; resume by running OAB-4's `orch` arm, or, on another trigger, re-running `artifacts/autokernel_ctx_ab_20260925/driver.py` at n >= 3 ABBA after adding per-section bytes.
 
   Then re-run `artifacts/autokernel_ctx_ab_20260925/driver.py` with **n ≥ 3 in counterbalanced order (ABBA)**,
   because the 2026-09-25 run always put inline first. Also give the driver a byte count per bundle section: it
@@ -477,6 +479,7 @@ Not measured:
   (`epyc.orchestrator.context_pulls.v1`) logs offered vs pulled bytes, unique coverage and per-turn records for
   each section, and `context_pull_budget_bytes` is the per-call cap. Still open: the seat exporter's per-section
   pull bytes.
+  - PARKED 2026-09-27 (operator): the orchestrator half is done (`88e22777`: `ChatResponse.context_pulls` with per-section offered and pulled bytes, plus the `context_pull_budget_bytes` cap). The seat exporter (`actor_call_metrics.v1`) still carries only `bundle_tool_calls`, with no per-section pull bytes; resume by deriving per-section pull counts and bytes from the export's `read`/`grep` tool parts in the seat metrics exporter.
 
 ### Tasks filed 2026-09-25 (integration, opencode store, planner timeline)
 
@@ -503,10 +506,12 @@ Not measured:
   would disable TUI undo. Recommendation: keep it per-call only. (b) A store retention policy: `opencode.db` is
   10.8 GB of live data plus a 10.9 GB WAL, so VACUUM cannot shrink it; only retention can. Recommendation: age out
   sessions older than N days for headless actor runs only. Blocks nothing else on this page.
+  - PARKED 2026-09-27 (operator): the decision package above is complete: (a) keep `snapshot: false` per-call only; (b) age out headless-actor sessions older than N days. There is no operator ruling yet, and nothing has been applied; resume when the operator answers OP-59, by applying (a) and (b) as ruled.
 - [ ] **OAB-16 — give scouts an inference-tap record.** OAB-8 scouts are direct completions that bypass the
   `LLMPrimitives` gates (contention, region lock, inference tap), so their tokens are missing from the tap's
   accounting. Emit one tap record per scout call (role, slot, prompt/decoded tokens, wall), tagged with the parent
   request id. Acceptance: an OAB-4 `orch`-arm call shows its scout calls in the tap next to the planner turn.
+  - PARKED 2026-09-27 (operator): not started. OAB-8 scouts still bypass `LLMPrimitives`, and no tap record exists for a scout call; resume by emitting one inference-tap record per scout call (role, slot, prompt and decoded tokens, wall, parent request id) from the orchestrator scout stage, then checking it on an OAB-4 `orch`-arm call.
 - [ ] **OAB-17 — triage the unfixed second-review items F8-F11, F15, F16 and R2-R4.** F1-F7 and F12-F14 landed in
   `86cdeaf3` / `b9e004e3`. Items (Fable review, 2026-09-25 ~12:50Z, file:line against 7d0ce447):
   - F8 MED: scout `/slots` cap is a one-shot snapshot from a 1.5 s-TTL process-wide cache (`scout_stage.py:719-723`,
@@ -528,15 +533,18 @@ Not measured:
   - R3 LOW: `orchestrator-variable` context mode has no inline fallback (unlike `variable`).
   - R4 INFO: `_sealed` seals without `role`; per-call files under `<workspace>/../actor-orchestrator/` never cleaned.
   Fix or decline each in writing. Acceptance: every item has a disposition.
+  - PARKED 2026-09-27 (operator): F1-F7 and F12-F14 landed (`86cdeaf3`/`b9e004e3`). F8-F11, F15, F16 and R2-R4 have neither a fix nor a written disposition; resume by writing a fix-or-decline disposition for each item here, starting with the two MED items, F8 (the `/slots` snapshot race) and F9 (the shared thread pool).
 - [ ] **OAB-18 — turn on `PREFIX_STABLE_ORDER` for scoped REPL calls, or measure why not.** With the prod default
   (off), each turn's state block precedes the task, so the whole task is re-prefilled every turn: measured on the
   DS41 control prompt, 27,803 → 6,555 uncached tokens per turn with the bundle, and 122 → 1,201 with the flag on
   (`88e22777`). On :8083 that is ~92 s of prefill per turn. Acceptance: a scoped OAB-4 call shows per-turn
   uncached prefill near the flag-on number, with unchanged replies on the REPL suites.
+  - PARKED 2026-09-27 (operator): `PREFIX_STABLE_ORDER` is still OFF in production (`src/features.py`, `prefix_stable_order` defaults to False). The only data is the `88e22777` DS41 control-prompt measurement quoted above. No scoped OAB-4 call and no REPL-suite reply check has run; resume by enabling the flag for scoped REPL calls and verifying per-turn uncached prefill and unchanged REPL-suite replies.
 - [ ] **OAB-19 — the compaction worker summarizes text no prompt shows.** Compaction measures and summarizes
   `TaskState.context`, which no turn prompt renders (the same root cause as the schema-preamble bug fixed in
   `1d0ab2f5`). Point it at what the root prompt actually carries, or retire it for REPL turns. Acceptance: a test
   where compaction fires changes the next root prompt.
+  - PARKED 2026-09-27 (operator): not started. Compaction still summarizes `TaskState.context`, which no turn prompt renders; resume by pointing the compaction worker at what the root prompt actually carries, or retiring it for REPL turns, with a test in which compaction fires and the next root prompt changes.
 - [x] **OAB-20 — planner timeline audit (why a planner call takes 30-60 min).** ✅ 2026-09-25 — from the :8083 logs
   of the trimmed call: decode 87% of wall, prefill 13%, gaps 0.3%. One 30k-token reasoning turn (step 6) was 68% of
   the call. `--planner-effort high` maps to opencode `--variant high`, which is inert for this server and model.
@@ -603,6 +611,7 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   shape (a `planner` agent with fan-out *guidance*, the hidden-`scout` description, a prompt that never names `task`) both
   frontdoor and 27B-think self-served 0/3. DS41-C20c's non-delegation was SETUP (prompt shape), not the model. If the AK
   seat should fan out, instruct it explicitly (or keep fan-out orchestrator-owned per OAB-8 / HS-19c, the operator ruling).
+  - PARKED 2026-09-27 (operator): the probe is done and recorded (`/mnt/raid0/llm/tmp/task-probe-20260927/`, root `e043cfa3`/`c9bc3859`): C20c's non-delegation came from the prompt shape. The AK seat prompt is unchanged, so fan-out is still offered, not instructed. The standing operator ruling keeps fan-out orchestrator-owned (OAB-8/HS-19c); resume by recording here whether that ruling closes this item, with the probe as evidence, or, if seat fan-out is wanted, naming the `task` tool explicitly in the research planner prompt.
 - [ ] **OAB-34 — actor calls end `output_capped_empty` at the 16384-token output cap.** Reported by ak-ds41-main on
   2026-09-27 for the planner (planner and critic output are capped at 16384 since the `ak-author-medium` lane). The loop
   record read during the wrap-up shows the same class on the a1-medium author in run 10k `batch-000000` ("3 step(s) hit

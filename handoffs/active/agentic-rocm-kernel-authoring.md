@@ -1215,19 +1215,25 @@ candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA
   in-loop v_accvgpr_read/write, s_waitcnt drains per iteration, and MFMA placement relative to s_barrier. Scope: MMQ,
   MMA-FA, rocWMMA FA, mul_mat_f. It is the accept gate for any MMQ/FA register-affecting candidate: no timing
   before it passes. Reads existing binaries only. Belief-kernel write side: SC84 amendment (P6).
-- [ ] **INF03-REGAUDIT-2 — make the ISA gate a hard step before timing.** Add `gfx90a_isa_audit.py diff <incumbent>
+- [x] **INF03-REGAUDIT-2 — make the ISA gate a hard step before timing.** Add `gfx90a_isa_audit.py diff <incumbent>
   <candidate> --families mmq,fattn_mma,fattn_wmma,mmf` to the kernel-promotion runbook/skill and the INF03-AGPR-1 arm
   protocol: must exit 0, or each FAIL is accepted by name in the package. Store both audit JSONs with
-  `--category`/`--source-commit` so they feed SC84.
+  `--category`/`--source-commit` so they feed SC84. ✅ 2026-09-27 — `.claude/skills/kernel-promotion/SKILL.md` step 3c
+  plus the required `gpu_isa_audit` gate in `promotion_gates.yaml` (root lane `lane/park-20260927` `222a2f93`); the
+  INF03-AGPR-1 accept clause below now names the same diff.
 - [ ] **INF03-REGAUDIT-3 — investigate the v9→v10 MMQ spill regressions** (Q5_0 J=64 15→46, Q1_0 21→61, Q4_0
   need_check=1 0→32, Q8_0 32→37; Q2_K improved 346→35). Bisect which v10 change raised register pressure; feeds the
   J-cap (AK-MMQ-H10) and any MMQ forward-port.
+  - PARKED 2026-09-27 (operator): not started. The regressions exist only as rows in the v9-vs-v10 audit (research `data/gfx90a-isa-audit-20260926/`), and no bisect build has been made. AK-MMQ-H10 came back NEGATIVE, so this is now the main MMQ register-pressure lead; resume by building gfx90a `libggml-hip.so` at bisect points between v9 `0db32c06e` and v10 `ffc1bac82` in an experimental worktree and running `gfx90a_isa_audit.py audit --families mmq` on each against the v9 audit (zero GPU).
 - [ ] **INF03-AGPR-1 — NH-1 MFMA-form arm on ROCm 6.2** (gate lifted 2026-09-27: v10 FREEZE is the consolidated champion; audit supports excluding MMA-FA DKQ≥192, already at 512 VGPR with hundreds of reloads/iteration). On an experimental
   branch from the v10 tip, change the <=256-thread `__launch_bounds__(N,1)` of mul_mat_f (mmf.cuh) and rocWMMA FA
   (fattn-wmma-f16.cu) to `(N,2)`, with a separate `amdgpu_num_vgpr(128)` arm (waves_per_eu also raises the scheduler's
-  occupancy target). Compile for gfx90a with ROCm 6.2. Accept only if INF03-REGAUDIT-1 shows agpr=0, zero in-loop
-  v_accvgpr copies and no new spills; then run a matched same-window ABA with correctness. Exclude MMA-FA DKQ>=192:
+  occupancy target). Compile for gfx90a with ROCm 6.2. Accept only if `gfx90a_isa_audit.py diff <v10 audit> <arm
+  audit> --families mmq,fattn_mma,fattn_wmma,mmf` exits 0 (the INF03-REGAUDIT-2 gate; audit each arm with
+  `--category CANDIDATE --source-commit <sha>`) AND the arm's audit shows agpr=0, zero in-loop
+  v_accvgpr copies and no new spills; no timing before that. Then run a matched same-window ABA with correctness. Exclude MMA-FA DKQ>=192:
   a 256 cap there would trade copies for scratch spills. Evidence: intake-1826#record, intake-1823#record.
+  - PARKED 2026-09-27 (operator): not started. The gate was lifted 2026-09-27, but no experimental branch, build or audit exists; resume by branching from the v10 tip `ffc1bac82`, changing the <=256-thread `__launch_bounds__(N,1)` in mmf.cuh and fattn-wmma-f16.cu to `(N,2)` (plus the separate `amdgpu_num_vgpr(128)` arm), compiling for gfx90a with ROCm 6.2, and passing the `gfx90a_isa_audit.py diff` gate above before the matched ABA.
 - [x] **INF03-GLUON-X — record, not work: Gluon and the tutorial's tools do not transfer to gfx90a.** Upstream Triton
   rejects BufferLoadToLocal on CDNA2, and local Triton 3.1.0 predates Gluon. amdgcnas hard-codes gfx950 registers,
   misses gfx90a `buffer_*` spills, and deletes in-loop s_nop wholesale. llirSched's cycle table is gfx950-only (gfx90a

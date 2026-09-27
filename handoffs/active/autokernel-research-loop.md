@@ -5581,13 +5581,16 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
   the zero-authoring first arm, then hand-set `sched_group_barrier` groups.** Also issue the final MFMAs before
   `__syncthreads`, the gfx90a analogue of a split barrier. Falsifier: the ISA shows MFMAs sunk after s_barrier or
   unchanged order, or the MMQ kernel time does not move beyond the noise floor at ne11 in {16,32,64}.
+  - PARKED 2026-09-27 (operator): not started. No experimental branch, no ISA audit and no timing exist; the only inputs are this seed and the v10 baseline audit (research `data/gfx90a-isa-audit-20260926/`); resume by cutting an experimental branch from the v10 tip `ffc1bac82`, adding `__builtin_amdgcn_iglp_opt(0)` and `(1)` arms to `vec_dot_*_mma`, gating each arm with `gfx90a_isa_audit.py diff --families mmq` against the v10 audit (INF03-REGAUDIT-2), then timing the MMQ kernel at ne11 in {16,32,64}.
 - [ ] **AK-MMQ-H7 — Register-staged prefetch of the next K iteration's x/y tiles across the barrier** (enabled
   by gfx90a FeatureBackOffBarrier). Only for instances with VGPR headroom: J<=48, or K-quants whose J=64 loop is rolled.
   Falsifier: INF03-REGAUDIT-1 shows new spills or a vmcnt(0) at the barrier, or no time change.
+  - PARKED 2026-09-27 (operator): not started. No branch, audit or timing exist. AK-MMQ-H10 came back NEGATIVE (J=64 stays), so the targets are the J<=48 instances and the K-quants with a rolled J=64 loop; resume by picking the instances with VGPR headroom from the v10 audit table (research `data/gfx90a-isa-audit-20260926/`), prototyping the cross-barrier register prefetch on an experimental branch from `ffc1bac82`, and passing `gfx90a_isa_audit.py diff --families mmq` (no new spills, no hot-loop vmcnt(0) at the barrier) before any timing.
 - [ ] **AK-MMQ-H8 — y-tile fill via dword `llvm.amdgcn.raw.buffer.load.lds` plus a second y buffer** (the y
   fill is a lane-linear copy, mmq.cuh:853-878). The y double buffer drops 2 of 4 barriers per 256-K iteration. LDS
   fits for Q8_0/Q8_1/Q6_K layouts at J=64 (57,600 B) but not for Q2_K. Prior: the MMVQ prefetch that used the same
   intrinsic was net-negative. Falsifier: MMQ time within noise, or a correctness failure.
+  - PARKED 2026-09-27 (operator): not started. No branch, audit or timing exist, and the prior stays negative (the MMVQ prefetch that used the same intrinsic lost); resume by prototyping the dword `raw.buffer.load.lds` y fill plus the second y buffer for the Q8_0/Q8_1/Q6_K layouts at J=64 on an experimental branch from `ffc1bac82`, checking LDS and occupancy with `gfx90a_isa_audit.py diff --families mmq`, then running correctness before any timing.
 - [x] **AK-MMQ-H10 — Remove the J=64 spill tax.** ✅ 2026-09-27 — **NEGATIVE, rejected.** Candidate `experimental/mmq-jcap-20260927` (`36e83c0f2`, per-type J cap, static gate PASS: hot-loop spill reloads 431→0). GPU window 02:06-02:46Z: correctness 2350/2350 both arms; llama-bench Qwen3.8-27B Q8_0 (1 ABAB round, `-ub 2048`) at the affected shapes p=64 **-12.6%**, p=112 **-9.1%**, p=128 **-9.9%**; null controls p=5/48/96/256 within ±1.5%. Removing the spills does not pay for the extra tiles (J=32x2 / J=48x3 re-read src0 1.5-2x). Keep J=64; attack register pressure instead (AK-MMQ-H3/H7, INF03-REGAUDIT-3 v9→v10 regression). Raw: `/mnt/raid0/llm/tmp/mmq-jcap-ab-20260927T020637Z/`. Window-script defects found: kernel-perf CSV carried no timing columns; the MoE arm aborted on `--autokernel-harden` output invariance (production arm A itself is non-deterministic on MoE); `verify_ggml_linkage.sh` compares unresolved paths (false FAIL on the symlinked kernel store). For types that spill at J=64 (Q8_0, Q5_0, MXFP4, IQ4_*,
   Q2_K), either select J=48 at 49-64 columns or restructure vec_dot to stay under 256 VGPR. Falsifier: spills unchanged,
   or the extra column tile costs more than the reloads saved.
@@ -5596,16 +5599,19 @@ Sources: intake-1822#record, intake-1823#record, intake-1826#record.
     llama-bench alone. Emit per-kernel time (mean and n) per arm, so a kernel-level delta can be read beside the
     end-to-end one. Acceptance: a re-run of the window's correctness+timing phases on the incumbent yields a CSV with
     timing columns for the MMQ kernels.
+    - PARKED 2026-09-27 (operator): window_ab.sh (research `data/gfx90a-isa-audit-20260927-mmq-jcap/window_ab.sh`) is fixed at research RESEARCH_JCAP_SHA: its perf output now carries per-kernel timing, and each arm fails independently with an end summary. The fixed script has NOT been run, so no CSV with MMQ timing columns exists yet (the J-cap A/B itself ran 2026-09-27 02:06Z and is recorded NEGATIVE under AK-MMQ-H10); resume by running window_ab.sh in a GPU window and checking that its kernel-perf CSV carries per-kernel time (mean, n) per arm for the MMQ kernels.
   - [ ] **AK-MMQ-H10b — the MoE `--autokernel-harden` arm is non-deterministic on production.** The MoE arm aborted on
     the harden output-invariance check, and production arm A itself failed invariance on MoE. So the check cannot
     tell a candidate defect from baseline MoE non-determinism. Establish whether production MoE output varies across
     harden seeds (routing ties, atomics, split-K), then either pin the source of variance for the harden arm or scope
     the invariance check to dense shapes with a recorded reason. Raw: `/mnt/raid0/llm/tmp/mmq-jcap-ab-20260927T020637Z/`.
+    - PARKED 2026-09-27 (operator): window_ab.sh at research RESEARCH_JCAP_SHA runs the MoE arm WITHOUT `--autokernel-harden`, because production arm A is itself non-deterministic on MoE, so the script sidesteps the invariance check rather than resolving it. The source of production MoE variance (routing ties, atomics, split-K) is not established, and the fixed script has not been run; resume by running window_ab.sh in a GPU window, then measuring production MoE output across harden seeds to either pin the variance source or record here the reason the check is dense-only.
   - The third defect, `verify_ggml_linkage.sh` comparing unresolved paths, is filed as NIB2-85 (it affects every caller).
 - [ ] **AK-MMQ-H5 — nthreads / per-wave-tile sweep in mmq-config-cdna.cuh** (256 vs 512 threads at I=128;
   occupancy 2 is infeasible at I=128 because the x tile alone is 38,912 B). Each cell sits on one side of the ROCm 6.2
   AGPR rule: 256-thread arms get AGPR form with a 512 budget and copies; the rule changes on ROCm 7.14+. Record agpr,
   copies, spills and compiler with every cell.
+  - PARKED 2026-09-27 (operator): not started. No sweep cell has been built; resume by building the 256- and 512-thread `mmq-config-cdna.cuh` arms at I=128 on an experimental branch from `ffc1bac82` and recording agpr, accvgpr copies, spills and the compiler for each cell with `gfx90a_isa_audit.py audit` plus `diff --families mmq`, before any timing.
 - [ ] **AK-MMQ-SK — GATED, low prior. Stream-K off for MUL_MAT_ID small-M on CDNA MMQ.** Transfer is weak: intake-1825
   reports that split-K hurts BS1 small-M MoE in CKTile, not in MMQ.
 - [x] **Recorded so it is not re-derived (dives 2026-09-26).** ✅ 2026-09-26

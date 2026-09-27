@@ -394,6 +394,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   register-raising variant (intake-1823#record).
   - Loop tries so far: B-side software prefetch in `gemm4xN` kept 2026-09-27 as `akm-ds41-dense-q8-tb-prefetch`
     (+3.440% paired, anchor-gen-002). The GGML_IQK_Q8_0 runtime arm has not been proposed yet.
+  - PARKED 2026-09-27 (operator): one follow-up has landed through the loop: B-side prefetch, kept as `akm-ds41-dense-q8-tb-prefetch` (+3.440% paired, anchor-gen-002 `c0ef3961`). The GGML_IQK_Q8_0 runtime arm, offset-trick VNNI, B-scale hoist and zmm widening have not been proposed, and the static gemm4xN spill check is not built; resume by adding the static spill check of the gemm4xN disassembly (needed before any register-raising variant is timed) and leaving the remaining ideas to the loop through inbox note 41.
 - [x] DS41-C53 — **Correctness oracle must exercise non-constant per-block scales.** Verify the AK kernel-mutation
   oracle's fixtures use varying Q8_0 `d` and Q4_K `d/dmin`/sub-scales. intake-1825 §5.3 reports a scale-layout bug on
   gfx90a that constant-scale fixtures hid (intake-1825#record). Read-only check; fix the fixture if constant.
