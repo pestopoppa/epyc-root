@@ -105,6 +105,12 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
            default=Path("/workspace/repos/epyc-inference-research/data/gpu-mi210/kv-quant-27b-v10-sweep"),
            note="v10 MI210 KV-quant sweep sidecars; pre-hook/failed runs yield no claims",
            task="VB-KVQ-V10"),
+    Source("embedder-placement-gate", "embedder_placement_gate",
+           _files("*.belief_measurements.jsonl"),
+           default=ORCHESTRATOR / "data/embedder_placement",
+           note="UFH-12 placement gate sidecars (`<record>.belief_measurements.jsonl`); the "
+                "2026-09-26 Phase-0 records have none and yield no claims",
+           task="VB-UFH12-PLACEMENT"),
     Source("kb-rag-qlen", "kb_rag_query_length",
            _files("*query_length*.json", "**/*query_length*.json"),
            note="persisted `query_length_report.py --out` snapshots", task="VB-KBRAG-QLEN-R"),
