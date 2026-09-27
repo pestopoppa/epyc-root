@@ -1,7 +1,8 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
 
-**Status:** active — PRE-REGISTRATION DRAFT. The design is below; the decision rule's X and Y await the operator's
-confirmation (master queue OP-66). Nothing has run.
+**Status:** active. The **decision rule is PRE-REGISTERED** (X = 0.75, Y = 0.50; operator-approved 2026-09-27, OP-66
+closed). The rest of the pre-registration (suite, scorer, arm configs) freezes at TE-3. TE-1 is approved and in build.
+Nothing has run.
 **Priority:** **TOP** (operator, narrowed plan, 2026-09-27). Work that does not move this experiment is frozen or waits
 behind it; see the freeze list at the end.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
@@ -30,8 +31,11 @@ A1 and A2 differ **only** in the escalation switch. A0 and A2 reach the same Fla
 `architect_critic`, so the consultant is reachable through existing escalation. The swap is a separate `stack-change`
 package. Until it is applied and serving is proved, Flash-Next is `architect_critic` on `:8074` and the 27B is
 `architect_general` on `:8083` (MI210).
+**Scope of the swap (operator, 2026-09-27): ONLY `architect_general` moves to Flash-Next.** `coder_escalation` and
+`ingest_long_context` stay on the 27B. Frontdoor's existing escalation hop is `CODER_ESCALATION` (TE-2), so after the
+swap that hop lands on the 27B: A2's escalation must target `architect_general` explicitly (TE-1), and TE-2 proves it.
 
-## Pre-registration (draft — freeze at TE-3)
+## Pre-registration (decision rule frozen 2026-09-27; the rest freezes at TE-3)
 
 ### Suite (frozen)
 
@@ -65,7 +69,12 @@ Also recorded per item in A2: the escalation fired or not, the escalation reason
 answer. Also recorded per arm: failures and timeouts, which count as wrong (every item is in the denominator; no
 retries), and truncation.
 
-### Decision rule (PROPOSED — operator confirms X and Y)
+### Decision rule — PRE-REGISTERED 2026-09-27 (frozen)
+
+**Registration:** X = 0.75, Y = 0.50 and the CI condition below, operator-approved in chat on 2026-09-27, session
+https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ (master queue OP-66, now closed). The rule is **frozen**:
+changing X, Y, the CI condition or the verdict classes later needs a **new registration** (a dated, operator-approved
+amendment recorded here), and a verdict taken under an amended rule is flagged as such.
 
 Define the gap-closure fraction **G = (Q_A2 − Q_A1) / (Q_A0 − Q_A1)** on pooled accuracy, and the consultant-cost
 fraction **d = DS_A2 / DS_A0** in consultant device-seconds.
@@ -143,9 +152,13 @@ code for a rider), and only if the window has its estimated time left.
 
 ## Tasks
 
-- [ ] **TE-0 — operator confirms the decision rule: X, Y and the CI condition** (master queue OP-66). The draft above
+- [x] **TE-0 — operator confirms the decision rule: X, Y and the CI condition** (master queue OP-66). The draft above
   proposes X = 0.75 and Y = 0.50. Everything below except TE-3's freeze can proceed meanwhile.
-- [ ] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** `/v1` never escalates in either
+  ✅ 2026-09-27 — operator-approved in chat as drafted (X = 0.75, Y = 0.50, lower bound of G > d), session
+  https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ. The rule is PRE-REGISTERED and frozen (§ *Decision rule*);
+  OP-66 closed and archived.
+- [ ] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** **Approved by the operator
+  2026-09-27 (with OP-66); being built by another agent — this box ticks when it lands with its tests.** `/v1` never escalates in either
   tool mode (orch `src/api/routes/openai_compat.py:595-596`), and `x_max_escalation` is recorded but not enforced
   (`src/api/models/openai.py:160-166`).
   - Add a default-off flag that lets a `/v1` frontdoor turn escalate to `architect_general` through the existing

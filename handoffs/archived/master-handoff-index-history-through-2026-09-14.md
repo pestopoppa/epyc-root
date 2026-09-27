@@ -37,3 +37,21 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-53 | **DeepSeek-V4.1 campaign is blocked by the competing-inference gate**: it classifies any UNOWNED `llama-server` as competing and raises, and :8074 (the requested planner) sits outside every owned scope with no allowlist parameter. Either (B) add a scoped, journalled pid allowlist — a source change that weakens a gate with INC-20260731 lineage — or (C) keep the default planner and stop :8074 for the window. The operator has said the stack stays up | [deepseek-v41-flash-evaluation.md](../active/deepseek-v41-flash-evaluation.md) | 2026-09-23 |
+
+## Resolved 2026-09-27 (row removed the same day by the root writer, workspace-8d)
+
+- **OP-66** — APPROVED by the operator in chat on 2026-09-27 (session
+  https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ), both rules as drafted, and both are now PRE-REGISTERED
+  (frozen; a later change needs a new registration):
+  - (a) UFH-13 thesis rule: X = 0.75, Y = 0.50 — G = (Q_A2 − Q_A1)/(Q_A0 − Q_A1) ≥ 0.75 at consultant device-seconds
+    fraction d ≤ 0.50, and G's paired-bootstrap 95% lower bound > d. Recorded in
+    [`thesis-experiment-orchestrator-vs-strongest-model.md`](../active/thesis-experiment-orchestrator-vs-strongest-model.md)
+    § *Decision rule*; TE-0 ✅.
+  - (b) UFH-12 kill rule: recall@5, M = 0.10, n ≥ 120, paired-bootstrap lower bound > 0, cheapest arm within X = 0.05.
+    Recorded in [`repl-embedding-retrieval.md`](../active/repl-embedding-retrieval.md) REPL-EMB-2.1 ✅.
+  - (c) TE-1 (the default-off `/v1` escalation flag for arm A2) approved in the same decision; built by another agent,
+    and its box stays open until it lands.
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-66 | **Confirm two pre-registered decision rules (narrowed plan).** (a) UFH-13 thesis experiment: SUPPORTED if A2 closes ≥ X = 75% of the A1→A0 quality gap at ≤ Y = 50% of A0's consultant device-seconds, and the lower CI bound of the gap closed beats the cost fraction (alternatives: 90/30 stricter, 50/50 beats-random only). (b) UFH-12 kill rule: hybrid must beat grep/BM25 on recall@k = 5 by M = 0.10, else stop at lexical; the cheapest arm within X = 0.05 of the best wins. Reasoning is in each handoff; both freeze at confirmation | [thesis-experiment-orchestrator-vs-strongest-model.md](../active/thesis-experiment-orchestrator-vs-strongest-model.md) TE-0; [repl-embedding-retrieval.md](../active/repl-embedding-retrieval.md) REPL-EMB-2.1 | 2026-09-27 |
