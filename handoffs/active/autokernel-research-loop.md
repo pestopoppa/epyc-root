@@ -1,6 +1,6 @@
 # AutoKernel — Autonomous System-Wide Kernel Research Loop
 
-**Status:** Active handoff; GLM AutoKernel campaign stopped by operator on 2026-09-18. No autonomous relaunch is authorized by this session; separate trust gates below remain open.
+**Status:** Active handoff. The live AutoKernel campaign is DS41 CPU decode (INF-77). The GLM campaign was stopped by the operator on 2026-09-18 and its subject was deleted on 2026-09-22. The 2026-09-08 kernel-research gate was lifted on 2026-09-27, so the GPU MMQ seeds are open. See *Current status — 2026-09-27* below.
 **Priority:** HIGH after the current production-topology work settles
 **Owner:** Inference Acceleration
 **Runtime owner repository:** `epyc-inference-research`
@@ -17,6 +17,23 @@
 [`kernel-freeze-runbook.md`](../../docs/reference/kernel-freeze-runbook.md)
 **Production baseline at authoring:** `production-consolidated-v8` at
 `67a433bf45a8a091d83b4ea0b32ff0735fd51800`; the production kernel set is frozen.
+
+## Current status — 2026-09-27 (start here)
+
+- **Live campaign: DS41 CPU decode**, run 10k on anchor-gen-002. It has 2 keeps and the serving gate is armed. It is
+  tracked in [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md) §C (INF-77); loop code is in the
+  research repo under `scripts/kernel_rnd/autokernel/loop/`. Runtime recipes are adopted under P-AK-SEARCH-1-A4
+  (root `101ed1b0`).
+- **GPU MMQ seeds are open** (gate lifted 2026-09-27). See *Research Intake Update — 2026-09-26 (gfx90a MMQ seed set …)*
+  near the end of this file. AK-MMQ-H10 (J cap) measured NEGATIVE: -9 to -13% at the MMQ shapes.
+- **Next**: AK-MMQ-H10a/H10b (the window-script defects), then AK-MMQ-H3 (the `iglp_opt` zero-authoring first arm),
+  then AK-MMQ-H7. Every seed first passes INF03-REGAUDIT-1 statically, and INF03-REGAUDIT-2 makes that a hard
+  pre-timing gate (`agentic-rocm-kernel-authoring.md`).
+- **GLM (AK-SERIAL-26)**: stopped. Its subject was deleted, so it resumes only on a new operator instruction. The
+  pointer below is its record.
+- **How this file is laid out**: §0-§14 (from about line 750) is the architecture and design spec, with inbound §
+  citations from the policy drafts. The operational runbook starts at *▶ START HERE*, which points to
+  `execution/README.md` and `program.md`. The dated checkpoints between here and §0 still carry open boxes.
 
 ## Current execution pointer — 2026-09-17
 
