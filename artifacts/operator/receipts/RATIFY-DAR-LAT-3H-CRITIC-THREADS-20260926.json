@@ -1,0 +1,81 @@
+{
+  "schema": "epyc.operator_receipt.v1",
+  "token": "RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926",
+  "status": "ratified",
+  "human_attestation": "RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926",
+  "signed_at": "2026-09-27T04:57:02.789198+00:00",
+  "signed_by_uid": 1000,
+  "package": "artifacts/operator/stack-change-dar-lat-3h-20260926/PACKAGE.md",
+  "pinned_sha256": {
+    "PACKAGE.md": "4ae206954741a737d10efd719d4b9167fdcce65a7632873505919a57cdf40cf5",
+    "gate/prompts-24mix.json": "ea154096eb110850ab5be5e4f574e995e5dbf17540dcbb9461b8cc38c0855783",
+    "patches/orchestrator-t48/0004-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch": "49d507333cb75fcf61271aa0ecbc188fe6ef8cfbecb621db18203d03350b06c1",
+    "patches/orchestrator/0001-stack_numa-NUMA_FULL_T48-shape-split-thread-invarian.patch": "204bb488fe692a0dd7a8b51e32bad01bedd0d95155d04c703c80dd8e94385d4f",
+    "patches/orchestrator/0002-server-critic_thread_gate.py-the-DAR-LAT-3h-gate-G1-.patch": "ad995bb9124c4fe496914d83cbc687cf36d74c10191c232ac35b48730e3aa9d0",
+    "patches/orchestrator/0003-stack_env-architect_critic-serving-env-GGML_FUSED_DE.patch": "d7bb546098fe39e0bad9ecfd6795412652ecf8997af965c9238d0b2e02a5629d",
+    "patches/orchestrator/0004-stack_env-architect_critic-GGML_NOHUGEPAGE_PROCESS-1.patch": "0f899f067408fedf30252fe040af1d164360edb8b6f39fb7af8b42afadeeb7aa",
+    "patches/orchestrator/0005-topology-architect_critic-NUMA_FULL_T48-t-48-complet.patch": "eedfef24055436278f6791fa9306a4be5bebaaa8b50f4db92098ffd36b3932cc",
+    "patches/research-t48n/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch": "3cc1b64a1d6914bbbba45607d545e3c09973c38ad797d1672f55afc07b85acd5",
+    "patches/research-t96/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch": "3932ac4ebe21abbbb22c2f9c580a92c880df870a93c2a845133184d7ff1069ae",
+    "patches/research-t96n/0002-registry-architect_critic-serving-shape-for-DAR-LAT-.patch": "c6997496b363da349fd1ca3d8b8ed47680fc73ba398fc1b9956adde3e8a72802",
+    "patches/research/0001-registry-recipe-correct-the-Flash-Next-t-48-served-o.patch": "508f92dc73d9745663b79af2a445181757602af6ac650ac7be641b6ff25e3075"
+  },
+  "package_version": "v2 (operator split after the GGML_* env audit, 2026-09-26)",
+  "signed_gates": {
+    "G1_threads_x_thp_shim": {
+      "driver": "epyc-orchestrator scripts/server/critic_thread_gate.py @ 8b7e24e3",
+      "arms": {
+        "L": "-t 96, live env",
+        "T96": "-t 96 + FUSED_DECODE_OFF",
+        "T96N": "-t 96 + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS",
+        "T48": "-t 48 + FUSED_DECODE_OFF",
+        "T48N": "-t 48 + FUSED_DECODE_OFF + NOHUGEPAGE_PROCESS"
+      },
+      "unit": "launch",
+      "launches_per_arm": 3,
+      "min_clean_launches_per_arm": 3,
+      "mechanism_check": "THP_enabled from /proc/<pid>/status: 0 on N arms, 1 otherwise, else the launch is re-queued",
+      "primary": "mean per-launch median W1 request wall time (the critic's region-lock hold time)",
+      "non_inferior": "wall <= 1.03x, TTFT <= 1.10x, coherent >= ref-1",
+      "rule": "premise T96~L else INVALID-PREMISE; threads 48 iff T48~T96 AND T48N~T96N else 96; shim iff TtN wall <= 0.98x Tt and TtN~Tt on TTFT/coherence; <3 clean launches -> INCONCLUSIVE"
+    },
+    "G2_serving_proof": "PACKAGE.md section 6 P4-P5: /proc argv, environ (no GGML_FA_SPLIT_KV), THP_enabled, per-task affinity, numa_maps, runtime_attestation + declared_env_attestation ok, coherent ~4k-token completion with MTP accepting",
+    "G3_contention_recert": "T48/T48N only: contention_matrix.py run in the same window; check_contention_matrix_fresh.py OK"
+  },
+  "outcome_merge_pair": {
+    "T48": {
+      "epyc-orchestrator": "lane/dar-lat-3h-v2-t48-20260927 @ 375ab5f7",
+      "epyc-inference-research": "lane/dar-lat-3h-v2-20260927 @ cbaeee2d",
+      "reload": "architect_critic"
+    },
+    "T48N": {
+      "epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 @ 5bbd7492",
+      "epyc-inference-research": "lane/dar-lat-3h-v2-t48n-20260927 @ af4f5675",
+      "reload": "architect_critic"
+    },
+    "T96": {
+      "epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through 074f5683",
+      "epyc-inference-research": "lane/dar-lat-3h-v2-t96-20260927 @ a969d2f9",
+      "reload": "architect_critic"
+    },
+    "T96N": {
+      "epyc-orchestrator": "lane/dar-lat-3h-v2-20260927 through e2febde0",
+      "epyc-inference-research": "lane/dar-lat-3h-v2-t96n-20260927 @ 48f7ebf6",
+      "reload": "architect_critic"
+    },
+    "INVALID-PREMISE": "apply nothing; GGML_FUSED_DECODE_OFF was not inert",
+    "INCONCLUSIVE": "apply nothing; re-run G1 in another window"
+  },
+  "env_fix_landed": "epyc-orchestrator main 5fd6bbdb (+ derived regen cfd77e6d), verified on origin/main by this script",
+  "superseded_lanes": [
+    "lane/dar-lat-3h-20260926",
+    "lane/dar-lat-3h-t96-20260926",
+    "lane/dar-lat-3h-live-20260926"
+  ],
+  "scope_excluded": [
+    "GGML_FA_SPLIT_KV (task DAR-LAT-3i)",
+    "n_ctx (lineup-change C4 stands)",
+    "CPU speech co-tenancy (operator ruling 2026-09-24: no change)"
+  ],
+  "applies_nothing": true
+}
