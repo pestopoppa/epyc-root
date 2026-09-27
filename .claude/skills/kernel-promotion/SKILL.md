@@ -16,6 +16,7 @@ this skill derives every fact it needs, runs the gates, and stops ONCE for a sig
 2. build candidate   relocatable ($ORIGIN), COMPLETE target set, in kernels/builds/
 3. pre-flight        RUNPATH assertion · standalone linkage · binary-set parity vs the anchor
 3b. LOAD-ONLY        scripts/loadcheck.sh — open every in-scope (model, drafter) pair, once
+3c. ISA AUDIT (gpu)  gfx90a_isa_audit.py audit ×2 + diff vs the incumbent — no GPU timing until it passes
 4. gates             promotion_gates.yaml: speed + quality per derived model, vs the CURRENT floor
 5. package           scripts/package.sh — one artifact, fixed key set, the REWIND (all 3 steps)
 6. OPERATOR SIGNS    one signature, one place  ← the only human gate
@@ -110,6 +111,34 @@ found it before the window opened.
 `--apply` starts one server at a time and stops **the PID it captured**: SIGTERM, confirm
 dead, escalate to SIGKILL. It never matches a process name.
 
+## Step 3c — gfx90a ISA audit, BEFORE any GPU timing (INF03-REGAUDIT-2)
+
+Zero-GPU and static: it reads the two `libggml-hip.so` files and never builds or launches
+anything. It runs in about 10 s per library. The tool lives in the research repo
+(`scripts/kernel_rnd/gfx90a_isa_audit.py`, research ≥ `e603216f`; see its README). `diff`
+compares two audit JSONs, not two libraries, so audit each side first:
+
+```bash
+A="taskset -c 72-79 python3 /mnt/raid0/llm/epyc-inference-research/scripts/kernel_rnd/gfx90a_isa_audit.py"
+E=<evidence-dir>; mkdir -p $E/isa_audit     # subdir: package.sh folds every top-level *.json in $E as a gate
+INC=$(readlink -f /mnt/raid0/llm/kernels/production/gpu/libggml-hip.so)   # incumbent, via the store
+CAN=$(readlink -f <candidate-build-dir>/libggml-hip.so)                    # kernels/builds/gpu-<date>-<sha>/bin
+$A audit $INC --category BASELINE  --source-commit <incumbent-sha> --json $E/isa_audit/incumbent.json
+$A audit $CAN --category CANDIDATE --source-commit <candidate-sha> --json $E/isa_audit/candidate.json
+$A diff $E/isa_audit/incumbent.json $E/isa_audit/candidate.json \
+   --families mmq,fattn_mma,fattn_wmma,mmf --json $E/isa_audit/diff.json --quiet-info
+```
+
+`diff` exits 1 on any FAIL: more VGPR spills, more hot-loop spill reloads, more hot-loop
+`v_accvgpr` copies, AGPRs appearing (0 to >0), or lower waves/SIMD. It exits 0 when there is
+no FAIL (WARNs are listed and do not change the exit code). **Exit 1 means stop.** Do not
+open a GPU timing window. Either fix the candidate, or accept each FAIL **by name** (kernel
+plus check) in the package with the operator's signature. Write `$E/gpu_isa_audit.json`
+with `status` (`pass`, or `waived` plus `accepted_fails`), the FAIL/WARN counts from
+`diff.json`, and the three file paths. `package.sh` then refuses a package without it
+(the `gpu_isa_audit` gate in `promotion_gates.yaml`). The `--category`/`--source-commit`
+flags let the audits project SC84 claims, and an audit without them projects none.
+
 ## Step 4 — gates
 
 Speed per derived model, candidate vs incumbent, **each at its own best recipe** (recipe-to-recipe;
@@ -201,6 +230,7 @@ cannot settle it because llama.cpp dlopens `libggml-hip.so`), per-port health, a
 - promote a candidate built with a partial `--target`
 - trust a scope number you did not just derive
 - bench before `loadcheck.sh` has passed over the derived scope
+- time a GPU candidate before step 3c's `diff` exits 0 or each of its FAILs is accepted by name
 
 ## Known gaps — code changes outside this skill (audit §4.6)
 
