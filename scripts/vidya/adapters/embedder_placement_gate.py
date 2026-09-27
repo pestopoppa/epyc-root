@@ -30,7 +30,7 @@ AUTHORITY = "measurement"
 SOURCE_KIND = "embedder-placement-gate"
 ORCHESTRATOR_ROOT = Path("/workspace/repos/epyc-orchestrator")
 PRODUCER_PATH = ORCHESTRATOR_ROOT / "scripts/server/embedder_placement_capture.py"
-PRODUCER_SHA256 = "63a5ea185dc8d00e1b18e99e7f306dcbd5816be1e1909d4d6f5c3627deae02a4"
+PRODUCER_SHA256 = "b31ac955456a8ec77779ab1483344b4de0164e1775598052cf0fce0edd3e3251"
 DEFAULT_ROOT = Path("/mnt/raid0/llm/epyc-orchestrator/data/embedder_placement")
 
 #: every metric a gate emits for one unit (per port for G1, per run otherwise)
