@@ -1,8 +1,8 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
 
 **Status:** active. The **decision rule is PRE-REGISTERED** (X = 0.75, Y = 0.50; operator-approved 2026-09-27, OP-66
-closed). The rest of the pre-registration (suite, scorer, arm configs) freezes at TE-3. TE-1 is approved and in build.
-Nothing has run.
+closed). The rest of the pre-registration (suite, scorer, arm configs) freezes at TE-3 after the TE-3a operator
+decisions. TE-1 and TE-2 are done (2026-09-27); the runner is written. Nothing has run.
 **Priority:** **TOP** (operator, narrowed plan, 2026-09-27). Work that does not move this experiment is frozen or waits
 behind it; see the freeze list at the end.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
@@ -157,7 +157,7 @@ code for a rider), and only if the window has its estimated time left.
   ✅ 2026-09-27 — operator-approved in chat as drafted (X = 0.75, Y = 0.50, lower bound of G > d), session
   https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ. The rule is PRE-REGISTERED and frozen (§ *Decision rule*);
   OP-66 closed and archived.
-- [ ] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** **Approved by the operator
+- [x] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** **Approved by the operator
   2026-09-27 (with OP-66); being built by another agent — this box ticks when it lands with its tests.** `/v1` never escalates in either
   tool mode (orch `src/api/routes/openai_compat.py:595-596`), and `x_max_escalation` is recorded but not enforced
   (`src/api/models/openai.py:160-166`).
@@ -165,24 +165,50 @@ code for a rider), and only if the window has its estimated time left.
     escalation policy, with the escalation receipt (fired, reason, target role) in the tap.
   - Add tests for off (byte-identical to today, which is A1) and on (A2).
   - This is the one piece of new code the experiment needs. Coordinate with UFH-01 HS-4 P4, and do not fork it.
-- [ ] **TE-2 — escalation-target check after the role swap (zero inference).** Frontdoor escalates to
+  ✅ 2026-09-27 — orchestrator `9959e8db` added the `v1_escalation` flag (default off) and the per-request
+  `x_escalation` key (`auto | off | architect_general`), with escalation telemetry; `280059cc` made escalation opt-in,
+  so a request without the key sees no behaviour change. Full `tests/unit` suite passed (15620 passed). Not yet
+  serving: deployment is TE-reload.
+- [x] **TE-2 — escalation-target check after the role swap (zero inference).** Frontdoor escalates to
   `CODER_ESCALATION` (orch `src/roles.py:468-499`), an alias on `architect_general`'s server, and the graph hard-wires
   Frontdoor → CoderEscalationNode → ArchitectNode (`src/graph/nodes.py:250`, `:595`, `:615`).
   - After the swap, prove with `orchestrator_route_explain` that A2's escalation lands on the Flash-Next server, and
     that no hop ends on a role missing from `_ROLE_TO_NODE`. RI-21 is that defect: fix it (a one-line map entry plus a
     test), do not file it.
   - This fails if escalation lands on the 27B.
+  ✅ 2026-09-27 — a test proves an escalated call reaches the registry-resolved `architect_general` server. Research
+  `2b59bebe` added the runner at `scripts/benchmark/thesis_ufh13/` (plan / pilot / run / score, per-question
+  persistence, resume, a sha-checked suite, and a bootstrap scorer implementing G and d), with 23 unit tests.
+- [ ] **TE-3a — freeze decisions (operator).** TE-3 cannot freeze the manifest until these are chosen; the runner
+  implements all options, so nothing else waits on them.
+  - (a) Transport: `--transport v1` with fixed sampling (recommended), or OpenCode with unfixed sampling. OpenCode's
+    plugin passes only `x_*` keys, so temperature and seed cannot be pinned through it.
+  - (b) Verdict evaluation order, as implemented: A2 < A1 → REFUTED; then NO GAP; then SUPPORTED; then G upper
+    bound < d → REFUTED; else INCONCLUSIVE. Confirm it, since the rule text does not fix the order.
+  - (c) Review-gate revisions are written by `worker_general`, as `/chat` does it (recommended: keep, so A2 measures
+    the orchestrator as it serves).
 - [ ] **TE-3 — build and freeze the manifest (zero inference).**
   - The driver: a per-item OpenCode headless run through `scripts/harness/hs4_p04_acceptance.py`'s pattern. Pass the
     prompt on stdin, not positionally (HS-4 P7). Use one config per arm and randomized interleaving.
   - The consultant device-seconds aggregator over the tap, with offline tests.
   - The sha sidecar for the suite, then `FROZEN-AT-LAUNCH.sha256`.
-  - Freeze only after TE-0.
+  - Freeze only after TE-0 and TE-3a. The runner (research `2b59bebe`, `scripts/benchmark/thesis_ufh13/`) is the
+    driver; TE-3a (a) decides whether it drives `/v1` directly or OpenCode.
 - [ ] **TE-4 — belief-kernel write side before the first scored item** (`vidya-belief-substrate-program.md` VB-THESIS-1;
   source row in `scripts/vidya/adapters/README.md`). Write per-item rows with the arm, item id, suite, correct,
   escalation fields, consultant and frontdoor device-seconds and wall, plus the manifest digest. Project; do not grade.
+  - Progress 2026-09-27: research `2b59bebe`'s `run_thesis.py score` writes the `belief_measurements.jsonl` sidecar
+    (`ufh13-thesis-belief/v1`, attestation = `records.jsonl`). The read-side adapter is VB-THESIS-2.
+- [ ] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
+  `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. Coordinate with workspace-76, which owns
+  the swap; `orchestrator_stack.py reload orchestrator`, never the whole stack.
+- [ ] **TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The
+  main risk is that `/chat`'s triggers are conservative: the quality detector is gated by `generation_monitor`, and
+  the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide
+  before spending it.
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
-  - Needs the role swap applied and serving proved, TE-1 deployed by an API reload, and TE-2, TE-3 and TE-4 done.
+  - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
+    TE-2, TE-3 and TE-4 done.
   - Run the plumbing smoke, then A0/A1/A2 interleaved, then the riders if cheap.
   - Estimate about 2 to 2.5 h: Flash-Next alone ≈ 55 min for 395 items. Frontdoor passes are shorter, and A2 is
     frontdoor plus the escalated items.

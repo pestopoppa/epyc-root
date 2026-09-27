@@ -3021,6 +3021,15 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
     digest and any post-hoc amendment.
   - Locator = run × arm × item; `instrument_class=serving`. Project; do not grade (P-AB-1 / PAIRED-CI-1 /
     BOUNDED-NULL-1 decide).
+  - Progress 2026-09-27: research `2b59bebe` writes the sidecar — `run_thesis.py score` emits
+    `belief_measurements.jsonl` (`ufh13-thesis-belief/v1`) with per-arm and run-level rows; per-item rows live in the
+    attestation `records.jsonl`. No run yet.
+- [ ] **VB-THESIS-2 — write the `ufh13-thesis-measurement` adapter (read side for VB-THESIS-1).** Project research
+  `scripts/benchmark/thesis_ufh13/run_thesis.py score`'s `belief_measurements.jsonl` (`ufh13-thesis-belief/v1`) into
+  `ClaimTuple`, re-hashing the attestation `records.jsonl` against `attestation_sha256` and refusing on mismatch.
+  Register it as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. Why now: the
+  producer exists and TE-5 is the next inference; wiring the read side before the first scored run means the verdict
+  is ingestible the day it lands. Project; do not grade (empty `protocol_id` grades as an observation).
 
 ## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design)
 
