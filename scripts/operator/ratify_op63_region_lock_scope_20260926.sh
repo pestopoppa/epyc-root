@@ -85,6 +85,10 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$MODE" != "apply" ] || ratify_require_operator
 
 say() { printf '%s\n' "$*"; }
 die() { printf 'REFUSING: %s\n' "$*" >&2; exit 65; }
@@ -236,7 +240,7 @@ python3 "$ROOT/scripts/operator/ratification_receipt.py" emit \
   --anchor "$NEW_SUB_HEAD" \
   --ratification-id "$GATE_ID" \
   --script "$SCRIPT_PATH" \
-  --operator "${RATIFY_OPERATOR:-${USER:-unknown}}" \
+  --operator "$RATIFY_OPERATOR" \
   --no-evidence-reason "doctrine scope clarification, not a measured claim; the incident (HS-4 P0.4 run 1, 503 contention_denied under an outer region-lock) is recorded in handoffs/active/harness-selection-and-integration.md P0.4, and r1's run dir was not preserved" \
   --validation "python3 $CHECKER_REL --repo-root ." \
   --validation "test \"\$(sha256sum $OC_REL | cut -d' ' -f1)\" = $OC_POST_SHA256" \
@@ -251,7 +255,7 @@ fi
 
 # ---------------------------------------------------------------- decision receipt + keyed index
 if ! python3 - "$ROOT" "$RATIFIED_AT" "$GATE_ID" "$RECEIPT_REL" "$INDEX_REL" "$CONSOLIDATED_REL" \
-     "${RATIFY_OPERATOR:-${USER:-unknown}}" "$PATCH_REL" "$PATCH_SHA256" "$SCRIPT_REL" \
+     "$RATIFY_OPERATOR" "$PATCH_REL" "$PATCH_SHA256" "$SCRIPT_REL" \
      "$OC_PRE_SHA256" "$OC_POST_SHA256" <<'PYEOF'
 import json, os, sys
 (root, ts, gate, receipt_rel, index_rel, consolidated_rel, operator, patch_rel, patch_sha, script_rel,

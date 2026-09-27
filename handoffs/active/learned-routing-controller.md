@@ -1135,14 +1135,16 @@ See the fuller root-cause writeup in [decision-aware-routing.md](decision-aware-
 
 ## 2026-09-26 audit follow-ups (code + live-process audit)
 
-- [ ] **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
   direction 2026-09-26). Define the projection from autopilot trial records to routing memories (task, chosen
   role, outcome), keep it separate from live write-back (see `episodic-memory-integrity.md` M-21), and
   measure whether a retrain with it beats the current 81.0% retrain on the held-out split.
-- [ ] **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): retraining the routing MLP tunes a component before the thesis experiment says routing is where the value is; unfreeze trigger: the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives. The box stays open: frozen is not done.
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
   verifier (`src/api/services/routing_models.py:131-149`) only runs in the classifier path, which is off
   (`routing_classifier`, `src/features.py:123`). Either unset it so the environment matches behaviour, or tie
   it to the classifier rollout decision above; do not leave a live flag that does nothing.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): the flag is inert (classifier path off), so it costs nothing while frozen; resolve it with the classifier rollout; unfreeze trigger: the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives. The box stays open: frozen is not done.
 
 ## Research Intake Update — 2026-09-26 (orchestration prior art: declines + a rollout precondition)
 

@@ -1,6 +1,6 @@
 # REPL Embedding Retrieval — hybrid search that returns pointers
 
-**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×); operator kept it with a G1 shortfall on `:8180` and asked for a Phase-1 in-flight cap (REPL-EMB-1.4).
+**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the next step is the Phase-2 kill criterion and offline eval; REPL-EMB-0.3 and 1.4 are frozen.
 **Created:** 2026-09-26
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-12).
 **Depends on:** UFH-07 (tool-output-compression, TOC-SP-3 + trajectory artifact), INF-78 (OAB-8 scouts),
@@ -21,8 +21,24 @@ every phase:
 4. **An index belongs to ONE embedding model.** The scheduler chooses among *instances* of that model,
    never across models.
 
-Phase 0 is done (below). The next dispatchable work is **REPL-EMB-1.1 + REPL-EMB-1.4**: the pooled client
-with the operator-requested in-flight cap, then the G1 re-measure (target ≥ 0.95).
+Phase 0 is done (below). **Narrowed plan (operator, 2026-09-27):** the next work is **REPL-EMB-2.1 → 2.2**, the
+kill criterion and then the offline recall eval. The saturation-guard policy (REPL-EMB-1.4, B+D) and the GPU embedder
+(REPL-EMB-0.3) are frozen until that eval passes. The orchestrator-vs-baseline comparison moved to its own handoff,
+UFH-13 [`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md).
+
+### Narrowed plan (operator, 2026-09-27)
+
+Adopted after a Fable audit of session workspace-8d: evaluate before building, and pre-register the kill criterion
+before any more embedder work.
+- **Frozen** (marked in place, boxes stay open): REPL-EMB-0.3, the GPU embedder instance; and REPL-EMB-1.4, the
+  saturation-guard **B+D** policy. The landed neighbour cap (`neighbour_cap.max_in_flight: 1`) stays as it is, behind
+  the default-off `repl_embedding_pool` flag. The policy arms prepared for it (runbook
+  `/mnt/raid0/llm/tmp/next-window-runbook-20260927.md`, chunks A0/A3) choose that policy, so they wait with it.
+- **Cancelled:** the UFH-12 **A1 duty sweep**. It was not a checkbox here, so nothing is left open for it.
+- **Operator's eventual target**, once REPL-EMB-2.2 passes the REPL-EMB-2.1 rule: B+D, **plus** GPU embedder
+  redundancy (REPL-EMB-0.3).
+- **Next:** REPL-EMB-2.1. The draft rule is below and awaits the operator's X, M and k (master queue OP-66). Then
+  REPL-EMB-2.2, zero-stack-change and offline, with VB-UFH12-RETR wired first.
 
 ## Operator decisions (2026-09-26)
 
@@ -86,13 +102,14 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   (REPL-EMB-1.4). This is one of the three needs-operator options the package pre-registered
   (keep / 4-instance pool / Phase-1 scheduler cap), taken as keep + cap.
 
-- [ ] **REPL-EMB-0.3 — prepare the GPU embedder instance package (the other half of D1)** via the `stack-change`
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-12 Phase-2 retrieval eval shows dense retrieval pays — **REPL-EMB-0.3 — prepare the GPU embedder instance package (the other half of D1)** via the `stack-change`
   skill. The package adds a small embedder on the MI210 as its own instance, of the same embedding model as the index
   it serves (invariant 4). VRAM is the binding constraint: the MI210 had **1.52 GiB free** on 2026-09-26 (session
   sample, not a protocol measurement). The package must re-sample free VRAM during serving, size the model + KV +
   compute buffers against it, and show the residents' decode unchanged. It is a separate package from Phase 0,
   which was CPU-only, and needs the operator's signature before any apply. The second MI210 (~Oct 2026) changes the
   headroom, so state which card it targets. Filed 2026-09-26.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): GPU embedder redundancy adds capacity to a feature whose retrieval value is unmeasured; unfreeze trigger: REPL-EMB-2.2 passes the REPL-EMB-2.1 kill rule. The operator's eventual target is then the B+D saturation-guard policy plus GPU embedder redundancy (this box). The box stays open: frozen is not done.
 
 ### Phase 1 — pooled async client, chunker, per-request index (no inference needed for tests)
 
@@ -100,7 +117,7 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   instances of ONE model, list-batched `/embedding`, ≤ 4 in flight per port, timeouts, LRU cache keyed by
   chunk sha256. Existing client for reference: `orchestration/repl_memory/parallel_embedder.py`
   (its Python-3.11 `asyncio.coroutine` bug was fixed separately in orch `120b55b7`, 2026-09-26).
-- [ ] **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-12 Phase-2 retrieval eval shows dense retrieval pays — **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**
   (operator decision 2026-09-26, from the Phase-0 G1 result). In the REPL-EMB-1.1 scheduler, cap in-flight
   embedding requests on instances whose NUMA node is shared with a frontdoor half that is currently decoding,
   applying the agreed D1 rule: *idle instance anywhere → else the requesting model's own hardware → else
@@ -109,6 +126,7 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   (`--label post-cap`); target S/Q ≥ 0.95 on `:8070`, `:8080` and `:8180`, and report G2 again so the cap's
   throughput cost is visible. Pre-register the G3 warm-up discard if G3 is re-run. Before this run, wire the
   gate driver's write side for the belief kernel (VB-UFH12-PLACEMENT in `vidya-belief-substrate-program.md`).
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): the saturation-guard policy (B+D) is frozen; the landed neighbour cap (`neighbour_cap.max_in_flight: 1`, pool flag default OFF) stays as it is, and no further policy arms or G1 re-measure run; unfreeze trigger: REPL-EMB-2.2 passes the REPL-EMB-2.1 kill rule; then B+D, plus GPU embedder redundancy (REPL-EMB-0.3), is the operator's target. The box stays open: frozen is not done.
 - [ ] **REPL-EMB-1.2 — line-aware chunker** that preserves source line ranges for every chunk.
 - [ ] **REPL-EMB-1.3 — per-request flat numpy index** (cosine, top-k) plus lexical scorer and
   `rrf_fuse` hybrid; lexical-only path labelled. Tests use a fake embedder.
@@ -118,6 +136,38 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 - [ ] **REPL-EMB-2.1 — pre-register the decision rule and kill criterion BEFORE running**: "cheapest arm
   within X of the best recall@k; cost = CPU-seconds + latency", and a kill criterion against lexical
   (if no dense/hybrid arm beats grep/BM25 by the pre-registered margin, stop at lexical).
+  **DRAFT rule (2026-09-27, proposed; the operator confirms X, M and k — master queue OP-66).** Nothing has run.
+  - *Metric.* recall@k is the fraction of queries with at least one returned pointer that overlaps a gold span (same
+    source, at least one line of overlap). **Primary k = 5.** k ∈ {1, 3, 10} are reported and not decided on.
+  - *Query set, frozen before any arm runs:*
+    - UFH-07's 45 behavioural questions, plus at least 75 queries from real spill-follow and context-bundle traces,
+      for **n ≥ 120**.
+    - Gold spans are labelled blind to every arm's output.
+    - The corpus, query and label digests go into `FROZEN-AT-LAUNCH.sha256`.
+  - *Arms:* grep, BM25 (the lexical baseline L is the better of the two), BGE, Granite-97M-R2, hybrid RRF (`rrf_fuse`
+    over lexical plus one dense arm) and ColGREP. Each index uses one embedding model (invariant 4).
+  - *Cost:* CPU-seconds per query, with the index build reported separately, and p50/p95 query latency.
+  - **Kill rule (applied first).** UFH-12 continues past Phase 2 only if hybrid recall@5 − L ≥ **M = 0.10** AND the
+    paired (by-query) bootstrap 95% lower bound of that difference is > 0. Otherwise UFH-12 **stops at lexical**:
+    - the D2 waiver lapses;
+    - Phases 3-5 stop;
+    - the embedder fleet goes to the operator as a keep-for-episodic-memory-or-reclaim question.
+  - **Selection rule (only if the kill rule passes):** take the cheapest arm, by CPU-s per query with latency as the
+    tie-break, whose recall@5 ≥ best − **X = 0.05**.
+  - **Why these numbers.**
+    - *k = 5.* Search returns pointers that are read through `get`/`peek` under the print caps. Following more than
+      about five pointers costs more in re-fetches than the search saves, so recall beyond 5 is not the working regime.
+    - *M = 0.10.* With n ≈ 120 and roughly 30% discordant queries, the paired SE of the difference is ≈ 0.05, so 0.10
+      is about 2 SE, the smallest effect this n separates from zero. It is also the size of gain that could pay for
+      the embedder fleet's standing cost: the Phase-0 G1 still shows 9-14% frontdoor decode lost with the pool
+      saturated (S/Q 0.86-0.91).
+    - *X = 0.05 = M/2.* An arm within half the material margin counts as equivalent, so the cheaper one wins. The
+      pair reads: "equivalent below X, materially better above M".
+    - *Small n kills by design.* At n = 45 the paired SE is ≈ 0.08, so the CI condition will usually fail. The burden
+      of proof sits on the new component, not on grep.
+    - *Alternatives for the operator.* M = 0.05 with n ≥ 400 (finer, but needs a much larger labelled set), or k = 3
+      (stricter on ranking).
+  - Report n, per-arm recall@{1,3,5,10}, CPU-s and latency, with every post-hoc amendment flagged.
 - [ ] **REPL-EMB-2.2 — offline eval**: corpus = real spill files, context bundles, UFH-07's 45 behavioural
   questions; arms = grep/BM25, BGE, Granite-97M-R2, hybrid RRF, ColGREP over the spill dir. Report
   recall@k, CPU-s and latency per arm; apply the rule from 2.1.
@@ -150,13 +200,18 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 
 ## Context — orchestrator-vs-baseline evaluation (operator direction 2026-09-26)
 
-No active handoff owns an "orchestrator vs single-model baseline" comparison; recorded here until one
-does. The **first standing baseline** is the benchmark *quality* of the strongest model on the stack — the operator named **Qwen3.8-Flash-Next**, the public-benchmark leader of the stack (2026-09-26);
+The "orchestrator vs single-model baseline" comparison is owned by UFH-13
+([`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md)) since
+2026-09-27; this section keeps the history and B.2. The **first standing baseline** is the benchmark *quality* of the strongest model on the stack — the operator named **Qwen3.8-Flash-Next**, the public-benchmark leader of the stack (2026-09-26);
 speed comparison is deferred. The later **speed baseline** is a large MoE hybrid across CPU+RAM and both
 MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), compared on concurrency × tasks/hr × aggregate tok/s.
 
-- [ ] **REPL-EMB-B.1 — define the quality baseline run**: Qwen3.8-Flash-Next (strongest stack model) alone, same suites the
+- [x] **REPL-EMB-B.1 — define the quality baseline run**: Qwen3.8-Flash-Next (strongest stack model) alone, same suites the
   orchestrator is scored on, as the standing comparison row for orchestrator evaluations.
+  ✅ 2026-09-27 — promoted to its own handoff, UFH-13
+  [`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md). The run
+  is defined there as arm A0: the pinned MMLU-Pro 200 + GPQA 195 manifest (sha256 `1532906b…adb1`), cap 16384, through
+  OpenCode → `/v1`. Its decision rule awaits the operator (OP-66).
 - [ ] **REPL-EMB-B.2 — speed baseline (after B.1; the operator deferred speed comparison)**: large MoE hybrid
   across CPU+RAM and both MI210s (Qwen3.8-Flash-Next or DeepSeek v4.1), measured on concurrency × tasks/hr ×
   aggregate tok/s. Related scoped baselines: `reviewer-latency-and-sampling-budget.md` LB-7 (review plane),

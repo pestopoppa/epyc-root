@@ -697,7 +697,7 @@ learned live estimate (intake-1796#02). The regime left open is ours: single-ins
 saturated (intake-1798#05; intake-1797#04). The terms land at weight 0 like DAR-4b: they do not reopen the
 DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 decides.
 
-- [ ] **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
+- [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**
   Role-keyed over the role's backend URLs:
   - `queued` = `AdmissionController` waiting_*, `running` = in_flight, `limit` = np (orch `src/api/admission.py:229-245`).
   - `kv_occupancy` comes from the existing `/slots` reader (`context_limits.py:433-452`); extend `parse_slots` with
@@ -710,7 +710,8 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     `expected_wait_s(role, priority="interactive")` returns seconds or None with `basis` and `source`; each consumer
     applies its own fallback.
   - Tests: ledger/`/slots` agreement, free-slot W=0, fail-open when the ledger is absent. intake-1796#01, intake-1798#02.
-- [ ] **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
+- [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`
   (`hybrid_router.py:308-327`), landed at λ_lat=0 (byte-identical, test-pinned).**
   - `score −= λ_lat·(T̂+W)/T_ref`, with `T̂ = L̂(role)/baseline_tps_by_role[role]` (provenance-labelled,
     `q_scorer.py:386-402`).
@@ -721,7 +722,8 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
   - Env-gated AB mode: per-request arm id, declared candidate restriction, read-only episodic snapshot, Q-updates
     off, arm-A2 live term from `/slots` (busy flags + `n_decoded`). intake-1796#02, intake-1798#04.
     - Key every prior row by (role, device, topology_hash), never by role alone: record the device (CPU region set or MI210) and the `ContentionGate._live_topology_hash()` value (orch `src/scheduling/contention_gate.py:141`) the TPOT/L̂ inputs were derived under. A row whose topology_hash differs from the live stack contributes term 0 plus a `prior_stale` flag (the same fail-open path as a missing prior), so a stack change or a Layer-2 residency swap cannot leave a CPU-era prior pricing a GPU-resident role. Re-derive the table on every stack change. RouterWise's latency model is per (model, setup) and its own router is a static prior with no live arm (intake-1815#0, intake-1815#6).
-- [ ] **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
+- [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
   Qwen3.8-Flash-Next (`architect_critic` :8074, `-np 1`) with divert target `architect_general` (:8083, MI210).**
   - Arms: A0 incumbent (λ_lat=0), A1 static prior + guard, A2 A1 + live `/slots` term.
   - Results go to `epyc-inference-research/data/sel-loadsweep-ab-<UTC>/`.
@@ -732,7 +734,8 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     - Otherwise write a BOUNDED-NULL-1 statement and keep static + guard.
     - The same structure clears A1 against A0.
   - Settles the c1 open residual. intake-1796#02, intake-1797#04, intake-1798#05.
-  - [ ] **DAR-LAT-3a — Freeze the pre-registration.**
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-3a — Freeze the pre-registration.**
     - Manifest: seeded MMLU-Pro/GPQA items (the frozen-v10 sets, amd-ai-lab-website-publication.md:18), `max_tokens`
       cap, candidate pair, dry-route-explain filter (architect_critic chosen under A0 and A1 at zero load), frozen
       prior table (keyed by role/device/topology_hash, with the live topology_hash at freeze) and episodic snapshot
@@ -746,7 +749,8 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
       `artifacts/operator/receipts/RATIFY-P-SERVE-SEL-1-20260926.json`; executed by session workspace-8d at the
       operator's explicit instruction, `--verify` passed). The A/B is decision-grade: record the protocol id in the
       manifest before the freeze.
-  - [ ] **DAR-LAT-3g — GATE (acquire, never observe):**
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-3g — GATE (acquire, never observe):**
     - bus-granted whole-host window (INVARIANTS #8), because MEAS-6 forbids a concurrent CPU/GPU campaign;
     - `region-lock run --cpu-list 0-95 -- <driver>` (OPERATING_CONSTRAINTS.md:106) + MI210 lease;
     - AutoPilot quiesced by its owner; experiment API on its own port with a captured PID (production API untouched,
@@ -762,13 +766,14 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
         differs from the recipe's validated 8192. This is a production launch change, so it is reconciled only by a
         signed `stack-change` package (the lineup/recipe owner), never an ad-hoc relaunch; 3g stays blocked until then.
     - VB-SEL-LOADAB wired.
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
   - [ ] **DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** Use the
     `stack-change` skill (zero inference). Live `-t 96` vs recipe `threads: 48`, and `n_ctx` 262144 vs the validated
     8192. Trace which surface emits 96 (the suspect is `stack_templates/default.yaml:155`). Present the options: align
     serving to the recipe, or re-derive the recipe for the 96-thread serving shape (CPU co-tenancy with speech is a
     known cost, CURRENT-CAMPAIGN.md:22). Give a recommendation and a before/after decode gate. One package for the
     operator's signature; never an ad-hoc relaunch. Filed 2026-09-26 (workspace-8d wrap-up).
-  - [ ] **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
     out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
     `server_mode.architect_critic.recipe.env_not_serving`.
     - Why it is separate:
@@ -784,11 +789,14 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
       3. Per-suite quality non-inferiority on the DAR-LAT-3a item sets.
     - Adopt only if the knob is non-inferior on speed at every depth and on quality. The change ships as its own
       `stack-change` package, which adds it to the critic's `stack_env` block.
-  - [ ] **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): a numerics-and-long-context knob for the critic seat; no thesis arm depends on it; unfreeze trigger: the UFH-13 verdict makes the critic seat's served shape decision-relevant, or the operator reopens it. The box stays open: frozen is not done.
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
     prerequisite that fails during a block; re-queue the block, never drop it. Per-request receipts + raw outputs.
-  - [ ] **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows that selection under load matters — **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window
     only; W1 and W2 are never pooled (MEASUREMENT.md:434-438). Record the verdict and, on A2 loss, the BOUNDED-NULL-1
     power bound + positive-control readback.
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND the UFH-13 thesis experiment shows that selection under load matters for the orchestrator's value. The box stays open: frozen is not done.
 
 **Default-weight flip (trigger prose, no checkbox).**
 - Fires only when DAR-LAT-3c clears A1 (or A2) against A0.

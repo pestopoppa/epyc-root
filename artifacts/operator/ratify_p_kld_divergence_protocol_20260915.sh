@@ -93,6 +93,10 @@ for arg in "$@"; do
     *) echo "unknown argument: $arg" >&2; exit 64 ;;
   esac
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/scripts/operator/lib/ratify_operator.sh"
+[ "$MODE" = "dry-run" ] || ratify_require_operator
 if [ -z "$MODE" ]; then
   echo "usage: $0 --dry-run | --apply | --commit   (no default: choose explicitly)" >&2
   exit 64
@@ -322,7 +326,7 @@ fi
 # ---------------------------------------------------------------- decision receipt + keyed index
 MEAS_POST_SHA256="$(sha "$MEAS")"
 if ! python3 - "$RECEIPT" "$INDEX" "$RATIFIED_AT" "$ANNEX_SHA256" "$MEAS_PRE_SHA256" "$MEAS_POST_SHA256" \
-     "$SOURCE_README_SHA256" "$GATE_ID" "$CONSOLIDATED_REL" "$RECEIPT_REL" "${RATIFY_OPERATOR:-${USER:-unknown}}" <<'PYEOF'
+     "$SOURCE_README_SHA256" "$GATE_ID" "$CONSOLIDATED_REL" "$RECEIPT_REL" "$RATIFY_OPERATOR" <<'PYEOF'
 import sys, json, os
 (receipt, index, ts, annex_sha, pre_sha, post_sha, src_sha, gate, consolidated_rel,
  receipt_rel, operator) = sys.argv[1:12]
