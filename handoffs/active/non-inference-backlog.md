@@ -634,6 +634,25 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       (not a bare `uv sync`, which would prune packages outside the requested extras), and extend `health_check.sh`'s
       OBS-11 Tooling Interpreters check to assert that pytest imports in both venvs.
 
+## 2026-09-27 supplement — disk-leak audit and window-script defects (ak-ds41-main)
+
+- [ ] **NIB2-84** (MED): **`~/.codex` has no retention and no reaper.** Disk-leak audit 2026-09-27
+  (`/mnt/raid0/llm/tmp/disk-leak-audit-20260927.md` §1 rank 2, §2.3): `/home/node/.codex` is ~23 GiB, and
+  `state_5.sqlite` (2.5G), `logs_2.sqlite` (2.1G) and `thread_history_1.sqlite` (2.9G) grew ~4.8 GiB in one ~8 h
+  window while Codex served as a delegation actor. Unlike `opencode.db` (the `opencode_event_reaper.sh` pattern,
+  OP-59), nothing ages these out. Fix: a bounded reaper with the same discipline (never touch a DB a live `codex`
+  process holds, three-state `observer_guard.sh` probe, an observer-registry row), plus a retention window that
+  follows Codex's own session-resume horizon. Any deletion of existing history needs operator confirmation first.
+  Acceptance: the reaper holds `~/.codex` flat across a day of actor use.
+- [ ] **NIB2-85** (MED): **`verify_ggml_linkage.sh` FAILs falsely on a symlinked kernel store.** Found 2026-09-27 by
+  the MMQ J-cap GPU window (research `6b8feb9e` worked around it in the window script): the tool compares unresolved
+  paths, so a binary under `kernels/production/{cpu,gpu}` (a symlink into the store) reads its own ggml libraries
+  as coming from elsewhere. v10 is served from the kernel store, so every production-arm check is exposed. Fix in
+  the research repo `scripts/utils/verify_ggml_linkage.sh`: `realpath` both the resolved library and the expected
+  tree before comparing, and keep failing on a genuine cross-tree resolution. Acceptance: PASS for
+  `kernels/production/gpu` and its resolved build dir; FAIL for a binary whose ggml resolves to another tree
+  (fixture); and the `/bin/true` vacuous-pass trap noted in `coordinator-role-failure-modes-and-refactor.md` stays covered.
+
 ## Cross-references
 
 Canonical sources (always verify status in these files first):

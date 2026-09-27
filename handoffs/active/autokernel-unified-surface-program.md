@@ -9,6 +9,10 @@ and `inf70-audit` / `workspace-1c` (CPU); both research sessions closed. Current
 `autokernel-unified-20260908` · rider on [`autokernel-rebuild-program.md`](autokernel-rebuild-program.md)
 (R23 series) and [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) (FOLD series)
 **Index row**: `inference-research-index.md` → this file. **Domain**: inference research.
+**Start here (2026-09-27 pointer)**: the first ~500 lines are a dated checkpoint log. The executor entry point is
+*Start here (implementation)* (about line 530): §8.1 → §8.16 → §8.17, then current execution in §9. The GLM subject
+(GLM-5.3-Flash) was deleted on 2026-09-22 (see `autokernel-research-loop.md` AK-SERIAL-26), so any "relaunch GLM"
+step is moot. The live AutoKernel campaign is DS41 CPU decode (INF-77).
 
 > **Operator correction, 2026-09-09:** extend the working loop; do not replace it with
 > a prerequisite-heavy framework. Prioritize an actual five-loop experimental GLM CPU
