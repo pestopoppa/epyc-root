@@ -38,6 +38,11 @@ Checks (verdict.json):
   S6  the orchestrator's progress JSONL has a session_created row with
       data.kind == "harness_subagent_link" linking child -> parent in the run window.
       Advisory when the log directory is missing; required with --strict-session-log.
+      When the row is absent, verify polls the log for up to --session-log-wait-s
+      (default 10) before failing: the API's uvicorn workers append to one shared
+      dated file, so there is no per-worker file to read, and a row a worker has not
+      yet written is invisible to any reader. (Before the orchestrator's log_durable
+      fix the row could sit in a worker's batch buffer until the next API reload.)
   T1  the parent's final answer names the fixture codename (the delegated lookup worked).
   T2  the scratch repo is unmodified (the lookup was read-only).
 
@@ -490,12 +495,8 @@ def _progress_rows(log_dir: Path, start: float, end: float) -> list[dict[str, An
     return rows
 
 
-def check_session_log(log_dir: Path, parent_id: str, child_id: str | None, start: float,
-                      end: float, strict: bool) -> dict[str, Any]:
-    if not log_dir.is_dir():
-        return _check(not strict, "S6-session-log-link",
-                      f"progress log dir missing: {log_dir}"
-                      + ("" if strict else " (advisory without --strict-session-log)"))
+def _session_log_hits(log_dir: Path, parent_id: str, child_id: str | None, start: float,
+                      end: float) -> list[dict[str, Any]]:
     hits = []
     for row in _progress_rows(log_dir, start, end):
         data = row.get("data") or {}
@@ -509,11 +510,30 @@ def check_session_log(log_dir: Path, parent_id: str, child_id: str | None, start
             continue
         if data.get("session_id") == child_id and data.get("parent_session_id") == parent_id:
             hits.append(data)
+    return hits
+
+
+def check_session_log(log_dir: Path, parent_id: str, child_id: str | None, start: float,
+                      end: float, strict: bool, wait_s: float = 0.0, poll_s: float = 1.0,
+                      *, clock=time.monotonic, sleep=time.sleep) -> dict[str, Any]:
+    """S6. Polls a bounded ``wait_s`` for the row before failing (never when it is found)."""
+    if not log_dir.is_dir():
+        return _check(not strict, "S6-session-log-link",
+                      f"progress log dir missing: {log_dir}"
+                      + ("" if strict else " (advisory without --strict-session-log)"))
+    deadline = clock() + max(0.0, wait_s)
+    polls = 0
+    hits = _session_log_hits(log_dir, parent_id, child_id, start, end)
+    while not hits and child_id is not None and clock() < deadline:
+        sleep(max(0.0, min(poll_s, deadline - clock())))
+        polls += 1
+        hits = _session_log_hits(log_dir, parent_id, child_id, start, end)
     return _check(bool(hits) and child_id is not None, "S6-session-log-link",
                   f"{len(hits)} session_created/{SESSION_LOG_KIND} row(s) linking {child_id} -> "
                   f"{parent_id} in {log_dir}"
                   + (f"; depth {hits[0].get('subagent_depth')!r}, name {hits[0].get('name')!r}"
-                     if hits else ""))
+                     if hits else "")
+                  + (f" (after {polls} re-read(s) over <= {wait_s:g}s)" if polls else ""))
 
 
 def check_answer(parent: dict[str, Any]) -> dict[str, Any]:
@@ -604,7 +624,8 @@ def cmd_verify(args: argparse.Namespace) -> int:
                               "child": p04.resolve_token_counts(child, None)}
     checks.append(lint_config(evid / "opencode.jsonc"))
     checks.append(check_session_log(Path(args.progress_log_dir), parent_id, child_id, start,
-                                    window_end, args.strict_session_log))
+                                    window_end, args.strict_session_log,
+                                    wait_s=args.session_log_wait_s))
     checks.append(check_answer(parent))
     checks.append(check_repo_unmodified(repo))
 
@@ -695,6 +716,9 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--strict-window", action="store_true")
     p.add_argument("--progress-log-dir", default=str(DEFAULT_PROGRESS_LOG_DIR))
     p.add_argument("--strict-session-log", action="store_true")
+    p.add_argument("--session-log-wait-s", type=float, default=10.0,
+                   help="S6: re-read the progress log for up to this many seconds when the "
+                        "link row is not there yet (0 = one read)")
     g = p.add_argument_group("SC86 belief capture (the serving identity is recorded, never guessed)")
     g.add_argument("--no-belief-capture", action="store_true")
     g.add_argument("--harness-card-version", default="")

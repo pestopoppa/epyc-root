@@ -536,8 +536,56 @@ def test_s6_missing_log_dir_is_advisory_unless_strict(tmp_path):
 
 def test_s6_strict_verify_fails_without_the_row(tmp_path):
     _, evid, tap, prog = _simulate(tmp_path, progress=lambda now: [])
-    rc, verdict = _verify(evid, tap, prog, "--no-belief-capture", "--strict-session-log")
+    rc, verdict = _verify(evid, tap, prog, "--no-belief-capture", "--strict-session-log",
+                          "--session-log-wait-s", "0")
     assert rc == 1 and not _by(verdict["checks"], "S6-session-log-link")["ok"]
+
+
+class _FakeClock:
+    def __init__(self) -> None:
+        self.t = 0.0
+        self.sleeps: list[float] = []
+
+    def __call__(self) -> float:
+        return self.t
+
+    def sleep(self, s: float) -> None:
+        self.sleeps.append(s)
+        self.t += s
+
+
+def test_s6_polls_until_a_late_row_lands(tmp_path):
+    """A row written after verify starts (a worker flushing late) still passes S6."""
+    d = tmp_path / "prog"
+    path = d / f"{datetime.fromtimestamp(100.0, timezone.utc).date().isoformat()}.jsonl"
+    _write_jsonl(path, [])
+    clock = _FakeClock()
+
+    def sleep(s: float) -> None:
+        clock.sleep(s)
+        if len(clock.sleeps) == 3:
+            _write_jsonl(path, [_progress_row(150.0, ts_offset=0)])
+
+    c = m.check_session_log(d, PID, CID, 100.0, 200.0, True, wait_s=10.0, poll_s=1.0,
+                            clock=clock, sleep=sleep)
+    assert c["ok"] and "after 3 re-read(s)" in c["detail"]
+    assert clock.sleeps == [1.0, 1.0, 1.0]
+
+
+def test_s6_wait_is_bounded_and_skipped_when_the_row_is_there(tmp_path):
+    clock = _FakeClock()
+    d = tmp_path / "prog"
+    _write_jsonl(d / f"{datetime.fromtimestamp(100.0, timezone.utc).date().isoformat()}.jsonl", [])
+    c = m.check_session_log(d, PID, CID, 100.0, 200.0, True, wait_s=2.5, poll_s=1.0,
+                            clock=clock, sleep=clock.sleep)
+    assert not c["ok"] and clock.t == pytest.approx(2.5)
+    assert clock.sleeps == [1.0, 1.0, 0.5]
+    hit_clock = _FakeClock()
+    _write_jsonl(d / f"{datetime.fromtimestamp(100.0, timezone.utc).date().isoformat()}.jsonl",
+                 [_progress_row(150.0, ts_offset=0)])
+    assert m.check_session_log(d, PID, CID, 100.0, 200.0, True, wait_s=30.0,
+                               clock=hit_clock, sleep=hit_clock.sleep)["ok"]
+    assert hit_clock.sleeps == []
 
 
 def test_task_suite_fingerprint_is_stable_hex():
