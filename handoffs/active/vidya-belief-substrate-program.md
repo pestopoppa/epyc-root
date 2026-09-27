@@ -3005,3 +3005,18 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   runtime-arm compare rides the loop's evaluation-event path and needs no new adapter. Copy the raw dir into a
   durable location first — `/mnt/raid0/llm/tmp` is scratch.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
+
+## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design)
+
+Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table row in
+`scripts/vidya/adapters/README.md`. Design: [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md) §12-13.
+
+- [ ] **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
+  and the first eval block (P5).**
+  - Record one row per plan: gate value and confidence, planner role and fallback, plan sha256, validation outcome,
+    `N_now`/`N_total`, and the capacity snapshot with its source.
+  - Record one row per subtask: `plan_id`, `subtask_id`, type, selected role and selection receipt, `queued_s`,
+    status, wall time and tokens.
+  - Carry both on the HS-19a link spine.
+  - Locator = plan for shadow rows. Locator = arm × workload class × block for eval rows.
+  - Shadow rows project as observations. Eval rows grade only under the protocol annex that §13 pre-registers. Project; do not grade.
