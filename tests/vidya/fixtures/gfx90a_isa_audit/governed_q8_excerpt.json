@@ -1,0 +1,374 @@
+{
+ "category": "BASELINE",
+ "code_objects": [
+  {
+   "index": 114,
+   "llvm_major": 18,
+   "mfma_form_regime": "mayneedagprs_rule_pre_159493",
+   "n_audited": 2,
+   "n_kernels": 64,
+   "rocm_version": "6.2.0",
+   "sha256": "cd63f11de5f4281a0018eba389fbb228189fbdbc1f4f2ba21e51ccbe3c9045a8",
+   "size": 486160,
+   "toolchain_id": "AMD clang version 18.0.0git (https://github.com/RadeonOpenCompute/llvm-project roc-6.2.0 24292 26466ce804ac523b398608f17388eb6d605a3f09)"
+  }
+ ],
+ "created_utc": "2026-09-27T00:04:37Z",
+ "families": [
+  "mmq"
+ ],
+ "flags_pragmas": null,
+ "hardware_model": {
+  "lds_per_cu": 65536,
+  "max_waves_per_simd": 8,
+  "sgpr_granule": 16,
+  "sgprs_per_simd": 800,
+  "simds_per_cu": 4,
+  "vgpr_granule": 8,
+  "vgprs_per_simd_lane": 512,
+  "wave_size": 64
+ },
+ "label": null,
+ "match": "type8ELi64",
+ "mfma_form_regime": [
+  "mayneedagprs_rule_pre_159493"
+ ],
+ "n_rows": 2,
+ "occupancy_basis": "registers + static LDS only; dynamic (extern __shared__) LDS is set at launch and invisible here, so occupancy is an upper bound",
+ "rows": [
+  {
+   "accum_offset": 256,
+   "agpr": 0,
+   "arch_vgpr": 256,
+   "binary_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+   "callees": [],
+   "code_object": "co_114",
+   "family": "mmq",
+   "gfx_target": "gfx90a",
+   "hot": {
+    "accvgpr_mov": 0,
+    "accvgpr_read": 0,
+    "accvgpr_write": 0,
+    "calls": 0,
+    "dot": 0,
+    "ds_read": 52,
+    "ds_write": 15,
+    "global_ld": 28,
+    "global_st": 0,
+    "insts": 622,
+    "mfma": 64,
+    "priv_ld": 12,
+    "priv_ld_off": 12,
+    "priv_ld_offen": 0,
+    "priv_st": 0,
+    "priv_st_off": 0,
+    "priv_st_offen": 0,
+    "s_barrier": 4,
+    "valu": 429,
+    "waitcnt": 36,
+    "waitcnt_full": 0,
+    "waitcnt_lgkmcnt0": 7,
+    "waitcnt_vmcnt0": 3
+   },
+   "hot_accvgpr_copies": 0,
+   "hot_loop_key": "mfma",
+   "hot_loops_detail": [
+    {
+     "accvgpr_copies": 0,
+     "dot": 0,
+     "insts": 622,
+     "mfma": 64,
+     "mfma_barrier_segments": [
+      0,
+      25,
+      7,
+      32
+     ],
+     "private_ld": 10,
+     "private_st": 0,
+     "range": [
+      "0x3b60c",
+      "0x3c4e4"
+     ],
+     "s_barrier": 4,
+     "spill_reloads": 10,
+     "waitcnt_lgkmcnt0": 7,
+     "waitcnt_vmcnt0": 3
+    },
+    {
+     "accvgpr_copies": 0,
+     "dot": 0,
+     "insts": 614,
+     "mfma": 64,
+     "mfma_barrier_segments": [
+      0,
+      25,
+      6,
+      33
+     ],
+     "private_ld": 12,
+     "private_st": 0,
+     "range": [
+      "0x3cb0c",
+      "0x3d9cc"
+     ],
+     "s_barrier": 4,
+     "spill_reloads": 12,
+     "waitcnt_lgkmcnt0": 6,
+     "waitcnt_vmcnt0": 3
+    }
+   ],
+   "hot_mfma_barrier_segments": [
+    [
+     0,
+     25,
+     7,
+     32
+    ],
+    [
+     0,
+     25,
+     6,
+     33
+    ]
+   ],
+   "hot_mfma_phases": 3,
+   "hot_spill_reloads": 12,
+   "hot_spill_stores": 0,
+   "kern": {
+    "accvgpr_mov": 0,
+    "accvgpr_read": 0,
+    "accvgpr_write": 0,
+    "calls": 0,
+    "dot": 0,
+    "ds_read": 110,
+    "ds_write": 33,
+    "global_ld": 57,
+    "global_st": 20,
+    "insts": 2229,
+    "mfma": 128,
+    "priv_ld": 46,
+    "priv_ld_off": 46,
+    "priv_ld_offen": 0,
+    "priv_st": 37,
+    "priv_st_off": 37,
+    "priv_st_offen": 0,
+    "s_barrier": 13,
+    "valu": 1228,
+    "waitcnt": 115,
+    "waitcnt_full": 0,
+    "waitcnt_lgkmcnt0": 28,
+    "waitcnt_vmcnt0": 36
+   },
+   "kern_accvgpr_copies": 0,
+   "kern_spill_reloads": 46,
+   "kernel": "_ZL9mul_mat_qIL9ggml_type8ELi64ELb0EEvPKcPKiS4_S4_PfS5_15HIP_vector_typeIjLj3EEiiiiiS7_S7_iiiS7_S7_iiiS7_",
+   "lds_bytes": 0,
+   "n_hot_loops": 2,
+   "n_loops": 6,
+   "occupancy_limiter": "vgpr",
+   "occupancy_waves_per_simd": 2.0,
+   "params": {
+    "ggml_type": 8,
+    "ggml_type_name": "Q8_0",
+    "mmq_x": 64,
+    "need_check": false
+   },
+   "private_bytes": 100,
+   "reqd_workgroup_size": null,
+   "row_id": "f26a166b8ea3089d:co_114:_ZL9mul_mat_qIL9ggml_type8ELi64ELb0EEvPKcPKiS4_S4_PfS5_15HIP_vector_typeIjLj3EEiiiiiS7_S7_iiiS7_S7_iiiS7_",
+   "schema": "epyc.gfx90a.isa_audit.v1",
+   "scratch_kind": "spill",
+   "self_sha256": "a5c1df2f84301f1ebd8054fb548dbae57a683c950c9b34e2e21c0b822f88e842",
+   "sgpr": 72,
+   "sgpr_spill": 0,
+   "stub": false,
+   "tg_split": false,
+   "uses_dynamic_stack": false,
+   "vgpr_alloc": 256,
+   "vgpr_alloc_granulated": 256,
+   "vgpr_spill": 37,
+   "vgpr_total": 256,
+   "wavefront_size": 64,
+   "waves_per_simd_sgpr_limit": 8,
+   "waves_per_simd_vgpr_limit": 2,
+   "waves_per_wg": 8,
+   "wg_max": 512,
+   "wg_per_cu": 1
+  },
+  {
+   "accum_offset": 256,
+   "agpr": 0,
+   "arch_vgpr": 256,
+   "binary_sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+   "callees": [],
+   "code_object": "co_114",
+   "family": "mmq",
+   "gfx_target": "gfx90a",
+   "hot": {
+    "accvgpr_mov": 0,
+    "accvgpr_read": 0,
+    "accvgpr_write": 0,
+    "calls": 0,
+    "dot": 0,
+    "ds_read": 52,
+    "ds_write": 24,
+    "global_ld": 28,
+    "global_st": 0,
+    "insts": 651,
+    "mfma": 64,
+    "priv_ld": 29,
+    "priv_ld_off": 29,
+    "priv_ld_offen": 0,
+    "priv_st": 0,
+    "priv_st_off": 0,
+    "priv_st_offen": 0,
+    "s_barrier": 4,
+    "valu": 434,
+    "waitcnt": 45,
+    "waitcnt_full": 0,
+    "waitcnt_lgkmcnt0": 11,
+    "waitcnt_vmcnt0": 15
+   },
+   "hot_accvgpr_copies": 0,
+   "hot_loop_key": "mfma",
+   "hot_loops_detail": [
+    {
+     "accvgpr_copies": 0,
+     "dot": 0,
+     "insts": 631,
+     "mfma": 64,
+     "mfma_barrier_segments": [
+      0,
+      23,
+      7,
+      34
+     ],
+     "private_ld": 0,
+     "private_st": 0,
+     "range": [
+      "0x5d5d8",
+      "0x5e508"
+     ],
+     "s_barrier": 4,
+     "spill_reloads": 0,
+     "waitcnt_lgkmcnt0": 11,
+     "waitcnt_vmcnt0": 4
+    },
+    {
+     "accvgpr_copies": 0,
+     "dot": 0,
+     "insts": 651,
+     "mfma": 64,
+     "mfma_barrier_segments": [
+      0,
+      25,
+      6,
+      33
+     ],
+     "private_ld": 29,
+     "private_st": 0,
+     "range": [
+      "0x5f060",
+      "0x6001c"
+     ],
+     "s_barrier": 4,
+     "spill_reloads": 29,
+     "waitcnt_lgkmcnt0": 6,
+     "waitcnt_vmcnt0": 15
+    }
+   ],
+   "hot_mfma_barrier_segments": [
+    [
+     0,
+     23,
+     7,
+     34
+    ],
+    [
+     0,
+     25,
+     6,
+     33
+    ]
+   ],
+   "hot_mfma_phases": 3,
+   "hot_spill_reloads": 29,
+   "hot_spill_stores": 0,
+   "kern": {
+    "accvgpr_mov": 0,
+    "accvgpr_read": 0,
+    "accvgpr_write": 0,
+    "calls": 0,
+    "dot": 0,
+    "ds_read": 136,
+    "ds_write": 51,
+    "global_ld": 57,
+    "global_st": 32,
+    "insts": 2703,
+    "mfma": 128,
+    "priv_ld": 34,
+    "priv_ld_off": 34,
+    "priv_ld_offen": 0,
+    "priv_st": 34,
+    "priv_st_off": 34,
+    "priv_st_offen": 0,
+    "s_barrier": 13,
+    "valu": 1469,
+    "waitcnt": 141,
+    "waitcnt_full": 0,
+    "waitcnt_lgkmcnt0": 58,
+    "waitcnt_vmcnt0": 29
+   },
+   "kern_accvgpr_copies": 0,
+   "kern_spill_reloads": 34,
+   "kernel": "_ZL9mul_mat_qIL9ggml_type8ELi64ELb1EEvPKcPKiS4_S4_PfS5_15HIP_vector_typeIjLj3EEiiiiiS7_S7_iiiS7_S7_iiiS7_",
+   "lds_bytes": 0,
+   "n_hot_loops": 2,
+   "n_loops": 33,
+   "occupancy_limiter": "vgpr",
+   "occupancy_waves_per_simd": 2.0,
+   "params": {
+    "ggml_type": 8,
+    "ggml_type_name": "Q8_0",
+    "mmq_x": 64,
+    "need_check": true
+   },
+   "private_bytes": 140,
+   "reqd_workgroup_size": null,
+   "row_id": "f26a166b8ea3089d:co_114:_ZL9mul_mat_qIL9ggml_type8ELi64ELb1EEvPKcPKiS4_S4_PfS5_15HIP_vector_typeIjLj3EEiiiiiS7_S7_iiiS7_S7_iiiS7_",
+   "schema": "epyc.gfx90a.isa_audit.v1",
+   "scratch_kind": "spill",
+   "self_sha256": "a3449cf209f9bca048c66bb0a50e1097fc4a01a4a45638704f9eb069fade459e",
+   "sgpr": 84,
+   "sgpr_spill": 0,
+   "stub": false,
+   "tg_split": false,
+   "uses_dynamic_stack": false,
+   "vgpr_alloc": 256,
+   "vgpr_alloc_granulated": 256,
+   "vgpr_spill": 34,
+   "vgpr_total": 256,
+   "wavefront_size": 64,
+   "waves_per_simd_sgpr_limit": 8,
+   "waves_per_simd_vgpr_limit": 2,
+   "waves_per_wg": 8,
+   "wg_max": 512,
+   "wg_per_cu": 1
+  }
+ ],
+ "schema": "epyc.gfx90a.isa_audit.v1",
+ "source": {
+  "n_code_objects": 135,
+  "path": "/mnt/raid0/llm/kernels/production/gpu/libggml-hip.so.0.16.0",
+  "resolved": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0",
+  "sha256": "f26a166b8ea3089d19a395ae00afa22e917df8eba71ca6ef4be5235d65ea8079",
+  "size": 68250624
+ },
+ "source_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+ "tool_id": "epyc.gfx90a_isa_audit/v1",
+ "tool_sha256": "a26dd2c1cb19f8d5a4cadbbfff176dbf0e729cc590f8ce0e1af0cb4bf277fcae",
+ "toolchain": [
+  "AMD clang version 18.0.0git (https://github.com/RadeonOpenCompute/llvm-project roc-6.2.0 24292 26466ce804ac523b398608f17388eb6d605a3f09)"
+ ]
+}

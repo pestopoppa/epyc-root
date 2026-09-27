@@ -740,6 +740,7 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         under `OMP_PLACES=cores` spins (median OMP voluntary switches ~0) with no `--load-threads` flag. Check whether
         production v10 carries the fast loader; production resolves libomp with `KMP_BLOCKTIME=10`, so it is expected to
         be unaffected, but that is unmeasured. Rides V6R-4a into v11. Until it lands, DS41 carries the recipe arm (DS41-C59).
+    - PARKED 2026-09-27 (operator): Loader-default fix prepared at e665242f0 (branch `experimental/loader-team-follows-threads-20260927`, 7 lines in `common/common.cpp` `common_model_params_to_llama`: auto load threads follow `-t`, plus the matching `--load-threads` help string in `common/arg.cpp`; cut from the AK champion tip `90c12df42`, pushed to fork), not built or benchmarked. The runtime-arm flag covers DS41 now (DS41-C59, `--load-threads 48`); resume by taking e665242f0 through the experimental workflow (build, then this item's acceptance: bit-exact load, load time within noise, DS41 spinning with no flag) into the champion, and from there into v11 via V6R-4a.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 

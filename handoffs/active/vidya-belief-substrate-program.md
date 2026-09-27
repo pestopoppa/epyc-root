@@ -2354,6 +2354,7 @@ OBSERVATION grade: register counts, not throughput. Source row added to `scripts
   #159493 default) to the native record before INF03-REGAUDIT-1 or INF03-AGPR-1 produce governed reads. OBSERVATION
   grade; no new grading rule.
   - Producer landed 2026-09-27: research e603216f (`claim_projection`, schema `epyc.gfx90a.isa_audit.v1`; pre-hook docs emit 0). Root adapter drafted (`adapters/gfx90a_static_register.py`, draft at the session scratchpad `isa-audit/`), not yet wired.
+  - PARKED 2026-09-27 (operator): read side wired at root `341fef03` (`scripts/vidya/adapters/gfx90a_static_register.py`, `SOURCE_KIND = epyc.gfx90a.isa_audit.v1`, Source `gfx90a-static-register` in `ingest_sources.py`, `cli.py ingest gfx90a-static-register --path <audit dir>`, 28 tests in `tests/vidya/test_gfx90a_static_register_adapter.py`); nothing ingested — every audit on disk is pre-hook and yields 0 tuples; resume by pulling the shared research checkout to ≥ `e603216f`, running `gfx90a_isa_audit.py audit … --category {BASELINE|CANDIDATE} --source-commit <sha> --json <dir>/audit_<arm>.json` for INF03-REGAUDIT-1 / INF03-AGPR-1 / AK-QL-7/8, then `cli.py ingest gfx90a-static-register --path <dir>`, and tick SC84a on the first governed row.
 
 ## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16)
 
@@ -2973,8 +2974,9 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   `embedder-placement-gate`. Schema and refusals: the source-table row in `scripts/vidya/adapters/README.md`. The
   2026-09-26 Phase-0 files stay retrospective. A G3 re-run must write an `epyc.embedder_placement_g3.v1` record through
   the same `CaptureWindow` (the Phase-0 G3 driver is an out-of-repo tmp script).
-- [ ] **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
+- [ ] ❄ FROZEN 2026-09-27 — resume only once v11 native scoring exists and UFH-13 shows a verdict — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.
 
 
 ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake)
@@ -2984,7 +2986,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 VB-NPD-1) are activation records in the durable-triggers list above.
 
 - [ ] **VB-V1-BACKPRESSURE — wire the write side of `/v1` backpressure receipts** (`harness-selection-and-integration.md` HS-OD-9) before the first live bounce: one receipt per bounce with the dispatch-ledger snapshot, estimator version, `retry_after_ms`, `retry_after_basis`, next-attempt time and admission, and turn outcome. Locator = request; never graded above observation until a codified protocol exists. Distinct from SC19 (`ChatResponse.contention_gate`, `/chat` only).
-- [ ] **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
   before its first block.**
   - Per-request rows carry: arm, ρ, block, manifest/prior-table/episodic-snapshot digests, TTFT budget, outcome class,
     selection receipt, final role, grader verdict, and `instrument_class=serving`.
@@ -2992,6 +2994,7 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   - Project; do not grade. The grade comes from the protocol id: P-SERVE-SEL-1 was ratified 2026-09-26 (operator,
     orchestrator-design session); the annex lands when the operator runs the ratify script, and the A/B grade follows
     that protocol once it is applied (observation before that).
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): its producer, DAR-LAT-3, is frozen; unfreeze trigger: DAR-LAT-3 unfreezes. The box stays open: frozen is not done.
 - [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).**
   - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
   - Cold/partial-cache launches project with their label and never merge into hot C.
@@ -3006,12 +3009,25 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   durable location first — `/mnt/raid0/llm/tmp` is scratch.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
+## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)
+
+Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table row in
+`scripts/vidya/adapters/README.md`. Experiment: [`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md) (UFH-13, TOP priority).
+
+- [ ] **VB-THESIS-1 — wire the write side of the thesis experiment before its first scored item (UFH-13 TE-4).**
+  - Per-item rows: arm (A0/A1/A2, riders labelled), item id, suite, correct, escalation fired / reason / final serving
+    role, consultant and frontdoor device-seconds from the inference tap, wall, truncation, failure class.
+  - Run-level rows: G and d with their paired-bootstrap CIs and the verdict class, plus the `FROZEN-AT-LAUNCH.sha256`
+    digest and any post-hoc amendment.
+  - Locator = run × arm × item; `instrument_class=serving`. Project; do not grade (P-AB-1 / PAIRED-CI-1 /
+    BOUNDED-NULL-1 decide).
+
 ## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design)
 
 Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table row in
 `scripts/vidya/adapters/README.md`. Design: [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md) §12-13.
 
-- [ ] **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
+- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
   and the first eval block (P5).**
   - Record one row per plan: gate value and confidence, planner role and fallback, plan sha256, validation outcome,
     `N_now`/`N_total`, and the capacity snapshot with its source.
@@ -3020,3 +3036,4 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Carry both on the HS-19a link spine.
   - Locator = plan for shadow rows. Locator = arm × workload class × block for eval rows.
   - Shadow rows project as observations. Eval rows grade only under the protocol annex that §13 pre-registers. Project; do not grade.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): its producers, HS-19d P3a and P5, are frozen; unfreeze trigger: HS-19d P3a or P5 unfreezes. The box stays open: frozen is not done.

@@ -110,6 +110,10 @@ for arg in "$@"; do
     *) echo "usage: $0 [--review | --apply [--no-commit] | --verify]   (default: --review, writes nothing)" >&2; exit 64 ;;
   esac
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$MODE" != "apply" ] || ratify_require_operator
 if [ "$DO_COMMIT" -eq 0 ] && [ "$MODE" != "apply" ]; then
   echo "usage: --no-commit only makes sense with --apply" >&2; exit 64
 fi
@@ -297,7 +301,7 @@ fi
 
 # ---------------------------------------------------------------- apply
 APPLIED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-OPERATOR="${RATIFY_OPERATOR:-${USER:-unknown}}"
+OPERATOR="$RATIFY_OPERATOR"
 TMPD="$(mktemp -d)"
 trap 'rm -rf "$TMPD"' EXIT
 cp "$ROOT/$MEAS_REL" "$TMPD/MEASUREMENT.md.bak"

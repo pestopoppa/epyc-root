@@ -11,6 +11,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -412,7 +413,8 @@ def test_receipt_tool_accepts_a_doctrine_anchor_in_the_amended_file(repo: Path) 
         [sys.executable, str(tool), "emit", "--repo-root", str(repo), "--pre", str(pre),
          "--protocol-id", "DOCTRINE-TEST-1", "--anchor", "- **New doctrine clause.**",
          "--ratification-id", "doctrine-test", "--no-evidence-reason", "doctrine; no measurement",
-         "--validation", f"grep -qF 'New doctrine clause' {oc}", "--out", str(out)],
+         "--validation", f"grep -qF 'New doctrine clause' {oc}", "--operator", "tester",
+         "--out", str(out)],
         capture_output=True, text=True,
     )
     receipt = json.loads(out.read_text())
@@ -420,3 +422,28 @@ def test_receipt_tool_accepts_a_doctrine_anchor_in_the_amended_file(repo: Path) 
     assert protocol["verdict"] == "PASS", protocol
     assert any(oc in d for d in protocol["detail"])
     assert receipt["verdict"] == "RATIFIED" and proc.returncode == 0, proc.stdout[-2000:]
+
+
+@pytest.mark.parametrize("operator", [None, "node", "root", "workspace-8d"])
+def test_receipt_tool_refuses_a_defaulted_or_system_operator(repo: Path, operator) -> None:
+    """RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 recorded `operator: "node"` (a $USER
+    fallback). The receipt proves a HUMAN signed, so an unset, system-account or agent
+    signer makes the receipt REFUSED instead of silently recording the login account."""
+    tool = ROOT / "scripts" / "operator" / "ratification_receipt.py"
+    oc = "agents/shared/OPERATING_CONSTRAINTS.md"
+    pre = repo / "pre.json"
+    subprocess.run([sys.executable, str(tool), "capture", "--repo-root", str(repo),
+                    "--state", oc, "--out", str(pre)], check=True, capture_output=True)
+    (repo / oc).write_text("# OC\n\n- **New doctrine clause.** Text.\n")
+    out = repo / "doctrine.receipt.json"
+    argv = [sys.executable, str(tool), "emit", "--repo-root", str(repo), "--pre", str(pre),
+            "--protocol-id", "DOCTRINE-TEST-1", "--anchor", "- **New doctrine clause.**",
+            "--ratification-id", "doctrine-test", "--no-evidence-reason", "doctrine; no measurement",
+            "--out", str(out)]
+    if operator is not None:
+        argv += ["--operator", operator]
+    env = {k: v for k, v in os.environ.items() if k != "RATIFY_OPERATOR"}
+    proc = subprocess.run(argv, capture_output=True, text=True, env=env)
+    receipt = json.loads(out.read_text())
+    assert proc.returncode == 1 and receipt["verdict"] == "REFUSED"
+    assert receipt["sections"]["operator"]["verdict"] == "FAIL"

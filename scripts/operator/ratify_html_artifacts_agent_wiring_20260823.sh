@@ -47,6 +47,10 @@ for arg in "$@"; do
     *) echo "unknown argument: $arg" >&2; exit 64 ;;
   esac
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$DRY_RUN" -eq 1 ] || ratify_require_operator
 
 MODIFIED_FILES=()
 BACKUPS=()
@@ -187,7 +191,7 @@ python3 "$RECEIPT_TOOL" emit --repo-root "$REPO" --pre "$PRE" \
   --script "$REPO/scripts/operator/ratify_html_artifacts_agent_wiring_20260823.sh" \
   --no-evidence-reason "agent-facing pointer to docs/reference/html-artifacts-index.md and the runbook; not a measured claim" \
   --validation "python3 scripts/docs/check_html_artifact_index.py --check" \
-  --operator "${RATIFY_OPERATOR:-${USER:-unknown}}" \
+  --operator "$RATIFY_OPERATOR" \
   --out "$REPO/$RECEIPT_REL" || receipt_rc=$?
 if [ "$receipt_rc" -ne 0 ]; then
   refused="$REPO/${RECEIPT_REL%.receipt.json}.refused-$(date -u +%Y%m%dT%H%M%SZ).receipt.json"

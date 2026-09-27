@@ -145,6 +145,22 @@ gates:
       arm an hour into a bench window; the drafter is why the pair, not the model, is the
       unit.
 
+  gpu_isa_audit:
+    required: true
+    added: 2026-09-27
+    method: >
+      epyc-inference-research/scripts/kernel_rnd/gfx90a_isa_audit.py audit (incumbent,
+      candidate) then diff --families mmq,fattn_mma,fattn_wmma,mmf -- SKILL.md step 3c,
+      BEFORE any GPU timing
+    pass_rule: >
+      diff exits 0 -> status pass. Exit 1 (any FAIL: spills up, hot-loop reloads or
+      accvgpr copies up, AGPRs appearing, occupancy down) -> no GPU timing; status waived
+      only with every FAIL named in accepted_fails and carried by the operator signature.
+    note: >
+      INF03-REGAUDIT-2. The v9->v10 audit found MMQ spill regressions (Q5_0 J=64 15->46,
+      Q1_0 21->61, Q4_0 need_check=1 0->32) that the v10 promotion gates never looked at.
+      A CPU-only promotion records this gate as waived.
+
   relocatable_runtime:
     required: true
     method: scripts/preflight.sh <build-dir> <backend>

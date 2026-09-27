@@ -8,6 +8,12 @@ and `handoffs/completed|archived/`.
 > [`CURRENT-CAMPAIGN.md`](CURRENT-CAMPAIGN.md) — read it before starting anything that touches the
 > production stack.
 
+> **Top priority (operator, narrowed plan, 2026-09-27): the thesis experiment, UFH-13**
+> ([`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md)).
+> It compares A0 (Flash-Next alone), A1 (frontdoor alone) and A2 (frontdoor with escalation to the consultant) on a
+> frozen suite. Before starting new work, ask whether it moves this experiment. The frozen list is in that handoff,
+> and each frozen box is marked `❄ FROZEN 2026-09-27` where it lives.
+
 ## Domain indices
 
 | Domain | Index | Scope |
@@ -30,7 +36,8 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-64 | Harness↔orchestrator interface discussion (operator-requested): OpenCode `task` tool as a control door (T1/Q7), a hierarchy of shared REPLs (Q2), generalized scouting. Package prepared under HS-19 | [harness-selection-and-integration.md](harness-selection-and-integration.md) → HS-19 | 2026-09-26 |
+| OP-66 | **Confirm two pre-registered decision rules (narrowed plan).** (a) UFH-13 thesis experiment: SUPPORTED if A2 closes ≥ X = 75% of the A1→A0 quality gap at ≤ Y = 50% of A0's consultant device-seconds, and the lower CI bound of the gap closed beats the cost fraction (alternatives: 90/30 stricter, 50/50 beats-random only). (b) UFH-12 kill rule: hybrid must beat grep/BM25 on recall@k = 5 by M = 0.10, else stop at lexical; the cheapest arm within X = 0.05 of the best wins. Reasoning is in each handoff; both freeze at confirmation | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) TE-0; [repl-embedding-retrieval.md](repl-embedding-retrieval.md) REPL-EMB-2.1 | 2026-09-27 |
+| OP-67 | **Terminal countersignature for four agent-executed or unattributed ratifications.** They are P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX (it recorded `operator: "node"`) and DAR-LAT-3h. Each was approved in chat on 2026-09-26/27 and executed by the agent (workspace-8d). They stand as CHAT-CONFIRMED. To countersign, run from a terminal: `bash scripts/operator/countersign_20260927.sh` (it asks you to type COUNTERSIGN). | [COUNTERSIGN-20260927.md](../../artifacts/operator/countersign/COUNTERSIGN-20260927.md) | 2026-09-27 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -63,6 +70,12 @@ Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
 OP-3, OP-19 and OP-53 (resolved) are preserved in
 [`../archived/master-handoff-index-history-through-2026-09-14.md`](../archived/master-handoff-index-history-through-2026-09-14.md).
+OP-64 (the HS-19 harness↔orchestrator interface discussion) was DECIDED by the operator on 2026-09-27, when the
+narrowed plan was adopted:
+- HS-19a is done, and HS-19d.0, the design, stays done.
+- HS-19b, HS-19c and HS-19d P1–P6 are frozen behind UFH-13.
+
+Recorded in [harness-selection-and-integration.md](harness-selection-and-integration.md) → HS-19d.
 OP-61 (OD-A, KTransformers) was DECIDED by the operator at the 2026-09-26 research-intake plan approval, before it
 reached the queue: KTransformers runtime declined for now; MI210 port investigation open. Recorded in
 [fable5-window2-findings-02-heterogeneous-gpu.md](fable5-window2-findings-02-heterogeneous-gpu.md) → R-A10; the follow-on is its F7.
@@ -86,12 +99,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 876 | 33 | 2026-07-29 |
+| inference-research | 60 | 875 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 467 | 12 | 2026-07-29 |
+| research-evaluation | 43 | 463 | 17 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 531 | 17 | 2026-07-29 |
-| user-facing-harness | 10 | 100 | 2 | 2026-07-29 |
+| routing-and-optimization | 50 | 520 | 28 | 2026-07-29 |
+| user-facing-harness | 11 | 92 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

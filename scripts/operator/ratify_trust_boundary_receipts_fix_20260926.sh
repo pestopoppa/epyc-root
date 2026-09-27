@@ -77,6 +77,10 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$MODE" != "apply" ] || ratify_require_operator
 
 say() { printf '%s\n' "$*"; }
 die() { printf 'REFUSING: %s\n' "$*" >&2; exit 65; }
@@ -232,7 +236,7 @@ python3 "$ROOT/scripts/operator/ratification_receipt.py" emit \
   --anchor "$NEW_GLOB_LINE" \
   --ratification-id "$GATE_ID" \
   --script "$SCRIPT_PATH" \
-  --operator "${RATIFY_OPERATOR:-${USER:-unknown}}" \
+  --operator "$RATIFY_OPERATOR" \
   --no-evidence-reason "governance amendment to the human-only list, not a measured claim; every exemption it protects cites its own commit, which ${CHECKER_REL} re-verifies at each run" \
   --validation "python3 $CHECKER_REL --repo-root ." \
   --validation "test \"\$(sha256sum $YAML_REL | cut -d' ' -f1)\" = \"\$(tr -d '[:space:]' < $PIN_REL)\"" \
@@ -247,7 +251,7 @@ fi
 
 # ---------------------------------------------------------------- decision receipt + keyed index
 if ! python3 - "$ROOT" "$RATIFIED_AT" "$GATE_ID" "$RECEIPT_REL" "$INDEX_REL" "$CONSOLIDATED_REL" \
-     "${RATIFY_OPERATOR:-${USER:-unknown}}" "$PATCH_REL" "$PATCH_SHA256" "$SCRIPT_REL" \
+     "$RATIFY_OPERATOR" "$PATCH_REL" "$PATCH_SHA256" "$SCRIPT_REL" \
      "$YAML_PRE_SHA256" "$YAML_POST_SHA256" "$EXEMPTIONS_REL" "$EXEMPTIONS_SHA256" \
      "$CHECKER_REL" "$CHECKER_SHA256" <<'PYEOF'
 import json, os, sys

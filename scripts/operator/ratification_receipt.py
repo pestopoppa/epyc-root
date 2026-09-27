@@ -96,8 +96,50 @@ COULD_NOT_CHECK = "COULD-NOT-CHECK"
 
 BULLET_RE = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)")
 
+# Who signed. The receipt is the proof that a HUMAN performed the amendment, so the
+# operator name must be typed, never defaulted. Until 2026-09-27 every ratifier fell
+# back to $USER, and RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 recorded
+# `operator: "node"` -- the container account an agent runs as. An unset name, a
+# system account, the invoking login, or an agent roster id is refused.
+# One source of truth: scripts/operator/lib/ratify_operator.sh calls `check-operator`.
+SYSTEM_ACCOUNTS = frozenset({
+    "node", "root", "nobody", "unknown", "daemon", "admin", "administrator", "ubuntu",
+    "user", "operator", "runner", "ci", "docker", "claude", "agent", "codex", "opencode",
+    "anthropic", "assistant", "bot", "system",
+})
+AGENT_ID_RE = re.compile(r"^(?:workspace-[0-9a-z]+|main[a-d]?|claude[\w.-]*|codex[\w.-]*|fable[\w.-]*)$", re.I)
+
 
 # --------------------------------------------------------------------------- util
+
+
+def _login_names() -> set[str]:
+    """Account names a `$USER`-style fallback would produce in this process."""
+    names = {os.environ.get("USER"), os.environ.get("LOGNAME")}
+    try:
+        import pwd
+
+        names.add(pwd.getpwuid(os.getuid()).pw_name)
+    except (ImportError, KeyError, OSError):
+        pass
+    return {n.strip().lower() for n in names if n and n.strip()}
+
+
+def operator_problem(name: str | None) -> str | None:
+    """Return why `name` cannot sign a ratification, or None when it can."""
+    if name is None or not name.strip():
+        return ("RATIFY_OPERATOR is unset. Type your own name: "
+                "RATIFY_OPERATOR=<your-name> (no $USER fallback)")
+    low = name.strip().lower()
+    if low in SYSTEM_ACCOUNTS:
+        return f"RATIFY_OPERATOR={name!r} is a system account, not a person"
+    if low in _login_names():
+        return (f"RATIFY_OPERATOR={name!r} equals this process's login account (id -un / $USER); "
+                "that is what a fallback would record. Type your name as you sign it")
+    if AGENT_ID_RE.match(low):
+        return f"RATIFY_OPERATOR={name!r} is an agent or session id, not a person"
+    return None
+
 
 
 def sha256_of(path: Path) -> str | None:
@@ -621,6 +663,13 @@ def cmd_emit(args: argparse.Namespace) -> int:
         if not script_path.is_file():
             section("protocol").fail(f"ratify script {args.script} does not exist")
 
+    operator = args.operator or os.environ.get("RATIFY_OPERATOR")
+    problem = operator_problem(operator)
+    if problem:
+        section("operator").fail(problem)
+    else:
+        section("operator").detail.append(f"typed operator name: {operator.strip()}")
+
     # ---- verdict ---------------------------------------------------------
     verdicts = {name: s.verdict for name, s in sections.items()}
     if FAIL in verdicts.values():
@@ -640,7 +689,7 @@ def cmd_emit(args: argparse.Namespace) -> int:
         "protocol_id": protocol_id,
         "supersedes": args.supersedes,
         "emitted_at_utc": _now(),
-        "operator": args.operator or os.environ.get("RATIFY_OPERATOR") or os.environ.get("USER"),
+        "operator": operator.strip() if operator else None,
         "repo_root": str(root),
         "git_head_before": snapshot.get("git_head"),
         "git_head_at_emit": _git_head(root),
@@ -704,6 +753,16 @@ def _render(receipt: dict, out: Path) -> None:
     print("=" * 78)
 
 
+def cmd_check_operator(args: argparse.Namespace) -> int:
+    name = args.name if args.name is not None else os.environ.get("RATIFY_OPERATOR")
+    problem = operator_problem(name)
+    if problem:
+        print(f"REFUSING: {problem}", file=sys.stderr)
+        return 65
+    print(name.strip())
+    return 0
+
+
 # ------------------------------------------------------------------------ main
 
 
@@ -748,6 +807,13 @@ def main(argv: list[str] | None = None) -> int:
     emit.add_argument("--out", default=None)
     emit.add_argument("--repo-root", default=str(REPO_ROOT))
     emit.set_defaults(func=cmd_emit)
+
+    chk = sub.add_parser(
+        "check-operator",
+        help="exit 0 if NAME (default: $RATIFY_OPERATOR) may sign; 65 and a reason if not",
+    )
+    chk.add_argument("name", nargs="?", default=None)
+    chk.set_defaults(func=cmd_check_operator)
 
     args = parser.parse_args(argv)
     return args.func(args)

@@ -298,7 +298,7 @@ hardware there must be an easy way to get it working on the mi210". What that me
       (research `2aa14264`). All three KB figures are corrected: `gpu-acceleration-path.md` `:16` now says PCIe4 and
       `:312-318` retires the ~64 GB/s figure; the "PCIe 5.0" claim is gone; `heterogeneous-slot-fabric-residency.md:77`
       carries the measurement. The per-crossing small-message latency (R-A7 F3) is not in this receipt; F1 measures it.
-- [ ] **F7 — MI210 port feasibility for KTransformers: SOURCE-ONLY read + effort estimate** (filed 2026-09-26 on the OD-A
+- [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows a verdict and the operator reopens OD-A — **F7 — MI210 port feasibility for KTransformers: SOURCE-ONLY read + effort estimate** (filed 2026-09-26 on the OD-A
       decision, R-A10; the first step of the open port investigation). Read-only: no build, no install, no inference, and
       nothing on the frozen trees. Bounded to one session. Answer three questions from source, each with file:line and a class
       in {works-as-is, flag/config, hipify-mechanical, needs-port, blocked}:
@@ -314,12 +314,14 @@ hardware there must be an easy way to get it working on the mi210". What that me
       `/mnt/raid0/llm/tmp/dive-intake-1809/` are the starting point. Deliverable: a dated note under R-A10 with the per-question
       verdict, the blocker list, an effort estimate per route (engineer-days, low / likely / high), and the recommended next step
       (F6 build, a port branch in an isolated experimental checkout, or close the port question).
-- [ ] **F6 — kt-kernel build-only check on this host** (after F7, and only if F7 names a build as the next step; re-scoped
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): a KTransformers port investigation is not on the thesis path; unfreeze trigger: the UFH-13 thesis experiment has a verdict AND the operator reopens the OD-A port question. The box stays open: frozen is not done.
+- [ ] ❄ FROZEN 2026-09-27 — resume only once UFH-13 shows a verdict and the operator reopens OD-A — **F6 — kt-kernel build-only check on this host** (after F7, and only if F7 names a build as the next step; re-scoped
       2026-09-26 by the OD-A decision, no longer "only if OD-A = B"): isolated venv under /mnt/raid0/llm/tmp, pinned c40722bf;
       CPU-only arm (CPUINFER_CPU_INSTRUCT=NATIVE) and ROCm arm (CPUINFER_USE_ROCM=1, PYTORCH_ROCM_ARCH=gfx90a); record
       __cpu_variant__ / __fp8_kernel__ / __rawint4_kernel__; no inference, no production tree. Experimental checkout only:
       never `/mnt/raid0/llm/llama.cpp`, `kernels/`, the kernel store, or a system/orchestrator/research venv; never inside
       a bench region claim or overlapping mi210-big-model-and-acceleration-roadmap.md PF1.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): it follows F7, which is frozen; unfreeze trigger: F7 unfreezes and names a build as the next step. The box stays open: frozen is not done.
 - [x] **M2 `-ncmoe` sweep** (§5 `:60`) — designed, still unrun; bounds the synchronous baseline.
       *Stale 2026-09-26: M2 EXECUTED 2026-08-13 (§5 :60) — owner to flip.*
       ✅ 2026-08-13 (flipped 2026-09-26, operator-directed; owner mainA not live): §5 `:60` records N ∈ {8,16,24,32} on the

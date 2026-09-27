@@ -8,8 +8,12 @@
 
 **IDs are stable.** `UFH-NN` is a durable handle — cite it instead of a line number, and never reuse a retired one.
 
+**Top priority (operator, narrowed plan, 2026-09-27): UFH-13, the thesis experiment.** Before taking any other row, check
+whether it moves UFH-13; frozen boxes carry a `❄ FROZEN 2026-09-27` marker in their handoffs.
+
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
+| UFH-13 | thesis experiment (TOP) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | TE-1 — default-off /v1 escalation flag for arm A2 (HS-4 P4 subset), with tests; X/Y wait on OP-66 | UFH-01, RTG-30 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-4 P0.4b/c — republish the Harness Card (HS-7) and freeze OpenCode at tag v1.18.31=014614d3; then P0-split | RTG-09 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
@@ -19,7 +23,7 @@
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example as a pseudocode loop block, and record what the GUI must expose | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-1.1 + 1.4 — pooled embed client with the in-flight cap by busy frontdoor node; re-measure G1 ≥ 0.95 | UFH-07, INF-78, EVL-37, UFH-01 |
+| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.1 → 2.2 — kill rule (X/M/k via OP-66), then the offline recall eval; wire VB-UFH12-RETR first | UFH-07, INF-78, EVL-37, UFH-01 |
 
 ## Cross-domain
 
