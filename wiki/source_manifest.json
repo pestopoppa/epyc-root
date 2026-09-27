@@ -1,18 +1,49 @@
 {
   "by_type": {
-    "docs": 112,
+    "docs": 114,
     "handoff-active": 175,
     "handoff-blocked": 2,
-    "handoff-completed": 199,
-    "progress": 500,
+    "handoff-completed": 200,
+    "progress": 502,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-09-26T20:02:39Z",
-  "mode": "touch",
-  "scan_time": "2026-09-26T20:02:39Z",
+  "last_touch": {
+    "advanced": {
+      "added": 5,
+      "changed": 15,
+      "removed": 0
+    },
+    "at": "2026-09-27T10:30:58Z",
+    "scope_paths": [
+      "docs/design/hs19a-linked-subagents-20260927.md",
+      "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
+      "docs/runbooks/rocm-upgrade-checklist.md",
+      "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "handoffs/active/autokernel-champion-aggregate.md",
+      "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "handoffs/active/autokernel-research-loop.md",
+      "handoffs/active/autokernel-unified-surface-program.md",
+      "handoffs/active/decision-aware-routing.md",
+      "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "handoffs/active/harness-selection-and-integration.md",
+      "handoffs/active/learned-routing-controller.md",
+      "handoffs/active/model-stack-single-source-update-pipeline.md",
+      "handoffs/active/non-inference-backlog.md",
+      "handoffs/active/rocm-verify-profile-backend.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
+      "handoffs/completed/learned-routing-controller-completed-through-2026-09-27.md",
+      "progress/2026-09/2026-09-26.md",
+      "progress/2026-09/2026-09-27-ak-ds41-main.md",
+      "progress/2026-09/2026-09-27-hs19a.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-09-27T10:30:58Z",
   "schema_version": 1,
-  "source_set_hash": "b60ad57a5fe1146809e1e252a55352efc847852794148395d09bae53b90863ec",
+  "source_set_hash": "3d30a5e541622aa3502056837584898d630692af60d1a85cb5353f552007604b",
   "sources": [
     {
       "content_hash": "9ee30de714cbef626949fd1e62c7772795280085cb0748a58f3a5d8aa1a1ac8e",
@@ -47,10 +78,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "fc38fb937ceec4b63a3abbd977ef26d20d532dc92d79a3ec7d1f8bb08a7516d7",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "900f2689753ba15f943101e5e326f68a722f78a18faa1499b51e6ff21e786c3d",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 118975,
+      "size": 123323,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -87,10 +118,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d4a4bcfcb780f1ddfc04f219c2af38c15f0c70a6691a5da8391dcbea3a81eec7",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "9c1dee3e4955f118c5815c70d11afc5a672f333546022365ad989d7c038eb652",
+      "modified": "2026-09-27T10:21:05Z",
       "path": "handoffs/active/autokernel-champion-aggregate.md",
-      "size": 80670,
+      "size": 82742,
       "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
       "type": "handoff-active"
     },
@@ -111,10 +142,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "862641a27de0206fb6b1b365544f9b2ec1cc6d6598c264cf299ea7077b2078e3",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "df1577b6019f80d14bef6ceb7754c424ac37da33c1db029c0f04c6b82fd8bfde",
+      "modified": "2026-09-27T10:21:05Z",
       "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
-      "size": 53537,
+      "size": 55246,
       "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
       "type": "handoff-active"
     },
@@ -127,10 +158,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "13dda186255353e5672e579e798dbdd5a9ed85ea8908f5a0e7860f0696342ba0",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "abec92ccde6e7ebef9ae9289cf535638948980a11770cc01f8d2fca596a243b4",
+      "modified": "2026-09-27T10:26:20Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 479891,
+      "size": 487170,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -143,10 +174,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "49b76b85fb01443dfb5fa9b387733956a99da2940c29c5922414101d1dcccd22",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "a46cf45b29b636a905831c5a40b72d1e91726cd0b97c5ae42c190747863f3688",
+      "modified": "2026-09-27T10:27:27Z",
       "path": "handoffs/active/autokernel-unified-surface-program.md",
-      "size": 353452,
+      "size": 353876,
       "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
       "type": "handoff-active"
     },
@@ -335,10 +366,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "be3e780df4eac715bfd43857169b4c0a2aa0bf3f85011f3e06d4eefa5a3851d4",
-      "modified": "2026-09-26T19:58:00Z",
+      "content_hash": "6d6526d56768bae358a0b6f2270d620c3f8c88437b57a2aba8bee3b03e7b8c3f",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "handoffs/active/decision-aware-routing.md",
-      "size": 97700,
+      "size": 99058,
       "title": "Decision-Aware Routing for Q-Scorer",
       "type": "handoff-active"
     },
@@ -351,10 +382,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "d19e613cd070120e754a34635ac5d78f798d2fb6cf8006e0611a377ec21a1a37",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "109d5ecfa20b74ccfac4daced7d69196000bd5b8bb28cfb322de5662d264fc92",
+      "modified": "2026-09-27T10:21:23Z",
       "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
-      "size": 49089,
+      "size": 61354,
       "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
       "type": "handoff-active"
     },
@@ -647,10 +678,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c5ef55166ac73a56762a9a8e88c3225b6637341b0dd3fde09a3341ae9536ea30",
-      "modified": "2026-09-26T19:57:23Z",
+      "content_hash": "c67800e904e44ba3f67adc1e2ad416352af2f8fbec432f25743214aaf9801722",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "handoffs/active/harness-selection-and-integration.md",
-      "size": 72935,
+      "size": 77818,
       "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
       "type": "handoff-active"
     },
@@ -735,10 +766,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "87c8f710805386ae634d4f3da53f67646c04bb95417ab01c85fee1d34cdd89d8",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "82ad6c1c373cd72b28d6f0a6aecfcd33e936f80ef7e01068e0db69b5d1263343",
+      "modified": "2026-09-27T10:26:58Z",
       "path": "handoffs/active/learned-routing-controller.md",
-      "size": 173608,
+      "size": 121506,
       "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
       "type": "handoff-active"
     },
@@ -847,10 +878,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "415c9e3b4f17e9bf662ac22ccca1a55a0b277c48e5b7fe54a18356f0ff5ffa2f",
-      "modified": "2026-09-26T19:56:34Z",
+      "content_hash": "aa67d20c577136adb2a870cfaab8ad2f51445e507003525fdbc87123b046e1ac",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
-      "size": 54099,
+      "size": 56328,
       "title": "Model Stack Single-Source Update Pipeline",
       "type": "handoff-active"
     },
@@ -903,10 +934,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "8bab8dce38d8580f72113ae1ee5b199986c4b1c174dd1e1eaaa20714633ffd93",
-      "modified": "2026-09-26T19:56:34Z",
+      "content_hash": "01c5fd728017513ae8cb27dbfdcbeb23606a6ca428257d97affbc5081e8501ea",
+      "modified": "2026-09-27T10:21:05Z",
       "path": "handoffs/active/non-inference-backlog.md",
-      "size": 106957,
+      "size": 109095,
       "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
       "type": "handoff-active"
     },
@@ -1151,10 +1182,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f2fa61cd7af7e25a650497eec6734c2b1a3bbe99c9924e71880b30862dfcdb74",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 156203,
+      "size": 156691,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1367,10 +1398,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "f6ffc645cac27c7e60c5b0b964022f7d994a95de1a14ce80e10813cb3e155b21",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "8414763d1b6beb1987b5e7e54db911cfdee54250b99a610865b68ad642822628",
+      "modified": "2026-09-27T10:18:11Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 280083,
+      "size": 281699,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -2284,6 +2315,14 @@
       "path": "handoffs/completed/lean-proving-pipeline.md",
       "size": 7041,
       "title": "Lean 4 Proving Pipeline \u2014 Leanstral + Goedel-Code-Prover",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "445eecf17f90b313c5b7eb2b2d1b88e12ee2d7fc49d5d8b99478a56dac9ab774",
+      "modified": "2026-09-27T10:27:08Z",
+      "path": "handoffs/completed/learned-routing-controller-completed-through-2026-09-27.md",
+      "size": 53725,
+      "title": "Learned Routing Controller \u2014 completed history through 2026-09-27",
       "type": "handoff-completed"
     },
     {
@@ -8135,11 +8174,27 @@
       "type": "progress"
     },
     {
-      "content_hash": "ee93840c8a05d191f390b7f300d2e18dcfa8c6b97c633711d5e8fcc55a430fcd",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "8a9f7e73916d614e6a0e68792ab1af7721327f35222a76e3c33d88812052ab2f",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "progress/2026-09/2026-09-26.md",
-      "size": 5241,
+      "size": 6699,
       "title": "2026-09-26",
+      "type": "progress"
+    },
+    {
+      "content_hash": "de36453bb9c0b2ba2eee7796e4d87c995fe10bb58cdd19225978581e6aed0c60",
+      "modified": "2026-09-27T10:22:44Z",
+      "path": "progress/2026-09/2026-09-27-ak-ds41-main.md",
+      "size": 8511,
+      "title": "2026-09-27 \u2014 ak-ds41-main (DS41 keep 2, the C57 barrier-sleep root cause, A4 ratified, loop hardening)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f2cbe112b82f8198557ff59301fe23a38678744a017f4d036b74b432ee4e2adf",
+      "modified": "2026-09-27T10:13:49Z",
+      "path": "progress/2026-09/2026-09-27-hs19a.md",
+      "size": 1046,
+      "title": "2026-09-27 \u2014 HS-19a stage 1 \"Linked\" (harness subagents)",
       "type": "progress"
     },
     {
@@ -8212,6 +8267,14 @@
       "path": "docs/design/exl3-mul1-ggml-type.md",
       "size": 10393,
       "title": "EXL3 `mul1` trellis weights as a ggml tensor type \u2014 format spec (X0 draft)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "9b0b38c6adddefc2077dcff9e25ebbe5e4f59cf48c623796cedb81219881e6ac",
+      "modified": "2026-09-27T10:13:48Z",
+      "path": "docs/design/hs19a-linked-subagents-20260927.md",
+      "size": 4983,
+      "title": "HS-19a stage 1 \u2014 \"Linked\" harness subagents (spec, 2026-09-27)",
       "type": "docs"
     },
     {
@@ -8879,6 +8942,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "6f4ba0f2317e5feac3071f1e4f4a427f9882adcdd411b7dbb05995757fd74afa",
+      "modified": "2026-09-27T10:13:48Z",
+      "path": "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
+      "size": 24660,
+      "title": "Research-intake Stage-3 plan: HipKittens GEMM ladder, Gluon tutorial and LLVM MFMA form (intake-1822..1826), 2026-09-26",
+      "type": "docs"
+    },
+    {
       "content_hash": "5c56d64db4d45d83a5c2874781b762fb204d85f72c5d0d001b943d9096febf69",
       "modified": "2026-09-26T19:51:39Z",
       "path": "docs/research-intake/orch-prior-art-stage3-plan-20260926.md",
@@ -9023,10 +9094,10 @@
       "type": "docs"
     },
     {
-      "content_hash": "afbb183b971c6ade7157a6725292acf62982dc83bde4169377930628dbf348ce",
-      "modified": "2026-09-26T19:51:39Z",
+      "content_hash": "511b333a8f63563eddae077f82c17ce4ec28b95d144e6bbc9cadc9a51f77d81d",
+      "modified": "2026-09-27T10:13:49Z",
       "path": "docs/runbooks/rocm-upgrade-checklist.md",
-      "size": 4141,
+      "size": 5009,
       "title": "ROCm Upgrade Checklist for llama.cpp / AutoKernel",
       "type": "docs"
     },
@@ -9039,7 +9110,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1128,
+  "total_new": 1133,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
