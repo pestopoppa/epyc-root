@@ -25,6 +25,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 RATIFY_REL = "scripts/operator/ratify_v10_episodic_repin_20260917.sh"
 WRAPPER_REL = "scripts/operator/run_v10_episodic_repin_ratify_20260917.sh"
 RECEIPT_TOOL_REL = "scripts/operator/ratification_receipt.py"
+OPERATOR_LIB_REL = "scripts/operator/lib/ratify_operator.sh"  # typed-signer guard, sourced by both
 V10 = "multitier_v10_20260810"
 V10_REL = "artifacts/operator/ratify_multitier_baseline_v10_20260810.json"
 DECISION_REL = "artifacts/operator/ratify_v10_episodic_repin_20260917.json"
@@ -154,7 +155,7 @@ def fx(tmp_path: Path) -> dict:
 
     # ---- epyc-root fixture: git repo with a bare origin ----
     root = tmp_path / "root"
-    for rel in (RATIFY_REL, WRAPPER_REL, RECEIPT_TOOL_REL):
+    for rel in (RATIFY_REL, WRAPPER_REL, RECEIPT_TOOL_REL, OPERATOR_LIB_REL):
         (root / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(REPO_ROOT / rel, root / rel)
     (root / "MEASUREMENT.md").write_text("# Measurement\n\n- P-QUAL-T1: quality tier 1.\n")

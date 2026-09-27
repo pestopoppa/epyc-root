@@ -120,6 +120,10 @@ for arg in "$@"; do
     *) echo "usage: $0 [--dry-run | --apply [--no-commit]]   (default: --dry-run, writes nothing)" >&2; exit 64 ;;
   esac
 done
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$MODE" != "apply" ] || ratify_require_operator
 
 say() { printf '%s\n' "$*"; }
 die() { printf 'REFUSING: %s\n' "$*" >&2; exit 65; }
@@ -302,7 +306,7 @@ fi
 
 # ---------------------------------------------------------------- decision receipt + keyed index
 if ! python3 - "$RECEIPT" "$INDEX" "$RATIFIED_AT" "$GATE_ID" "$CONSOLIDATED_REL" "$RECEIPT_REL" \
-     "${RATIFY_OPERATOR:-${USER:-unknown}}" "$PATCH_SHA256" "$PATCH_REL" "$SCRIPT_REL" \
+     "$RATIFY_OPERATOR" "$PATCH_SHA256" "$PATCH_REL" "$SCRIPT_REL" \
      "$MEAS_PRE_SHA256" "$MEAS_POST_SHA256" "$KR_PRE_SHA256" "$KR_POST_SHA256" <<'PYEOF'
 import sys, json, os
 (receipt, index, ts, gate, consolidated_rel, receipt_rel, operator, patch_sha, patch_rel,

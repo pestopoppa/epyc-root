@@ -115,6 +115,10 @@ case "${1:-}" in
   --verify)     MODE="verify" ;;
   *) echo "usage: $0 [--dry-run | --apply | --verify]   (default: --dry-run, writes nothing)" >&2; exit 64 ;;
 esac
+# The signer is TYPED, never defaulted: unset, system-account (node, root, id -un) and
+# agent-id names are refused before anything is written (2026-09-27 governance repair).
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+[ "$MODE" != "apply" ] || ratify_require_operator
 [ $# -le 1 ] || { echo "usage: $0 [--dry-run | --apply | --verify]" >&2; exit 64; }
 
 say() { printf '%s\n' "$*"; }
@@ -664,7 +668,7 @@ rows = sorted(str(p.relative_to(ck)) for p in ck.glob("*/prompts/rules.md") if n
 json.dump(rows, open(sys.argv[1], "w"))
 PYEOF
 if ! python3 - "$RECEIPT" "$INDEX" "$RATIFIED_AT" "$CONSOLIDATED_REL" "$INV_JSON" \
-     "${RATIFY_OPERATOR:-${USER:-unknown}}" "$(sha256sum "$BACKUP_DIR/SHA256SUMS" | awk '{print $1}')" \
+     "$RATIFY_OPERATOR" "$(sha256sum "$BACKUP_DIR/SHA256SUMS" | awk '{print $1}')" \
      "$(sha256sum "$POOL" | awk '{print $1}')" "$(sha256sum "$ROOT/$V10_REL" | awk '{print $1}')" <<'PYEOF'
 import sys, json, os, re
 (receipt, index, ts, consolidated_rel, inv_json, operator, sums_sha, pool_sha, v10_after) = sys.argv[1:10]

@@ -72,6 +72,9 @@ while [ $# -gt 0 ]; do
   esac
 done
 [ -n "$OPERATOR" ] || die "--operator <name> is required (usage: --operator <name> [--resume])"
+# Same rule as the ratifier: a system account, the login (id -un) or an agent id is refused.
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/lib/ratify_operator.sh"
+ratify_require_operator "$OPERATOR"; OPERATOR="$RATIFY_OPERATOR"
 case "$OPERATOR" in *$'\n'*|*[[:cntrl:]]*) die "operator name contains control characters" ;; esac
 
 [ -d "$EPYC_ROOT/.git" ] || [ -f "$EPYC_ROOT/.git" ] || die "$EPYC_ROOT is not a git checkout"
