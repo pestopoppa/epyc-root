@@ -499,8 +499,21 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - [ ] Watch the first resumed build-stage checkpoint of `akm-ds41-q4k-x4t-weight-prefetch` pass the corrected
     Q4/Q5 dot witness and reach measurement.
   - [ ] Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
-    caused by `1f7979d4`): `test_aggregate_feedback::test_actual_aggregate_dispositions_export_original_capture_once`,
-    three failures in `test_seed.py`, and errors in `test_native_server_t0_witness`.
+    caused by `1f7979d4`): wider than first scoped — 72 failures across 22 files in the autokernel loop suite
+    (e.g. `test_serial_roster`, `test_serving::LifecycleObservationHook`, `test_validation_semantic_adapter`,
+    `test_gpu_runtime` x2, `test_seed` x3, `test_aggregate_feedback` x2, `test_native_server_t0_witness` errors).
+- [x] DS41-C67 — **`oracle_unavailable` gate refusals were burning authoring attempts and orphaning build
+  checkpoints.** ✅ 2026-09-27 — research `0a117b03`. After DS41-C66, the loop still could not recover the
+  critic-accepted patch `e4ce1b1f` of `akm-ds41-q4k-x4t-weight-prefetch`: its three `oracle_unavailable` refusals
+  (11:41, 19:25, 19:46Z) were each classified as an authoring failure (2 of 3 attempts spent), and their build
+  checkpoints were refused by `resume.py` as "a verdict on the patch rather than a rule." `gate_rules_fingerprint`
+  also hashed only `gates.py`, so the C66 oracle fix re-opened nothing. Fix: `oracle_unavailable` joins the rule
+  gates in `loop._RULE_GATES` and `resume.RULE_GATES` (no authoring attempt spent; checkpoint resumes once the
+  gate rules fingerprint changes), and `gate_rules_fingerprint` now also hashes `ORACLE_MODULES`. Resumed patches
+  still re-run every current gate. 3 regression tests added in `test_resume.py`. Loop suite failure set identical
+  to unmodified main (72 failures in 22 files, all pre-existing). Verified: dry scan of the live DS41 store shows
+  the `e4ce1b1f` build checkpoints go from refused to ELIGIBLE (outrank the author checkpoint). Deployed: live run
+  worktree `research-ds41-run10` moved to `0a117b03`; the next batch's child picks it up.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
