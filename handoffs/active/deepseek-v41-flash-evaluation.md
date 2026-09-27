@@ -338,6 +338,12 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - If the digests differ, record which object differs and keep `-j1`.
   - The build takes CPU cores, so schedule it under a region claim that does not overlap a live measurement.
 - [ ] DS41-C47 — **Confirm the first keep at the serving gate.**
+  - Operator 2026-09-27: let the loop's serving gate decide (fires at 13.81% compounded or every 4 keeps); no early
+    confirmation run. The keep's commit `cafb59c3` is now durable on `fork/experimental/fastload-ds41-20260925`
+    (it was local-only). Not in `ak/champion` / v10.
+  - After the gate confirms a bundle: fold it toward the champion as a full experimental candidate (fresh v10 +
+    the confirmed sgemm keeps, validated as a whole — never a promotion-time cherry-pick). The gemm4xN change is
+    generic tinyBLAS Q8_0 (n=2..8), so also A/B a production CPU Q8_0 role with multi-token verify before v11.
   - `akm-ds41-gemm4xn-2x-unroll` measured +4.535% on the paired A/B and +7.304% compounded (DS41-C39).
   - But its anchor-guard A/A read **+19.443% between two builds with identical code digests** (the "R21-10
     instrument excursion"). That is four times the keep's own delta, on the same code.
