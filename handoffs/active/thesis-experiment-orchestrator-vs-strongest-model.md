@@ -1,7 +1,9 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
 
-**Status:** active — PRE-REGISTRATION DRAFT. The design is below; the decision rule's X and Y await the operator's
-confirmation (master queue OP-66). Nothing has run.
+**Status:** active. The **decision rule is PRE-REGISTERED** (X = 0.75, Y = 0.50; operator-approved 2026-09-27, OP-66
+closed). The TE-3a freeze decisions are recorded (operator-approved 2026-09-27; § *Pre-registration
+clarifications*). The rest of the pre-registration (suite, scorer, arm configs) freezes at TE-3. TE-1, TE-2 and TE-3a
+are done (2026-09-27); the runner is written. Nothing has run.
 **Priority:** **TOP** (operator, narrowed plan, 2026-09-27). Work that does not move this experiment is frozen or waits
 behind it; see the freeze list at the end.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
@@ -30,8 +32,11 @@ A1 and A2 differ **only** in the escalation switch. A0 and A2 reach the same Fla
 `architect_critic`, so the consultant is reachable through existing escalation. The swap is a separate `stack-change`
 package. Until it is applied and serving is proved, Flash-Next is `architect_critic` on `:8074` and the 27B is
 `architect_general` on `:8083` (MI210).
+**Scope of the swap (operator, 2026-09-27): ONLY `architect_general` moves to Flash-Next.** `coder_escalation` and
+`ingest_long_context` stay on the 27B. Frontdoor's existing escalation hop is `CODER_ESCALATION` (TE-2), so after the
+swap that hop lands on the 27B: A2's escalation must target `architect_general` explicitly (TE-1), and TE-2 proves it.
 
-## Pre-registration (draft — freeze at TE-3)
+## Pre-registration (decision rule frozen 2026-09-27; the rest freezes at TE-3)
 
 ### Suite (frozen)
 
@@ -65,7 +70,12 @@ Also recorded per item in A2: the escalation fired or not, the escalation reason
 answer. Also recorded per arm: failures and timeouts, which count as wrong (every item is in the denominator; no
 retries), and truncation.
 
-### Decision rule (PROPOSED — operator confirms X and Y)
+### Decision rule — PRE-REGISTERED 2026-09-27 (frozen)
+
+**Registration:** X = 0.75, Y = 0.50 and the CI condition below, operator-approved in chat on 2026-09-27, session
+https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ (master queue OP-66, now closed). The rule is **frozen**:
+changing X, Y, the CI condition or the verdict classes later needs a **new registration** (a dated, operator-approved
+amendment recorded here), and a verdict taken under an amended rule is flagged as such.
 
 Define the gap-closure fraction **G = (Q_A2 − Q_A1) / (Q_A0 − Q_A1)** on pooled accuracy, and the consultant-cost
 fraction **d = DS_A2 / DS_A0** in consultant device-seconds.
@@ -105,6 +115,50 @@ within one window only, and grade nulls with BOUNDED-NULL-1. P-SERVE-SEL-1 does 
 sweeps. All arms are serving class, on the live stack, in one window. They are never compared with bench-class numbers
 (INSTRUMENT-CLASS-1).
 
+### Pre-registration clarifications (TE-3a) — fixed before any suite item was run
+
+Operator-approved in chat on 2026-09-27, session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ. No suite
+item, pilot item or smoke item had been run when these were fixed. They clarify the frozen rule above and do not
+amend it; they enter the TE-3 freeze with it.
+
+- **(a) Transport: `--transport v1`. This is a declared DEVIATION from the prose "via OpenCode"** (§ *Start here*,
+  *Rigor*). The runner drives the orchestrator's `/v1` directly, with the pre-registered sampling fixed on every
+  request (temperature 0, seed 42, `max_tokens` 16384; research `scripts/benchmark/thesis_ufh13/arms.py`
+  `GENERATION`).
+  - Why: OpenCode's epyc plugin forwards only `x_*` keys, so it cannot pin temperature or seed per request.
+  - What does not change: `/v1` is the same endpoint OpenCode calls. The arms, the role pinning and the escalation
+    switch are the same body keys.
+  - Consequence for the metrics: wall (Metric 3) runs from request start to the final answer, not from an OpenCode
+    run start, and OpenCode's system prompt is not in the request. It is absent from every arm alike, so the
+    "OpenCode's system prompt is constant across arms" confound becomes "no harness system prompt in any arm".
+- **(b) Verdict evaluation order, as implemented** in research `scripts/benchmark/thesis_ufh13/score.py` (`score()`,
+  origin/main `2b59bebe`; 10,000 resamples, stratified by suite, bootstrap seed 20260927). The first match wins:
+  1. **REFUTED** if A2 is quality-inferior to A1: `Q_A2 - Q_A1 < -quantum`, with `quantum = 1/n` over the pooled
+     items (point estimates on the same items).
+  2. **NO GAP** if `gap_ci[0] <= 0.0 <= gap_ci[1]`, where `gap_ci` is the paired-bootstrap 2.5th/97.5th percentile
+     interval of `Q_A0 - Q_A1`: per resample, `(correct_A0 - correct_A1) / n` over the same resampled items.
+     The endpoints count as including 0.
+  3. **SUPPORTED** if `G >= X` and `d <= Y` and the G lower bound `> d`.
+  4. **REFUTED** if the G upper bound `< d` (no better than random escalation).
+  5. **INCONCLUSIVE** otherwise, with a BOUNDED-NULL-1 statement.
+
+  The scorer also returns INCONCLUSIVE between steps 2 and 3 when d is unmeasured, meaning a consultant cost is
+  missing on some A0 or A2 record. That is the rule's "anything else" class, not a new verdict. Bootstrap resamples
+  with `Q_A0 == Q_A1` leave G undefined. They are dropped from G's interval and counted.
+- **(c) Review revisions: WRONG review verdicts are revised by `worker_general`**, as `/chat` does it. A2's quality
+  therefore includes the worker's rewrites. Why: the experiment measures the system as it serves, not a
+  consultant-only variant. The runner records `review_verdicts` and `final_answer_role` per A2 item, so the
+  contribution is visible in the report.
+- **The pilot is not a pre-registration deviation.** TE-pilot draws only from a pool disjoint from the frozen 395:
+  research `0a8fa57b` (`scripts/benchmark/thesis_ufh13/pilot_pool.py`, `data/ufh13-thesis/pilot_pool.json`), pool
+  sha256 `0898013e86b365d89cf941205e19e3843d4d3cd21f869d4db917496f030aa3c5`, 453 items (MMLU-Pro 200, GPQA 253).
+  The runner refuses a drifted pool and any frozen question. No pilot item enters any score.
+- **ARCHSWAP acknowledgements.** The operator approved the role-swap package's acknowledgements A-1 to A-5 in the same
+  chat, **with reviews staying on the 27B** (`architect_critic`), not moving to Flash-Next. The package is being
+  amended to match and is **not yet signed**. Nothing here substitutes for its signature. Consequence for this
+  experiment: review calls are served by the 27B, not the consultant, so they do not enter consultant
+  device-seconds (Metric 2). TE-reload proves the reviewer role resolves to the 27B before any scored item.
+
 ### Rigor
 
 - **Freeze before the first scored item.** `FROZEN-AT-LAUNCH.sha256` (precedent:
@@ -143,33 +197,70 @@ code for a rider), and only if the window has its estimated time left.
 
 ## Tasks
 
-- [ ] **TE-0 — operator confirms the decision rule: X, Y and the CI condition** (master queue OP-66). The draft above
+- [x] **TE-0 — operator confirms the decision rule: X, Y and the CI condition** (master queue OP-66). The draft above
   proposes X = 0.75 and Y = 0.50. Everything below except TE-3's freeze can proceed meanwhile.
-- [ ] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** `/v1` never escalates in either
+  ✅ 2026-09-27 — operator-approved in chat as drafted (X = 0.75, Y = 0.50, lower bound of G > d), session
+  https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ. The rule is PRE-REGISTERED and frozen (§ *Decision rule*);
+  OP-66 closed and archived.
+- [x] **TE-1 — `/v1` escalation parity for A2 (HS-4 P4 subset, epyc-orchestrator).** **Approved by the operator
+  2026-09-27 (with OP-66); being built by another agent — this box ticks when it lands with its tests.** `/v1` never escalates in either
   tool mode (orch `src/api/routes/openai_compat.py:595-596`), and `x_max_escalation` is recorded but not enforced
   (`src/api/models/openai.py:160-166`).
   - Add a default-off flag that lets a `/v1` frontdoor turn escalate to `architect_general` through the existing
     escalation policy, with the escalation receipt (fired, reason, target role) in the tap.
   - Add tests for off (byte-identical to today, which is A1) and on (A2).
   - This is the one piece of new code the experiment needs. Coordinate with UFH-01 HS-4 P4, and do not fork it.
-- [ ] **TE-2 — escalation-target check after the role swap (zero inference).** Frontdoor escalates to
+  ✅ 2026-09-27 — orchestrator `9959e8db` added the `v1_escalation` flag (default off) and the per-request
+  `x_escalation` key (`auto | off | architect_general`), with escalation telemetry; `280059cc` made escalation opt-in,
+  so a request without the key sees no behaviour change. Full `tests/unit` suite passed (15620 passed). Not yet
+  serving: deployment is TE-reload.
+- [x] **TE-2 — escalation-target check after the role swap (zero inference).** Frontdoor escalates to
   `CODER_ESCALATION` (orch `src/roles.py:468-499`), an alias on `architect_general`'s server, and the graph hard-wires
   Frontdoor → CoderEscalationNode → ArchitectNode (`src/graph/nodes.py:250`, `:595`, `:615`).
   - After the swap, prove with `orchestrator_route_explain` that A2's escalation lands on the Flash-Next server, and
     that no hop ends on a role missing from `_ROLE_TO_NODE`. RI-21 is that defect: fix it (a one-line map entry plus a
     test), do not file it.
   - This fails if escalation lands on the 27B.
+  ✅ 2026-09-27 — a test proves an escalated call reaches the registry-resolved `architect_general` server. Research
+  `2b59bebe` added the runner at `scripts/benchmark/thesis_ufh13/` (plan / pilot / run / score, per-question
+  persistence, resume, a sha-checked suite, and a bootstrap scorer implementing G and d), with 23 unit tests.
+- [x] **TE-3a — freeze decisions (operator).** TE-3 cannot freeze the manifest until these are chosen; the runner
+  implements all options, so nothing else waits on them.
+  - (a) Transport: `--transport v1` with fixed sampling (recommended), or OpenCode with unfixed sampling. OpenCode's
+    plugin passes only `x_*` keys, so temperature and seed cannot be pinned through it.
+  - (b) Verdict evaluation order, as implemented: A2 < A1 → REFUTED; then NO GAP; then SUPPORTED; then G upper
+    bound < d → REFUTED; else INCONCLUSIVE. Confirm it, since the rule text does not fix the order.
+  - (c) Review-gate revisions are written by `worker_general`, as `/chat` does it (recommended: keep, so A2 measures
+    the orchestrator as it serves).
+  ✅ 2026-09-27 — operator-approved in chat, session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ:
+  (a) `--transport v1`, a declared deviation from "via OpenCode"; (b) the order as implemented; (c) keep
+  `worker_general` revisions. Recorded with the exact scorer conditions, the disjoint pilot pool and the ARCHSWAP
+  A-1..A-5 approval (reviews stay on the 27B) in § *Pre-registration clarifications*.
 - [ ] **TE-3 — build and freeze the manifest (zero inference).**
   - The driver: a per-item OpenCode headless run through `scripts/harness/hs4_p04_acceptance.py`'s pattern. Pass the
     prompt on stdin, not positionally (HS-4 P7). Use one config per arm and randomized interleaving.
   - The consultant device-seconds aggregator over the tap, with offline tests.
   - The sha sidecar for the suite, then `FROZEN-AT-LAUNCH.sha256`.
-  - Freeze only after TE-0.
+  - Freeze only after TE-0 and TE-3a. The runner (research `2b59bebe`, `scripts/benchmark/thesis_ufh13/`) is the
+    driver; TE-3a (a) chose `--transport v1`, so it drives `/v1` directly and the OpenCode-driver bullet above is
+    superseded. The manifest records the transport and the deviation.
 - [ ] **TE-4 — belief-kernel write side before the first scored item** (`vidya-belief-substrate-program.md` VB-THESIS-1;
   source row in `scripts/vidya/adapters/README.md`). Write per-item rows with the arm, item id, suite, correct,
   escalation fields, consultant and frontdoor device-seconds and wall, plus the manifest digest. Project; do not grade.
+  - Progress 2026-09-27: research `2b59bebe`'s `run_thesis.py score` writes the `belief_measurements.jsonl` sidecar
+    (`ufh13-thesis-belief/v1`, attestation = `records.jsonl`). The read-side adapter is VB-THESIS-2.
+- [ ] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
+  `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. Coordinate with workspace-76, which owns
+  the swap; `orchestrator_stack.py reload orchestrator`, never the whole stack. After the reload, prove the reviewer
+  role resolves to the 27B (`architect_critic`), per the operator's 2026-09-27 ARCHSWAP approval (§ *Pre-registration
+  clarifications*).
+- [ ] **TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The
+  main risk is that `/chat`'s triggers are conservative: the quality detector is gated by `generation_monitor`, and
+  the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide
+  before spending it.
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
-  - Needs the role swap applied and serving proved, TE-1 deployed by an API reload, and TE-2, TE-3 and TE-4 done.
+  - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
+    TE-2, TE-3 and TE-4 done.
   - Run the plumbing smoke, then A0/A1/A2 interleaved, then the riders if cheap.
   - Estimate about 2 to 2.5 h: Flash-Next alone ≈ 55 min for 395 items. Frontdoor passes are shorter, and A2 is
     frontdoor plus the escalated items.

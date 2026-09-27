@@ -509,6 +509,12 @@ the 260.0 figure (§0.5). A long-context quality **and** cost re-measure is the 
 
 ## C3 — The Flash-Next recipe would not import. **RESOLVED: a new `cpu_shape`, `NUMA_FULL_T48`.**
 
+> **Superseded 2026-09-27 by measurement (addendum; the text below is the 2026-09-22 record, unchanged).** The
+> DAR-LAT-3h G1 gate (signed `RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926`, v10, served shape, 15 clean launches) chose
+> **`-t 96`**: 48 threads failed parity (wall 1.0385×, TTFT 1.055×). `NUMA_FULL_T48` was never added to
+> `stack_numa.py`, and live `:8074` stays at `-t 96`. See
+> [`stack-change-dar-lat-3h-20260926/RESULT.md`](stack-change-dar-lat-3h-20260926/RESULT.md).
+
 **What was raised.** The codified recipe serves at `THREADS = 48` on a `0-95` cpuset
 (`qwen38_flash_next_recipe.py`: `SERVE_PREFIX = ["taskset","-c","0-95","numactl","--interleave=all"]`,
 `THREADS = 48  # NOT 96: the served decode optimum on this model`). The only `0-95` shape is

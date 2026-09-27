@@ -1,6 +1,6 @@
 # REPL Embedding Retrieval — hybrid search that returns pointers
 
-**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the next step is the Phase-2 kill criterion and offline eval; REPL-EMB-0.3 and 1.4 are frozen.
+**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the Phase-2 kill criterion is PRE-REGISTERED (REPL-EMB-2.1 ✅); next is the offline eval (2.2); REPL-EMB-0.3 and 1.4 are frozen.
 **Created:** 2026-09-26
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-12).
 **Depends on:** UFH-07 (tool-output-compression, TOC-SP-3 + trajectory artifact), INF-78 (OAB-8 scouts),
@@ -33,12 +33,16 @@ before any more embedder work.
 - **Frozen** (marked in place, boxes stay open): REPL-EMB-0.3, the GPU embedder instance; and REPL-EMB-1.4, the
   saturation-guard **B+D** policy. The landed neighbour cap (`neighbour_cap.max_in_flight: 1`) stays as it is, behind
   the default-off `repl_embedding_pool` flag. The policy arms prepared for it (runbook
-  `/mnt/raid0/llm/tmp/next-window-runbook-20260927.md`, chunks A0/A3) choose that policy, so they wait with it.
+  `/mnt/raid0/llm/tmp/next-window-runbook-20260927.md`, chunks A0/A3) choose that policy. A0 and A3 (sched-sat,
+  low-duty) had already run 10:15-11:31Z, before the freeze; A3-raw did not run. Readings: A0 (neighbour cap 0) is
+  *partial* on `:8080` and `:8180` (the rest is cross-node); A3 (embedder `OMP_WAIT_POLICY=passive KMP_BLOCKTIME=0`)
+  is NULL on all 3 ports, so keep the declared env. Detail: `progress/2026-09/2026-09-27-orch-design.md`. Nothing
+  further runs for 1.4 while it is frozen.
 - **Cancelled:** the UFH-12 **A1 duty sweep**. It was not a checkbox here, so nothing is left open for it.
 - **Operator's eventual target**, once REPL-EMB-2.2 passes the REPL-EMB-2.1 rule: B+D, **plus** GPU embedder
   redundancy (REPL-EMB-0.3).
-- **Next:** REPL-EMB-2.1. The draft rule is below and awaits the operator's X, M and k (master queue OP-66). Then
-  REPL-EMB-2.2, zero-stack-change and offline, with VB-UFH12-RETR wired first.
+- **Next:** REPL-EMB-2.2, zero-stack-change and offline, with VB-UFH12-RETR wired first. REPL-EMB-2.1's rule is
+  PRE-REGISTERED (operator-approved 2026-09-27, OP-66 closed).
 
 ## Operator decisions (2026-09-26)
 
@@ -133,10 +137,15 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 
 ### Phase 2 — offline retrieval eval, then online shadow (decides the method from data)
 
-- [ ] **REPL-EMB-2.1 — pre-register the decision rule and kill criterion BEFORE running**: "cheapest arm
+- [x] **REPL-EMB-2.1 — pre-register the decision rule and kill criterion BEFORE running**: "cheapest arm
   within X of the best recall@k; cost = CPU-seconds + latency", and a kill criterion against lexical
   (if no dense/hybrid arm beats grep/BM25 by the pre-registered margin, stop at lexical).
-  **DRAFT rule (2026-09-27, proposed; the operator confirms X, M and k — master queue OP-66).** Nothing has run.
+  ✅ 2026-09-27 — **PRE-REGISTERED (frozen)**: recall@5, M = 0.10, n ≥ 120, paired-bootstrap lower bound > 0,
+  cheapest-within-X = 0.05, exactly as drafted below. Operator-approved in chat on 2026-09-27, session
+  https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ (master queue OP-66, closed). Changing k, M, X, n or the CI
+  condition later needs a **new registration** (a dated, operator-approved amendment recorded here), and any verdict
+  under an amended rule is flagged as such. Nothing has run.
+  **Rule (as registered 2026-09-27):**
   - *Metric.* recall@k is the fraction of queries with at least one returned pointer that overlaps a gold span (same
     source, at least one line of overlap). **Primary k = 5.** k ∈ {1, 3, 10} are reported and not decided on.
   - *Query set, frozen before any arm runs:*
