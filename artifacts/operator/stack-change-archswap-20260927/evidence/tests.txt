@@ -1,0 +1,7 @@
+FAILED tests/unit/test_check_shared_with_derivations.py::test_live_models_py_table_agrees_with_the_live_registry
+= 1 failed, 15654 passed, 57 skipped, 6 xfailed, 25 warnings in 607.33s (0:10:07) =
+rc=1
+# orchestrator lane: tests/unit + tests/test_autopilot_review_integration.py, -n 4, after `update` and the matrix relabel.
+# The single failure reads the REAL master path (/mnt/raid0/llm/epyc-inference-research), which is
+# unswapped until apply; `check_shared_with_derivations.py` against the lane master prints OK (5 surfaces agree).
+# root lane: tests/harness/test_task_delegation_probe.py -> 48 passed, rc=0

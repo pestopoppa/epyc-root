@@ -1,0 +1,3 @@
+CHANGED (intended)  architect_critic: http://localhost:8074 -> http://localhost:8083
+CHANGED (intended)  architect_general: http://localhost:8083 -> http://localhost:8074
+PASS: only the named role(s) moved: architect_general architect_critic 
