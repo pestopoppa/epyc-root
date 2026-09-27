@@ -2965,12 +2965,14 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
-- [ ] **VB-UFH12-PLACEMENT — wire the write side of the embedder placement gate** (`repl-embedding-retrieval.md`
+- [x] **VB-UFH12-PLACEMENT — wire the write side of the embedder placement gate** (`repl-embedding-retrieval.md`
   REPL-EMB-0.2 / 1.4; `epyc-orchestrator` `scripts/server/embedder_placement_gate.py`) before the REPL-EMB-1.4 G1
-  re-measure: per-run self-hashed rows with gate, port, metric and unit, raw samples, the A/A floor, the embedder
-  cpuset/placement digest, llama-server binary/store digest, load shape (in-flight count) and method (warm-up
-  discarded or not). The 2026-09-26 Phase-0 files are retrospective and not backfilled. Then author the read-side
-  adapter. Locator = run × gate × port.
+  re-measure. Done 2026-09-27: write side `scripts/server/embedder_placement_capture.py` (orch lane
+  `lane/repl-emb-gate-capture-20260926`, on top of `lane/repl-emb-11-14-20260926`) emits
+  `<record-stem>.belief_measurements.jsonl`; read side `scripts/vidya/adapters/embedder_placement_gate.py`, ingest name
+  `embedder-placement-gate`. Schema and refusals: the source-table row in `scripts/vidya/adapters/README.md`. The
+  2026-09-26 Phase-0 files stay retrospective. A G3 re-run must write an `epyc.embedder_placement_g3.v1` record through
+  the same `CaptureWindow` (the Phase-0 G3 driver is an out-of-repo tmp script).
 - [ ] **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
 
