@@ -1,7 +1,8 @@
 #!/bin/bash
 # ratify_ak_search_1_a4_runtime_recipe_20260927.sh — P-AK-SEARCH-1-A4: the AutoKernel controller may
 # ADOPT a runtime configuration of its own experimental serving launch (OpenMP placement, load-thread
-# caps, kernel env switches, threads, CPU list, NUMA policy) under its own strict gates.
+# caps, threads, CPU list, NUMA policy) at KEEP-GRADE evidence: a declared bit-exact arm that clears the
+# current recipe's matched serving floor in the same paired serving A/B a source keep uses.
 #
 #   Review (default, writes nothing):   bash scripts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.sh
 #   Apply + receipts + commit (ONE):    bash scripts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.sh --apply
@@ -15,9 +16,12 @@
 # 48-place list spins, ~+9.5% median decode tok/s.
 #
 # WHY AN AMENDMENT. P-AK-SEARCH-1 authorizes ranking/retaining/composing SOURCE candidates against an
-# immutable anchor. A2 lets a runtime-parameter SCREEN run, but a screen is non-promotable and nothing
-# names a path by which a confirmed runtime nominee becomes the execution recipe; no clause sets a
-# numerics rule for a runtime arm that is not bit-exact. A3/A3.1 imply that a recipe change moves the
+# immutable anchor. A2 lets a runtime-parameter SCREEN run, but a screen is non-promotable, and A2 Clause 3
+# plus "Search-grade requires ALL of" route banking/composition through the strict path (calibration
+# block, B_min, controls 1-5, e-value, strata). No clause names a path by which a runtime finding becomes
+# the execution recipe, and none admits keep-grade evidence for one. The strict path costs, for the DS41
+# serving cell, a 640-launch calibration plus ~150-260 launches per arm; keep-grade costs 10 launches per
+# arm (+48 to recalibrate the floor once per adoption). A3/A3.1 imply that a recipe change moves the
 # epoch but never frame it as the controller adopting one.
 #
 # WHAT THE AMENDMENT DOES (artifacts/operator/ak-search-1-a4-runtime-recipe-adoption-20260927.patch)
@@ -26,15 +30,16 @@
 #     - an EXTENDED 2026-09-27 line under the P-AK-SEARCH-1 header, beside the A1/A2/A3/A3.1 lines
 #     - a new appended section P-AK-SEARCH-1-A4:
 #         Clause 1  sixth authority: adopt one declared runtime field of the full selected launch as the
-#                   experimental execution recipe, only after (a) single-field recipe-constructor delta,
-#                   (b) strict runtime admission under a PROSPECTIVE statistics declaration (anchor A/A +
-#                   neutral calibration, measured control panel, calibrated paired selection + separate
-#                   confirmation), (c) unchanged correctness precedence, (d) a durable adoption receipt
+#                   experimental execution recipe when (a) the arm is a declared single-field
+#                   recipe-constructor delta, (b) bit-exact only, (c) KEEP-GRADE evidence: the matched,
+#                   order-randomized paired serving A/B clears the current recipe's own matched serving
+#                   floor (the bar source keeps clear), (d) correctness precedence unchanged, (e) a durable
+#                   adoption receipt. The strict search-grade path stays available and is the only one
+#                   that can admit a non-bit-exact arm (evaluator's existing coherence gate only).
 #         Clause 2  adoption is a measurement-epoch boundary: the runtime surface enters declared host
-#                   state; floors/calibration recompute; a composition compounded under the old recipe
+#                   state; the serving floor recomputes; a composition compounded under the old recipe
 #                   loses its magnitude until re-measured
-#         Clause 3  a non-bit-exact runtime arm gets no tolerance of its own: only the evaluator's
-#                   existing coherence gate (differing outputs admitted solely vs a bitwise_unstable anchor)
+#         not search-grade: no banking, source composition, readiness or durable statement (A2 Clause 3)
 #         what does NOT change: no serving/production/registry/lineup/era effect; denials 1,2,5,6 stand
 #   MEASUREMENT.md
 #     - one 2026-09-27 CHANGELOG entry (required by section 5)
@@ -49,12 +54,12 @@
 # lane lane/ak-runtime-arms-a4-20260927. Only the operator applies it.
 #
 # PINS. Any mismatch is refused. If a target has moved, REGENERATE the bundle; never force or fuzz.
-#   patch                                   2ab398c88612067932d1afd20a445e180c7caddfce14faa2b4418209f75fb7dd
+#   patch                                   cf0129f7fb91fdb09ded4ed804d0b72354305e74311ac923b92652ef708f5090
 #   MEASUREMENT.md             pre-state    73f09cacca8c1dcb8eaed5c57cebec860b0f35a757e3e9efc32827f20fd3cbc4
-#   MEASUREMENT.md             post-state   2f90524e6e3d44ffb711a8b495ea0e5574ddf7ab198346e06731c7188b88fd4e
+#   MEASUREMENT.md             post-state   8012422fa40a871e2d668904ee9c84fb449a1e25aff2d155a1249146e07d311a
 #   protocols/kernel-research  pre-state    6d3ecd9451578c7dab1af07dd0e192e2cb69eb3ed7a971abad4cdb0ec0d36a54
-#   protocols/kernel-research  post-state   59dc902c1ad3947be60ecd3fc88becffea9aa38069bd0022d9c078ded3691c6b
-# The pre-state pins match epyc-root origin/main e043cfa3.
+#   protocols/kernel-research  post-state   f4223c738e5aa6ba75134fa78e2c558e9cefe40f49967fe4de7f505487173c75
+# The pre-state pins match epyc-root origin/main c9bc3859 (unchanged since e043cfa3).
 #
 # COMMIT / IDEMPOTENCE: identical to ratify_op60_measurement_epoch_20260926.sh (private index seeded
 # from HEAD, exactly five paths, staged blobs re-hashed against the post pins; ALREADY RATIFIED on a
@@ -80,17 +85,17 @@ RECEIPT="$ROOT/$RECEIPT_REL"
 INDEX="$ROOT/$INDEX_REL"
 CONSOLIDATED="$ROOT/$CONSOLIDATED_REL"
 COMMIT_PATHS=("$MEAS_REL" "$KR_REL" "$RECEIPT_REL" "$INDEX_REL" "$CONSOLIDATED_REL")
-COMMIT_MSG="RATIFIED: P-AK-SEARCH-1-A4 — AutoKernel may adopt a runtime recipe of its own experimental launch under strict runtime admission; adoption is an epoch boundary (operator directive 2026-09-27)"
+COMMIT_MSG="RATIFIED: P-AK-SEARCH-1-A4 — AutoKernel may adopt a declared bit-exact runtime recipe of its own experimental launch at keep-grade evidence (matched serving floor); adoption is an epoch boundary (operator directive 2026-09-27)"
 
-PATCH_SHA256="2ab398c88612067932d1afd20a445e180c7caddfce14faa2b4418209f75fb7dd"
+PATCH_SHA256="cf0129f7fb91fdb09ded4ed804d0b72354305e74311ac923b92652ef708f5090"
 MEAS_PRE_SHA256="73f09cacca8c1dcb8eaed5c57cebec860b0f35a757e3e9efc32827f20fd3cbc4"
-MEAS_POST_SHA256="2f90524e6e3d44ffb711a8b495ea0e5574ddf7ab198346e06731c7188b88fd4e"
+MEAS_POST_SHA256="8012422fa40a871e2d668904ee9c84fb449a1e25aff2d155a1249146e07d311a"
 KR_PRE_SHA256="6d3ecd9451578c7dab1af07dd0e192e2cb69eb3ed7a971abad4cdb0ec0d36a54"
-KR_POST_SHA256="59dc902c1ad3947be60ecd3fc88becffea9aa38069bd0022d9c078ded3691c6b"
+KR_POST_SHA256="f4223c738e5aa6ba75134fa78e2c558e9cefe40f49967fe4de7f505487173c75"
 
 RESEARCH="${RESEARCH:-/mnt/raid0/llm/epyc-inference-research}"
-# 4b3fcc9f: declared runtime arms, runtime-surface epoch input, adoption receipt (the implementation A4 names).
-RESEARCH_COMMITS=(4b3fcc9f)
+# 4d676163: declared runtime arms, runtime-surface epoch input, adoption receipt (the implementation A4 names).
+RESEARCH_COMMITS=(4b3fcc9f 4d676163)
 
 MODE="dry-run"; DO_COMMIT=1
 for arg in "$@"; do
@@ -181,7 +186,7 @@ else
 fi
 
 if [ "$fail" -ne 0 ]; then
-  die "preflight failed: $ROOT is not in the state this bundle was prepared against (epyc-root origin/main e043cfa3). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
+  die "preflight failed: $ROOT is not in the state this bundle was prepared against (epyc-root origin/main c9bc3859). Stale checkout: fast-forward it first. Moved target: regenerate the bundle. Nothing written."
 fi
 say "  preflight clean"
 
@@ -245,7 +250,7 @@ kr = open(sys.argv[2], encoding="utf-8").read()
 for needle in ("attempt. An epoch is the SHA-256 of the anchor commit, the build recipe, and the declared host\nstate, taken together.",
                "## P-AK-SEARCH-1-A3.1 — the A3 epoch is the measurement epoch (RATIFIED 2026-09-26)",
                "## P-AK-SEARCH-1-A4 — runtime-recipe adoption by the controller (RATIFIED 2026-09-27)",
-               "### Clause 3 — runtime arms that are not bit-exact",
+               "### What keep-grade adoption is not",
                "**EXTENDED 2026-09-27 by `P-AK-SEARCH-1-A4`**"):
     if kr.count(needle) != 1:
         print(f"  FAIL  expected exactly one occurrence of: {needle[:80]!r}"); ok = False
@@ -272,7 +277,7 @@ python3 "$ROOT/scripts/operator/ratification_receipt.py" emit \
   --anchor '- **2026-09-27 (v2.x)** — AMENDMENT (Annex K, `P-AK-SEARCH-1-A4`): the AutoKernel controller may' \
   --ratification-id "$GATE_ID" \
   --script "$SCRIPT_PATH" \
-  --no-evidence-reason "authority amendment, not a measured claim; every adoption it permits must itself pass the strict runtime admission it names; the implementation is code at epyc-inference-research 4b3fcc9f, verified merged in origin/main by this script's preflight; the motivating observation (DS41-C57 OMP_PLACES barrier sleep, ~+9.5% median) is a probe finding at /mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/, not a claim this amendment makes" \
+  --no-evidence-reason "authority amendment, not a measured claim; every adoption it permits must itself pass the strict runtime admission it names; the implementation is code at epyc-inference-research 4d676163, verified merged in origin/main by this script's preflight; the motivating observation (DS41-C57 OMP_PLACES barrier sleep, ~+9.5% median) is a probe finding at /mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/, not a claim this amendment makes" \
   --validation "bash scripts/validate/check_claims_grammar.sh --files $KR_REL" \
   --out "$CONSOLIDATED" || receipt_rc=$?
 if [ "$receipt_rc" -ne 0 ]; then
@@ -302,16 +307,21 @@ doc = {
   "annex": "K",
   "amendment_class": "amendment",
   "authority": {
-    "adds": "adopt one declared runtime field (threads, CPU list, NUMA policy, or a policy-listed env key) of the full selected serving launch as the experimental execution recipe",
-    "conditions": ["single-field recipe-constructor delta; runtime surface sealed (A2 bank rule)",
-                   "strict runtime admission under a prospective statistics declaration: anchor A/A + neutral calibration, measured control panel, calibrated paired order-randomized selection window, separate confirmation window",
-                   "correctness precedence unchanged: op correctness on the candidate recipe; evaluator correctness/determinism/coherence gates on every original output",
+    "adds": "adopt one declared runtime field (threads, CPU list, NUMA policy, or a policy-listed env key) of the full selected serving launch as the experimental execution recipe, at keep-grade evidence",
+    "conditions": ["arms declared in advance; single-field recipe-constructor delta; runtime surface sealed (A2 bank rule)",
+                   "bit-exact arms only",
+                   "keep-grade evidence: matched order-randomized paired serving A/B (fresh process per launch) whose positive median effect clears the current recipe's own matched serving floor, the bar a source keep clears",
+                   "correctness precedence unchanged: op correctness on the candidate recipe",
                    "durable adoption receipt"],
+    "evidence_class": "keep-grade, NOT search-grade: no banking, source composition, readiness or durable performance statement (A2 Clause 3 unchanged)",
+    "strict_alternative": "the strict search-grade path remains available; it alone may admit a non-bit-exact arm, via the evaluator's existing coherence gate",
     "epoch": "adoption is a measurement-epoch boundary: the runtime surface digest enters declared host state; floors and calibration recompute; compositions compounded under the replaced recipe lose their magnitude until re-measured",
-    "numerics": "a non-bit-exact runtime arm passes only through the evaluator's existing coherence gate (differing outputs admitted solely against a bitwise_unstable anchor)",
+    "numerics": "keep-grade admits bit-exact arms only; a non-bit-exact arm needs the strict path and passes only through the evaluator's existing coherence gate (differing outputs admitted solely against a bitwise_unstable anchor)",
+    "cost": "DS41 serving cell: keep-grade 10 server launches per arm (~35 min) + 48 launches (~2.8 h) to recalibrate the floor once per adoption; strict 640-launch calibration + ~150-260 launches per arm",
   },
   "implementation": {"repo": "epyc-inference-research",
-                     "commits": {"4b3fcc9f": "declared runtime arms (loop/runtime_arms.py), runtime-surface epoch input (loop/run.py, loop/epoch_aliases.py), adoption receipt"}},
+                     "commits": {"4b3fcc9f": "declared runtime arms (loop/runtime_arms.py), runtime-surface epoch input (loop/run.py, loop/epoch_aliases.py), adoption receipt",
+                                 "4d676163": "keep-grade evidence for declared arms (loop/serving.py runtime_evidence=keep_grade, loop/run.py, loop/cpu_screen.py), keep-grade selection restore"}},
   "rationale": "runtime configuration is a property of the measured recipe, not of the kernel; without an adoption authority every runtime finding (DS41-C57: OMP_PLACES barrier sleep, ~+9.5% median decode) became an operator escalation although the strict runtime admission already exists in the loop",
   "not_granted": "no production recipe, registry, lineup, era or cutover change; no banking, readiness, promotion or evaluator/threshold change; reduced screens never adopt; every P-AK-SEARCH-1 denial stands",
   "patch": {"path": patch_rel, "sha256": patch_sha},
