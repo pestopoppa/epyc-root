@@ -2998,3 +2998,18 @@ VB-NPD-1) are activation records in the durable-triggers list above.
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
 - [ ] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
+
+## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design)
+
+Filed at design time, before any producer exists, per the CLAUDE.md belief-kernel rule. Source-table row in
+`scripts/vidya/adapters/README.md`. Design: [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md) §12-13.
+
+- [ ] **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a)
+  and the first eval block (P5).**
+  - Record one row per plan: gate value and confidence, planner role and fallback, plan sha256, validation outcome,
+    `N_now`/`N_total`, and the capacity snapshot with its source.
+  - Record one row per subtask: `plan_id`, `subtask_id`, type, selected role and selection receipt, `queued_s`,
+    status, wall time and tokens.
+  - Carry both on the HS-19a link spine.
+  - Locator = plan for shadow rows. Locator = arm × workload class × block for eval rows.
+  - Shadow rows project as observations. Eval rows grade only under the protocol annex that §13 pre-registers. Project; do not grade.

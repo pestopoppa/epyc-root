@@ -242,6 +242,7 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
       `bash <out>/evidence/run.sh` (it calls `verify`), and read `verdict.json`. It must show one `task` part and one child session,
       keyed parent and child tap calls, the parent link on every child call, the child served by normal
       selection with no pin (its role is recorded, not gated), A5 token parity per session, the session-log row, and SC86 rows written.
+      ✅ 2026-09-27 — PASS 18/18 (run ~02:05Z in the AutoKernel CPU window; API reloaded with v1_subagent_link on, orch 86b412ff). Frontdoor DID call `task`: one `general` child (depth 1) answered `CODENAME=amber-heron-47`; parent + child keyed in the tap, child served by normal selection (frontdoor), no x_force_*, one logical model, A5 token parity per session (15521/125 and 12557/46). S6 first failed because ProgressLogger buffered 10 rows per worker; fixed (orch 9d711b32: log_durable + flush race fix; root 82e36e4c: bounded poll) and re-verified offline after the next API reload flushed the row. Evidence: artifacts/harness/hs19a-20260927/.
   - [ ] **HS-19b — a hierarchy of shared REPLs (Q2).** Today each request gets one isolated REPL. Decide whether a
     child sees a live parent view or a snapshot, who merges what is published upward, and how OAB-12 pull budgets add
     up across levels. Draft: read-only parent views, explicit publish, one accounting tree. The design must rest on
@@ -251,7 +252,59 @@ The typed-decision plane measured 11.98x (native id-only) at 15/16 agreement on 
     run today only when a request lists targets, which in practice means AutoKernel requests only. Decide the trigger
     (a typed advisor, request shape, or retrieval miss), the budget, and how scout results reach the REPL hierarchy.
     Coordinate with INF-78 (OAB-8 scouts) and UFH-12 REPL-EMB-5.1 (the SEARCH primitive); do not fork either.
-      ✅ 2026-09-27 — PASS 18/18 (run ~02:05Z in the AutoKernel CPU window; API reloaded with v1_subagent_link on, orch 86b412ff). Frontdoor DID call `task`: one `general` child (depth 1) answered `CODENAME=amber-heron-47`; parent + child keyed in the tap, child served by normal selection (frontdoor), no x_force_*, one logical model, A5 token parity per session (15521/125 and 12557/46). S6 first failed because ProgressLogger buffered 10 rows per worker; fixed (orch 9d711b32: log_durable + flush race fix; root 82e36e4c: bounded poll) and re-verified offline after the next API reload flushed the row. Evidence: artifacts/harness/hs19a-20260927/.
+    **Designed with stage 2 (2026-09-27):** the trigger is the stage-2 gate's `scout` option, the targets come from the
+    planner, and the budget and queueing are the dispatcher's. See
+    [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md) §5-§6. Build task: HS-19d.P3c.
+  - [ ] **HS-19d — stage 2 "Scheduled": dispatch subagent work (gate → plan → size → select → aggregate; operator-approved
+    2026-09-27).** Design: [`hs19-stage2-dispatch-20260927.md`](../../docs/design/hs19-stage2-dispatch-20260927.md).
+    - Front door A (`/chat`, or the harness through an MCP tool) runs all five steps. Front door B (OpenCode `task` on
+      `/v1`) skips Gate and Plan.
+    - The work replaces proactive stage 7.5's heuristic gate, always-architect planner and wave executor, and generalizes
+      scout-stage admission from skip to queue. The plan compiles to TaskIR `plan.steps`.
+    - Every phase is behind a default-off flag. Belief write side: VB-DISPATCH-S2.
+    - [x] **HS-19d.0 — design note plus the OpenCode source audit per step, and the prior-art check.** ✅ 2026-09-27 — doc §4 (OpenCode `v1.18.31`) and §15.
+    - [ ] **HS-19d.P0 — preflight, zero inference.**
+      - Offline test: `/v1` passes more than one `tool_calls` through from a canned multi-call response. Also read the
+        served templates' `supports_parallel_tool_calls` (llama-server defaults to it; nobody sends `parallel_tool_calls`).
+      - Count `task` parts per assistant message in the HS-19a and probe taps.
+      - Confirm the tap keeps the emitted tool calls, for the child ↔ tool-call join (doc §12).
+      - Build the gate and plan corpus.
+      - Wire VB-DISPATCH-S2.
+    - [ ] **HS-19d.P1 — `epyc.dispatch_plan.v1` schema, validator and TaskIR projection** (doc §7; one test per rule; a GBNF
+      round-trip through `response_format`).
+    - [ ] **HS-19d.P2 — dispatcher (flag `dispatch_scheduler`).**
+      - Readiness dispatch, not waves.
+      - Admission generalized from `scout_stage.resolve_cap`, plus a process-wide reservation (the `EmbeddingScheduler`
+        pattern).
+      - Subtasks that are not granted are queued. Deadline, cancel flag and R2.
+      - DAR-LAT-1 `SlotCapacity` when it lands, never a second occupancy model.
+    - [ ] **HS-19d.P3a — gate in shadow (flag `dispatch_gate_shadow`).**
+      - The typed `dispatch.mode` ∈ {direct, scout, decompose, decompose_consult} is recorded on live `/chat`, and
+        nothing changes.
+      - τ_gate is re-set from the corpus and the shadow rows.
+    - [ ] **HS-19d.P3b — front door A live (flag `dispatch_plan`).**
+      - Planner routing: frontdoor by default, the consultant for `decompose_consult`, with the saturation guard.
+      - Budget `N_now`/`N_total` goes into the prompt and is enforced in code.
+      - Select from the type table plus the saturation skip (DAR-LAT-2 when it lands).
+      - Text aggregate. Stage 7.5 stays off.
+    - [ ] **HS-19d.P3c — HS-19c scouting through the gate (flag `dispatch_scout`).** `scout` → planner-derived
+      `ScoutTarget`s → stage 6.8. Coordinate with INF-78 and REPL-EMB-5.1.
+    - [ ] **HS-19d.P4a — front door B Size (flag `v1_subagent_schedule`; needs HS-OD-8/9).**
+      - Per-parent in-flight cap keyed by the HS-19a parent link.
+      - Pre-stream hold, then 503 with `Retry-After` and `retry-after-ms` (OpenCode `session/retry.ts:47-78`,
+        5 retries).
+      - Type from `x_agent_name` through typed markdown agents in the subagents profile, with the lint extended.
+    - [ ] **HS-19d.P4b — `orchestrator_dispatch` MCP tool (needs HS-17).** The harness reaches front door A with one
+      call. This is the orchestrator-driven answer to the 2026-09-27 probe (delegation 0/3 under discretionary guidance).
+    - [ ] **HS-19d.P4c — capacity note (flag `v1_capacity_note`).** A fixed, versioned tail note on turns that offer `task`
+      ("at most N subagents can run now").
+    - [ ] **HS-19d.P5 — eval (inference, coordinated window).**
+      - Arms: A0 the strongest model alone (the standing baseline), A1 frontdoor alone, A2 the pipeline, A3 the gate
+        forced to decompose, A4 the consultant always planning.
+      - Decomposable and control workloads.
+      - Pre-register a protocol annex first. Then decide per class, and delete stage 7.5.
+    - [ ] **HS-19d.P6 — stage 2.5 pointer results (flag `dispatch_pointer_results`).** Subtask outputs go to the UFH-12
+      store; the parent gets `{ref, gist, size}` and pulls on demand. The design goes through HS-19b.
 
 
 **Standing rule.** The orchestrator stays the sole caller of models; no orchestrator feature may depend on MCP sampling (deprecated in protocol 2026-07-28, earliest removal in the first revision released on or after 2027-07-28; never enabled by pinned OpenCode; and OpenCode's only provider is the orchestrator, so "borrowing the harness's model" loops back to us). [intake-1791#0, intake-1791#4]
