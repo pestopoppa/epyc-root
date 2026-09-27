@@ -597,6 +597,12 @@ These come from the 57.5 h DS41 local-planner bring-up: [retrospective](../../do
 checklist in `docs/guides/agent-workflows/agent-loop-design.md` → *Bringing up a new actor model or backend*.
 Each one turns a practice that was missing on 2026-09-23 into a standing gate.
 
+- [ ] **OAB-33 — Actor delegation must be instructed, not offered.** workspace-8d's pre-registered probe (2026-09-27,
+  `/mnt/raid0/llm/tmp/task-probe-20260927/`, driver root `scripts/harness/task_delegation_probe.py summarize`): on the
+  HS-19a prompt that names the `task` tool, frontdoor, 27B-nothink and 27B-think all delegated 3/3; on the DS41-C20c seat
+  shape (a `planner` agent with fan-out *guidance*, the hidden-`scout` description, a prompt that never names `task`) both
+  frontdoor and 27B-think self-served 0/3. DS41-C20c's non-delegation was SETUP (prompt shape), not the model. If the AK
+  seat should fan out, instruct it explicitly (or keep fan-out orchestrator-owned per OAB-8 / HS-19c, the operator ruling).
 - [ ] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** Add a scripted
   OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
   config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.
