@@ -8,7 +8,8 @@ are done (2026-09-27); the runner is written. Nothing has run.
 behind it; see the freeze list at the end.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-13).
-**Depends on:** the role-swap stack-change package (in preparation, separate), HS-4 P4 `/v1` escalation parity
+**Depends on:** the role-swap stack-change package (amended and VALID, awaiting the operator's terminal signature;
+ARCHSWAP-1 to ARCHSWAP-4 below), HS-4 P4 `/v1` escalation parity
 (UFH-01), RI-21 (routing-intelligence.md).
 
 ## Start here
@@ -158,6 +159,14 @@ amend it; they enter the TE-3 freeze with it.
   amended to match and is **not yet signed**. Nothing here substitutes for its signature. Consequence for this
   experiment: review calls are served by the 27B, not the consultant, so they do not enter consultant
   device-seconds (Metric 2). TE-reload proves the reviewer role resolves to the 27B before any scored item.
+  - Update 2026-09-27 evening: the amendment is done. Plan decomposition also stays on the 27B, through
+    `DEFAULT_PLANNER_ROLE = architect_critic`. The lanes are orchestrator `e08ec06d`, root `6dbbd7a1` and research
+    `61af24fa`, and `--validate-only` returns VALID.
+  - It reconciles TE-1: `x_escalation=auto` sends the verdict to the reviewer (the 27B), while
+    `x_escalation=architect_general` pins every consultant call to Flash-Next. A2 therefore uses `architect_general`.
+  - The package is still **unsigned**. The operator gave chat consent, but the auto-mode safety classifier blocked the
+    agent from running the ratify script under the operator's name. Signing is an operator terminal action (ARCHSWAP-1
+    below).
 
 ### Rigor
 
@@ -249,11 +258,57 @@ code for a rider), and only if the window has its estimated time left.
   escalation fields, consultant and frontdoor device-seconds and wall, plus the manifest digest. Project; do not grade.
   - Progress 2026-09-27: research `2b59bebe`'s `run_thesis.py score` writes the `belief_measurements.jsonl` sidecar
     (`ufh13-thesis-belief/v1`, attestation = `records.jsonl`). The read-side adapter is VB-THESIS-2.
+- [ ] **ARCHSWAP-1 — the operator signs the ARCHSWAP-20260927 package from a terminal.** Chat consent is on
+  record, but the auto-mode safety classifier blocks an agent from running the ratify script under the operator's
+  name (2026-09-27), so only the operator can do this. The package is amended and VALID. Command:
+  `cd /mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927 && RATIFY_OPERATOR="pestopoppa" THINKING_OPTION=follow-model BRINGUP_OPTION=B1 ./ratify_archswap_20260927.sh --attest RATIFY-ARCHSWAP-20260927`.
+  If a pinned path has moved on origin/main, the script refuses. The package is then re-pinned by its preparer, never
+  signed as-is.
+- [ ] **ARCHSWAP-2 — merge the three swap lanes and the A-3 fix** (PACKAGE §7 steps 1-4; needs ARCHSWAP-1's
+  receipt).
+  - Fast-forward to main at the pinned commits: research `61af24fa`, orchestrator `e08ec06d` and root `6dbbd7a1`.
+  - Merge **orchestrator `lane/orch-prewarm-lock-20260927` @ `9a4785e1` (the A-3 prewarm/scout region-claim fix)
+    together with the orchestrator lane.** It is based on `e08ec06d`, it is pushed only as a lane backup, and it must
+    be on orchestrator main before ARCHSWAP-3's reload, so the bypass is never live unfixed.
+  - Then run the registry bootstrap and `update`, `relabel_state.py` (a dry run, then `--apply`), and
+    `check_contention_matrix_fresh.py` (expect OK `5d772b2c`).
+  - Rerun the orchestrator unit suite on the merged main. On the lane there was one known failure: a test that reads
+    the unswapped master registry (15635 passed). It must clear once the swapped master is merged. If it does not,
+    treat it as a defect before ARCHSWAP-3.
+  - Note: the research lane also carries the INF-78 AutoKernel `run.py` help-text change to `orch:architect_critic`.
+    INF-78 is workspace-76's, so no task is filed here. It lands with this merge.
+- [ ] **ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7).
+  - Run `orchestrator_stack.py reload orchestrator` with `ORCHESTRATOR_V1_ESCALATION=1`. Do not stop autopilot.
+  - Run `stack_change_pipeline.py check --numa-mode both`. Expect only the two slot_save_path lines.
+  - Run the serving proofs:
+    - P1: an escalation reaches `:8074`;
+    - P2: `architect_critic` answers from `:8083`;
+    - P3: `coder_escalation` and `ingest_long_context` answer from `:8083`;
+    - P4: `url_snapshot` equals `evidence/urls-after-static.tsv`.
+  - Prove the reviewer and planner resolve to the 27B.
+  - **A-3 side effect.** Frontdoor scouts now hold the frontdoor claim for their whole stage (budget up to 240 s).
+    During the first scout stage after the reload, sample the claim state and any `contention_denied` or 503 on
+    concurrent frontdoor calls. Record either "no denials" or the denial rate.
+- [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
+  two slot_save_path drifts.
+  - Relaunch `architect_critic` (`:8083`) **only between DS41 actor calls, coordinated with workspace-76 over the
+    bus**: its planner uses `:8083` by port.
+  - Relaunch `architect_general` (`:8074`) at a quiet boundary of its CPU users. Fuse it with any DAR-LAT-3h reload
+    of the same process.
+  - Done when `check` shows 0 drift.
+- [ ] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
+  pre-swap labels:
+  - `decision-aware-routing.md` (the DAR-LAT-3 lines, including the 3i recipe key);
+  - `conversation-stack.md` CS-17;
+  - `routing-intelligence.md` RI-21: tick it, because the escalation map and the graph both end at
+    `architect_general` after the swap;
+  - the memory `project_champion_promotion_and_architect_swap_plan`.
 - [ ] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
-  `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. Coordinate with workspace-76, which owns
-  the swap; `orchestrator_stack.py reload orchestrator`, never the whole stack. After the reload, prove the reviewer
-  role resolves to the 27B (`architect_critic`), per the operator's 2026-09-27 ARCHSWAP approval (§ *Pre-registration
-  clarifications*).
+  `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. **It is the same reload as ARCHSWAP-3's
+  B1; run it once.** workspace-8d owns the swap. workspace-76 owns DS41, which binds the 27B by port and is
+  unaffected by an API reload. Use `orchestrator_stack.py reload orchestrator`, never the whole stack. After the
+  reload, prove the reviewer role resolves to the 27B (`architect_critic`), per the operator's 2026-09-27 ARCHSWAP
+  approval (§ *Pre-registration clarifications*).
 - [ ] **TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The
   main risk is that `/chat`'s triggers are conservative: the quality detector is gated by `generation_monitor`, and
   the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide

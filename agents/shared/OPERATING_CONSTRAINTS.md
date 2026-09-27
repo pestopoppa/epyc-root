@@ -308,6 +308,14 @@ Exception: pure factual gaps (a missing credential, an ambiguous file reference)
 Accumulation, and the one-script form a batch of pending signatures takes:
 `agents/coordinator-agent.md` → Guardrails, *Ratifications ACCUMULATE*.
 
+The operator signs from a terminal.
+- Chat consent does not let an agent run a `ratify_*.sh` or `--attest` under the operator's name, even when the
+  operator writes "run it with my consent": the auto-mode safety classifier blocks the call.
+- Hand over the pre-validated signing command, file the signature as an operator task, and keep working on everything
+  that does not need the receipt.
+- Origin: ARCHSWAP-20260927, blocked 2026-09-27. Precedent: the 2026-09-27 countersignature record (master queue
+  OP-67).
+
 ## Parallel Subagent Fan-Out — the default working mode of every main
 
 **Fan-out is the permanent default of every main, not a per-task reminder.** Operator, 2026-08-12, on

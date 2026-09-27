@@ -747,6 +747,10 @@ supplies the value under test cannot fail on it.
     `scripts/validate/check_shared_with_derivations.py:400-442` (`check_alias_of_coherence`).
   - Overlaps SSU-F4 (derive instead of restate): once roles bind to server ids, the `shared_with` alias lists that
     SSU-F4 would derive no longer exist.
+  - Also fold in ARCHSWAP acknowledgement **A-5**, a pre-existing defect the swap did not cause:
+    `ingest_long_context` is in `serial_roles`, but its host server is not. Once roles bind to server ids,
+    serial-ness belongs to the server. Derive it there, so an alias can no longer disagree with its host. (Folded here
+    2026-09-27 rather than filed separately: a stand-alone fix would re-edit a surface this task deletes.)
   - It changes the registry schema, so it runs as a `stack-change` package with one operator signature.
   - Blocker: sequencing only (UFH-13's verdict, TE-6).
 

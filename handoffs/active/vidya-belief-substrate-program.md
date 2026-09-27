@@ -2974,6 +2974,14 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   `embedder-placement-gate`. Schema and refusals: the source-table row in `scripts/vidya/adapters/README.md`. The
   2026-09-26 Phase-0 files stay retrospective. A G3 re-run must write an `epyc.embedder_placement_g3.v1` record through
   the same `CaptureWindow` (the Phase-0 G3 driver is an out-of-repo tmp script).
+- [ ] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed
+  2026-09-27). The A0 and A3 arm sidecars live at
+  `epyc-orchestrator/data/embedder_placement/arms/<run>/<N>-{base,cand}.belief_measurements.jsonl`, nine files. But
+  `scripts/vidya/ingest_sources.py`'s `Source("embedder-placement-gate", ...)` globs only `*.belief_measurements.jsonl`
+  at the root, so `cli.py ingest` never sees them.
+  - Add `arms/*/*.belief_measurements.jsonl` (or `*/*/…`, following the `kv-quant-27b-v10-measurement` pattern).
+  - Add a discovery test over a two-level fixture.
+  - Confirm the nine arm sidecars project, and that any refusal names its reason.
 - [ ] ❄ FROZEN 2026-09-27 — resume only once v11 native scoring exists and UFH-13 shows a verdict — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.

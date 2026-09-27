@@ -155,3 +155,120 @@ Root `5ef39690` covers both.
   write side), before TE-5 runs.
 - REPL-EMB-2.2: the offline recall eval, with VB-UFH12-RETR wired first.
 - OP-67: the operator's terminal countersignature.
+
+## Evening: TE-1 landed, thesis runner, ARCHSWAP amended, A-3 fix (wrap-up)
+
+Supersedes the *Open* list above for TE-1, TE-2 and TE-3a.
+
+### TE-1: `/v1` escalation (UFH-13 arm A2)
+
+- Orchestrator `9959e8db` adds the default-off flag `v1_escalation` and the per-request key
+  `x_escalation: auto | off | architect_general` (anything else returns 422). A finished frontdoor answer passes
+  through the same post-answer hooks `/chat` uses, in `/chat`'s order: `_quality_escalate`, then the review gate, then
+  `worker_general`'s revision on a WRONG verdict.
+- Every escalation call is a receipt step in the telemetry. The receipt carries consultant device-seconds and
+  request device-seconds. There are 24 unit tests plus a golden test showing the flag-off path is byte-identical.
+- `280059cc` makes escalation opt-in per request: with `x_escalation` absent, nothing changes, whether the flag is on
+  or off.
+- Full unit suite: 15620 passed. The code is not serving yet; deploying it is TE-reload.
+
+### Thesis runner (research)
+
+- `2b59bebe` adds `scripts/benchmark/thesis_ufh13/` with four verbs: `plan`, `pilot`, `run` and `score`.
+  - Results persist per question, and a run can resume.
+  - The suite is sha-checked.
+  - A bootstrap scorer computes G and d.
+  - `score` writes a ClaimTuple-shaped `belief_measurements.jsonl` (the VB-THESIS-1 write side).
+- `0a8fa57b` adds a disjoint pilot pool at `data/ufh13-thesis/pilot_pool.json`, sha256 `0898013e…aa3c5`, with
+  453 items.
+  - MMLU-Pro contributes 200 items, with a category mix matched to the suite.
+  - GPQA contributes 253 items: every GPQA question on disk that is not in the suite.
+  - The runner refuses any frozen question. 29 tests.
+
+### ARCHSWAP (the architect role swap)
+
+- **Approval.** The operator approved A-1 to A-5 in chat, with one amendment: review AND plan decomposition stay on
+  the 27B, and only escalation moves to Flash-Next.
+  - Review stays through `DEFAULT_REVIEWER_ROLE = architect_critic`.
+  - Plan decomposition stays through a new `DEFAULT_PLANNER_ROLE = architect_critic` with `resolve_planner_role()`.
+- **The amended package**, on lanes:
+  - orchestrator `lane/archswap-20260927` @ `e08ec06d`;
+  - root `lane/archswap-20260927` @ `6dbbd7a1`;
+  - research `lane/archswap-20260927` @ `61af24fa`.
+- **Reconciled with TE-1.** `x_escalation=auto` sends the answer verdict to the reviewer binding, which is the 27B.
+  `x_escalation=architect_general` pins every consultant call to Flash-Next.
+- `--validate-only` returns VALID.
+- **Signing was blocked for the agent.** The operator gave chat consent ("run now with my consent"). The auto-mode
+  safety classifier still BLOCKED the agent from running the ratify script under the operator's name. Signing is
+  therefore an operator action from a terminal (the command is below).
+- **Security flag.** The package's subagent raised an "instruction poisoning" flag. The main session reviewed the
+  diff and found it on-task. The flag was attributed to approval quotes in code comments, and those quotes were
+  removed.
+
+### A-3 fix: the prewarm and scout region-lock bypass
+
+- Orchestrator `lane/orch-prewarm-lock-20260927` @ `9a4785e1`, based on the swap lane at `e08ec06d`. It is pushed to
+  origin as a lane backup only, and is NOT on main.
+- **What it does.**
+  - A new module, `src/runtime/direct_region_claim.py`.
+  - The escalation prewarm makes one non-blocking claim attempt on a CPU-resident target, or skips.
+  - The scouts hold one claim per stage and run concurrently inside it.
+- **Tests.** 12 new tests. Full unit suite: 15635 passed and 1 known failure, a test that reads the unswapped master
+  registry.
+- **Order.** It lands after the swap commits and before the bring-up API reload (PACKAGE §7 step 1). The bypass is
+  never live unfixed.
+- **Side effect.** Frontdoor scouts now hold the frontdoor claim for their whole stage, with a budget of up to 240 s.
+- **Approval.** gitnexus rated the impact on the prewarm and scout symbols HIGH. The operator approved the fix.
+
+### Coordination
+
+- workspace-76 confirmed that DS41 binds the 27B by port, so the swap does not affect it.
+- The AutoKernel `run.py` help text changes to `orch:architect_critic` in the research swap lane. That repo is
+  workspace-76's (INF-78).
+- Any `architect_critic` (:8083) reload must be coordinated with workspace-76 and happen between actor calls.
+
+### Signing and bring-up (the operator's next steps)
+
+Run the signing from a terminal:
+
+```bash
+cd /mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927 && RATIFY_OPERATOR="pestopoppa" THINKING_OPTION=follow-model BRINGUP_OPTION=B1 ./ratify_archswap_20260927.sh --attest RATIFY-ARCHSWAP-20260927
+```
+
+Then the bring-up follows PACKAGE §7:
+
+1. Merge the three lanes, plus the A-3 fix with the orchestrator lane.
+2. Relabel the state.
+3. Run the API-only reload with `ORCHESTRATOR_V1_ESCALATION=1`. This one reload is both B1 and TE-reload.
+4. Verify that the reviewer resolves to the 27B, and run the serving proofs P1 to P4.
+5. Run TE-pilot.
+
+B2 follows at the owners' boundaries.
+
+### Commits
+
+| Repo | Commit | What | On main |
+|---|---|---|---|
+| epyc-orchestrator | `9959e8db` | TE-1 `v1_escalation` flag + `x_escalation`, telemetry, 24 tests + golden | yes |
+| epyc-orchestrator | `280059cc` | TE-1 escalation opt-in per request | yes |
+| epyc-orchestrator | `e08ec06d` | ARCHSWAP amended lane tip (reviewer/planner stay on 27B) | no (lane, unsigned) |
+| epyc-orchestrator | `9a4785e1` | A-3 prewarm/scout region claim (`lane/orch-prewarm-lock-20260927`) | no (lane backup) |
+| epyc-inference-research | `2b59bebe` | thesis runner `scripts/benchmark/thesis_ufh13/` | yes |
+| epyc-inference-research | `0a8fa57b` | disjoint pilot pool, 453 items | yes |
+| epyc-inference-research | `61af24fa` | ARCHSWAP registry + `run.py` help text | no (lane, unsigned) |
+| epyc-root | `cb8d85e2`, `f3ed7dec` | TE-1/TE-2 ticked; TE-3a, TE-reload, TE-pilot, VB-THESIS-2 filed | yes |
+| epyc-root | `f115a9d4` | TE-3a ticked with the operator's freeze decisions; SSU-F17 filed | yes |
+| epyc-root | `e8abf01d` | index next actions | yes |
+| epyc-root | `6dbbd7a1` | ARCHSWAP package amendment (UNSIGNED) | no (lane, unsigned) |
+
+The TE-3a freeze decisions are: (a) `--transport v1` with fixed sampling, a declared deviation from OpenCode; (b) the
+verdict order as implemented; (c) `worker_general` revises. SSU-F17 (roles bind to server ids) is sequenced after
+UFH-13.
+
+### Open
+
+- ARCHSWAP signature: the operator, from a terminal.
+- Then bring-up B1 with the A-3 merge and TE-reload fused into it, then TE-pilot.
+- TE-3: freeze the manifest. TE-4 and VB-THESIS-2: the belief-kernel write side and read side.
+- B2 relaunches at the owners' boundaries: `:8083` with workspace-76, `:8074` at a CPU-quiet boundary.
+- VB-UFH12-PLACEMENT discovery: the placement adapter does not see the `arms/` sidecars.
