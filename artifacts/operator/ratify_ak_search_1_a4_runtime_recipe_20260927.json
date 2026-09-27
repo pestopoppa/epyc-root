@@ -1,0 +1,56 @@
+{
+  "schema": "epyc.measurement.protocol_amendment.v1",
+  "decision": "AK-SEARCH-1-A4-CONTROLLER-ADOPTS-RUNTIME-RECIPE",
+  "gate_id": "RATIFY-AK-SEARCH-1-A4-RUNTIME-RECIPE-20260927",
+  "operator_decision": "operator directive 2026-09-27 (given in session): runtime and recipe knobs like OpenMP placement are decided by AutoKernel itself under its own gates, not escalated",
+  "ratified_at": "2026-09-27T10:08:03Z",
+  "operator": "node",
+  "status": "ratified",
+  "protocol_id": "P-AK-SEARCH-1",
+  "clause": "P-AK-SEARCH-1 'What this protocol authorizes' (sixth authority), new section P-AK-SEARCH-1-A4",
+  "annex": "K",
+  "amendment_class": "amendment",
+  "authority": {
+    "adds": "adopt one declared runtime field (threads, CPU list, NUMA policy, or a policy-listed env key) of the full selected serving launch as the experimental execution recipe, at keep-grade evidence",
+    "conditions": [
+      "arms declared in advance; single-field recipe-constructor delta; runtime surface sealed (A2 bank rule)",
+      "bit-exact arms only",
+      "keep-grade evidence: matched order-randomized paired serving A/B (fresh process per launch) whose positive median effect clears the current recipe's own matched serving floor, the bar a source keep clears",
+      "correctness precedence unchanged: op correctness on the candidate recipe",
+      "durable adoption receipt"
+    ],
+    "evidence_class": "keep-grade, NOT search-grade: no banking, source composition, readiness or durable performance statement (A2 Clause 3 unchanged)",
+    "strict_alternative": "the strict search-grade path remains available; it alone may admit a non-bit-exact arm, via the evaluator's existing coherence gate",
+    "epoch": "adoption is a measurement-epoch boundary: the runtime surface digest enters declared host state; floors and calibration recompute; compositions compounded under the replaced recipe lose their magnitude until re-measured",
+    "numerics": "keep-grade admits bit-exact arms only; a non-bit-exact arm needs the strict path and passes only through the evaluator's existing coherence gate (differing outputs admitted solely against a bitwise_unstable anchor)",
+    "cost": "DS41 serving cell: keep-grade 10 server launches per arm (~35 min) + 48 launches (~2.8 h) to recalibrate the floor once per adoption; strict 640-launch calibration + ~150-260 launches per arm"
+  },
+  "implementation": {
+    "repo": "epyc-inference-research",
+    "commits": {
+      "4b3fcc9f": "declared runtime arms (loop/runtime_arms.py), runtime-surface epoch input (loop/run.py, loop/epoch_aliases.py), adoption receipt",
+      "4d676163": "keep-grade evidence for declared arms (loop/serving.py runtime_evidence=keep_grade, loop/run.py, loop/cpu_screen.py), keep-grade selection restore"
+    }
+  },
+  "rationale": "runtime configuration is a property of the measured recipe, not of the kernel; without an adoption authority every runtime finding (DS41-C57: OMP_PLACES barrier sleep, ~+9.5% median decode) became an operator escalation although the strict runtime admission already exists in the loop",
+  "not_granted": "no production recipe, registry, lineup, era or cutover change; no banking, readiness, promotion or evaluator/threshold change; reduced screens never adopt; every P-AK-SEARCH-1 denial stands",
+  "patch": {
+    "path": "artifacts/operator/ak-search-1-a4-runtime-recipe-adoption-20260927.patch",
+    "sha256": "cf0129f7fb91fdb09ded4ed804d0b72354305e74311ac923b92652ef708f5090"
+  },
+  "state": {
+    "MEASUREMENT.md": {
+      "sha256_before": "73f09cacca8c1dcb8eaed5c57cebec860b0f35a757e3e9efc32827f20fd3cbc4",
+      "sha256_after": "8012422fa40a871e2d668904ee9c84fb449a1e25aff2d155a1249146e07d311a"
+    },
+    "measurement/protocols/kernel-research.md": {
+      "sha256_before": "6d3ecd9451578c7dab1af07dd0e192e2cb69eb3ed7a971abad4cdb0ec0d36a54",
+      "sha256_after": "f4223c738e5aa6ba75134fa78e2c558e9cefe40f49967fe4de7f505487173c75"
+    }
+  },
+  "tracking": {
+    "first_consumer": "DS41-C57 decision package A (handoffs/active/deepseek-v41-flash-evaluation.md)"
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.receipt.json",
+  "applied_by": "scripts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.sh"
+}

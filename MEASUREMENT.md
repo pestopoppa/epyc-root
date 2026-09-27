@@ -285,6 +285,19 @@ confers no authority beyond its own enumeration.
 
 ## CHANGELOG
 
+- **2026-09-27 (v2.x)** — AMENDMENT (Annex K, `P-AK-SEARCH-1-A4`): the AutoKernel controller may
+  adopt a runtime configuration of its own full selected serving launch (one declared field:
+  threads, CPU list, NUMA policy, or a policy-listed env key such as OpenMP placement or a
+  load-thread cap) as its experimental execution recipe, at keep-grade evidence. Arms are declared in
+  advance and bit-exact only. An arm must clear the current recipe's matched serving floor in the
+  same order-randomized paired serving A/B a source keep uses, and the correctness gates are
+  unchanged. Adoption is a measurement-epoch boundary. The runtime surface enters the declared host
+  state, and the serving floor recomputes under the adopted recipe. It is not search-grade: no
+  banking, composition, readiness or durable statement. The strict search-grade path remains
+  available, and it is the only one that can admit a non-bit-exact arm, via the evaluator's existing
+  coherence gate. No production, registry or lineup effect; every denial stands. Operator directive
+  2026-09-27; first consumer DS41-C57 (OpenMP placement).
+
 - **2026-09-26 (v2.x)** — AMENDMENT (Annex Q, new protocol `P-SERVE-SEL-1`): text-LLM
   serving-selection load-sweep A/B. It covers selection-policy arms on a single-instance tier that
   saturates under load, TTFT-bound, orchestrator in the loop, `instrument_class=serving`. Primary

@@ -47,6 +47,8 @@ used to relocate an existing protocol.
 
 **CLARIFIED 2026-09-26 by `P-AK-SEARCH-1-A3.1`** (this annex, below; operator decision OP-60): A3's epoch is the **measurement epoch**: anchor commit, build recipe and declared host state, where host state is the state of what is measured and never the actor configuration (which models plan, author and critique a patch, and how they are configured). Planner-history comparability and the do-not-repeat gate both key on it, so an actor change no longer hides same-anchor records or re-admits mechanisms already measured. A record whose measurement identity is unknown stays on the full-epoch comparison. Nothing else in A3 changes.
 
+**EXTENDED 2026-09-27 by `P-AK-SEARCH-1-A4`** (this annex, below; operator directive 2026-09-27): the controller may adopt a runtime configuration of its own full selected serving launch (one declared runtime field: thread count, CPU list, NUMA policy, or an environment key the campaign's environment policy lists, such as OpenMP placement or a load-thread cap) as its **experimental execution recipe**, at **keep-grade evidence**: a declared bit-exact arm that clears the current recipe's matched serving floor in the same order-randomized paired serving A/B a source keep uses, with correctness gates unchanged. Adoption is a measurement-epoch boundary. It is not banking, composition, readiness or a durable performance statement. No production, registry, lineup or serving effect; every denial stands.
+
 **Purpose.** This protocol permits an automated kernel-research controller to **rank, retain,
 abandon, branch, and compose candidates inside experimental worktrees**, on the basis of measurements
 taken on those experimental candidates. It is the narrow lift of the consumption prohibition at
@@ -728,3 +730,118 @@ section gives comparability and the do-not-repeat gate the same identity.
   measured input and belongs in the measurement epoch.
 - Every denial in *"What this protocol does NOT authorize"*, every precondition, the campaign
   calibration block and the release boundary stand exactly as A3 left them.
+
+## P-AK-SEARCH-1-A4 — runtime-recipe adoption by the controller (RATIFIED 2026-09-27)
+
+Appended to Annex K. It adds one authority to *"What this protocol authorizes"* and narrows no
+denial. Operator directive, 2026-09-27: runtime and recipe knobs such as OpenMP placement are
+decided by AutoKernel itself, under its own gates, and are not escalated to the operator.
+
+### Why
+
+`P-AK-SEARCH-1` authorizes ranking, retaining and composing **source** candidates against an
+immutable anchor. It does not say that the controller may change the recipe its anchor is served
+under. A2 lets a registered runtime-parameter screen run (exactly one declared runtime field
+differs, same sealed executable and DSO set, no build), but a screen is non-promotable, and A2
+Clause 3 routes banking and composition through the strict path of *"Search-grade requires ALL
+of"*. No clause names a path by which a runtime finding becomes the execution recipe, so every such
+finding became an operator decision. DS41-C57 (2026-09-27) is the case in point: with 48 threads
+and `OMP_PLACES=cores` (96 places), GNU libgomp workers sleep at barriers, and any 48-place list
+makes them spin, for about +9.5% median decode tok/s and much less noise. That is a property of
+the measured recipe, not of the kernel.
+
+The strict search-grade path costs a campaign calibration block (for the DS41 serving cell,
+`calibration_block_count` 160, which is 640 server launches) plus a measured control panel and
+selection and confirmation windows for every arm. That is days of full-host time for an effect
+several times larger than the serving floor. This section therefore sets a separate, narrower
+authority at **keep-grade** evidence. It is not search-grade, and it grants nothing search-grade
+grants.
+
+### Clause 1 — the authority
+
+A conforming controller MAY, as a sixth authority beside the five in *"What this protocol
+authorizes"*:
+
+6. adopt a runtime configuration of the campaign's own selected, full (not reduced-scope) serving
+   launch as its **experimental execution recipe**, when every condition below holds.
+
+- **(a) One declared field, declared in advance.** The campaign declares its runtime arms before
+  any of them is measured. Each arm is a single-field change to the current recipe: thread count,
+  CPU list, NUMA policy, or one environment key that the campaign's environment policy lists as a
+  measurement key. The executable, DSO set, model, drafter, request bytes, context, cache, seed and
+  speculation are identical. The candidate recipe is produced by the same recipe constructor as the
+  anchor (precondition 6), and the complete runtime parameter and environment surface is sealed as
+  the A2 bank requires. After an adoption the remaining arms are compared against the adopted
+  recipe.
+- **(b) Bit-exact arms only.** An arm is declared bit-exact: it changes placement, scheduling or
+  load-time work, not arithmetic. A declaration that names any other arm is refused before any
+  launch.
+- **(c) Keep-grade evidence.** The arm is measured with the campaign's matched serving instrument:
+  the declared number of order-randomized anchor/candidate process pairs, each launch a fresh
+  server, both arms on the same build. It is adopted only when the median effect is positive and
+  its magnitude is at least the **current recipe's own matched serving floor**. That floor was
+  calibrated under the anchor recipe, on these request bytes, with this placement and environment
+  frame, and is the same floor a source candidate's keep must clear. A floor from any other recipe
+  is refused.
+- **(d) Correctness precedence, unchanged.** Mandatory operator correctness runs on the candidate
+  recipe. A failure means no adoption, as in *"Correctness precedence"*.
+- **(e) A durable receipt.** Each adoption writes an auditable receipt. It names both recipes (their
+  execution digests and runtime-surface digests), the declared arm, the evidence mode, the floor
+  and its content hash, the raw samples, the measurement epoch the comparison was measured under,
+  the epoch input the next launch carries, the floor it invalidated, and the accumulated
+  composition it re-based.
+
+A campaign MAY instead run its declared arms through the strict search-grade path. That path
+additionally admits a non-bit-exact arm, and only through the evaluator's existing
+output-coherence gate: differing outputs pass solely when the anchor's own measured determinism
+class is `bitwise_unstable` and token agreement meets the evaluator's declared floor. Nothing here
+widens a tolerance, adds an oracle or changes the evaluator bundle (denial 6).
+
+### Clause 2 — adoption is a measurement-epoch boundary
+
+The **runtime surface** of a launch is its command, topology prefix, environment, workload and
+environment-policy version, without the build's executable and DSO identity. It is a measured input
+under A3.1 Clause 1a.
+
+- A launch that carries an adopted runtime recipe folds the digest of its runtime surface into the
+  declared host state. Its full epoch and its measurement epoch both move. A campaign that never
+  adopts keeps its exact prior epochs.
+- Records measured before the adoption are cross-epoch from after it (A3 Clause 2). They are
+  evidence of attempt, never of magnitude. Within one launch, records carry the epoch that launch
+  started under, as A3 already treats an in-launch anchor advance, and every record names its own
+  recipe hash.
+- The serving floor is recomputed under the adopted recipe before either arm of the next comparison
+  launches. Nothing calibrated under the replaced recipe is reused.
+- A composition compounded under the replaced recipe loses its magnitude. Both of its arms are
+  re-measured under the adopted recipe before it may fire a serving gate.
+- The replaced recipe stays recorded and immutable. Reverting to it is another adoption through the
+  same gate.
+
+### What keep-grade adoption is not
+
+- It is not a search-grade record. It does not bank a candidate, compose a source lineage, feed
+  readiness or make any durable performance statement. Those still require everything in
+  *"Search-grade requires ALL of"* (A2 Clause 3).
+- It does not certify the adopted recipe outside the campaign. A durable placement or OpenMP number
+  is produced afresh under P-BENCH-PLACEMENT-1 or the owning release protocol.
+
+### Reference implementation
+
+`epyc-inference-research` `4d676163` (`scripts/kernel_rnd/autokernel/loop/runtime_arms.py`, `loop/run.py`,
+`loop/serving.py`, `loop/epoch_aliases.py`, `loop/cpu_screen.py`): declared runtime arms drawn before
+planner proposals, the keep-grade matched serving A/B (`--runtime-arm-evidence keep_grade`, the
+default), the runtime-surface epoch input, the adoption receipt and the keep-grade selection the
+next launch restores. The strict alternative (`--runtime-arm-evidence strict`) uses the unchanged
+`loop/runtime_admission.py` and `loop/runtime_calibration.py`.
+
+### What this does not change
+
+- **No serving, production, registry, lineup, era or cutover effect** (denials 1, 2 and 5). An
+  adopted experimental recipe is not a production recipe. Changing a production recipe remains a
+  human-only write.
+- **Denial 6 stands.** Adoption does not change the campaign objective, a calibrated threshold, the
+  evaluator bundle or the control definitions.
+- Reduced and common-scope screens never adopt a runtime recipe. Only the full selected target
+  does.
+- Banking, composition of source candidates, readiness, promotion and the release boundary are
+  exactly as `P-AK-SEARCH-1`, A1, A2, A3 and A3.1 left them.

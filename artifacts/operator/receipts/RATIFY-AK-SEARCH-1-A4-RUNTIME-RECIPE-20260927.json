@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-AK-SEARCH-1-A4-RUNTIME-RECIPE-20260927",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_ak_search_1_a4_runtime_recipe_20260927.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
