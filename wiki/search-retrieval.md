@@ -2,9 +2,9 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-09-26 late (REPL-EMB-0.3: the GPU half of D1 is its own package, bounded by 1.52 GiB free VRAM; the parallel embedder client fixed in orch `120b55b7`); previous: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-09-27 (wrap-up compile: UFH-12 kill rule PRE-REGISTERED — recall@5, M = 0.10 over the best lexical arm with a paired lower bound > 0, n ≥ 120, cheapest within 0.05; A0 neighbour cap partial, A3 OMP passive NULL; REPL-EMB-0.3/1.4 frozen behind the offline eval); previous: 2026-09-26 late (REPL-EMB-0.3: the GPU half of D1 is its own package, bounded by 1.52 GiB free VRAM; the parallel embedder client fixed in orch `120b55b7`); previous: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
-**Sources**: see per-section source lists (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
+**Sources**: see per-section source lists (added 2026-09-27 wrap-up compile: repl-embedding-retrieval REPL-EMB-2.1/0.3/1.4/B.1 and the narrowed-plan section, the 2026-09-27 orch-design and narrowed-plan progress logs) (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
 
 ## Compiled Update — 2026-09-17: the query-length instrument exists, PREFIX-1 is verified on both consumers, and trace FTS finally ranks by bm25
 
@@ -1328,3 +1328,26 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 - [repl-embedding-retrieval.md](../handoffs/active/repl-embedding-retrieval.md) — D1, REPL-EMB-0.3, REPL-EMB-1.1.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — § Final, derived-actionables row 7.
 - epyc-orchestrator commit `120b55b7` (`fix(repl_memory): define ParallelEmbedderClient async context manager natively`).
+
+
+## Compiled Update — 2026-09-27: UFH-12 registers its kill rule before the eval, and the embedder policy work freezes
+
+**Confidence: verified** for the registered rule and the A0/A3 readings (pre-registered runbook, ABA against a relative A/A floor); **nothing of the offline eval has run**.
+
+- **REPL-EMB-2.1 is PRE-REGISTERED (operator-approved, OP-66).** Changing k, M, X, n or the CI condition needs a new dated registration, and a verdict under an amended rule is flagged.
+  - Metric: recall@k is the fraction of queries with at least one returned pointer that overlaps a gold span (same source, at least one line). Primary k = 5; k ∈ {1, 3, 10} are reported, not decided on.
+  - Query set, frozen before any arm runs: UFH-07's 45 behavioural questions plus at least 75 queries from real spill-follow and context-bundle traces (n ≥ 120), gold labelled blind to every arm.
+  - Arms: grep and BM25 (L is the better of the two), BGE, Granite-97M-R2, hybrid RRF, ColGREP; one embedding model per index.
+  - **Kill rule, applied first:** UFH-12 continues past Phase 2 only if hybrid recall@5 − L ≥ 0.10 **and** the paired bootstrap 95% lower bound of that difference is > 0. Otherwise it stops at lexical: the D2 waiver lapses, Phases 3–5 stop, and the embedder fleet goes to the operator as a keep-for-episodic-memory-or-reclaim question.
+  - Selection, only if the kill rule passes: the cheapest arm by CPU-s per query (latency breaks ties) whose recall@5 is within X = 0.05 of the best.
+  - Why these numbers: past about five pointers, re-fetch costs exceed the search savings; M = 0.10 is about 2 SE at n ≈ 120 with ~30% discordant queries, and roughly what could pay for the fleet's standing cost; X = M/2. At n = 45 the paired SE is ≈ 0.08, so a small eval kills by design, and **the burden of proof sits on the new component, not on grep**.
+- **The last policy arms ran before the freeze** (metric r = frontdoor decode saturated ÷ idle, higher is better):
+  - A0 (neighbour cap 0) is **partial**. On `:8080` Δ is +0.031 against a 2·floor of 0.021; on `:8180` Δ is +0.104 against 0.007. Removing the SMT-sibling neighbours recovers part of the loss, and the rest is cross-node contention that no cap can reach. The price is embed throughput B/A of 0.154 / 0.897 / 0.681.
+  - A3 (embedder `OMP_WAIT_POLICY=passive KMP_BLOCKTIME=0`) is NULL on all three ports under both sched-sat and low-duty, so the declared embedder env stays.
+- **Frozen (narrowed plan):** REPL-EMB-0.3 (the GPU embedder instance) and REPL-EMB-1.4 (the B+D saturation-guard policy) wait until REPL-EMB-2.2 passes the 2.1 rule. The landed neighbour cap (`max_in_flight: 1`) stays behind the default-off pool flag. The A1 duty sweep is cancelled. The operator's eventual target is B+D plus GPU embedder redundancy. The orchestrator-vs-baseline comparison moved to UFH-13 ([Benchmark Methodology](benchmark-methodology.md)).
+
+### Source References
+
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — § Narrowed plan, REPL-EMB-2.1 as registered, the 0.3/1.4 freeze markers, B.1.
+- [2026-09-27 orch-design progress](../progress/2026-09/2026-09-27-orch-design.md) — § UFH-12 embedder policy arms A0 and A3, § OP-66.
+- [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the kill-rule draft and the freeze list.
