@@ -484,6 +484,23 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   adoption receipt and opens a new runtime-surface epoch. The governing rule is P-AK-SEARCH-1-A4, ratified on operator
   authorization (root `101ed1b0`). The operator chose to leave as written the older gap where 5-pair keep-grade source
   keeps sit below the "search-grade requires ALL of" text. DS41-C59 is its first use.
+- [x] DS41-C66 — **Fused-helper dot witness broke on a helper the DS41 lineage never calls.** ✅ 2026-09-27 — research
+  `1f7979d4`. `iqk_witness.run_fused_probe` put its helper breakpoint only on `iqk_moe_fused_up_gate`; the DS41
+  llama.cpp lineage has no caller for that function, so the gate refused every `akm-ds41-q4k-x4t-weight-prefetch`
+  candidate with `gate_refused` / `oracle_unavailable` ("exact fused helper and dot specialization hits in candidate
+  DSO not proven", runs 10k 11:37Z and 10m 19:25Z) for the kernel carrying ~29% of sampled decode cycles
+  (`mul_mat_qX_K_q8_2_X4_T`). GDB-traced on anchor-gen-002: the fused up-gate graph runs as two MUL_MAT_IDs through
+  `iqk_mul_mat_moe_rows` (1 activation row) and `iqk_mul_mat_moe` (2+ rows). Fix: the dot witness now breaks on all
+  three trusted IQK MoE helpers, still requiring first stop in the candidate DSO and first dot hit exactly the
+  expected quant/width; `check_fused` unchanged. Verified end-to-end on the live candidate build: Q4_K+Q5_K widths
+  1-8, 16/16 pass. Regression test added. Deployed: live run worktree `research-ds41-run10` moved to `1f7979d4`; the
+  refused patch `43982b2b` has a build-stage resume checkpoint so it goes straight to the corrected gate plus
+  measurement.
+  - [ ] Watch the first resumed build-stage checkpoint of `akm-ds41-q4k-x4t-weight-prefetch` pass the corrected
+    Q4/Q5 dot witness and reach measurement.
+  - [ ] Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
+    caused by `1f7979d4`): `test_aggregate_feedback::test_actual_aggregate_dispositions_export_original_capture_once`,
+    three failures in `test_seed.py`, and errors in `test_native_server_t0_witness`.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
