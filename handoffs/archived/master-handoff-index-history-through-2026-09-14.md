@@ -55,3 +55,17 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-66 | **Confirm two pre-registered decision rules (narrowed plan).** (a) UFH-13 thesis experiment: SUPPORTED if A2 closes ≥ X = 75% of the A1→A0 quality gap at ≤ Y = 50% of A0's consultant device-seconds, and the lower CI bound of the gap closed beats the cost fraction (alternatives: 90/30 stricter, 50/50 beats-random only). (b) UFH-12 kill rule: hybrid must beat grep/BM25 on recall@k = 5 by M = 0.10, else stop at lexical; the cheapest arm within X = 0.05 of the best wins. Reasoning is in each handoff; both freeze at confirmation | [thesis-experiment-orchestrator-vs-strongest-model.md](../active/thesis-experiment-orchestrator-vs-strongest-model.md) TE-0; [repl-embedding-retrieval.md](../active/repl-embedding-retrieval.md) REPL-EMB-2.1 | 2026-09-27 |
+
+## Resolved 2026-09-28 (row removed by the root writer, workspace-8d)
+
+- **OP-68** — SIGNED by the operator from a terminal on 2026-09-28 (02:52:34Z; `signed_by: pestopoppa`,
+  `signature_channel: terminal`), receipt
+  [`artifacts/operator/receipts/RATIFY-ARCHSWAP-20260927.json`](../../artifacts/operator/receipts/RATIFY-ARCHSWAP-20260927.json),
+  options O-2 `follow-model`, O-3 `B1`. Applied the same day: the lanes merged (orchestrator with A-3 fix `9a4785e1`,
+  research `76cecec4`, root `ec7748aa`) and the B1 API-only reload was done. Recorded in
+  [`thesis-experiment-orchestrator-vs-strongest-model.md`](../active/thesis-experiment-orchestrator-vs-strongest-model.md)
+  ARCHSWAP-1 ✅ to ARCHSWAP-3; the P1-P3 proofs are ARCHSWAP-3b.
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-68 | **ARCHSWAP-20260927 signature (terminal).** The architect role swap (Flash-Next → `architect_general` for escalation; the 27B → `architect_critic`, keeping review and plan decomposition) was approved in chat as amended (A-1..A-5); `--validate-only` returns VALID. The auto-mode classifier blocks agent execution under your name, so run from a terminal: `cd /mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927 && RATIFY_OPERATOR="pestopoppa" THINKING_OPTION=follow-model BRINGUP_OPTION=B1 ./ratify_archswap_20260927.sh --attest RATIFY-ARCHSWAP-20260927`. Gates the UFH-13 bring-up (ARCHSWAP-2/3 → TE-pilot). | [thesis-experiment-orchestrator-vs-strongest-model.md](../active/thesis-experiment-orchestrator-vs-strongest-model.md) → ARCHSWAP-1 | 2026-09-27 |
