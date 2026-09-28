@@ -36,9 +36,73 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
 - [ ] **RI-16 — PRIORITY: measure end-to-end routing-decision latency on live `/chat`.** (filed 2026-09-26, code+live-process audit) A routed request makes ~3-4 embed+KNN lookups — role priors (`chat_routing.py:316-343` `_heuristic_role_priors` → `ClassificationRetriever`), route (`chat_pipeline/routing_decision.py:314` → `hybrid_router.py:388`), mode (`chat_routing.py:182` → `route_with_mode`), and the post-answer review gate (`chat_review.py:57-96`) — and none is timed; the "<1 ms MLP / 10-50 ms KNN" figures in docs are claims. Add per-stage timers to routing telemetry, report p50/p95 per stage and total, and set them beside typed routing (590 ms native single-token / ~2.5 s JSON, `typed-decision-plane.md`). Wire the telemetry into the belief kernel (`vidya-belief-substrate-program.md` VB-ROUTE-LAT).
 - [ ] **RI-17 — compare live `/chat` routing against rules-only routing** on the same frozen workload (quality, cost, latency per request), so the KNN/memory layer has to earn its lookups. Reuse the counterfactual harness from `typed-decision-plane.md` TD-10 where it fits. (filed 2026-09-26)
 - [ ] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26)
+  - 2026-09-28: the "do reviewed answers improve" half waits on RI-22. Until RI-22 lands, the gate has not produced a
+    usable verdict on the 27B, so a measurement now would count triggers and zero revisions.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
 - [x] **RI-21 — make the escalation map and the graph agree on `architect_critic`.** `roles.py:476-481` ends the chain at `ARCHITECT_CRITIC`, but `_ROLE_TO_NODE` (`graph/nodes.py:855-866`) has no entry for it, so `select_start_node` falls back to `FrontdoorNode`. Add the node mapping (with a test) or end the map at `architect_general`. (filed 2026-09-26) ✅ 2026-09-28 — closed by the ARCHSWAP-20260927 role swap (receipt `RATIFY-ARCHSWAP-20260927`, applied 2026-09-28; `thesis-experiment-orchestrator-vs-strongest-model.md` ARCHSWAP-5). The escalation map now ends at `architect_general` (Flash-Next): orch `src/roles.py` `_ESCALATION_MAP` sends `CODER_ESCALATION`, `THINKING_REASONING`, `ARCHITECT_CRITIC` and `INGEST_LONG_CONTEXT` to `ARCHITECT_GENERAL`, which is terminal, and the graph targets `architect_general` (`ArchitectNode`), so they agree. The critic (27B) is reachable only by direct request and `critique_plan`, deliberately (operator, 2026-09-27); no critic node was added, which is the receipt's `not_in_scope` item. Live routing proves `architect_general` → `:8074`.
+- [ ] **RI-22 — PRIORITY, before UFH-13 TE-reopen: the post-answer review gate is a silent no-op on the 27B.**
+  (filed 2026-09-28 from a code and inference-tap investigation, no inference; line refs at orch `e60ee78a`)
+  - **Mechanism.** `_architect_verdict` (`src/api/routes/chat_review.py:139`) calls
+    `llm_call(prompt, role=<reviewer>, n_tokens=80)`. The reviewer resolves to `architect_critic`, the 27B on :8083.
+    That role is thinking-on, so it sits on the `/completion` lane: `src/chat_completions_roles.py:32-52` puts a role
+    on chat-completions only when it is jinja AND `enable_thinking is False`. The verdict prompt therefore goes out raw
+    and untemplated, with the critic's `system_prompt_suffix` appended (the call passes no `skip_suffix`) and thinking
+    on. The reply starts with `<think>`, so it never starts with `OK` or `WRONG`. Every caller acts only on
+    `startswith("WRONG")` (`chat.py:1619`, `chat_pipeline/direct_stage.py:234`, `chat_pipeline/stream_adapter.py:352`,
+    `v1_escalation.py:428`), so every answer passes as ok-or-unavailable.
+  - **Not new.** It held before the 2026-09-28 ARCHSWAP too, when `architect_general` was the 27B. The swap made it
+    worse: the verdict prompt now also carries the critic's own suffix, which contradicts the OK/WRONG instruction.
+  - **Not firing recently either.** The inference tap holds no "Judge this answer" prompt between 2026-08-24 and
+    2026-09-28.
+  - **Why it gates TE-reopen.** The review gate is one of A2's two escalation triggers
+    (`thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen). With `x_escalation=architect_general` the
+    verdict goes to Flash-Next on the chat-completions lane and works. With `x_escalation=auto` it goes to the 27B and
+    is a no-op, so an A2 run under `auto` would measure an arm with one trigger dead.
+  - **Fix.** Call the verdict with `skip_suffix=True` and thinking off. Thinking off is reachable only on the
+    chat-completions lane, because `chat_template_kwargs` are injected only there, so the fix waits on RI-23's
+    decision. Also stop reading an unparseable verdict as a pass: record it as `unavailable` in the review telemetry
+    (and test that a `<think>`-prefixed verdict is not counted as OK), so a dead gate is visible instead of silent.
+  - **Done when** the configured reviewer returns `OK` or `WRONG: ...` on a templated, thinking-off call, proved on one
+    live request (needs a :8083 window, coordinated with workspace-76), and RI-18 can count real verdicts.
+- [ ] **RI-23 — DECISION (operator, OPEN; operator-queue entry prepared): how thinking-on roles reach llama-server.**
+  (filed 2026-09-28, same investigation; line refs at orch `e60ee78a`)
+  - **The defect.** The thinking-on roles `architect_critic`, `coder_escalation`, `ingest_long_context` and
+    `worker_vision` are outside `chat_completions_roles()` and speak `/completion`. On that lane llama-server applies
+    no chat template. The orchestrator injects `chat_template_kwargs` (`enable_thinking`, `reasoning_effort=medium`)
+    only on the chat-completions lane (`src/backends/llama_server.py:733-741`), so for these roles the kwargs are dead.
+    Paths that send them an untemplated prompt today:
+    - the `/v1` default REPL bridge (`src/api/routes/openai_compat.py` ~:1674; the role suffix is still appended);
+    - graph REPL turns (`src/graph/helpers.py:1003`): thinking arrives inline and `FINAL()` still parses, so this path
+      works by accident;
+    - quality escalation to `coder_escalation` (`src/api/routes/chat_pipeline/stages.py:72`);
+    - the review gate (RI-22).
+  - Nothing in the orchestrator surfaces `reasoning_content`: the chat lane reads only `message.content`
+    (`llama_server.py:786`). The one exception is the `/v1` `x_disable_repl` direct path, fixed by orch `66ef96b8`
+    (`harness-selection-and-integration.md` HS-OD-10), which templates orchestrator-side and splits a leading
+    `<think>` block into `reasoning_content`.
+  - **Options.**
+    - **(a) Recommended.** Put the thinking-on roles on `/v1/chat/completions`, so the GGUF template and the per-role
+      kwargs apply, and pass `reasoning_content` through (the `llm_call` result and `/v1` `message.reasoning_content`).
+      Cost: it changes the prompt every 27B role sees on the graph REPL, `/chat` and escalation, so A/B it first
+      (RI-23b). The A/B needs a :8083 window.
+    - **(b)** Keep them on `/completion` and apply the chat template centrally in `llm_call`, generalising what
+      `66ef96b8` does for one path. Cheaper, no lane change and no A/B, but `chat_template_kwargs` stay ignored:
+      `enable_thinking` and `reasoning_effort` remain unsettable for these roles (so RI-22 cannot turn thinking off
+      except by prompt), and every future caller must go through the central templater.
+  - **Tradeoff in one line:** (a) is one lane rule with the kwargs live, at the cost of an A/B and a 27B behaviour
+    change; (b) is cheaper now and leaves the kwargs dead.
+  - **Blocks** RI-22's fix, and through it UFH-13 TE-reopen under `x_escalation=auto`. Everything else here proceeds.
+  - [ ] **RI-23a — reconcile `coder_escalation`'s `enable_thinking`.** Its `server_mode` kwargs say
+    `enable_thinking: False`, but the stack priors mark it thinking-on, inherited from its host `architect_critic`.
+    That inheritance is why it is routed to `/completion`, where the False is dead. Reconcile it here, as part of RI-23,
+    not under SSU-F17: SSU-F17 is sequenced after UFH-13 while this is needed before TE-reopen, and SSU-F17 keeps
+    per-role `chat_template_kwargs` per role, so it would not resolve the contradiction by itself. Under (a) the
+    registered value goes live, so decide the intended value and make the registry and priors agree before the lane
+    change. Under (b), delete the dead False and record that the role cannot set it.
+  - [ ] **RI-23b — if (a): A/B the lane change in a :8083 window.** Graph REPL turns, `/chat` answers and escalation
+    answers for the 27B roles, before and after, on a frozen item set; report quality, token cost and the
+    `FINAL()` parse rate. Coordinate the window with workspace-76 (DS41 binds :8083 by port).
 
 ## Dependency Graph
 

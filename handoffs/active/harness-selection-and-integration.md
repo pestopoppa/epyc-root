@@ -9,7 +9,7 @@
 ## Start here
 
 1. Next dispatchable: P0.4b (republish the Harness Card per HS-7), then P0.4c (freeze the pin at `v1.18.31`=`014614d3`), then P0-split. All three are under *Prioritized Task List → HS-4 P0*.
-2. Also open and not frozen (zero inference): the P0.4 preflight Dockerfile pin, P7, HS-OD-4/5/6/8, HS-16, HS-17, and HS-19d.P0 (ranked behind UFH-13).
+2. Also open and not frozen (zero inference): the P0.4 preflight Dockerfile pin, P7, HS-OD-4/5/6/8/10, HS-16, HS-17, and HS-19d.P0 (ranked behind UFH-13).
 3. Frozen, do not start: HS-19b, HS-19c, HS-19d.P1–P6, until UFH-13 returns SUPPORTED.
 4. Closed work: § *Completed Scope*.
 
@@ -99,6 +99,26 @@ _Same lane as the closed HS-OD-1/HS-OD-2 (archived [history](../archived/harness
 - [ ] **HS-OD-6 — `x_disable_repl=true` plus `tools` tells the model to call tools nothing will execute.** The tool block is still rendered into the prompt as `CALL(...)` instructions (`:348`) while the REPL executor is disabled (`:918, 1183`). Either suppress the tool block when the executor is off, or refuse the combination with a 422. Today the model is instructed to use a mechanism that is not there.
 - [ ] **HS-OD-8 — backpressure never reaches the shell as a retryable HTTP status.** At orch `fb7871ea`: a full admission queue (`inference.py:958-972`) answers **502** "Backend failed" with no `Retry-After` (`openai_compat.py:1427-1433`, stream `:1008-1016`); on `stream:true` (OpenCode's main loop) every denial is an SSE event after a 200, so no header can reach `session/retry.ts`; and no in-stream error text matches OpenCode's retry patterns (`retry.ts:33-41,146-152`), so a queued turn can fail with no retry. Fix: admit or probe before returning the `StreamingResponse`; answer a denial as HTTP **503 with `Retry-After` and `retry-after-ms`** (OpenCode reads `-ms` first, `retry.ts:51-56`); map queue-full to 503, keep genuine upstream faults 502; make any residual in-stream error text retryable (contains "503 service unavailable"). The header value stays the current constant until HS-OD-9. Acceptance: extend `harness/opencode-plugin/test/wire-contract.test.ts` through the pinned SDK 2.0.41 + `retry.ts delay()` — the header is honoured on a pre-stream 503 and the in-stream fallback is retried; `test_openai_compat_backend_failure_status.py` still pins 502 for upstream faults. Zero inference. [intake-1790#1, intake-1792#1]
 - [ ] **HS-OD-9 — derive the backpressure delay from live queue state (after HS-OD-8; consumes decision-aware-routing.md DAR-LAT-1's `expected_wait_s`).** Replace the constants (5 s `api/__init__.py:401,406`; 10 s `:418`; 30 s `routes/chat.py:321`) with the expected wait from the ONE admission-ledger estimator, decision-aware-routing.md DAR-LAT-1 — never a second occupancy model. Hold the request in the orchestrator while the estimate fits its own wait budget (the template's `headerTimeout:false` means a pre-stream hold does not time out the shell); bounce only beyond it, with `Retry-After`=ceil(s) and `retry-after-ms`, so OpenCode's 5-retry budget (`retry.ts:31`) spans the queue. Emit `retry_after_ms` + `retry_after_basis` (`estimate|constant`) beside, never inside, the closed `epyc.failure_provenance.v1`. Write one receipt per bounce (VB-V1-BACKPRESSURE). [intake-1790#1, intake-1792#1]
+
+- [ ] **HS-OD-10 — the `x_disable_repl` direct path sent thinking-on roles an untemplated prompt with the suffix appended; fix landing.**
+  (filed 2026-09-28)
+  - **Defect.** `/v1` with `x_disable_repl` (including `x_force_role`) called `llm_call(combined_context, role=role)`
+    with no chat template and with the role's `system_prompt_suffix` after the user text. For the 27B roles on :8083
+    (the `/completion` lane) llama-server continued the raw text. The ARCHSWAP serving proofs of 2026-09-28T08:54Z
+    show it: `architect_critic` echoed a JSON template, `coder_escalation` repeated its suffix's last line, and
+    `<think>` arrived inline in `content` (`/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260928T085434Z/`).
+    Pre-existing since orch `ae5975b4` (2026-04-05).
+  - **Fix.** Orch `66ef96b8`, a lane commit being landed on orch main by another agent at filing: an
+    orchestrator-side chat template for `/completion` roles (bare for chat-completions roles, the same rule as
+    `chat.py`'s direct path), `skip_suffix=True` as in `/chat`'s direct stage, and a leading closed `<think>` block
+    split into `message.reasoning_content` (one `reasoning_content` delta when streaming).
+  - **Behaviour change to check.** Chat-completions roles (for example `frontdoor`) on the `x_disable_repl` path no
+    longer get their suffix appended. The autopilot `LocalPlannerProvider` uses exactly this path
+    (`scripts/autopilot/planner_providers.py:562`, `x_disable_repl: True`), so its planner drafts lose the role
+    suffix. Confirm `_local_planner_prompt` carries what the suffix supplied, or add it back explicitly there.
+  - Ticks when `66ef96b8` is an ancestor of orch `origin/main` and the planner check is recorded.
+  - Not fixed by this: the default REPL bridge (`openai_compat.py` ~:1674) still sends thinking-on roles an
+    untemplated prompt with the suffix. That path is one of `routing-intelligence.md` RI-23's.
 
 **Read these together with HS-OD-1.** That row established the rule: *a body field that changes output semantics must be refused, not ignored.* HS-OD-5 and HS-OD-7 are unfinished applications of it, HS-OD-4 and HS-OD-6 are mode-dependent contradictions of it, and HS-OD-3 is a name that documents a capability the code does not have. None is fixed here: each changes `/v1` behaviour a shell depends on, so each wants its own before/after test, and HS-OD-3's answer is a small design decision rather than a patch. HS-OD-3 and HS-OD-7 closed 2026-09-17 (orch 2a609f5c; see the [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md)).
 

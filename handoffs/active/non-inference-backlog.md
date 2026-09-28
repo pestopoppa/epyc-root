@@ -16,7 +16,7 @@
 - **Then:** NIB2-85, NIB2-84, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
-  (dormant), NIB2-80a, NIB2-82, NIB2-87 (filed as NIB2-81), NIB2-88, NIB2-89, OBS-9, OBS-10.
+  (dormant), NIB2-80a, NIB2-82, NIB2-87 (filed as NIB2-81), NIB2-88, NIB2-89, NIB2-90, OBS-9, OBS-10.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
 ## Purpose
@@ -270,6 +270,16 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
   tree before comparing, and keep failing on a genuine cross-tree resolution. Acceptance: PASS for
   `kernels/production/gpu` and its resolved build dir; FAIL for a binary whose ggml resolves to another tree
   (fixture); and the `/bin/true` vacuous-pass trap noted in `coordinator-role-failure-modes-and-refactor.md` stays covered.
+
+## 2026-09-28 supplement — test-order dependence in the orchestrator's openai/v1 tests (workspace-8d)
+
+- [ ] **NIB2-90** (LOW): **two test-order-dependent failures in the orchestrator's openai/v1 test set.**
+      `tests/unit/test_openai_compat_bare_name_final.py` and the `[stream]` case of
+      `tests/unit/test_openai_compat_compression_fallback.py` fail when run as part of the openai/v1 set, and both
+      reproduce on unmodified orch `origin/main` (found 2026-09-28 while testing orch `66ef96b8`, so not caused by it).
+      Find the state one test leaks into the next (module-level feature flags, a cached app or backend, or a logger
+      level that `caplog` depends on), reset it in a fixture, and prove it by running the set in two different orders
+      with both passing.
 
 ## 2026-09-27 compaction — orphaned residuals boxed
 

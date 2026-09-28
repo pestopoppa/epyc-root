@@ -382,4 +382,6 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
     serial-ness belongs to the server. Derive it there, so an alias can no longer disagree with its host. (Folded here
     2026-09-27 rather than filed separately: a stand-alone fix would re-edit a surface this task deletes.)
   - It changes the registry schema, so it runs as a `stack-change` package with one operator signature.
+  - Not folded here (2026-09-28): `coder_escalation`'s dead `enable_thinking: False` (it inherits its host's
+    thinking-on lane) is reconciled under `routing-intelligence.md` RI-23a, because it is needed before TE-reopen.
   - Blocker: sequencing only (UFH-13's verdict, TE-6).

@@ -324,12 +324,20 @@ code for a rider), and only if the window has its estimated time left.
       `architect_general` → `:8074`, and `architect_critic`, `coder_escalation` and `ingest_long_context` → `:8083`.
     - Open: P1-P3 and the A-3 scout-stage sample, split out as ARCHSWAP-3b. This box ticks when ARCHSWAP-3b does.
 - [ ] **ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).
-  - P1: an escalation reaches `:8074`. Script `/mnt/raid0/llm/tmp/archswap-20260927/serving_proof.sh`; run it in a
-    CPU window.
-  - P2 and P3: `architect_critic`, `coder_escalation` and `ingest_long_context` answer from `:8083`. Script
-    `/mnt/raid0/llm/tmp/archswap-20260927/proof_8083.sh`; run it only on workspace-76's "go" at a DS41 critic pass.
-  - The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the first
-    scout stage after the reload), unless it was already recorded.
+  - [ ] P1: an escalation reaches `:8074`. Script `/mnt/raid0/llm/tmp/archswap-20260927/serving_proof.sh`; run it in
+    a CPU window.
+  - [x] P2 and P3: `architect_critic`, `coder_escalation` and `ingest_long_context` answer from `:8083`. Script
+    `/mnt/raid0/llm/tmp/archswap-20260927/proof_8083.sh`; run only on workspace-76's "go" at a DS41 critic pass.
+    ✅ 2026-09-28 — routing PROVEN: all three were served by :8083 with the right `api_role` (evidence
+    `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260928T085434Z/summary.txt`).
+    - Correction: the script's P2 line expected `reasoning_content` at medium. Through :8000 that could never pass, on
+      any path, before or after the swap: `architect_critic` is on the `/completion` lane, where its
+      `chat_template_kwargs` are dead and nothing surfaces `reasoning_content`. The reasoning expectation is not part
+      of P2; it moves to the lane decision in `routing-intelligence.md` RI-23. The same proofs exposed the
+      untemplated-prompt defect (a JSON template echoed, a suffix repeated, `<think>` inline), filed as
+      `harness-selection-and-integration.md` HS-OD-10 (the `x_disable_repl` path, fix landing) and RI-23.
+  - [ ] The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the
+    first scout stage after the reload), unless it was already recorded.
 - [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
   two slot_save_path drifts.
   - Relaunch `architect_critic` (`:8083`) **only between DS41 actor calls, coordinated with workspace-76 over the
@@ -367,6 +375,10 @@ code for a rider), and only if the window has its estimated time left.
   - First, review the escalation design. Under the review gate, a WRONG verdict is rewritten by `worker_general`
     (TE-3a (c)), not answered by the consultant, which makes G ≥ 0.75 structurally hard. Consider a registered
     variant in which the consultant answers. The rule is frozen, so a variant is a new registration, never an edit.
+  - Before any A2 run under `x_escalation=auto`, land `routing-intelligence.md` RI-22: the review gate, one of A2's two
+    escalation triggers, is a silent no-op when the verdict goes to the 27B (`architect_critic`, untemplated
+    `/completion`, thinking on, so the reply is never `OK`/`WRONG`). Under `x_escalation=architect_general` the verdict
+    goes to Flash-Next and works. RI-22's fix waits on the RI-23 lane decision (operator). (2026-09-28)
   - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
