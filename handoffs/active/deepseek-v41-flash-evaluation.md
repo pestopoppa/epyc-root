@@ -481,6 +481,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     the next source comparison (DS41-C47's A/A re-read, DS41-C51, …) recalibrates the request-bound floor under
     this adopted recipe — a new measurement epoch per A4/OP-60. Progress:
     `progress/2026-09/2026-09-28-ak-ds41-main.md`.
+  - **2026-09-28 08:21Z**: after the DS41-C59 recipe's floor recalibrated to 1.876% (DS41-C69, batch 5 anchor
+    `fe8ee8f3…`), the fallback arm `omp-places-48-sib` was measured +1.340% on top of that floor — below it, so
+    `runtime_observed` and not adopted. Batch 6 returned to source authoring. Progress:
+    `progress/2026-09/2026-09-28-ak-ds41-main.md`.
 - [ ] DS41-C60 — **The ~20 µs on-CPU hc-norm gap in serving.** Thread-0 compute on the hc RMS_NORM is 32-33 µs in
   every C57 arm (spinning or not), against ~12 µs in the isolated micro-bench. Run-queue wait is ≤0.2% and stime ≤2%,
   so the time is on-CPU work. Candidates: producer spread across CCDs/quadrants and `numactl --interleave=all` placing
@@ -560,6 +564,39 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     confirmed keeps, validated as a whole) per DS41-C47's acceptance clause; not yet done.
   - DS41-C59 (`--load-threads 48` runtime-arm swap, keep-grade A/B per P-AK-SEARCH-1-A4) is now **ADOPTED**
     (2026-09-28 ~04:44Z, +8.606%, `decisive: true`); detail in DS41-C59.
+- [x] DS41-C69 — **Floor carry-forward + serving-gate cadence 8.** ✅ 2026-09-28 (~06:30-08:40Z), `ak-ds41-main`.
+  Operator directive 2026-09-28 ("let's be more clever about this. Wasting sooo much time over this is silly."):
+  stop recalibrating the serving noise floor (~3 h, 48 launches) after every source-only champion-of-record
+  promotion; operator also chose (AskUserQuestion) to raise the serving-gate keep cadence from 4 to 8 (amends
+  R23-54; the +13.8% fire_multiple threshold trigger unchanged; operator can always force an advance).
+  - Governance finding: no ratification needed — `measurement/protocols/kernel-research.md` already says the
+    campaign noise floor φ "is a property of the instrument under this host state, not of any candidate";
+    P-AK-SEARCH-1-A4 requires recalibration only after a runtime-recipe adoption. The per-execution-identity
+    floor keying was a research-lane code choice.
+  - Research commits on epyc-inference-research main: `41f7ba71` (floor carry-forward: `_carry_forward_floor` /
+    `_select_source_floor` in loop/run.py; lookup order exact tip floor → COR floor → carried-forward lineage
+    floor → 24-pair calibration; carries only the newest valid floor of the SAME runtime recipe hash, only when
+    every anchor-guard A/A on the current anchor after that floor is `anchor_verified` within it; read-only;
+    provenance `carried_forward` + `serving_floor_carry` record; `--no-floor-carry-forward` restores old
+    behaviour; 12 tests in `test_floor_carry_forward.py`; failure set identical to main) and `6787ee00`
+    (`SERVING_GATE_EVERY_KEEPS` 4→8; cadence behaviour tests pin `every_keeps=4` explicitly;
+    `test_the_ruling_is_eight_keeps`). The cadence edit was first attempted by a subagent and refused by the
+    auto-mode classifier because the instruction reached it as a mid-task coordinator message; the owning
+    session, holding the operator's direct approval, applied it itself.
+  - Dry check (read-only, live store): as of 01:15Z the carry would have picked the 5.525% floor (A/A 23:54Z
+    −2.202%) and skipped the 01:15-04:07Z recalibration. Recipe changes still recalibrate by construction.
+  - Deployed: live run worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` moved to `6787ee00` (effective
+    from the next batch).
+  - Related: after the load-threads-48 adoption (DS41-C59, 04:44Z), the floor recalibrated under the new recipe
+    (hash `fe8ee8f3…`) to **1.876%** (was 5.525%; ~3x tighter) at 07:45Z; the fallback arm `omp-places-48-sib`
+    then measured +1.340% on top, below the 1.876% floor → not adopted (`runtime_observed`, 08:21Z). Batch 6
+    returned to source authoring at 08:21Z. Detail in DS41-C59 above.
+  - Progress: `progress/2026-09/2026-09-28-ak-ds41-main.md`.
+  - [ ] Confirm the first post-promotion launch under the new code logs `request-bound floor … [carried_forward]`
+    instead of scheduling calibration.
+  - [ ] Test-isolation hazard found by the subagent: `test_runtime_keep_source_continuity` and one
+    `test_serial_run` test hang while holding the real host lock
+    `/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock` (on main too) — fix the isolation.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
