@@ -688,7 +688,7 @@ episodic memory writing."
 ## Open Questions
 
 - Which confidence statistic, if any, survives local calibration well enough to gate an action?
-- Does the frozen v9 server's json_schema→GBNF converter accept the nested probability-map schemas the adapter generates?
+- Does the production server's (`production-consolidated-v10`, final freeze 2026-09-22; the question was first asked against frozen v9) json_schema→GBNF converter accept the nested probability-map schemas the adapter generates?
 - Does question-order contamination on our stack reproduce the 24.7% seen in intake-1486, or is it smaller at our batch sizes?
 
 ## Notes

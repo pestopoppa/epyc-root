@@ -45,7 +45,7 @@
 
 ### Key findings
 
-- **M-19 — typed decision records + confidence gate design, BLOCKED on TD-2.** Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from TD-2 calibration, **never from candidate softmax** — the intake measured 65% of a 7B's wrong fields above 0.90 confidence (intake-1474). Owner stub `typed-decision-plane.md` (RTG-56). ([episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md))
+- **M-19 — typed decision records + confidence gate design: record spec dispatchable now; the live gate needs a calibration record.** TD-2 landed 2026-09-17 and was never the unlock (handoff corrected 2026-09-26): the gate threshold needs a calibration record for the memory-write catalogue on its model pin, with TD-2 as the method. Specify a memory-write record carrying per-question probabilities and a caller-computed confidence statistic; the gate threshold must come from that calibration record, **never from candidate softmax** — the intake measured 65% of a 7B's wrong fields above 0.90 confidence (intake-1474). Owner stub `typed-decision-plane.md` (RTG-56). ([episodic-memory-integrity](../handoffs/active/episodic-memory-integrity.md))
 - **Why the record needs per-question probabilities at all** (inferred): the public typed-decision contract calls confidence an undisclosed statistic (intake-1472) and the local candidate-softmax readout is uncalibrated (intake-1474). A record that stores only the chosen value cannot be re-graded when a later calibration changes which answers were trustworthy.
 - **Order effects are part of the record's truth conditions.** The independent rerank reproduction shows **24.7% order sensitivity** (intake-1486) — the same batching that makes the write cheap is the contamination axis TD-2 must measure, so the record should carry enough context (question order / batch shape) to audit it.
 - **Write-side wiring precedes the first measurement run.** VB-TDP-1 requires one self-hashed ClaimTuple per TD-2/TD-3/PAW-3 run at the vidya source table — a tuple invented on read cannot gate a decision. ([vidya-belief-substrate-program](../handoffs/active/vidya-belief-substrate-program.md))
@@ -58,7 +58,7 @@
 
 ### Source References (2026-09-17 research-intake delta)
 
-- [episodic-memory-integrity.md](../handoffs/active/episodic-memory-integrity.md) — M-19 and its TD-2 block.
+- [episodic-memory-integrity.md](../handoffs/active/episodic-memory-integrity.md) — M-19 (record spec open; the live gate waits on a calibration record).
 - [typed-decision-plane.md](../handoffs/active/typed-decision-plane.md) — the typed-decision contract and the calibration constraint.
 - [vidya-belief-substrate-program.md](../handoffs/active/vidya-belief-substrate-program.md) — VB-TDP-1 write-side rule covering RTG-56.
 - [2026-09-17-intake-jev-sageattn.md](../progress/2026-09/2026-09-17-intake-jev-sageattn.md) — session record.
