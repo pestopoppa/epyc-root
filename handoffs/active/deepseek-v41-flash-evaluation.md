@@ -23,9 +23,14 @@
   every-4-keeps cadence — `outcome: promote`, serving effect +7.113% vs the verified 5.525% floor, bench
   compounded +9.642% over 4 keeps. Champion of record advanced `00d118d44876` → `a1faab471e83be12398fc4da57a4c7a7e3f75d77`;
   accumulator reset to 0. Detail: DS41-C68 below.
-- **Next (start here)**: DS41-C59 (declared runtime-arm swap `--load-threads 48` at the next DS41 boundary, no
-  adoption receipt yet) and folding the confirmed C68 bundle toward the champion as a full experimental candidate;
-  then DS41-C51, DS41-C46, C50, C48, and C42's durable trigger.
+- **DS41-C59 adopted 2026-09-28 ~04:44Z**: the declared runtime arm `load-threads-48` went through the
+  keep-grade A/B (correctness 04:07Z, 10-launch paired serving A/B 04:08-04:44Z) — effect **+8.606%**,
+  `decisive: true`, admission `keep_grade_matched_serving_floor`, noise floor 3.469%. Receipt
+  `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/runtime-adoptions/runtime-recipe-adoption-dfd1fec2e06ec71b.json`.
+  Detail: DS41-C59 below.
+- **Next (start here)**: fold the confirmed DS41-C68 bundle toward the champion as a full experimental
+  candidate, and re-read the DS41-C47 A/A excursion under the now-adopted C59 runtime recipe (new
+  measurement epoch); then DS41-C51, DS41-C46, C50, C48, and C42's durable trigger.
 - Bring-up retrospective: `docs/design/autokernel-local-actor-bringup-retro-20260926.md`.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
@@ -379,6 +384,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     acceptance bullet satisfied; detail in DS41-C68. Second bullet (the A/A excursion) is still open — not
     re-read after DS41-C59. Item stays open until DS41-C59 lands and the A/A is re-read, and until the confirmed
     bundle is folded toward the champion as a full experimental candidate.
+  - **2026-09-28 ~04:44Z: DS41-C59 is now ADOPTED** (`load-threads-48`, +8.606%, `decisive: true`; detail in
+    DS41-C59 below). The A/A excursion re-read is unblocked but not yet done — it must run under the newly
+    adopted runtime recipe's recalibrated floor (a new measurement epoch per the adoption receipt's floors rule).
+    Item stays open until that re-read runs and the bundle is folded toward the champion.
 - [ ] DS41-C48 — **A freshness gate on seeded numeric evidence in the campaign inbox.**
   - A stale "~220 GB/s" read ceiling, which predated the 2026-09-21 BIOS/config change, drove 13 batches of
     planner abstention (DS41-C36). The real figure was 399.6-449.4 GB/s full-screen.
@@ -451,7 +460,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     defect is not expected there; that is unmeasured.
   - Follow-ups: DS41-C59 (runtime arm), V6R-4c (loader default), DS41-C60 (on-CPU hc-norm gap), DS41-C61 (production
     root-thread sampling), VB-DS41-C57 (vidya).
-- [ ] DS41-C59 — **Declared runtime-arm swap at the next DS41 boundary: `--load-threads 48`.** The DS41-C57 fix, taken
+- [x] DS41-C59 — **Declared runtime-arm swap at the next DS41 boundary: `--load-threads 48`.** The DS41-C57 fix, taken
   through the loop's own keep-grade runtime-arm path (research `4d676163`, `--runtime-arms`, `--runtime-arm-evidence
   keep_grade`), as ratified in P-AK-SEARCH-1-A4 (root `101ed1b0`: bit-exact runtime recipes only, adoption is an epoch
   boundary).
@@ -462,6 +471,16 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Declare both at a batch boundary (no mid-batch relaunch). The matched compare against the current recipe decides.
   - Acceptance: the adoption receipt (evidence=keep_grade, floor sha, raw samples) is recorded here. The new epoch's
     floors are recalibrated, and older rows are labelled as the sleeping-barrier regime.
+  - ✅ **ADOPTED 2026-09-28T04:44:07Z** — after the post-DS41-C68 promotion serving-floor recalibration
+    (~01:15-04:07Z), the loop ran the declared arm `load-threads-48` (kind `load_threads`, candidate 48) through
+    the A4 keep-grade path: correctness check 04:07Z, 10-launch paired serving A/B 04:08-04:44Z. Effect
+    **+8.606%**, `decisive: true`, admission `keep_grade_matched_serving_floor`, noise floor 3.469%. Adopted
+    runtime_surface_digest `905a37f1…`, execution_digest `cdb0535c…`. Receipt:
+    `/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/runtime-adoptions/runtime-recipe-adoption-dfd1fec2e06ec71b.json`.
+    Fallback arm `omp-places-48-sib` (`{2}:47:2,{1}`) remains declared, not adopted. Per the receipt's floors rule,
+    the next source comparison (DS41-C47's A/A re-read, DS41-C51, …) recalibrates the request-bound floor under
+    this adopted recipe — a new measurement epoch per A4/OP-60. Progress:
+    `progress/2026-09/2026-09-28-ak-ds41-main.md`.
 - [ ] DS41-C60 — **The ~20 µs on-CPU hc-norm gap in serving.** Thread-0 compute on the hc RMS_NORM is 32-33 µs in
   every C57 arm (spinning or not), against ~12 µs in the isolated micro-bench. Run-queue wait is ≤0.2% and stime ≤2%,
   so the time is on-CPU work. Candidates: producer spread across CCDs/quadrants and `numactl --interleave=all` placing
@@ -539,8 +558,8 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Progress: `progress/2026-09/2026-09-28-ak-ds41-main.md`.
   - Follow-on: fold the confirmed bundle toward the champion as a full experimental candidate (fresh v10 + the
     confirmed keeps, validated as a whole) per DS41-C47's acceptance clause; not yet done.
-  - DS41-C59 (`--load-threads 48` runtime-arm swap, keep-grade A/B per P-AK-SEARCH-1-A4) has not yet produced an
-    adoption receipt and stays open.
+  - DS41-C59 (`--load-threads 48` runtime-arm swap, keep-grade A/B per P-AK-SEARCH-1-A4) is now **ADOPTED**
+    (2026-09-28 ~04:44Z, +8.606%, `decisive: true`); detail in DS41-C59.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
