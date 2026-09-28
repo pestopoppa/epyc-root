@@ -614,10 +614,25 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     still ran on the old 16,384 limit).
   - Also recorded: batch 6's `akm-ds41-hcmix-narrow-m-plan` measured **−3.833%**, a DECISIVE regression
     against the new 1.876% floor (09:52Z) — rejected (the tighter floor made a −3.8% call decisive).
-  - [ ] Follow-up: if planner `budget_exhausted` recurs after C70 (the context-growth/compaction path, batch
+  - [x] Follow-up: if planner `budget_exhausted` recurs after C70 (the context-growth/compaction path, batch
     7's mode), raise `--actor-planner-budget-s` from 2700 or cap planner tool-output size. Ties to INF-78
     OAB-34 (16384 output-cap hit rate per role) — OAB-34's premise changed for the planner now that its
-    default is 32,000.
+    default is 32,000. ✅ 2026-09-28 — recurred on batch 9; resolved by DS41-C71 raising the wall budget.
+    Tool-output capping was not needed.
+- [x] DS41-C71 — **Planner wall budget 2700 → 4500 s.** ✅ 2026-09-28 (~12:10-12:25Z), `ak-ds41-main`. Batch
+  9's planner (started before DS41-C70 deployed) also ended `planner_transient budget_exhausted` at 2700 s
+  (12:08Z) — the third consecutive empty planner call (batches 7, 8, 9). Prompt size was unchanged (~120k
+  chars) across the three; the failed sessions ran 21-39 tool steps with single reasoning steps of 15-16k
+  output tokens (batch 7: 22 steps, compacted at ~171k context, 42.8 min; batch 9: 39 steps, 43.1 min, still
+  working when cut). Cause: session length on the thinking-on 27B, not prompt growth.
+  - Fix: research `5bb48c98` on epyc-inference-research main raises `--actor-planner-budget-s` default 2700 →
+    4500 s in `loop/run.py` (matches the thinking-on author member budget; under `--actor-timeout-s` 7200;
+    the planner phase holds no CPU measurement, so the longer wall costs only GPU time). Tests: 220 pass.
+  - Deployed: the live run worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` moved to `5bb48c98`,
+    effective from batch 11 (batch 10, started 12:09Z, has the 32,000 output cap but still the 2700 s
+    budget).
+  - [ ] Follow-up: verify batch 11+ planner calls complete within 4500 s; if planner calls still exceed it,
+    lower planner thinking effort or cap tool-output size.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
