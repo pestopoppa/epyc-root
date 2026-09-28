@@ -503,6 +503,8 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   [20480, 24], 80 nodes per verify) ran a 3-thread tile plan with 45 threads idle, 4.6-5.2% of the cycle. The route
   admits only the class `tinyBLAS::matmul` tile plan (bit-exact for F32/F16/BF16), with a GDB witness and float
   reference arms. Inbox note `52-ds41-hc-mixes-20260926.md` drives the planner.
+  - 2026-09-28 (DS41-C70, batch 6): a follow-on hypothesis on this route, `akm-ds41-hcmix-narrow-m-plan`,
+    measured **−3.833%** — a DECISIVE regression against the new 1.876% floor (09:52Z); rejected.
 - [x] DS41-C63 — **CPU windows: the loop yields its CPU-region claim during actor phases.** ✅ 2026-09-27 — research
   `5aadf3a4` (`90dd8201`, operator proposal relayed by workspace-8d). `--cpu-window-yield on` (default) releases the
   claim while no lane holds the tail and re-acquires it for every tail session and measurement window. The window is
@@ -597,6 +599,25 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - [ ] Test-isolation hazard found by the subagent: `test_runtime_keep_source_continuity` and one
     `test_serial_run` test hang while holding the real host lock
     `/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock` (on main too) — fix the isolation.
+- [x] DS41-C70 — **Planner output cap 16,384 → 32,000.** ✅ 2026-09-28 (~11:25-11:50Z), `ak-ds41-main`. Two
+  consecutive DS41 planner calls produced nothing (10m run): batch 7 `planner_transient budget_exhausted`
+  (10:38Z — the session reached ~171k of the 196k context, opencode compacted, then burned the rest of the
+  2700 s budget) and batch 8 `planner_transient output_capped_empty` (11:23Z — the final step was pure
+  reasoning, 45.8k chars, hit the 16,384-token output cap, `finish=length`, 0-char report). No external
+  traffic on :8083 at the time (only DS41's own opencode connected; the peer's UFH-13 pilot driver had been
+  idle since 05:05Z).
+  - Fix: research `9a64aec8` on epyc-inference-research main raises `DEFAULT_PLANNER_OUTPUT_LIMIT` 16,384 →
+    32,000 in `loop/actor_opencode_config.py` — exactly opencode's own ceiling, so no `output_ceiling_env` is
+    needed; the pool rule (output < context − 32768) still holds and the critic inherits the new limit; 237
+    tests pass across the six actor test files.
+  - Deployed: the live run worktree moved to `9a64aec8`, effective from the next batch (batch 9's planner
+    still ran on the old 16,384 limit).
+  - Also recorded: batch 6's `akm-ds41-hcmix-narrow-m-plan` measured **−3.833%**, a DECISIVE regression
+    against the new 1.876% floor (09:52Z) — rejected (the tighter floor made a −3.8% call decisive).
+  - [ ] Follow-up: if planner `budget_exhausted` recurs after C70 (the context-growth/compaction path, batch
+    7's mode), raise `--actor-planner-budget-s` from 2700 or cap planner tool-output size. Ties to INF-78
+    OAB-34 (16384 output-cap hit rate per role) — OAB-34's premise changed for the planner now that its
+    default is 32,000.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

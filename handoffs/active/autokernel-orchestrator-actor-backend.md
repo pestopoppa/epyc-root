@@ -621,6 +621,11 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   before long reasoning; or salvage the last complete JSON block. Acceptance: the cap-hit rate per role is recorded
   here, and the chosen fix drives `output_capped_empty` to ~0 over the next batches without raising
   `budget_exhausted`. Tie the per-role budget to OAB-32.
+  - 2026-09-28 (DS41-C70): DS41 hit `output_capped_empty` again at 11:23Z (batch 8, a 45.8k-char pure-reasoning
+    step, `finish=length`, 0-char report). Fix applied for DS41 only: `DEFAULT_PLANNER_OUTPUT_LIMIT` raised
+    16,384 → 32,000 (research `9a64aec8`, opencode's own ceiling). This changes OAB-34's premise for the
+    planner role — its default output cap is no longer 16,384 — but the cap-hit-rate measurement and the
+    cross-role disposition called for above are still open.
 - [ ] **OAB-29 — a fake-model wire test as the standard gate for any new actor seat.** Add a scripted
   OpenAI-compatible stub server, with a test harness that drives the EXACT actor invocation: CLI, flags, per-call
   config, env and stdin prompt. Build on the fake server used to root-cause `b8d6a046`.
