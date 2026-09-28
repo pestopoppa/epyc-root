@@ -1,0 +1,178 @@
+diff --git a/.claude/skills/kernel-promotion/promotion_gates.yaml b/.claude/skills/kernel-promotion/promotion_gates.yaml
+index 7ce984f4..97c69aec 100644
+--- a/.claude/skills/kernel-promotion/promotion_gates.yaml
++++ b/.claude/skills/kernel-promotion/promotion_gates.yaml
+@@ -64,7 +64,9 @@ gates:
+     required: true
+     accepts: [quality, cpu_quality, gpu_quality]
+     suites: [mmlu_pro, gpqa]
+-    roles: [worker_general, architect_critic]
++    # ARCHSWAP-20260927: the CPU Flash-Next role is now architect_general (was architect_critic);
++    # the gate follows the CPU MODEL, so the role name moved with it.
++    roles: [worker_general, architect_general]
+     n:
+       mmlu_pro: 200
+       gpqa: 195            # the suite holds 195 items; 200 was requested, 195 exist
+diff --git a/docs/reference/speech/cpu-speech-contention-20260924.md b/docs/reference/speech/cpu-speech-contention-20260924.md
+index e4d28ab5..0d124cab 100644
+--- a/docs/reference/speech/cpu-speech-contention-20260924.md
++++ b/docs/reference/speech/cpu-speech-contention-20260924.md
+@@ -112,7 +112,7 @@ mask. It is a possible source of stragglers (quiet STT RTF spread 0.22–0.39).
+ 
+ ## 6. GPU-side facts voice work depends on (MI210, 65,520 MiB)
+ 
+-- **Voice turns route their reasoning step to `architect_general` (`:8083`, the 27B on the GPU),** not the CPU
++- **Voice turns route their reasoning step to the 27B on the GPU (`:8083`) — role `architect_critic` since ARCHSWAP-20260927 (it was `architect_general` when this was written),** not the CPU
+   frontdoor. This applies to voice turns only; it is an operator requirement recorded in RTG-57 KVU-11. A CPU
+   frontdoor generation is exactly what collapses CPU speech (§4).
+ - **`:8083` shape:** `-np 4 -c 196608 --kv-unified`, MTP draft depth 4, F16 draft KV. O-2 (q8_0 draft KV) was
+diff --git a/scripts/harness/task_delegation_probe.py b/scripts/harness/task_delegation_probe.py
+index 5acabd95..b0c6adec 100644
+--- a/scripts/harness/task_delegation_probe.py
++++ b/scripts/harness/task_delegation_probe.py
+@@ -16,7 +16,8 @@ every arm; only the server behind the orchestrator changes.
+ Arms (the parent's pin):
+   fd           no pin -> frontdoor (Qwen3.6-35B-A3B), registry enable_thinking=false
+   27b-nothink  x_force_role=coder_escalation  -> :8083 Qwen3.8-27B, enable_thinking=false
+-  27b-think    x_force_role=architect_general -> :8083 Qwen3.8-27B, enable_thinking=true (medium)
++  27b-think    x_force_role=architect_critic  -> :8083 Qwen3.8-27B, enable_thinking=true (medium)
++               (ARCHSWAP-20260927: the :8083 27B's role; architect_general now serves Flash-Next on :8074)
+ Variants (the prompt/agent shape):
+   hs19a  HS-19a's fixture and imperative prompt ("Use the task tool exactly once ..."), agent build
+   ds41   DS41-C20c's seat shape: a primary `planner` agent, the seat's instructions (fan-out
+@@ -89,16 +90,17 @@ SEEDS = (101, 202, 303)
+ 
+ # The parent's pin per arm. enable_thinking is the registry's chat_template_kwargs for that role
+ # (src/registry chat_template_kwargs_for_role, read 2026-09-27): frontdoor false,
+-# coder_escalation false, architect_general true (+ reasoning_effort medium).
++# coder_escalation false, architect_critic true (+ reasoning_effort medium) — the :8083 27B's
++# kwargs moved with the process to architect_critic in ARCHSWAP-20260927.
+ ARMS: dict[str, dict[str, Any]] = {
+     "fd": {"force_role": None, "model_role": "frontdoor", "enable_thinking": False,
+            "served": "frontdoor Qwen3.6-35B-A3B (CPU), unpinned"},
+     "27b-nothink": {"force_role": "coder_escalation", "model_role": "coder_escalation",
+                     "enable_thinking": False,
+                     "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) via its coder_escalation alias"},
+-    "27b-think": {"force_role": "architect_general", "model_role": "architect_general",
++    "27b-think": {"force_role": "architect_critic", "model_role": "architect_critic",
+                   "enable_thinking": True,
+-                  "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) as architect_general"},
++                  "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) as architect_critic"},
+ }
+ 
+ CODENAME = h.CODENAME
+@@ -324,7 +326,7 @@ cat >&2 <<'PRECONDITION'
+ ########################################################################################
+ # PRECONDITIONS (the main session confirms; this script cannot):
+ #  - GPU window on the MI210 / :8083 agreed with workspace-76 (no overlap with its GPU work);
+-#  - :8083 serves the production Qwen3.8-27B-Q8_0 (architect_general + coder_escalation alias);
++#  - :8083 serves the production Qwen3.8-27B-Q8_0 (architect_critic + coder_escalation alias);
+ #  - frontdoor serves Qwen3.6-35B-A3B (fd parents and EVERY child run there, on CPU): no CPU
+ #    measurement window may be open on the frontdoor's cores;
+ #  - orchestrator API running with ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1;
+@@ -861,7 +863,7 @@ PLAN_TEXT = """Task-delegation probe (measurement package B) checklist
+ =========================================================
+ Manual gates (the main session confirms each; this script cannot):
+   [ ] GPU window agreed with workspace-76: the MI210 / :8083 carries no measurement of theirs.
+-  [ ] :8083 serves the production Qwen3.8-27B-Q8_0 (architect_general, alias coder_escalation).
++  [ ] :8083 serves the production Qwen3.8-27B-Q8_0 (architect_critic, alias coder_escalation).
+   [ ] frontdoor serves Qwen3.6-35B-A3B; no CPU measurement window is open on its cores (fd
+       parents and every child run there).
+   [ ] Orchestrator API running with ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1.
+diff --git a/tests/harness/test_task_delegation_probe.py b/tests/harness/test_task_delegation_probe.py
+index ceb5619e..58a1c554 100644
+--- a/tests/harness/test_task_delegation_probe.py
++++ b/tests/harness/test_task_delegation_probe.py
+@@ -86,7 +86,7 @@ def _keys(sid, agent, extra=None, child=False):
+     return k
+ 
+ 
+-def _calls(parent_role="architect_general", parent_port=8083, parent_extra=None,
++def _calls(parent_role="architect_critic", parent_port=8083, parent_extra=None,
+            child_role="frontdoor", child_port=8070, child_extra=None, parent_agent="build",
+            child_agent="general", with_child=True):
+     rows = [("p1", _keys(PID, parent_agent, parent_extra), parent_role, parent_port, 100, ["task"])]
+@@ -180,13 +180,13 @@ def test_build_config_pins_only_the_primary_agent(tmp_path, variant, arm):
+ 
+ 
+ def test_check_config_pin_refuses_a_misplaced_or_extra_pin(tmp_path):
+-    probe = {"primary": "build", "subagents": ["general"], "force_role": "architect_general"}
++    probe = {"primary": "build", "subagents": ["general"], "force_role": "architect_critic"}
+     cfg = m.build_config("hs19a", "27b-think", 1, None)
+     child_pin = m.copy.deepcopy(cfg)
+-    child_pin["agent"]["general"]["options"]["x_force_role"] = "architect_general"
++    child_pin["agent"]["general"]["options"]["x_force_role"] = "architect_critic"
+     assert not m.check_config_pin(child_pin, probe)["ok"]
+     static = m.copy.deepcopy(cfg)
+-    static["plugin"][0][1]["staticKeys"]["x_force_role"] = "architect_general"
++    static["plugin"][0][1]["staticKeys"]["x_force_role"] = "architect_critic"
+     assert not m.check_config_pin(static, probe)["ok"]
+     wrong = m.copy.deepcopy(cfg)
+     wrong["agent"]["build"]["options"]["x_force_role"] = "frontdoor"
+@@ -254,7 +254,7 @@ def test_check_config_fails_after_tampering(tmp_path):
+     m.main(["prepare", "--out", str(out), "--variant", "hs19a", "--arm", "27b-think", "--seed", "1"])
+     evid = out / "evidence"
+     cfg = m.load_jsonc(evid / "opencode.jsonc")
+-    cfg["agent"]["general"]["options"]["x_force_role"] = "architect_general"
++    cfg["agent"]["general"]["options"]["x_force_role"] = "architect_critic"
+     (evid / "opencode.jsonc").write_text(json.dumps(cfg))
+     assert m.main(["check-config", "--evidence", str(evid)]) == 1
+ 
+@@ -292,12 +292,12 @@ def test_verify_pinned_parent_and_unpinned_child_is_valid_and_delegated(tmp_path
+     failed = [c for c in v["checks"] if not c["ok"]]
+     assert rc == 0 and v["valid"] and not failed, failed
+     assert v["outcome"] == "delegated" and v["delegated"] and v["answer_correct"]
+-    assert v["pin"] == {"field": "x_force_role", "role": "architect_general", "agent": "build",
++    assert v["pin"] == {"field": "x_force_role", "role": "architect_critic", "agent": "build",
+                         "child_agents_unpinned": ["general"]}
+     c2 = _by(v["checks"], "C2-parent-pinned")
+     assert "basis: tap request_keys" in c2["detail"] and "[8083]" in c2["detail"]
+     assert "ports [8070]" in _by(v["checks"], "C3-child-unpinned")["detail"]
+-    assert v["observations"]["tap"]["parent_override_keys"] == [{"x_force_role": "architect_general"}] * 2
++    assert v["observations"]["tap"]["parent_override_keys"] == [{"x_force_role": "architect_critic"}] * 2
+     assert v["observations"]["tap"]["parent_tool_calls_parsed"] == ["task"]
+ 
+ 
+@@ -311,11 +311,11 @@ def test_verify_falls_back_to_the_served_port_when_the_tap_has_no_override_keys(
+ 
+ 
+ @pytest.mark.parametrize("calls", [
+-    _calls(parent_port=8070, parent_role="frontdoor", parent_extra={"x_force_role": "architect_general"}),
++    _calls(parent_port=8070, parent_role="frontdoor", parent_extra={"x_force_role": "architect_critic"}),
+     _calls(parent_extra={"x_force_role": "coder_escalation"}),
+-    _calls(parent_extra={"x_force_role": "architect_general"}, child_extra={"x_force_role": "architect_general"}),
+-    _calls(parent_extra={"x_force_role": "architect_general"}, child_port=8083, child_role="architect_general"),
+-    _calls(parent_extra={"x_force_role": "architect_general"}, child_extra={"x_orchestrator_role": "frontdoor"}),
++    _calls(parent_extra={"x_force_role": "architect_critic"}, child_extra={"x_force_role": "architect_critic"}),
++    _calls(parent_extra={"x_force_role": "architect_critic"}, child_port=8083, child_role="architect_critic"),
++    _calls(parent_extra={"x_force_role": "architect_critic"}, child_extra={"x_orchestrator_role": "frontdoor"}),
+ ])
+ def test_verify_invalidates_a_wrong_pin_or_a_pinned_child(tmp_path, calls):
+     _, evid, tap = _simulate(tmp_path, calls=calls)
+@@ -344,7 +344,7 @@ def test_verify_unpinned_arm(tmp_path):
+     ([_task_part(status="error")], "failed", "delegated_failed"),
+ ])
+ def test_non_delegating_outcomes_are_valid_runs(tmp_path, first, answer, outcome):
+-    calls = _calls(parent_extra={"x_force_role": "architect_general"}, with_child=False)
++    calls = _calls(parent_extra={"x_force_role": "architect_critic"}, with_child=False)
+     children = {} if outcome != "delegated_failed" else {}
+     _, evid, tap = _simulate(tmp_path, parent=_parent(first=first, answer=answer),
+                              children=children, calls=calls)
+@@ -359,7 +359,7 @@ def test_verify_ds41_two_scouts(tmp_path):
+                                              _task_part(CID2, subagent="scout")],
+                      answer=f"CODENAME={m.CODENAME}\nMAX_RETRIES=13")
+     children = {CID: _child(CID, "scout"), CID2: _child(CID2, "scout")}
+-    calls = _calls(parent_extra={"x_force_role": "architect_general"}, parent_agent="planner",
++    calls = _calls(parent_extra={"x_force_role": "architect_critic"}, parent_agent="planner",
+                    child_agent="scout")
+     _, evid, tap = _simulate(tmp_path, variant="ds41", parent=parent, children=children, calls=calls)
+     rc, v = _verify(evid, tap, "--no-belief-capture")
+@@ -377,7 +377,7 @@ def test_verify_writes_sc86_beliefs_for_a_valid_run(tmp_path):
+ 
+     run = json.loads((evid / cap.RUN_SIDECAR_NAME).read_text())
+     assert cap.validate_run_sidecar(run) == []
+-    assert run["serving"]["model_role"] == "architect_general"
++    assert run["serving"]["model_role"] == "architect_critic"
+     assert run["serving"]["enable_thinking"] is True
+     assert run["task_suite"]["name"] == "task-delegation-probe-hs19a"
+     record = json.loads((evid / "attempts.jsonl").read_text())

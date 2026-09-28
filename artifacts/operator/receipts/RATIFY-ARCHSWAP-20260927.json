@@ -1,0 +1,61 @@
+{
+  "schema": "epyc.operator_receipt.v1",
+  "token": "RATIFY-ARCHSWAP-20260927",
+  "status": "ratified",
+  "human_attestation": "RATIFY-ARCHSWAP-20260927",
+  "signed_at": "2026-09-28T02:52:34.707389+00:00",
+  "signed_by": "pestopoppa",
+  "signed_by_uid": 1000,
+  "signature_channel": "terminal",
+  "consent_ref": null,
+  "package": "artifacts/operator/stack-change-archswap-20260927/PACKAGE.md",
+  "pinned_sha256": {
+    "PACKAGE.md": "63f88985a1a7add2b0580d2a6afb8e499bfe3c769a37fdc95752d2fc1c8863fc",
+    "evidence/assert_alias_clean.txt": "760fa555ef3530654df16c9885736d0a04c17177a365c8de3da155765fe076c7",
+    "evidence/classify.txt": "10a20ff4d3802aa21ba51bf38b3fdf545b36a01390b4a5ec997e5712a9bcbb81",
+    "evidence/pipeline-check-baseline.txt": "689a82db4c173bb54e784e47e283e6aa377ff6479ac2006d7c87d55780b283b7",
+    "evidence/pipeline-check-relabeled-state.txt": "12b0b41bdfa59b5a70732297a2faa0fb1c5dbbc2dadf9299443c5f8b4799d872",
+    "evidence/pipeline-update.txt": "e18e7f58c5e843d27888cc3111d64296bce1640e56be414e42ec65ea83031224",
+    "evidence/tests.txt": "2a8931c33338c23a371bff3f8b569b53c6b29a8ef6daf4df2f86c402fdb1704f",
+    "evidence/url_diff.txt": "0973b8c1949fe932e06e6ef319394a5268ea75c5a92ef3f29b877058e0c4eaf3",
+    "evidence/urls-after-static.tsv": "9214506d9a66d266ce12311acec5bc2dd353ea9dc879b1306004b4d9d1e46b2b",
+    "evidence/urls-before-static.tsv": "62cd85e5880306106dbd055fd84cb3222dd3b52bb118c3a9bd7871c55b63a641",
+    "evidence/urls-before.tsv": "62cd85e5880306106dbd055fd84cb3222dd3b52bb118c3a9bd7871c55b63a641",
+    "patches/orchestrator/0001-stack-ARCHSWAP-20260927-architect_general-Flash-Next.patch": "89708ee091fb103bf57030b9cc766f901ab211cad557fd87ca746085aa11134c",
+    "patches/orchestrator/0002-derived-regenerate-lean-registry-descriptors-stack-p.patch": "5a5e6d9f5a4ad67f5bcb3bc42eca42e3f283e2f1edcdfd344a0d7f4b56d2aa4a",
+    "patches/orchestrator/0003-contention_matrix-DECLARED-RELABEL-for-ARCHSWAP-2026.patch": "fe5483a4698901cb271cfee1e2028c6da9a0578dbd32fd2f2922653ec51f72be",
+    "patches/orchestrator/0004-roles-ARCHSWAP-20260927-review-and-plan-work-stay-on.patch": "1c687634465011c52631037c69e3ef76a5ecf7da91ef8c850d5cb4e084db87a9",
+    "patches/orchestrator/0005-derived-regenerate-for-the-reviewer-planner-bindings.patch": "7974b6021c6f21e1cbfe48245b3225a123bc3434eb2417ce5607656c8d28df7c",
+    "patches/orchestrator/0006-v1_escalation-ARCHSWAP-20260927-auto-verdict-follows.patch": "a05e9cfb472d622a899a199f0ce9f4d47fca5f8352f2f8cebf47b1c5d95fdfbd",
+    "patches/orchestrator/0007-derived-regenerate-after-merging-origin-main-into-th.patch": "2659b6994b55b79134a68aacccca3bd6157bcce24c4daaf3ef25da8134415905",
+    "patches/orchestrator/NET.diff": "138f6017a5cfa4c4d19814363f240349e40872be23ac772962d6d2d6a9f812b3",
+    "patches/research/0001-registry-ARCHSWAP-20260927-Flash-Next-becomes-archit.patch": "3453ea0da2759edf9dce02648e8489a9d14b246a685fc942ed1e462845345772",
+    "patches/research/NET.diff": "515116c237f42006939ebc62c3a3ea92ded83cc918c03e23fbec2648e3487b6c",
+    "patches/root/0001-archswap-rebind-root-consumers-that-meant-the-27B-th.patch": "b6126e9321a26402f1530ace26df441e62688a5f82a66fa89b6debdd7eac2024",
+    "patches/root/NET.diff": "86a043877459292169c0d512896bbdfc24df431669b8b549882aee01365142ad",
+    "tools/relabel_contention_matrix.py": "d0865a51240fb69508e8cbdad569ba18df8dbfab526ff4c9a8856023c333d3a5",
+    "tools/relabel_state.py": "b7f927b81e6aa11d1b25b8733558b608ecf59dca601856c96292a984f42de5ae",
+    "tools/transform_registry.py": "59f46d65253559421d26673e4197587fb7c2b419f479f1a850757b271d16cff0",
+    "tools/url_snapshot_static.py": "585cad92ea195fa576ac922611e590e870ab4fc43c25adb8591b66b8e747e138"
+  },
+  "decision": "operator-decided 2026-09-27: swap architect roles \u2014 Qwen3.8-Flash-Next (:8074) -> architect_general, Qwen3.8-27B Q8 (:8083) -> architect_critic",
+  "aliases": "operator ruling 2026-09-27: coder_escalation + ingest_long_context stay on the :8083 27B (host role architect_critic); not an option",
+  "acknowledged": {
+    "status": "approved in chat 2026-09-27 as amended; the approval, its wording and the session URL are recorded in PACKAGE.md section 4",
+    "A-1": "routine graph escalation reaches the whole-machine-lock CPU role (supersedes the 2026-07-30 role definition and the D2 premise for architect_general)",
+    "A-2": "AMENDED: review work (plan review, answer verdict, review_before_commit) AND plan decomposition (proactive_stage decomposition + repair) stay on the MI210 27B via DEFAULT_REVIEWER_ROLE / DEFAULT_PLANNER_ROLE = architect_critic; only escalation moves: routine escalation and risk_abstain_target_role go to architect_general (Flash-Next)",
+    "A-3": "prewarm/scout cpu_region_lock bypass on :8074 \u2014 fixed by a separate orchestrator commit based on lane/archswap-20260927, merged before the bring-up API reload",
+    "A-4": "by-name callers of architect_general now reach Flash-Next",
+    "A-5": "pre-existing: ingest_long_context in serial_roles while its host is not"
+  },
+  "options_chosen": {
+    "O-2_thinking": "follow-model",
+    "O-3_bringup": "B1"
+  },
+  "not_in_scope": [
+    "RI-21 (graph never reaches ARCHITECT_CRITIC) \u2014 deliberately left open",
+    "DAR-LAT-3h/3i (G1 verdict T96: -t 96 kept; nothing folded) \u2014 their patches must be re-keyed to architect_general, the role serving Flash-Next after this swap",
+    "registry schema refactor (servers keyed by model instance; roles bind to servers) \u2014 PACKAGE.md 4a"
+  ],
+  "applies_nothing": true
+}

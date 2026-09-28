@@ -86,7 +86,7 @@ def _keys(sid, agent, extra=None, child=False):
     return k
 
 
-def _calls(parent_role="architect_general", parent_port=8083, parent_extra=None,
+def _calls(parent_role="architect_critic", parent_port=8083, parent_extra=None,
            child_role="frontdoor", child_port=8070, child_extra=None, parent_agent="build",
            child_agent="general", with_child=True):
     rows = [("p1", _keys(PID, parent_agent, parent_extra), parent_role, parent_port, 100, ["task"])]
@@ -180,13 +180,13 @@ def test_build_config_pins_only_the_primary_agent(tmp_path, variant, arm):
 
 
 def test_check_config_pin_refuses_a_misplaced_or_extra_pin(tmp_path):
-    probe = {"primary": "build", "subagents": ["general"], "force_role": "architect_general"}
+    probe = {"primary": "build", "subagents": ["general"], "force_role": "architect_critic"}
     cfg = m.build_config("hs19a", "27b-think", 1, None)
     child_pin = m.copy.deepcopy(cfg)
-    child_pin["agent"]["general"]["options"]["x_force_role"] = "architect_general"
+    child_pin["agent"]["general"]["options"]["x_force_role"] = "architect_critic"
     assert not m.check_config_pin(child_pin, probe)["ok"]
     static = m.copy.deepcopy(cfg)
-    static["plugin"][0][1]["staticKeys"]["x_force_role"] = "architect_general"
+    static["plugin"][0][1]["staticKeys"]["x_force_role"] = "architect_critic"
     assert not m.check_config_pin(static, probe)["ok"]
     wrong = m.copy.deepcopy(cfg)
     wrong["agent"]["build"]["options"]["x_force_role"] = "frontdoor"
@@ -254,7 +254,7 @@ def test_check_config_fails_after_tampering(tmp_path):
     m.main(["prepare", "--out", str(out), "--variant", "hs19a", "--arm", "27b-think", "--seed", "1"])
     evid = out / "evidence"
     cfg = m.load_jsonc(evid / "opencode.jsonc")
-    cfg["agent"]["general"]["options"]["x_force_role"] = "architect_general"
+    cfg["agent"]["general"]["options"]["x_force_role"] = "architect_critic"
     (evid / "opencode.jsonc").write_text(json.dumps(cfg))
     assert m.main(["check-config", "--evidence", str(evid)]) == 1
 
@@ -292,12 +292,12 @@ def test_verify_pinned_parent_and_unpinned_child_is_valid_and_delegated(tmp_path
     failed = [c for c in v["checks"] if not c["ok"]]
     assert rc == 0 and v["valid"] and not failed, failed
     assert v["outcome"] == "delegated" and v["delegated"] and v["answer_correct"]
-    assert v["pin"] == {"field": "x_force_role", "role": "architect_general", "agent": "build",
+    assert v["pin"] == {"field": "x_force_role", "role": "architect_critic", "agent": "build",
                         "child_agents_unpinned": ["general"]}
     c2 = _by(v["checks"], "C2-parent-pinned")
     assert "basis: tap request_keys" in c2["detail"] and "[8083]" in c2["detail"]
     assert "ports [8070]" in _by(v["checks"], "C3-child-unpinned")["detail"]
-    assert v["observations"]["tap"]["parent_override_keys"] == [{"x_force_role": "architect_general"}] * 2
+    assert v["observations"]["tap"]["parent_override_keys"] == [{"x_force_role": "architect_critic"}] * 2
     assert v["observations"]["tap"]["parent_tool_calls_parsed"] == ["task"]
 
 
@@ -311,11 +311,11 @@ def test_verify_falls_back_to_the_served_port_when_the_tap_has_no_override_keys(
 
 
 @pytest.mark.parametrize("calls", [
-    _calls(parent_port=8070, parent_role="frontdoor", parent_extra={"x_force_role": "architect_general"}),
+    _calls(parent_port=8070, parent_role="frontdoor", parent_extra={"x_force_role": "architect_critic"}),
     _calls(parent_extra={"x_force_role": "coder_escalation"}),
-    _calls(parent_extra={"x_force_role": "architect_general"}, child_extra={"x_force_role": "architect_general"}),
-    _calls(parent_extra={"x_force_role": "architect_general"}, child_port=8083, child_role="architect_general"),
-    _calls(parent_extra={"x_force_role": "architect_general"}, child_extra={"x_orchestrator_role": "frontdoor"}),
+    _calls(parent_extra={"x_force_role": "architect_critic"}, child_extra={"x_force_role": "architect_critic"}),
+    _calls(parent_extra={"x_force_role": "architect_critic"}, child_port=8083, child_role="architect_critic"),
+    _calls(parent_extra={"x_force_role": "architect_critic"}, child_extra={"x_orchestrator_role": "frontdoor"}),
 ])
 def test_verify_invalidates_a_wrong_pin_or_a_pinned_child(tmp_path, calls):
     _, evid, tap = _simulate(tmp_path, calls=calls)
@@ -344,7 +344,7 @@ def test_verify_unpinned_arm(tmp_path):
     ([_task_part(status="error")], "failed", "delegated_failed"),
 ])
 def test_non_delegating_outcomes_are_valid_runs(tmp_path, first, answer, outcome):
-    calls = _calls(parent_extra={"x_force_role": "architect_general"}, with_child=False)
+    calls = _calls(parent_extra={"x_force_role": "architect_critic"}, with_child=False)
     children = {} if outcome != "delegated_failed" else {}
     _, evid, tap = _simulate(tmp_path, parent=_parent(first=first, answer=answer),
                              children=children, calls=calls)
@@ -359,7 +359,7 @@ def test_verify_ds41_two_scouts(tmp_path):
                                              _task_part(CID2, subagent="scout")],
                      answer=f"CODENAME={m.CODENAME}\nMAX_RETRIES=13")
     children = {CID: _child(CID, "scout"), CID2: _child(CID2, "scout")}
-    calls = _calls(parent_extra={"x_force_role": "architect_general"}, parent_agent="planner",
+    calls = _calls(parent_extra={"x_force_role": "architect_critic"}, parent_agent="planner",
                    child_agent="scout")
     _, evid, tap = _simulate(tmp_path, variant="ds41", parent=parent, children=children, calls=calls)
     rc, v = _verify(evid, tap, "--no-belief-capture")
@@ -377,7 +377,7 @@ def test_verify_writes_sc86_beliefs_for_a_valid_run(tmp_path):
 
     run = json.loads((evid / cap.RUN_SIDECAR_NAME).read_text())
     assert cap.validate_run_sidecar(run) == []
-    assert run["serving"]["model_role"] == "architect_general"
+    assert run["serving"]["model_role"] == "architect_critic"
     assert run["serving"]["enable_thinking"] is True
     assert run["task_suite"]["name"] == "task-delegation-probe-hs19a"
     record = json.loads((evid / "attempts.jsonl").read_text())

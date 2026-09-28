@@ -1,0 +1,80 @@
+### architect_general --to qwen38_flash_next
+role            architect_general
+currently       server=architect_general binding=server_mode.direct own_server_mode_row=yes numa_config=yes role_launch_meta=yes
+
+SHAPE (b)  model swap on host role architect_general.
+
+change set (every row goes in the patch; a surface you skip is one you must
+be able to say why you skipped):
+  - server_mode.architect_general.model / model_path / model_role -> qwen38_flash_next_ud_iq4xs_local
+  - server_mode.architect_general.serving_shape    DERIVE from the GGUF header, never hand-compute
+  - server_mode.architect_general.draft_model + acceleration re-validate the pair (`draft-compat`)
+  - roles.architect_general.model                  the role's own metadata must name the SAME artifact
+  - every name in this row's shared_with           each alias's roles.<alias>.model too
+  - stack_topology.numa_config.architect_general   memory footprint, mlock, numa_pre_evict_gib
+  - launch_manifest capacity                       host + GPU legs recomputed, per instance
+  - quality + speed evidence for the NEW model IN THIS ROLE needs-measurement
+
+NOTE: `serving_shape.kv_kib_per_token_f16` is DERIVED. Hand-computing it from the
+documented formula over-declared six models by 4.06x on 2026-09-22, because
+Qwen3.6/3.8 set `full_attention_interval: 4` and the formula counted every layer.
+rc=0
+### architect_critic --to qwen38_27b
+role            architect_critic
+currently       server=architect_critic binding=server_mode.direct own_server_mode_row=yes numa_config=yes role_launch_meta=yes
+
+SHAPE (b)  model swap on host role architect_critic.
+
+change set (every row goes in the patch; a surface you skip is one you must
+be able to say why you skipped):
+  - server_mode.architect_critic.model / model_path / model_role -> qwen38_27b_q8_local
+  - server_mode.architect_critic.serving_shape     DERIVE from the GGUF header, never hand-compute
+  - server_mode.architect_critic.draft_model + acceleration re-validate the pair (`draft-compat`)
+  - roles.architect_critic.model                   the role's own metadata must name the SAME artifact
+  - every name in this row's shared_with           each alias's roles.<alias>.model too
+  - stack_topology.numa_config.architect_critic    memory footprint, mlock, numa_pre_evict_gib
+  - launch_manifest capacity                       host + GPU legs recomputed, per instance
+  - quality + speed evidence for the NEW model IN THIS ROLE needs-measurement
+
+NOTE: `serving_shape.kv_kib_per_token_f16` is DERIVED. Hand-computing it from the
+documented formula over-declared six models by 4.06x on 2026-09-22, because
+Qwen3.6/3.8 set `full_attention_interval: 4` and the formula counted every layer.
+rc=0
+### coder_escalation --alias-of architect_critic
+role            coder_escalation
+currently       server=coder_escalation binding=server_mode.direct own_server_mode_row=yes numa_config=no role_launch_meta=no
+
+SHAPE (a)  alias re-point  coder_escalation -> rides server_mode.architect_critic
+
+change set (every row goes in the patch; a surface you skip is one you must
+be able to say why you skipped):
+  - server_mode.architect_critic.shared_with       APPEND coder_escalation -- this is the load-bearing binding
+  - server_mode.<old host>.shared_with             REMOVE coder_escalation
+  - server_mode.coder_escalation                   delete it, or keep it ONLY as routing metadata with alias_of + the host's port/url/model_role and no numa_ports
+  - roles.coder_escalation.model                   must name the host's artifact: ['/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf', '/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', 'Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', 'mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf']
+  - launch_manifest.port_map.coder_escalation      -> 8074
+  - src/config/models.py ServerURLsConfig          coder_escalation delegates to _server_url_default('architect_critic')
+  - src/roles.py _FALLBACK_MAP                     remove same-fleet edges -- they are retry-the-same-metal no-ops that produced 90x churn
+  - orchestration/procedures/*.yaml role enums     regenerate, never hand-edit
+
+Then: scripts/assert_alias_clean.py --alias coder_escalation --host architect_critic
+rc=0
+### ingest --alias-of architect_critic
+role            ingest_long_context
+currently       server=ingest_long_context binding=server_mode.direct own_server_mode_row=yes numa_config=no role_launch_meta=no
+
+SHAPE (a)  alias re-point  ingest_long_context -> rides server_mode.architect_critic
+
+change set (every row goes in the patch; a surface you skip is one you must
+be able to say why you skipped):
+  - server_mode.architect_critic.shared_with       APPEND ingest_long_context -- this is the load-bearing binding
+  - server_mode.<old host>.shared_with             REMOVE ingest_long_context
+  - server_mode.ingest_long_context                delete it, or keep it ONLY as routing metadata with alias_of + the host's port/url/model_role and no numa_ports
+  - roles.ingest_long_context.model                must name the host's artifact: ['/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf', '/mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', 'Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf', 'mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf']
+  - launch_manifest.port_map.ingest_long_context   -> 8074
+  - src/config/models.py ServerURLsConfig          ingest_long_context delegates to _server_url_default('architect_critic')
+  - src/roles.py _FALLBACK_MAP                     remove same-fleet edges -- they are retry-the-same-metal no-ops that produced 90x churn
+  - orchestration/procedures/*.yaml role enums     regenerate, never hand-edit
+
+Then: scripts/assert_alias_clean.py --alias ingest_long_context --host architect_critic
+rc=0

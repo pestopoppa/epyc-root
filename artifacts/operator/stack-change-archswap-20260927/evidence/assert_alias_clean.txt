@@ -1,0 +1,11 @@
+### coder_escalation -> architect_critic
+PASS: every alias relationship checked is well-formed.
+rc=0
+### ingest_long_context -> architect_critic
+PASS: every alias relationship checked is well-formed.
+rc=0
+### --all
+checking 9 alias relationship(s): coder_escalation, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_general, worker_math, worker_summarize
+
+PASS: every alias relationship checked is well-formed.
+rc=0

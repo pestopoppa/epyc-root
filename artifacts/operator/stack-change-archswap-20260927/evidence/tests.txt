@@ -1,0 +1,8 @@
+FAILED tests/unit/test_check_shared_with_derivations.py::test_live_models_py_table_agrees_with_the_live_registry
+= 1 failed, 15623 passed, 57 skipped, 6 xfailed, 25 warnings in 762.16s (0:12:42) =
+rc=1
+# orchestrator lane @ e08ec06d: full tests/unit, -n 4, rc captured (not piped).
+# The single failure reads the REAL master (/mnt/raid0/llm/epyc-inference-research), unswapped until apply.
+# Against the lane master: scripts/validate/check_shared_with_derivations.py --master-registry <lane> -> rc=0:
+shared_with derivations: OK — port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all agree with server_mode.*.shared_with
+# root lane: tests/harness/test_task_delegation_probe.py -> 48 passed, rc=0

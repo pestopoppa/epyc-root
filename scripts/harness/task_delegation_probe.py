@@ -16,7 +16,8 @@ every arm; only the server behind the orchestrator changes.
 Arms (the parent's pin):
   fd           no pin -> frontdoor (Qwen3.6-35B-A3B), registry enable_thinking=false
   27b-nothink  x_force_role=coder_escalation  -> :8083 Qwen3.8-27B, enable_thinking=false
-  27b-think    x_force_role=architect_general -> :8083 Qwen3.8-27B, enable_thinking=true (medium)
+  27b-think    x_force_role=architect_critic  -> :8083 Qwen3.8-27B, enable_thinking=true (medium)
+               (ARCHSWAP-20260927: the :8083 27B's role; architect_general now serves Flash-Next on :8074)
 Variants (the prompt/agent shape):
   hs19a  HS-19a's fixture and imperative prompt ("Use the task tool exactly once ..."), agent build
   ds41   DS41-C20c's seat shape: a primary `planner` agent, the seat's instructions (fan-out
@@ -89,16 +90,17 @@ SEEDS = (101, 202, 303)
 
 # The parent's pin per arm. enable_thinking is the registry's chat_template_kwargs for that role
 # (src/registry chat_template_kwargs_for_role, read 2026-09-27): frontdoor false,
-# coder_escalation false, architect_general true (+ reasoning_effort medium).
+# coder_escalation false, architect_critic true (+ reasoning_effort medium) — the :8083 27B's
+# kwargs moved with the process to architect_critic in ARCHSWAP-20260927.
 ARMS: dict[str, dict[str, Any]] = {
     "fd": {"force_role": None, "model_role": "frontdoor", "enable_thinking": False,
            "served": "frontdoor Qwen3.6-35B-A3B (CPU), unpinned"},
     "27b-nothink": {"force_role": "coder_escalation", "model_role": "coder_escalation",
                     "enable_thinking": False,
                     "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) via its coder_escalation alias"},
-    "27b-think": {"force_role": "architect_general", "model_role": "architect_general",
+    "27b-think": {"force_role": "architect_critic", "model_role": "architect_critic",
                   "enable_thinking": True,
-                  "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) as architect_general"},
+                  "served": ":8083 Qwen3.8-27B-Q8_0 (MI210) as architect_critic"},
 }
 
 CODENAME = h.CODENAME
@@ -324,7 +326,7 @@ cat >&2 <<'PRECONDITION'
 ########################################################################################
 # PRECONDITIONS (the main session confirms; this script cannot):
 #  - GPU window on the MI210 / :8083 agreed with workspace-76 (no overlap with its GPU work);
-#  - :8083 serves the production Qwen3.8-27B-Q8_0 (architect_general + coder_escalation alias);
+#  - :8083 serves the production Qwen3.8-27B-Q8_0 (architect_critic + coder_escalation alias);
 #  - frontdoor serves Qwen3.6-35B-A3B (fd parents and EVERY child run there, on CPU): no CPU
 #    measurement window may be open on the frontdoor's cores;
 #  - orchestrator API running with ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1;
@@ -861,7 +863,7 @@ PLAN_TEXT = """Task-delegation probe (measurement package B) checklist
 =========================================================
 Manual gates (the main session confirms each; this script cannot):
   [ ] GPU window agreed with workspace-76: the MI210 / :8083 carries no measurement of theirs.
-  [ ] :8083 serves the production Qwen3.8-27B-Q8_0 (architect_general, alias coder_escalation).
+  [ ] :8083 serves the production Qwen3.8-27B-Q8_0 (architect_critic, alias coder_escalation).
   [ ] frontdoor serves Qwen3.6-35B-A3B; no CPU measurement window is open on its cores (fd
       parents and every child run there).
   [ ] Orchestrator API running with ORCHESTRATOR_FEATURE_V1_SUBAGENT_LINK=1.
