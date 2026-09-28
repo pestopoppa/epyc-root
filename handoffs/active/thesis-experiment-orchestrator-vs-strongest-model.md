@@ -324,8 +324,11 @@ code for a rider), and only if the window has its estimated time left.
       `architect_general` → `:8074`, and `architect_critic`, `coder_escalation` and `ingest_long_context` → `:8083`.
     - Open: P1-P3 and the A-3 scout-stage sample, split out as ARCHSWAP-3b. This box ticks when ARCHSWAP-3b does.
 - [ ] **ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).
-  - [ ] P1: an escalation reaches `:8074`. Script `/mnt/raid0/llm/tmp/archswap-20260927/serving_proof.sh`; run it in
-    a CPU window.
+  - [x] P1: an escalation reaches `:8074`. Script `/mnt/raid0/llm/tmp/archswap-20260927/serving_proof.sh`; run it in
+    a CPU window. ✅ 2026-09-28 15:59Z (DS41 window open, loop not holding the claim): `x_force_role=architect_general`
+    served by `:8074` (log growth), `api_role=architect_general`, answer "The product of 17 and 23 is 391." (evidence
+    `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260928T155858Z/summary.txt`). Proves role → port binding;
+    the package's "graph escalation reaches ArchitectNode" form is covered by the A2 path when UFH-13 reopens.
   - [x] P2 and P3: `architect_critic`, `coder_escalation` and `ingest_long_context` answer from `:8083`. Script
     `/mnt/raid0/llm/tmp/archswap-20260927/proof_8083.sh`; run only on workspace-76's "go" at a DS41 critic pass.
     ✅ 2026-09-28 — routing PROVEN: all three were served by :8083 with the right `api_role` (evidence
@@ -336,6 +339,9 @@ code for a rider), and only if the window has its estimated time left.
       of P2; it moves to the lane decision in `routing-intelligence.md` RI-23. The same proofs exposed the
       untemplated-prompt defect (a JSON template echoed, a suffix repeated, `<think>` inline), filed as
       `harness-selection-and-integration.md` HS-OD-10 (the `x_disable_repl` path, fix landing) and RI-23.
+    - Update 2026-09-28: the HS-OD-10 fix landed (orch `5ddb7320`, test tap isolation `8a7d57a8`) and is live after an
+      API-only reload (PID 458129). A re-run of `proof_8083.sh` on workspace-76's next "go" should now show templated
+      answers with `reasoning_content` split out on this path.
   - [ ] The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the
     first scout stage after the reload), unless it was already recorded.
 - [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
