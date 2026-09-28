@@ -19,8 +19,13 @@
   caused by the fast loader's auto 32-thread reader team running before the 48-thread compute team under 96
   `OMP_PLACES=cores` places. The fix is a declared runtime arm (DS41-C59) plus a loader-default code fix (V6R-4c in
   `autokernel-champion-aggregate.md`).
-- **Next (start here)**: DS41-C59 (declared runtime-arm swap `--load-threads 48` at the next DS41 boundary) and
-  DS41-C47 (serving gate on the 2-keep chain); then DS41-C51, DS41-C46, C50, C48, and C42's durable trigger.
+- **DS41-C68, serving gate PROMOTE, 2026-09-28 ~01:15Z**: the serving gate (DS41-C47) fired on run 10m's
+  every-4-keeps cadence — `outcome: promote`, serving effect +7.113% vs the verified 5.525% floor, bench
+  compounded +9.642% over 4 keeps. Champion of record advanced `00d118d44876` → `a1faab471e83be12398fc4da57a4c7a7e3f75d77`;
+  accumulator reset to 0. Detail: DS41-C68 below.
+- **Next (start here)**: DS41-C59 (declared runtime-arm swap `--load-threads 48` at the next DS41 boundary, no
+  adoption receipt yet) and folding the confirmed C68 bundle toward the champion as a full experimental candidate;
+  then DS41-C51, DS41-C46, C50, C48, and C42's durable trigger.
 - Bring-up retrospective: `docs/design/autokernel-local-actor-bringup-retro-20260926.md`.
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
@@ -369,6 +374,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Acceptance:
     - the serving gate's verdict on the chain containing this keep is recorded here;
     - the A/A excursion is explained (host drift, launch variance, or instrument) or bounded by a repeat A/A.
+  - **2026-09-28 ~01:15Z: the serving gate fired on the every-4-keeps cadence (run 10m), verdict `promote`**
+    (`serving_decisive: true`, +7.113% serving vs the verified 5.525% floor, +9.642% compounded bench). First
+    acceptance bullet satisfied; detail in DS41-C68. Second bullet (the A/A excursion) is still open — not
+    re-read after DS41-C59. Item stays open until DS41-C59 lands and the A/A is re-read, and until the confirmed
+    bundle is folded toward the champion as a full experimental candidate.
 - [ ] DS41-C48 — **A freshness gate on seeded numeric evidence in the campaign inbox.**
   - A stale "~220 GB/s" read ceiling, which predated the 2026-09-21 BIOS/config change, drove 13 batches of
     planner abstention (DS41-C36). The real figure was 399.6-449.4 GB/s full-screen.
@@ -496,8 +506,11 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   1-8, 16/16 pass. Regression test added. Deployed: live run worktree `research-ds41-run10` moved to `1f7979d4`; the
   refused patch `43982b2b` has a build-stage resume checkpoint so it goes straight to the corrected gate plus
   measurement.
-  - [ ] Watch the first resumed build-stage checkpoint of `akm-ds41-q4k-x4t-weight-prefetch` pass the corrected
-    Q4/Q5 dot witness and reach measurement.
+  - [x] Watch the first resumed build-stage checkpoint of `akm-ds41-q4k-x4t-weight-prefetch` pass the corrected
+    Q4/Q5 dot witness and reach measurement. ✅ 2026-09-27 — satisfied in substance, not literally: a
+    **re-authored** patch of the mechanism (batch 2 loaded the fixed witness), not the resumed build-stage
+    checkpoint of the earlier refused patch (`43982b2b` / `e4ce1b1f`), passed the corrected Q4/Q5 dot witness at
+    20:08Z and was measured and kept as `47b6865de` (+5.683%, DS41-C68 keep 3).
   - [ ] Triage the pre-existing research test failures surfaced alongside this fix (identical to baseline, not
     caused by `1f7979d4`): wider than first scoped — 72 failures across 22 files in the autokernel loop suite
     (e.g. `test_serial_roster`, `test_serving::LifecycleObservationHook`, `test_validation_semantic_adapter`,
@@ -514,6 +527,20 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   to unmodified main (72 failures in 22 files, all pre-existing). Verified: dry scan of the live DS41 store shows
   the `e4ce1b1f` build checkpoints go from refused to ELIGIBLE (outrank the author checkpoint). Deployed: live run
   worktree `research-ds41-run10` moved to `0a117b03`; the next batch's child picks it up.
+- [x] DS41-C68 — **Serving gate (DS41-C47) fired, PROMOTE.** ✅ 2026-09-28 (~01:15Z), run 10m. The every-4-keeps
+  cadence fired the serving gate: `outcome: promote`, `serving_decisive: true`, serving effect **+7.113%** against
+  the verified 5.525% serving floor; bench compounded **+9.642%** over the 4 keeps. Champion of record advanced
+  `00d118d44876` → `a1faab471e83be12398fc4da57a4c7a7e3f75d77`; the accumulator reset to 0.
+  - The 4 keeps: `akm-ds41-gemm4xn-2x-unroll` +4.535% (`cafb59c3b`), `akm-ds41-dense-q8-tb-prefetch` +3.440%
+    (`c0ef39613`), `akm-ds41-q4k-x4t-weight-prefetch` +5.683% (`47b6865de`, 2026-09-27 ~20:50Z),
+    `akm-ds41-q4k-x4t-weight-prefetch` +1.074% (`a1faab471`, ~23:18Z). Compounded bench after keep 3: +8.891%;
+    after keep 4: +9.642%. Anchor guards, both inside the 5.525% floor: gen-003 +2.376%, gen-004 -2.202%.
+  - Keeps 3-4 were unblocked by DS41-C66 (research `1f7979d4`) and DS41-C67 (research `0a117b03`).
+  - Progress: `progress/2026-09/2026-09-28-ak-ds41-main.md`.
+  - Follow-on: fold the confirmed bundle toward the champion as a full experimental candidate (fresh v10 + the
+    confirmed keeps, validated as a whole) per DS41-C47's acceptance clause; not yet done.
+  - DS41-C59 (`--load-threads 48` runtime-arm swap, keep-grade A/B per P-AK-SEARCH-1-A4) has not yet produced an
+    adoption receipt and stays open.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
