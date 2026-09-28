@@ -1,16 +1,33 @@
 # Thesis Experiment — does the orchestrator beat the strongest model alone?
 
-**Status:** active. The **decision rule is PRE-REGISTERED** (X = 0.75, Y = 0.50; operator-approved 2026-09-27, OP-66
-closed). The TE-3a freeze decisions are recorded (operator-approved 2026-09-27; § *Pre-registration
-clarifications*). The rest of the pre-registration (suite, scorer, arm configs) freezes at TE-3. TE-1, TE-2 and TE-3a
-are done (2026-09-27); the runner is written. Nothing has run.
-**Priority:** **TOP** (operator, narrowed plan, 2026-09-27). Work that does not move this experiment is frozen or waits
-behind it; see the freeze list at the end.
+**Status:** **PARKED 2026-09-28** (operator, in chat, session
+https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
+- **Why.** A2's escalation is driven by episodic-memory Q-values. The store holds 64,396 memories, the newest written
+  2026-09-24, all learned while `architect_general` was the 27B, before the ARCHSWAP was applied on 2026-09-28. A2
+  would therefore test an untrained router on a new stack, and a low G could not separate "routing does not help"
+  from "routing has not learned this stack".
+- **No routing-independent gap check (A0 vs A1).** The operator ruled it not worth running: public quality benchmarks
+  already exist for these models and already answer whether a gap worth routing for exists.
+- **The autopilot run that would train escalation on the swapped stack waits for the second MI210**, which the
+  operator installs.
+- **Reopen trigger:** an autopilot run has trained escalation on the swapped stack. Then TE-reopen (below): review the
+  escalation design first, then TE-pilot and A2 under the frozen rule.
+- **Everything stays in place:** the runner (research `2b59bebe`), the pilot pool, the pre-registration (decision rule
+  frozen, TE-3a decisions recorded) and `v1_escalation` (production, opt-in per request).
+- Before parking: the decision rule was PRE-REGISTERED (X = 0.75, Y = 0.50; OP-66, 2026-09-27), TE-0 to TE-3a were
+  done, and the ARCHSWAP was signed (2026-09-28), merged and brought up by B1 (ARCHSWAP-1 to ARCHSWAP-3 below). No
+  scored item has run.
+
+**Priority:** parked. The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
+(operator, 2026-09-28): until the second GPU is in, the working direction is infrastructure and design work with the
+operator (see `CURRENT-CAMPAIGN.md`, 2026-09-28). The freeze list at the end still binds INFERENCE-bearing steps; the
+design and documentation work of a frozen item may proceed.
 **Created:** 2026-09-27, promoted from `repl-embedding-retrieval.md` REPL-EMB-B.1 (the quality-baseline seed).
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-13).
-**Depends on:** the ARCHSWAP role-swap stack-change package (workspace-8d; amended, VALID, awaiting the operator's
-terminal signature, OP-68; ARCHSWAP-1 to ARCHSWAP-4 below), RI-21 (routing-intelligence.md, RTG-30). TE-1 delivered
-the HS-4 P4 /v1 escalation subset this experiment needed from UFH-01.
+**Depends on:** an autopilot run that trains escalation on the swapped stack (after the second MI210; TE-reopen). The
+ARCHSWAP role-swap package (workspace-8d) was signed 2026-09-28 (receipt `RATIFY-ARCHSWAP-20260927`, OP-68 resolved)
+and is applied; its remaining steps are ARCHSWAP-3b, ARCHSWAP-4 and ARCHSWAP-5 below. RI-21 (routing-intelligence.md,
+RTG-30) is closed by the swap. TE-1 delivered the HS-4 P4 /v1 escalation subset this experiment needed from UFH-01.
 
 ## Start here
 
@@ -32,7 +49,8 @@ A1 and A2 differ **only** in the escalation switch. A0 and A2 reach the same Fla
 **Role swap (operator decision, 2026-09-27).** Flash-Next becomes `architect_general` and the 27B becomes
 `architect_critic`, so the consultant is reachable through existing escalation. The swap is a separate `stack-change`
 package. Until it is applied and serving is proved, Flash-Next is `architect_critic` on `:8074` and the 27B is
-`architect_general` on `:8083` (MI210).
+`architect_general` on `:8083` (MI210). **Applied 2026-09-28** (ARCHSWAP-1 to ARCHSWAP-3 below): Flash-Next now
+serves `architect_general` on `:8074` and the 27B serves `architect_critic` on `:8083`.
 **Scope of the swap (operator, 2026-09-27): ONLY `architect_general` moves to Flash-Next.** `coder_escalation` and
 `ingest_long_context` stay on the 27B. Frontdoor's existing escalation hop is `CODER_ESCALATION` (TE-2), so after the
 swap that hop lands on the 27B: A2's escalation must target `architect_general` explicitly (TE-1), and TE-2 proves it.
@@ -259,13 +277,16 @@ code for a rider), and only if the window has its estimated time left.
   escalation fields, consultant and frontdoor device-seconds and wall, plus the manifest digest. Project; do not grade.
   - Progress 2026-09-27: research `2b59bebe`'s `run_thesis.py score` writes the `belief_measurements.jsonl` sidecar
     (`ufh13-thesis-belief/v1`, attestation = `records.jsonl`). The read-side adapter is VB-THESIS-2.
-- [ ] **ARCHSWAP-1 — the operator signs the ARCHSWAP-20260927 package from a terminal.** Chat consent is on
+- [x] **ARCHSWAP-1 — the operator signs the ARCHSWAP-20260927 package from a terminal.** Chat consent is on
   record, but the auto-mode safety classifier blocks an agent from running the ratify script under the operator's
   name (2026-09-27), so only the operator can do this. The package is amended and VALID. Command:
   `cd /mnt/raid0/llm/tmp/archswap-20260927/root/artifacts/operator/stack-change-archswap-20260927 && RATIFY_OPERATOR="pestopoppa" THINKING_OPTION=follow-model BRINGUP_OPTION=B1 ./ratify_archswap_20260927.sh --attest RATIFY-ARCHSWAP-20260927`.
   If a pinned path has moved on origin/main, the script refuses. The package is then re-pinned by its preparer, never
   signed as-is.
-- [ ] **ARCHSWAP-2 — merge the three swap lanes and the A-3 fix** (PACKAGE §7 steps 1-4; needs ARCHSWAP-1's
+  ✅ 2026-09-28 — signed by the operator from a terminal (`signed_by: pestopoppa`, `signature_channel: terminal`,
+  02:52:34Z); receipt `artifacts/operator/receipts/RATIFY-ARCHSWAP-20260927.json`, options O-2 `follow-model`, O-3
+  `B1`. OP-68 resolved.
+- [x] **ARCHSWAP-2 — merge the three swap lanes and the A-3 fix** (PACKAGE §7 steps 1-4; needs ARCHSWAP-1's
   receipt).
   - Fast-forward to main at the pinned commits: research `61af24fa`, orchestrator `e08ec06d` and root `6dbbd7a1`.
   - Merge **orchestrator `lane/orch-prewarm-lock-20260927` @ `9a4785e1` (the A-3 prewarm/scout region-claim fix)
@@ -278,6 +299,10 @@ code for a rider), and only if the window has its estimated time left.
     treat it as a defect before ARCHSWAP-3.
   - Note: the research lane also carries the INF-78 AutoKernel `run.py` help-text change to `orch:architect_critic`.
     INF-78 is workspace-76's, so no task is filed here. It lands with this merge.
+  ✅ 2026-09-28 — the three lanes are merged: orchestrator (with the A-3 prewarm/scout region-claim fix `9a4785e1`),
+  research `76cecec4` and root `ec7748aa`. Derived-file provenance commit: orchestrator `0cc516b4`. `relabel_state.py
+  --apply` ran (operator-approved in chat); the backup is
+  `epyc-orchestrator/logs/orchestrator_state.json.pre-archswap-20260928T041545Z`.
 - [ ] **ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7).
   - Run `orchestrator_stack.py reload orchestrator` with `ORCHESTRATOR_V1_ESCALATION=1`. Do not stop autopilot.
   - Run `stack_change_pipeline.py check --numa-mode both`. Expect only the two slot_save_path lines.
@@ -290,6 +315,21 @@ code for a rider), and only if the window has its estimated time left.
   - **A-3 side effect.** Frontdoor scouts now hold the frontdoor claim for their whole stage (budget up to 240 s).
     During the first scout stage after the reload, sample the claim state and any `contention_denied` or 503 on
     concurrent frontdoor calls. Record either "no denials" or the denial rate.
+  - Progress 2026-09-28 — done:
+    - B1 API-only reload done. `v1_escalation` was then added to production (orch `6d024ced`, operator-approved) and
+      the API was reloaded API-only a second time: PID 1100541, `ORCHESTRATOR_FEATURE_V1_ESCALATION=1` in its env.
+    - `check`: only the two known `slot_save_path` drifts, and `declared_env_attestation: ok`.
+    - P4: the URL snapshot is identical to the evidence (19/19).
+    - The reviewer and planner resolve to `architect_critic` (the 27B). The runtime-facts state routes
+      `architect_general` → `:8074`, and `architect_critic`, `coder_escalation` and `ingest_long_context` → `:8083`.
+    - Open: P1-P3 and the A-3 scout-stage sample, split out as ARCHSWAP-3b. This box ticks when ARCHSWAP-3b does.
+- [ ] **ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).
+  - P1: an escalation reaches `:8074`. Script `/mnt/raid0/llm/tmp/archswap-20260927/serving_proof.sh`; run it in a
+    CPU window.
+  - P2 and P3: `architect_critic`, `coder_escalation` and `ingest_long_context` answer from `:8083`. Script
+    `/mnt/raid0/llm/tmp/archswap-20260927/proof_8083.sh`; run it only on workspace-76's "go" at a DS41 critic pass.
+  - The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the first
+    scout stage after the reload), unless it was already recorded.
 - [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
   two slot_save_path drifts.
   - Relaunch `architect_critic` (`:8083`) **only between DS41 actor calls, coordinated with workspace-76 over the
@@ -297,6 +337,7 @@ code for a rider), and only if the window has its estimated time left.
   - Relaunch `architect_general` (`:8074`) at a quiet boundary of its CPU users. Fuse it with any DAR-LAT-3h reload
     of the same process.
   - Done when `check` shows 0 drift.
+  - 2026-09-28: the `:8083` relaunch waits on workspace-76's go; the `:8074` relaunch waits for a long idle gap.
 - [ ] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
   pre-swap labels:
   - `decision-aware-routing.md` (the DAR-LAT-3 lines, including the 3i recipe key);
@@ -304,16 +345,29 @@ code for a rider), and only if the window has its estimated time left.
   - `routing-intelligence.md` RI-21: tick it, because the escalation map and the graph both end at
     `architect_general` after the swap;
   - the memory `project_champion_promotion_and_architect_swap_plan`.
-- [ ] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
+  - Progress 2026-09-28: RI-21 is ticked (root, this date). The DAR-LAT-3, CS-17 and memory texts are applied by their
+    owners, per PACKAGE §9.
+- [x] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
   `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. **It is the same reload as ARCHSWAP-3's
   B1; run it once.** workspace-8d owns the swap. workspace-76 owns DS41, which binds the 27B by port and is
   unaffected by an API reload. Use `orchestrator_stack.py reload orchestrator`, never the whole stack. After the
   reload, prove the reviewer role resolves to the 27B (`architect_critic`), per the operator's 2026-09-27 ARCHSWAP
   approval (§ *Pre-registration clarifications*).
+  ✅ 2026-09-28 — deployed with ARCHSWAP-3's reload: orchestrator main carries `280059cc` and `6d024ced` (the flag in
+  production's feature wave, operator-approved). The API was reloaded API-only (PID 1100541, env
+  `ORCHESTRATOR_FEATURE_V1_ESCALATION=1`). The reviewer and planner resolve to `architect_critic` (the 27B).
 - [ ] **TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The
   main risk is that `/chat`'s triggers are conservative: the quality detector is gated by `generation_monitor`, and
   the review gate fires only at Q < 0.6. If A2 barely escalates, A2 ≈ A1 and the full window buys little; decide
   before spending it.
+  - **PARKED 2026-09-28** with the experiment: it runs only after TE-reopen's design review.
+- [ ] **TE-reopen — reopen the experiment once escalation is trained on the swapped stack** (operator, 2026-09-28).
+  - Trigger: an autopilot run has trained escalation on the swapped stack (`architect_general` = Flash-Next). That run
+    waits for the second MI210.
+  - First, review the escalation design. Under the review gate, a WRONG verdict is rewritten by `worker_general`
+    (TE-3a (c)), not answered by the consultant, which makes G ≥ 0.75 structurally hard. Consider a registered
+    variant in which the consultant answers. The rule is frozen, so a variant is a new registration, never an edit.
+  - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
     TE-2, TE-3 and TE-4 done.
@@ -327,6 +381,9 @@ code for a rider), and only if the window has its estimated time left.
 ## Frozen behind this experiment (operator, narrowed plan, 2026-09-27)
 
 These boxes carry a `❄ FROZEN 2026-09-27` marker in their own handoffs. Each stays open, because frozen is not done.
+
+**Scope since the park (operator, 2026-09-28):** the freeze binds only the INFERENCE-bearing steps of these items.
+Their design and documentation work may proceed as part of the design agenda (`CURRENT-CAMPAIGN.md`, 2026-09-28).
 
 - HS-19b, HS-19c and HS-19d P1–P6 (`harness-selection-and-integration.md`). HS-19d.0, the design, stays done. The
   A0/A1/A2 arms of HS-19d.P5 are this experiment.

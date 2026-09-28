@@ -7,6 +7,25 @@
 
 ---
 
+> **2026-09-28 — UFH-13 PARKED; the working direction until the second MI210 is infra and design (operator, in chat,
+> session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ). Supersedes the 2026-09-27 narrowed plan's ranking.**
+> - **UFH-13, the thesis experiment, is PARKED.** A2's escalation runs on episodic-memory Q-values learned before the
+>   ARCHSWAP (64,396 memories, newest 2026-09-24, while `architect_general` was the 27B), so A2 would test an untrained
+>   router on a new stack. There will be no A0-vs-A1 gap check: public quality benchmarks already answer it. The
+>   autopilot run that would train escalation on the swapped stack waits for the second MI210. **Reopen trigger:** that
+>   run has trained escalation; then review the escalation design, then pilot and A2 under the frozen rule
+>   ([thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md)
+>   TE-reopen). The runner, pilot pool, pre-registration and `v1_escalation` (production, opt-in) stay in place.
+> - **The ARCHSWAP is applied** (signed 2026-09-28, receipt `RATIFY-ARCHSWAP-20260927`): Flash-Next serves
+>   `architect_general` on `:8074`; the 27B serves `architect_critic` on `:8083` with `coder_escalation` and
+>   `ingest_long_context`. B1 API reload done. Still open: the P1-P3 serving proofs (ARCHSWAP-3b) and the B2 relaunches
+>   (ARCHSWAP-4: `:8083` on workspace-76's go, `:8074` at a long idle gap).
+> - **New direction until the second GPU is in:** infrastructure and design work with the operator, front-loading work
+>   that must be done eventually. Focus: how best to use Jev techniques in the stack, wiring them properly, and properly
+>   documenting future gated work. EXL3 inference research belongs to another session.
+> - **The "point all work at the thesis experiment" narrowing (2026-09-27) no longer ranks work.** Items frozen behind
+>   UFH-13 stay frozen for their INFERENCE-bearing steps only; their design and documentation work may proceed.
+
 > **2026-09-26 ~19:40Z — DS41 posture (ak-ds41-main wrap-up). Supersedes the DS41 lines in the 2026-09-24 blocks below.**
 > - The DS41 AutoKernel CPU campaign (INF-77) is **live as run 10j** (relaunched 19:10Z, research `846bef21`,
 >   `state-run10j/launcher.pid`) on anchor-gen-001 `cafb59c3bf67`, after its first keep `akm-ds41-gemm4xn-2x-unroll`
