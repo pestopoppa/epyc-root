@@ -505,6 +505,9 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   reference arms. Inbox note `52-ds41-hc-mixes-20260926.md` drives the planner.
   - 2026-09-28 (DS41-C70, batch 6): a follow-on hypothesis on this route, `akm-ds41-hcmix-narrow-m-plan`,
     measured **−3.833%** — a DECISIVE regression against the new 1.876% floor (09:52Z); rejected.
+  - 2026-09-28 (DS41-C72, 21:33Z): a second plan-only variant, `akm-ds41-float-tinyblas-rowplan`, measured
+    **−6.586%** — a second DECISIVE regression on the route; rejected. See DS41-C72 follow-up on closing the
+    route if a third plan-only variant is proposed.
 - [x] DS41-C63 — **CPU windows: the loop yields its CPU-region claim during actor phases.** ✅ 2026-09-27 — research
   `5aadf3a4` (`90dd8201`, operator proposal relayed by workspace-8d). `--cpu-window-yield on` (default) releases the
   claim while no lane holds the tail and re-acquires it for every tail session and measurement window. The window is
@@ -631,8 +634,41 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Deployed: the live run worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` moved to `5bb48c98`,
     effective from batch 11 (batch 10, started 12:09Z, has the 32,000 output cap but still the 2700 s
     budget).
-  - [ ] Follow-up: verify batch 11+ planner calls complete within 4500 s; if planner calls still exceed it,
-    lower planner thinking effort or cap tool-output size.
+  - [x] Follow-up: verify batch 11+ planner calls complete within 4500 s; if planner calls still exceed it,
+    lower planner thinking effort or cap tool-output size. ✅ 2026-09-28 — recurred on batch 15 at 4500 s;
+    addressed by DS41-C72's salvage turn rather than lowering effort or capping tool-output size.
+- [x] DS41-C72 — **One planner salvage turn on budget exhaustion.** ✅ 2026-09-28 (~22:50-23:40Z),
+  `ak-ds41-main`. DS41-C71's follow-up recurred: batches 11, 13, 14 completed (28-34 min, 15-16 steps), but
+  batch 15's planner ended `budget_exhausted` at 4500 s (22:49Z) — 46 steps, 47 tool calls, ~87k output
+  tokens, no report. 5 of 9 planner calls on 2026-09-28 produced nothing; successful sessions run 15-19
+  steps, failures 21-46.
+  - Rejected alternatives: an opencode step cap (`agent.steps`) — at the cap opencode 1.18.31 injects a
+    "CRITICAL - MAXIMUM STEPS REACHED ... This constraint overrides ALL other instructions ..." message that
+    would replace the proposal JSON with a summary; a soft planner prompt rule — the planner already ignores
+    the concise-analysis rule.
+  - Fix: research `23305d81` on epyc-inference-research main. When a PLANNER opencode call ends by its wall
+    budget without a complete reply and its root session id is known, the loop makes ONE follow-up call
+    continuing that session (`--session <id>`, same backend/model/variant/config, fixed stdin message: stop
+    investigating, no tools, output the proposal JSON now or abstain) under `--actor-planner-salvage-s`
+    (default 900 s; 0 = off, byte-identical), bounded by `--actor-timeout-s`. A valid proposal lets the
+    iteration proceed, stamped `planner_report_source: "salvage_turn"`; otherwise `budget_exhausted` as
+    before with the salvage outcome appended. New actor-calls.jsonl row
+    `epyc.autokernel.actor_salvage_turn.v1`; salvage arm `+salvage` excluded from the CPU-window phase
+    estimator. Planner only. Tests: 28 new (incl. two live wire tests against opencode 1.18.31), 227 pass;
+    the loop suite's failure set is identical to main (13 pre-existing in 7 files).
+  - Deployed: live worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` at `23305d81` (no restart needed:
+    default on, child imports fresh code each batch), effective from batch 17 (batch 16's planner had
+    already started on the old code).
+  - Also recorded: `akm-ds41-dense-q8-offset-vnni` +0.801% (`14386242a`, 17:02Z) kept, anchor guard gen-005
+    +1.624% inside 1.876%, accumulate +2.342%; `akm-ds41-dense-q8-prefetch-deep` measured_null −0.478%
+    (19:57Z) rejected; `akm-ds41-float-tinyblas-rowplan` DECISIVE REGRESSION −6.586% (21:33Z) rejected, the
+    `float_tinyblas_plan` route's second decisive loss (see DS41-C62 note).
+  - [ ] Follow-up: verify the first salvage turn in production (actor-calls.jsonl `actor_salvage_turn.v1`
+    rows; does the 27B obey "no tool calls"?); if salvage turns burn 900 s calling tools, consider lowering
+    planner thinking effort.
+  - [ ] Follow-up: if the planner proposes a third plan-only variant on the `float_tinyblas_plan` route,
+    consider closing the route (two decisive regressions: DS41-C70's `hcmix-narrow-m-plan` −3.833% and this
+    batch's `float-tinyblas-rowplan` −6.586%).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
