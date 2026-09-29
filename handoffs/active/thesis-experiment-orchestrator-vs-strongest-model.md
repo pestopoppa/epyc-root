@@ -342,8 +342,18 @@ code for a rider), and only if the window has its estimated time left.
     - Update 2026-09-28: the HS-OD-10 fix landed (orch `5ddb7320`, test tap isolation `8a7d57a8`) and is live after an
       API-only reload (PID 458129). A re-run of `proof_8083.sh` on workspace-76's next "go" should now show templated
       answers with `reasoning_content` split out on this path.
+    - ✅ 2026-09-29 ~07:06Z — re-run after the HS-OD-10 fix, in the bundled :8083 window (workspace-76's go, DS41
+      paused), on the ARCHSWAP-4 relaunched :8083. All three roles were served by :8083 with the right `api_role`
+      and returned the same clean templated answer, "The product of 17 and 23 is 391.": no template echo, no
+      repeated suffix, no inline `<think>`. `reasoning_content` came back empty (`architect_critic`: 21 completion
+      tokens), so the model answered without a thinking block on this path. The earlier expectation of a split-out
+      `reasoning_content` is not met and is not part of P2; surfacing reasoning belongs to RI-23. Evidence:
+      `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T070556Z/summary.txt` (+ `P2-*.json`, `P3a-*.json`,
+      `P3b-*.json`).
   - [ ] The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the
     first scout stage after the reload), unless it was already recorded.
+    - 2026-09-29: P1-P3 are all proven, so this sample is the only open item left in ARCHSWAP-3b. It was not taken
+      in the :8083 window, which exercised :8083 roles only (no frontdoor scout stage).
 - [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
   two slot_save_path drifts.
   - Relaunch `architect_critic` (`:8083`) **only between DS41 actor calls, coordinated with workspace-76 over the
@@ -352,6 +362,22 @@ code for a rider), and only if the window has its estimated time left.
     of the same process.
   - Done when `check` shows 0 drift.
   - 2026-09-28: the `:8083` relaunch waits on workspace-76's go; the `:8074` relaunch waits for a long idle gap.
+  - ✅ 2026-09-29 07:05:56Z — **the `:8083` half is done (B2)**, in the bundled :8083 window (workspace-76's go,
+    DS41 paused). Production `:8083` was relaunched through the stack (`orchestrator_stack.py reload
+    architect_critic`) on v10 `ffc1bac82` (`kernels/builds/gpu-20260921-ffc1bac82`, the `production/gpu` store) with
+    `--slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic`. The window's GPU A/B step failed its per-arm
+    checks twice more and each attempt ended with the same B2 relaunch, so the final `:8083` PID is **3363961**
+    (started 07:08:48Z). Post-proof on each relaunch: exe is the v10 llama-server, the cmdline carries the
+    `architect_critic` slot dir, its own `libggml-hip` is mapped, `/health` ok, `/props` build_info
+    `b10303-ffc1bac82`, and it is VRAM-resident. The `orchestrator_stack.py status` attestation (taken after the first
+    relaunch, same recipe) no longer reports the `:8083` slot_save_path drift, and `stack_change_pipeline.py check
+    --numa-mode both` has one error left, the `:8074` drift below. Evidence:
+    `/mnt/raid0/llm/tmp/gpu-champion-ab/runs/w8083-20260929T070523Z/` (`w8083_bundle.log`, `stack_status.txt`,
+    `pipeline_check.txt`), with the retries in `runs/w8083-20260929T070737Z/` and `runs/w8083-20260929T070833Z/`.
+  - Still open: **the `:8074` half.** `architect_general` on `:8074` still carries `--slot-save-path
+    .../kv_slots/architect_critic` (status: "architect_general pid 2030855 runtime slot_save_path expected
+    architect_general; live cmdline has architect_critic"). It needs its own reload in a CPU window, coordinated with
+    workspace-76. **Until then both servers point at the `architect_critic` slot dir.**
 - [ ] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
   pre-swap labels:
   - `decision-aware-routing.md` (the DAR-LAT-3 lines, including the 3i recipe key);

@@ -93,6 +93,14 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
   - **Tradeoff in one line:** (a) is one lane rule with the kwargs live, at the cost of an A/B and a 27B behaviour
     change; (b) is cheaper now and leaves the kwargs dead.
   - **Blocks** RI-22's fix, and through it UFH-13 TE-reopen under `x_escalation=auto`. Everything else here proceeds.
+  - Progress 2026-09-29 (workspace-8d):
+    - Option (a) was taken (OP-69 = (a), operator, 2026-09-29, as recorded in the lane commit and in
+      `/mnt/raid0/llm/tmp/ri23b/PROTOCOL.md`). It is implemented on orchestrator `lane/orch-ri23-8d` @ `e0787feb`,
+      behind the feature flag `thinking_roles_chat_lane` (default OFF). The same commit carries the RI-22 verdict
+      telemetry: an unparseable verdict is counted as `unavailable`, not OK.
+    - The RI-23b A/B ran (below) and supports (a).
+    - **Still open: landing plus enabling.** The lane waits for the operator's landing approval, because gitnexus
+      impact flags four HIGH/CRITICAL symbols on it. After landing: an API-only reload, then flip the flag.
   - [ ] **RI-23a — reconcile `coder_escalation`'s `enable_thinking`.** Its `server_mode` kwargs say
     `enable_thinking: False`, but the stack priors mark it thinking-on, inherited from its host `architect_critic`.
     That inheritance is why it is routed to `/completion`, where the False is dead. Reconcile it here, as part of RI-23,
@@ -100,9 +108,31 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     per-role `chat_template_kwargs` per role, so it would not resolve the contradiction by itself. Under (a) the
     registered value goes live, so decide the intended value and make the registry and priors agree before the lane
     change. Under (b), delete the dead False and record that the role cannot set it.
-  - [ ] **RI-23b — if (a): A/B the lane change in a :8083 window.** Graph REPL turns, `/chat` answers and escalation
+    - 2026-09-29: still unapplied. The ON arm of RI-23b therefore ran `coder_escalation` thinking-OFF. The prepared
+      change is `/mnt/raid0/llm/tmp/ri23b/RI-23a-master-registry.patch` (research `orchestration/model_registry.yaml`);
+      it needs a stack-change package, then regeneration of the lean registry and derived artifacts.
+  - [x] **RI-23b — if (a): A/B the lane change in a :8083 window.** Graph REPL turns, `/chat` answers and escalation
     answers for the 27B roles, before and after, on a frozen item set; report quality, token cost and the
     `FINAL()` parse rate. Coordinate the window with workspace-76 (DS41 binds :8083 by port).
+    ✅ 2026-09-29 07:06Z — ran in the bundled :8083 window (workspace-76's go; DS41 paused, :8083 idle: 0 busy of 4
+    slots at preflight). Code: orchestrator `lane/orch-ri23-8d` @ `e0787feb`, the flag toggled in-process (the API
+    was not touched). n=1 per probe, wall 49 s. Flag OFF = `/completion` lane; flag ON = `/v1/chat/completions`.
+
+    | probe (role) | OFF: latency, tokens, result | ON: latency, tokens, result |
+    |---|---|---|
+    | review verdict, correct answer (`architect_critic`) | 2.01 s, 80 tok, hit the limit inside `<think>`, **never parsed** | 0.98 s, 1 tok, `OK`, correct |
+    | review verdict, wrong answer (`architect_critic`) | 1.92 s, 80 tok, hit the limit inside `<think>`, **never parsed** | 1.10 s, 37 tok, `WRONG: ...`, correct |
+    | escalation (`coder_escalation`) | 5.65 s, 269 tok, correct, `<think>` inline | 1.44 s, 76 tok, correct, thinking off (RI-23a not applied) |
+    | ingest (`ingest_long_context`) | 11.68 s, 522 tok, correct, `<think>` inline | 10.09 s, 865 tok, correct, reasoning server-split into `reasoning_content` |
+    | graph REPL turn (`architect_critic`) | 6.94 s, 158 tok, correct, `FINAL()` parsed, `<think>` inline | 4.78 s, 68 tok, correct, `FINAL()` parsed, reasoning server-split |
+
+    - Flag OFF, both verdict probes ran into the 80-token limit inside the thinking block and never parsed. This is
+      live confirmation of RI-22: on today's lane the review gate cannot return a verdict.
+    - Flag ON, both verdicts parsed and were correct.
+    - The feared hazard, a stop string matching inside the thinking block on the REPL turn, did **not** occur.
+    - At n=1 the latencies are a direction, not a claim.
+    - Evidence: `/mnt/raid0/llm/tmp/ri23b/run-20260929T070600/SUMMARY.md` and `rows.jsonl` (10 rows; `raw_head`
+      keeps the start of each reply). Protocol: `/mnt/raid0/llm/tmp/ri23b/PROTOCOL.md`.
 
 ## Dependency Graph
 

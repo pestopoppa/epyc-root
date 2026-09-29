@@ -756,6 +756,22 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         rule: every future champion advance produces BOTH a CPU and a GPU store build of the same commit**
         (single-champion invariant: one commit, one build per device). A CPU-only advance leaves the GPU path on a
         pre-advance build; that is how SW-9 went five days without a GPU build.
+      - 2026-09-29 07:05-07:09Z — **attempted in the bundled :8083 window; not completed.** The A/B step
+        (`/mnt/raid0/llm/tmp/gpu-champion-ab/`, order P C P on :8197, host threads on 72-79) failed three times in a
+        row on over-strict per-arm checks, each before the first probe. No A/B number exists. :8083 was restored on
+        v10 each time (thesis handoff ARCHSWAP-4).
+        - 07:05Z: the `--slot-save-path` dir was never created, so llama-server rejected the argument.
+        - 07:07Z: the device-line regex expected `using device ROCm0` / `offloaded N/N layers`. The v10 server prints
+          neither at verbosity 3; its only ROCm line is a sampler-support warning.
+        - 07:08Z: the thread-affinity check reported `OUTSIDE:[0..7]`. ROCr's async-event thread (wchan
+          `kfd_wait_on_events`) has its affinity reset to 0-191 by the runtime. This is normal: it is identical in all
+          four live GPU processes (production :8083 and :8086, whisper, tts).
+        - Fixed offline the same day. Every per-arm check (device, placement, `/props`, watcher, sampler) is now an
+          `ab_probe.py` subcommand that prints what it saw. `selftest/live_checks.sh` runs each check read-only against
+          today's arm logs and the live production servers.
+        - **Re-planned for the vision (:8086) window.** That window tests identity, speed and residency only:
+          Qwen3-VL has no MTP drafter, so it cannot exercise SW-9.
+        - **The SW-9 GPU check (draft-mtp `n_probs>0`) needs an MTP model**: a :8083 window or the 2nd MI210.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 
