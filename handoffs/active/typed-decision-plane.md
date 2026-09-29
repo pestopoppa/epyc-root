@@ -273,6 +273,25 @@ episodic memory writing."
   - [ ] **TD-29.M4 — Confirm prompt-prefix cache reuse between the tool call and the typed call.** Check that the typed
     pass shares the tool call's prompt prefix, so llama-server reuses the cached prefix instead of re-prefilling it.
     Acceptance: `prompt_n`/`cache_n` recorded for paired calls (with TD-29.M0); if reuse is absent, name the prefix break.
+  - **2026-09-29 champion-sidecar native result (n=1, CPU sidecar).** `--closed-mode native --cue-style id_only`, 18
+    TD-4 cases, build `cpu-20260925-90c12df42` on :8199, 40 threads, cores 48-87. **12/18 exact; all 12 resolved cases
+    correct.** The 6 failures are all `cannot assemble tool arguments: required argument 'severity' was not answered`:
+    the `p1`..`p4` enum is multi-token, so native excluded the question (`native_unsupported_candidates`). 534 generated
+    tokens in total (17-38 per case) vs 5,112 in the 2026-09-17 GPU JSON arm; 18 calls, one per case; wall 42.3 s
+    (2.35 s per case); prompt 20.3 s vs gen 16.9 s, so prefill dominates and M4 prefix-cache reuse is the next lever.
+    The same-machine JSON and free-form arms were NOT run (the window closed early), so no within-run native-vs-JSON
+    ratio exists yet. Receipt: `/mnt/raid0/llm/tmp/champion-sidecar/runs/td-20260929/td29/closed_native_id_only.json`
+    (cases in `closed_native_id_only.cases.jsonl` beside it).
+  - [x] **TD-29.K1 — Single-token keys for multi-token closed sets (native mode).** A closed set whose labels are not all
+    single tokens is re-keyed with the TD-9 code alphabet (A-Z, 0-9), each key verified single-token and collision-free
+    through `/tokenize`; the model picks a key and the layer maps it back to the original value (`Decision.native_key`
+    plus value; the pilot receipt records both). Sets that already bind are untouched (byte-identical); more than 36
+    labels falls back as before, with the reason recorded. JSON mode is unchanged. ✅ 2026-09-29 — orchestrator
+    `c595e13d` (`src/typed_decisions/native.py` `_bind_single_token_keys`, serial and parallel native runners).
+  - [ ] **TD-29.K2 — Re-run the native arm after K1.** Repeat `--closed-mode native --cue-style id_only` on the champion
+    sidecar with the fixed harness (`orch-tdbench-8d`), together with the same-machine JSON and free-form arms that the
+    2026-09-29 window missed. **GATE: champion-sidecar (CPU window).** Acceptance: 18/18 resolved or each failure named;
+    `native_keys` present on the file_ticket cases; within-run native vs JSON token and wall ratios.
 - [x] **TD-5 — One shadow integration after TD-2 passes.** Wire the typed-decision call into exactly one live
   surface as a shadow arm (routing classifier or judge, chosen by the owning handoff), gated on TD-2's
   calibration result. **2026-09-17: IMPLEMENTED + SMOKE-VALIDATED.** `src/typed_decisions/shadow.py` wired at `routing.py` (`_plan_review_gate`), flag `typed_decisions_shadow` default off, fixed canonical order, non-blocking bounded daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log via `ORCHESTRATOR_TYPED_DECISIONS_SHADOW_LOG`. Live smoke against the 35B produced one well-formed record (incumbent + decisions + confidences + prompt/state hashes). Next: enable it for a real window and accumulate labeled outcomes (the calibration set), then report agreement + calibration. No enforcement without operator approval.
