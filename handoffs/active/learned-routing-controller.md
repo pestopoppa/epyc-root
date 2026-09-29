@@ -4,7 +4,7 @@
 **Status**: REFRESHED 2026-06-12 (BGE+MLP repair follow-up) — classifier fast-path is **STAGED, not live**: fresh `routing_classifier_weights.npz` now exists and wiring preflight passes, but production still attests `routing_classifier=false` across 6 workers pending a rollout decision. The historical "Phase 1 COMPLETE — 92% val acc, flag enabled" claim below describes pre-reset state; current retrain is 81.0% val acc with thresholded >=0.8 precision 94.4% over 61.6% coverage. The BGE repair blocker is cleared (see [retrain-routing-models.md](retrain-routing-models.md)): 275,960 FAISS vectors, 94.6% coverage, diagnose-only HEALTHY. **Phases 1.5+ are FROZEN per fable5-findings-02** pending a future DAR-1 regret replay >=5% plus per-question eval vectors.
 **Next (start here, 2026-09-27)**: EP-5 — re-run the outcome-label probe on rows updated after `24b43990` (or after
 the EPD-1b backfill), then EPD-3. Open follow-ups: LRC-1 (autopilot data as MLP training data), LRC-2 (the inert
-`ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`), LRC-TD-1. Completed history is linked from *Completed Scope*.
+`ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`); LRC-TD-1 was folded into `typed-decision-plane.md` TD-11 on 2026-09-29. Completed history is linked from *Completed Scope*.
 **Priority**: ACTIVE for rollout decision of the repaired BGE+MLP fast path; FROZEN for expansion. Do not promote logit/hidden-state/GraphRouter-style expansion until the fable5 routing-freeze gates clear.
 **Related**: [routing-intelligence.md](routing-intelligence.md), [autopilot-continuous-optimization.md](autopilot-continuous-optimization.md), [retrain-routing-models.md](retrain-routing-models.md), [decision-aware-routing.md](decision-aware-routing.md), SkillBank (completed handoff)
 **Rollback**: Set `ORCHESTRATOR_ROUTING_CLASSIFIER=0` (default). Zero schema/API/data changes. (With weights missing, flag-ON is already functionally equivalent to fallback — but the flag should be reconciled with reality.)
@@ -1131,20 +1131,20 @@ See the fuller root-cause writeup in [decision-aware-routing.md](decision-aware-
 
 ## Research Intake Update — 2026-09-17 (candidate-scoring arm; intake-1462/1487)
 
-- [ ] **LRC-TD-1 — Candidate-scoring arm for the learned controller.** Compare the per-call label-set pattern (option-as-query head intake-1462 or native token logits intake-1487) against the current classifier on the recorded routing corpus; treat as unadopted until TD-2 reports calibration. (Owner stub `typed-decision-plane.md`, RTG-56.)
+- [x] **LRC-TD-1 — Candidate-scoring arm for the learned controller.** Compare the per-call label-set pattern (option-as-query head intake-1462 or native token logits intake-1487) against the current classifier on the recorded routing corpus; treat as unadopted until TD-2 reports calibration. (Owner stub `typed-decision-plane.md`, RTG-56.) ✅ 2026-09-29 — folded into TD-11 (`typed-decision-plane.md`; operator ruling Q5: TD-11 is the single typed-routing owner). The classifier comparison and the option-as-query arm moved there.
 
 ## 2026-09-26 audit follow-ups (code + live-process audit)
 
-- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
+- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-1 — distill autopilot-generated data into episodic memory as MLP training data** (operator
   direction 2026-09-26). Define the projection from autopilot trial records to routing memories (task, chosen
   role, outcome), keep it separate from live write-back (see `episodic-memory-integrity.md` M-21), and
   measure whether a retrain with it beats the current 81.0% retrain on the held-out split.
-  ❄ FROZEN 2026-09-27 (operator, narrowed plan): retraining the routing MLP tunes a component before the thesis experiment says routing is where the value is; unfreeze trigger: the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives. The box stays open: frozen is not done.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): retraining the routing MLP tunes a component before the thesis experiment says routing is where the value is; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives", which cannot fire while UFH-13 is PARKED): autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
+- [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **LRC-2 — resolve the inert `ORCHESTRATOR_FRONTDOOR_VERIFIER_GATE=1`.** It is set live, but the
   verifier (`src/api/services/routing_models.py:131-149`) only runs in the classifier path, which is off
   (`routing_classifier`, `src/features.py:123`). Either unset it so the environment matches behaviour, or tie
   it to the classifier rollout decision above; do not leave a live flag that does nothing.
-  ❄ FROZEN 2026-09-27 (operator, narrowed plan): the flag is inert (classifier path off), so it costs nothing while frozen; resolve it with the classifier rollout; unfreeze trigger: the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives. The box stays open: frozen is not done.
+  ❄ FROZEN 2026-09-27 (operator, narrowed plan): the flag is inert (classifier path off), so it costs nothing while frozen; resolve it with the classifier rollout; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 thesis experiment reaches a pre-registered verdict of SUPPORTED, and the operator names a workload class where A2's escalation gain lives", which cannot fire while UFH-13 is PARKED): autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
 
 ## Research Intake Update — 2026-09-26 (orchestration prior art: declines + a rollout precondition)
 

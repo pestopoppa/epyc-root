@@ -404,4 +404,4 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 
 ## Research Intake Update — 2026-09-17 (closed-set tool arguments; intake-1472/1473)
 
-- [ ] **TU-TD-1 — Closed-set tool-argument arm.** Add an evaluation arm where tool arguments are selected from closed sets with per-argument confidence (Literal→Choice, list[Literal]→multi-choice, bool→Noul), scored on exact-match argument correctness vs the free-form path.
+- [x] **TU-TD-1 — Closed-set tool-argument arm.** Add an evaluation arm where tool arguments are selected from closed sets with per-argument confidence (Literal→Choice, list[Literal]→multi-choice, bool→Noul), scored on exact-match argument correctness vs the free-form path. ✅ 2026-09-29 — folded into TD-4/TD-12 (`typed-decision-plane.md`; operator-directed duplicate consolidation). TD-4's pilot harness (`tool_args_pilot.py`; 18/18 vs 6/18 exact-match) is this arm; TD-12 extends it with a tool-choice step; TD-29 builds the real-traffic shadow corpus in `decision_receipt.v1`. This contract reads that harness as its eval arm and owns no second implementation.

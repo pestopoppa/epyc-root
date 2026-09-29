@@ -79,5 +79,5 @@ Cold-start: The paper requires ~10 full-benchmark agent runs before the filter i
 
 ## Research Intake Update — 2026-09-17 (external cost anchors + citation hygiene; intake-1475, intake-1492#record)
 
-- [ ] **ECR-TD-1 — Cost-order anchor + same-rubric local comparison.** Record the verified per-million-checks cost order (Jev ~$160; DeepSeek Flash $260; Gemini $1,600; Astra $18,700; Fable 5.1 $33,000 — estimates at list rates, intake-1475) as an external anchor, then run one same-rubric local cheap-judge arm before assuming a typed judge is the cheapest adequate reader.
+- [x] **ECR-TD-1 — Cost-order anchor + same-rubric local comparison.** Record the verified per-million-checks cost order (Jev ~$160; DeepSeek Flash $260; Gemini $1,600; Astra $18,700; Fable 5.1 $33,000 — estimates at list rates, intake-1475) as an external anchor, then run one same-rubric local cheap-judge arm before assuming a typed judge is the cheapest adequate reader. ✅ 2026-09-29 — folded into CJ-13 (`canonical-judge-suite-revamp.md`; operator-directed duplicate consolidation). The cost-order anchor and the same-rubric local comparison moved there.
 - [ ] **ECR-TD-2 — External dashboard citations must be snapshot-captured** (payload hash or rendered snapshot) before entering a claim tuple; the 3–329 s baseline citation is not derivable from its cited live page (intake-1492#record).

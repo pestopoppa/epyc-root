@@ -234,7 +234,10 @@ worth about as much as an entire frontier-model optimization campaign, and shoul
 
 ## Research Intake Update — 2026-09-17 (Jev typed-decision cluster; intake-1472/1473/1474/1487)
 
-- [ ] **RI-14 — Typed-decision fast path for closed-set routing questions.** Once TD-2 calibration lands, evaluate a Choice-style candidate-logit call as the routing classifier fast path; never gate on uncalibrated confidence; report agreement + calibration + wall time vs the current classifier. (Evidence: intake-1472/1473/1474/1487; owner stub `typed-decision-plane.md`, RTG-56.)
+- [x] **RI-14 — Typed-decision fast path for closed-set routing questions.** Once TD-2 calibration lands, evaluate a Choice-style candidate-logit call as the routing classifier fast path; never gate on uncalibrated confidence; report agreement + calibration + wall time vs the current classifier. (Evidence: intake-1472/1473/1474/1487; owner stub `typed-decision-plane.md`, RTG-56.) ✅ 2026-09-29 — folded into TD-11 (`typed-decision-plane.md`; operator ruling Q5: TD-11 is the single typed-routing owner). The classifier comparison, the calibration rule and the intake-1501 question shape moved there.
   - *Question-shape template 2026-09-23 (intake-1501):* tier choice with criteria + ordinal effort score, with a 20-card OOD
     probe whose labels come from a distribution the arm was not tuned on.
 - [ ] **RI-15 — (conditional) Generation-side comparator for factual_risk.** When factual_risk.py is assessed for shadow→enforce, report on the same rows a generation-side comparator (spec-OFF mean/min token log-prob of the served answer), not only the calibration set. Evidence: intake-1521 (zero-shot log-prob ties a simplified supervised router in distribution; no calibration measured).
+  - *Cross-link (2026-09-29, Jev-techniques map §3.2):* the same intake-1521 log-prob signal is EV-CONF-2's
+    salient-token confidence source on the autopilot eval surface (`autopilot-decision-plane-audit-2026-07-22.md`).
+    Different surfaces, one evidence base: reuse EV-CONF-2's spec-OFF capture rather than building a second one.

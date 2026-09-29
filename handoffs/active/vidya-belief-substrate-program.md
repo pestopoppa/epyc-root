@@ -1975,7 +1975,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Add `arms/*/*.belief_measurements.jsonl` (or `*/*/…`, following the `kv-quant-27b-v10-measurement` pattern).
   - Add a discovery test over a two-level fixture.
   - Confirm the nine arm sidecars project, and that any refusal names its reason.
-- [ ] ❄ FROZEN 2026-09-27 — resume only once v11 native scoring exists and UFH-13 shows a verdict — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
+- [ ] ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side of the typed-routing advice A/B** (`typed-decision-plane.md` TD-28):
   arm, typed mode, workload digest, override rate and per-item outcome split. Project, do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its only producer, TD-28, is frozen; wiring a source with no producer is dead code; unfreeze trigger: TD-28 unfreezes. The box stays open: frozen is not done.
 
@@ -1987,7 +1987,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
 VB-NPD-1) are activation records in the durable-triggers list above.
 
 - [ ] **VB-V1-BACKPRESSURE — wire the write side of `/v1` backpressure receipts** (`harness-selection-and-integration.md` HS-OD-9) before the first live bounce: one receipt per bounce with the dispatch-ledger snapshot, estimator version, `retry_after_ms`, `retry_after_basis`, next-attempt time and admission, and turn outcome. Locator = request; never graded above observation until a codified protocol exists. Distinct from SC19 (`ChatResponse.contention_gate`, `/chat` only).
-- [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
+- [ ] ❄ FROZEN 2026-09-27 — resume only once DAR-LAT-3 unfreezes (autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-SEL-LOADAB — wire the write side of the selection load-sweep A/B (decision-aware-routing.md DAR-LAT-3)
   before its first block.**
   - Per-request rows carry: arm, ρ, block, manifest/prior-table/episodic-snapshot digests, TTFT budget, outcome class,
     selection receipt, final role, grader verdict, and `instrument_class=serving`.
