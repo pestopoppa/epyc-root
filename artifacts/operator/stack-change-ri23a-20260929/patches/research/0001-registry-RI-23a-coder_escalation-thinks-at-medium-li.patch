@@ -1,0 +1,59 @@
+From 4ba28678f744d728d7c00caac2c5ba10433ced7f Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 29 Sep 2026 10:28:02 +0000
+Subject: [PATCH] registry(RI-23a): coder_escalation thinks at medium, like its
+ :8083 host
+
+server_mode.coder_escalation.chat_template_kwargs was {enable_thinking: false}.
+That kwarg was dead while the role rode /completion (it only applies on
+/v1/chat/completions), and it contradicted the :8083 process, which runs
+thinking ON at medium (server_mode.architect_critic, ruling C1), and the
+stack priors, which already mark coder_escalation thinking-on through its
+host. Under the orchestrator flag thinking_roles_chat_lane (RI-23, OP-69 (a))
+the row becomes LIVE and would have run coder_escalation with thinking OFF.
+
+- server_mode.coder_escalation.chat_template_kwargs =
+  {enable_thinking: true, reasoning_effort: medium} (mirrors architect_critic
+  and ingest_long_context).
+- roles.coder_escalation.model.disable_thinking: true -> false.
+
+Operator: OP-69 = (a) and "proceed" on RI-23a, 2026-09-29. Stack-change
+package RATIFY-RI23A-20260929 (root lane/ri23a-20260929).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ orchestration/model_registry.yaml | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index a1708ebc..ae4624b9 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1045,7 +1045,13 @@ server_mode:
+     port: 8083
+     slots: 1
+     chat_template_kwargs:
+-      enable_thinking: false
++      # RI-23a (2026-09-29, OP-69 (a)): was `enable_thinking: false` — DEAD while this role
++      # rode /completion (the kwarg only applies on /v1/chat/completions), and it contradicted
++      # the :8083 process, which runs thinking ON at medium (server_mode.architect_critic).
++      # With orchestrator flag thinking_roles_chat_lane ON this row becomes LIVE, so it now
++      # mirrors the host row: coder_escalation is a thinking-on role (operator OP-69 (a)).
++      enable_thinking: true
++      reasoning_effort: medium
+     # 2026-08-20 Qwen3.6->Qwen3.8 swap: this MUST move with model_path. model_role is load-bearing —
+     # model_descriptors.py:1233-1244 substitutes the model_role role's config when an alias's model id
+     # differs from its server_mode entry (recording ignored_model_id), so a stale value here would
+@@ -2811,7 +2817,7 @@ roles:
+       ctx_max: 262144
+       previous_model: "Qwen3.6-35B-A3B-MTP-Q8_0 (2026-07-31: role moved off frontdoor's shared :8070 35B process onto architect_general's :8083 GPU 27B). Prior: Qwen3-Coder-30B-A3B-Instruct-Q4_K_M (swapped 2026-05-06)."
+       use_chat_api: true
+-      disable_thinking: true
++      disable_thinking: false   # RI-23a 2026-09-29: the :8083 process thinks (medium); see server_mode.coder_escalation
+       reasoning: auto
+       max_tokens_multiplier: 4
+     candidate_roles:
+-- 
+2.51.0
+

@@ -1,0 +1,14 @@
+# orchestrator lane/ri23a-20260929 @ 8991000d, cwd = lane worktree, rc captured (not piped):
+# nice -n 19 taskset -c 0-47 .venv/bin/python -m pytest -q -p no:cacheprovider -n 4 tests/unit -k "registry or stack_priors or chat_completions_roles or thinking"
+================= 599 passed, 6 skipped, 5 warnings in 30.26s ==================
+rc=0
+
+# sensitivity: tests/unit/test_registry_chat_template_kwargs.py against the PRE-RI-23a lean (e0787feb bytes, identical to c62fcadd), lean restored after (sha256 7ff34c2d... re-verified):
+E   AssertionError: coder_escalation (alias on architect_critic) declares enable_thinking=False but its host declares True
+2 failed, 2 passed  (the new alias/host guard and the updated kwargs assertion both fail on the defect)
+
+# scripts/validate/check_shared_with_derivations.py --master-registry <lane master>:
+shared_with derivations: OK — port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all agree with server_mode.*.shared_with
+rc=0
+
+# research lane/ri23a-20260929 @ 4ba28678: pre-commit evidence durability on the master: errors: 0, warnings: 5 (pre-existing WAIVED_LOST rows, unchanged)

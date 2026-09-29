@@ -1,0 +1,178 @@
+From 269e755acf200b460bfd994c64097abad8ee3d68 Mon Sep 17 00:00:00 2001
+From: pestopoppa <72076821+pestopoppa@users.noreply.github.com>
+Date: Tue, 29 Sep 2026 10:30:35 +0000
+Subject: [PATCH 2/3] derived(RI-23a): regenerate lean registry, descriptors,
+ stack priors, summary
+
+stack_change_pipeline.py update --numa-mode both against the research lane
+master (lane/ri23a-20260929 @ 4ba28678). Lean diff: only
+server_mode.coder_escalation.chat_template_kwargs (+enable_thinking true,
++reasoning_effort medium) and roles.coder_escalation.model.disable_thinking
+(true -> false). Descriptors and stack priors change provenance only: the
+descriptor already derived coder_escalation thinking-on from its host. The
+descriptor's research path names the lane master; bring-up re-runs update
+against the canonical master (PACKAGE.md section 7).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+---
+ docs/generated/current_stack_summary.md |  6 +++---
+ orchestration/derived/stack_priors.yaml | 24 ++++++++++++------------
+ orchestration/model_descriptors.yaml    | 12 ++++++------
+ orchestration/model_registry.yaml       | 11 ++++++-----
+ 4 files changed, 27 insertions(+), 26 deletions(-)
+
+diff --git a/docs/generated/current_stack_summary.md b/docs/generated/current_stack_summary.md
+index 49045545..c3a91b18 100644
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,9 +9,9 @@ uv run python scripts/registry/stack_change_pipeline.py update
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `2e352b11e9a9da015e5934089de620048b8b98957871cdda508a1e10f99e5846`
+-- orchestration/model_registry.yaml: `26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7`
+-- orchestration/model_descriptors.yaml: `6c6359b5afd6a1d832be35b35f57c7fb3584338b8e20865cde3314340040cf3a`
++- orchestration/derived/stack_priors.yaml: `1729496b3ddcbdab337b5eb25c5ea9b1fde844ae6710ce2d5c64cb1b5e534c34`
++- orchestration/model_registry.yaml: `7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f`
++- orchestration/model_descriptors.yaml: `c25175de98a1b5605be959d25d5974795f99b4518ab52757e4bca1c7e5ce291a`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+diff --git a/orchestration/derived/stack_priors.yaml b/orchestration/derived/stack_priors.yaml
+index 2222efe5..0df66865 100644
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,47 +48,47 @@ contract:
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+-compiled_at: '2026-09-29T04:12:37Z'
++compiled_at: '2026-09-29T10:29:11Z'
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7
+-    repo_commit: c595e13d
++    sha256: 7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f
++    repo_commit: e0787feb
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 6c6359b5afd6a1d832be35b35f57c7fb3584338b8e20865cde3314340040cf3a
+-    repo_commit: c595e13d
++    sha256: c25175de98a1b5605be959d25d5974795f99b4518ab52757e4bca1c7e5ce291a
++    repo_commit: e0787feb
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+     sha256: 5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   stack_numa:
+     path: scripts/server/stack_numa.py
+     sha256: edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+     sha256: 66fe456dc9c3fe323239571d4f32794c93391741986bffb875a925729b54b8c1
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+     sha256: 33f3f36a285659bdd63477dfbe1bd86f734a04137257674001a83e79f76a0bac
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+     sha256: 200fa02ba41ae5594f74cad815ffd749689d735c4e828387054ca11a95d0595a
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   stack_paths:
+     path: scripts/server/stack_paths.py
+     sha256: 4a7ca842a87b6ffec022f4f6433d755751cac32b9102747d88f3f4f2e4cb24de
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+   stack_runtime:
+     path: scripts/server/stack_runtime.py
+     sha256: 984d27262e1f1d5a5332d0b4a3e6fb96fb8095fc890ddaa93da07bff52eb1c99
+-    repo_commit: c595e13d
++    repo_commit: e0787feb
+ roles:
+   architect_critic:
+     role: architect_critic
+diff --git a/orchestration/model_descriptors.yaml b/orchestration/model_descriptors.yaml
+index 222ecb4d..7093e047 100644
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+-compiled_at: '2026-09-29T04:12:36Z'
++compiled_at: '2026-09-29T10:29:10Z'
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+-    repo_commit: c595e13d
+-    sha256: 26733449e47913cae19589b1dd4b1a21c1610fed079e9e02fcff98173028f5c7
++    repo_commit: e0787feb
++    sha256: 7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f
+   research:
+-    path: /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+-    repo_commit: 76cecec4
+-    sha256: 3a19aaae84596c20be0c8a8e40791b53a1bd3c38315a43b17d0ad5f7934dbe2d
++    path: /mnt/raid0/llm/tmp/ri23a-20260929/research/orchestration/model_registry.yaml
++    repo_commit: 4ba28678
++    sha256: aa1229cd39fa6eca8efe15a3e964a8162c314d45cfcabad4fecaff03adcdfae1
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index bec06afc..3894168b 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,7 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/tmp/ri23a-20260929/research/orchestration/model_registry.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +10,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-27T18:57:44+00:00
+-# Cache key:   124f808d4f4b3d45...
++# Compiled at: 2026-09-29T10:29:10+00:00
++# Cache key:   0f7451edfead1a61...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -1730,7 +1730,8 @@ server_mode:
+     port: 8083
+     slots: 1
+     chat_template_kwargs:
+-      enable_thinking: false
++      enable_thinking: true
++      reasoning_effort: medium
+     model_role: qwen38_27b_q8_local
+     description: 'Coding escalation — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0. 2026-07-31: MOVED off frontdoor''s :8070 shared 35B process onto
+       architect_general''s :8083 GPU process; alias, launches no server of its own. 2026-09-27 ARCHSWAP: the :8083 host role is now architect_critic (same process, same model). Quality on this model NOT
+@@ -2031,7 +2032,7 @@ roles:
+       previous_model: 'Qwen3.6-35B-A3B-MTP-Q8_0 (2026-07-31: role moved off frontdoor''s shared :8070 35B process onto architect_general''s :8083 GPU 27B). Prior: Qwen3-Coder-30B-A3B-Instruct-Q4_K_M (swapped
+         2026-05-06).'
+       use_chat_api: true
+-      disable_thinking: true
++      disable_thinking: false
+       reasoning: auto
+       max_tokens_multiplier: 4
+     candidate_roles:
+-- 
+2.51.0
+
