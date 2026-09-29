@@ -1,0 +1,44 @@
+# Why no llama-server relaunch is needed (lane/ri23a-20260929 @ 8991000d; this code is unchanged from origin/main c62fcadd)
+
+## 1. chat_template_kwargs are REQUEST-side: read per request from the lean registry and put in the POST body
+src/registry/registry_loader.py:567:    def get_role_chat_template_kwargs(self, role_name: str) -> dict[str, Any] | None:
+src/registry/registry_loader.py:575:            ctk = sm.get("chat_template_kwargs")
+src/registry/registry_loader.py:949:_CTK_LOADER: "RegistryLoader | None" = None
+src/registry/registry_loader.py:961:            _CTK_LOADER = RegistryLoader(validate_paths=False)
+src/backends/llama_server.py:139:def _chat_template_kwargs(role_config: Any, request: Any) -> dict[str, Any] | None:
+src/backends/llama_server.py:151:            ctk = chat_template_kwargs_for_role(getattr(request, "role", None) or role_config.name)
+src/backends/llama_server.py:776:            payload["chat_template_kwargs"] = ctk
+src/backends/llama_server.py:1686:            payload["chat_template_kwargs"] = ctk
+  -> The loader is cached once per API worker process (_CTK_LOADER), so the API reload (orchestrator_stack.py reload orchestrator) picks up the new lean. No model server is involved.
+
+## 2. Nothing on the launch side reads chat_template_kwargs or disable_thinking
+$ grep -rn 'chat_template_kwargs\|chat-template-kwargs\|reasoning_effort' --include='*.py' scripts/server src/registry
+scripts/server/orchestrator_stack.py:2287:    # their template + chat_template_kwargs apply and reasoning is server-split; the review verdict
+src/registry/model_descriptors.py:780:        chat_kwargs = source.get("chat_template_kwargs") if isinstance(source, dict) else None
+src/registry/model_descriptors.py:785:                "source": "chat_template_kwargs.enable_thinking",
+src/registry/registry_loader.py:567:    def get_role_chat_template_kwargs(self, role_name: str) -> dict[str, Any] | None:
+src/registry/registry_loader.py:571:        section. Backends auto-inject this into request.extra["chat_template_kwargs"]
+src/registry/registry_loader.py:575:            ctk = sm.get("chat_template_kwargs")
+src/registry/registry_loader.py:946:# Lets a backend auto-inject per-role chat_template_kwargs without threading a
+src/registry/registry_loader.py:952:def chat_template_kwargs_for_role(role_name: str) -> dict[str, Any] | None:
+src/registry/registry_loader.py:953:    """Per-role chat_template_kwargs from the default registry, or None.
+src/registry/registry_loader.py:965:        return _CTK_LOADER.get_role_chat_template_kwargs(role_name)
+  (scripts/server: one COMMENT, orchestrator_stack.py:2287, on the flag-enable hunk from a504ba28. src/registry: the request-side loader above, and the descriptor compiler.)
+$ grep -rn disable_thinking --include='*.py' src scripts | grep -v src/registry/model_descriptors.py
+  (no hits)
+  -> model_descriptors.py is compiler input only. Its output for coder_escalation is unchanged: 0 priors rows changed (url_kwargs_diff.txt).
+
+## 3. coder_escalation launches no process
+  It is in server_mode.architect_critic.shared_with. Its argv is the host's, and the host's prior is unchanged.
+  The stack_priors.yaml diff is provenance only (compiled_at, sha256, repo_commit): patches/orchestrator/NET.diff.
+
+## 4. The :8083 process already serves thinking per request (read-only /proc read, 2026-09-29)
+  pid 3363961: --port 8083 --jinja --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja 
+  architect_critic and ingest_long_context already send {enable_thinking: true, reasoning_effort: medium} to this same process.
+
+## 5. Flag state: the defect is LIVE now
+  The API pid 3004477 (started Tue Sep 29 10:30:18 2026, main c62fcadd) has ORCHESTRATOR_FEATURE_THINKING_ROLES_CHAT_LANE=1 in /proc/<pid>/environ (orchestrator a504ba28 enabled it in production).
+src/chat_completions_roles.py:192:            and acceleration.get("enable_thinking") is True
+  coder_escalation's prior is enable_thinking=True, so under the flag it is admitted to /v1/chat/completions,
+  and today it is sent {enable_thinking: false}: thinking OFF. After this package it is sent the host's kwargs.
+  With the flag off the change would be inert: coder_escalation is not in the static chat-completions set (it requires enable_thinking is False), so it rides /completion, where kwargs are not sent.

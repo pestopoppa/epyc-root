@@ -1,0 +1,7 @@
+# RI-23a static snapshot diff: orchestrator origin/main c62fcadd (before) vs lane/ri23a-20260929 8991000d (after)
+# tool: tools/snapshot_static.py, cwd = each tree, ORCHESTRATOR_IGNORE_RUNTIME_STACK_FACTS=1
+# facts compared: 40 before / 40 after
+CHANGED  ctk  coder_escalation: {"enable_thinking": false} -> {"enable_thinking": true, "reasoning_effort": "medium"}
+url rows changed: 0 of 19 (no role moved port)
+priors rows changed: 0 ; lane rows changed: 0 (thinking_chat_lane_roles stays architect_critic, coder_escalation, ingest_long_context)
+PASS: the only changed fact is ctk coder_escalation

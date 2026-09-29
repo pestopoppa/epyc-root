@@ -1,0 +1,40 @@
+url	api_url	http://localhost:8000
+url	architect_critic	http://localhost:8083
+url	architect_general	http://localhost:8074
+url	coder	http://localhost:8083
+url	coder_escalation	http://localhost:8083
+url	frontdoor	full:http://localhost:8070,http://localhost:8080,http://localhost:8180
+url	ingest_long_context	http://localhost:8083
+url	ocr_server	http://localhost:9001
+url	toolrunner	http://localhost:8070
+url	vision_api	http://localhost:8000/v1/vision/analyze
+url	vision_escalation	http://localhost:8086
+url	worker	http://localhost:8070
+url	worker_coder	http://localhost:8102
+url	worker_explore	http://localhost:8070
+url	worker_fast	http://localhost:8102
+url	worker_general	http://localhost:8070
+url	worker_math	http://localhost:8070
+url	worker_summarize	full:http://localhost:8070,http://localhost:8080,http://localhost:8180
+url	worker_vision	http://localhost:8086
+ctk	architect_critic	{"enable_thinking": true, "reasoning_effort": "medium"}
+ctk	architect_general	{"enable_thinking": false}
+ctk	coder_escalation	{"enable_thinking": true, "reasoning_effort": "medium"}
+ctk	frontdoor	{"enable_thinking": false}
+ctk	ingest_long_context	{"enable_thinking": true, "reasoning_effort": "medium"}
+ctk	worker	{"enable_thinking": false}
+ctk	worker_vision	null
+priors	architect_critic	enable_thinking=True jinja=True
+priors	architect_general	enable_thinking=False jinja=True
+priors	coder_escalation	enable_thinking=True jinja=True
+priors	frontdoor	enable_thinking=False jinja=True
+priors	ingest_long_context	enable_thinking=True jinja=True
+priors	toolrunner	enable_thinking=False jinja=True
+priors	vision_escalation	enable_thinking=None jinja=False
+priors	worker	enable_thinking=False jinja=True
+priors	worker_explore	enable_thinking=False jinja=True
+priors	worker_general	enable_thinking=False jinja=True
+priors	worker_math	enable_thinking=False jinja=True
+priors	worker_summarize	enable_thinking=False jinja=True
+priors	worker_vision	enable_thinking=None jinja=False
+lane	thinking_chat_lane_roles	["architect_critic", "coder_escalation", "ingest_long_context"]
