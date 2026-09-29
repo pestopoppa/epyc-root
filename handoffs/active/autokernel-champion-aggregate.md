@@ -742,6 +742,21 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         be unaffected, but that is unmeasured. Rides V6R-4a into v11. Until it lands, DS41 carries the recipe arm (DS41-C59).
     - PARKED 2026-09-27 (operator): Loader-default fix prepared at e665242f0 (branch `experimental/loader-team-follows-threads-20260927`, 7 lines in `common/common.cpp` `common_model_params_to_llama`: auto load threads follow `-t`, plus the matching `--load-threads` help string in `common/arg.cpp`; cut from the AK champion tip `90c12df42`, pushed to fork), not built or benchmarked. The runtime-arm flag covers DS41 now (DS41-C59, `--load-threads 48`); resume by taking e665242f0 through the experimental workflow (build, then this item's acceptance: bit-exact load, load time within noise, DS41 spinning with no flag) into the champion, and from there into v11 via V6R-4a.
 
+  - [ ] **V6R-4d — live GPU no-regression validation of the champion's HIP build.** The GPU half of the champion now
+        exists: **`kernels/builds/gpu-20260929-90c12df42`**, the HIP (gfx90a) twin of `cpu-20260925-90c12df42`, built
+        2026-09-29 (workspace-8d, operator-approved). It uses recipe `gfx90a-house-v1`, and its CMakeCache is identical
+        to v10's `gpu-20260921-ffc1bac82` on every GGML/LLAMA/target/compiler entry. It reports `10308 (90c12df42)`.
+        SW-9 is compiled in: `libllama-common.so` exports both `out_dists` overloads of
+        `common_sampler_sample_and_accept_n`, and v10 GPU has 0. `verify_ggml_linkage.sh` PASS. RUNPATH carries no empty
+        element. Record: that directory's `PROVENANCE.md`. No `ggml-cuda`/`ggml-hip` source differs from v10, so the
+        GPU risk is host-side (server, sampling, loader). **No live check has been run.** The MI210 is full with the
+        production 27B (67.0/68.7 GB). Gate: the 2nd MI210, or an operator-approved displacement window. Acceptance:
+        the GPU device appears in the startup log, speed is within the floor of `production/gpu` on the production 27B,
+        output is byte-identical at `n_probs=0`, and draft-mtp `n_probs>0` returns probs on every token. **Standing
+        rule: every future champion advance produces BOTH a CPU and a GPU store build of the same commit**
+        (single-champion invariant: one commit, one build per device). A CPU-only advance leaves the GPU path on a
+        pre-advance build; that is how SW-9 went five days without a GPU build.
+
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 
 | branch @ commit | disposition | why | condition if ever folded |
