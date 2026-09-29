@@ -669,6 +669,29 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - [ ] Follow-up: if the planner proposes a third plan-only variant on the `float_tinyblas_plan` route,
     consider closing the route (two decisive regressions: DS41-C70's `hcmix-narrow-m-plan` −3.833% and this
     batch's `float-tinyblas-rowplan` −6.586%).
+- [x] DS41-C73 — **Pre-existing getenv opt-in is not a new env probe.** ✅ 2026-09-29 (~00:05-00:35Z),
+  `ak-ds41-main`. DS41 run 10m batch 16 (planner finished in ~51 min on the old code, within 4500 s): an
+  author patch for `akm-ds41-dense-q8-iqk` was refused `integrity_refused` / `reward_hack_scan` at 00:03Z on
+  `ggml/src/ggml-cpu/iqk/iqk_dispatch.cpp:59:environment_probe:static const bool e = []() { const char * s =
+  getenv("GGML_IQK_Q8_0");`.
+  - Root cause: the patch's whole mechanism was flipping the `GGML_IQK_Q8_0` opt-in default in
+    `iqk_q8_0_enabled` (unset → on, routing dense Q8_0 through iqk), which the admitted `iqk_dense_dispatch`
+    route explicitly names as a target (the opt-in has defaulted off since `aebb556b1`). Rewriting the
+    existing `getenv` line made the added-lines scanner treat it as a new environment probe, so that route
+    target could never be edited.
+  - Fix: research `5b7f757a` on epyc-inference-research main. `loop/integrity.py`
+    `_without_preexisting_env_reads` drops an `environment_probe` finding only when every probe on the added
+    line is `getenv`/`secure_getenv` of a literal NAME the anchor's version of the SAME file already reads;
+    new names, mixed lines (`getpid`, `sched_getcpu`, `/proc`, tool names) and new files keep the finding.
+    Verified on the real refused patch (finding dropped, no other findings). Tests: 6 new in
+    `test_integrity.py`; 92 pass across integrity/author-recovery/path-normalization/reward_hack_scan/
+    instrument_integrity.
+  - Deployed: live worktree `/mnt/raid0/llm/worktrees/research-ds41-run10` at `5b7f757a` (includes C72
+    salvage turn `23305d81`), effective from the next batch.
+  - Note: routing Q8_0 into iqk changes the activation quantization, so outputs are not bit-identical to
+    tinyBLAS (the route's own documented caveat) — the correctness gates will judge it.
+  - [ ] Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
+    (dense Q8_0 is the largest single lever, ~40% of cycles).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
