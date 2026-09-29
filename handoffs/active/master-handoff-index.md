@@ -99,7 +99,7 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 880 | 33 | 2026-07-29 |
+| inference-research | 60 | 883 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
 | research-evaluation | 43 | 465 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
