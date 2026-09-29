@@ -772,16 +772,42 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     (arm B + `--actor-context-mode variable`). Caveat: context limit/mode are global, so lane 1 and the
     critic inherit them too — lane-0 per-call metrics stay clean, but campaign-level arm yield comparisons do
     not isolate lane 0.
-  - [ ] Follow-up: collect ≥3 lane-0 planner sessions under arm B; compare completion rate, wall, peak
+  - [x] Follow-up: collect ≥3 lane-0 planner sessions under arm B; compare completion rate, wall, peak
     context (`context_max_tokens`), compactions, output-capped steps vs arm A baseline (runs 10n/10o lane-0
-    sessions).
-  - [ ] Follow-up: then run arm C for ≥3 sessions.
+    sessions). ✅ 2026-09-29 — arm B 0/3 valid; superseded by arm C (DS41-C76).
+  - [ ] Follow-up: then run arm C for ≥3 sessions. (Tracked as DS41-C77.)
   - [ ] Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
     worst case, over the 196,608 pool — needs C≈77k and author output under 40,960, or lane-0-only limits via
     `lane_actors.seat_for`).
   - [ ] Follow-up: planner effort "high" arm, later.
   - [ ] Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
     wanted.
+- [x] DS41-C76 — **Escape mandate confined the search to four closed categories → abstention storm; fixed.**
+  ✅ 2026-09-29, `ak-ds41-main`. Experiments rows 134-143 (14:18-14:53Z) were all
+  `abstained`, 0 measurements.
+  - Cause: `render_context` (`scripts/kernel_rnd/autokernel/loop/actors.py`) emitted "DIMINISHING-RETURNS
+    ESCAPE — mandatory for this turn" whenever any mechanism family had ≥3 resolved failures, ordering the next
+    hypothesis to target one of graph scheduling, row/work partitioning, NUMA/memory placement, or
+    expert/load balance. All four were already tried, so both lanes abstained honestly; lane 0 (row 141)
+    named the dense MUL_MAT per-core efficiency gap — the route every kept win came from.
+  - Fix: research `4fefe923` (origin/main). The block bans variants of the listed families and allows either
+    an unlisted profile-supported family or a causal escalation; closed escalation categories are not grounds
+    to abstain. Heading kept (`actor_context.py` matches it). New test
+    `test_family_escape_bans_the_family_not_the_rest_of_the_search`; `test_actors` + `test_actor_context` 160
+    pass. Follow-up `56dfdccf`: a keep resets its family (the keyword bucket "local quant/dot kernel" had stayed
+    exhausted through its own dense Q8_0 keeps), and the rule bans cosmetic variants rather than whole families;
+    `test_a_keep_resets_an_exhausted_family`, 161 pass. Deployed via swap to run 10r (same arm C args) at the next batch boundary
+    (`/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_c76_10r.log`).
+  - Arm B verdict (run 10p): 0/3 lane-0 calls valid — walls 16.4/68.9/53.2 min, peaks 52,398/66,291/61,404,
+    1/2/2 compactions; the ~52.7k-token inline first prompt means compaction near ~58k drops the JSON output
+    contract. Arm A baseline: 8/10 valid, median 38.2 min, peak median 114,367.
+  - Arm C (arm B + `--actor-context-mode variable`, run 10q from 14:01:56Z, 12 iterations/batch): first
+    lane-0 call valid — 46.0 min, first prompt 19,200 tokens (vs ~53k), peak 59,038, 2 compactions, 12 bundle
+    tool calls. Pre-C76 arm C calls are outcome-contaminated by the abstain mandate; context metrics stay
+    valid.
+- [ ] DS41-C77 — collect ≥3 arm C lane-0 planner calls on C76 code (run 10r); compare vs arm A (completion,
+  wall, peak context, compactions); decide second 27B lane (pool: two sessions at 90k worst case ~205k vs
+  196,608 unified KV).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
