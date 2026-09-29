@@ -692,6 +692,36 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     tinyBLAS (the route's own documented caveat) — the correctness gates will judge it.
   - [ ] Follow-up: watch whether `akm-ds41-dense-q8-iqk` is re-authored and now reaches the gates/measurement
     (dense Q8_0 is the largest single lever, ~40% of cycles).
+- [x] DS41-C74 — **Two lanes, lane 1 on an external planner/author model (deepseek/deepseek-flash).**
+  ✅ 2026-09-29 (~01:30-03:25Z), `ak-ds41-main`. Operator decision (AskUserQuestion): second lane on an
+  external model, motivated by the host CPU sitting ~98% idle during every actor phase and no peer using the
+  windows; two lanes on the local 27B were ruled out because `:8083`'s single unified 196,608-token KV pool
+  is shared by all slots (planner sessions reach 100-170k tokens, a full pool + MTP has crashed the server,
+  and halving per-lane context to ~90k would cripple the planner).
+  - Implementation: research `48ed3f77` on epyc-inference-research main. `--batch-iterations N>1` now admitted
+    in scheduled mode only for a single-target derived manifest (stage outcome folds to the worst iteration
+    class; derived stage bound D × N; multi-iteration children never train the cost forecast; validation/LOO
+    forced to 1 iteration; seeds with a pending CPU-screen candidate refused at startup). New
+    `--lane-actor-models K=provider/model[@effort]` (lane 0 never overridden): lane 1 planner + single author
+    on `deepseek/deepseek-flash@high`, critic stays global, no qwen-specific thinking kwargs sent to deepseek,
+    salvage turn stays on, best-of panel counts only lanes on the global provider. Fixes found on the way:
+    runtime arms shared across lanes via `ArmLanes`; every ak-check takes the pool's shared fence
+    (`AK_CHECK_FENCE`, OAB-28); CPU-window estimator keys phase medians by lane model.
+    `POOL_ACTOR_FLAGS` excluded from `resume_binding` (OP-60). Tests: 27 new in `test_lane_actors.py` plus
+    additions in three other suites; 189 pass, failure set identical to main.
+  - Launch: dry-run proved the wiring first. `swap_twolane_10n.sh` paused run 10m at the batch boundary
+    (accepted 02:10Z, landed 03:22:49Z after batch 18; 10m ran 33.5 h, 18 batches), moved the live worktree to
+    `48ed3f77`, installed `--workers 2 --lane-actor-models 1=deepseek/deepseek-flash`, and launched run 10n
+    (pid 2279409, `--batch-iterations 2`) seeded from 10m's last continuation at 03:22:55Z. New watchdog v2
+    (2 iterations/child, falls back to single-lane at 1) started 03:24:25Z; watchdog v1 left running but held.
+  - Known costs (documented, not bugs): a keep in one lane supersedes the other lane's in-flight candidate;
+    lane 1 is deepseek authoring + deepseek critic (self-review); lane-1 prompts (up to ~100-170k tokens)
+    egress to the external provider; `_last_call_evidence` may attribute authoring-failure evidence to the
+    other lane's row.
+  - [ ] Follow-up: confirm lane 1 (deepseek) produces proposals/patches that reach measurement and that the
+    shared tail serializes measurements (no overlap).
+  - [ ] Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
+  - [ ] Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
