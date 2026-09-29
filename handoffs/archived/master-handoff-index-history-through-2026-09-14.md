@@ -80,3 +80,14 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-67 | **Terminal countersignature for four agent-executed or unattributed ratifications.** They are P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX (it recorded `operator: "node"`) and DAR-LAT-3h. Each was approved in chat on 2026-09-26/27 and executed by the agent (workspace-8d). They stand as CHAT-CONFIRMED. To countersign, run from a terminal: `bash scripts/operator/countersign_20260927.sh` (it asks you to type COUNTERSIGN). | [COUNTERSIGN-20260927.md](../../artifacts/operator/countersign/COUNTERSIGN-20260927.md) | 2026-09-27 |
+
+## Resolved 2026-09-29 (row removed by the root writer)
+
+- **OP-69** — DECIDED (a) and LANDED. The operator approved landing in chat on 2026-09-29: orch `e0787feb` on main,
+  flag `thinking_roles_chat_lane` enabled in production at `a504ba28`, derived `c62fcadd`, API-only reload. Live
+  serving proof 2026-09-29 15:04Z (`/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T150402Z/`). Closes
+  `routing-intelligence.md` RI-22, RI-23 and RI-23a (receipt `RATIFY-RI23A-20260929`, root `05e13e75`).
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-69 | **Land the RI-23 thinking-on chat lane** (decided (a), 2026-09-29). orch lane/orch-ri23-8d @ e0787feb, flag thinking_roles_chat_lane default OFF; RI-23b A/B supports it (flag OFF the review verdict never parses; ON both verdicts correct). gitnexus flags 4 HIGH/CRITICAL symbols -> operator landing approval; then API-only reload + flag flip. | [routing-intelligence.md](routing-intelligence.md) → RI-23 | 2026-09-29 |
