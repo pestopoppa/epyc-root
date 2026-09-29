@@ -420,6 +420,10 @@ code for a rider), and only if the window has its estimated time left.
       `thinking_roles_chat_lane` enabled at `a504ba28`, API-only reload). The 27B verdict now runs templated,
       thinking-off, with `skip_suffix`, and parsed 2/2 against 0/2 before (RI-23b). An A2 run under
       `x_escalation=auto` no longer has a dead review-gate trigger. The escalation-design review above still applies.
+  - Before any A2 or autopilot run that sends traffic to the 27B roles: check `:8083` KV headroom. From 2026-09-29
+    DS41 runs two 27B planner lanes on `:8083` (per-session cap 90,112 tokens, peaks 44k-76k), which can hold ~180k
+    of the 196,608-token `-kvu` pool and leaves ~16k for `architect_critic`/`coder_escalation`/`ingest_long_context`.
+    Ask workspace-76 to lower DS41's per-session cap (or move the run to a DS41 pause) first.
   - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
