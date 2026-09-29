@@ -18,7 +18,7 @@
 | RTG-06 | capability registry and promotion | [capability-registry-and-promotion.md](capability-registry-and-promotion.md) | W3-b — LIVE shadowed role-restart attestation (BLOCKED: reload window owned by the inference session) | — |
 | RTG-07 | contention model device and load axes rider | [contention-model-device-and-load-axes-rider.md](contention-model-device-and-load-axes-rider.md) | Parameterize Artifact 2 capacity/VRAM fit, then Artifact 3 interference cost; retain E5 as final calibration dependency | INF-07 |
 | RTG-08 | context folding progressive | [context-folding-progressive.md](context-folding-progressive.md) | CF-L5 — Run the L5 single-sentence compression check only if it answers a live question; verdict vs L3: rejected, role-limited, or tune | — |
-| RTG-09 | decision aware routing | [decision-aware-routing.md](decision-aware-routing.md) | Hold for UFH-13's TE-6 verdict, then unfreeze DAR-LAT boxes per their triggers; DAR-SPLIT-1 is the first unfrozen box | — |
+| RTG-09 | decision aware routing | [decision-aware-routing.md](decision-aware-routing.md) | Hold until autopilot trains on the swapped stack AND UFH-13 re-opens (operator 2026-09-29); then unfreeze DAR-LAT per triggers, DAR-SPLIT-1 first | — |
 | RTG-10 | delegation context preassembly | [delegation-context-preassembly.md](delegation-context-preassembly.md) | DCP-10 — build the zero-decode ContextBench discovery scorer (wrap the shipped scorer first), then score lexical vs ColGREP arms | — |
 | RTG-11 | dynamic stack concurrency | [dynamic-stack-concurrency.md](dynamic-stack-concurrency.md) | G4 — measure the post-restore prompt-reuse rate on the hybrid frontdoor (slot save/restore, upstream #25913); K4a master-registry drift | — |
 | RTG-13 | evidence plane event sourcing and narrative | [evidence-plane-event-sourcing-and-narrative.md](evidence-plane-event-sourcing-and-narrative.md) | W3 — after the first automatic segment snapshot (trial 1999→2000), demonstrate bounded startup cost on the next AutoPilot restart | — |
@@ -58,7 +58,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
-| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-1d.0 — re-settle the n=1 acceptance: a 4-round re-measure gives 9.60x vs the accepted 11.98x, bar not cleared | — |
+| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 — shadow-only closed-set tool args (zero-inference code); TD-1d.0 re-settle in a GATE: mi210-window with workspace-76 | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-1b/M-3b — re-read depth 4 vs 8 at ~175 organic requests; KVU-1a opencode limit | RTG-19, RTG-36, INF-41 |
 
 ## Cross-domain
