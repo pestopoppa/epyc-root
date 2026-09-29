@@ -1,0 +1,38 @@
+{
+  "schema": "epyc.operator_receipt.v1",
+  "token": "RATIFY-RI23A-20260929",
+  "status": "ratified",
+  "human_attestation": "RATIFY-RI23A-20260929",
+  "signed_at": "2026-09-29T14:59:40.164702+00:00",
+  "signed_by": "Daniele",
+  "signed_by_uid": 1000,
+  "signature_channel": "terminal",
+  "consent_ref": null,
+  "package": "artifacts/operator/stack-change-ri23a-20260929/PACKAGE.md",
+  "pinned_sha256": {
+    "PACKAGE.md": "bbd12c2d037c3196b5b1bb85dfe03f53d21f89d5cfa84cc9986f73653c150ce0",
+    "evidence/assert_alias_clean.txt": "5c87b28cc05ee4c225df4441e1841a9bf33892401f18033aaf5efeb297445ba3",
+    "evidence/no_relaunch.txt": "ba248f527844c6ad23337ad494310ca57b86b597903c1844cc88cb222097fe4b",
+    "evidence/pipeline-check-after-livestate.txt": "6a35b4dae5c8a6934c1a810fad9773028fb6705a16e10d433e6a1fec699318d3",
+    "evidence/pipeline-check-after.txt": "da5fda7da63b48a82fe38da45aab800b3595e78595b173c700d6b19c3d334833",
+    "evidence/pipeline-check-main-baseline.txt": "da0c16d7b8695bf46803167afb8d3c0512fcbd322f433c0d5433db72e53991b3",
+    "evidence/pipeline-update.txt": "a59f3011fe9e82f9b6698f92a9c737bb7e317ef98fc37f93214b70e2a5dc0563",
+    "evidence/snapshot-after.tsv": "fc74f8ec82efa089e058157fed6320c148044d04ffbb02762622253d3bf9e9d5",
+    "evidence/snapshot-before.tsv": "8340cd8516323472d0dc308222f01dee2723cd54ecc3b45779374a7d8a1f5b62",
+    "evidence/tests.txt": "44c54b622df28e07aa0c25c9f66b287f529e1d700aa3cfa37bef7749213fb20b",
+    "evidence/url_kwargs_diff.txt": "abf05f59d5af05517dc93b29af707e311d0d11b37a2a242e40b518a0004c8a28",
+    "patches/orchestrator/0001-tests-RI-23a-coder_escalation-declares-its-8083-host.patch": "ba760d4dbb4c34ed2c0918ecc666982bdcd4deb75f901c2d127d879e2861380c",
+    "patches/orchestrator/0002-derived-RI-23a-regenerate-lean-registry-descriptors-.patch": "87cc2849a6ff2a41bcb5e1fea006a04376bc9fd34f6c966bedb0220ae8254f4c",
+    "patches/orchestrator/0003-derived-RI-23a-regenerate-after-merging-origin-main-.patch": "1ce83722153855c308b4ee58abf9c76d88e19248a3d32f0cc9c4615269ec0a18",
+    "patches/orchestrator/NET.diff": "fdd9fd1a157781948d5687a6c2f6678a7b8ae50cb51ac66570d0fe50b10e38f6",
+    "patches/research/0001-registry-RI-23a-coder_escalation-thinks-at-medium-li.patch": "a23d213853a83beaedcf09508c11ec5709af1d1e96085ac9b93f1d4a2f6b709d",
+    "patches/research/NET.diff": "e8b97d1d2d27b29f75fe4d4beea3876df5e043437fe6d19f0e6d325a564bdfbc",
+    "tools/snapshot_static.py": "a608a8f3c4110d3401ca62073a553f5723a64297ba7bb59e29a6b8770eaa9dab"
+  },
+  "decision": "operator-decided 2026-09-29: OP-69 = (a) (thinking-on roles on the chat-completions lane) and 'proceed' on RI-23a in chat. coder_escalation (alias on the :8083 Qwen3.8-27B, host architect_critic) declares chat_template_kwargs {enable_thinking: true, reasoning_effort: medium}, mirroring its host; roles.coder_escalation.model.disable_thinking true -> false",
+  "acknowledged": {
+    "A-1": "coder_escalation answers on the chat lane include thinking (reasoning_effort medium), split into reasoning_content. Latency goes up: RI-23b measured coder_escalation at 1.44 s with thinking OFF on the chat lane and 5.65 s with inline thinking on /completion",
+    "A-2": "no port, process, model or launch argv changes; the kwargs are request-side, so the bring-up is an API reload only (no llama-server relaunch) - evidence/no_relaunch.txt"
+  },
+  "applies_nothing": true
+}
