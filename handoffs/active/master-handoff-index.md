@@ -37,7 +37,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-69 | **Land the RI-23 thinking-on chat lane** (decided (a), 2026-09-29). orch lane/orch-ri23-8d @ e0787feb, flag thinking_roles_chat_lane default OFF; RI-23b A/B supports it (flag OFF the review verdict never parses; ON both verdicts correct). gitnexus flags 4 HIGH/CRITICAL symbols -> operator landing approval; then API-only reload + flag flip. | [routing-intelligence.md](routing-intelligence.md) → RI-23 | 2026-09-29 |
-| OP-67 | **Terminal countersignature for four agent-executed or unattributed ratifications.** They are P-SERVE-SEL-1, OP-63, TRUST-BOUNDARY-RECEIPTS-FIX (it recorded `operator: "node"`) and DAR-LAT-3h. Each was approved in chat on 2026-09-26/27 and executed by the agent (workspace-8d). They stand as CHAT-CONFIRMED. To countersign, run from a terminal: `bash scripts/operator/countersign_20260927.sh` (it asks you to type COUNTERSIGN). | [COUNTERSIGN-20260927.md](../../artifacts/operator/countersign/COUNTERSIGN-20260927.md) | 2026-09-27 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -68,7 +67,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
-OP-3, OP-19, OP-53, OP-66 and OP-68 (resolved) are preserved in
+OP-3, OP-19, OP-53, OP-66, OP-67 and OP-68 (resolved) are preserved in
 [`../archived/master-handoff-index-history-through-2026-09-14.md`](../archived/master-handoff-index-history-through-2026-09-14.md).
 OP-64 (the HS-19 harness↔orchestrator interface discussion) was DECIDED by the operator on 2026-09-27, when the
 narrowed plan was adopted:

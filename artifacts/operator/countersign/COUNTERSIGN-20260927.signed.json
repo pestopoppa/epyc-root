@@ -1,0 +1,31 @@
+{
+  "schema": "epyc.operator_countersign.v1",
+  "record": {
+    "path": "artifacts/operator/countersign/COUNTERSIGN-20260927.md",
+    "sha256": "cedf1a68fbc3ef6038d8a8398227081b84cb2825c44786812aeb8ae0062e36cf"
+  },
+  "countersigned_by": "Daniele",
+  "countersigned_at_utc": "2026-09-29T10:25:56Z",
+  "uid": 1000,
+  "typed": "COUNTERSIGN",
+  "gates": [
+    {
+      "gate_id": "RATIFY-P-SERVE-SEL-1-20260926",
+      "landed_in": "3573028b"
+    },
+    {
+      "gate_id": "RATIFY-OP63-REGION-LOCK-SCOPE-20260926",
+      "landed_in": "cdf8232f"
+    },
+    {
+      "gate_id": "RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926",
+      "landed_in": "2850fa8c"
+    },
+    {
+      "gate_id": "RATIFY-DAR-LAT-3H-CRITIC-THREADS-20260926",
+      "landed_in": "bf610d36"
+    }
+  ],
+  "state": "COUNTERSIGNED",
+  "note": "chat approval 2026-09-26/27 (https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ); executed by the agent (workspace-8d); countersigned here by a human at a terminal"
+}
