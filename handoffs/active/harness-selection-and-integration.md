@@ -100,7 +100,7 @@ _Same lane as the closed HS-OD-1/HS-OD-2 (archived [history](../archived/harness
 - [ ] **HS-OD-8 — backpressure never reaches the shell as a retryable HTTP status.** At orch `fb7871ea`: a full admission queue (`inference.py:958-972`) answers **502** "Backend failed" with no `Retry-After` (`openai_compat.py:1427-1433`, stream `:1008-1016`); on `stream:true` (OpenCode's main loop) every denial is an SSE event after a 200, so no header can reach `session/retry.ts`; and no in-stream error text matches OpenCode's retry patterns (`retry.ts:33-41,146-152`), so a queued turn can fail with no retry. Fix: admit or probe before returning the `StreamingResponse`; answer a denial as HTTP **503 with `Retry-After` and `retry-after-ms`** (OpenCode reads `-ms` first, `retry.ts:51-56`); map queue-full to 503, keep genuine upstream faults 502; make any residual in-stream error text retryable (contains "503 service unavailable"). The header value stays the current constant until HS-OD-9. Acceptance: extend `harness/opencode-plugin/test/wire-contract.test.ts` through the pinned SDK 2.0.41 + `retry.ts delay()` — the header is honoured on a pre-stream 503 and the in-stream fallback is retried; `test_openai_compat_backend_failure_status.py` still pins 502 for upstream faults. Zero inference. [intake-1790#1, intake-1792#1]
 - [ ] **HS-OD-9 — derive the backpressure delay from live queue state (after HS-OD-8; consumes decision-aware-routing.md DAR-LAT-1's `expected_wait_s`).** Replace the constants (5 s `api/__init__.py:401,406`; 10 s `:418`; 30 s `routes/chat.py:321`) with the expected wait from the ONE admission-ledger estimator, decision-aware-routing.md DAR-LAT-1 — never a second occupancy model. Hold the request in the orchestrator while the estimate fits its own wait budget (the template's `headerTimeout:false` means a pre-stream hold does not time out the shell); bounce only beyond it, with `Retry-After`=ceil(s) and `retry-after-ms`, so OpenCode's 5-retry budget (`retry.ts:31`) spans the queue. Emit `retry_after_ms` + `retry_after_basis` (`estimate|constant`) beside, never inside, the closed `epyc.failure_provenance.v1`. Write one receipt per bounce (VB-V1-BACKPRESSURE). [intake-1790#1, intake-1792#1]
 
-- [ ] **HS-OD-10 — the `x_disable_repl` direct path sent thinking-on roles an untemplated prompt with the suffix appended; fix landing.**
+- [x] **HS-OD-10 — the `x_disable_repl` direct path sent thinking-on roles an untemplated prompt with the suffix appended; fix landing.** ✅ 2026-09-29 — landed (orch `5ddb7320`) and live
   (filed 2026-09-28)
   - **Defect.** `/v1` with `x_disable_repl` (including `x_force_role`) called `llm_call(combined_context, role=role)`
     with no chat template and with the role's `system_prompt_suffix` after the user text. For the 27B roles on :8083
@@ -119,6 +119,20 @@ _Same lane as the closed HS-OD-1/HS-OD-2 (archived [history](../archived/harness
   - Ticks when `66ef96b8` is an ancestor of orch `origin/main` and the planner check is recorded.
   - Not fixed by this: the default REPL bridge (`openai_compat.py` ~:1674) still sends thinking-on roles an
     untemplated prompt with the suffix. That path is one of `routing-intelligence.md` RI-23's.
+  - ✅ **Closed 2026-09-29.** The fix landed on orch main as `5ddb7320` (the landed form of lane commit `66ef96b8`;
+    test tap isolation `8a7d57a8`) and is live: API-only reload 2026-09-28 (PID 458129), re-proved templated on
+    2026-09-29 07:06Z (`/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T070556Z/`) and again at 15:04Z
+    with `reasoning_content` once RI-23 put these roles on the chat-completions lane
+    (`serving-proof-20260929T150402Z/`).
+    - **Planner check (code read at orch `origin/main`, 2026-09-29): losing the suffix is harmless, and an
+      improvement.** `LocalPlannerProvider._payload` sends `_local_planner_prompt(...)`, which wraps the draft and
+      critique prompts in `_LOCAL_ACTION_OUTPUT_CONTRACT` / `_LOCAL_CRITIQUE_OUTPUT_CONTRACT` at both head and tail
+      (JSON-only fenced output, "no prose before the first fence"); the brief prompt carries
+      `_LOCAL_BRIEF_OUTPUT_CONTRACT` the same way. The planner role is `frontdoor` by default
+      (`planner_providers.py:446`) and `ingest_long_context` under `start_authority_daemon.py`. Their suffixes ask for
+      "clear, user-friendly explanations ... elaborate" and "structured headings ... cite source locations", which
+      contradict the JSON-only contract. The contract already supplies everything the planner needs, so nothing is
+      added back.
 
 **Read these together with HS-OD-1.** That row established the rule: *a body field that changes output semantics must be refused, not ignored.* HS-OD-5 and HS-OD-7 are unfinished applications of it, HS-OD-4 and HS-OD-6 are mode-dependent contradictions of it, and HS-OD-3 is a name that documents a capability the code does not have. None is fixed here: each changes `/v1` behaviour a shell depends on, so each wants its own before/after test, and HS-OD-3's answer is a small design decision rather than a patch. HS-OD-3 and HS-OD-7 closed 2026-09-17 (orch 2a609f5c; see the [completed sibling](../completed/harness-selection-completed-through-2026-09-27.md)).
 

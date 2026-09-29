@@ -384,4 +384,6 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   - It changes the registry schema, so it runs as a `stack-change` package with one operator signature.
   - Not folded here (2026-09-28): `coder_escalation`'s dead `enable_thinking: False` (it inherits its host's
     thinking-on lane) is reconciled under `routing-intelligence.md` RI-23a, because it is needed before TE-reopen.
+    RI-23a was applied 2026-09-29 (receipt `RATIFY-RI23A-20260929`): the role is thinking-on in the registry and the
+    priors.
   - Blocker: sequencing only (UFH-13's verdict, TE-6).

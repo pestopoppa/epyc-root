@@ -281,6 +281,18 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       level that `caplog` depends on), reset it in a fixture, and prove it by running the set in two different orders
       with both passing.
 
+## 2026-09-29 supplement — test sections left in the plain inference tap log (workspace-8d)
+
+- [ ] **NIB2-91** (LOW): **rewrite the plain `inference_tap.log` to drop the 738 test-written sections.** Orch
+      `8a7d57a8` made the `tests/unit` tap hermetic (no new fake sections), and on 2026-09-29 the operator ran
+      `clean_tap_events.py --apply` on the JSONL events file: 3,668 test events removed (rule a 2,844 role_a/role_b
+      pytest PIDs; rule b 824, i.e. 206 non-API task-less requests to the `test-native-wire` backend or port 0), 267,312
+      kept and verified byte-identical in order, lock held 20.35 s. Backup, script and `clean_run.json`:
+      `/mnt/raid0/llm/tmp/inference_tap_backup_20260929/`. The plain `inference_tap.log` still carries the 738 test
+      sections. It can only be rewritten while no `TapWriter` holds an fd, so do it at a planned API stop: back up,
+      drop the sections the same two rules identify, verify the kept sections byte-identical in order, restart.
+      Ticks when the rewrite and its verification are recorded here.
+
 ## 2026-09-27 compaction — orphaned residuals boxed
 
 Both residuals below sat inside closed items and had no box of their own, so the compaction gave them one before

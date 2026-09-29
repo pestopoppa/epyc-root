@@ -350,6 +350,11 @@ code for a rider), and only if the window has its estimated time left.
       `reasoning_content` is not met and is not part of P2; surfacing reasoning belongs to RI-23. Evidence:
       `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T070556Z/summary.txt` (+ `P2-*.json`, `P3a-*.json`,
       `P3b-*.json`).
+    - ✅ 2026-09-29 15:04Z — re-run with RI-23 live (thinking-on roles on the chat-completions lane) and RI-23a
+      applied, under workspace-76's "go". All three roles were served by :8083 with the right `api_role`, returned a
+      clean answer ("17 × 23 = 391.") and now return `reasoning_content`. The reasoning expectation dropped from P2
+      above is therefore met too. Evidence:
+      `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T150402Z/summary.txt`.
   - [ ] The A-3 side-effect sample from ARCHSWAP-3 (frontdoor claim state and any `contention_denied`/503 during the
     first scout stage after the reload), unless it was already recorded.
     - 2026-09-29: P1-P3 are all proven, so this sample is the only open item left in ARCHSWAP-3b. It was not taken
@@ -411,6 +416,10 @@ code for a rider), and only if the window has its estimated time left.
     escalation triggers, is a silent no-op when the verdict goes to the 27B (`architect_critic`, untemplated
     `/completion`, thinking on, so the reply is never `OK`/`WRONG`). Under `x_escalation=architect_general` the verdict
     goes to Flash-Next and works. RI-22's fix waits on the RI-23 lane decision (operator). (2026-09-28)
+    - ✅ Satisfied 2026-09-29: RI-22 is fixed in production by RI-23 (orch `e0787feb` on main, flag
+      `thinking_roles_chat_lane` enabled at `a504ba28`, API-only reload). The 27B verdict now runs templated,
+      thinking-off, with `skip_suffix`, and parsed 2/2 against 0/2 before (RI-23b). An A2 run under
+      `x_escalation=auto` no longer has a dead review-gate trigger. The escalation-design review above still applies.
   - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and
