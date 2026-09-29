@@ -666,9 +666,12 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - [ ] Follow-up: verify the first salvage turn in production (actor-calls.jsonl `actor_salvage_turn.v1`
     rows; does the 27B obey "no tool calls"?); if salvage turns burn 900 s calling tools, consider lowering
     planner thinking effort.
-  - [ ] Follow-up: if the planner proposes a third plan-only variant on the `float_tinyblas_plan` route,
+  - [x] Follow-up: if the planner proposes a third plan-only variant on the `float_tinyblas_plan` route,
     consider closing the route (two decisive regressions: DS41-C70's `hcmix-narrow-m-plan` −3.833% and this
-    batch's `float-tinyblas-rowplan` −6.586%).
+    batch's `float-tinyblas-rowplan` −6.586%). Resolved by DS41-C75: a third variant
+    (`akm-ds41-float-tinyblas-narrowm-plan`, −3.485%) and a fourth (`…-narrowm-workfill`, −4.589%) both
+    appeared and both decisively regressed. Inbox note 54 added instead of formal closure; formal closure if
+    a post-note variant appears.
 - [x] DS41-C73 — **Pre-existing getenv opt-in is not a new env probe.** ✅ 2026-09-29 (~00:05-00:35Z),
   `ak-ds41-main`. DS41 run 10m batch 16 (planner finished in ~51 min on the old code, within 4500 s): an
   author patch for `akm-ds41-dense-q8-iqk` was refused `integrity_refused` / `reward_hack_scan` at 00:03Z on
@@ -722,6 +725,63 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     shared tail serializes measurements (no overlap).
   - [ ] Follow-up: measure the throughput change (measurements per hour vs run 10m's single lane).
   - [ ] Follow-up: watch supersession waste (keeps in one lane discarding the other lane's candidate).
+- [x] DS41-C75 — **Batch size 6, dead-end steering, planner context arms (arm B live).** ✅ 2026-09-29
+  (~07:30-11:31Z), `ak-ds41-main`. With `--batch-iterations 2`, each child gave each lane one iteration, so
+  fast lane 1 (deepseek, ~15-20 min/iteration) idled while lane 0 (27B, 1-2 h/iteration) finished — the pool
+  shares one iteration budget (`pipeline.run_pool`: `while budget.take()`). Relaunched at 6 iterations/child
+  (run 10o, 08:45:27Z, seeded from run 10n batch-000001, via
+  `/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_bi6_10o.sh`); run 10o batch 1 took 41 min vs 1.5-3.5 h/batch at
+  N=2. New watchdog v3 (`ds41_watchdog3.sh`, reads batch-iterations from
+  `/mnt/raid0/llm/tmp/ds41-scope-20260926/ds41_batch_iterations`, hold file `WATCHDOG3_HOLD`, log
+  `ds41_watchdog3.log`); v1/v2 held permanently.
+  - Peer window: DS41 paused 07:03:59-07:09:29Z at a batch boundary for workspace-8d's `:8083` runbook (27B
+    relaunched on production v10 under `architect_critic`, B2 slot-dir drift cleared; their champion-HIP A/B
+    did not complete and moves to `:8086`) — no overlap with a DS41 measurement. An earlier peer CPU sidecar
+    stayed up past a window close and died at 03:36:17Z, before lane 1's A/B began — no contamination; their
+    watcher now aborts on anything but `open`.
+  - Results since C74: lane 1's first deepseek patch `akm-ds41-mmid-verify-slab` measured_null −0.99%; keep
+    `akm-ds41-gemm4xn-4x-unroll` (0c8b896ee) +0.395%, anchor guard gen-006 −0.794% inside 1.876%; accumulated
+    to 2 keeps the compound fell to +0.38% (the earlier +2.342% was mostly noise). Both dense-Q8 iqk
+    default-flip hypotheses retired: they fail the independent scalar Q8_0 reference at widths 1-8
+    (Q8_2_X4 activation re-quantization is not bit-identical — a genuine correctness verdict, not a harness
+    defect). `float_tinyblas_plan` route: `akm-ds41-float-tinyblas-narrowm-plan` −3.485% and
+    `…-narrowm-workfill` −4.589%, both decisive regressions (4 total on the route).
+  - Inbox steering notes (re-read every iteration): `store/inbox/53-ds41-dense-q8-iqk-flip-settled-20260929.md`
+    and `store/inbox/54-ds41-float-tinyblas-plan-settled-20260929.md`. Route not formally closed (2026-09-26
+    operator route widening); close it if a new tile-plan variant is proposed after 10:08Z.
+  - Context arms (operator directive: test dropping old reasoning plus REPL-style context, aiming at a second
+    27B lane). Research commits on epyc-inference-research main (`c1abfe1f`): `35c62028` new
+    `--actor-planner-reasoning-history {keep,drop}` (planner only; `drop` sets opencode `interleaved:
+    {field: "reasoning_history_dropped"}` — opencode 1.18.31 re-sends every prior step's reasoning,
+    llama-server v10 keeps it, and `qwen3.8-froggeric-v22.3` renders it within one tool chain;
+    `preserve_thinking=false` does not help within a chain); `360bcd6a` arm flags are actor provenance, not
+    continuation identity; `c1abfe1f` `test_scratch` allowlist fix. 14 new tests, 193 pass.
+  - Side finding: `--planner-effort high` never reached the server for qwen-gpu (no `reasoning_effort` /
+    `chat_template_kwargs` on the wire; config-only model has no variants) — planner has run at the
+    template's default (medium) throughout. Decision: leave at default, test "high" later as its own arm.
+  - Measured context composition (recent long sessions): prompt ≈134k chars (~35k tokens), tool output
+    20-105k chars, reasoning 24-182k chars, peak context 62-131k tokens. 27B concurrency (measured
+    2026-09-08): 79.25 tok/s at 1 slot, 109.41 aggregate at 2, 167.76 at 4 — two 27B lanes would add real
+    aggregate throughput; the binding constraint is the single 196,608-token unified KV pool. 2026-09-25
+    OAB-9 A/B (`artifacts/autokernel_ctx_ab_20260925`): `variable` lost on wall/steps/peak-context without a
+    cap; OAB-9b's re-open trigger (≤98k, n≥3 ABBA) is met by a 90k cap.
+  - Arm B live: run 10p launched 11:29:27Z (`state-run10p`, 6 iterations/child) via
+    `/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_args.sh <args> <name> <label>`; common args = previous +
+    `--actor-context-limit 90112 --actor-planner-reasoning-history drop --actor-authors single` (backup
+    `inputs/bak-20260929T112927-run10p/`). Arm C staged, not launched: `inputs/next/armC/common-args.json`
+    (arm B + `--actor-context-mode variable`). Caveat: context limit/mode are global, so lane 1 and the
+    critic inherit them too — lane-0 per-call metrics stay clean, but campaign-level arm yield comparisons do
+    not isolate lane 0.
+  - [ ] Follow-up: collect ≥3 lane-0 planner sessions under arm B; compare completion rate, wall, peak
+    context (`context_max_tokens`), compactions, output-capped steps vs arm A baseline (runs 10n/10o lane-0
+    sessions).
+  - [ ] Follow-up: then run arm C for ≥3 sessions.
+  - [ ] Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
+    worst case, over the 196,608 pool — needs C≈77k and author output under 40,960, or lane-0-only limits via
+    `lane_actors.seat_for`).
+  - [ ] Follow-up: planner effort "high" arm, later.
+  - [ ] Follow-up: consider pinning lane 1 to its own context limit if campaign-level arm comparisons are
+    wanted.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
