@@ -1,12 +1,15 @@
 # Routing Intelligence: Factual-Risk Rollout
 
-**Status**: COMPACTED 2026-05-28. Phases 0-5 implementation history moved to completed ledger. Live work is RI-10 canary decision, RI-11/RI-12 staged rollout, optional threshold work before any threshold change, and a gated injection-risk fork for DAR-6/J14. 2026-07-06 current decision packet `ri10_canary_decision_report_20260706T065654Z` attaches the scored factuality evidence from `ri10_canary_scored_summary_20260705T185001Z`: the scorer is ready (`60` rows, `30` enforce / `30` shadow, `0` missing), but enforce accuracy is tied with shadow (`0.10` vs `0.10`, delta `0.0`; token-F1 delta `+0.000531`). Operational proxies remain favorable to enforce in the live canary logs (`61` enforce / `80` shadow current rows; p95 latency ratio `0.211511`; mean estimated-cost ratio `0.532151`; operational error-rate delta `-0.0125`), but RI-10 now holds on `hold_quality_scored_no_lift`, not missing scoring. Keep RI-11 frozen unless a future scored packet shows an enforce factuality lift or the operator explicitly accepts a lower-evidence rollout decision. Treat the July 4 `20`-row / `1` enforce / `19` shadow state and the 2026-07-05 `hold_quality_unscored` packet as historical pre-scoring context. `epyc-orchestrator` removes process-RNG canary skew on the live chat path by deriving RI-10 enforce/shadow assignment from a stable task-id sample key while preserving the configured `canary_ratio`.
+**Status**: ACTIVE. Live work is the routing audit RI-16..RI-20 (filed 2026-09-26). The factual-risk rollout (RI-10..RI-12) holds on `hold_quality_scored_no_lift` (packet 2026-07-06; § Start Here).
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
 **Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
 **Updated**: 2026-09-29 (RI-22, RI-23, RI-23a closed; the thinking-on chat lane is live)
 
 ## Start Here
+
+**Current priority (2026-09-29):** RI-16, per-stage routing-decision latency (p50/p95) on live `/chat`; then RI-18, the
+`_should_review` gate, unblocked by RI-22. The numbered steps below concern the older RI-10 factual-risk canary.
 
 Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
 
@@ -49,118 +52,9 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     "do reviewed answers improve" comparison.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
-- [x] **RI-21 — make the escalation map and the graph agree on `architect_critic`.** `roles.py:476-481` ends the chain at `ARCHITECT_CRITIC`, but `_ROLE_TO_NODE` (`graph/nodes.py:855-866`) has no entry for it, so `select_start_node` falls back to `FrontdoorNode`. Add the node mapping (with a test) or end the map at `architect_general`. (filed 2026-09-26) ✅ 2026-09-28 — closed by the ARCHSWAP-20260927 role swap (receipt `RATIFY-ARCHSWAP-20260927`, applied 2026-09-28; `thesis-experiment-orchestrator-vs-strongest-model.md` ARCHSWAP-5). The escalation map now ends at `architect_general` (Flash-Next): orch `src/roles.py` `_ESCALATION_MAP` sends `CODER_ESCALATION`, `THINKING_REASONING`, `ARCHITECT_CRITIC` and `INGEST_LONG_CONTEXT` to `ARCHITECT_GENERAL`, which is terminal, and the graph targets `architect_general` (`ArchitectNode`), so they agree. The critic (27B) is reachable only by direct request and `critique_plan`, deliberately (operator, 2026-09-27); no critic node was added, which is the receipt's `not_in_scope` item. Live routing proves `architect_general` → `:8074`.
-- [x] **RI-22 — PRIORITY, before UFH-13 TE-reopen: the post-answer review gate is a silent no-op on the 27B.** ✅ 2026-09-29
-  (filed 2026-09-28 from a code and inference-tap investigation, no inference; line refs at orch `e60ee78a`)
-  - **Mechanism.** `_architect_verdict` (`src/api/routes/chat_review.py:139`) calls
-    `llm_call(prompt, role=<reviewer>, n_tokens=80)`. The reviewer resolves to `architect_critic`, the 27B on :8083.
-    That role is thinking-on, so it sits on the `/completion` lane: `src/chat_completions_roles.py:32-52` puts a role
-    on chat-completions only when it is jinja AND `enable_thinking is False`. The verdict prompt therefore goes out raw
-    and untemplated, with the critic's `system_prompt_suffix` appended (the call passes no `skip_suffix`) and thinking
-    on. The reply starts with `<think>`, so it never starts with `OK` or `WRONG`. Every caller acts only on
-    `startswith("WRONG")` (`chat.py:1619`, `chat_pipeline/direct_stage.py:234`, `chat_pipeline/stream_adapter.py:352`,
-    `v1_escalation.py:428`), so every answer passes as ok-or-unavailable.
-  - **Not new.** It held before the 2026-09-28 ARCHSWAP too, when `architect_general` was the 27B. The swap made it
-    worse: the verdict prompt now also carries the critic's own suffix, which contradicts the OK/WRONG instruction.
-  - **Not firing recently either.** The inference tap holds no "Judge this answer" prompt between 2026-08-24 and
-    2026-09-28.
-  - **Why it gates TE-reopen.** The review gate is one of A2's two escalation triggers
-    (`thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen). With `x_escalation=architect_general` the
-    verdict goes to Flash-Next on the chat-completions lane and works. With `x_escalation=auto` it goes to the 27B and
-    is a no-op, so an A2 run under `auto` would measure an arm with one trigger dead.
-  - **Fix.** Call the verdict with `skip_suffix=True` and thinking off. Thinking off is reachable only on the
-    chat-completions lane, because `chat_template_kwargs` are injected only there, so the fix waits on RI-23's
-    decision. Also stop reading an unparseable verdict as a pass: record it as `unavailable` in the review telemetry
-    (and test that a `<think>`-prefixed verdict is not counted as OK), so a dead gate is visible instead of silent.
-  - **Done when** the configured reviewer returns `OK` or `WRONG: ...` on a templated, thinking-off call, proved on one
-    live request (needs a :8083 window, coordinated with workspace-76), and RI-18 can count real verdicts.
-  - ✅ **Closed 2026-09-29 — fixed in production by RI-23.** The verdict now runs thinking-off with `skip_suffix` on
-    the chat-completions lane, and an unparseable verdict is recorded as `unavailable`, not OK (orch `e0787feb`, on
-    orch main; flag `thinking_roles_chat_lane` enabled in production at `a504ba28`). Live proof: the RI-23b A/B
-    (below) against :8083 parsed 2/2 verdicts with the flag ON (`OK` on the correct answer, `WRONG: ...` on the wrong
-    one) against 0/2 with it OFF. The production API (PID 1080404, started 15:02:26Z) runs with the flag in its env.
-- [x] **RI-23 — DECISION (operator, OPEN; operator-queue entry prepared): how thinking-on roles reach llama-server.** ✅ 2026-09-29 — decided (a) (OP-69), landed and live
-  (filed 2026-09-28, same investigation; line refs at orch `e60ee78a`)
-  - **The defect.** The thinking-on roles `architect_critic`, `coder_escalation`, `ingest_long_context` and
-    `worker_vision` are outside `chat_completions_roles()` and speak `/completion`. On that lane llama-server applies
-    no chat template. The orchestrator injects `chat_template_kwargs` (`enable_thinking`, `reasoning_effort=medium`)
-    only on the chat-completions lane (`src/backends/llama_server.py:733-741`), so for these roles the kwargs are dead.
-    Paths that send them an untemplated prompt today:
-    - the `/v1` default REPL bridge (`src/api/routes/openai_compat.py` ~:1674; the role suffix is still appended);
-    - graph REPL turns (`src/graph/helpers.py:1003`): thinking arrives inline and `FINAL()` still parses, so this path
-      works by accident;
-    - quality escalation to `coder_escalation` (`src/api/routes/chat_pipeline/stages.py:72`);
-    - the review gate (RI-22).
-  - Nothing in the orchestrator surfaces `reasoning_content`: the chat lane reads only `message.content`
-    (`llama_server.py:786`). The one exception is the `/v1` `x_disable_repl` direct path, fixed by orch `66ef96b8`
-    (`harness-selection-and-integration.md` HS-OD-10), which templates orchestrator-side and splits a leading
-    `<think>` block into `reasoning_content`.
-  - **Options.**
-    - **(a) Recommended.** Put the thinking-on roles on `/v1/chat/completions`, so the GGUF template and the per-role
-      kwargs apply, and pass `reasoning_content` through (the `llm_call` result and `/v1` `message.reasoning_content`).
-      Cost: it changes the prompt every 27B role sees on the graph REPL, `/chat` and escalation, so A/B it first
-      (RI-23b). The A/B needs a :8083 window.
-    - **(b)** Keep them on `/completion` and apply the chat template centrally in `llm_call`, generalising what
-      `66ef96b8` does for one path. Cheaper, no lane change and no A/B, but `chat_template_kwargs` stay ignored:
-      `enable_thinking` and `reasoning_effort` remain unsettable for these roles (so RI-22 cannot turn thinking off
-      except by prompt), and every future caller must go through the central templater.
-  - **Tradeoff in one line:** (a) is one lane rule with the kwargs live, at the cost of an A/B and a 27B behaviour
-    change; (b) is cheaper now and leaves the kwargs dead.
-  - **Blocks** RI-22's fix, and through it UFH-13 TE-reopen under `x_escalation=auto`. Everything else here proceeds.
-  - Progress 2026-09-29 (workspace-8d):
-    - Option (a) was taken (OP-69 = (a), operator, 2026-09-29, as recorded in the lane commit and in
-      `/mnt/raid0/llm/tmp/ri23b/PROTOCOL.md`). It is implemented on orchestrator `lane/orch-ri23-8d` @ `e0787feb`,
-      behind the feature flag `thinking_roles_chat_lane` (default OFF). The same commit carries the RI-22 verdict
-      telemetry: an unparseable verdict is counted as `unavailable`, not OK.
-    - The RI-23b A/B ran (below) and supports (a).
-    - ✅ **Landed and enabled 2026-09-29.** The operator approved the landing in chat. `e0787feb` is on orch main,
-      carrying RI-22's unparseable→`unavailable` verdict telemetry with it. The flag `thinking_roles_chat_lane` was
-      enabled in production at orch `a504ba28` (in `PRODUCTION_FEATURE_WAVE_OVERRIDES`), derived files regenerated
-      at `c62fcadd`, then an API-only reload.
-    - **Live serving proof, 2026-09-29 15:04Z** (after RI-23a's reload, under workspace-76's "go"): `architect_critic`,
-      `coder_escalation` and `ingest_long_context` were all served by :8083 with the right `api_role`, each returned
-      a clean answer ("17 × 23 = 391.") and each returned `reasoning_content`. Evidence:
-      `/mnt/raid0/llm/tmp/archswap-20260927/serving-proof-20260929T150402Z/summary.txt` (+ `P2-*.json`,
-      `P3a-*.json`, `P3b-*.json`).
-  - [x] **RI-23a — reconcile `coder_escalation`'s `enable_thinking`.** Its `server_mode` kwargs say
-    `enable_thinking: False`, but the stack priors mark it thinking-on, inherited from its host `architect_critic`.
-    That inheritance is why it is routed to `/completion`, where the False is dead. Reconcile it here, as part of RI-23,
-    not under SSU-F17: SSU-F17 is sequenced after UFH-13 while this is needed before TE-reopen, and SSU-F17 keeps
-    per-role `chat_template_kwargs` per role, so it would not resolve the contradiction by itself. Under (a) the
-    registered value goes live, so decide the intended value and make the registry and priors agree before the lane
-    change. Under (b), delete the dead False and record that the role cannot set it.
-    - 2026-09-29: still unapplied. The ON arm of RI-23b therefore ran `coder_escalation` thinking-OFF. The prepared
-      change is `/mnt/raid0/llm/tmp/ri23b/RI-23a-master-registry.patch` (research `orchestration/model_registry.yaml`);
-      it needs a stack-change package, then regeneration of the lean registry and derived artifacts.
-    - ✅ 2026-09-29 — applied under receipt `RATIFY-RI23A-20260929`, signed by the operator (Daniele) and committed
-      on root at `05e13e75`. Lanes merged: research `7b9bc565`, orchestrator `8991000d`, root `3a958060`; derived
-      artifacts regenerated at orch `3fb01cc9`, then an API-only reload (API PID 1080404, started 15:02:26Z, both
-      flags in its env). Before the reload `chat_template_kwargs_for_role('coder_escalation')` already returned
-      `{enable_thinking: True, reasoning_effort: medium}`, so the registry and the priors agree: the role is
-      thinking-on. The pipeline check shows only the known :8074 ARCHSWAP-B2 `slot_save_path` drift;
-      `declared_env_attestation` is ok. The 15:04Z serving proof above covers `coder_escalation`.
-  - [x] **RI-23b — if (a): A/B the lane change in a :8083 window.** Graph REPL turns, `/chat` answers and escalation
-    answers for the 27B roles, before and after, on a frozen item set; report quality, token cost and the
-    `FINAL()` parse rate. Coordinate the window with workspace-76 (DS41 binds :8083 by port).
-    ✅ 2026-09-29 07:06Z — ran in the bundled :8083 window (workspace-76's go; DS41 paused, :8083 idle: 0 busy of 4
-    slots at preflight). Code: orchestrator `lane/orch-ri23-8d` @ `e0787feb`, the flag toggled in-process (the API
-    was not touched). n=1 per probe, wall 49 s. Flag OFF = `/completion` lane; flag ON = `/v1/chat/completions`.
-
-    | probe (role) | OFF: latency, tokens, result | ON: latency, tokens, result |
-    |---|---|---|
-    | review verdict, correct answer (`architect_critic`) | 2.01 s, 80 tok, hit the limit inside `<think>`, **never parsed** | 0.98 s, 1 tok, `OK`, correct |
-    | review verdict, wrong answer (`architect_critic`) | 1.92 s, 80 tok, hit the limit inside `<think>`, **never parsed** | 1.10 s, 37 tok, `WRONG: ...`, correct |
-    | escalation (`coder_escalation`) | 5.65 s, 269 tok, correct, `<think>` inline | 1.44 s, 76 tok, correct, thinking off (RI-23a not applied) |
-    | ingest (`ingest_long_context`) | 11.68 s, 522 tok, correct, `<think>` inline | 10.09 s, 865 tok, correct, reasoning server-split into `reasoning_content` |
-    | graph REPL turn (`architect_critic`) | 6.94 s, 158 tok, correct, `FINAL()` parsed, `<think>` inline | 4.78 s, 68 tok, correct, `FINAL()` parsed, reasoning server-split |
-
-    - Flag OFF, both verdict probes ran into the 80-token limit inside the thinking block and never parsed. This is
-      live confirmation of RI-22: on today's lane the review gate cannot return a verdict.
-    - Flag ON, both verdicts parsed and were correct.
-    - The feared hazard, a stop string matching inside the thinking block on the REPL turn, did **not** occur.
-    - At n=1 the latencies are a direction, not a claim.
-    - Evidence: `/mnt/raid0/llm/tmp/ri23b/run-20260929T070600/SUMMARY.md` and `rows.jsonl` (10 rows; `raw_head`
-      keeps the start of each reply). Protocol: `/mnt/raid0/llm/tmp/ri23b/PROTOCOL.md`.
+- RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
+  RI-23a/RI-23b (2026-09-29, OP-69 option (a): thinking-on roles on the chat-completions lane, flag
+  `thinking_roles_chat_lane`, live) are done. § *Completed Scope*.
 
 ## Dependency Graph
 
@@ -226,6 +120,7 @@ DAR-6.5 unconditional J14 A/B pass
 | RI-10 scored response result | Quiet-window scored response artifacts are complete: `60` rows, `60` scored, `0` missing; enforce and shadow exact accuracy tie at `3/30` each, with only a tiny token-F1 enforce delta. This closes the "unscored" blocker and replaces it with "no enforce factuality lift." | `orchestration/reports/ri10_canary_scored_summary_20260705T185001Z.{json,md}`; `orchestration/reports/ri10_canary_scored_rows_20260705T185001Z.jsonl` |
 | G12 role-tier recalibration | AA-Omniscience frontdoor/worker/architect evidence completed; deterministic 4-class scoring accepted for role-tier recalibration; measured tier multipliers landed in orchestrator. Mode/canary/enforce decisions remain RI-10+ gates. | [bulk-inference-campaign](bulk-inference-campaign.md) |
 | Research intake | AA-Omniscience, STOP, Qwen-Scope SAE caveats, BaRP/Conductor context captured. | [completed ledger](../completed/routing-intelligence-completed-through-2026-05-28.md) |
+| RI-21, RI-22, RI-23 (+RI-23a, RI-23b), 2026-09-28/29 | Escalation map ends at `architect_general`; the review gate parses on the 27B; thinking-on roles speak chat-completions (OP-69 (a), live). | [completed ledger § 2026-09-29](../completed/routing-intelligence-completed-through-2026-05-28.md) |
 
 ## Research Intake Update — 2026-07-08: J-Space Interpretability (rec-009)
 
