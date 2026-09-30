@@ -834,9 +834,41 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C82 — loop full-CPU pytest fixtures take the real MI210 device lock (claim.DEVICE_LOCK); make fixtures use a private lock by default so tests can't block or hang behind a live loop.
   - Path: `_q3_cpu_gpu_quiet_window` (run.py:124) takes `/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock`.
     Workaround meanwhile: private-lock runner `/mnt/raid0/llm/tmp/c78-dry/runtests.py`.
-- [ ] DS41-C83 — 27B planner quality investigation on the freed GPU: replay fixed DS41 planning contexts through qwen3.8-27b vs deepseek/gpt-6.1-sol with a neutral critic; separate capability from harness (compaction, effort not reaching the server, same-family critic).
+  - Note 2026-09-30: DS41-C84 made pytest fixtures exit when their parent dies, which covers orphaned fixtures
+    but not the shared device lock itself; still open.
+- [x] DS41-C83 — 27B planner quality investigation on the freed GPU: replay fixed DS41 planning contexts through qwen3.8-27b vs deepseek/gpt-6.1-sol with a neutral critic; separate capability from harness (compaction, effort not reaching the server, same-family critic). ✅ 2026-09-30
   - Post-C76 the 27B went 0/5 (2 critic rejections on source grounds, 1 abstain, 1 authoring failure, 1 patch
     rejection); it found the earlier keeps (gemm4xn-2x/4x-unroll, q4k-x4t-weight-prefetch, dense-q8-offset-vnni).
+  - Verdict (`/mnt/raid0/llm/tmp/ds41-c83-planner-gap-report.md`): ~45% capability / ~40% harness / ~15%
+    scheduling; no critic bias (27B accepted 9/13 vs deepseek 6/11); the 27B found then lost zmm-widen to
+    compaction. Harness: effort never reached the server, lane-0-only reasoning-drop, fast lane got 2-10x the
+    calls. Replay experiment → DS41-C95.
+- [x] DS41-C84 — orphaned ak-check op-test (PID 930091, 25 h, deleted cwd/exe) fixed by per-call process scope (research a4436986; analysis c453f997). ✅ 2026-09-30
+  - Root cause: setsid child of ak_check survived opencode's 120 s group TERM; `_end_group` reached only the
+    actor group; fence flock released with ak-check. Fix: `AK_PROC_SCOPE` cookie swept by pidfd TERM→KILL,
+    ak-check PDEATHSIG/signal handlers, MeasurementWatch contention invalidation, parent-watch fixtures (319
+    tests). Remaining gap → DS41-C94.
+- [x] DS41-C85 — prompts >100,000 bytes go to codex/claude on stdin, not argv (7123c503). ✅ 2026-09-30
+  - MAX_ARG_STRLEN (128 KiB) killed the Opus critic pass-2 with E2BIG (lane_error, rows 173-175).
+- [x] DS41-C86 — resume drops anchor-bound `experimental_source_keeps` from the in-memory continuation (08d3c15d). ✅ 2026-09-30
+  - Seeds from a batch that kept crashed on pruned anchor-gen-009 (07:19-07:23Z); unreceipted kept commits are
+    now named (bscale-cvtph 6f8e232aa41f → DS41-C93).
+- [x] DS41-C87 — a new anchor with no A/A yet carries the lineage floor; only ≥2 above-floor A/As refuse (fb684136). ✅ 2026-09-30
+  - Operator: no more calibrations. Runs 10v/10w carried gen-009's 3.412% with zero calibration.
+- [x] DS41-C88 — `_extract_json` uses `raw_decode` instead of brace counting (b148d218). ✅ 2026-09-30
+  - An unbalanced `{` in a 27B compaction summary had turned a finished, op-test-passing patch into "author
+    abstained"; 129 actor tests.
+- [x] DS41-C89 — dedup refusal text corrected; diagnosis of a per-champion retry bug was wrong (588c74bc). ✅ 2026-09-30
+  - Rows 185/186 were both lanes proposing the same bytes at once (oracle_unavailable); only the misleading
+    "configuration closed infeasible" text changed. Follow-up → DS41-C91.
+- [x] DS41-C90 — integrity `literal_shape_predicate` requires the literal to be a comparison operand with the tensor subject (a35b679f). ✅ 2026-09-30
+  - `>` inside `->` parked `akm-ds41-mmid-verify-flat-slabs` (+2.285%, row 190) on two false positives; the
+    parked candidate is not auto-revived; 36 integrity tests.
+- [ ] DS41-C91 — planner "formed but never measured — consider FIRST" list should drop superseded ideas already re-proposed/queued on the new champion (contradicts "do NOT re-propose"; invited both lanes to re-propose at once).
+- [ ] DS41-C92 — floor selection prefers the COR exact floor (4.533%, contaminated) over the cleaner carried lineage floor after each anchor advance; quarantine the 4.533 record or re-order selection (operator decision pending).
+- [ ] DS41-C93 — reconstruct the fold receipt for bscale-cvtph 6f8e232aa41f (lost when run10s stopped mid-batch) before the C47/C68 fold.
+- [ ] DS41-C94 — C84 remaining gap: per-call cgroup v2 scopes so a SIGKILLed run.py's cookie-less children (llama-server, builds) are killed, not just flagged.
+- [ ] DS41-C95 — C83 replay experiment (27B arms vs deepseek/gpt-6.1-sol, blinded Opus critic; ~8 GPU-h minimal) — awaiting operator go.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
