@@ -8,11 +8,11 @@ and `handoffs/completed|archived/`.
 > [`CURRENT-CAMPAIGN.md`](CURRENT-CAMPAIGN.md) — read it before starting anything that touches the
 > production stack.
 
-> **Top priority (operator, narrowed plan, 2026-09-27): the thesis experiment, UFH-13**
-> ([`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md)).
-> It compares A0 (Flash-Next alone), A1 (frontdoor alone) and A2 (frontdoor with escalation to the consultant) on a
-> frozen suite. Before starting new work, ask whether it moves this experiment. The frozen list is in that handoff,
-> and each frozen box is marked `❄ FROZEN 2026-09-27` where it lives.
+> **UFH-13, the thesis experiment, is PARKED (operator, 2026-09-28)** until an autopilot run trains escalation on the
+> swapped stack (after the 2nd MI210;
+> [`thesis-experiment-orchestrator-vs-strongest-model.md`](thesis-experiment-orchestrator-vs-strongest-model.md)).
+> Until then: infrastructure and design work, and Jev techniques (`typed-decision-plane.md` operator rulings).
+> Boxes marked `❄ FROZEN 2026-09-27` stay frozen for inference-bearing steps only. Posture: `CURRENT-CAMPAIGN.md`.
 
 ## Domain indices
 
@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-70 | Ratify four 2026-09-29 lesson rules into agents/shared/OPERATING_CONSTRAINTS.md (human-only): peer CPU window stop-on-closing, test checks on live artifacts before a scarce window, capture gate rc before push, TTY scripts in a separate terminal — prepared patch | [INCIDENT_LOG.md](../../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260929-*; artifacts/operator/lessons-20260929-operating-constraints.patch | 2026-09-29 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |

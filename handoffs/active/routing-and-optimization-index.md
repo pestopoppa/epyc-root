@@ -58,7 +58,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
-| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 — shadow-only closed-set tool args (zero-inference code); TD-1d.0 re-settle in a GATE: mi210-window with workspace-76 | — |
+| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29.K2 with JSON/free-form arms on the champion sidecar (window loop running; K2a); TD-29 shadow-mode code, zero-inference | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-1b/M-3b — re-read depth 4 vs 8 at ~175 organic requests; KVU-1a opencode limit | RTG-19, RTG-36, INF-41 |
 
 ## Cross-domain
