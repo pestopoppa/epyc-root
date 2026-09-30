@@ -152,6 +152,8 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       lower bound > 0 in place of πQ(0.6)'s; clause 3 adds "π1 full-set lower bound > 0"; "beats by ≥ 2 per 100" is
       the point estimate (paired CI cited); the latency cap is median added latency on reviewed requests ≤ 0.20 ×
       the median frontdoor wall time on those same requests.
+      - ✅ CONFIRMED by the operator in chat on 2026-09-30 ("Confirm all four"), before any item ran: these four
+        readings are part of the pre-registration. `score` may run once the segments complete.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
 - RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
