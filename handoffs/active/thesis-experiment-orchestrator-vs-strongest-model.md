@@ -309,10 +309,24 @@ code for a rider), and only if the window has its estimated time left.
       `thinking_roles_chat_lane` enabled at `a504ba28`, API-only reload). The 27B verdict now runs templated,
       thinking-off, with `skip_suffix`, and parsed 2/2 against 0/2 before (RI-23b). An A2 run under
       `x_escalation=auto` no longer has a dead review-gate trigger. The escalation-design review above still applies.
-  - Before any A2 or autopilot run that sends traffic to the 27B roles: check `:8083` KV headroom. From 2026-09-29
+  - **SUPERSEDED 2026-09-30 (void):** DS41 moved its planner and critic off-host at 2026-09-30 02:36Z, so `:8083` no
+    longer carries DS41's two 27B lanes. Original text kept for the record:
+    ~~Before any A2 or autopilot run that sends traffic to the 27B roles: check `:8083` KV headroom. From 2026-09-29
     DS41 runs two 27B planner lanes on `:8083` (per-session cap 90,112 tokens, peaks 44k-76k), which can hold ~180k
     of the 196,608-token `-kvu` pool and leaves ~16k for `architect_critic`/`coder_escalation`/`ingest_long_context`.
-    Ask workspace-76 to lower DS41's per-session cap (or move the run to a DS41 pause) first.
+    Ask workspace-76 to lower DS41's per-session cap (or move the run to a DS41 pause) first.~~
+  - 2026-09-30, from `routing-intelligence.md` RI-18 (structural **observations**, not gating claims; design
+    `/mnt/raid0/llm/tmp/ri18/DESIGN.md` §1). They bear on the escalation-design review above:
+    - (a) `_should_review` returns False for any answer under 50 chars. The frozen suite and the pilot pool both end
+      "Answer with the letter only"; on the A4 proxy (same base model) the median answer is 1 char and 58-77% are
+      under 50 chars. **So A2's review-gate trigger is structurally inert on the frozen letter-only suite**: A2's
+      escalation there rests on its other trigger.
+    - (b) The gate's KNN retrieves with `min_q_value=0.3`, so it never sees the Q < 0.3 failures: 5,484 of 33,293
+      frontdoor routing memories (16.5%) are invisible, and of the retrievable ones only 8.4% have Q < 0.6.
+    - (c) The verdict prompt truncates the question to 300 chars (and the answer to 1,500). 86% of pilot-pool
+      prompts exceed 300 chars, so the reviewer usually never sees the MC options.
+    - RI-18's pre-registered counterfactual (re-rendered pilot pool + `olympiadbench_hard`, 2026-09-30) measures
+      whether the review helps at all; its verdict, and its secondary rule on the 300-char cap, feed this review.
   - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and

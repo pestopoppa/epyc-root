@@ -283,7 +283,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
 
 ## 2026-09-29 supplement — test sections left in the plain inference tap log (workspace-8d)
 
-- [ ] **NIB2-91** (LOW): **rewrite the plain `inference_tap.log` to drop the 738 test-written sections.** Orch
+- [x] **NIB2-91** (LOW): **rewrite the plain `inference_tap.log` to drop the 738 test-written sections.** ✅ 2026-09-30 Orch
       `8a7d57a8` made the `tests/unit` tap hermetic (no new fake sections), and on 2026-09-29 the operator ran
       `clean_tap_events.py --apply` on the JSONL events file: 3,668 test events removed (rule a 2,844 role_a/role_b
       pytest PIDs; rule b 824, i.e. 206 non-API task-less requests to the `test-native-wire` backend or port 0), 267,312
@@ -295,6 +295,14 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       - 2026-09-29: the operator directs it as next work, with RI-16 and RI-18, after that day's wrap-up. Next step:
         schedule the planned API stop with any session that has live `/chat` or `/v1` traffic (the stop ends every
         `TapWriter` fd), then back up, rewrite, verify and restart through `orchestrator_stack.py`.
+      - ✅ 2026-09-30: done at a planned API stop, 04:52:16Z-04:52:32Z. Evidence:
+        `/mnt/raid0/llm/tmp/inference_tap_backup_20260929/rewrite_run-20260930T045216Z.json` (verify `ok: true`, no
+        errors; 3,259 sections → 2,315 kept, byte-identical in order (`kept_identical` 2,315 of `kept_expected`
+        2,315; result 8,551,968 bytes, sha256 `5b1af99d…`); 944 dropped = rule a 738 + rule b 206, overlap 0;
+        `carried_forward_bytes` 0, `post_rename_extra_bytes` 0). Pre-rewrite snapshot
+        `inference_tap.log.pre-rewrite-20260930T045216Z` (sha256 `c97fc8b9…`) in the same directory. API downtime
+        13.2 s (stop 2.3, rewrite 0.6, start 10.3; from `rewrite-run-20260930.log` there, not the JSON). The same
+        restart deployed orch `78847544` (RI-16, `routing-intelligence.md`) to the API: new master PID 1930724.
 
 ## 2026-09-27 compaction — orphaned residuals boxed
 

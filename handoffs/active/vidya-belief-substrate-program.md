@@ -1956,6 +1956,10 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   RI-16). The producer emits per-request, per-stage timings (role priors, route, mode, review gate) with backend
   and index size; then author the read-side adapter. Locator = request x stage aggregated to a run window;
   never project the unmeasured "<1 ms / 10-50 ms" doc figures.
+  - Progress 2026-09-30: the producer exists. Orch `78847544` (RI-16) writes `routing_path` + `stage_ms` into the
+    progress JSONL `routing_decision` and `task_completed`/`task_failed` events, and it serves from 2026-09-30 04:52Z
+    (API PID 1930724). Still owed: backend, index size and `instrument_class` on the producer, a ClaimTuple-shaped
+    sidecar or strict reader, the adapter and a `cli.py ingest` verb. Source-table row updated.
 - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md`
   REPL-EMB-2.1/2.2/2.3) before its first run: per-arm recall@k, CPU-s, latency, with the pre-registered rule,
   corpus digest and embedding-model identity; the online `spill_pointer_follows` shadow is a separate instrument.
@@ -2047,3 +2051,29 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Locator = plan for shadow rows. Locator = arm × workload class × block for eval rows.
   - Shadow rows project as observations. Eval rows grade only under the protocol annex that §13 pre-registers. Project; do not grade.
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): its producers, HS-19d P3a and P5, are frozen; unfreeze trigger: HS-19d P3a or P5 unfreezes. The box stays open: frozen is not done.
+
+## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build)
+
+Filed with the producers, before either has run, per the CLAUDE.md belief-kernel rule. Source-table rows in
+`scripts/vidya/adapters/README.md`. Design: `/mnt/raid0/llm/tmp/ri18/DESIGN.md` (`routing-intelligence.md` RI-18).
+RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
+
+- [ ] **VB-REVIEW-GATE — write the read-side adapter for the `review_gate` tap events** (RI-18 C1; orch lane
+  `lane/orch-ri18-8d`, SHA ORCH_SHA_PENDING). The orchestrator emits one `review_gate/v1` event per review-site
+  evaluation to `/mnt/raid0/llm/tmp/inference_tap_events.jsonl` (fields: the source-table row).
+  - Project trigger rate, skip-reason coverage, verdict mix (`ok`/`wrong`/`unavailable`) and gate/verdict/revision
+    ms per `path` as **observations**. Never infer "the review helped" from them: live traffic has no ground truth.
+  - Keep `unavailable` (and `null`, no verdict requested) distinct from `ok`, never folded into it; never pool across
+    `path` values or thresholds. Locator = event, aggregated to a run window.
+  - Register as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. No back-fill: before
+    C1 is deployed there is no structured record. Project; do not grade.
+- [ ] **VB-RI18 — write the read-side adapter for RI-18's `belief_measurements.jsonl` sidecar** (research
+  `scripts/benchmark/ri18_review_gate/run_ri18.py score`, lane `lane/res-ri18-8d`, SHA RES_SHA_PENDING).
+  - Project the per-policy, per-stratum rows (net per 100, accuracy, precision/recall, AUROC, reviewer
+    sensitivity/specificity, device-seconds per net fix with GPU and CPU separate), re-hashing the per-item records
+    against `attestation_sha256` and refusing on mismatch.
+  - Refuse rows from a VOID run, rows missing the served orch commit or store-snapshot sha, and a pooled GPU+CPU cost.
+    Split-A (tune) rows project but never as the decision. Locator = run x split x stratum x policy x metric.
+  - Register as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. Why now: wiring the
+    read side before the first scored run makes the verdict ingestible the day it lands. Project; do not grade (the
+    pre-registered rule, PAIRED-CI-1 and BOUNDED-NULL-1 decide).

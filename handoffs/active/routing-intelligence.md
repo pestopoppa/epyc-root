@@ -4,7 +4,7 @@
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
 **Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
-**Updated**: 2026-09-29 (RI-22, RI-23, RI-23a closed; the thinking-on chat lane is live)
+**Updated**: 2026-09-30 (RI-16 landed and deployed; RI-18 pre-registered, operator-approved)
 
 ## Start Here
 
@@ -41,6 +41,13 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     Next step: add per-stage timers (role priors, route, mode, review gate, and the total) to the routing telemetry,
     with unit tests (zero inference). Then land them, do an API-only reload, and read p50/p95 per stage from live
     `/chat` requests.
+  - 2026-09-30: landed as orch `78847544` (per-stage timers `memrl_init`, `priors`, `route`, `xmas`, `factual_risk`,
+    `failure_veto`, `difficulty`, `trinity`, `route_total`, `mode`, `routing_context`, `review_gate`,
+    `review_verdict`, `total`; a stage that did not run is `None`, never 0). `routing_path` + `stage_ms` ride the
+    progress JSONL `routing_decision` and `task_completed`/`task_failed` events; reader
+    `scripts/analysis/routing_stage_latency.py`. Deployed to the API 2026-09-30 04:52Z (master PID 1930724) by the
+    NIB2-91 planned restart (`non-inference-backlog.md`). The box stays open: it ticks when p50/p95 per stage are read
+    from live `/chat`. Belief-kernel adapter: `vidya-belief-substrate-program.md` VB-ROUTE-LAT.
 - [ ] **RI-17 — compare live `/chat` routing against rules-only routing** on the same frozen workload (quality, cost, latency per request), so the KNN/memory layer has to earn its lookups. Reuse the counterfactual harness from `typed-decision-plane.md` TD-10 where it fits. (filed 2026-09-26)
 - [ ] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26)
   - 2026-09-28: the "do reviewed answers improve" half waits on RI-22. Until RI-22 lands, the gate has not produced a
@@ -50,6 +57,81 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
   - 2026-09-29: the operator directs it next, after RI-16. Next step: read the trigger rate and review cost from the
     RI-22 verdict telemetry on live `/chat` (zero new code if RI-16's timers cover the gate), then run the
     "do reviewed answers improve" comparison.
+  - 2026-09-30: live traffic cannot answer RI-18 (0 `POST /chat` from the RI-23 reload to ~00:30Z; 0 answer-review prompts and
+    0 `v1_escalation` receipts in the whole tap window 2026-08-24 → 2026-09-29). Design: a forced-review
+    counterfactual with exact policy evaluation, `/mnt/raid0/llm/tmp/ri18/DESIGN.md`. Instrument:
+    `epyc-inference-research/scripts/benchmark/ri18_review_gate/` (research lane `lane/res-ri18-8d`, SHA
+    RES_SHA_PENDING). Orchestrator changes (orch lane `lane/orch-ri18-8d`, SHA ORCH_SHA_PENDING):
+    - **C1** persistent `review_gate` tap event (`inference_tap.emit_request_event("review_gate", ...)`) for every gate
+      evaluation on all five call sites; the three `_architect_verdict` callers switch to
+      `_architect_verdict_with_status`.
+    - **C2** `review_gate_score(state, role, answer) -> GateScore` accessor; `_should_review` makes byte-identical
+      decisions on top of it.
+    - **C3** `question_cap` (and `answer_cap`) on `build_review_verdict_prompt`, defaults 300/1500, so the production
+      prompt is unchanged.
+    - Belief-kernel wiring: `vidya-belief-substrate-program.md` VB-REVIEW-GATE (C1 events) and VB-RI18 (the
+      `belief_measurements.jsonl` sidecar).
+  - 2026-09-30 structural findings. These are **observations** (design §1: read-only code and data, no protocol);
+    they gate nothing.
+    - (a) **Answers under 50 chars skip the gate**, so it is inert on letter-only prompts. The UFH-13 frozen suite and
+      pilot pool both end "Answer with the letter only"; on the A4 proxy (same base model) the median answer is 1 char
+      and 58-77% are under 50 chars. So A2's review-gate trigger is structurally inert on the frozen letter-only suite
+      (routed to `thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen).
+    - (b) **The KNN never sees Q < 0.3 failures** (`min_q_value=0.3`): 5,484 of 33,293 frontdoor routing memories
+      (16.5%) are invisible to it, and of the 27,809 retrievable ones only 8.4% have Q < 0.6. The reachable trigger
+      rate is low by construction.
+    - (c) **The verdict prompt truncates the question to 300 chars** (and the answer to 1,500). 86% of pilot-pool
+      prompts exceed 300 chars, so the reviewer usually never sees the MC options.
+  - **PRE-REGISTERED 2026-09-30, operator-approved in chat (Q1-Q3 as recommended).** Frozen 2026-09-30; changes are
+    new registrations, never edits. Source: `/mnt/raid0/llm/tmp/ri18/DESIGN.md` §5 (operator questions §6).
+    - **Question:** does the post-answer review (27B verdict → `worker_general` revision) improve frontdoor answers,
+      and does the MemRL Q gate (`avg_q < 0.6` over an answer-keyed KNN) select the answers where it helps?
+    - **Instrument:** `ri18_review_gate` driver at the served orch commit (pinned). Workload (Q2): S1 = the UFH-13
+      pilot pool re-rendered, 453 items, render `ri18-brief-justify-v1` (the letter-only last line replaced by
+      "Justify briefly (at most three sentences), then end with a final line `Answer: <letter>`"; sha pinned); S2 =
+      `olympiadbench_hard`, 155 items (sha pinned). Not letter-only, and no LLM judge. Frozen 395 excluded (asserted).
+      Production functions `_architect_verdict_with_status` / `_fast_revise` forced on every item. Gate computed
+      offline against a sha-pinned store snapshot with the production retrieval config. Scorers:
+      `extract_letter_answer` (S1), `math_symbolic` (S2). One sample per call. instrument_class = `serving`
+      (production recipe, production functions); category OPTIMUM (production reviewer config).
+    - **n:** 608 items (primary population = items with a scored original answer and the quality detector not fired;
+      expected ≈ 560-600). Split: seeded (`seed=18`) 50/50 **tune (A) / confirm (B)**, stratified by suite.
+    - **Primary metrics:** net(π) = fixed − broken per 100 items for π1 (review all eligible) and πQ(0.6)
+      (production); AUROC of −avg_q for frontdoor-wrong; device-seconds per net fix (GPU and CPU separately).
+    - **Power:** a paired test detects |net| ≥ 2.8·√D items at 80% power (D = discordant items). With D ≈ 40-120 on
+      the full set, that is roughly 3-5 per 100 items; on split B alone, roughly 6-7 per 100 items. Effects below
+      those are not excluded, and the verdict says so.
+    - **Cost cap X (Q1):** at most 60 GPU device-seconds and at most 120 CPU device-seconds per net fix, and at most
+      +20% added p50 latency on reviewed requests.
+    - **Decision rule** (applied in order; each clause cites its CI):
+      0. **VOID** if the canary pair fails in either direction, the `unavailable` rate exceeds 5%, the gate controls
+         fail, or the served commit or store sha drifts. Fix, re-run; no decision.
+      1. **DROP**: remove the gate, verdict and revision from all five call sites plus the `review_low_q_threshold`
+         config. Applies if net(π1) has a 95% CI upper bound < 0, **or** if no policy in {π1, πQ(t*)} (t* tuned on A
+         over t ∈ {0.30..1.00 step 0.05}, maximising net subject to review rate ≤ 50%) has a split-B net 95% CI lower
+         bound > 0.
+      2. **KEEP at 0.6** if πQ(0.6)'s net CI lower bound (full set) > 0, AUROC CI lower bound > 0.5, and neither
+         πQ(t*) nor π1 beats it on split B by ≥ 2 net fixes per 100 items at a cost of at most 60 GPU device-seconds
+         and at most 120 CPU device-seconds per net fix, with at most +20% added p50 latency on reviewed requests.
+      3. **RETUNE to t*** if πQ(t*) has a split-B net CI lower bound > 0, AUROC CI lower bound > 0.5, and it beats
+         πQ(0.6) on B by ≥ 2 per 100 at a cost of at most 60 GPU device-seconds and at most 120 CPU device-seconds
+         per net fix, with at most +20% added p50 latency on reviewed requests.
+      4. **REPLACE THE TRIGGER** (Q is uninformative): if the AUROC CI contains 0.5, π1's net CI lower bound > 0, and
+         π1's cost per net fix is at most 60 GPU device-seconds and at most 120 CPU device-seconds, with at most +20%
+         added p50 latency on reviewed requests. The Q gate goes, and review-all or a new trigger (e.g. the quality
+         detector, or RI-9 factual risk; exploratory `avg_q_question` reported) goes to a decision package.
+      5. If eligible gate@0.6 triggers number < 30, πQ(0.6)'s own net is reported **untested** (BOUNDED-NULL-1), and
+         clauses 2 and 3 fall back to AUROC plus π1.
+    - **Secondary (own rule; Q3 latitude granted):** V-full vs the production cap. If V-full's verdict sensitivity at
+      equal or better specificity beats the cap-300 verdict on split B with a paired CI lower bound > 0, land
+      `question_cap=1500` (C3) as the production reviewer prompt without a separate A/B (operator Q3, 2026-09-30:
+      the reviewer verdict question cap 300 → 1500 may land under this rule), then re-run stages 3-4 on the banked
+      answers only (replay, no frontdoor inference) before re-applying the rule.
+    - **Reported regardless:** coverage by skip reason, precision/recall at every t (eligible and population),
+      reviewer sensitivity/specificity/unavailable rate, revision fix/break/no-op rates, infra rate by reason, verdict
+      and revision noise, per-stratum tables, and the external-validity caveat (closed-form tasks, not open chat).
+    - **Stopping rule:** the split-B table is FINAL. No confirmation re-runs unless the result would change the
+      decision.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
 - RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
