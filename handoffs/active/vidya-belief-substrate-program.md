@@ -2058,8 +2058,8 @@ Filed with the producers, before either has run, per the CLAUDE.md belief-kernel
 `scripts/vidya/adapters/README.md`. Design: `/mnt/raid0/llm/tmp/ri18/DESIGN.md` (`routing-intelligence.md` RI-18).
 RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
-- [ ] **VB-REVIEW-GATE — write the read-side adapter for the `review_gate` tap events** (RI-18 C1; orch lane
-  `lane/orch-ri18-8d`, SHA ORCH_SHA_PENDING). The orchestrator emits one `review_gate/v1` event per review-site
+- [ ] **VB-REVIEW-GATE — write the read-side adapter for the `review_gate` tap events** (RI-18 C1; orch main
+  `08edc054`). The orchestrator emits one `review_gate/v1` event per review-site
   evaluation to `/mnt/raid0/llm/tmp/inference_tap_events.jsonl` (fields: the source-table row).
   - Project trigger rate, skip-reason coverage, verdict mix (`ok`/`wrong`/`unavailable`) and gate/verdict/revision
     ms per `path` as **observations**. Never infer "the review helped" from them: live traffic has no ground truth.
@@ -2068,7 +2068,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - Register as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. No back-fill: before
     C1 is deployed there is no structured record. Project; do not grade.
 - [ ] **VB-RI18 — write the read-side adapter for RI-18's `belief_measurements.jsonl` sidecar** (research
-  `scripts/benchmark/ri18_review_gate/run_ri18.py score`, lane `lane/res-ri18-8d`, SHA RES_SHA_PENDING).
+  `scripts/benchmark/ri18_review_gate/run_ri18.py score`, research main `6b2366e2`).
   - Project the per-policy, per-stratum rows (net per 100, accuracy, precision/recall, AUROC, reviewer
     sensitivity/specificity, device-seconds per net fix with GPU and CPU separate), re-hashing the per-item records
     against `attestation_sha256` and refusing on mismatch.

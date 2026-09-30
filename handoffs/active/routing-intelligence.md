@@ -60,13 +60,16 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
   - 2026-09-30: live traffic cannot answer RI-18 (0 `POST /chat` from the RI-23 reload to ~00:30Z; 0 answer-review prompts and
     0 `v1_escalation` receipts in the whole tap window 2026-08-24 → 2026-09-29). Design: a forced-review
     counterfactual with exact policy evaluation, `/mnt/raid0/llm/tmp/ri18/DESIGN.md`. Instrument:
-    `epyc-inference-research/scripts/benchmark/ri18_review_gate/` (research lane `lane/res-ri18-8d`, SHA
-    RES_SHA_PENDING). Orchestrator changes (orch lane `lane/orch-ri18-8d`, SHA ORCH_SHA_PENDING):
+    `epyc-inference-research/scripts/benchmark/ri18_review_gate/` (research main
+    `6b2366e2`). Orchestrator changes landed on orch main as `08edc054` (2026-09-30; NOT yet deployed — C1 goes
+    live at the API-only reload the owning session times; the driver's in-process calls use `--code-root` at `08edc054`):
     - **C1** persistent `review_gate` tap event (`inference_tap.emit_request_event("review_gate", ...)`) for every gate
       evaluation on all five call sites; the three `_architect_verdict` callers switch to
       `_architect_verdict_with_status`.
-    - **C2** `review_gate_score(state, role, answer) -> GateScore` accessor; `_should_review` makes byte-identical
-      decisions on top of it.
+    - **C2** `review_gate_score(state, role, answer, *, key_text=None) -> GateScore` accessor. `_should_review` is left
+      untouched (gitnexus HIGH); the five call sites decide through the accessor (one KNN, timed into RI-16's
+      `review_gate` stage), and a fixture-grid test pins `_should_review(...) == review_gate_score(...).triggered`,
+      KNN key included.
     - **C3** `question_cap` (and `answer_cap`) on `build_review_verdict_prompt`, defaults 300/1500, so the production
       prompt is unchanged.
     - Belief-kernel wiring: `vidya-belief-substrate-program.md` VB-REVIEW-GATE (C1 events) and VB-RI18 (the
@@ -132,6 +135,23 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       and revision noise, per-stratum tables, and the external-validity caveat (closed-form tasks, not open chat).
     - **Stopping rule:** the split-B table is FINAL. No confirmation re-runs unless the result would change the
       decision.
+  - 2026-09-30 **run plan** (instrument built and landed, no inference run yet). From the research repo root:
+    `PY=/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python; M="-m scripts.benchmark.ri18_review_gate.run_ri18"`;
+    real: `$PY $M <segment> [args] --out /mnt/raid0/llm/tmp/ri18/run-v1 --run-id ri18-v1 --code-root <orch checkout at
+    08edc054 or later>`; dry-run: the same with `--dry-run --out /mnt/raid0/llm/tmp/ri18/dev/dry --run-id dry`. Every
+    segment is resumable per item and fsyncs per record. rc 3 = window refused/closed mid-segment (resume next
+    window), 5 = VOID, 6 = instrument fault, 7 = all `:8083` slots busy, 9 = manifest drift.
+    - `snapshot --source-root /mnt/raid0/llm/epyc-orchestrator` — right before the first `answer`; no inference.
+    - `answer --suite s1` (453) and `answer --suite s2` (155) — CPU window (`open`, `loop_holds_claim=false`, item +
+      120 s before `est_close_at`, re-checked per item); ~35-50 and ~30-50 min.
+    - `verdict` (incl. V-full on S1) and `noise-verdict` — GPU `:8083`, one slot, no CPU window; ~18-27 and ~1-2 min.
+    - `revise`, then `noise-revise` — CPU window; ~25-45 and ~3-7 min. The per-call frontdoor region claim is taken by
+      `llm_call` itself (the segment sets the per-region-lock flags and asserts `:8070` → frontdoor instance 0).
+    - `gate` — CPU embedders, CPU window, against the snapshot; < 3 min. `score` — offline, seconds.
+    - Rule readings the driver encodes (confirm before the first `score`): clause 5 → clause 2 uses π1's full-set CI
+      lower bound > 0 in place of πQ(0.6)'s; clause 3 adds "π1 full-set lower bound > 0"; "beats by ≥ 2 per 100" is
+      the point estimate (paired CI cited); the latency cap is median added latency on reviewed requests ≤ 0.20 ×
+      the median frontdoor wall time on those same requests.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
 - RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
