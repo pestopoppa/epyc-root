@@ -775,7 +775,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - [x] Follow-up: collect ≥3 lane-0 planner sessions under arm B; compare completion rate, wall, peak
     context (`context_max_tokens`), compactions, output-capped steps vs arm A baseline (runs 10n/10o lane-0
     sessions). ✅ 2026-09-29 — arm B 0/3 valid; superseded by arm C (DS41-C76).
-  - [ ] Follow-up: then run arm C for ≥3 sessions. (Tracked as DS41-C77.)
+  - [x] Follow-up: then run arm C for ≥3 sessions. (Tracked as DS41-C77.) ✅ 2026-09-30 — arm C 5/5 valid.
   - [ ] Follow-up: if arms hold, design a second 27B lane (pool math: two sessions at 90k can reach ~205k
     worst case, over the 196,608 pool — needs C≈77k and author output under 40,960, or lane-0-only limits via
     `lane_actors.seat_for`).
@@ -805,9 +805,38 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     lane-0 call valid — 46.0 min, first prompt 19,200 tokens (vs ~53k), peak 59,038, 2 compactions, 12 bundle
     tool calls. Pre-C76 arm C calls are outcome-contaminated by the abstain mandate; context metrics stay
     valid.
-- [ ] DS41-C77 — collect ≥3 arm C lane-0 planner calls on C76 code (run 10r); compare vs arm A (completion,
+- [x] DS41-C77 — collect ≥3 arm C lane-0 planner calls on C76 code (run 10r); compare vs arm A (completion,
   wall, peak context, compactions); decide second 27B lane (pool: two sessions at 90k worst case ~205k vs
-  196,608 unified KV).
+  196,608 unified KV). ✅ 2026-09-30
+  - Verdict: arm C 5/5 valid (one via the 15-min salvage turn), median 43.0 min, median first prompt ~20.8k,
+    median peak ~59k (max 75.6k) — vs arm A 8/10, 38.2 min, peak median 114k (max 149k); arm B 0/3. A second
+    27B lane was memory-feasible (~180k of 196,608).
+  - Lane decision superseded by the operator's 2026-09-30 lineup change (DS41-C80): the 27B left DS41. Every
+    keep since C76 came from deepseek (lane 1: 3 keeps / 4 hypotheses; 27B 0/5) — mostly model capability;
+    harness confounds carried to DS41-C83.
+- [x] DS41-C78 — resume advances a superseded continuation after a mid-batch crash (bf07f204). ✅ 2026-09-30
+  - Anchor-gen retention keeps 1 generation, so after a mid-batch crash the newest complete continuation named
+    a pruned anchor-gen-006 and every relaunch would have failed; resume now re-derives anchor/COR from proven
+    exact builds only. Dry-run on live data: HEAD 1ef72c228766=anchor-gen-009, COR 053c3bd82d00=anchor-gen-007.
+- [x] DS41-C79 — floor carry refuses only on two A/A excursions (e66f2bad; operator 2026-09-30). ✅ 2026-09-30
+  - Under the old one-excursion rule a single -2.145% anchor-guard excursion (row 168) forced a 48-launch COR
+    floor recalibration (22:31-01:12Z); two-sample persistence now required.
+- [x] DS41-C80 — lineup gpt-6.1-sol @low planner / claude-opus-5-5 @xhigh critic; codex daemon binary; planner/critic flags out of the resume binding (30b1bc2d, 336f946d); live run10s 02:36Z. ✅ 2026-09-30
+  - Operator lineup change: gpt-6.1-sol also authors; deepseek and the local 27B dropped → MI210/`:8083` freed.
+    Codex runs from the auto-updated daemon build (npm CLI 0.157 refused gpt-6.1-sol). A lineup change had
+    refused resume ("different stable resume inputs") until planner/critic flags joined `POOL_ACTOR_FLAGS`.
+  - Serving gate 2026-09-29T18:07Z (row 159) promoted offset-vnni + gemm4xn-4x-unroll + zmm-widen at +11.18%
+    serving, decisive (bench +11.876%, 5/5 pairs separated); COR now 053c3bd82d00.
+- [ ] DS41-C81 — serving floor 4.533% was inflated by our own test activity during calibration (operator: keep for now); at the next COR promotion quarantine it and recalibrate with zero test/dry-run activity.
+  - The recalibration ran while pytest/dry-runs/find ran (some pinned to SMT siblings 184-191 of DS41 cores
+    0-95); low samples clustered 00:06-00:14 and 00:30-00:48Z (20.9-23.4 vs a 24.2-25.1 band); previous floor
+    1.876%. Candidates now need >4.5% to be decisive (gate threshold 11.333%).
+- [ ] DS41-C82 — loop full-CPU pytest fixtures take the real MI210 device lock (claim.DEVICE_LOCK); make fixtures use a private lock by default so tests can't block or hang behind a live loop.
+  - Path: `_q3_cpu_gpu_quiet_window` (run.py:124) takes `/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock`.
+    Workaround meanwhile: private-lock runner `/mnt/raid0/llm/tmp/c78-dry/runtests.py`.
+- [ ] DS41-C83 — 27B planner quality investigation on the freed GPU: replay fixed DS41 planning contexts through qwen3.8-27b vs deepseek/gpt-6.1-sol with a neutral critic; separate capability from harness (compaction, effort not reaching the server, same-family critic).
+  - Post-C76 the 27B went 0/5 (2 critic rejections on source grounds, 1 abstain, 1 authoring failure, 1 patch
+    rejection); it found the earlier keeps (gemm4xn-2x/4x-unroll, q4k-x4t-weight-prefetch, dense-q8-offset-vnni).
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
