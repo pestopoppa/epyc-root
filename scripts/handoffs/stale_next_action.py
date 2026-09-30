@@ -36,8 +36,11 @@ import sys
 ACTIVE = pathlib.Path(__file__).resolve().parents[2] / "handoffs" / "active"
 
 # A task id as the handoffs write them: EVL-42, RTG-1f, HS-4, EPD-3-R5, TD-1c, NIB2-80,
-# WP-6, ID-3, UTM-P1a.2. Deliberately tight: a bare word or a bare number is not an id.
-ID_RE = re.compile(r"\b([A-Z][A-Za-z0-9]{0,7}\d*-[A-Za-z0-9]{1,8}(?:-[A-Za-z0-9]{1,8})?(?:\.\d+)?)\b")
+# WP-6, ID-3, UTM-P1a.2, VB-KVQ-V10-DICT. Deliberately tight: a bare word or a bare number is
+# not an id. Any number of trailing dash parts: capping them at one truncated 4-part ids
+# (VB-KVQ-V10-DICT read as VB-KVQ-V10), so a row naming an open 4-part task was flagged when
+# its 3-part prefix was ticked, and a row naming a ticked one was skipped (2026-09-29 wrap-up).
+ID_RE = re.compile(r"\b([A-Z][A-Za-z0-9]{0,7}\d*-[A-Za-z0-9]{1,12}(?:-[A-Za-z0-9]{1,12})*(?:\.\d+)?)\b")
 BOX_RE = re.compile(r"^[ \t]*- \[([ xX])\][ \t]*\*\*([A-Za-z0-9.\-]+)", re.M)
 
 

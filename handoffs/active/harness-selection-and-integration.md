@@ -9,8 +9,8 @@
 ## Start here
 
 1. Next dispatchable: P0.4b (republish the Harness Card per HS-7), then P0.4c (freeze the pin at `v1.18.31`=`014614d3`), then P0-split. All three are under *Prioritized Task List → HS-4 P0*.
-2. Also open and not frozen (zero inference): the P0.4 preflight Dockerfile pin, P7, HS-OD-4/5/6/8/10, HS-16, HS-17, and HS-19d.P0 (ranked behind UFH-13).
-3. Frozen, do not start: HS-19b, HS-19c, HS-19d.P1–P6, until UFH-13 returns SUPPORTED.
+2. Also open and not frozen (zero inference): the P0.4 preflight Dockerfile pin, P7, HS-OD-4/5/6/8, HS-16, HS-17, and HS-19d.P0.
+3. Frozen for their inference-bearing steps only (design and docs may proceed, operator 2026-09-28): HS-19b, HS-19c, HS-19d.P1–P6, until UFH-13 returns SUPPORTED.
 4. Closed work: § *Completed Scope*.
 
 ## Objective
@@ -142,7 +142,7 @@ _Same lane as the closed HS-OD-1/HS-OD-2 (archived [history](../archived/harness
 HS-4 decided 2026-09-16 (OpenCode, pi fallback) — inputs HS-1/HS-2/HS-5c/HS-1e/HS-1f closed
 P0.1/P0.2/P0.3/P0-MCP (closed) → P0.4 live acceptance PASS 2026-09-26 → P0.4b (Harness Card) + P0.4c (pin freeze)
                                                                         → P0-split → P1 → P2 → P3 → P4 → P5
-HS-19a stage 1 PASS 2026-09-27 → HS-19d.P0 (zero inference, ranked behind UFH-13)
+HS-19a stage 1 PASS 2026-09-27 → HS-19d.P0 (zero inference)
                                → ❄ HS-19b / HS-19c / HS-19d.P1–P6 (until UFH-13 returns SUPPORTED)
 HS-1f.1 only if the pi fallback is invoked
 ```

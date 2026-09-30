@@ -11,7 +11,7 @@
 ## Start here (2026-09-27)
 
 - DAR-LAT is ❄ FROZEN, with a per-box unfreeze trigger; since 2026-09-29 (operator ruling, `typed-decision-plane.md` → *Operator rulings — 2026-09-29*, Q2) that trigger is "autopilot has trained on the swapped stack AND UFH-13 re-opened", replacing UFH-13's TE-6 verdict (UFH-13 PARKED 2026-09-28). DAR-LAT-3h is ✅.
-- Operator narrowed plan 2026-09-27: hold new DAR work for UFH-13. The first unfrozen box after the verdict is DAR-SPLIT-1, then the `stage`/`producer_role` split.
+- The first box to unfreeze when the trigger above fires is DAR-SPLIT-1, then the `stage`/`producer_role` split.
 - Operator-owned: the ">=5% regret" ruling and the E9 routing-reward era signature.
 - Standing, never flip: no production epsilon-greedy; do not close DAR-3/4/5 as signal-bound; any reward redesign carries the speed axis.
 - Do not dispatch the DAR-3 SPO+ boxes.

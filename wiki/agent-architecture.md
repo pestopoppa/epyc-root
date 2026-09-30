@@ -210,7 +210,7 @@ gates every `/v1`-lane one, and the operator is dispatching a separate session.
   `--json-schema` or enum/`const` bindings) — but flags two defects there anyway: an arena fallback that
   **returns the whole raw reply as a candidate** which then compiles and evaluates, and an OpenAI shim that
   drops any `response_format` the vendor supplies. TD-21.32: there is **no declared `judge` role** in the
-  registry, so the judge-site conversions must land after or alongside the CJ-11 binding at `src/llm.py`,
+  registry, so the judge-site conversions must land after or alongside the CJ-17 binding (was CJ-11) at `src/llm.py`,
   or they convert against a moving target.
   ([typed-decision-plane](../handoffs/active/typed-decision-plane.md) TD-21.31, TD-21.32)
 - **Agents edit and then stop: 0/38 edited trajectories ever execute anything** (MF-VBS-1, measured, orch

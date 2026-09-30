@@ -146,7 +146,7 @@ Details are in [agent-architecture](agent-architecture.md) (the per-call row) an
 - Four `scripts/benchmark/` collection errors remain outside the pinned scorer scope
   (`test_aa_omniscience_manifest`, `test_m12_review_fixes`, `test_rope_position_probe`,
   `tests/test_run_benchmark_suite_selection`) — a whole-directory run is still not green.
-- There is no declared `judge` role in the registry, so judge-site conversions and the CJ-11 binding must
+- There is no declared `judge` role in the registry, so judge-site conversions and the CJ-17 binding (was CJ-11) must
   be sequenced together rather than duplicated.
 
 ### Source References (2026-09-24 wrap-up compile)

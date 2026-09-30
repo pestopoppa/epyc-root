@@ -1,10 +1,18 @@
 # Canonical Judge Suite Revamp — Replace a Saturated Instrument with Execution-Verified Ones
 
-**Status**: stub — investigation scoped, nothing acquired, nothing run. Operator-authorised 2026-08-02.
+**Status**: active. The CJ-1/CJ-3 corpora are acquired and CJ-1 is wired; the judge-verdict semantics (CJ-8/9/11/12) and the CJ-15 cascade fixture landed. Next: CJ-16 (§ Start here). Operator-authorised 2026-08-02.
 **Created**: 2026-08-03
 **Categories**: benchmark_methodology, evaluation, routing
 **Related (owns adjacent work — do NOT duplicate)**: [`scoring-infra-standardization.md`](scoring-infra-standardization.md) (Track 2 owns the exec-scorer + coding ladder + LCB contamination refresh), [`architect-model-selection-bench.md`](architect-model-selection-bench.md) (owns the architect keep/drop verdict and its SWE/LCB arms), [`eval-tower-verification.md`](eval-tower-verification.md) (owns E-era eval-pool registration)
 **Tracked in**: [`research-evaluation-index.md`](research-evaluation-index.md) — index row added 2026-08-03 (operator-approved).
+
+## Start here (2026-09-29)
+
+- **Next:** CJ-16, the bounded LOCAL judge-cascade shadow on the frozen CJ-15 fixture (**GATE: mi210-window** with
+  workspace-76). CJ-13's re-run with a structured LLM reader rides the same window.
+- **Zero inference:** CJ-10, CJ-17 (repoint the judge), CJ-14, CJ-5a/5b, and the CJ-6/CJ-7 corpus steps. CJ-2 and
+  CJ-3d/3e wiring wait on `scoring-infra-standardization.md` 2a-iv.
+- **Operator:** CJ-GATE, which suites to adopt.
 
 ## Problem
 
@@ -489,7 +497,8 @@ import.
       a first-party risk precisely because our judge is a served local model, not an OpenAI
       endpoint. Pairs with CJ-8's three-valued verdict rule: a decode failure is
       `out-of-coverage`, never `fail`.
-- [ ] **CJ-11 — Repoint the judge before running anything** (intake-1330#record). One edit at
+- [ ] **CJ-17 — Repoint the judge before running anything** (intake-1330#record; numbered CJ-11 until 2026-09-30,
+      which collided with the closed CJ-11 above: a pre-2026-09-30 "CJ-11 judge binding" citation means this box). One edit at
       `src/llm.py:61-64` (`model_url` + `model_name`) fixes the judge AND the LIGHT scratchpad path
       together. Then check agreement on a stratified sample against the `gpt-4.1-mini` verdicts and
       against a human pass. Also pass `probing_question` through in all ten `evaluate_*` functions —
