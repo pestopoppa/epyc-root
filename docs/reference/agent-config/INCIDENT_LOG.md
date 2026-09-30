@@ -360,3 +360,46 @@ Rules fed:
 - proposed for operator ratification: a wire test before any new actor seat runs live
   (`scripts/operator/ratify_actor_seat_wire_test_20260926.sh`, into
   `agents/shared/OPERATING_CONSTRAINTS.md`).
+
+## INC-20260929-peer-window-closing-overrun
+On 2026-09-29 a champion CPU sidecar (typed-decision benches on :8199) ran inside a DS41 AutoKernel CPU
+window. Its watcher treated `closing` as still usable. The sidecar stayed up past the window close into
+DS41's pre-measurement build and died at 03:36:17Z (overlap about 03:33-03:36Z). There was no
+contamination: it died before lane 1's A/B began, which workspace-76 confirmed. Rules fed:
+- `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
+- the champion-sidecar gate, `handoffs/active/typed-decision-plane.md` → operator ruling 6;
+- proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
+  Benchmarks: `artifacts/operator/lessons-20260929-operating-constraints.patch`.
+
+## INC-20260929-piped-gate-push
+On 2026-09-29 a wrap-up ran `index_state.py --check | tail -1 && git push`. The pipeline's status was
+`tail`'s, so the push went out with a failing check: an over-long `Next action` cell (root `3e756b3c`,
+fixed in `c54d5701`). Rules fed:
+- capture a gate's exit code before any push, in `agents/commands/wrap-up.md` Step 3;
+- proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Test Safety:
+  `artifacts/operator/lessons-20260929-operating-constraints.patch`.
+
+## INC-20260929-dry-run-missed-live-checks
+On 2026-09-28/29, four checks passed their dry-runs and then aborted real runs in scarce, peer-paused
+windows. Each check only fails against live state:
+- a `$([ ... ] && echo ...)` substitution under `set -e`, which exits the script when the test is false;
+- a `--slot-save-path` directory that was never created, so llama-server rejected the argument;
+- a device-log regex expecting lines that v10 does not print at verbosity 3;
+- a thread-affinity check that failed on ROCr's async-event thread, whose affinity the runtime resets to
+  all CPUs.
+
+The :8083 window of 07:05-07:09Z lost the champion GPU A/B three times this way
+(`handoffs/active/autokernel-champion-aggregate.md` V6R-4d). Rules fed:
+- test every check against real artifacts or the live read-only process before spending a window, in
+  `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
+- proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Inference and
+  Benchmarks: `artifacts/operator/lessons-20260929-operating-constraints.patch`.
+
+## INC-20260929-tty-gated-operator-scripts
+On 2026-09-29 the operator's countersign (OP-67) and the typed ratify scripts refused to run under a `!`
+command. They need a real TTY, and a `!` command does not provide one. The countersign was then done
+from a separate terminal (root `04a82bc8`). Rules fed:
+- hand TTY-gated operator scripts over as a separate-terminal instruction, never chained with `&&`, in
+  `agents/coordinator-agent.md` → Guardrails, *Ratifications ACCUMULATE*;
+- proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Operator Decision
+  Requests: `artifacts/operator/lessons-20260929-operating-constraints.patch`.

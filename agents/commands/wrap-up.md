@@ -354,6 +354,17 @@ simply lost. Your own domain-index **row edits** are ordinary lane work and need
 `--check` must exit 0 before committing. It fails on duplicate ownership, orphans, dead handoff links,
 malformed rows, over-long `Next action`, unresolved `Deps`, and a stale generated block.
 
+**Capture the gate's exit code; never pipe it into the push.** In `index_state.py --check | tail -1 && git push`
+the `&&` reads `tail`'s status, so a failing check still pushes. Write the rc to a file and push in a
+separate step only when it is 0:
+
+```bash
+python3 scripts/handoffs/index_state.py --check > "$WRAPUP_TOKEN_DIR/check.out" 2>&1; echo $? > "$WRAPUP_TOKEN_DIR/check.rc"
+test "$(cat "$WRAPUP_TOKEN_DIR/check.rc")" = 0 || { cat "$WRAPUP_TOKEN_DIR/check.out"; exit 1; }
+```
+
+(origin: INC-20260929-piped-gate-push, root `3e756b3c` pushed with a failing check, fixed in `c54d5701`)
+
 **Index hygiene — prune at wrap-up only (never mid-campaign).** Indices track *outstanding TODOs*, not completed-work narration. **"At wrap-up" here means the OPERATOR-INVOKED `/wrap-up`** — pruning is one of the two operator-cadence steps (ruling 2026-08-16 at the top of this file); a per-task wrap-up refreshes `Next action` cells and adds a row for a handoff it created, and leaves deleting/archiving rows and handoff compaction for the operator's cadence. Do this pruning only here, at wrap-up, so completed work is reviewed on a controlled cadence rather than vanishing ad-hoc while an agent works:
 
 **Do NOT select prune candidates by `open == 0`.** That reads the ABSENCE OF OPEN CHECKBOXES as the PRESENCE OF COMPLETION, and it is wrong often enough to destroy live work: measured 2026-08-18, of 15 handoffs reporting `open == 0`, **13 were false positives** — compatibility pointers whose whole job is to keep a path resolving, handoffs whose open work is stated in prose and never checkboxed, prompts and notes-only references that never carried tasks, and handoffs whose remaining boxes are guarded/blocked rather than done. Use the generated signal instead, which is conservative by construction (a candidate needs boxes, none open, and no disqualifying status phrase):

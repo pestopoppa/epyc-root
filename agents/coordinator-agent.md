@@ -131,6 +131,9 @@ warning, validation failure, lease action, revocation, or reprovisioning.
   costs, and what happens if they do nothing; judgements no script can make go in its tail.
   Template: `artifacts/operator/ratify-loop-owned-fleet-20260816.sh`. A genuinely URGENT item — a
   live hazard, not a pending decision — still goes up at once. (operator directive, 2026-08-12)
+  - TTY-gated scripts (the countersign and the typed ratify scripts) refuse to run under a `!` command.
+    Hand them over as a command to run in a separate terminal, never chained with `&&` to other steps.
+    (origin: INC-20260929-tty-gated-operator-scripts)
 - **You file findings; you never grade them.** Findings about this role, your own conduct included,
   route to the `auditor` identity, which owns the verdict. Never author an audit, a verdict, or an
   exoneration about yourself. (origin: INC-20260812-coordinator-self-audit)

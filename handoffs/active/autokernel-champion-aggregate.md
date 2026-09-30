@@ -772,6 +772,16 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         - **Re-planned for the vision (:8086) window.** That window tests identity, speed and residency only:
           Qwen3-VL has no MTP drafter, so it cannot exercise SW-9.
         - **The SW-9 GPU check (draft-mtp `n_probs>0`) needs an MTP model**: a :8083 window or the 2nd MI210.
+      - [x] **V6R-4d.0 — harden the A/B per-arm checks.** ✅ 2026-09-29 — every check (device by KFD VRAM ≥ 1 GB,
+            per-thread placement re-checked after the probe, `/props`, a paused-mode watcher, the summary) is an
+            `ab_probe.py` subcommand that prints what it saw; `selftest/live_checks.sh` passes 24/24 read-only against
+            the arm logs and live :8083/:8086 (`/mnt/raid0/llm/tmp/gpu-champion-ab/`). Lesson:
+            INC-20260929-dry-run-missed-live-checks.
+      - [ ] **V6R-4d.1 — run the champion HIP A/B in the vision (:8086) window.** Tests identity, speed and residency
+            (`vision_ab.sh`). Needs a DS41 pause coordinated with workspace-76 over the bus; this is not an operator
+            decision.
+      - [ ] **V6R-4d.2 — the SW-9 GPU check (draft-mtp `n_probs>0` returns probs on every token)** on an MTP model: a
+            :8083 window (DS41 pause, workspace-76) or the 2nd MI210.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 

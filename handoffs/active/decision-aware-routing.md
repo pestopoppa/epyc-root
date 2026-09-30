@@ -429,7 +429,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     - Key every prior row by (role, device, topology_hash), never by role alone: record the device (CPU region set or MI210) and the `ContentionGate._live_topology_hash()` value (orch `src/scheduling/contention_gate.py:141`) the TPOT/L̂ inputs were derived under. A row whose topology_hash differs from the live stack contributes term 0 plus a `prior_stale` flag (the same fail-open path as a missing prior), so a stack change or a Layer-2 residency swap cannot leave a CPU-era prior pricing a GPU-resident role. Re-derive the table on every stack change. RouterWise's latency model is per (model, setup) and its own router is a static prior with no live arm (intake-1815#0, intake-1815#6).
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND (operator ruling Q2, 2026-09-29, replacing "the UFH-13 thesis experiment shows that selection under load matters", which cannot fire while UFH-13 is PARKED) autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
 - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:
-  Qwen3.8-Flash-Next (`architect_critic` :8074, `-np 1`) with divert target `architect_general` (:8083, MI210).**
+  Qwen3.8-Flash-Next (`architect_general` :8074 since ARCHSWAP-20260927, `-np 1`) with divert target `architect_critic` (:8083, MI210).**
   - Arms: A0 incumbent (λ_lat=0), A1 static prior + guard, A2 A1 + live `/slots` term.
   - Results go to `epyc-inference-research/data/sel-loadsweep-ab-<UTC>/`.
   - Decision rule (predeclared, frozen in FROZEN-AT-LAUNCH.sha256):
@@ -442,7 +442,7 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND (operator ruling Q2, 2026-09-29, replacing "the UFH-13 thesis experiment shows that selection under load matters", which cannot fire while UFH-13 is PARKED) autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
   - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3a — Freeze the pre-registration.**
     - Manifest: seeded MMLU-Pro/GPQA items (the frozen-v10 sets, amd-ai-lab-website-publication.md:18), `max_tokens`
-      cap, candidate pair, dry-route-explain filter (architect_critic chosen under A0 and A1 at zero load), frozen
+      cap, candidate pair, dry-route-explain filter (architect_general chosen under A0 and A1 at zero load), frozen
       prior table (keyed by role/device/topology_hash, with the live topology_hash at freeze) and episodic snapshot
       digests.
     - Calibration on the 50% calibration half: μ̂ and TTFT budget = 2 × unloaded p50 per length bucket.
@@ -479,13 +479,13 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
     already runs `-t 96`). The `lane/dar-lat-3h-v2-*` lanes are NOT to be merged. Result:
     [`RESULT.md`](../../artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md) and `g1-result/verdict.json`.
     Full box text: [completed sibling](../completed/decision-aware-routing-completed-through-2026-09-27.md).
-  - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29), or the operator reopens it — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` critic at its served context.** The operator split it
+  - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29), or the operator reopens it — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` Flash-Next server (`architect_general` since ARCHSWAP-20260927) at its served context.** The operator split it
     out of the DAR-LAT-3h package on 2026-09-26, after the GGML_* env audit. It is recorded under master registry
-    `server_mode.architect_critic.recipe.env_not_serving`.
+    `server_mode.architect_general.recipe.env_not_serving` (the Flash-Next row; renamed by ARCHSWAP-20260927).
     - Why it is separate:
       - It changes numerics (BE-2: a row-exact reduction order for 1-row decode vs n-row MTP verify).
       - It is a perf risk at long context: single-row decode loses KV-axis parallelism.
-      - The critic serves `n_ctx` 262144, and DAR-LAT-3h's G1 exercises only up to ~4k-token prompts.
+      - The :8074 server serves `n_ctx` 262144, and DAR-LAT-3h's G1 exercises only up to ~4k-token prompts.
     - Does not block 3g: the DAR-LAT-3h package does not set the knob.
     - Needs, all on production v10 at the served argv, as launch-unit arms (`FA_SPLIT_KV` unset vs `=0`) under a
       region claim in a quiet window:
@@ -494,8 +494,8 @@ DAR-3/DAR-6 expansion gates, and nothing changes live routing until DAR-LAT-3 de
       2. A numerics check: greedy output agreement, first-divergence position, and MTP acceptance α.
       3. Per-suite quality non-inferiority on the DAR-LAT-3a item sets.
     - Adopt only if the knob is non-inferior on speed at every depth and on quality. The change ships as its own
-      `stack-change` package, which adds it to the critic's `stack_env` block.
-    ❄ FROZEN 2026-09-27 (operator, narrowed plan): a numerics-and-long-context knob for the critic seat; no thesis arm depends on it; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 verdict makes the critic seat's served shape decision-relevant"): autopilot has trained on the swapped stack AND UFH-13 re-opened, or the operator reopens it. The box stays open: frozen is not done.
+      `stack-change` package, which adds it to the :8074 server's (`architect_general`) `stack_env` block.
+    ❄ FROZEN 2026-09-27 (operator, narrowed plan): a numerics-and-long-context knob for the :8074 seat (the critic seat before ARCHSWAP-20260927); no thesis arm depends on it; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 verdict makes the critic seat's served shape decision-relevant"): autopilot has trained on the swapped stack AND UFH-13 re-opened, or the operator reopens it. The box stays open: frozen is not done.
   - [ ] ❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any
     prerequisite that fails during a block; re-queue the block, never drop it. Per-request receipts + raw outputs.
     ❄ FROZEN 2026-09-27 (operator, narrowed plan): DAR-LAT is frozen once DAR-LAT-3h's G1 is recorded; the load-sweep programme is not on the thesis path; unfreeze trigger: DAR-LAT-3h's G1 is recorded (the only DAR-LAT work that proceeds) AND (operator ruling Q2, 2026-09-29, replacing "the UFH-13 thesis experiment shows that selection under load matters", which cannot fire while UFH-13 is PARKED) autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.

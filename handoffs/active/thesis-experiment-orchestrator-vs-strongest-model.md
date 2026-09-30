@@ -383,8 +383,8 @@ code for a rider), and only if the window has its estimated time left.
     .../kv_slots/architect_critic` (status: "architect_general pid 2030855 runtime slot_save_path expected
     architect_general; live cmdline has architect_critic"). It needs its own reload in a CPU window, coordinated with
     workspace-76. **Until then both servers point at the `architect_critic` slot dir.**
-- [ ] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
-  pre-swap labels:
+- [x] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
+  pre-swap labels: ✅ 2026-09-29 (all four surfaces; see the last bullet)
   - `decision-aware-routing.md` (the DAR-LAT-3 lines, including the 3i recipe key);
   - `conversation-stack.md` CS-17;
   - `routing-intelligence.md` RI-21: tick it, because the escalation map and the graph both end at
@@ -392,6 +392,13 @@ code for a rider), and only if the window has its estimated time left.
   - the memory `project_champion_promotion_and_architect_swap_plan`.
   - Progress 2026-09-28: RI-21 is ticked (root, this date). The DAR-LAT-3, CS-17 and memory texts are applied by their
     owners, per PACKAGE §9.
+  - 2026-09-29 (workspace-8d wrap-up): the rest is applied. The swap is live and P1-P3 are proven, so the labels were
+    wrong in place; ARCHSWAP-3's only open item, the A-3 scout-stage sample, does not touch them.
+    - `decision-aware-routing.md`: DAR-LAT-3 (Flash-Next is `architect_general` :8074, divert target `architect_critic`
+      :8083), DAR-LAT-3a (`architect_general` chosen under A0 and A1), and DAR-LAT-3i (the `:8074` Flash-Next server,
+      key `server_mode.architect_general.recipe.env_not_serving`).
+    - `conversation-stack.md` :109 and CS-17: the voice target is `architect_critic` (the :8083 27B).
+    - The memory `project_champion_promotion_and_architect_swap_plan` has an update line.
 - [x] **TE-reload — deploy TE-1 by an API-only reload** onto orchestrator `280059cc` or later with
   `ORCHESTRATOR_V1_ESCALATION=1`, after the ARCHSWAP (role swap) is applied. **It is the same reload as ARCHSWAP-3's
   B1; run it once.** workspace-8d owns the swap. workspace-76 owns DS41, which binds the 27B by port and is

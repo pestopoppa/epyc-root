@@ -292,6 +292,9 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       sections. It can only be rewritten while no `TapWriter` holds an fd, so do it at a planned API stop: back up,
       drop the sections the same two rules identify, verify the kept sections byte-identical in order, restart.
       Ticks when the rewrite and its verification are recorded here.
+      - 2026-09-29: the operator directs it as next work, with RI-16 and RI-18, after that day's wrap-up. Next step:
+        schedule the planned API stop with any session that has live `/chat` or `/v1` traffic (the stop ends every
+        `TapWriter` fd), then back up, rewrite, verify and restart through `orchestrator_stack.py`.
 
 ## 2026-09-27 compaction — orphaned residuals boxed
 

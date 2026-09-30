@@ -106,7 +106,7 @@ The interlocutor and the orchestrator split the work like this.
 - **`/v1/chat/completions` streaming is fake.** The answer is fully generated, then replayed character by character (`src/api/routes/openai_compat.py:1211-1232`). Real llama-server chunks already exist in `src/llm_primitives/inference.py` `_call_caching_backend` (`on_chunk` closures at :1221/:1253/:1292), but they feed only the tap, the repetition guard and cancellation. `primitives.llm_call` (`src/llm_primitives/primitives.py:663`) returns `str`.
 - **No conversation store.** `x_session_id` is "RECORDED ONLY" (`src/api/models/openai.py:192-202`). The session sqlite store has no messages table (`src/session/sqlite_store.py:123-257`). The trace store (`src/trace/navigation.py:117` `get_conversation`) is the closest thing.
 - **The MCP `orchestrator_chat` tool wraps `/chat`** (prompt plus a context string), not `/v1` (`src/mcp_server.py:451-500`).
-- **Voice routing to :8083 is unimplemented.** "Voice turns reason on architect_general (:8083)" (KVU-11) is written in docs only; no routing code implements it.
+- **Voice routing to :8083 is unimplemented.** "Voice turns reason on the :8083 27B" (KVU-11; that role is `architect_critic` since ARCHSWAP-20260927) is written in docs only; no routing code implements it.
 
 **Speech kernels today**
 - **whisper.cpp** is `production-speech-v1` `b3073792` (ggml 0.18.0).
@@ -271,7 +271,7 @@ The interlocutor and the orchestrator split the work like this.
   - Add an optional `display` payload for code, commands, URLs and tables. Exact artefacts are *shown*, not spoken.
   - Add `must_preserve[]` (numbers, proper nouns, caveats) and `response_mode: normal | verbatim`.
   - The speech plane must not alter `must_preserve` values. The CS-4 exact-value set tests this.
-- [ ] **CS-17 — implement voice routing as configuration.** The default voice cognition target is architect_general (:8083), per the operator requirement in KVU-11.
+- [ ] **CS-17 — implement voice routing as configuration.** The default voice cognition target is `architect_critic` (the :8083 27B; renamed by ARCHSWAP-20260927), per the operator requirement in KVU-11.
   - After CS-12, measure 35B-A3B on the second MI210 (112.68 tok/s solo, measured) as the voice cognition target against :8083 (about 42 tok/s per slot at np4) on the CS-4 routing and fidelity sets.
   - The operator then chooses the default; this is a config change, not a code change.
 - [ ] **CS-18 — implement cancellation.** A barge-in cancels the in-flight orchestrator generation through the existing cancel path (`_cancel_only`, inference.py:1297). Expose the controller's retain/cancel decision: "yeah, exactly" retains the result; "no, forget that" cancels it.

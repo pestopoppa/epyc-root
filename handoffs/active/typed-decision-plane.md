@@ -44,6 +44,9 @@ that contradicts this section is stale and must be corrected, not reconciled.
    args through `LLMPrimitives` `/v1` (receipt `/workspace/tmp/td1d5-20260924/bench-candidate-8199.json`). Test order:
    TD-29 (native vs JSON vs free-form with TD-29.M0 instrumentation) → TD-1d.0 (n>=4 rounds) → TD-12 → TD-16/17.
    TD-29.M1 (per-request spec-off probe on v10) is DECLINED: native mode is measured on the champion directly.
+   Window discipline (added 2026-09-29, INC-20260929-peer-window-closing-overrun): stop the bench and the sidecar at
+   once on any window `state` other than `open`, or when `loop_holds_claim=true`; `closing` means stop. The sidecar
+   lives exactly as long as its bench run. `window_loop.sh` and `run_td_bench.sh` enforce both.
 
 Duplicate-owner consolidation the same day (the map's §3.2): closed-set tool arguments → TD-4/TD-12 (TU-TD-1 in
 `tool-use-eval-contract.md` folded); cheap-judge redundancy → CJ-13 (ECR-TD-1 in `eval-benchmark-cost-reduction.md`
@@ -244,6 +247,9 @@ episodic memory writing."
     mode in production until v11; native mode is measured on the champion sidecar (operator ruling 6, 2026-09-29).
   - The native vs JSON vs free-form comparison (with TD-29.M0 instrumentation) runs all arms on the same sidecar server —
     **GATE: champion-sidecar (CPU window)** (operator ruling 6, 2026-09-29).
+  - [x] **Skip the typed-args call site when the flag is off** (the bullet below). ✅ 2026-09-28 — orchestrator
+    `e60ee78a`: `_dispatch_tool` calls `_typed_tool_arguments` only when a prepared action exists; the flag-off test
+    proves neither it nor `maybe_typed_arguments` runs and no receipt is written, and fails against the old code.
   - With the flag off, `context.py:593-597` still calls `_typed_tool_arguments` on every dispatch (it returns at
     `tool_args_integration.py:177`); skip it at the call site.
   - Acceptance: tests prove the shadow never alters executed arguments; the stack launcher enables it for one role; a
@@ -252,6 +258,10 @@ episodic memory writing."
     keep `prompt_n`/`cache_n` and an explicit call count per case, then re-run the 18 cases. Code is zero-inference; the
     re-run is **GATE: champion-sidecar (CPU window)** (operator ruling 6, 2026-09-29), all arms on the sidecar as part of the TD-29 comparison (TD-29.M1 declined). Acceptance: per-arm decode tokens, prefill tokens, call count and
     wall, from the receipt.
+    - Progress 2026-09-29: the code half landed as orchestrator `c4e99dbe` (`call_recorder.py` snapshots tokens,
+      `prompt_tokens`, `cache_n`, `prompt_n`, `prompt_ms` and `gen_ms` after every call; the pilot sums per case and
+      keeps `tokens_last_call`; new `--closed-mode`, `--cue-style`, `--arm`, `--case-log`, `--server-url`). The box
+      ticks with the re-run, which rides TD-29.K2's sidecar window.
   - [x] ~~**TD-29.M1 — Native scoring probe on v10 with speculation disabled per request.**~~ **DECLINED (operator,
     2026-09-29):** the operator prefers testing native mode on the champion directly (ruling 6) over a per-request spec-off
     probe on v10. ✅ 2026-09-29 — resolved to a decline; the text below is kept for the record. Native one-token scoring needs
@@ -280,8 +290,9 @@ episodic memory writing."
     tokens in total (17-38 per case) vs 5,112 in the 2026-09-17 GPU JSON arm; 18 calls, one per case; wall 42.3 s
     (2.35 s per case); prompt 20.3 s vs gen 16.9 s, so prefill dominates and M4 prefix-cache reuse is the next lever.
     The same-machine JSON and free-form arms were NOT run (the window closed early), so no within-run native-vs-JSON
-    ratio exists yet. Receipt: `/mnt/raid0/llm/tmp/champion-sidecar/runs/td-20260929/td29/closed_native_id_only.json`
-    (cases in `closed_native_id_only.cases.jsonl` beside it).
+    ratio exists yet. Receipt: `/mnt/raid0/llm/tmp/champion-sidecar/runs/td-20260929/td29/closed_native_id_only.pre-K1.json`
+    (cases in `closed_native_id_only.pre-K1.cases.jsonl` beside it; renamed with the `.pre-K1` suffix so the K2 re-run
+    writes fresh receipts under the original names).
   - [x] **TD-29.K1 — Single-token keys for multi-token closed sets (native mode).** A closed set whose labels are not all
     single tokens is re-keyed with the TD-9 code alphabet (A-Z, 0-9), each key verified single-token and collision-free
     through `/tokenize`; the model picks a key and the layer maps it back to the original value (`Decision.native_key`
@@ -292,6 +303,16 @@ episodic memory writing."
     sidecar with the fixed harness (`orch-tdbench-8d`), together with the same-machine JSON and free-form arms that the
     2026-09-29 window missed. **GATE: champion-sidecar (CPU window).** Acceptance: 18/18 resolved or each failure named;
     `native_keys` present on the file_ticket cases; within-run native vs JSON token and wall ratios.
+    - Progress 2026-09-29: a window-gated loop is running the remaining arms
+      (`/mnt/raid0/llm/tmp/champion-sidecar/window_loop.sh td29 td-20260929`, started 23:48Z, log
+      `window_loop-td29.log`). It waits for an open window, launches the sidecar, runs the bench, and confirms the
+      sidecar is dead afterwards. It needs 10 min left in the window (`NEED_MIN=10`), not 30, because DS41's two-lane
+      windows have all been shorter than 30 min. The bench still aborts on any state other than `open`. No arm had run
+      by 23:50Z. The 03:3xZ JSON attempt was aborted at the window close; its partial cases are kept as
+      `closed_json.aborted-0336Z.cases.jsonl` and are not a result.
+    - [ ] **TD-29.K2a — record workspace-76's agreement to the 10-minute threshold.** Ruling 6's gate names ≥30 min
+      left, or workspace-76's agreement. The running loop uses 10 min, so record that agreement here (bus message
+      id or chat date), or restart the loop at `NEED_MIN=30`.
 - [x] **TD-5 — One shadow integration after TD-2 passes.** Wire the typed-decision call into exactly one live
   surface as a shadow arm (routing classifier or judge, chosen by the owning handoff), gated on TD-2's
   calibration result. **2026-09-17: IMPLEMENTED + SMOKE-VALIDATED.** `src/typed_decisions/shadow.py` wired at `routing.py` (`_plan_review_gate`), flag `typed_decisions_shadow` default off, fixed canonical order, non-blocking bounded daemon (MAX_PENDING=4, drops counted), fail-open, JSONL log via `ORCHESTRATOR_TYPED_DECISIONS_SHADOW_LOG`. Live smoke against the 35B produced one well-formed record (incumbent + decisions + confidences + prompt/state hashes). Next: enable it for a real window and accumulate labeled outcomes (the calibration set), then report agreement + calibration. No enforcement without operator approval.
