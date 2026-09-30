@@ -308,6 +308,20 @@ episodic memory writing."
       windows have all been shorter than 30 min. The bench still aborts on any state other than `open`. No arm had run
       by 23:50Z. The 03:3xZ JSON attempt was aborted at the window close; its partial cases are kept as
       `closed_json.aborted-0336Z.cases.jsonl` and are not a result.
+    - Note 2026-09-30, one profile per run: workspace-76 will pause DS41 for 4-8 h (a 27B harness on :8083). They
+      agreed the arms may run during that ANNOUNCED pause on an explicit override. The condition is that the
+      sidecar stays off cores 72-79, where the 27B's host threads decode.
+      - Pause profile: cpuset `48-71,80-87`, 32 threads, NUMA interleave 2,3. The standing profile is `48-87` with
+        40 threads.
+      - The arms must share one profile to be comparable, so under the pause profile all three run fresh in
+        run `td-20260930-p32`.
+      - The pre-K1 native receipt is superseded. The post-K1 native receipt in `td-20260929` (2026-09-30 01:48Z)
+        is 48-87/40, so it is not mixed in. No JSON or free-form arm has completed in either run.
+      - If the pause profile is not used, `td-20260929` continues at 48-87/40.
+      - `run_td_bench.sh` now refuses a second profile in one run dir (`profile.json`).
+      - Machinery: `champion-sidecar/window_gate.py --allow-announced-pause` (the pause file
+        `sequencer-8d/DS41_PAUSE_ANNOUNCED.json`, plus an exited, claim-free, dead DS41 loop) and the lane
+        `sequencer-8d/run_cpu_lane_pause.sh`.
     - [x] **TD-29.K2a — record workspace-76's agreement to the 10-minute threshold.** Ruling 6's gate names ≥30 min
       left, or workspace-76's agreement. The running loop uses 10 min, so record that agreement here (bus message
       id or chat date), or restart the loop at `NEED_MIN=30`.
