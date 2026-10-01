@@ -2012,6 +2012,13 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   OBSERVATION grade (1-2 launches per arm); never merge into the loop's matched-floor rows. The follow-on DS41-C59
   runtime-arm compare rides the loop's evaluation-event path and needs no new adapter. Copy the raw dir into a
   durable location first — `/mnt/raid0/llm/tmp` is scratch.
+- [ ] **VB-DS41-C95 — project the DS41-C95 blind-graded planner-harness records (INF-77 DS41-C95/C101, 2026-10-01).** Source row in
+  `scripts/vidya/adapters/README.md`. Inputs: `/mnt/raid0/llm/tmp/ds41-c95/grading/{report.json,grades/,key.json,items.jsonl}` and the
+  per-call `results/<ctx>/<arm>/r<k>/result.json`. Locator = context × arm × repeat; `asran-*` calibration rows are labelled and never
+  pooled. OBSERVATION grade (2-4 calls per arm); per-call keep-class verdicts project as verifier records with an explicit decided
+  proposition; no-reply calls are misses. Carry `recovered_by` for run-1 calls rebuilt by `run2.py finalize`. Add the write-side
+  `belief_measurements.jsonl` to `run2.py`/`grade.py` BEFORE DS41-C102 runs, so orv/orsv rows are born with their tuple. Copy the dir
+  somewhere durable first — `/mnt/raid0/llm/tmp` is scratch.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
 ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)
