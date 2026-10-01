@@ -868,7 +868,26 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C92 — floor selection prefers the COR exact floor (4.533%, contaminated) over the cleaner carried lineage floor after each anchor advance; quarantine the 4.533 record or re-order selection (operator decision pending).
 - [ ] DS41-C93 — reconstruct the fold receipt for bscale-cvtph 6f8e232aa41f (lost when run10s stopped mid-batch) before the C47/C68 fold.
 - [ ] DS41-C94 — C84 remaining gap: per-call cgroup v2 scopes so a SIGKILLed run.py's cookie-less children (llama-server, builds) are killed, not just flagged.
-- [ ] DS41-C95 — C83 replay experiment (27B arms vs deepseek/gpt-6.1-sol, blinded Opus critic; ~8 GPU-h minimal) — awaiting operator go.
+- [ ] DS41-C95 — C83 replay experiment (27B arms vs deepseek/gpt-6.1-sol, blinded Opus critic; ~8 GPU-h minimal) — operator go 2026-09-30; running.
+  - 2026-10-01: operator go; DS41 halted 02:55:55Z (watchdog held). Launched 02:57:53Z, driver
+    `/mnt/raid0/llm/tmp/ds41-c95/`: 27B on `:8083` × opencode / codex (`danger-full-access`, operator-approved;
+    no bwrap in this container) / Hermes (isolated venv); contexts C1, C2, C4, C5 + a C1 repeat (15 calls,
+    ~7.6 GPU-h); isolated anchor-gen-006 rebuild, shallow clones, effort-stripping wire proxy, blind Opus 5.5
+    xhigh grader.
+  - Early ungraded C1: 27B×codex proposed `gemm4xn-zmm-widen`; 27B×opencode a B-scale prepass; C1×Hermes and
+    C2×opencode produced no reply (90 min timeout / empty salvage).
+  - Added arms (operator), C1/C2 after the current run: `cxv` (codex + variable-mode prompt) and `orv` (27B via
+    orchestrator REPL `orchestrator-variable`, `orch:architect_critic`). `orsv` arm → DS41-C100.
+- [x] DS41-C96 — graph-sync gate fault: `GLU`/`UNARY` passed to `test-backend-ops -o` match no `op_desc()`, so the suite was always 0/0; `backend_ops_selector` expands them to sub-ops (e29dca63). ✅ 2026-10-01
+  - Route now 29 ops (incl. TOPK_MOE chain; EXP/EXPM1 excluded, fail on anchor); empty suite still fails
+    closed. Caused the run 10w abstention storm (rows 203-224). Shared-walk-defect caveat → DS41-C99.
+- [x] DS41-C97 — runtime treatments deduplicated by normalized launch delta in a sidecar identity ledger; duplicates refused `refused_duplicate` / gate `runtime_treatment_identity` (42f434a5). ✅ 2026-10-01
+  - Both passive-wait rows map to identity 746aeb3181543057; `serial_scheduling` outcome classes fixed. Limit:
+    simultaneous same-treatment proposals from two lanes are not deduplicated.
+- [ ] DS41-C98 — keep admission: 8 bench keeps since the +11.18% promotion summed to +0.101% serving (row 253 measured_divergence). Rethink admitting keeps on non-decisive positive bench A/Bs (e.g. require decisiveness, or a cheaper serving confirm per keep) — decision package for operator.
+- [ ] DS41-C99 — e2e correctness oracle for scheduling-only routes (cpu_graph_sync): compare --autokernel-harden output hashes vs anchor; op-level suites can't see shared deterministic walk defects (C96 caveat).
+- [ ] DS41-C100 — UFH-12 context.search (hybrid lexical+dense, rrf_fuse, pointers only) in the orchestrator REPL; add an orsv arm to C95 once deployed (coordinate the API reload with workspace-8d).
+- [ ] DS41-C101 — wire the C95 graded results into the belief kernel (source row in scripts/vidya/adapters/README.md + task in vidya-belief-substrate-program.md), per CLAUDE.md.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
