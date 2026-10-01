@@ -186,3 +186,21 @@ Pending. It waits for workspace-76's "done" after their replays and two orchestr
 | epyc-root | `handoffs/active/routing-intelligence.md` | RI-18 status (void, pinned redo, interim score); RI-18a and RI-18b filed |
 | epyc-root | `docs/reference/agent-config/INCIDENT_LOG.md` | `INC-20261001-shared-clone-drift-voided-ri18-revise` |
 | epyc-root | `progress/2026-10/2026-10-01-workspace-8d.md` | these sections |
+
+## OP-70 ratified; embedding pool on for orsv; late-day gap plan (~17:00-18:00Z)
+
+- **OP-70 ratified.** The operator approved it in chat from the remote app (verbatim: "approved: apply
+  artifacts/operator/lessons-20260929-operating-constraints.patch to OPERATING_CONSTRAINTS.md and push"). The patch
+  was applied unchanged, root `642729da`, and the four INC-20260929 rules are now in `agents/shared/OPERATING_CONSTRAINTS.md`.
+  The OP-70 row is archived in the history file. Standing: CHAT-CONFIRMED (no terminal receipt).
+- **`repl_embedding_pool` ON at runtime** for workspace-76's orsv arm. POST /config was operator-approved in chat, and
+  the change is confirmed via /config/attest. :8000 was not reloaded. Runtime-only, as REPL-EMB-4.4 requires.
+- **Agreed with workspace-76**, in this order:
+  1. orv/orsv, with the frontdoor quiet. My RI-18 redo is held by the job lock.
+  2. A ≤60 min ws8d gap: ARCHSWAP-4 `:8074` relaunch plus the RI-18 revisions, run concurrently
+     (`/mnt/raid0/llm/tmp/sequencer-8d/run_gap_20261001.sh`).
+  3. Their `:8083`-exclusive 27B C95 follow-up (6-8 h). RI-18 needs nothing more on :8083: verdict and noise-verdict
+     are complete. Leftover revisions may run on the frontdoor under a pause ending 03:00Z
+     (`run_ri18_leftover_20261001.sh`), with START and END lines in `/mnt/raid0/llm/tmp/ds41-c95/peer-load.log`.
+- **A live-only check caught a defect before the window:** the pause gate requires `by: workspace-76`, and the draft
+  pause file would have been refused. It was fixed and re-checked against the real gate.
