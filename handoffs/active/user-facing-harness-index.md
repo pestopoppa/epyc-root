@@ -24,7 +24,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example as a pseudocode loop block, and record what the GUI must expose | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-4.4 deploy for DS41-C100 orsv on workspace-76's ALL GPU CALLS DONE; then REPL-EMB-2.2 offline recall eval | UFH-07, INF-78, EVL-37, UFH-01 |
+| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-4.4 deploy on ws-76's ALL GPU CALLS DONE; then 2.2 offline recall eval (wire VB-UFH12-RETR first) | UFH-07, INF-78, EVL-37, UFH-01 |
 
 ## Cross-domain
 
