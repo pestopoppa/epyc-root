@@ -91,3 +91,16 @@ Rows removed from the operator decision queue at the operator-invoked wrap-up of
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
 | OP-69 | **Land the RI-23 thinking-on chat lane** (decided (a), 2026-09-29). orch lane/orch-ri23-8d @ e0787feb, flag thinking_roles_chat_lane default OFF; RI-23b A/B supports it (flag OFF the review verdict never parses; ON both verdicts correct). gitnexus flags 4 HIGH/CRITICAL symbols -> operator landing approval; then API-only reload + flag flip. | [routing-intelligence.md](routing-intelligence.md) → RI-23 | 2026-09-29 |
+
+## Resolved 2026-10-01 (row removed by the root writer)
+
+- **OP-70** — RATIFIED. The operator approved it in chat on 2026-10-01 from the remote app ("approved: apply
+  artifacts/operator/lessons-20260929-operating-constraints.patch to OPERATING_CONSTRAINTS.md and push"); applied
+  unchanged by workspace-8d. The four rules are now in `agents/shared/OPERATING_CONSTRAINTS.md`: capture a gate's rc
+  before any push; a peer CPU window means stop on anything but `open`; test checks on real artifacts before a scarce
+  window; hand TTY-gated scripts over for a separate terminal. Origins: INC-20260929-*. Standing: CHAT-CONFIRMED (no
+  terminal receipt), like the OP-67 set.
+
+| ID | Decision | Owner | Open since |
+|----|----------|-------|-----------|
+| OP-70 | Ratify four 2026-09-29 lesson rules into agents/shared/OPERATING_CONSTRAINTS.md (human-only): peer CPU window stop-on-closing, test checks on live artifacts before a scarce window, capture gate rc before push, TTY scripts in a separate terminal — prepared patch | [INCIDENT_LOG.md](../../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260929-*; artifacts/operator/lessons-20260929-operating-constraints.patch | 2026-09-29 |

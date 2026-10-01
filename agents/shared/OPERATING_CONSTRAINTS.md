@@ -22,6 +22,9 @@ Recommended environment variables:
 - Never use `pytest -n auto` on this machine.
 - Use bounded worker counts (for example `-n 4` or default project settings).
 - Prefer targeted test execution during iteration.
+- **Capture a gate's exit code before any push.** In `gate | tail -1 && git push`, the `&&` reads
+  `tail`'s status, so a failing gate still pushes. Write the gate's rc to a file (or a variable, with no
+  pipe) and push only in a separate step that checks it is 0. (origin: INC-20260929-piped-gate-push)
 
 ## Logging and Traceability
 
@@ -122,6 +125,14 @@ investigation; Appendix)
   - Details and measurements: `wiki/kv-cache.md`.
   - (origin: 2026-09-24. :8083 was documented as unified but ran split in every production launch, which capped
     DS41's planner at 98,304 tokens; RTG-57)
+- **Using a peer's AutoKernel CPU window** (`/mnt/raid0/llm/autokernel/cpu-window.json`): stop at once on any
+  `state` other than `open`, or when `loop_holds_claim=true`. `closing` means stop, not finish up. A side
+  server launched for the window (for example a champion sidecar) lives exactly as long as its bench run: it
+  is started just before the run and stopped on every exit path. (origin: INC-20260929-peer-window-closing-overrun)
+- **Test every check against real artifacts before spending a scarce window.** A dry-run does not exercise
+  live-only checks, such as startup-log regexes, thread placement, directories that must exist, or `set -e`
+  interactions. Run each check read-only against real logs or the live production process first, and have it
+  print what it saw. (origin: INC-20260929-dry-run-missed-live-checks)
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
@@ -315,6 +326,9 @@ The operator signs from a terminal.
   that does not need the receipt.
 - Origin: ARCHSWAP-20260927, blocked 2026-09-27. Precedent: the 2026-09-27 countersignature record (master queue
   OP-67).
+- TTY-gated operator scripts (the countersign and the typed ratify scripts) refuse to run under a `!` command. Hand
+  them over as a command to run in a separate terminal, never chained with `&&` to other steps.
+  (origin: INC-20260929-tty-gated-operator-scripts)
 
 ## Parallel Subagent Fan-Out — the default working mode of every main
 

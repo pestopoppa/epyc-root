@@ -36,7 +36,6 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
-| OP-70 | Ratify four 2026-09-29 lesson rules into agents/shared/OPERATING_CONSTRAINTS.md (human-only): peer CPU window stop-on-closing, test checks on live artifacts before a scarce window, capture gate rc before push, TTY scripts in a separate terminal — prepared patch | [INCIDENT_LOG.md](../../docs/reference/agent-config/INCIDENT_LOG.md) INC-20260929-*; artifacts/operator/lessons-20260929-operating-constraints.patch | 2026-09-29 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -67,7 +66,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 Full text for OP-1..OP-6 (including the closed OP-2 and the superseded narration) is preserved in
 [`../archived/master-handoff-index-history-through-2026-08-10.md`](../archived/master-handoff-index-history-through-2026-08-10.md).
-OP-3, OP-19, OP-53, OP-66, OP-67, OP-68 and OP-69 (resolved) are preserved in
+OP-3, OP-19, OP-53, OP-66, OP-67, OP-68, OP-69 and OP-70 (resolved) are preserved in
 [`../archived/master-handoff-index-history-through-2026-09-14.md`](../archived/master-handoff-index-history-through-2026-09-14.md).
 OP-64 (the HS-19 harness↔orchestrator interface discussion) was DECIDED by the operator on 2026-09-27, when the
 narrowed plan was adopted:
