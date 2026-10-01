@@ -4,12 +4,12 @@
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
 **Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
-**Updated**: 2026-10-01 (RI-16 measured on live `/chat` and closed; RI-24 filed; RI-18 run in progress)
+**Updated**: 2026-10-01 (RI-16 measured on live `/chat` and closed; RI-24 filed; RI-18 revise redo pinned; RI-18a/b filed)
 
 ## Start Here
 
-**Current priority (2026-10-01):** RI-18, the `_should_review` gate: finish the run in `/mnt/raid0/llm/tmp/ri18/run-v1`,
-then `score`. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s p95 before generation); RI-19 and RI-24 cut it. The numbered steps below concern the older RI-10 factual-risk canary.
+**Current priority (2026-10-01):** RI-18, the `_should_review` gate: finish the run in `/mnt/raid0/llm/tmp/ri18/run-v1`
+(the voided 90 revisions are being redone on the pinned `08edc054` worktree), then `score`. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s p95 before generation); RI-19 and RI-24 cut it. The numbered steps below concern the older RI-10 factual-risk canary.
 
 Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
 
@@ -187,6 +187,30 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     Next step: the resume pass (`/mnt/raid0/llm/tmp/sequencer-8d/run_ri18_resume_pause.sh`, per-item resume, no
     re-snapshot) covers the remaining 87 S1 items and S2 (155), then verdict, revise, noise-revise and `gate`; then
     `score`.
+  - 2026-10-01 status (NOT complete): all 608 answers are in, and `verdict`, `noise-verdict`, `noise-revise` (pinned)
+    and `gate` are done.
+    - The gate never fired on the 579 scored items. avg_q ≈ 1.0, far above the 0.6 threshold, which matches
+      structural finding (b): the KNN cannot see Q < 0.3 failures.
+    - The 90 final revisions were VOIDED by the driver (`segments.jsonl` 12:59:07Z, segment
+      `revise-20261001T121657Z-2fbb99`: "code_root commit drifted during the segment"). workspace-8d had
+      fast-forwarded the shared orchestrator clone at 12:22Z to deploy UFH-12 (REPL-EMB-4.4). The integrity check
+      worked as designed; see `INC-20261001-shared-clone-drift-voided-ri18-revise`.
+    - The redo runs with `--code-root` pinned to the detached worktree
+      `/mnt/raid0/llm/worktrees/orch-ri18-pin-08edc054` (the run's commit, `08edc054`), in normal DS41 windows.
+      `score` runs automatically after it.
+    - A `score` attempt before the redo returned VOID (clause 0: incomplete, revise missing 90). INTERIM only, not a
+      verdict: AUROC of Q against wrong answers 0.56 [0.51, 0.62]; π1 net per 100 −36.8 [−41.5, −32.3].
+    - Next step: let the pinned redo finish, then read `score`.
+  - [ ] **RI-18a — the driver's `--retriever` default must mirror production's resolution.** The default is `graph`.
+    Production falls back to `TwoPhaseRetriever` when the kuzu graph backend is unavailable
+    (`src/api/services/memrl.py` ~488-520, "failure/hypothesis graph scoring inactive, using TwoPhaseRetriever").
+    This run's `gate` used `--retriever two_phase` explicitly. Fix: resolve the default the way `memrl.py` does,
+    and record the resolved retriever in the segment header. (filed 2026-10-01)
+  - [ ] **RI-18b — the wrapper scripts must read segment `end` and `void` events, not trust the process rc.** The
+    VOIDED `revise` segment logged `void`, then an `end` with `exit: 5` but `reason: complete`, and the chain
+    started `noise-revise` 23 s later. The `sequencer-8d` wrappers (`run_ri18_resume_pause.sh`,
+    `run_ri18_revise_redo.sh`) must not rely on the process rc alone. Fix: after each segment, read its last `end` event
+    from `segments.jsonl`; stop the chain on a `void` event or a non-zero `exit`. (filed 2026-10-01)
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
   - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
     set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the

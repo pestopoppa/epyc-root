@@ -225,11 +225,18 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 - [ ] **REPL-EMB-4.2 — replace `DocumentREPLEnvironment.search_sections`** (`src/repl_document.py:221`)
   with the hybrid search primitive.
 - [ ] **REPL-EMB-4.3 — evaluate via `rlm-contested-claims` E3b.**
-- [ ] **REPL-EMB-4.4 — deploy context.search for the DS41-C100 `orsv` arm**: on workspace-76's "ALL GPU CALLS DONE",
+- [x] **REPL-EMB-4.4 — deploy context.search for the DS41-C100 `orsv` arm**: on workspace-76's "ALL GPU CALLS DONE",
   workspace-8d does an API-only reload (`orchestrator_stack.py reload orchestrator`) onto `b384cdbb`+ and a runtime
   `POST /config {"repl_embedding_pool": true}` for the `orsv` arm. Afterwards decide whether to pin the flag in
   `orchestration/runtime_flags.spec.yaml` (now `repl_embedding_pool: baseline`) or reset it — the REPL-EMB-2.1 kill
   rule keeps it OFF by default.
+  ✅ 2026-10-01 — API-only reload at 12:22Z onto `b384cdbb` (PID 1690649), then the runtime
+  `POST /config {"repl_embedding_pool": true}`, read back as true.
+  - Pin or reset is decided: the flag stays OFF by default per the REPL-EMB-2.1 kill rule, and nothing is pinned in
+    `runtime_flags.spec.yaml`. It is enabled at runtime only for the experiment arm.
+  - The ~13:10Z reload for the `context.get` fix (INF-78 OAB-35, orch `2d97ade2`, PID 1767532) reset the pool to OFF,
+    its default. workspace-76 rescheduled `orv`/`orsv` for a later DS41 pause, and will ask workspace-8d to
+    re-enable the pool at runtime (`POST /config {"repl_embedding_pool": true}`) before the arm runs.
 
 ### Phase 5 — SEARCH for OAB-8 scouts
 

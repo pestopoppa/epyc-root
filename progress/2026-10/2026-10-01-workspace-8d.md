@@ -137,3 +137,52 @@ Pending. It waits for workspace-76's "done" after their replays and two orchestr
 | epyc-root | `handoffs/active/autokernel-champion-aggregate.md` | V6R-4d, V6R-4d.1 and V6R-4d.2 ticked; Start-here row removed; v11 line under V6R-4a |
 | epyc-root | `handoffs/active/speculative-decoding-mtp-refresh.md` | SW-9 exercised on GPU (header and SW-9 item) |
 | epyc-root | `handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md` | ARCHSWAP-4: :8083 relaunched again 2026-10-01 12:16Z |
+
+## INF-78 OAB-35: the `context.get(name, '')` HTTP 500 (fixed and deployed)
+
+- Orch `2d97ade2` on main (parent `b384cdbb`). API-only reload ~13:10Z, PID 1767532.
+- Root cause: models write the dict idiom `context.get('inbox', '')`. `ContextBundle.get(path, max_chars=None,
+  offset=0)` read `''` as `max_chars`, and `_page_bounds` raised a ValueError from `int('')`. The model repeated the
+  line for 6 turns, escalated to `coder_escalation` (same failure), retries ran out, and the API returned HTTP 500.
+- Live since OAB-7 (`88e22777`). It hit workspace-76's DS41-C95 `orv`/`orsv` arms (`orch:architect_critic`,
+  orchestrator-variable mode); evidence `/mnt/raid0/llm/tmp/repl_tap.log` 12:11-12:12Z.
+- Fix: a dict-style default (`get(name, default)` or `default=`); paging unchanged for numeric `max_chars`; a
+  TypeError naming the signature for a bad `max_chars`; `context.get('missing', None)` still raises a KeyError that
+  lists the sections.
+- Tests: a regression test that reproduces the crash on the old code; oab7 68/68; a targeted set of 785 passed. One
+  CPU-starved timing witness failed in that set and passed 10/10 when rerun on its own.
+- Derived actionable filed: OAB-36, document `context.get(name, default)` in the root block, landing between C95 arm
+  pairs because it changes the prompt bytes.
+
+## UFH-12 REPL-EMB-4.4: context.search deployed for `orsv` (complete)
+
+- API-only reload at 12:22Z onto `b384cdbb` (PID 1690649), then a runtime `POST /config {"repl_embedding_pool": true}`,
+  read back as true.
+- The 13:10Z reload for OAB-35 reset the pool to OFF, its default. workspace-76 rescheduled `orv`/`orsv` for a later
+  DS41 pause, and will ask workspace-8d to re-enable the pool at runtime first.
+- Pin or reset is decided: the flag stays OFF by default per the REPL-EMB-2.1 kill rule, and is enabled at runtime only
+  for the experiment arm.
+
+## RI-18 status (not complete)
+
+- All 608 answers, `verdict`, `noise-verdict`, `noise-revise` (pinned) and `gate` are done.
+- The gate never fired on the 579 scored items. avg_q ≈ 1.0 against the 0.6 threshold, which matches the structural
+  finding that the KNN cannot see Q < 0.3 failures.
+- The 90 final revisions were VOIDED by the driver ("code_root commit drifted during the segment"). This session's
+  12:22Z fast-forward of the shared orchestrator clone for UFH-12 caused it. The integrity check worked as designed.
+  Incident: `INC-20261001-shared-clone-drift-voided-ri18-revise`.
+- The redo runs with `--code-root` pinned to `/mnt/raid0/llm/worktrees/orch-ri18-pin-08edc054`, in normal DS41
+  windows, and `score` runs automatically after it.
+- INTERIM, not a verdict: a `score` attempt before the redo returned VOID (clause 0, revise missing 90). AUROC of Q
+  against wrong answers 0.56 [0.51, 0.62]; π1 net per 100 −36.8 [−41.5, −32.3].
+- Filed RI-18a (the driver's `--retriever` default `graph` does not mirror production's fallback to
+  `TwoPhaseRetriever`; this gate ran with `--retriever two_phase`) and RI-18b (the wrappers must read segment
+  `end`/`void` events rather than the process rc).
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/autokernel-orchestrator-actor-backend.md` | OAB-35 ticked (the `context.get` fix); OAB-36 filed; status line |
+| epyc-root | `handoffs/active/repl-embedding-retrieval.md` | REPL-EMB-4.4 ticked; pin-or-reset decided (OFF by default) |
+| epyc-root | `handoffs/active/routing-intelligence.md` | RI-18 status (void, pinned redo, interim score); RI-18a and RI-18b filed |
+| epyc-root | `docs/reference/agent-config/INCIDENT_LOG.md` | `INC-20261001-shared-clone-drift-voided-ri18-revise` |
+| epyc-root | `progress/2026-10/2026-10-01-workspace-8d.md` | these sections |

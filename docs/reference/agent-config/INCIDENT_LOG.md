@@ -403,3 +403,10 @@ from a separate terminal (root `04a82bc8`). Rules fed:
   `agents/coordinator-agent.md` → Guardrails, *Ratifications ACCUMULATE*;
 - proposed for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md` § Operator Decision
   Requests: `artifacts/operator/lessons-20260929-operating-constraints.patch`.
+
+## INC-20261001-shared-clone-drift-voided-ri18-revise
+On 2026-10-01 at 12:22Z workspace-8d fast-forwarded the shared orchestrator clone to deploy UFH-12 while the RI-18
+`revise` segment was running in-process from that same clone. The driver's integrity check voided all 90 revisions
+at 12:59:07Z ("code_root commit drifted during the segment"), and they must be redone. Rule fed: an
+in-process run pins `--code-root` to a detached worktree at its commit, never the shared clone
+(`handoffs/active/routing-intelligence.md` RI-18; wrapper fix RI-18b).

@@ -2,7 +2,8 @@
 
 **Status**: ACTIVE — PLANNED 2026-09-24 (operator direction). Seat A/Bs done: plain beats bounded (DS41-C20c),
 and inline beats context-as-files (OAB-9, 2026-09-25). OAB-1/2/3/10/11/13 done; OAB-7 and OAB-8 built and
-deployed (orchestrator `b9e004e3`); OAB-22..27 merged to research main `d643d794`.
+deployed (orchestrator `b9e004e3`); OAB-22..27 merged to research main `d643d794`. 2026-10-01: OAB-35 fixed the
+`context.get(name, '')` HTTP 500 (orchestrator `2d97ade2`, live); OAB-36 filed.
 **Next (start here)**: OAB-29 fake-model wire-test gate and OAB-30 stub e2e (incl. keep→continuation, the
 DS41-C45 path); then the live OAB-4 A/B (pin :8083's KV mode per OAB-4a) and the OAB-5 promotion rule;
 OAB-28 before best-of runs with more than one worker.
@@ -664,3 +665,32 @@ Each one turns a practice that was missing on 2026-09-23 into a standing gate.
   backend with no configured budget refuses to start instead of running unbounded.
   - Acceptance: a fake backend that never finishes is cut at the default budget, and recorded once, for each
     role × kind.
+
+### Tasks filed 2026-10-01 (OAB-7 `context` API in production)
+
+- [x] **OAB-35 — `context.get(name, '')` (the dict idiom) crashed REPL calls with HTTP 500.** ✅ 2026-10-01 —
+  orchestrator `2d97ade2` on main (parent `b384cdbb`), deployed by an API-only reload at ~13:10Z (PID 1767532).
+  - Root cause: models write `context.get('inbox', '')`. `ContextBundle.get(path, max_chars=None, offset=0)` took
+    `''` as `max_chars`, and `_page_bounds` did `int('')`, raising a ValueError. The model saw only that opaque
+    message and repeated the line for six turns. It escalated to `coder_escalation`, which failed the same way.
+    Retries ran out, the graph raised `[FAILED: ...]`, and the API returned HTTP 500.
+  - Live since OAB-7 (`88e22777`). It hit workspace-76's DS41-C95 orchestrator-REPL arms (`orv`/`orsv`,
+    `orch:architect_critic`, `orchestrator-variable` mode); evidence `/mnt/raid0/llm/tmp/repl_tap.log`, 12:11-12:12Z.
+  - Fix:
+    - A second argument that is not a char count, or `default=`, is a dict-style default: the value when the path
+      resolves, else the default, and a miss counts no pull.
+    - Int and numeric `max_chars` page exactly as before.
+    - A bad `max_chars`/`offset` raises a TypeError that names the signature and the `default=` form.
+    - `context.get('missing', None)` still raises a KeyError listing the sections.
+  - Tests: a regression test reproduces the crash on the old code; `test_oab7_context_bundle.py` 68/68; a targeted
+    set of 785 passed. One CPU-starved timing witness failed in that set and passed 10/10 when rerun on its own.
+  - Related open items: OAB-17 F16 (`get()` on a JSON path records no span) and F10 (the `context.get(` default-path
+    patterns) are untouched by this fix.
+- [ ] **OAB-36 — document the dict idiom in the `context` root block.** OAB-35 shows that models reach for dict
+  idioms on `context` by default. The root block (`context_bundle.py` ~810, `render_root_block`) and the short
+  namespace line (~1023) list only `context.get(name, max_chars=None, offset=0)`; the `default=` form appears only in
+  the TypeError text. Add `context.get(name, default)` to both, plus `name in context`. The change alters the rendered
+  root prompt bytes, so:
+  - land it between DS41-C95 arm pairs, never inside one;
+  - update the field-off golden test (`5cae6c6b`) in the same commit.
+  - Acceptance: the root block names the default form, and the golden test pins the new bytes.
