@@ -4,12 +4,12 @@
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
 **Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
-**Updated**: 2026-09-30 (RI-16 landed and deployed; RI-18 pre-registered, operator-approved)
+**Updated**: 2026-10-01 (RI-16 measured on live `/chat` and closed; RI-24 filed; RI-18 run in progress)
 
 ## Start Here
 
-**Current priority (2026-09-29):** RI-16, per-stage routing-decision latency (p50/p95) on live `/chat`; then RI-18, the
-`_should_review` gate, unblocked by RI-22. The numbered steps below concern the older RI-10 factual-risk canary.
+**Current priority (2026-10-01):** RI-18, the `_should_review` gate: finish the run in `/mnt/raid0/llm/tmp/ri18/run-v1`,
+then `score`. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s p95 before generation); RI-19 and RI-24 cut it. The numbered steps below concern the older RI-10 factual-risk canary.
 
 Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
 
@@ -36,7 +36,7 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
 - [ ] **RI-13 — Injection-risk classifier fork (DAR-6/J14)**: do not build until the cheap-first unconditional J14 swarm-fanout A/B clears its gate. If it clears, add an injection-risk axis to this handoff rather than burying it in DAR.
 - [ ] **RI-X — New-model onboarding contract**: if learned-routing-controller P5.2 passes, document cold-start workflow here and link the `tools/onboard_specialist.py` wrapper from that handoff.
 
-- [ ] **RI-16 — PRIORITY: measure end-to-end routing-decision latency on live `/chat`.** (filed 2026-09-26, code+live-process audit) A routed request makes ~3-4 embed+KNN lookups — role priors (`chat_routing.py:316-343` `_heuristic_role_priors` → `ClassificationRetriever`), route (`chat_pipeline/routing_decision.py:314` → `hybrid_router.py:388`), mode (`chat_routing.py:182` → `route_with_mode`), and the post-answer review gate (`chat_review.py:57-96`) — and none is timed; the "<1 ms MLP / 10-50 ms KNN" figures in docs are claims. Add per-stage timers to routing telemetry, report p50/p95 per stage and total, and set them beside typed routing (590 ms native single-token / ~2.5 s JSON, `typed-decision-plane.md`). Wire the telemetry into the belief kernel (`vidya-belief-substrate-program.md` VB-ROUTE-LAT).
+- [x] **RI-16 — PRIORITY: measure end-to-end routing-decision latency on live `/chat`.** ✅ 2026-10-01 (filed 2026-09-26, code+live-process audit) A routed request makes ~3-4 embed+KNN lookups — role priors (`chat_routing.py:316-343` `_heuristic_role_priors` → `ClassificationRetriever`), route (`chat_pipeline/routing_decision.py:314` → `hybrid_router.py:388`), mode (`chat_routing.py:182` → `route_with_mode`), and the post-answer review gate (`chat_review.py:57-96`) — and none is timed; the "<1 ms MLP / 10-50 ms KNN" figures in docs are claims. Add per-stage timers to routing telemetry, report p50/p95 per stage and total, and set them beside typed routing (590 ms native single-token / ~2.5 s JSON, `typed-decision-plane.md`). Wire the telemetry into the belief kernel (`vidya-belief-substrate-program.md` VB-ROUTE-LAT).
   - 2026-09-29: the operator directs RI-16, then RI-18, as workspace-8d's next work, right after that day's wrap-up.
     Next step: add per-stage timers (role priors, route, mode, review gate, and the total) to the routing telemetry,
     with unit tests (zero inference). Then land them, do an API-only reload, and read p50/p95 per stage from live
@@ -48,6 +48,33 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     `scripts/analysis/routing_stage_latency.py`. Deployed to the API 2026-09-30 04:52Z (master PID 1930724) by the
     NIB2-91 planned restart (`non-inference-backlog.md`). The box stays open: it ticks when p50/p95 per stage are read
     from live `/chat`. Belief-kernel adapter: `vidya-belief-substrate-program.md` VB-ROUTE-LAT.
+  - ✅ 2026-10-01 — read from live `/chat`. 30 requests from ~03:06Z (request set `/mnt/raid0/llm/tmp/ri16/ri16_load.py`,
+    results `/mnt/raid0/llm/tmp/ri16/load-20260930/results.jsonl`) against orch `78847544` (deployed 2026-09-30 04:52Z).
+    Reader: `python3 scripts/analysis/routing_stage_latency.py --since 2026-10-01T03:00:00Z --path all` (orchestrator).
+    n=30, all on the chat path:
+
+    | stage | p50 ms | p95 ms |
+    |---|---|---|
+    | priors | 156 | 275 |
+    | route | 197 | 529 |
+    | xmas | 26 | 96 |
+    | factual_risk | 0.06 | 85 |
+    | route_total | 542 | 1027 |
+    | mode | 58 | 69 |
+    | review_gate | 69 | 105 |
+    | total | 622 | 1159 |
+
+    `memrl_init`, `failure_veto`, `difficulty` and `trinity` are each under 2 ms at p95.
+    - Routing costs ~0.6 s at p50 and ~1.2 s at p95 before generation starts. That is the same order as typed
+      routing's 590 ms native single-token median. The docs' "<1 ms MLP / 10-50 ms KNN" figures do not describe the
+      request path.
+    - Priors plus route (embedding + KNN) are 353 ms of the 542 ms `route_total` p50. `priors` is
+      `_classify_and_route` + `_should_use_direct` (`chat_routing.py:318-343`), which is the MemRL
+      `ClassificationRetriever` path that RI-19 shows has 0 memories to retrieve. RI-19 is therefore worth ~156 ms p50
+      / ~275 ms p95 per request, not hygiene only.
+    - Caveats: n=30 from one session; the GPU was busy with workspace-76's 27B harness replays; the CPU was quiet
+      under the announced DS41 pause, but production frontdoor shares cores 0-95.
+    - Belief kernel: the VB-ROUTE-LAT write side now holds these 30 records; the adapter is still owed.
 - [ ] **RI-17 — compare live `/chat` routing against rules-only routing** on the same frozen workload (quality, cost, latency per request), so the KNN/memory layer has to earn its lookups. Reuse the counterfactual harness from `typed-decision-plane.md` TD-10 where it fits. (filed 2026-09-26)
 - [ ] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26)
   - 2026-09-28: the "do reviewed answers improve" half waits on RI-22. Until RI-22 lands, the gate has not produced a
@@ -154,7 +181,21 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       the median frontdoor wall time on those same requests.
       - ✅ CONFIRMED by the operator in chat on 2026-09-30 ("Confirm all four"), before any item ran: these four
         readings are part of the pre-registration. `score` may run once the segments complete.
+  - 2026-10-01 run status (read-only, `/mnt/raid0/llm/tmp/ri18/run-v1/segments.jsonl`), first pass under the announced
+    DS41 pause. The `answer` segment hit its 5400 s wall budget at 366 of 453 S1 items. `verdict` also hit its budget, at
+    358 items; `noise-verdict` completed (32). `revise` has been running on CPU since 05:51Z (item 191 of 274 at ~06:12Z).
+    Next step: the resume pass (`/mnt/raid0/llm/tmp/sequencer-8d/run_ri18_resume_pause.sh`, per-item resume, no
+    re-snapshot) covers the remaining 87 S1 items and S2 (155), then verdict, revise, noise-revise and `gate`; then
+    `score`.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
+  - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
+    set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the
+    same routed roles; then delete the branch.
+- [ ] **RI-24 — cut the `route` stage cost (197 ms p50 / 529 ms p95 on live `/chat`, RI-16).** (filed 2026-10-01) After
+  RI-19 removes `priors`, `route` is the largest routing stage. Next step: count the prompt embeddings per request
+  across `route`, `mode` and `review_gate`. If the same text is embedded more than once, compute it once per request
+  and pass it down. Then re-run the RI-16 set and report the per-stage delta. RI-17 decides whether the KNN layer
+  stays at all; this task only makes it cheaper while it does.
 - [ ] **RI-20 — close the `## Routing Intelligence` prompt-section gap.** The section (`prompt_builders/builder.py:287`) is added only on turn 0 of the streaming paths (`chat.py:1453` legacy, `chat_pipeline/stream_adapter.py:196` unified); the graph path (`graph/helpers.py:856-864`) passes no `routing_context`. Decide by A/B whether it helps, then wire it into the graph path or remove it from streaming. (filed 2026-09-26)
 - RI-21 (2026-09-28, closed by the ARCHSWAP), RI-22 (2026-09-29, the 27B review verdict now parses) and RI-23 with
   RI-23a/RI-23b (2026-09-29, OP-69 option (a): thinking-on roles on the chat-completions lane, flag

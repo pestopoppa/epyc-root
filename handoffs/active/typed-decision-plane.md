@@ -6,12 +6,13 @@
 **Parent index**: [routing-and-optimization-index.md](routing-and-optimization-index.md)
 **Evidence**: intake-1472, intake-1473, intake-1474, intake-1485, intake-1486, intake-1487, intake-1490 (all dive-verified); intake-1476#record (application survey, anecdote-grade)
 
-## Start here (2026-09-29)
+## Start here (2026-10-01)
 
 - **Next, zero inference:** TD-29, the shadow mode (the typed pick is written beside the executed arguments in
   `decision_receipt.v1`; JSON mode in production until v11).
-- **Next, GATE: champion-sidecar (CPU window):** TD-29.K2 runs the native arm (K1 keys landed, orch `c595e13d`) plus
-  the same-machine JSON and free-form arms. Then TD-1d.0 (n≥4), TD-12, TD-16/17 (ruling 6 order).
+- **Next, zero inference:** TD-29.M0a (prefill tokens on the `/completion` lane), then TD-29.M4 (prefix-cache reuse).
+- **Next, GATE: champion-sidecar (CPU window):** TD-1d.0 (n≥4), TD-12, TD-16/17 (ruling 6 order). TD-29.K2 is done
+  (2026-10-01: native 18/18 at 1.45x free-form wall, 5.3x faster than JSON).
 - **GATE: mi210-window (JSON-mode only):** TD-29.M3, TD-13, TD-19, TD-23. CJ-13 and CJ-16 ride the same window.
 - **Frozen:** TD-28, until v11 ships and autopilot has trained on the swapped stack and UFH-13 has re-opened. TD-11 is
   the single owner of typed routing.
@@ -252,7 +253,7 @@ episodic memory writing."
     `tool_args_integration.py:177`); skip it at the call site.
   - Acceptance: tests prove the shadow never alters executed arguments; the stack launcher enables it for one role; a
     live shadow window yields receipts with typed pick + executed arguments + outcome. No replacement mode before v11.
-  - [ ] **TD-29.M0 — Split the TD-4 cost into decode, extra calls and prefill.** Make the pilot sum tokens across retries,
+  - [x] **TD-29.M0 — Split the TD-4 cost into decode, extra calls and prefill.** ✅ 2026-10-01 Make the pilot sum tokens across retries,
     keep `prompt_n`/`cache_n` and an explicit call count per case, then re-run the 18 cases. Code is zero-inference; the
     re-run is **GATE: champion-sidecar (CPU window)** (operator ruling 6, 2026-09-29), all arms on the sidecar as part of the TD-29 comparison (TD-29.M1 declined). Acceptance: per-arm decode tokens, prefill tokens, call count and
     wall, from the receipt.
@@ -260,6 +261,18 @@ episodic memory writing."
       `prompt_tokens`, `cache_n`, `prompt_n`, `prompt_ms` and `gen_ms` after every call; the pilot sums per case and
       keeps `tokens_last_call`; new `--closed-mode`, `--cue-style`, `--arm`, `--case-log`, `--server-url`). The box
       ticks with the re-run, which rides TD-29.K2's sidecar window.
+    - ✅ 2026-10-01: the re-run is TD-29.K2's run `td-20260930-p32`. It delivers per-arm decode tokens, call count
+      (18 per arm, no retries) and wall. The prefill split is only partial. `prompt_n` and `cache_n` are `None` in all
+      three arms. `prompt_ms` arrives only on the native arm (batch transport, 24.96 s total vs 19.31 s gen). The
+      JSON and free-form arms stream and report `prompt_ms` 0.0. Cause: `inference.py:1359-1367` sets
+      `prompt_tokens`/`cached_prompt_tokens` only when a `chat_payload` is present, and frontdoor is on the raw
+      `/completion` lane (the limit is documented in `call_recorder.py:24-27`). Filed as TD-29.M0a.
+  - [ ] **TD-29.M0a — Report prefill tokens on the `/completion` lane.** (filed 2026-10-01) Populate `prompt_tokens` and
+    `cached_prompt_tokens` from llama-server's `timings.prompt_n`/`timings.cache_n` on the raw `/completion` path
+    (batch and stream transports), and `prompt_ms` on the stream transport. Then `call_recorder` yields
+    `prompt_n`/`cache_n` for every arm. Code and unit tests are zero-inference. Acceptance: a summarize run over a
+    fresh sidecar receipt shows non-null `prompt_n_total`/`cache_n_total` on all three arms. TD-29.M4 needs this
+    first, because prefix reuse cannot be confirmed without `cache_n`.
   - [x] ~~**TD-29.M1 — Native scoring probe on v10 with speculation disabled per request.**~~ **DECLINED (operator,
     2026-09-29):** the operator prefers testing native mode on the champion directly (ruling 6) over a per-request spec-off
     probe on v10. ✅ 2026-09-29 — resolved to a decline; the text below is kept for the record. Native one-token scoring needs
@@ -275,6 +288,13 @@ episodic memory writing."
     validation fails, so correct calls pay nothing extra. First measure the real-traffic free-form failure rate from the
     TD-29 shadow receipts: the TD-4 cases were adversarial, so 12/18 is not a traffic rate. Acceptance: a failure rate
     with a CI from real receipts, and a design that charges the typed latency only to the failing share.
+    - Decision note 2026-10-01 (TD-29.K2), re-scoping M2 and M3: free-form is 18/18 on frontdoor (Qwen3.6-35B-A3B)
+      against 6/18 on the gemma worker in TD-4. So on frontdoor the typed path buys robustness only, not accuracy on
+      this case set. Validate-first is therefore more attractive on frontdoor, not less. If free-form already passes,
+      the typed call (1.45x free-form wall native, 7.76x JSON) is pure overhead, and validate-first charges it only to
+      the failing share. M2 stays, unchanged in scope. Its first input is the free-form failure rate in the TD-29
+      shadow receipts, measured per role, because the rate is model-dependent. M3 also stays: it matters only while
+      JSON mode is the production decode (until v11), and that is exactly the shadow path.
   - [ ] **TD-29.M3 — Trim the JSON-mode output.** In shadow mode emit no confidence fields, and put closed-set arguments
     only on exactness-critical tools (name them from `ToolRegistry`). Schema change and unit tests are zero-inference;
     the before/after tokens-per-pass count on the TD-4 case set is **GATE: mi210-window** (operator ruling Q3, 2026-09-29).
@@ -297,7 +317,7 @@ episodic memory writing."
     plus value; the pilot receipt records both). Sets that already bind are untouched (byte-identical); more than 36
     labels falls back as before, with the reason recorded. JSON mode is unchanged. ✅ 2026-09-29 — orchestrator
     `c595e13d` (`src/typed_decisions/native.py` `_bind_single_token_keys`, serial and parallel native runners).
-  - [ ] **TD-29.K2 — Re-run the native arm after K1.** Repeat `--closed-mode native --cue-style id_only` on the champion
+  - [x] **TD-29.K2 — Re-run the native arm after K1.** ✅ 2026-10-01 Repeat `--closed-mode native --cue-style id_only` on the champion
     sidecar with the fixed harness (`orch-tdbench-8d`), together with the same-machine JSON and free-form arms that the
     2026-09-29 window missed. **GATE: champion-sidecar (CPU window).** Acceptance: 18/18 resolved or each failure named;
     `native_keys` present on the file_ticket cases; within-run native vs JSON token and wall ratios.
@@ -329,6 +349,25 @@ episodic memory writing."
       left, each arm gated to fit the time remaining, and it stops on any window state other than `open`. Their
       words: "Keep going by cpu-window.json and its est_close_at; the flock is the truth." The loop stays at
       `NEED_MIN=10`.
+    - ✅ 2026-10-01 result, run `/mnt/raid0/llm/tmp/champion-sidecar/runs/td-20260930-p32/` (03:08-03:15Z, announced
+      DS41 pause). One profile for all three arms: cpuset `48-71,80-87`, 32 threads, champion `cpu-20260925-90c12df42`,
+      frontdoor Qwen3.6-35B-A3B Q8 with MTP, 18 TD-4 cases. Summary:
+      `python3 /mnt/raid0/llm/tmp/champion-sidecar/summarize_td_bench.py <run dir>`.
+
+      | arm | exact | per-arg | decode tokens | calls | wall | vs free-form |
+      |---|---|---|---|---|---|---|
+      | native `id_only` (K1 keys) | 18/18 | 66/66 | 564 | 18 | 49.6 s | 1.45x |
+      | JSON | 18/18 | 66/66 | 9,870 | 18 | 265.3 s | 7.76x |
+      | free-form | 18/18 | 66/66 | 805 | 18 | 34.2 s | 1.0x |
+
+      - K1 lifted native from 12/18 to 18/18. `native_keys` is present on all six `file_ticket` cases (`severity`
+        p1..p4 → A..D).
+      - Native is 5.3x faster than JSON, with 17.5x fewer decode tokens.
+      - Free-form is 18/18 on frontdoor, against TD-4's 6/18 on the gemma worker. Closed-set accuracy gains are
+        model-dependent; on frontdoor the gain is robustness only. M2/M3 are re-scoped in the decision note under M2.
+      - Native costs 1.45x free-form wall. Prefill dominates (native `prompt_ms` 24.96 s vs `gen_ms` 19.31 s), so M4
+        prefix-cache reuse is the next lever. It needs TD-29.M0a first.
+      - n=1 per arm on one profile; this is not a production-profile (48-87/40) number.
 - TD-5, TD-9, TD-6, TD-7 and TD-10 are done (2026-09-17/18): the shadow integration, the routing code map, the
   `id_only` native default (it stands pending TD-1d.0), the live replay, and the counterfactual OPE (typed routing is
   ~1pp worse, so enforcement is OFF; TD-11 owns the follow-up). § *Completed Scope*.
