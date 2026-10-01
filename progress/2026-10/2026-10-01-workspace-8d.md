@@ -107,3 +107,33 @@ Pending. It waits for workspace-76's "done" after their replays and two orchestr
   and the minimal REPL-EMB-1.2/1.3. REPL-EMB-1.4 stays frozen, now carrying the post-cap G1 (0.921/0.918/0.862 < 0.95).
   REPL-EMB-4.1 stays open with a landing note. Filed REPL-EMB-4.4, the deploy step for DS41-C100's `orsv` arm.
 - Defaults are unchanged: the REPL-EMB-2.1 kill rule governs any default, and 2.2 is still next.
+
+## V6R-4d.1 / V6R-4d.2: champion HIP build validated on GPU, SW-9 exercised (PASS)
+
+- Ran 2026-10-01 12:14 to 12:16:40Z in workspace-76's DS41 pause, on the production Qwen3.8-27B Q8_0 with its MTP draft.
+  The MI210 device lock was held for the A/B only.
+- Builds: P = v10 `kernels/production/gpu` (`gpu-20260921-ffc1bac82`, b10303); C = champion
+  `kernels/builds/gpu-20260929-90c12df42` (b10308).
+- Arms: P C P on :8197, `-t 8` on cores 72-79, membind 3. Every arm was checked for KFD VRAM residency, its own
+  libggml-hip mapped, placement, and `/props` build_info.
+- pp/tg tok/s: P 886.9/39.01, C 884.4/38.83, P 875.1/39.00.
+- RESULT: `PASS=True; identity C==P True; P-self True; pp_tps_median +0.39% (floor 2.00%); tg_tps_median -0.46% (floor
+  2.00%); sw9_C_all_probs=True; sw9_P_gap=True`.
+- Restore: production :8083 relaunched on v10 (PID 1677674, slot dir `architect_critic`), /health ok.
+- Evidence: `/mnt/raid0/llm/tmp/gpu-champion-ab/runs/w8083-20261001T121346Z/` (`result.json` sha256 `ef3b32b7…5821`);
+  log `/mnt/raid0/llm/tmp/gpu-champion-ab/run_27b_ab_lockonly.log`.
+- V6R-4d.1 (the vision-window variant) is ticked as covered: the production-27B A/B is a superset of it.
+- The parent V6R-4d is ticked.
+- What this means for v11: the champion's GPU side is no-regression with the SW-9 fix in. A candidate from a descendant
+  tip, such as the DS41-C68 fold, reruns the A/B on its own full GPU build. This is recorded under V6R-4a.
+- Derived actionable declined: "add the vision model (:8086) to a future GPU A/B".
+  - The champion changes no ggml-hip source.
+  - The mtmd/clip path does not use the changed loader.
+  - The v11 promotion gate covers all serving roles on the full candidate.
+  - A separate vision window would displace a production server and test nothing that is at risk.
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/autokernel-champion-aggregate.md` | V6R-4d, V6R-4d.1 and V6R-4d.2 ticked; Start-here row removed; v11 line under V6R-4a |
+| epyc-root | `handoffs/active/speculative-decoding-mtp-refresh.md` | SW-9 exercised on GPU (header and SW-9 item) |
+| epyc-root | `handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md` | ARCHSWAP-4: :8083 relaunched again 2026-10-01 12:16Z |

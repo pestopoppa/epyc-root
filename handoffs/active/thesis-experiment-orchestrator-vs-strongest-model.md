@@ -269,6 +269,9 @@ code for a rider), and only if the window has its estimated time left.
     of the same process.
   - Done when `check` shows 0 drift.
   - ✅ 2026-09-29 — the `:8083` half is done (B2: PID 3363961 on v10 `ffc1bac82`, slot dir `architect_critic`, the `:8083` drift cleared). Record: § *Completed Scope*.
+  - 2026-10-01 12:16Z — production `:8083` was relaunched again on v10 under `architect_critic` (PID 1677674, /health ok,
+    VRAM-resident) by the restore step of the champion GPU A/B (`autokernel-champion-aggregate.md` V6R-4d.2). The
+    `:8083` half stays done, and the slot dir is still correct.
   - Still open: **the `:8074` half.** `architect_general` on `:8074` still carries `--slot-save-path
     .../kv_slots/architect_critic` (status: "architect_general pid 2030855 runtime slot_save_path expected
     architect_general; live cmdline has architect_critic"). It needs its own reload in a CPU window, coordinated with

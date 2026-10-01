@@ -19,7 +19,6 @@ DS41's champion of record on its own campaign lineage is `a1faab471e83`, with 4 
 
 | task | what to do |
 |---|---|
-| **V6R-4d.1 / V6R-4d.2** | Live GPU no-regression check of the HIP build `gpu-20260929-90c12df42` (V6R-4d.0, the hardened A/B checks, is done). V6R-4d.1: the vision (:8086) window covers identity, speed and residency. V6R-4d.2: the SW-9 check needs a :8083 window or the 2nd MI210. Both need a DS41 pause agreed with workspace-76 over the bus |
 | **V6R-4a / V6R-4c** | Ride the v11 candidate gate (the fast loader; V6R-4c PARKED by the operator 2026-09-27) |
 | **V6R-4b** | Operator: OP-58, ratify the forward-port rule |
 | **HEAD-3** | The 35B np=24/32 ceiling; needs an operator go for ~12 min of exclusive GPU |
@@ -357,6 +356,9 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         gate: `25132e042` and `90c12df42` are ancestors of the candidate; `tests/test-repack-parallel` passes;
         a CPU load with auto load threads is measured against v10 on one production model; and the decode A/B
         that was cut at one pair here is run to the promotion protocol's full pair count.
+        2026-10-01 (V6R-4d): the GPU half of champion `90c12df42` is validated no-regression vs v10, with SW-9
+        exercised on GPU (pp +0.39%, tg -0.46%, floor 2%; identity and residency PASS). A v11 candidate built from a
+        descendant tip, such as the DS41-C68 fold, still reruns that A/B (`gpu-champion-ab`) on its own full GPU build.
   - [ ] **V6R-4b — operator ratification of the forward-port rule** (OP-58 when the index row lands). Proposed
         text for `CLAUDE.md` § *Experimental Kernel Workflow*: forward-port one feature per commit; before
         reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels with it
@@ -376,7 +378,7 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         be unaffected, but that is unmeasured. Rides V6R-4a into v11. Until it lands, DS41 carries the recipe arm (DS41-C59).
     - PARKED 2026-09-27 (operator): Loader-default fix prepared at e665242f0 (branch `experimental/loader-team-follows-threads-20260927`, 7 lines in `common/common.cpp` `common_model_params_to_llama`: auto load threads follow `-t`, plus the matching `--load-threads` help string in `common/arg.cpp`; cut from the AK champion tip `90c12df42`, pushed to fork), not built or benchmarked. The runtime-arm flag covers DS41 now (DS41-C59, `--load-threads 48`); resume by taking e665242f0 through the experimental workflow (build, then this item's acceptance: bit-exact load, load time within noise, DS41 spinning with no flag) into the champion, and from there into v11 via V6R-4a.
 
-  - [ ] **V6R-4d — live GPU no-regression validation of the champion's HIP build.** The GPU half of the champion now
+  - [x] **V6R-4d — live GPU no-regression validation of the champion's HIP build.** ✅ 2026-10-01 (all parts done; V6R-4d.2 below) The GPU half of the champion now
         exists: **`kernels/builds/gpu-20260929-90c12df42`**, the HIP (gfx90a) twin of `cpu-20260925-90c12df42`, built
         2026-09-29 (workspace-8d, operator-approved). It uses recipe `gfx90a-house-v1`, and its CMakeCache is identical
         to v10's `gpu-20260921-ffc1bac82` on every GGML/LLAMA/target/compiler entry. It reports `10308 (90c12df42)`.
@@ -411,11 +413,31 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
             `ab_probe.py` subcommand that prints what it saw; `selftest/live_checks.sh` passes 24/24 read-only against
             the arm logs and live :8083/:8086 (`/mnt/raid0/llm/tmp/gpu-champion-ab/`). Lesson:
             INC-20260929-dry-run-missed-live-checks.
-      - [ ] **V6R-4d.1 — run the champion HIP A/B in the vision (:8086) window.** Tests identity, speed and residency
+      - [x] **V6R-4d.1 — run the champion HIP A/B in the vision (:8086) window.** Tests identity, speed and residency
             (`vision_ab.sh`). Needs a DS41 pause coordinated with workspace-76 over the bus; this is not an operator
             decision.
-      - [ ] **V6R-4d.2 — the SW-9 GPU check (draft-mtp `n_probs>0` returns probs on every token)** on an MTP model: a
+            ✅ 2026-10-01 — **covered, superseded by V6R-4d.2.** The vision window was planned only because no MTP
+            window existed. The production-27B A/B below checks identity, speed and residency on the production
+            model itself, plus SW-9, so a separate :8086 run would add nothing.
+      - [x] **V6R-4d.2 — the SW-9 GPU check (draft-mtp `n_probs>0` returns probs on every token)** on an MTP model: a
             :8083 window (DS41 pause, workspace-76) or the 2nd MI210.
+            ✅ 2026-10-01 — **PASS** (workspace-8d). Run 12:14 to 12:16:40Z in workspace-76's DS41 pause, on the
+            production model Qwen3.8-27B Q8_0 with its MTP draft. The MI210 device lock was held for the A/B only.
+            - Builds: P = production v10 `kernels/production/gpu` (`gpu-20260921-ffc1bac82`, build_info
+              b10303-ffc1bac82); C = champion `kernels/builds/gpu-20260929-90c12df42` (b10308-90c12df42).
+            - Arms: P C P on :8197, host threads `-t 8` on cores 72-79, membind 3.
+            - Every arm was checked for KFD VRAM residency, its own `libggml-hip` mapped, placement OK, and
+              `/props` build_info.
+            - pp/tg tok/s: P 886.9/39.01, C 884.4/38.83, P 875.1/39.00.
+            - RESULT: `PASS=True; identity C==P True; P-self True; pp_tps_median +0.39% (floor 2.00%);
+              tg_tps_median -0.46% (floor 2.00%); sw9_C_all_probs=True; sw9_P_gap=True`. That is, C returns probs on
+              every draft-mtp token and v10 P still shows the gap.
+            - Restore: production :8083 relaunched on v10 (PID 1677674, slot dir `architect_critic`), /health ok.
+            - Evidence: run dir `/mnt/raid0/llm/tmp/gpu-champion-ab/runs/w8083-20261001T121346Z/` (`result.json`
+              sha256 `ef3b32b79c043b772abb8cc152f52ceb1f0b4a1d43ea85c399e6676ef18a5821`, schema
+              `epyc.gpu_champion_ab.result.v1`); log `/mnt/raid0/llm/tmp/gpu-champion-ab/run_27b_ab_lockonly.log`.
+            - Implication: the GPU side of the champion `90c12df42` is no-regression vs v10, with the SW-9 fix
+              exercised on GPU. The v11 consequence is recorded under V6R-4a.
 
 #### DO-NOT-FOLD ledger — branches that exist on the CPU lineage and must NOT be picked up by a sweep
 
