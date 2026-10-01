@@ -97,3 +97,13 @@ Pending. It waits for workspace-76's "done" after their replays and two orchestr
 | epyc-root | `handoffs/active/routing-intelligence.md` | RI-16 ticked with the table; RI-19 measured value and next step; RI-24 filed; RI-18 run status |
 | epyc-root | `handoffs/active/typed-decision-plane.md` | TD-29.K2 and TD-29.M0 ticked; TD-29.M0a filed; M2/M3 decision note; Start here refreshed |
 | epyc-root | `progress/2026-10/2026-10-01-workspace-8d.md` | this note |
+
+## UFH-12: context.search landed as an opt-in arm (handoff update)
+
+- `context.search` is on orch main `b384cdbb` (series `d02942f7`..`b384cdbb`, golden field-off test `5cae6c6b`), reviewed
+  by this session. Opt-in per request via `ChatRequest.context_search`; it returns pointers, its accounting is a separate
+  `context_pulls.search` block, and with the field off the surfaces are byte-identical to `08edc054`.
+- `repl-embedding-retrieval.md`: ticked REPL-EMB-1.1 (`4f534f95`, `cc808487`; hermetic tests `002b6fc4`, `1fe1d5f8`)
+  and the minimal REPL-EMB-1.2/1.3. REPL-EMB-1.4 stays frozen, now carrying the post-cap G1 (0.921/0.918/0.862 < 0.95).
+  REPL-EMB-4.1 stays open with a landing note. Filed REPL-EMB-4.4, the deploy step for DS41-C100's `orsv` arm.
+- Defaults are unchanged: the REPL-EMB-2.1 kill rule governs any default, and 2.2 is still next.

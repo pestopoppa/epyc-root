@@ -1,6 +1,6 @@
 # REPL Embedding Retrieval — hybrid search that returns pointers
 
-**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the Phase-2 kill criterion is PRE-REGISTERED (REPL-EMB-2.1 ✅); next is the offline eval (2.2); REPL-EMB-0.3 and 1.4 are frozen.
+**Status:** active — Phase 0 signed, applied and proven 2026-09-26 (embedder pool 0.95× → 4.96×). Narrowed 2026-09-27: the Phase-2 kill criterion is PRE-REGISTERED (REPL-EMB-2.1 ✅); next is the offline eval (2.2); REPL-EMB-0.3 and 1.4 are frozen. 2026-10-01: `context.search` landed as an opt-in experiment arm (orch `b384cdbb`); defaults unchanged; the 2.1 kill rule governs any default.
 **Created:** 2026-09-26
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-12).
 **Depends on:** UFH-07 (tool-output-compression, TOC-SP-3 + trajectory artifact), INF-78 (OAB-8 scouts),
@@ -117,10 +117,12 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 
 ### Phase 1 — pooled async client, chunker, per-request index (no inference needed for tests)
 
-- [ ] **REPL-EMB-1.1 — pooled async embedding client**: one shared `httpx.AsyncClient`, round-robin over
+- [x] **REPL-EMB-1.1 — pooled async embedding client**: one shared `httpx.AsyncClient`, round-robin over
   instances of ONE model, list-batched `/embedding`, ≤ 4 in flight per port, timeouts, LRU cache keyed by
   chunk sha256. Existing client for reference: `orchestration/repl_memory/parallel_embedder.py`
   (its Python-3.11 `asyncio.coroutine` bug was fixed separately in orch `120b55b7`, 2026-09-26).
+  ✅ 2026-10-01 — on orch main: `4f534f95` (pooled client plus the busy-frontdoor neighbour cap, `src/embedding_pool/`,
+  flag `repl_embedding_pool`, default OFF) and `cc808487` (capped-grant peak). Hermetic tests: `002b6fc4`, `1fe1d5f8`.
 - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-12 Phase-2 retrieval eval shows dense retrieval pays — **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**
   (operator decision 2026-09-26, from the Phase-0 G1 result). In the REPL-EMB-1.1 scheduler, cap in-flight
   embedding requests on instances whose NUMA node is shared with a frontdoor half that is currently decoding,
@@ -131,9 +133,18 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   throughput cost is visible. Pre-register the G3 warm-up discard if G3 is re-run. Before this run, wire the
   gate driver's write side for the belief kernel (VB-UFH12-PLACEMENT in `vidya-belief-substrate-program.md`).
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): the saturation-guard policy (B+D) is frozen; the landed neighbour cap (`neighbour_cap.max_in_flight: 1`, pool flag default OFF) stays as it is, and no further policy arms or G1 re-measure run; unfreeze trigger: REPL-EMB-2.2 passes the REPL-EMB-2.1 kill rule; then B+D, plus GPU embedder redundancy (REPL-EMB-0.3), is the operator's target. The box stays open: frozen is not done.
-- [ ] **REPL-EMB-1.2 — line-aware chunker** that preserves source line ranges for every chunk.
-- [ ] **REPL-EMB-1.3 — per-request flat numpy index** (cosine, top-k) plus lexical scorer and
+  Cap code landed in `4f534f95`; post-cap G1 2026-09-27 = 0.921/0.918/0.862 on `:8070`/`:8080`/`:8180` (< 0.95 target),
+  `data/embedder_placement/post-cap-20260927.json` (epyc-orchestrator working tree, untracked).
+- [x] **REPL-EMB-1.2 — line-aware chunker** that preserves source line ranges for every chunk.
+  ✅ 2026-10-01 — minimal version landed with context.search (orch `d02942f7`..`b384cdbb`,
+  `src/repl_environment/context_search.py` `chunk_sections`): a chunk is a run of whole lines of one section and keeps
+  its section, char span and first line number.
+- [x] **REPL-EMB-1.3 — per-request flat numpy index** (cosine, top-k) plus lexical scorer and
   `rrf_fuse` hybrid; lexical-only path labelled. Tests use a fake embedder.
+  ✅ 2026-10-01 — minimal version landed with context.search (orch `d02942f7`..`b384cdbb`,
+  `src/repl_environment/context_search.py`): BM25 plus a flat cosine index fused with `rrf_fuse`, one index per
+  embedding model (invariant 4), fake-embedder tests (`tests/unit/test_ufh12_context_search.py`). Every fallback is
+  labelled in `mode`: `lexical` = dense off; `lexical_fallback:<reason>`, e.g. `index_timeout`.
 
 ### Phase 2 — offline retrieval eval, then online shadow (decides the method from data)
 
@@ -198,9 +209,27 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
 - [ ] **REPL-EMB-4.1 — `context.search()`**: `repl_view` closure + namespace key, `op="search"` pull
   accounting, lazy index on first call (the bundle is built twice per request), `describe` /
   `render_root_block` entries, and extend the `test_oab7_context_bundle.py` `dir(view)` test.
+  **2026-10-01 — LANDED AS AN OPT-IN EXPERIMENT ARM**, orch main `b384cdbb`, reviewed by workspace-8d. The box stays open.
+  - Field `ChatRequest.context_search` (default false; requires `context_bundle`). The actor CLI's `--context-search`
+    fails closed (exit 1) without the server's `context_pulls.search` echo.
+  - Returns POINTERS only; reads go through `context.get`. Accounting is a separate `context_pulls.search` block, not
+    `op="search"` pull records, so the pull fields stay exact.
+  - Field off: the root block, view and echo are byte-identical to `08edc054`; a golden test pins this (`5cae6c6b`).
+  - Index build budget per search: clamp(5 + n/25, 10, 60) s for n chunks not yet embedded; the build resumes batch by
+    batch on the next search.
+  - Consumer: DS41-C100's `orsv` arm (workspace-76); API reloads are coordinated with workspace-8d.
+  - **The REPL-EMB-2.1 kill rule still governs any default:** context.search stays per-request opt-in and
+    `repl_embedding_pool` stays OFF by default unless REPL-EMB-2.2 passes (hybrid recall@5 − L ≥ 0.10, n ≥ 120,
+    bootstrap lower bound > 0).
+  - Open until 2.2 decides and `search_sections` (4.2) is resolved.
 - [ ] **REPL-EMB-4.2 — replace `DocumentREPLEnvironment.search_sections`** (`src/repl_document.py:221`)
   with the hybrid search primitive.
 - [ ] **REPL-EMB-4.3 — evaluate via `rlm-contested-claims` E3b.**
+- [ ] **REPL-EMB-4.4 — deploy context.search for the DS41-C100 `orsv` arm**: on workspace-76's "ALL GPU CALLS DONE",
+  workspace-8d does an API-only reload (`orchestrator_stack.py reload orchestrator`) onto `b384cdbb`+ and a runtime
+  `POST /config {"repl_embedding_pool": true}` for the `orsv` arm. Afterwards decide whether to pin the flag in
+  `orchestration/runtime_flags.spec.yaml` (now `repl_embedding_pool: baseline`) or reset it — the REPL-EMB-2.1 kill
+  rule keeps it OFF by default.
 
 ### Phase 5 — SEARCH for OAB-8 scouts
 
