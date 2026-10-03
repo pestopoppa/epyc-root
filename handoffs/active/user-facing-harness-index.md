@@ -15,6 +15,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
 | UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
+| UFH-14 | agentic serving harness fixes | [agentic-serving-harness-fixes.md](agentic-serving-harness-fixes.md) | UFH14-A1 — finish the F12 cxf1/cxf12 run on DFlash2 :8083, then A3 prefix warming + staggered starts | INF-77, UFH-01 |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-4 P0.4b/c — republish the Harness Card (HS-7) and freeze OpenCode at tag v1.18.31=014614d3; then P0-split | RTG-09 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
