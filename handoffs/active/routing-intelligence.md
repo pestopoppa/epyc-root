@@ -248,6 +248,11 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       counterfactual"). The read side is `vidya-belief-substrate-program.md` VB-RI18; the sidecar gaps against its
       contract are filed there as VB-RI18a.
   - [ ] **RI-18c — apply the DROP (clause 1's pre-registered action).** (filed 2026-10-03, from the RI-18 verdict)
+    - **BUILT 2026-10-03, NOT DEPLOYED** (workspace-ec): orch 88d885c6 (gate, verdict and revision removed at all five
+      call sites; `chat_review` verdict/revise helpers, C1-C3, the review/revision prompt builders and files, and
+      `review_low_q_threshold` with its env/autopilot/swarm surfaces removed; plan review kept; RI-16 `stage_ms` keys kept,
+      now always null) + 8e379f13 (docs). Integrated on orch `integ/api-reload-2-ec` 10bc5681. Not ticked: the done-when
+      needs the live `/chat` reading, which follows UFH14-DEPLOY-EC (`agentic-serving-harness-fixes.md`).
     - Remove the gate, the verdict and the revision from all five call sites: `repl_executor.py` ~779-826,
       `direct_stage.py` ~223-242, `stream_adapter.py` ~346-360, `chat.py` ~1613-1628 and `v1_escalation.py` ~405-466.
       Also remove the `review_low_q_threshold` config.

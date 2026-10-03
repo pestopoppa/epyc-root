@@ -103,6 +103,20 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   workspace-ec) An API test falls back to that directory when run from a worktree with no `logs/`; on 2026-10-03 it
   wrote 2 synthetic `contention_denied` rows into the live 2026-10-03 progress file (deleted with operator OK).
   Point the fallback at a tmp dir under pytest (conftest fixture) and add a test that the live dir is untouched.
+- [ ] **SCG-PRIORS-WARM — `stack_priors` must not classify WARM-tier roles as `live_stack`.** (filed 2026-10-03,
+  workspace-ec, found fixing 19 stale test fixtures on orch `fix/main-test-failures-ec` d97004f6 / 9d40c30b) After
+  STACKCHG-DFLASH2 moved `worker_vision` (:8086) to cold CPU, WARM tier, the compiled `stack_priors` still lists the
+  vision roles as `live_stack`, so seeding's DEFAULT_ROLES include :8086, which a default `start` no longer launches.
+  Fix the compiler classification (launch tier HOT only, or an explicit `warm` class), recompile, and add a test that
+  a WARM role never lands in DEFAULT_ROLES. Derived output changes, so it ships as a stack-change package.
+- [ ] **SCG-TEST-ORDER — fix the order-dependent `test_safety_gate_baseline_eligibility` failure.** (filed 2026-10-03,
+  workspace-ec) `test_reproduced_promotion_uses_representative_median…` fails or passes depending on test order, on
+  origin/main as well as the integration branch. Find the leaked state (module global, env, or monkeypatch order),
+  isolate it in a fixture, and prove it with `pytest -p no:randomly` in both orders plus the full `tests/unit` run.
+- [ ] **SCG-GITNEXUS-ORCH — re-index the stale orchestrator GitNexus index.** (filed 2026-10-03, workspace-ec) A
+  subagent saw it ~844 commits behind, which makes every `gitnexus impact` blast radius on orch code untrustworthy.
+  Run `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyze`) for epyc-orchestrator in a CPU-quiet window (it
+  must not overlap an AutoKernel CPU measurement window); exit 75 means another analyze holds the lock, retry later.
 - [ ] **SCG-INERT-FLAGS — sweep `orchestrator_stack.py` for other parsed-but-unread flags.** (filed 2026-10-03, from
   SCG-DRYRUN) The same defect has now shipped twice (`--validate-only` 2026-08-12, `--dry-run` 2026-10-03), and each
   was found by accident. Each fix covered only its own flag. Add one structural test: for every subcommand, every
