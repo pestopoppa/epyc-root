@@ -1,0 +1,36 @@
+IMPORT-TIME CAPACITY/PARITY GATE: PASS
+HOT_SERVERS  ports: [8070, 8074, 8080, 8083, 8090, 8091, 8092, 8093, 8094, 8095, 8180]
+WARM_SERVERS: [None, None, None, None, None, None]
+
+per instance:
+  role                    port shape_class      on_gpu   n_ctx  kv_gib vram_nonkv  host_w
+  architect_critic        8083 gpu_host_lane    True    196608    6.38      37.92      27
+  architect_general       8074 full             False   262144   24.00       None      90
+  frontdoor               8070 full             False   262144    2.66       None      37
+  frontdoor               8080 half             False   262144    2.66       None      37
+  frontdoor               8180 half             False   262144    2.66       None      37
+  worker_vision           8086 half             False    65536    3.19      19.26    18.3
+
+GPU leg (ROCm0):
+{
+ "ok": true,
+ "required_gib": 44.295,
+ "budget_gib": 62.0,
+ "capacity_gib": 64.0,
+ "headroom_gib": 2.0,
+ "per_role_gib": {
+  "architect_critic": 44.295
+ },
+ "source": "declared:/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/sandbox-base/orchestrator/orchestration/gpu_shadow_lane_np_ceiling.yaml"
+}
+host leg (CPU RAM):
+{
+ "gated": true,
+ "kv_gib": 35.1561,
+ "weights_gib": 219.3,
+ "required_gib": 254.4561,
+ "budget_gib": 1069.4158,
+ "capacity_gib": 1133.4158,
+ "reserve_gib": 64.0,
+ "ok": true
+}

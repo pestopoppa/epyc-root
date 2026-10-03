@@ -1,0 +1,31 @@
+applied at 2026-10-03T05:23:49Z
+orchestrator HEAD 2586a7bb939ea7a81acfa63d29ef1a2cc4c8c0ef
+research     HEAD be2cc41410604eec5055f04e5c05c0e44d807604
+== git apply --check on the REAL working trees (read-only)
+ok  orchestrator patch applies to 2586a7bb
+ok  research patch applies to be2cc414
+== git apply into sandbox-pristine
+Checking patch scripts/registry/stack_change_pipeline.py...
+Checking patch src/backends/context_limits.py...
+Checking patch stack_templates/default.yaml...
+Checking patch tests/unit/test_context_limits_model_cap.py...
+Checking patch tests/unit/test_stack_change_pipeline.py...
+Checking patch tests/unit/test_stack_templates_v2.py...
+Checking patch tests/unit/test_kv_pool_long_prefill.py...
+Applied patch scripts/registry/stack_change_pipeline.py cleanly.
+Applied patch src/backends/context_limits.py cleanly.
+Applied patch stack_templates/default.yaml cleanly.
+Applied patch tests/unit/test_context_limits_model_cap.py cleanly.
+Applied patch tests/unit/test_stack_change_pipeline.py cleanly.
+Applied patch tests/unit/test_stack_templates_v2.py cleanly.
+Applied patch tests/unit/test_kv_pool_long_prefill.py cleanly.
+Checking patch orchestration/model_registry.yaml...
+Applied patch orchestration/model_registry.yaml cleanly.
+identical scripts/registry/stack_change_pipeline.py
+identical src/backends/context_limits.py
+identical stack_templates/default.yaml
+identical tests/unit/test_context_limits_model_cap.py
+identical tests/unit/test_stack_change_pipeline.py
+identical tests/unit/test_stack_templates_v2.py
+identical tests/unit/test_kv_pool_long_prefill.py
+identical research master

@@ -1,0 +1,23 @@
+taken_at 2026-10-03T05:18:12Z
+== listener
+LISTEN 0      512        127.0.0.1:8083      0.0.0.0:*    users:(("llama-server",pid=3793153,fd=10))
+== pid 3793153
+3793153 Sat Oct  3 04:44:39 2026       33:32
+exe: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+argv: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 8083 -np 4 -c 196608 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 8 --device ROCm0 --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic --device-draft ROCm0 
+== VRAM (read-only sysfs)
+05:18:12 card2 mem_info_vram_used=47915741184 total=68702699520
+   kfd pid=32889 comm=whisper-server vram=0
+   kfd pid=33130 comm=tts-server vram=0
+   kfd pid=3793153 comm=llama-server vram=47899860992
+05:18:17 card2 mem_info_vram_used=47915741184 total=68702699520
+   kfd pid=32889 comm=whisper-server vram=0
+   kfd pid=33130 comm=tts-server vram=0
+   kfd pid=3793153 comm=llama-server vram=47899860992
+== GET /props (read-only)
+{'total_slots': 4, 'default_generation_settings.n_ctx': 196608}
+== last load block of logs/llama-server-8083.log
+213147:0.09.917.995 W common_speculative_impl_draft_dflash: requested draft size (n_max=8, n_min=0) exceeds the trained block size 8 -- clamping to 7
+213186:0.16.859.237 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 196608, kv_unified = 'true'
+213190:0.16.859.290 I common_speculative_impl_draft_dflash: - block_size=8, mask_token_id=248070, n_extract=5
+213191:0.16.859.290 W common_speculative_impl_draft_dflash: requested draft size (n_max=8, n_min=0) exceeds the trained block size 8 -- clamping to 7

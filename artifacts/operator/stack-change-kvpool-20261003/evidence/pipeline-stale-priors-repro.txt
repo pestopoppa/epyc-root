@@ -1,0 +1,58 @@
+# candidate sources + UNPATCHED pipeline; derived files at HEAD; ONE update then check
+== update (once)
+numa_mode: ok
+shared_with_derivations: ok
+lean_registry: ok
+descriptors: updated
+stack_priors: updated
+procedure_enums: updated
+operator_summary: updated
+guard: ok
+guard_all_surfaces: warnings
+guard_strict: ok
+reasoning_effort_certifications: ok
+serving_shape_capacity: ok
+stack_manifest_registry: ok
+q_scorer_priors: ok
+runtime_attestation: failed
+  error: live process drift: architect_critic pid 3793153 runtime context_tokens expected 393216; live cmdline has 196608
+  error: live process drift: architect_critic pid 3793153 runtime spec.draft_max expected 7; live cmdline has 8
+declared_env_attestation: ok
+simulated_fixtures: reference
+summary: failed
+acceptance: blocked
+== priors written by that update:
+107:      effective_context_tokens: 196608
+517:      effective_context_tokens: 196608
+961:      effective_context_tokens: 196608
+== check (fresh process)
+numa_mode: ok
+shared_with_derivations: ok
+lean_registry: ok
+descriptors: ok
+stack_priors: stale
+  error: stack-prior artifact is stale or missing: /mnt/raid0/llm/tmp/stack-change-kvpool-20261003/sandbox-repro/orchestrator/orchestration/derived/stack_priors.yaml
+  error: run: uv run python scripts/registry/stack_change_pipeline.py update
+procedure_enums: ok
+operator_summary: ok
+guard: failed
+  error: role 'architect_critic' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'coder_escalation' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'ingest_long_context' serving.effective_context_tokens 196608 does not match launch context 393216
+guard_all_surfaces: failed
+  error: role 'architect_critic' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'coder_escalation' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'ingest_long_context' serving.effective_context_tokens 196608 does not match launch context 393216
+guard_strict: failed
+  error: role 'architect_critic' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'coder_escalation' serving.effective_context_tokens 196608 does not match launch context 393216
+  error: role 'ingest_long_context' serving.effective_context_tokens 196608 does not match launch context 393216
+reasoning_effort_certifications: ok
+serving_shape_capacity: ok
+stack_manifest_registry: skipped
+q_scorer_priors: skipped
+runtime_attestation: skipped
+declared_env_attestation: ok
+simulated_fixtures: reference
+summary: failed
+acceptance: blocked

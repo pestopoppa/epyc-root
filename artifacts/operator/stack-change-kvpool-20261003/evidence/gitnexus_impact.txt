@@ -1,0 +1,88 @@
+orchestrator HEAD 2586a7bb; gitnexus index (built from /workspace/repos at an old commit):
+=== gitnexus impact parse_props --direction upstream
+{"level":50,"time":1791004774512,"name":"gitnexus","msg":"GitNexus: ⚠️ Index for \"epyc-orchestrator\" was built at /workspace/repos/epyc-orchestrator; your cwd (/mnt/raid0/llm/epyc-orchestrator) is a sibling clone that is 842 commits ahead of the indexed commit. Results may be stale or incorrect — re-run `gitnexus analyze` to refresh the index."}
+  "error": "Target 'parse_props' not found",
+    "name": "parse_props"
+  "impactedCount": 0,
+  "risk": "UNKNOWN"
+=== gitnexus impact ContextLimit --direction upstream
+{"level":50,"time":1791004775319,"name":"gitnexus","msg":"GitNexus: ⚠️ Index for \"epyc-orchestrator\" was built at /workspace/repos/epyc-orchestrator; your cwd (/mnt/raid0/llm/epyc-orchestrator) is a sibling clone that is 842 commits ahead of the indexed commit. Results may be stale or incorrect — re-run `gitnexus analyze` to refresh the index."}
+  "error": "Target 'ContextLimit' not found",
+    "name": "ContextLimit"
+  "impactedCount": 0,
+  "risk": "UNKNOWN"
+=== gitnexus impact observe --direction upstream
+{"level":50,"time":1791004776160,"name":"gitnexus","msg":"GitNexus: ⚠️ Index for \"epyc-orchestrator\" was built at /workspace/repos/epyc-orchestrator; your cwd (/mnt/raid0/llm/epyc-orchestrator) is a sibling clone that is 842 commits ahead of the indexed commit. Results may be stale or incorrect — re-run `gitnexus analyze` to refresh the index."}
+    "name": "observe",
+    "filePath": "src/trace/review_ledger.py"
+  "impactedCount": 1,
+  "risk": "LOW",
+      "name": "Trace",
+        "name": "run",
+        "filePath": "src/trace/review_ledger.py",
+=== gitnexus impact _lean_registry_step --direction upstream
+{"level":50,"time":1791004777140,"name":"gitnexus","msg":"GitNexus: ⚠️ Index for \"epyc-orchestrator\" was built at /workspace/repos/epyc-orchestrator; your cwd (/mnt/raid0/llm/epyc-orchestrator) is a sibling clone that is 842 commits ahead of the indexed commit. Results may be stale or incorrect — re-run `gitnexus analyze` to refresh the index."}
+  "error": "Target '_lean_registry_step' not found",
+    "name": "_lean_registry_step"
+  "impactedCount": 0,
+  "risk": "UNKNOWN"
+=== gitnexus impact run_stack_change_pipeline --direction upstream
+{"level":50,"time":1791004777944,"name":"gitnexus","msg":"GitNexus: ⚠️ Index for \"epyc-orchestrator\" was built at /workspace/repos/epyc-orchestrator; your cwd (/mnt/raid0/llm/epyc-orchestrator) is a sibling clone that is 842 commits ahead of the indexed commit. Results may be stale or incorrect — re-run `gitnexus analyze` to refresh the index."}
+    "name": "run_stack_change_pipeline",
+    "filePath": "scripts/registry/stack_change_pipeline.py"
+  "impactedCount": 2,
+  "risk": "LOW",
+      "name": "Unit",
+        "name": "main",
+        "filePath": "scripts/registry/stack_change_pipeline.py",
+
+=== STRUCTURAL consumers of the ContextLimit fields this change touches (git grep, HEAD)
+src/api/admission.py:258:    get_shared_pool_admission,
+src/api/routes/chat_pipeline/routing_decision.py:207:        limit = get_context_limit_resolver().limit_for_role(frontdoor)
+src/api/routes/chat_pipeline/routing_decision.py:233:        limit = resolver.limit_for_role(default_role)
+src/api/routes/chat_pipeline/scout_stage.py:780:                self.url, prompt_tokens, self.limit.pool_tokens,
+src/api/routes/chat_pipeline/scout_stage.py:817:        limit_for_url = getattr(resolver, "limit_for_url", None)
+src/api/routes/chat_pipeline/scout_stage.py:818:        limit = limit_for_url(url) if callable(limit_for_url) else None
+src/api/routes/chat_pipeline/scout_stage.py:822:    if limit is None or not getattr(limit, "shared_pool", False):
+src/api/routes/chat_pipeline/scout_stage.py:825:        from src.scheduling.kv_pool_admission import get_shared_pool_admission
+src/api/routes/chat_pipeline/scout_stage.py:827:        pool = get_shared_pool_admission()
+src/api/routes/chat_pipeline/scout_stage.py:981:        report["pool_gate"] = {"gated": True, "pool_tokens": int(pool_limit.pool_tokens),
+src/api/routes/openai_compat.py:1065:        limit = get_context_limit_resolver().limit_for_role(role)
+src/graph/compaction.py:91:            limit = get_context_limit_resolver().limit_for_role(role, urls)
+src/llm_primitives/context_recovery.py:106:            return resolver.limit_for_role(r, urls)
+src/llm_primitives/context_recovery.py:114:                resolver.observe(current_exc.backend_url, n_ctx=current_exc.n_ctx)
+src/llm_primitives/inference.py:157:    if limit is None or not getattr(limit, "cap_binding", False):
+src/llm_primitives/inference.py:999:            _clamp_limit = get_context_limit_resolver().limit_for_role(
+src/llm_primitives/inference.py:1015:                f"(server slot n_ctx {_clamp_limit.slot_n_ctx}); never dispatched",
+src/llm_primitives/inference.py:1078:                pool_limit = get_context_limit_resolver().limit_for_url(backend_url)
+src/llm_primitives/inference.py:1081:            if pool_limit is not None and pool_limit.shared_pool:
+src/llm_primitives/inference.py:1082:                from src.scheduling.kv_pool_admission import get_shared_pool_admission
+src/llm_primitives/inference.py:1087:                pool_admission = get_shared_pool_admission()
+src/llm_primitives/inference.py:1090:                pool_tokens_needed = pool_admission.reservation_tokens(
+src/llm_primitives/inference.py:1097:                        pool_limit.pool_tokens,
+src/llm_primitives/inference.py:1120:                        f"queued {pool_tokens_needed} tokens behind "
+src/llm_primitives/inference.py:1122:                        f"(pool {pool_limit.pool_tokens}"
+src/llm_primitives/inference.py:1489:                from src.scheduling.kv_pool_admission import get_shared_pool_admission
+src/llm_primitives/inference.py:1491:                get_shared_pool_admission().report_pool_exhausted(backend_url)
+src/registry/stack_priors.py:2397:            # Declared as `server_mode.<role>.serving_shape.kv_unified`: with it,
+src/scheduling/kv_pool_admission.py:292:    def _fits(self, url: str, tokens: int, pool_tokens: int, observed: tuple | None) -> bool:
+src/scheduling/kv_pool_admission.py:298:        return max(own, seen) + tokens <= pool_tokens
+src/scheduling/kv_pool_admission.py:304:        pool_tokens: int,
+src/scheduling/kv_pool_admission.py:327:        pool_tokens = max(1, int(pool_tokens))
+src/scheduling/kv_pool_admission.py:329:        want = max(1, min(want, pool_tokens))
+src/scheduling/kv_pool_admission.py:353:                                               pool_tokens, observed)
+src/scheduling/kv_pool_admission.py:398:                            observed[0] if observed else "n/a", pool_tokens,
+src/scheduling/kv_pool_admission.py:433:        pool_tokens: int,
+src/scheduling/kv_pool_admission.py:442:            if not self._fits(url, want, pool_tokens, observed):
+src/scheduling/kv_pool_admission.py:455:        if self._fits(url, want + held_for_ahead, pool_tokens, observed):
+src/scheduling/kv_pool_admission.py:502:_shared_pool_admission = SharedKVPoolAdmission()
+src/scheduling/kv_pool_admission.py:505:def get_shared_pool_admission() -> SharedKVPoolAdmission:
+src/scheduling/kv_pool_admission.py:506:    return _shared_pool_admission
+
+=== STRUCTURAL consumers of _lean_registry_step / stack_manifest import order
+scripts/registry/stack_change_pipeline.py:590:    from scripts.server.stack_manifest import ROLE_LAUNCH_META
+scripts/registry/stack_change_pipeline.py:613:def _lean_registry_step(
+scripts/registry/stack_change_pipeline.py:657:                from scripts.server.stack_manifest import ROLE_LAUNCH_META
+scripts/registry/stack_change_pipeline.py:1167:    from scripts.server.stack_manifest import validate_against_registry
+scripts/registry/stack_change_pipeline.py:1419:        report.steps.append(_lean_registry_step(config, check=True))
+scripts/registry/stack_change_pipeline.py:1427:        lean_step = _lean_registry_step(config, check=False)

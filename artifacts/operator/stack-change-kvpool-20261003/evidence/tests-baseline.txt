@@ -1,0 +1,5 @@
+== promotion-gate set
+======================= 202 passed, 1 warning in 44.61s ========================
+== related set
+FAILED tests/unit/test_stack_templates_v2.py::TestDefaultYamlRoundTrip::test_hot_vs_loaded_breakdown
+============= 1 failed, 828 passed, 2 warnings in 77.98s (0:01:17) =============

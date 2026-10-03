@@ -1,0 +1,30 @@
+# stack-change phase 0 — intent (operator-approved 2026-10-03, "yes"). The ONLY input.
+schema: epyc.stack_change_intent.v1
+id: STACKCHG-KVPOOL-20261003
+operator_directives:
+  - "2026-10-03: yes — :8083 KV pool 196608 -> 393216 (np 4, kv-unified, q8_0 K/V kept); per-request cap 262144 (n_ctx_train) in the orchestrator's context limits; DFlash2 --spec-draft-n-max 8 -> 7; re-derive vram_non_kv_gib and the capacity leg"
+decision_package: /mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md   # option (a) at 393216
+
+retire: []          # nothing retired
+assign: {}          # no role changes host or model (architect_critic keeps Qwen3.8-27B-Q8_0;
+                    # coder_escalation / ingest_long_context stay aliases on :8083)
+
+topology:
+  architect_critic:            # :8083, MI210 ROCm0, GPU_HOST_LANE 184-191 (placement unchanged)
+    n_ctx: 393216              # was 196608
+    UNVALIDATED: true          # never served at 393216; load-time KFD peak measured at bring-up
+    slots: 4                   # unchanged
+    kv_unified: true           # unchanged
+    kv_quant: {k: q8_0, v: q8_0}   # unchanged
+    vram_non_kv_gib: 39.15     # was 37.92; DERIVED (PACKAGE §4), UNVALIDATED until bring-up
+
+drafter:
+  master:
+    roles.qwen38_27b_q8_local.drafters.dflash2.draft_max: 7   # was 8; server clamped 8 -> 7 (block_size 8)
+    # canonical recipe qwen3.8-27b-q8-gpu-dflash2-np4.json keeps draft_n_max 8 (AK measurement identity)
+  topology:
+    drafter_selection: {architect_critic: dflash2}            # unchanged
+
+context_limits:
+  per_request_cap: 262144      # = n_ctx_train (GGUF qwen35.context_length); derived from model.ctx_max,
+                               # not a new literal. Lives in the API -> `reload orchestrator` after apply.

@@ -1,0 +1,10 @@
+== base (DFLASH2 root patch applied to a scratch copy of topology_check.py)
+  [undersubscription] shape 'NUMA_Q1A' = ('48-71,144-167', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+  [undersubscription] shape 'NUMA_Q1B' = ('72-95,168-191', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+TOPOLOGY CHECK PASS: 5 roles, 7 instances, 8 shapes
+rc=0
+== pristine (DFLASH2 root patch applied to a scratch copy of topology_check.py)
+  [undersubscription] shape 'NUMA_Q1A' = ('48-71,144-167', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+  [undersubscription] shape 'NUMA_Q1B' = ('72-95,168-191', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+TOPOLOGY CHECK PASS: 5 roles, 7 instances, 8 shapes
+rc=0

@@ -1,0 +1,526 @@
+--- a/scripts/registry/stack_change_pipeline.py
++++ b/scripts/registry/stack_change_pipeline.py
+@@ -723,9 +723,14 @@
+ 
+         if cache_path.exists():
+             cache_path.unlink()  # force, as the CLI's --force does
++        before = config.lean_registry.read_bytes() if config.lean_registry.exists() else None
+         out = load_or_compile(
+             config.research_registry, active, config.lean_registry, cache_path, topology
+         )
++        changed = before != (
++            config.lean_registry.read_bytes() if config.lean_registry.exists() else None
++        )
++        evicted = _evict_lean_derived_modules(config) if changed else []
+     except Exception as exc:  # noqa: BLE001
+         return PipelineStep(
+             name="lean_registry",
+@@ -736,18 +741,54 @@
+                 f"drafter selection: {_topology_path(config)} (drafter_selection)",
+             ],
+         )
++    details = [
++        f"recompiled from master: {config.research_registry}"
++        f" -> {config.lean_registry}",
++        f"{len(out.get('roles', {}))} roles projected through the active manifest",
++    ]
++    if evicted:
++        details.append(
++            "lean changed: evicted " + ", ".join(evicted) + " so the later steps of this "
++            "run import it against the regenerated lean, not the one it was loaded from"
++        )
+     return PipelineStep(
+         name="lean_registry",
+         status="ok",
+         warnings=bootstrap_warnings,
+-        details=[
+-            f"recompiled from master: {config.research_registry}"
+-            f" -> {config.lean_registry}",
+-            f"{len(out.get('roles', {}))} roles projected through the active manifest",
+-        ],
++        details=details,
+     )
+ 
+ 
++# Modules whose MODULE-LEVEL constants are computed from the lean registry at import.
++_LEAN_DERIVED_MODULES = ("scripts.server.stack_manifest", "stack_manifest")
++
++
++def _evict_lean_derived_modules(config: StackChangePipelineConfig) -> list[str]:
++    """Forget stack_manifest after `update` rewrote the lean it reads.
++
++    STACKCHG-KVPOOL-20261003. stack_manifest derives LAUNCH_CONTEXT_TOKENS,
++    ROLE_LAUNCH_META, LAUNCH_KV_QUANT_CONFIGS, HOT/WARM_SERVERS, ... from the lean
++    AT IMPORT, and this run imported it (the step above, `_active_roles`) before
++    the lean was rewritten. Every later step of the same `update` then compiled
++    stack priors from the OLD lean: raising :8083 n_ctx 196608 -> 393216 wrote
++    `effective_context_tokens: 196608` into the priors, `update` reported
++    `guard: ok`, and the next `check` (a fresh process) failed with "stack-prior
++    artifact is stale" and three "serving.effective_context_tokens 196608 does not
++    match launch context 393216" guard errors. The consumers on this path import
++    it inside functions, so dropping it from sys.modules is enough for them to
++    re-execute it against the fresh lean (and re-run its import-time gates).
++    Only the lean stack_manifest actually reads is eligible.
++    """
++    default_lean = config.repo_root / "orchestration" / "model_registry.yaml"
++    if config.lean_registry.resolve() != default_lean.resolve():
++        return []
++    evicted = [name for name in _LEAN_DERIVED_MODULES if sys.modules.pop(name, None) is not None]
++    parent = sys.modules.get("scripts.server")
++    if parent is not None and "stack_manifest" in vars(parent):
++        delattr(parent, "stack_manifest")
++    return evicted
++
++
+ def _launch_meta_from_sources(config: StackChangePipelineConfig) -> dict[str, dict]:
+     """ROLE_LAUNCH_META's role/alias skeleton, read from its SOURCES without importing
+     stack_manifest (whose import-time gates read the lean being regenerated).
+--- a/src/backends/context_limits.py
++++ b/src/backends/context_limits.py
+@@ -19,13 +19,30 @@
+ (``runtime.cache.context_tokens`` / ``slots_by_port`` / ``kv_unified``) → None.
+ 
+ Per-request cap (2026-10-03, :8083 KV-pool decision step 1): under unified KV the
+-server lets ONE request use the whole ``-c``. Once ``-c`` exceeds the model's
+-trained context (``n_ctx_train``) the server only warns, so the orchestrator caps
++server lets ONE request use the whole ``-c``. The orchestrator caps
+ ``per_request_n_ctx`` at the model's ``ctx_max`` from the compiled stack priors
+ (``roles.<role>.model.ctx_max``, sourced from the research registry). Nothing is
+ hardcoded: today ``min(196608, 262144) = 196608``; after a relaunch at a larger
+ ``-c`` the same rule yields 262144. ``server_n_ctx`` keeps the server's own slot
+-n_ctx, which is what sizes the shared pool (``pool_tokens``).
++n_ctx.
++
++THE v10 SERVER CAPS TOO (STACKCHG-KVPOOL-20261003). Above ``n_ctx_train`` the
++server does not only warn: it clamps every slot, ``n_ctx_slot = min(n_ctx_seq,
++n_ctx_train)`` (llama.cpp ffc1bac82 ``tools/server/server-context.cpp:1316-1322``,
++WARN "the slot context (393216) exceeds the training context of the model
++(262144) - capping"), and ``/props`` reports the CLAMPED 262144. So for a capping
++server the slot n_ctx no longer equals ``-c`` under unified KV, and two things
++must not be read from it:
++
++* the unified/split inference — comparing the live n_ctx with the raw ``-c``
++  (262144 >= 393216 is False) reads the server as SPLIT, which turns
++  ``shared_pool`` off and DISARMS SharedKVPoolAdmission for :8083. It compares
++  against the midpoint of the two CAPPED expectations instead;
++* the pool — ``pool_n_ctx`` carries the declared ``-c`` (393216) when the server
++  has clamped its slots, so ``pool_tokens`` is the real pool, not 262144.
++
++A build that does not clamp (``/props`` n_ctx 393216) keeps the step-1 path:
++``per_request_n_ctx`` 262144 from the config cap, ``cap_binding`` True.
+ There is no invented default here: a caller that gets None decides (and logs)
+ its own degraded behaviour.
+ 
+@@ -88,10 +105,13 @@
+     server_n_ctx: int | None = None
+     # The model's trained context (``model.ctx_max``) when config declares it.
+     request_cap: int | None = None
++    # The whole unified pool (-c) when the SERVER clamped its slots below it
++    # (n_ctx_slot = min(-c, n_ctx_train)); None = the slot n_ctx is the pool.
++    pool_n_ctx: int | None = None
+ 
+     @property
+     def slot_n_ctx(self) -> int:
+-        """The server's per-slot n_ctx (what sizes the KV pool)."""
++        """The server's per-slot n_ctx."""
+         return int(self.server_n_ctx or self.per_request_n_ctx)
+ 
+     @property
+@@ -108,7 +128,7 @@
+     def pool_tokens(self) -> int:
+         """Total KV cells requests on this server compete for."""
+         if self.kv_unified:
+-            return self.slot_n_ctx
++            return max(self.slot_n_ctx, self.pool_n_ctx or 0)
+         return self.slot_n_ctx * max(1, self.total_slots or 1)
+ 
+     def fits(self, prompt_tokens: int, max_new_tokens: int = 0) -> bool:
+@@ -183,7 +203,8 @@
+     if n_ctx is None:
+         return None
+     total_slots = _positive_int(props.get("total_slots"))
+-    reg_ctx = registry.get("context_tokens") if registry else None
++    reg_ctx = _positive_int(registry.get("context_tokens")) if registry else None
++    request_cap = _positive_int(registry.get("ctx_max")) if registry else None
+     kv_unified: bool | None
+     if isinstance(props.get("kv_unified"), bool):
+         kv_unified = props["kv_unified"]
+@@ -192,22 +213,39 @@
+     elif total_slots and reg_ctx:
+         # Live evidence beats the declaration (a declared-but-not-yet-reloaded
+         # server is still split): split KV gives each slot -c/np, unified gives
+-        # each slot all of -c.
+-        kv_unified = n_ctx >= int(reg_ctx)
++        # each slot all of -c — and a capping server clamps BOTH at n_ctx_train.
++        # Decide on the midpoint of the two CAPPED expectations. The raw-(-c)
++        # comparison read a clamped unified server (262144 < 393216) as split and
++        # disarmed SharedKVPoolAdmission (STACKCHG-KVPOOL-20261003).
++        unified_slot = capped_n_ctx(reg_ctx, request_cap)
++        split_slot = capped_n_ctx(max(1, reg_ctx // total_slots), request_cap)
++        if unified_slot > split_slot:
++            kv_unified = 2 * n_ctx > unified_slot + split_slot
++        elif registry and isinstance(registry.get("kv_unified"), bool):
++            kv_unified = registry["kv_unified"]
++        else:
++            kv_unified = None  # both layouts give the same slot context
+     elif registry and isinstance(registry.get("kv_unified"), bool):
+         kv_unified = registry["kv_unified"]
+     else:
+         kv_unified = None
+-    request_cap = _positive_int(registry.get("ctx_max")) if registry else None
++    # A unified server whose slot n_ctx sits AT the cap below the declared -c has
++    # clamped its slots; the pool is still the declared -c.
++    clamped_pool = (
++        reg_ctx
++        if kv_unified and request_cap and n_ctx >= request_cap and reg_ctx and reg_ctx > n_ctx
++        else None
++    )
+     return ContextLimit(
+         url=url,
+         per_request_n_ctx=capped_n_ctx(n_ctx, request_cap),
+         total_slots=total_slots,
+         kv_unified=kv_unified,
+         source="live_props",
+-        registry_context_tokens=_positive_int(reg_ctx),
++        registry_context_tokens=reg_ctx,
+         server_n_ctx=n_ctx,
+         request_cap=request_cap,
++        pool_n_ctx=clamped_pool,
+     )
+ 
+ 
+@@ -554,8 +592,12 @@
+             if base is not None and base.slot_n_ctx == n_ctx:
+                 return
+             if base is not None:
++                # A clamped pool survives only while the server still reports the
++                # clamped value; below the cap the slot n_ctx IS the unified pool.
++                clamped = (base.pool_n_ctx if base.request_cap and n_ctx >= base.request_cap
++                           else None)
+                 limit = replace(base, per_request_n_ctx=capped_n_ctx(n_ctx, base.request_cap),
+-                                server_n_ctx=n_ctx, source="observed")
++                                server_n_ctx=n_ctx, pool_n_ctx=clamped, source="observed")
+             else:
+                 limit = ContextLimit(url=url, per_request_n_ctx=n_ctx, total_slots=None,
+                                      kv_unified=None, source="observed")
+--- a/stack_templates/default.yaml
++++ b/stack_templates/default.yaml
+@@ -152,16 +152,13 @@
+       port: 8083
+       numa: GPU_HOST_LANE
+       threads: 8
+-      spec_overrides:
+-        # 2026-08-20: was 24, which SILENTLY OVERRODE the registry's measured optimum (4 for
+-        # Qwen3.6-27B) — a spec_override here wins at stack-assembly time, so the stack was
+-        # drafting at 24 against a measured-4 artifact. Now 8 = the measured optimum for
+-        # Qwen3.8-27B (sweep: n6 55.22 / n8 55.46 / n12 51.14 t/s; curve turns over past 8).
+-        # Keep in step with speculative_decoding_policy.draft_max in the MASTER registry.
+-        # 2026-09-24: 8 -> 4 with the master (production shape np 4 + unified KV; depth 4 is
+-        # equal-or-faster there: np_context_kvu_study_20260924/q38_27b_q8_depth).
+-        draft_max: 4
+-        p_split: 0
++      # spec_overrides {draft_max: 4, p_split: 0} DELETED 2026-10-03 (STACKCHG-KVPOOL-20261003).
++      # It was a THIRD copy of this server's draft depth, stale since DRAFT-SEL-1: the drafter
++      # and its draft_max are owned by the master's roles.qwen38_27b_q8_local.drafters, chosen
++      # by stack_topology.yaml drafter_selection (dflash2, draft_max 7). Nothing launches from
++      # this template today (stack_commands: "integration pending DS-7 Phase 2"), but the day it
++      # does, this block would have rewritten DFlash2's --spec-draft-n-max to 4. History of the
++      # deleted values: 24 -> 8 (2026-08-20, Qwen3.8-27B MTP sweep) -> 4 (2026-09-24, np 4 kvu).
+ 
+   ingest_long_context:
+     # 2026-09-22 lineup change: Qwen3-Next-80B-A3B retired. The role moved onto
+--- /dev/null
++++ b/tests/unit/test_context_limits_model_cap.py
+@@ -0,0 +1,162 @@
++"""The model cap on per-request context (STACKCHG-KVPOOL-20261003).
++
++:8083 runs a UNIFIED KV pool of -c 393216 at -np 4 on a model trained to
++262144. The v10 server caps every slot at n_ctx_train
++(``tools/server/server-context.cpp:1316-1322``), so ``/props`` reports
++``n_ctx 262144`` while the pool the four slots share is 393216. These tests pin
++what the orchestrator's context limits must make of that:
++
++* one request may use 262144, never 393216 (live, registry fallback, observe);
++* the server is still read as UNIFIED, so ``shared_pool`` stays True and
++  SharedKVPoolAdmission stays armed — the pre-fix inference compared the live
++  n_ctx with the raw -c (262144 >= 393216 is False), read the server as SPLIT,
++  reported a 1,048,576-token pool and turned pool admission OFF;
++* the pool is the whole -c.
++"""
++
++from __future__ import annotations
++
++import re
++from pathlib import Path
++
++import pytest
++
++from src.backends.context_limits import (
++    ContextLimitResolver,
++    limit_from_registry,
++    parse_props,
++    registry_facts_by_port,
++)
++
++FROZEN_TREE = Path("/mnt/raid0/llm/llama.cpp")
++
++TRAIN = 262144
++POOL = 393216
++REG = {"context_tokens": POOL, "slots": 4, "kv_unified": True, "ctx_max": TRAIN}
++PROPS_CAPPED = {"default_generation_settings": {"n_ctx": TRAIN}, "total_slots": 4}
++
++
++def _shape(lim):
++    return (lim.per_request_n_ctx, lim.kv_unified, lim.shared_pool, lim.pool_tokens)
++
++
++class TestLiveProps:
++    def test_capped_unified_server_stays_unified_with_the_whole_pool(self):
++        lim = parse_props("http://localhost:8083", PROPS_CAPPED, REG)
++        assert _shape(lim) == (TRAIN, True, True, POOL)
++        assert lim.request_cap == TRAIN and not lim.cap_binding
++
++    def test_regression_raw_c_comparison_would_disarm_pool_admission(self):
++        # The exact pre-fix arithmetic: n_ctx >= -c decides "unified".
++        assert not (TRAIN >= POOL)
++        lim = parse_props("u", PROPS_CAPPED, {**REG, "kv_unified": None})
++        assert lim.kv_unified is True and lim.shared_pool is True
++        assert lim.pool_tokens == POOL  # not 4 x 262144 = 1,048,576
++
++    def test_split_server_at_the_same_declaration_is_still_split(self):
++        lim = parse_props("u", {"default_generation_settings": {"n_ctx": POOL // 4},
++                                "total_slots": 4}, REG)
++        assert _shape(lim) == (POOL // 4, False, False, POOL)
++
++    def test_not_yet_reloaded_196608_unified_server_reads_its_own_pool(self):
++        # API reloaded onto the new priors before :8083 is relaunched: the live
++        # server is uncapped (196608 < 262144), so its slot context IS its pool.
++        lim = parse_props("u", {"default_generation_settings": {"n_ctx": 196608},
++                                "total_slots": 4}, REG)
++        assert _shape(lim) == (196608, True, True, 196608)
++
++    def test_a_build_that_does_not_clamp_is_capped_by_config(self):
++        lim = parse_props("u", {"default_generation_settings": {"n_ctx": POOL},
++                                "total_slots": 4}, REG)
++        assert _shape(lim) == (TRAIN, True, True, POOL)
++        assert lim.cap_binding  # step-1 pre-dispatch refusal applies (the server would accept)
++
++    def test_no_cap_known_is_the_pre_fix_behaviour(self):
++        reg = {"context_tokens": 196608, "slots": 2, "kv_unified": None}
++        uni = parse_props("u", {"default_generation_settings": {"n_ctx": 196608}, "total_slots": 2}, reg)
++        spl = parse_props("u", {"default_generation_settings": {"n_ctx": 98304}, "total_slots": 2}, reg)
++        assert _shape(uni) == (196608, True, True, 196608)
++        assert _shape(spl) == (98304, False, False, 196608)
++
++    def test_cap_above_every_slot_changes_nothing(self):
++        # frontdoor :8070 shape: -c 262144 -np 4 split, model ctx_max 262144.
++        reg = {"context_tokens": 262144, "slots": 4, "kv_unified": None, "ctx_max": TRAIN}
++        lim = parse_props("u", {"default_generation_settings": {"n_ctx": 65536}, "total_slots": 4}, reg)
++        assert _shape(lim) == (65536, False, False, 262144)
++
++    def test_single_slot_server_is_untouched(self):
++        reg = {"context_tokens": 262144, "slots": 1, "kv_unified": None, "ctx_max": TRAIN}
++        lim = parse_props("u", {"default_generation_settings": {"n_ctx": 262144}, "total_slots": 1}, reg)
++        assert (lim.per_request_n_ctx, lim.kv_unified, lim.shared_pool) == (262144, None, False)
++
++
++class TestRegistryFallback:
++    def test_declared_unified_pool_above_the_cap(self):
++        assert _shape(limit_from_registry("u", REG)) == (TRAIN, True, True, POOL)
++
++    def test_declared_unified_pool_below_the_cap_is_unchanged(self):
++        lim = limit_from_registry("u", {**REG, "context_tokens": 196608})
++        assert _shape(lim) == (196608, True, True, 196608)
++        assert lim.pool_n_ctx is None
++
++    def test_without_a_cap_the_whole_pool_is_one_request(self):
++        lim = limit_from_registry("u", {**REG, "ctx_max": None})
++        assert _shape(lim) == (POOL, True, True, POOL)
++
++
++class TestResolver:
++    def test_registry_path_of_the_resolver_applies_the_cap(self):
++        r = ContextLimitResolver(live=False, registry_facts=lambda: {8083: REG}, role_urls=lambda: {})
++        assert _shape(r.limit_for_url("http://localhost:8083")) == (TRAIN, True, True, POOL)
++
++    def test_live_path_of_the_resolver_applies_the_cap(self):
++        r = ContextLimitResolver(live=True, fetch_props=lambda u, t: PROPS_CAPPED,
++                                 registry_facts=lambda: {8083: REG}, role_urls=lambda: {})
++        assert _shape(r.limit_for_url("http://localhost:8083")) == (TRAIN, True, True, POOL)
++
++    def test_observe_caps_a_reported_n_ctx_and_keeps_the_pool(self):
++        r = ContextLimitResolver(live=False, registry_facts=lambda: {8083: REG}, role_urls=lambda: {})
++        r.limit_for_url("http://localhost:8083")
++        r.observe("http://localhost:8083", n_ctx=POOL)
++        assert _shape(r.limit_for_url("http://localhost:8083")) == (TRAIN, True, True, POOL)
++
++    def test_observe_below_the_cap_means_the_pool_is_that_size(self):
++        r = ContextLimitResolver(live=False, registry_facts=lambda: {8083: REG}, role_urls=lambda: {})
++        r.limit_for_url("http://localhost:8083")
++        r.observe("http://localhost:8083", n_ctx=196608)
++        lim = r.limit_for_url("http://localhost:8083")
++        assert lim.source == "observed" and _shape(lim) == (196608, True, True, 196608)
++
++    def test_observe_of_the_clamped_value_keeps_the_clamped_pool(self):
++        r = ContextLimitResolver(live=True, fetch_props=lambda u, t: PROPS_CAPPED,
++                                 registry_facts=lambda: {8083: REG}, role_urls=lambda: {})
++        r.limit_for_url("http://localhost:8083")
++        r.observe("http://localhost:8083", n_ctx=TRAIN)  # a 400 body from the clamped server
++        assert _shape(r.limit_for_url("http://localhost:8083")) == (TRAIN, True, True, POOL)
++
++
++class TestRegistryFacts:
++    def test_compiled_priors_of_this_tree_carry_the_cap_for_8083(self):
++        facts = registry_facts_by_port()
++        if 8083 not in facts:
++            pytest.skip("no :8083 role in this tree's compiled priors")
++        cap = facts[8083]["ctx_max"]
++        assert cap == TRAIN
++        lim = limit_from_registry("http://localhost:8083", facts[8083])
++        assert lim.per_request_n_ctx <= cap
++        assert lim.pool_tokens == facts[8083]["context_tokens"]
++
++
++class TestFrozenServerCapsSlotsAtTrainingContext:
++    """Re-derive the server behaviour this module mirrors from the frozen source."""
++
++    def test_server_clamps_slot_context_to_n_ctx_train(self):
++        src = FROZEN_TREE / "tools/server/server-context.cpp"
++        if not src.exists():
++            pytest.skip("frozen llama.cpp tree not present on this host")
++        text = src.read_text(errors="replace")
++        assert re.search(r"int n_ctx_slot = llama_n_ctx_seq\(ctx_tgt\);\s*"
++                         r"if \(n_ctx_slot > n_ctx_train\) \{", text)
++        assert re.search(r"n_ctx_slot = n_ctx_train;", text)
++        assert re.search(r"slot\.n_ctx\s*=\s*n_ctx_slot;", text)
++        assert '{ "n_ctx",  meta->slot_n_ctx }' in text
+--- a/tests/unit/test_stack_change_pipeline.py
++++ b/tests/unit/test_stack_change_pipeline.py
+@@ -4,6 +4,7 @@
+ 
+ import json
+ import subprocess
++import sys
+ from pathlib import Path
+ 
+ import pytest
+@@ -1091,3 +1092,78 @@
+     )
+     assert active_roles_from_launch_meta(pipeline._launch_meta_from_sources(cfg)) == \
+         active_roles_from_launch_meta(ROLE_LAUNCH_META)
++
++
++# --- STACKCHG-KVPOOL-20261003: `update` must not compile priors from the lean it replaced ---
++
++_SM = "scripts.server.stack_manifest"
++
++
++@pytest.fixture
++def pin_stack_manifest():
++    """Swap BOTH bindings eviction touches (sys.modules and the package attribute) and
++    put the real ones back at teardown, whatever eviction left behind."""
++    import scripts.server as server_pkg
++
++    had_mod, mod = _SM in sys.modules, sys.modules.get(_SM)
++    had_attr, attr = "stack_manifest" in vars(server_pkg), vars(server_pkg).get("stack_manifest")
++
++    def pin(value) -> None:
++        sys.modules[_SM] = value
++        server_pkg.stack_manifest = value
++
++    yield pin
++    if had_mod:
++        sys.modules[_SM] = mod
++    else:
++        sys.modules.pop(_SM, None)
++    if had_attr:
++        server_pkg.stack_manifest = attr
++    elif "stack_manifest" in vars(server_pkg):
++        delattr(server_pkg, "stack_manifest")
++
++
++def test_evict_lean_derived_modules_only_for_the_lean_stack_manifest_reads(
++    pin_stack_manifest, tmp_path
++) -> None:
++    sentinel = object()
++    pin_stack_manifest(sentinel)
++    elsewhere = StackChangePipelineConfig(mode="update", repo_root=tmp_path,
++                                          lean_registry=tmp_path / "elsewhere.yaml")
++    assert pipeline._evict_lean_derived_modules(elsewhere) == []
++    assert sys.modules[_SM] is sentinel
++
++    default = StackChangePipelineConfig(
++        mode="update", repo_root=tmp_path,
++        lean_registry=tmp_path / "orchestration" / "model_registry.yaml")
++    assert _SM in pipeline._evict_lean_derived_modules(default)
++    assert _SM not in sys.modules
++
++
++def test_lean_update_evicts_stack_manifest_only_when_the_lean_changed(
++    pin_stack_manifest, tmp_path
++) -> None:
++    """Measured on the KVPOOL candidate: with stack_manifest imported before the lean was
++    rewritten, ONE `update` wrote `effective_context_tokens: 196608` for a 393216 lean and
++    the next `check` failed (evidence/pipeline-stale-priors-repro.txt)."""
++    master = _registry(tmp_path / "master" / "model_registry.yaml")
++    lean = tmp_path / "orchestration" / "model_registry.yaml"
++    config = StackChangePipelineConfig(mode="update", repo_root=tmp_path, lean_registry=lean,
++                                       research_registry=master, roles={"frontdoor"})
++    sentinel = object()
++
++    pin_stack_manifest(sentinel)
++    first = pipeline._lean_registry_step(config, check=False)
++    assert first.status == "ok", first.errors
++    assert _SM not in sys.modules
++    assert any("evicted scripts.server.stack_manifest" in d for d in first.details)
++
++    pin_stack_manifest(sentinel)
++    again = pipeline._lean_registry_step(config, check=False)  # same master: lean unchanged
++    assert again.status == "ok", again.errors
++    assert sys.modules[_SM] is sentinel
++    assert not any("evicted" in d for d in again.details)
++
++    _registry(master, throughput=99.0)  # master edit -> the lean changes -> evict again
++    third = pipeline._lean_registry_step(config, check=False)
++    assert _SM not in sys.modules and any("evicted" in d for d in third.details)
+--- a/tests/unit/test_stack_templates_v2.py
++++ b/tests/unit/test_stack_templates_v2.py
+@@ -335,8 +335,13 @@
+ 
+     def test_hot_vs_loaded_breakdown(self):
+         t = load_template("default")
+-        # Production default stack is all-HOT
+-        assert t.hot_ram_gb == t.loaded_ram_gb
++        # The default stack is no longer all-HOT: STACKCHG-DFLASH2-20261003 made worker_vision
++        # WARM (cold CPU, not started by a default start). loaded = hot + every WARM role,
++        # recomputed from the template rather than pinned. (This failed on HEAD since d3233170.)
++        warm = {name: r for name, r in t.roles.items() if r.tier == "WARM"}
++        assert "worker_vision" in warm
++        assert t.loaded_ram_gb == pytest.approx(
++            t.hot_ram_gb + sum(r.total_ram_gb for r in warm.values()))
+         assert t.hot_ram_gb > 0
+ 
+ 
+--- a/tests/unit/test_kv_pool_long_prefill.py
++++ b/tests/unit/test_kv_pool_long_prefill.py
+@@ -481,10 +481,19 @@
+         assert lim.per_request_n_ctx == 262144 and lim.slot_n_ctx == 300_000
+ 
+     def test_the_cap_comes_from_the_compiled_stack_priors(self):
++        from pathlib import Path
++
++        import yaml
++
+         facts = registry_facts_by_port()
+         assert facts, "compiled stack priors present in the tree"
+         assert facts[8083]["ctx_max"] == 262144
+-        assert facts[8083]["context_tokens"] == 196608
++        # The pool is whatever the lean declares for the :8083 host — recomputed, not pinned
++        # (was the literal 196608; STACKCHG-KVPOOL-20261003 raised it to 393216).
++        lean = yaml.safe_load((Path(__file__).resolve().parents[2]
++                               / "orchestration" / "model_registry.yaml").read_text())
++        declared = lean["server_mode"]["architect_critic"]["serving_shape"]["n_ctx"]
++        assert facts[8083]["context_tokens"] == declared
+ 
+     def _prims(self, monkeypatch, facts):
+         from src.llm_primitives import LLMPrimitives

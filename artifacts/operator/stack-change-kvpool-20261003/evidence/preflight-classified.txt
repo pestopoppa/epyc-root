@@ -1,0 +1,25 @@
+stack-change preflight — 15 violation(s)
+
+== fixable-by-transform (0)
+
+== needs-measurement (0)
+
+== needs-operator (15)
+   error: live process drift: architect_critic pid 3793153 runtime context_tokens expected 393216; live cmdline has 196608
+   error: live process drift: architect_critic pid 3793153 runtime spec.draft_max expected 7; live cmdline has 8
+   warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/chapters/10-escalation-and-routing.md:429: signals.thinking_requested = True  # Route to thinking_reasoning model [remediatio
+   warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/diagrams/orchestration_topology.md:34: THR[thinking_reasoning] [remediation: generate current stack tables or label snapshot 
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-r
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:309: scoring_config={"timeout": 5, "judge_role": "thinking_reasoning"}, [remediation: label as reti
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:311: assert calls[0]["json"]["force_role"] == "thinking_reasoning" [remediation: label as retired-r
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:48: "architect_critic": {"port": 8074, "model_role": "qwen35_122b_q4km"}, [remediation: label as reti
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:133: assert "thinking_reasoning" not in WORKING_VALUES  # Role with no server [remediation: 
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:272: "thinking_reasoning",  # a Role member with no server (retired) [remediation: label as 
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_pipeline_routing.py:32: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate 
+   warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_registry_loader.py:18: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate f
+   warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:62: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception
+   warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:74: "architect_coding", [exception: classification=legacy_test; owner=test-infrastruct
+   warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test
+
+report: /mnt/raid0/llm/tmp/stack-change-kvpool-20261003/evidence/preflight-classified.txt
+preflight rc=5
