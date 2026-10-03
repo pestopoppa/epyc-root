@@ -253,6 +253,12 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       `review_low_q_threshold` with its env/autopilot/swarm surfaces removed; plan review kept; RI-16 `stage_ms` keys kept,
       now always null) + 8e379f13 (docs). Integrated on orch `integ/api-reload-2-ec` 10bc5681. Not ticked: the done-when
       needs the live `/chat` reading, which follows UFH14-DEPLOY-EC (`agentic-serving-harness-fixes.md`).
+    - **DEPLOYED 2026-10-03 ~14:50Z, pending live verification** (workspace-ec): merged to orch main (10bc5681, now
+      aa1d6894) and deployed by an API-only reload (PID 1628390). Of the done-when, the code removal is live, and
+      the suite is green: full `tests/unit` 15979 passed, 0 failed (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`).
+      The live `/chat` RI-16 reading (`review_gate` / `review_verdict` null) is still open. It waits for the :8083
+      restore (KVU-16e in `kv-unified-stack-rollout.md`; X0 hand-back ~17:15Z), tracked as UFH14-DEPLOY-EC-2. Not
+      ticked until that reading exists.
     - Remove the gate, the verdict and the revision from all five call sites: `repl_executor.py` ~779-826,
       `direct_stage.py` ~223-242, `stream_adapter.py` ~346-360, `chat.py` ~1613-1628 and `v1_escalation.py` ~405-466.
       Also remove the `review_low_q_threshold` config.

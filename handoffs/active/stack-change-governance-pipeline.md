@@ -113,6 +113,27 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   workspace-ec) `test_reproduced_promotion_uses_representative_median…` fails or passes depending on test order, on
   origin/main as well as the integration branch. Find the leaked state (module global, env, or monkeypatch order),
   isolate it in a fixture, and prove it with `pytest -p no:randomly` in both orders plus the full `tests/unit` run.
+  - 2026-10-03: the full `tests/unit` run on `integ/api-reload-2-ec` passed it, 15979 passed / 0 failed
+    (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`). That is one order, not a fix: the leaked state is unfound, so
+    the task stays open.
+- [x] **SCG-STALE-FIXTURES — fix the 19 orch `tests/unit` failures on main.** ✅ 2026-10-03 (workspace-ec) All 19 were
+  stale fixtures from STACKCHG-DFLASH2 5265e09d, not production defects: orch `fix/main-test-failures-ec` d97004f6
+  (enrollment compiles a master view of the lean, DRAFT-SEL-1) and 9d40c30b (vision expectations: VL-30B on cold CPU,
+  WARM tier). Merged through `integ/api-reload-2-ec` (10bc5681) to orch main. Full `tests/unit`: 15979 passed,
+  0 failed, 57 skipped. Residual found while fixing them: SCG-PRIORS-WARM above.
+- [x] **SCG-LEASE-FIXTURE — the KVU-15a autouse lease fixture reordered monkeypatch teardown.** ✅ 2026-10-03
+  (orch ac33e623) `_hermetic_long_prefill_lease` requested the function-scoped `monkeypatch`, so it tore down after
+  `_reset_config_between_tests`, and a patched `get_config` lambda was still in place at `cache_clear()`. That caused
+  9 teardown errors (`test_safe_pickle` ×2, `test_typed_decisions_tool_args_integration` ×7). The fixture now uses a
+  private `MonkeyPatch.context()`.
+- [ ] **SCG-ENVOVR-EXPIRED — an expired embedder override of an UNDECLARED key is silent in env attestation.**
+  (filed 2026-10-03, workspace-ec, found building the diagnostic override, orch aa1d6894) In
+  `scripts/server/env_attestation.py` (~:200-207) the loop over keys the embedder record overrides but the stack does
+  not declare (e.g. `KMP_LIBRARY`) appends EXPECTED when the record covers the live value and does nothing otherwise.
+  So an expired record, or one naming another pid, leaves a live undeclared key unreported. The same case on the new
+  diagnostic path is an ERROR (`:208-224`). Add the missing branch: an ERROR with the EXPIRED/restore hint, matching
+  the diagnostic path. Test it with an expired record plus a live `KMP_LIBRARY`. Done when attestation reports that
+  case as an error and the existing embedder tests stay green.
 - [ ] **SCG-GITNEXUS-ORCH — re-index the stale orchestrator GitNexus index.** (filed 2026-10-03, workspace-ec) A
   subagent saw it ~844 commits behind, which makes every `gitnexus impact` blast radius on orch code untrustworthy.
   Run `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyze`) for epyc-orchestrator in a CPU-quiet window (it

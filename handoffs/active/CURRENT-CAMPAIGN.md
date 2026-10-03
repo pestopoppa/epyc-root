@@ -21,6 +21,10 @@
 >   and step 2 (KVU-16) are LIVE — :8083 relaunched 13:14Z at `-c 393216` unified, 262144 per-slot cap, draft n-max 7,
 >   50.78 GiB at load. :8083 is then STOPPED from 13:55Z for workspace-89's INF-80 X0 window (restore = KVU-16e,
 >   ETA ~16:30Z). Full-pool concurrent residency is unproven (KVU-16b/16c).
+>   **~15:00Z:** the X0 window is extended (granted) to a ~17:15Z hand-back: X0 serving+KLD → P3 → LB1 → speech stop
+>   (whisper/TTS ~30 min near the end) + EXL3 correctness. The second API-only reload went live ~14:50Z (orch main,
+>   PID 1628390: passthrough B6, review gate removed RI-18c, host-wide long-prefill lease KVU-15a, B4 API part); their
+>   live proofs wait for the :8083 restore (UFH14-DEPLOY-EC-2).
 
 > **2026-09-28 — UFH-13 PARKED; the working direction until the second MI210 is infra and design (operator, in chat,
 > session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ). Supersedes the 2026-09-27 narrowed plan's ranking.**

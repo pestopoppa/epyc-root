@@ -271,3 +271,81 @@ Deploy = UFH14-DEPLOY-EC (after :8083 is restored, API-only reload).
 
 Index-row `Next action` refreshes and the adapters-README row are prepared, not applied:
 `/mnt/raid0/llm/tmp/wrapup-ec-kvu16/INDEX_ROWS.md`.
+
+## Second API-only reload live, diagnostic env override, KVU-15a credit finding, X0 extended (2026-10-03 ~14:30-15:05Z)
+
+**Second API-only reload is LIVE.** Orch `integ/api-reload-2-ec` merged to orch main as 10bc5681 (orch main is now
+aa1d6894). `orchestrator_stack.py reload orchestrator` (API only) → PID 1628390 at ~14:50Z
+(`/mnt/raid0/llm/tmp/integ2-ec/reload-api.out`).
+
+What the reload deployed:
+- KVU-15a: the host-wide flock long-prefill lease (cdf0f9b4).
+- UFH14-B6: passthrough `/v1/passthrough/{role}/{chat/completions,responses,models}` (3edfdff3, plus integration
+  ed34f40d and 03bd31de).
+- RI-18c: the review gate removed (88d885c6, 8e379f13).
+- UFH14-B4 API part: router slot pinning made opt-in, serving-record `prefix_fp`, `cache_prompt` on the chat lane, and
+  `prefix_cache_report.py` (61873d75 … 8f354ac3).
+- Test fixes: conftest ac33e623, and the 19 stale-fixture fixes d97004f6 / 9d40c30b.
+
+Gate: full `tests/unit` on the integration branch, 15979 passed, 0 failed, 57 skipped
+(`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`). Main had 19 failing before.
+
+**Live verification so far.**
+- `GET /v1/passthrough/architect_general/models` works.
+- Three completion calls to :8074 (14:51, 14:54, 14:58Z; one streamed) were refused with 503 `lock_unavailable` after
+  the 180 s region-admission timeout, blockers `['autokernel-cpu']`. That is by design: DS41 holds every CPU region
+  (window closed, build_and_measure).
+- :8083 is stopped for workspace-89's X0 window.
+
+So these proofs are pending the :8083 restore (KVU-16e), tracked as UFH14-DEPLOY-EC-2:
+- the end-to-end streamed passthrough with timings (B6);
+- `review_gate` null on live `/chat` (RI-18c);
+- the 2-worker lease replay (KVU-15a);
+- `prefix_fp` on a dispatched call (B4). It is already present on the refusal records.
+
+**Diagnostic env override on orch main** (aa1d6894; branch `feat/diag-env-override-ec`, ada71720 rebased). CLI-only,
+so no reload was needed. 51 new tests.
+- Command: `orchestrator_stack.py reload <llama-server component> --diag-env-override LLAMA_SERVER_SLOTS_DEBUG=1
+  --experiment-id ID --override-ttl-s N` (N ≤ 14400 s).
+- Recorded in `logs/env_overrides/<component>.json`. `declared_env_attestation` shows a declared, time-bound warning,
+  and an ERROR after expiry.
+- A plain reload restores. `python -m scripts.server.env_override readback --port 8083 --expect-declared` proves it.
+- Purpose: UFH14-A7. Workspace-89 found 41 of 230 F12 follow-on turns (17.8%) re-prefilling the previous output
+  (225k tokens, 705 s, 14.8% of prefill). SLOTS_DEBUG logs the mismatching tokens, which separates a template or
+  conversion bug from tokenizer non-canonicality.
+- Plan agreed with workspace-89: on only for their A3/A4 multi-turn GPU window, TTL ≤ 4 h. With debug ON, every
+  `/slots` GET detokenizes the full slot prompts in the server loop.
+
+**Finding: KVU-15a's cached-prefix credit is inert in production.** v10 returns slot prompt text only under
+`LLAMA_SERVER_SLOTS_DEBUG` (`server-context.cpp` `to_json` :699-730, `slot.to_json(slots_debug == 0)` at :2541).
+- Live on :8074, an idle slot reports only `id`, `is_processing`, `n_ctx` and `speculative`.
+- So the credit always falls back to whole-prompt sizing. That is safe, but the credit is never applied.
+- Step 1's `/slots` prefill observation still works, because it reads token counts.
+- Filed KVU-15c: re-base the credit on per-port `prefix_fp` history and make the fallback visible. KVU-15b is moot
+  until then.
+- Corollary: during a SLOTS_DEBUG window the credit goes live, so that window's records are not a baseline.
+
+**Defects filed.**
+- (a) UFH14-B6a: refusal records carry `error.type` and free text, but no structured gate name. The blockers sit only
+  in the message string, and `passthrough.http_status` is null although the client got 503. Correction to the
+  briefing: the records do carry a reason, as `error.type=lock_unavailable` plus the message. What is missing is the
+  structured gate field and the status code.
+- (b) SCG-ENVOVR-EXPIRED: an expired embedder record overriding an undeclared key (`KMP_LIBRARY`) is silent in
+  env attestation. The same case is an ERROR on the diagnostic path.
+- (c) Frontdoor (multi-endpoint) passthrough: declined with a reason. No harness targets it, the 422 fails loud, and
+  the scope question is added to UFH14-C1.
+
+**X0 window extended** (granted) to a ~17:15Z hand-back. Order: X0 serving+KLD → P3 (unified-KV decode cost vs pool
+fill, llama.cpp #28495) → LB1 (rocprof low-bit kernel roofline, operator-approved) → speech stop + EXL3 correctness.
+- :8083 has been down since 13:55Z.
+- Whisper/TTS will be stopped for ~30 min near the end.
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/agentic-serving-harness-fixes.md` | B6 and B4 DEPLOYED notes (not ticked); DEPLOY-EC-1 `[x]`, DEPLOY-EC-2 filed; DIAG-EC `[x]`, DIAG-EC-a filed; B6a filed; A7 infra-ready note; frontdoor declined, C1 scope line |
+| epyc-root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-15a DEPLOYED note and the inert-credit finding; KVU-15c filed; KVU-15b moot note; KVU-16e X0 extension |
+| epyc-root | `handoffs/active/routing-intelligence.md` | RI-18c DEPLOYED, live reading pending (not ticked) |
+| epyc-root | `handoffs/active/stack-change-governance-pipeline.md` | SCG-STALE-FIXTURES and SCG-LEASE-FIXTURE `[x]`; SCG-ENVOVR-EXPIRED filed; SCG-TEST-ORDER note |
+| epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | X0 extension and the reload-2 line |
+
+Index-row `Next action` refreshes are prepared, not applied: `/mnt/raid0/llm/tmp/wrapup-ec-reload2/INDEX_ROWS.md`.

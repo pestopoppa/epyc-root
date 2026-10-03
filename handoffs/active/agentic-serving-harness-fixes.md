@@ -1,6 +1,6 @@
 # Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit
 
-**Status**: active. Phase A: A1 (F12 run) done and graded 2026-10-03; A2 running inside the INF-80 X0 window; A3/A4 implemented and offline-tested, GPU test pending.
+**Status**: active. Phase A: A1 (F12 run) done and graded 2026-10-03; A2 running inside the INF-80 X0 window; A3/A4 implemented and offline-tested, GPU test pending. Phase B: B2, B3, B5 live; B6, B4 (API part) and DIAG deployed 2026-10-03 ~14:50Z, live proofs pending the :8083 restore.
 **Created**: 2026-10-03, by operator directive in session ak-ds41-main:
 
 > "yes, i want all the harness bugs we identified to be fixed. The fixes shoudl be as general as possible (not limited solely to the 27B model) as I'm sure they would affect the usage of any of the models in the orchestrator stack. A full review/audit of how fixes should holistically be folded into the orchestrator's mgmt shoudl be performed after they are demonstrated on the 27B model."
@@ -90,6 +90,14 @@
     - An end-of-generation checkpoint would save **0** tokens, because every divergence precedes the end.
   - **Next steps, in order.**
     1. *Root cause, no code.* Set `LLAMA_SERVER_SLOTS_DEBUG=1` on the next :8083 relaunch. It prints the old and new tokens at the mismatch (`server-context.cpp:3407-3447`). Then classify each case: template re-render (fix in `epyc-qwen3x-v1-terse.jinja` or the Responses-to-chat conversion) or non-canonical re-tokenization of sampled text. A render-side fix recovers up to the full 705 s per 8 calls.
+       - *Infra ready, 2026-10-03 (workspace-ec; a note only, the step stays workspace-89's).* No hand edit at relaunch
+         is needed. Orch main aa1d6894 adds `orchestrator_stack.py reload architect_critic --diag-env-override
+         LLAMA_SERVER_SLOTS_DEBUG=1 --experiment-id <ID> --override-ttl-s <N>` (N ≤ 14400). The override is recorded
+         in `logs/env_overrides/<component>.json` and attested as a declared, time-bound warning (an ERROR after
+         expiry). `python -m scripts.server.env_override readback --port 8083 --expect-declared` proves it, and a
+         plain `reload` undoes it. Agreed scope: the A3/A4 multi-turn GPU window only, TTL ≤ 4 h (re-apply if longer).
+         With debug ON, every `/slots` GET detokenizes the full slot prompts in the server loop, so it is not for heavy
+         traffic. Applying it is UFH14-DIAG-EC-a below.
     2. *Only if the cause cannot be removed: experimental-tree code on `llama.cpp-experimental`.* Add generation-time checkpoints every N generated tokens for RS/hybrid slots, in the decode path beside the existing per-round speculative checkpoint (`server-context.cpp:3146-3184`). Each is about 144 MB of 27B linear state (`intake-1847#01`). Restore then lands at the last checkpoint at or before the divergence point. Replayed savings on the 35 located turns: N=1024 saves 92k tokens and 270 s (38% of the class); N=2048 saves 82k and 237 s; an ideal checkpoint exactly at the divergence point saves 105k and 309 s. No flag change in v10 achieves this.
 
 ## Phase B — generalize, model-agnostic
@@ -111,7 +119,10 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     lines, KFD peak 51.73 GiB) but peaked at 92,343 cells in flight, under its 300k criterion, so residency is UNPROVEN,
     not disproven. Tracked as KVU-16b (corrected probe) / KVU-16c (cite workspace-89's P3 run).
 - [ ] **UFH14-B4.** Prefix-cache and `--cache-ram` policy per server. Covers D5 and D6 on the server side.
-  **DESIGNED + API part BUILT 2026-10-03, NOT DEPLOYED, policy not applied** (workspace-ec): design
+  **API part DEPLOYED 2026-10-03 ~14:50Z (UFH14-DEPLOY-EC: orch main, API PID 1628390); policy not applied.**
+  The first post-reload serving records carry `request.prefix_fp`; they are the 3 refused passthrough calls at
+  14:51-14:58Z, so no dispatched call has been fingerprinted yet. The `missed_prefill_share` window (B4a) starts when
+  :8083 is restored (KVU-16e). Earlier state: **DESIGNED + API part BUILT 2026-10-03** (workspace-ec): design
   `docs/design/ufh14-b4-prefix-cache-policy-20261003.md`; orch commits 61873d75, acb5a816, 1c3f8e77, c14a098d, 8f354ac3
   (integrated on `integ/api-reload-2-ec` 10bc5681). Key fix: router `id_slot` pinning hashed the prompt's first 256
   characters, so every call of a role went to ONE slot and v10 deferred it while other slots were free; pinning is now
@@ -161,6 +172,30 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   `serving_call.v1` record per call (`caller.source="passthrough"`), localhost only, `ORCHESTRATOR_PASSTHROUGH=0` kill
   switch. Integrated on `integ/api-reload-2-ec` 10bc5681. The purpose (harness experiments go through the gate) needs
   it live on :8000, so not ticked until UFH14-DEPLOY-EC lands and a live call proves it.
+  - **DEPLOYED 2026-10-03 ~14:50Z, pending live verification.** Merged to orch main (10bc5681, now aa1d6894) and
+    deployed by an API-only reload (PID 1628390). Live so far: `GET /v1/passthrough/architect_general/models` answers.
+    Three completion calls to :8074 (14:51, 14:54, 14:58Z; one streamed) were refused with 503 `lock_unavailable`
+    after the 180 s region-admission timeout, blockers `['autokernel-cpu']`. That is by design: DS41 holds every CPU
+    region in its build_and_measure window. Evidence: `/mnt/raid0/llm/tmp/integ2-ec/stream-smoke.txt` and
+    `logs/serving_calls/serving_calls.jsonl`. :8083 is stopped for workspace-89's X0 window, so the end-to-end proof
+    (one streamed call with timings) waits for the restore (KVU-16e). Not ticked until then.
+  - [ ] **UFH14-B6a — passthrough refusal records must name the refusing gate in structured fields.** (filed
+    2026-10-03, workspace-ec, from the 14:51-14:58Z refusals) Today a refusal record has `outcome=refused`,
+    `dispatched=false` and free-text `error.message`, plus `error.type` (`lock_unavailable`). It has no structured
+    field naming the gate: region lock, KV pool, per-request cap or backend semaphore. The blockers
+    (`['autokernel-cpu']`) exist only inside the message string, and `passthrough.http_status` is `null` although
+    the client received 503. Add `refusal: {gate, blockers, wait_ms}` and the returned status, set on every refusal
+    path in `src/api/routes/passthrough.py`, with one test per gate. Done when each gate's refusal record carries
+    its gate name and the client's status code.
+  - Declined, not filed: passthrough for multi-endpoint fleets such as frontdoor. Frontdoor returns 422 by design
+    (`passthrough.py:236-243`; the KV-pool gate is per URL). No harness experiment targets frontdoor: C95, the
+    AutoKernel actor and the opencode/codex local-model configs all address single-endpoint roles. Supporting it
+    would mean re-implementing the fleet's endpoint balancing inside the passthrough. The 422 fails loud, so a future
+    need surfaces at once. Whether harnesses should ever reach frontdoor is a scope question for UFH14-C1, which
+    already covers frontdoor; it is added to C1's scope below rather than filed as a separate task.
+  - Noted, not filed: CPU-role passthrough calls cannot run while an AutoKernel window holds all CPU regions. That is
+    the region-claim contract working as designed (the orchestrator takes CPU regions per call and waits behind an
+    AutoKernel claim), not a defect.
   - Declined, not filed: timings on a NON-streamed `/v1/responses` body. llama-server v10 does not emit them
     (`server-task.cpp:558`) and the kernel is frozen; streamed `/responses` and chat/completions carry them.
 - [ ] **UFH14-DEPLOY-EC — deploy orch `integ/api-reload-2-ec` (B6, B4 API part, KVU-15a, RI-18c, test fixes).**
@@ -170,12 +205,48 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   (API only) once :8083 is restored (KVU-16e). Proofs after the reload: one live passthrough streamed call with
   timings (B6); RI-16 reader shows `review_gate`/`review_verdict` null on live `/chat` (RI-18c); a 2-worker replay
   with peak 1 long prefill and a cached-prefix request not held (KVU-15a); serving records carry `prefix_fp` (B4).
+  - [x] **UFH14-DEPLOY-EC-1 — gate, merge and API-only reload.** ✅ 2026-10-03 (workspace-ec). Full `tests/unit` on
+    the integration branch: 15979 passed, 0 failed, 57 skipped (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`; main
+    had 19 failing before). That run includes conftest fix ac33e623 and the 19 stale-fixture fixes d97004f6 /
+    9d40c30b. Merged to orch main as 10bc5681 (now aa1d6894). `orchestrator_stack.py reload orchestrator` →
+    API PID 1628390 at ~14:50Z (`/mnt/raid0/llm/tmp/integ2-ec/reload-api.out`). It shipped ahead of the :8083
+    restore, so the parent stays open for its live proofs.
+  - [ ] **UFH14-DEPLOY-EC-2 — the live proofs, after the :8083 restore (KVU-16e).** Status at 15:00Z:
+    - B6: `…/models` OK; the streamed completion with timings is still pending.
+    - RI-18c: `review_gate` null on live `/chat` is pending.
+    - KVU-15a: the 2-worker replay is pending. Its cached-prefix half cannot pass in production until KVU-15c (see
+      `kv-unified-stack-rollout.md`).
+    - B4: `prefix_fp` is present on refusal records but not yet on a dispatched call.
+- [x] **UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03
+  (workspace-ec) Orch main aa1d6894 (branch `feat/diag-env-override-ec`, ada71720 rebased). It is CLI-only, so no
+  reload was needed.
+  - Command: `orchestrator_stack.py reload <component> --diag-env-override KEY=VAL --experiment-id ID
+    --override-ttl-s N`. The key must be on an allowlist (`LLAMA_SERVER_SLOTS_DEBUG`), and N ≤ 14400 s.
+  - Record: `logs/env_overrides/<component>.json`. `declared_env_attestation` shows a live override as a declared,
+    time-bound warning, and as an ERROR after expiry.
+  - Readback: `python -m scripts.server.env_override readback --port <p> --expect-declared`. A plain `reload`
+    restores the declared environment.
+  - Tests: 51 new (`tests/unit/test_diag_env_override.py`).
+  - Purpose: UFH14-A7 step 1.
+  - [ ] **UFH14-DIAG-EC-a — apply it for workspace-89's A3/A4 multi-turn GPU window, then restore.** (filed
+    2026-10-03) At the start of the window, the session that owns that window's :8083 reloads runs it with
+    `--experiment-id ufh14-a7-slotsdebug-<date>` and a TTL ≤ 14400 s (re-apply if the window runs longer). Prove it
+    with the readback, then restore with a plain `reload architect_critic` at the window's end. Two side effects
+    while it is on:
+    - The KV-pool gate's `/slots` polls make the server detokenize every slot prompt.
+    - `/slots` now returns `prompt`, so KVU-15a's cached-prefix credit becomes live for that window only.
+
+    So serving records from the window are not a KVU-15b/15c baseline; tag them by the experiment id. Done when the
+    readback shows the declared deviation during the window and `declared_env_attestation` is clean after the
+    restore.
 
 ## Phase C — holistic audit (starts only after A5)
 
 - [ ] **UFH14-C1.** A full review of how the A and B fixes fold into orchestrator management across every model in the stack: CPU and GPU roles, frontdoor, architect, workers and embedders. Covers routing, admission, compaction, caching, telemetry and per-model parameters.
   - Output: a decision package for the operator (options, tradeoffs, recommendation), plus follow-up tasks filed in their owning handoffs.
   - Delete-lens included: name the fixes that should NOT become generic.
+  - Scope question added 2026-10-03: should harnesses ever reach a multi-endpoint fleet such as frontdoor through
+    the passthrough? Today it returns 422 by design. See the declined note under UFH14-B6.
 
 ## Notes
 

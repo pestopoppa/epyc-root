@@ -177,6 +177,29 @@ is olympiad-style reasoning.
   move the lease to a cross-process primitive (flock or the region-lock layer). (2) Size is judged on the whole prompt, so a
   mostly-cached long prompt still waits: subtract the matching slot's cached prefix (`cache_n` from the serving records)
   when estimating new tokens. Done when a 2-worker replay shows peak 1 long prefill and a cached-prefix request is not held.
+  - **DEPLOYED 2026-10-03 ~14:50Z, pending live verification** (UFH14-DEPLOY-EC: merged to orch main 10bc5681, now
+    aa1d6894; API-only reload → PID 1628390; full `tests/unit` 15979 passed / 0 failed). The flock lease half is live.
+    The 2-worker replay waits for the :8083 restore (KVU-16e). The cached-prefix half **cannot pass in production as
+    built**: the credit is inert, see the finding and KVU-15c below. Not ticked.
+  - **Finding, 2026-10-03 (workspace-ec): the cached-prefix credit is inert in production.** It reads the prompt
+    text an idle slot holds from `/slots`. v10 returns slot prompt text only under `LLAMA_SERVER_SLOTS_DEBUG`
+    (`tools/server/server-context.cpp` `to_json` :699-730; `slot.to_json(slots_debug == 0)` at :2541, prompt only under `!only_metrics` at :726). With debug off, a
+    busy slot reports `n_prompt_tokens` / `_processed` / `_cache` but no `prompt`. Live check on :8074: an idle slot
+    reports only `id`, `is_processing`, `n_ctx` and `speculative`. So the credit always falls back to whole-prompt
+    sizing. That is safe, but the credit is never applied. Step 1's `/slots` prefill observation is unaffected,
+    because it reads token counts, not text.
+  - [ ] **KVU-15c — re-base the cached-prefix credit on orchestrator-side prefix history, not `/slots` text.** (filed
+    2026-10-03, workspace-ec, from the finding above)
+    - Keep a per-port history of recent `prefix_fp` fingerprints and the server-reported `cache_n` from the UFH14-B4
+      serving records. Credit a request with the longest prefix that history says a slot or `--cache-ram` holds,
+      less the margin.
+    - Until it lands, make the fallback visible: count and record `cache_credit_unavailable` (reason
+      `slots_no_prompt`) on every serving record where the credit could not be computed, so an inert credit no
+      longer looks like zero hits.
+    - Do not read the KVU-15a credit from a `LLAMA_SERVER_SLOTS_DEBUG` window (UFH14-DIAG-EC-a): the credit goes
+      live there only because debug exposes the text.
+    - Done when the 2-worker replay shows a cached-prefix request admitted with a non-zero credit on a
+      production-flag server, and the KVU-15a done-when passes.
   - [ ] **KVU-15b — measure cache-credit misses on the serving records.** (filed 2026-10-03, workspace-ec; owner's
     decision was keep the credit and measure) On unified-KV servers the credit assumes the matched prefix survives in
     `--cache-ram`; a miss costs one extra concurrent long prefill. After KVU-15a is live, count calls admitted with
@@ -184,6 +207,9 @@ is olympiad-style reasoning.
     prefix, over ≥ 200 calls on :8083 (two windows, two-sample persistence). Today `cache_credited` is an admission
     counter and a passthrough-record field; put it on every `serving_call.v1` record first if it is missing there.
     Remove or narrow the credit if misses persist above ~5% of credited calls.
+    - **Moot until KVU-15c (2026-10-03).** In production the credit never fires (finding above), so there is nothing
+      to miss. Re-scope against KVU-15c's history-based credit once it lands. Records from a SLOTS_DEBUG window do
+      not count.
 - [x] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** ✅ 2026-10-03 (workspace-ec) — LIVE. SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17 (`artifacts/operator/stack-change-kvpool-20261003/`; live evidence in `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/{apply,evidence}/`). Bring-up after workspace-89's "F12 done": `reload architect_critic` → PID 4052768 at 13:14:35Z, argv `-c 393216 … --spec-draft-n-max 7` (`evidence/argv_8083_live_post_relaunch.txt`); server log "slot context (393216) exceeds the training context (262144) - capping", `n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'`, no clamp-to-7 warning. Load-peak VRAM 50.78 GiB (`evidence/vram_during_reload.log`). API reload → PID 4054223; `context_limits` per_request 262144, kv_unified True, shared_pool True, pool_tokens 393216. Alias completion via :8000 `coder_escalation` correct with draft acceptance logged (`apply/completion.json`). `stack_change_pipeline check --run-promotion-gate` all ok incl. runtime_attestation (`apply/check-final.out`). The 4 × 90k concurrency probe is NOT a pass — see KVU-16b/16c; full-pool concurrent residency is UNPROVEN, not disproven. :8083 has been stopped for the INF-80 X0 window since 13:55Z (KVU-16e restores it).
   - Original scope:
   (operator-approved 2026-10-03, IN PACKAGING; decision package
@@ -220,11 +246,15 @@ is olympiad-style reasoning.
     If P3 shows ≥ 15% decode loss at 300k+ pool fill vs ~100k, prepare the option (c) split stack change (4 × 163840,
     DECISION.md §4) for operator signature; if < 15%, record the verdict here and keep unified. Trigger: workspace-89's
     P3 result.
-  - [ ] **KVU-16e — restore :8083 after workspace-89's "X0 done" (ETA ~16:30Z 2026-10-03).** (filed 2026-10-03,
+  - [ ] **KVU-16e — restore :8083 after workspace-89's "X0 done" (ETA ~16:30Z 2026-10-03; extended, see below).** (filed 2026-10-03,
     workspace-ec) `orchestrator_stack.py reload architect_critic`; verify the live argv equals
     `evidence/argv_8083_live_post_relaunch.txt`, `context_limits` (262144 / unified / pool 393216) and one alias
     completion via :8000. :8083 is down from 13:55Z (stop verified: PID dead, VRAM 0.01 GiB; X0 argv record
     `/mnt/raid0/llm/tmp/ds41-c95/X0_ARGV_8083.txt`).
+    - 2026-10-03, ~15:00Z: the X0 window was extended (granted) to a ~17:15Z hand-back. Order: X0 serving + KLD,
+      then P3 (KVU-18, llama.cpp #28495), then LB1 (rocprof low-bit kernel roofline, operator-approved), then a
+      speech stop plus EXL3 correctness. Whisper/TTS will be stopped for ~30 min near the end. The restore also
+      unblocks the UFH14-DEPLOY-EC-2 live proofs (B6, RI-18c, KVU-15a, B4).
   - Finding, not filed as a task: 4 concurrent ~90k prompts take ~36 min for the last one (2166 s). That is the
     neighbour-prefill serialisation the one-long-prefill gate (KVU-15) makes explicit by design; it is a capacity
     fact, not a defect. Declined as a separate task: the actionable part, unified vs split, is KVU-16d.
