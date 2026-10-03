@@ -101,8 +101,8 @@ nobody is moving.
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
 | research-evaluation | 43 | 470 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 553 | 17 | 2026-07-29 |
-| user-facing-harness | 12 | 110 | 16 | 2026-07-29 |
+| routing-and-optimization | 50 | 555 | 17 | 2026-07-29 |
+| user-facing-harness | 12 | 113 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
