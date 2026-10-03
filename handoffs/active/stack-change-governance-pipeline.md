@@ -104,6 +104,60 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   was found by accident. Each fix covered only its own flag. Add one structural test: for every subcommand, every
   parsed option is either read on the path `main()` dispatches to or rejected with a non-zero exit. Drive `main()`
   with the launch functions booby-trapped, as `99e3e5fe` does. Fix whatever it finds.
+- [x] **STACKCHG-DFLASH2-20261003 — :8083 on DFlash2, Qwen3-VL-30B to cold CPU.** ✅ 2026-10-03 — signed at the
+  terminal 2026-10-03T04:39:55Z; research `be2cc414`, orch `d3233170` (source) + `5265e09d` (derived), root
+  `ceae5967` (receipt, package archive, change-topology `device: none` is CPU). Bring-up: `reload architect_critic`
+  → :8083 PID 3793153, stack-launched with the DFlash2 argv; `reload orchestrator` → API PID 3794270 with
+  `ORCHESTRATOR_VISION_VL_BACKEND=server`; `check --run-promotion-gate`: runtime_attestation, serving_shape_capacity
+  and promotion_gate ok. Package: [`artifacts/operator/stack-change-dflash2-20261003/PACKAGE.md`](../../artifacts/operator/stack-change-dflash2-20261003/PACKAGE.md).
+  Root cause: `INC-20261003-dflash2-ruling-never-compiled`.
+- [x] **DRAFT-SEL-1 — drafter selection is a compile input, not a hand-carried field.** ✅ 2026-10-03 (orch
+  `d3233170`, research `be2cc414`). The master lists every acceptable drafter per model
+  (`roles.<model_role>.drafters`); `stack_topology.yaml` `drafter_selection:` picks one per launching server;
+  `src/registry/drafter_selection.py` projects it into host, role and alias rows with a provenance stamp. Compile
+  FAILS on an unlisted or alias-keyed selection, on a hand-carried drafter field, and on a model with >1 drafter
+  and no selection (deliberately no default — a default is how :8083 re-inherited MTP); the lean validator at
+  every `start` fails a stale or hand-edited projection. `stack_priors` now enables spec for `draft-dflash` /
+  `draft-simple` / `draft-eagle3` (it used to enable only `draft-mtp`, so a hand edit launched with no
+  speculation), the launcher emits `-ngld`, and runtime attestation checks it. The global
+  `production_recipe: draft-mtp` became `default_spec_type`, scoped to n-gram composition (operator-signed A-1).
+- [x] **SCG-CAPACITY-FRESH — `update` was green over a lean that fails the import-time VRAM gate.** ✅ 2026-10-03
+  (orch `d3233170`). The pipeline imported `stack_manifest` before rewriting the lean, so the import-time capacity
+  gate ran against the OLD lean. Measured during packaging: with the VL still on the card, `update` was all-green
+  while a fresh import raised `ROCm0 OVERSUBSCRIBED by 3.16 GiB`. New step `serving_shape_capacity` re-runs the gate
+  in a fresh interpreter on the lean the run just wrote (tests: capacity step ×3).
+- [x] **SCG-LEAN-BOOTSTRAP — a tier flip could never compile.** ✅ 2026-10-03 (orch `d3233170`). `stack_manifest`
+  validates launcher↔lean parity at import, so a field both sides declare (here the vision `tier`) could not be
+  flipped: the lean that fixes the parity cannot compile, because compiling needs the import. During `update`
+  only, the lean step now derives the active set from `launch_manifest.yaml` + master `shared_with` (mirroring
+  `_build_role_launch_meta`; a test pins equality with `ROLE_LAUNCH_META`), compiles, and re-imports. `check`
+  never takes this path. It also covers the reverse flip on rollback.
+- [ ] **DRAFT-SEL-2 — audit the roles that still carry legacy drafter fields** (filed 2026-10-03, from the
+  drafter-compile handback `/mnt/raid0/llm/tmp/drafter-compile-20261001/REPORT_handback.txt` and DESIGN §7).
+  DRAFT-SEL-1 migrated only Qwen3.8-27B; every other row compiles with a `LEGACY drafter` warning. Close each:
+  - **Qwen3.6-27B (rollback anchor, not served):** its DFlash drafter lives in a third shape, its own role row
+    `dflash_qwen36_27b_f16_local` (below floor at the v9 freeze). A rollback would re-open the same drift. Migrate
+    it to `drafters:` with no DFlash selection until its gate passes.
+  - **`architect_general` (:8074, Flash-Next):** topology `spec_overrides: {draft_max: 4}` is a second argv writer
+    after compile, and its comment still describes the pre-ARCHSWAP critic. Fold it into `drafters.mtp.draft_max`
+    and retire `spec_overrides` (or add the rule: `spec_overrides.draft_max` must equal the selected recipe).
+  - **frontdoor + worker/toolrunner aliases (35B-A3B MTP):** no DFlash drafter exists, so no functional drift;
+    migrate to a one-entry `drafters:` list so the LEGACY path can be deleted.
+  - **Top-level `dflash_drafters:`** (Qwen3-8B, Qwen3-Coder-30B-A3B): a fourth drafter shape; fold onto target
+    rows if ever rostered, else delete.
+  - **MTP baseline mismatch:** the untracked research recipe `qwen3.8-27b-q8-gpu-mtp.json` measures MTP with the
+    SIDECAR `mtp-Qwen3.8-27B-Q8_0.gguf`, while production MTP self-drafts from the model file — so AK's MTP
+    denominator is not the production argv. List the sidecar as `drafters.mtp_sidecar` or fix the recipe.
+  Done when no served or rollback-anchor model compiles with a `LEGACY drafter` warning.
+- [ ] **SCG-FASTPATH — the stack-change skill offers the fast path first for an urgent production fix**
+  (filed 2026-10-03, from `INC-20261003-urgent-fix-slowed-by-bundling`). When live serving is wrong and the
+  operator wants it fixed now, phase 0 presents (a) an operator-terminal relaunch with the target argv, then (b)
+  the permanent package behind it — instead of only (b). It also refuses to bundle an unrelated lineup move into
+  an urgent package without the operator choosing that. Edit `.claude/skills/stack-change/SKILL.md` phase 0.
+- [ ] **SCG-RULING-TO-FIELD — an operator recipe ruling must land as a registry field plus a compile check, or a
+  task that does so** (filed 2026-10-03, same incident). Add to the stack-change skill's intake: any operator
+  ruling that names a launch recipe ("use X for model Y") is a stack-change intent, not handoff prose; the
+  handoff carries only a pointer to the package or to an open `- [ ]` task.
 
 ## Dependency Graph
 

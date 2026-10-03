@@ -107,9 +107,32 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
   matches `e4f9e21f…` and the figures re-read correctly. Their matched MTP arm reproduces our 55.46 to
   within 0.5%. Recorded in the registry (`bd40ca94`) as `challenger_under_evaluation`, status
   `np1_only_NOT_SELECTABLE`; `spec_type: draft-mtp` / `n_max: 8` untouched. **No selection published.**
-- [ ] **DFlash2 selection decision** — BLOCKED on three named gates before it may displace MTP: np2/4/8
+- [x] **DFlash2 selection decision** — BLOCKED on three named gates before it may displace MTP: np2/4/8
   scaling, exact greedy parity at temp 0, and the block-verify dispatch proof. Owned by the autokernel
   session under INF-62; this row exists so the registry side has a visible decision point.
+  ✅ 2026-10-03 — **decided by the operator, applied and serving.** Operator rulings 2026-08-27 (ruling 3,
+  `autokernel-champion-aggregate.md`) and 2026-10-01 ("ALWAYS use dflash2"); signed as
+  `RATIFY-STACKCHG-DFLASH2-20261003` (terminal, 2026-10-03T04:39:55Z). Package:
+  [`artifacts/operator/stack-change-dflash2-20261003/PACKAGE.md`](../../artifacts/operator/stack-change-dflash2-20261003/PACKAGE.md).
+  Research `be2cc414` (master `drafters` list, VRAM 37.92 measured), orch `d3233170` + `5265e09d` (DRAFT-SEL-1
+  compiler + derived). `reload architect_critic` gave :8083 PID 3793153 with `-md Qwen3.8-27B-DFlash2-Q8_0.gguf
+  -ngld 99 --spec-type draft-dflash --spec-draft-n-max 8` (clamped to 7), np4 / 196608 / q8_0 / kv-unified; load
+  log shows `draft-dflash`; `check --run-promotion-gate` green. Of the three gates: np2/4/8 scaling was measured
+  (DF2-5, v10 qualification np4 ratio 1.239); greedy parity was attributed away from DFlash2 (DF2-6/DF2-8). The
+  production-shape measurement is still owed: Q38-T7.
+- [ ] **Q38-T7 — DFlash2 at the PRODUCTION shape: speed paired with correctness, plus the coherence gate**
+  (STACKCHG-DFLASH2 PACKAGE §7.4 M-1; filed 2026-10-03). DFlash2 was never measured at np 4 / `-c 196608` / q8_0
+  KV / kv-unified (recipe runs were ctx 16384 f16, 65536 f16, DF2-5 4096×np). The operator fast path (PID 3737649)
+  gave 91.7 tok/s single-stream decode, acceptance 450/490, vs workspace-76's MTP probe of ~37-41 tok/s at the same
+  shape (`/mnt/raid0/llm/tmp/ds41-c95/probe-decode-vs-context.md`) — one request, not a measurement. Owed, in the
+  owner's :8083 window: the coherence gate at production prompt length; MTP vs DFlash2 decode paired with a
+  correctness check at production context; acceptance rate on organic traffic; n-max 7 vs 8 (7 saves ~0.58 GiB of
+  GDN state with identical drafting — rides KVU-16). Wire the result as a belief-kernel source (VB-SERVING-DF2).
+- [x] **Q38-T8 — DFlash2 load-time VRAM peak sampled DURING the load** (PACKAGE M-2). ✅ 2026-10-03 — the sampler
+  armed before `reload architect_critic` (`/mnt/raid0/llm/tmp/stack-change-dflash2-20261003/apply/vram_during_reload.log`,
+  0.5 s cadence) reads 44.31 GiB card-total on the OLD process (04:44:36Z), 0.01 GiB at unload (04:44:39Z), and a
+  NEW-process load-time peak of **43.49 GiB at 04:44:57Z**. Load peak ≤ the 44.30 GiB runtime reading, so the
+  declared `vram_non_kv_gib: 37.92` (runtime-derived) stays the conservative figure; no registry change.
 - [x] **Q38-T4 ✅ 2026-08-21 — CLOSED, and neither proposed fix was the right one: the "drift" was a CHECK-TIME MODE ARTIFACT.** The guard builds its launch view against the realized fleet mode, defaulting to `full` in a clean shell (`stack_change_guard.py:1183-1191`, `stack_numa_mode.py:10`), which filters the half instances out of the view while the master unconditionally projects them into `serving.ports`. Under the PRODUCTION mode (`ORCHESTRATOR_STACK_NUMA_MODE=both`) all 13 errors vanish with ZERO data edits; after a mode-correct `update` (re-pinning the launcher hash the jinja fix had legitimately broken) the check is **FULLY GREEN — `guard: ok`, `guard_strict: ok`, `acceptance: no-inference checks passed`** — the first fully green stack-change check of the campaign. Master, topology, stack template and launch manifest were all correct all along; the ratify script now exports the mode. (Earlier annotation about launch-manifest-vs-accepted_gaps options is superseded. CORRECTED FRAMING 2026-08-21 (after a reverted over-read): the flagged ports are
       the HALF instances, which are LIVE production config** — `stack_templates/default.yaml:93-94`
       and `:121-122` launch them (`{port: 8080, numa: HALF_A, threads: 48}` …). The operator's

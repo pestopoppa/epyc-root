@@ -7,6 +7,19 @@
 
 ---
 
+> **2026-10-03 ~04:45Z — GPU posture (workspace-ec wrap-up, STACKCHG-DFLASH2-20261003). Supersedes the :8083
+> drafter and :8086 lines in the blocks below.**
+> - **:8083 serves Qwen3.8-27B on the DFlash2 drafter**, stack-launched (PID 3793153): `-md
+>   Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 8` (clamped to 7), np 4 /
+>   196608 / q8_0 / kv-unified, 44.30 GiB VRAM. MTP is gone from :8083. The drafter is now a compile input
+>   (`stack_topology.yaml` `drafter_selection`; DRAFT-SEL-1).
+> - **:8086 vision (Qwen3-VL-30B) is OFF the MI210: cold, CPU, WARM tier.** A default `start` does not launch it;
+>   image requests are refused (API runs `ORCHESTRATOR_VISION_VL_BACKEND=server`). Start on demand with
+>   `orchestrator_stack.py start --only worker_vision` (cores 0-47 + 96-143 — overlaps frontdoor). Back on a GPU
+>   when MI210 #2 arrives.
+> - Open: KV-pool step 1 (KVU-15, in progress) and step 2 (KVU-16, `-c 393216`, in packaging); the DFlash2
+>   production-shape measurement (Q38-T7).
+
 > **2026-09-28 — UFH-13 PARKED; the working direction until the second MI210 is infra and design (operator, in chat,
 > session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ). Supersedes the 2026-09-27 narrowed plan's ranking.**
 > - **UFH-13, the thesis experiment, is PARKED.** A2's escalation runs on episodic-memory Q-values learned before the

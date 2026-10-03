@@ -120,6 +120,16 @@ apparatus exists to prevent — and would destroy the comparability of every lat
   **target-feature** path; whether plain non-speculative decode also degrades at length on an OFF
   build is **not measured** and is not asserted.
 - CH-9 is done (2026-08-28): § *Completed Scope*.
+- [ ] **CH-17 (new, 2026-10-03) — every kernel freeze re-selects each role's spec-decode recipe.** A v-next
+  promotion checklist item (kernel-promotion skill and its `promotion_gates.yaml`, and the v11 candidate gate
+  with V6R-4a). Origin: the 2026-08-27 ruling 3 said "adjust the lean registry compiler at promotion time"; the
+  v10 freeze (`ffc1bac82`) was even qualified on DFlash2 vs MTP (np4 ratio 1.239), yet the promotion only re-ran
+  `stack_change_pipeline.py update`, and :8083 kept `draft-mtp` until 2026-10-03 (drafter-compile DESIGN §4 item
+  8, `/mnt/raid0/llm/tmp/drafter-compile-20261001/DESIGN.md`). Acceptance: for each served model, list the
+  drafters the new kernel supports (`llama-server --help` spec types; master `drafters`), compare the
+  qualification evidence per drafter, and either change `stack_topology.yaml` `drafter_selection` or record
+  "selection unchanged, because …" in the promotion receipt. The step blocks the freeze until done. Now that
+  DRAFT-SEL-1 makes the selection a compile input, this is a data edit, not a compiler change.
 
 ## The champion as built — 2026-08-27
 
@@ -201,6 +211,9 @@ champion is *for*.
    not additive" framing is withdrawn. Not every model has a DFlash2 drafter head; current intent is
    Qwen3.8-27B only, with the rest of the stack staying on MTP. The lean registry compiler is
    adjusted at promotion time to select per role.
+   *(2026-10-03: the compiler adjustment was NOT made at the v10 promotion; it landed only with
+   STACKCHG-DFLASH2-20261003 as DRAFT-SEL-1, orch `d3233170`. :8083 serves DFlash2 since then. The
+   freeze-time re-selection that would have caught it is CH-17.)*
 
 4. **Run the DFlash2 gates.** DF2-5 (np=8 concurrency) and DF2-6 (exact greedy parity) are approved
    to run. Note DF2-6 may fail for a reason unrelated to DFlash2: the in-production MMQ patch

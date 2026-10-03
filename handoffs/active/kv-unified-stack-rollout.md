@@ -140,6 +140,10 @@ is olympiad-style reasoning.
     requests (resolves an effect of ~8%), re-run the M-3 log read, and if the difference is inside 8% run a
     same-window A/B (depth 8 vs 4 alternating on :8083) for the ~2.5% effect. If depth 4 loses by more than the
     §6 rollback threshold, revert `draft_max` to 8 through a stack-change reload.
+  - **SUPERSEDED 2026-10-03 (KVU-1b and M-3b):** :8083 no longer runs MTP. Since `RATIFY-STACKCHG-DFLASH2-20261003`
+    it serves DFlash2 (`--spec-type draft-dflash --spec-draft-n-max 8`, clamped to 7; PID 3793153), so MTP depth 4
+    vs 8 has no production arm left. The DFlash2 depth question (n-max 7 vs 8) is KVU-16; the production-shape
+    speed/correctness check is `qwen38-27b-replace-qwen36.md` Q38-T7. Boxes left for their owner to close.
 - [x] **KVU-1c — add the context-checkpoint read to the serving proof.** ✅ 2026-09-24 — :8083 was reloaded
   with `LLAMA_ARG_LOG_VERBOSITY=4`; its log since the np4/kvu launch holds 26 `created context checkpoint` lines
   (first: slot 3, task 1, `checkpoint 1 of 32`, 150.2 MiB), read-only from
@@ -148,6 +152,10 @@ is olympiad-style reasoning.
 - [ ] **KVU-1d — replace the `vram_non_kv_gib` UNVALIDATED line** (still open after bring-up: research
   `75ee1b8e` declares 32.80 as UNVALIDATED, and the package's proof step 2 reading was not written back) with KFD − 6.375 from the M-1 reading. Record the
   reading through SSU-F3's prepared claim tuple (RTG-19; SSU-F3 itself is done).
+  - 2026-10-03: the master figure is now `vram_non_kv_gib: 37.92` MEASURED for DFlash2 (research `be2cc414`, KFD on
+    PID 3737649 minus 6.38 GiB KV, `vram_non_kv_drafter: dflash2`); the load-time peak was sampled at bring-up
+    (43.49 GiB card-total, `qwen38-27b-replace-qwen36.md` Q38-T8). The 32.80 UNVALIDATED line is gone. Still open
+    here: recording the reading through SSU-F3's claim tuple.
 - [x] **KVU-1e — M-4: np4 aggregate under concurrent load, live.** ✅ 2026-09-24 — live :8083 (np4, kvu, depth
   4), fixed-length 1024-token generations (`ignore_eos`), 2 waves per level: aggregate 40.2 / 39.9 tok/s at
   concurrency 1, 71.4 / 67.8 at 2, 95.3 / 93.1 at 4; per-request median 40.5 / 40.2, 36.4 / 34.9, 27.6 / 26.1.
@@ -159,8 +167,40 @@ is olympiad-style reasoning.
   - Recommendations: 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086.
   - The value compiles to `-cram` already. Land it at the same :8083 reload if the operator agrees; a second
     reload costs a planner transient.
+- [ ] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7**
+  (operator-approved 2026-10-03, IN PACKAGING; decision package
+  `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §4 step 2). One :8083 relaunch carrying: `-c` 196608 →
+  393216 unified at np 4 (+4.86 GiB → ~51.4 GiB, 12.5 GiB free; four concurrent p90 prompts fit); an orchestrator
+  per-request cap of 262144 (= `n_ctx_train`; `context_limits.py` `per_request_n_ctx` must take
+  `min(n_ctx, n_ctx_train)` once `-c` exceeds it); `--spec-draft-n-max` 8 → 7 (the kernel already clamps to 7; the
+  GDN ring is sized from the unclamped value, so 7 should save ~0.58 GiB); re-derive `vram_non_kv_gib` for the new
+  depth (DRAFT-SEL-1's `check_lean` refuses a selection whose VRAM was not re-derived). Bring-up with `-lv 4`:
+  read the `llama_kv_cache` / `memory_recurrent` / `sched_reserve` lines and KFD at load (expect ~51.4 GiB), then
+  one synthetic 4 × 90k concurrent replay: zero "failed to find a memory slot", KFD peak ≤ 62 GiB. Before
+  packaging, run DECISION §4 measurement 1 (zero compute: regress per-slot decode vs pool high-water on the
+  existing log); if decode with neighbours is >15% slower at 300k+ fill than at 100k, take option (c) split
+  4 × 163840 instead. Fix the "3 GiB" comment at `stack_manifest.py:1690` (code uses 2.0) in the same package.
 
 ### B — orchestrator
+- [ ] **KVU-15 — :8083 KV-pool step 1: close the admission bypasses** (operator-approved 2026-10-03, IN PROGRESS;
+  `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §3(d), §4 step 1). All 17 pool-exhaustion episodes in
+  the 8083 log were four ~45-55k contexts filling the 196k pool, and `logs/orchestrator.log` holds zero
+  `SharedKVPoolAdmission` queue lines: the load never passed through the gate. No relaunch, API reload only:
+  - route :8083 traffic through the token gate — scouts reserve TOKENS, not slots (`scout_stage.py:39-50`,
+    `:250-266`, `:726-753`);
+  - one long prefill (≥ 8k tokens) at a time per URL, which targets the 28.6 → 7.8 tok/s neighbour-prefill decode
+    collapse (`kv_pool_admission.py`);
+  - re-point remaining direct :8083 clients (AutoKernel/DS41 harnesses, opencode, codex, Hermes, C95) at :8000.
+  Done when a replay of concurrent long prompts through :8000 queues FIFO with zero "failed to find a memory slot".
+- [ ] **KVU-17 — serving telemetry: record per-call server timings, including streamed chat** (IN PROGRESS
+  2026-10-03; scratch `/mnt/raid0/llm/tmp/serving-timing-ec/`, new `src/backends/serving_calls` module, 44 tests
+  pass on the candidate `llama_server.py`). The chat-stream path ignored the `timings` object llama-server
+  attaches to the last chunk and hard-coded `prompt_eval_ms = 0.0`, so every streamed completion logged zero
+  prefill time and no draft acceptance. The change records `prompt_ms`, `predicted_ms`, `cache_n`, `draft_n` and
+  `draft_n_accepted` per call (`infer`, `infer_stream_text`, `/completion`, `/v1/chat/completions`). It is the
+  instrument for KVU-15/16 (decode vs pool fill) and Q38-T7 (DFlash2 acceptance on organic traffic). Land on orch
+  main, `reload orchestrator`, prove one streamed completion logs non-zero `prompt_eval_ms`, and wire the records
+  as a belief-kernel source (VB-SERVING-DF2).
 - [x] **KVU-3 — land `feat/context-overflow-handling-20260924` @ `8bbe2a3c`** once OP-55 decides: ✅ 2026-09-24 —
   OP-55 decided "all recommended"; `5ca21957` added route-by-live-limit; merged as orch `8a0c0944` (351 targeted
   tests pass on the merge), shared clone fast-forwarded, API reloaded (orchestrator only); `/v1/models` shows the

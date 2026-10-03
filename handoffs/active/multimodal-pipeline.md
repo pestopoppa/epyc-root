@@ -327,6 +327,28 @@ Do not rebuild the C++ accelerator — its source is lost and it never worked.
       ✅ 2026-09-23 — `default_vl_max_tokens` 512→1024 (epyc-orchestrator `8a8e391c`); chat vision routes already request 2048. LIVE: API reloaded 2026-09-23 20:31Z (pid 2815541 on orch `3c6721ef`), config reads 1024.
 - [ ] **S-16 — promote `Qwen3-VL-30B-A3B Q4_K_M` to the vision role** and retire `Qwen2.5-VL-7B`. Evidence below (§ vision decision). Register per MRG-1; depends on S-15 landing first, or the promotion inherits the truncation defect.
 - [ ] **S-17 — audit the GPU resident-set budget before any further GPU model lands.** 27B Q8_0 (27.0) + Qwen3-VL-30B-A3B (21.0) + whisper (2.6) + Qwen3-TTS (1.2) ≈ **51.8 GB of 64**, leaving ~12 GB for KV — the 27B tops out near **90k tokens** on `q8_0` KV. A KV-quantization quality test is in flight to establish whether `q4_0` buys ~180k; do not add a fifth resident model before it reports.
+  - Note 2026-10-03 (S-16 and S-17): the master already serves `Qwen3-VL-30B-A3B-Instruct-Q4_K_M` +
+    `mmproj-…-F16` as `worker_vision` / `vision_escalation` on :8086 (STACKCHG-DFLASH2 PACKAGE §2 argv). Since
+    `RATIFY-STACKCHG-DFLASH2-20261003` the VL is **off the MI210**: device `none`, tier WARM (a default `start` does
+    not launch it), NUMA_HALF_A (cores 0-47 + 96-143, `-t 48`, `--interleave=0,1`, pre-evict 40 GiB/node). DFlash2
+    on :8083 holds 44.30 GiB, so the VL (19.26 + 3.19 GiB) no longer fits beside it (66.75 > 62.00). The GPU figures
+    stay in the master as the restore record for MI210 #2; the operator reassesses placement when it arrives.
+    Start it on demand: `orchestrator_stack.py start --only worker_vision`.
+- [ ] **S-18 — measure Qwen3-VL-30B on CPU the first time it is started** (STACKCHG-DFLASH2 PACKAGE §7.4 M-3; filed
+  2026-10-03). The only CPU evidence is K35 2026-07-17 at `-t 96`; the new placement (NUMA_HALF_A, `-t 48`) has
+  no throughput or quality figure. On the first on-demand start, in a window that does not overlap a DS41 CPU
+  A/B: decode tok/s paired with an MMMU parity slice vs the 63.6% MI210 figure. Wire it as a belief-kernel
+  source (VB-SERVING-DF2).
+- [ ] **S-19 — re-bench `worker_vision`'s contention pairs before it is ever made HOT again** (PACKAGE M-4; filed
+  2026-10-03). Its three measured pairs described the old placement (184-191, `-t 8`); the package moved them to
+  `unknown_pairs` with reason `placement_withdrawn` (declared withdrawal, NOT a re-measurement; stamp
+  `5d772b2c` → `560d489b`). A hot tier flip without a re-bench leaves contention_gate blind for vision.
+- [ ] **S-20 — make the cold-vision refusal fail fast** (filed 2026-10-03, bring-up proof 9). With :8086 down and
+  `ORCHESTRATOR_VISION_VL_BACKEND=server`, an image request was refused correctly and spawned no `llama-mtmd-cli`,
+  but the refusal took **27.9 s**. Expected: immediate ("All vision paths failed"). Find where the time goes
+  (`chat_vision` tries :8086 as worker_vision, then as vision_escalation, then POSTs `/vision/analyze`; likely
+  connect timeouts or retries on each hop), short-circuit when no vision server is listening and the backend is
+  `server`, and add a test with a timing bound.
 
 **LensVLM activation trigger.** Materialize `MM-LENS-1`, `MM-LENS-2`, and their `VB-LENS-1` receipt only when visual-token processing is a measured latency, memory, or quality bottleneck on an EPYC workload, or a named deployment needs LensVLM. Until then this is a monitor record, not an active reproduction campaign.
 

@@ -22,6 +22,15 @@ proof, and measurement roots. ~~No DFlash2 result may enter the kernel-source ch
 > binds a server instance, not the kernel, so one kernel carrying both `draft-mtp` and
 > `draft-dflash` is a capability, not a conflict. Program handoff:
 > [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md).
+>
+> **IN PRODUCTION 2026-10-03.** The ruling above lived only as prose here and in the aggregate handoff for five
+> weeks; :8083 kept serving `draft-mtp` through the v10 freeze and two relabels. It is now structural: the master
+> lists each model's acceptable `drafters`, the orchestrator topology selects one per server
+> (`drafter_selection: {architect_critic: dflash2}`), and compile fails on an unlisted, missing or hand-carried
+> drafter (DRAFT-SEL-1, `stack-change-governance-pipeline.md`). Signed `RATIFY-STACKCHG-DFLASH2-20261003`; research
+> `be2cc414`, orch `d3233170` + `5265e09d`; :8083 PID 3793153 serves DFlash2. Selection box:
+> `qwen38-27b-replace-qwen36.md` (ticked); the production-shape measurement is Q38-T7 there; root cause
+> `INC-20261003-dflash2-ruling-never-compiled`.
 
 ## ⭐ OPEN — DRAFTER-PER-MODEL: a served model without a DFlash2 head serves slow (Qwopus3.8-27B, 2026-09-05)
 
