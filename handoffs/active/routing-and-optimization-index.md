@@ -36,7 +36,7 @@
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |
 | RTG-28 | reasoning effort levels | [reasoning-effort-levels.md](reasoning-effort-levels.md) | TB-1 — per-model budget curve on a truncation-inducing suite | — |
 | RTG-29 | retrain routing models | [retrain-routing-models.md](retrain-routing-models.md) | Operator decision: run a --keep-enabled bracket to actually enable live routing | — |
-| RTG-30 | routing intelligence | [routing-intelligence.md](routing-intelligence.md) | RI-18c deployed 14:50Z: verify review_gate/review_verdict null on live /chat after :8083 restore; RI-19 use_memrl off; RI-24 | UFH-14 |
+| RTG-30 | routing intelligence | [routing-intelligence.md](routing-intelligence.md) | RI-18c: verify review_gate/review_verdict null on a COMPLETED live /chat in a DS41 open window; RI-19 use_memrl off; RI-24 | UFH-14 |
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row | — |
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | — |
 | RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then resume live canaries | — |
@@ -59,7 +59,7 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 shadow-mode code (zero-inference); TD-29.M0a prefill tokens on the /completion lane, then TD-29.M4 prefix-cache reuse | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16e restore :8083 (X0 hand-back ~17:15Z); KVU-15c prefix_fp-based cache credit; KVU-16b/c residency; KVU-16a; KVU-16d | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-19a masked-block skip, fold via workspace-89 (KVU-19); KVU-15c prefix_fp credit; KVU-16b residency probe; KVU-15a replay; KVU-16a | RTG-19, RTG-36, INF-41 |
 
 ## Cross-domain
 
