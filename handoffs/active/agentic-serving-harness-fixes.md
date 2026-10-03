@@ -60,12 +60,37 @@
   - The separate DFlash2 decode probe crashed on fresh slots (`KeyError 'params'`); fixed in `probe_decode.py` and folded into the INF-80 X0 window (A2).
 - [ ] **UFH14-A2.** DFlash2 decode-vs-context probe on the production shape, to compare against the MTP probe and to separate drafter speed from harness effects.
   - 2026-10-03: running inside the INF-80 EXL3-X0 window (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`) after the `probe_decode.py` fix. Agentic-traffic acceptance from A1 (29–34%) is context for it, not a substitute.
+  - *F12 production-traffic numbers, 2026-10-03.* These are not the probe, so the box stays open. Re-derived from `wire_timing` in `/mnt/raid0/llm/tmp/ds41-c95/results/C{2,4}/cxf{1,12}/r{1,2}/result.json`, 8 calls. Server: :8083 PID 3793153, `-np 4 -c 196608 --kv-unified`, `--spec-draft-n-max 8` clamped to 7. This is the pre-KVU-16 shape.
+    - DFlash2 draft acceptance: 0.290–0.343.
+    - Median decode on turns of ≥1k tokens: 24.6–30.2 tok/s.
+    - Prompt-cache hit: 0.882–0.959. Two calls sit below 0.90 (C2/cxf1/r2 0.882 and C4/cxf1/r1 0.896); both contain a compaction (A4).
+    - Context: 49.8–56.9k at the first request, 109.5–151.5k at the peak.
+  - Read the acceptance against the production prior, not the benchmark one. AngelSpec replayed temperature-1 production traffic and measured a block-8 DFlash-family drafter at a mean accepted length of about 2.5 tokens per step, roughly half its benchmark figure (`intake-1848#01`, `intake-1848#02`). Our 29–34% at n_max 7 is in that range and is not by itself a drafter defect. The unified-KV decode tax is a separate, unmeasured suspect (`intake-1849#02`; KVU-18 in [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)).
 - [ ] **UFH14-A3.** Prefix warming plus staggered starts for parallel arms. Issue one warm request for the shared context, then start the arms so they hit the prompt cache. Measure the cold-prefill share and decode stall against an unstaggered A/B. Covers D5.
   - 2026-10-03: implemented in `/mnt/raid0/llm/tmp/ds41-c95/run3.py` + `proxy3.py`, offline-tested only. Close after the GPU A/B.
 - [ ] **UFH14-A4.** Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
   - 2026-10-03: implemented in `run3.py` + `proxy3.py`, offline-tested only. Close after a GPU run measures re-prefill tokens per compaction.
+  - *Baseline from F12, 2026-10-03, wire logs.* 5 codex compactions across the 8 calls, each a cold pair at `cache_n` = 0:
+    - The `tools=[]` compaction request: 147.6–157.1k tokens, 416.7–461.2 s.
+    - The post-compaction request: 38.3–39.7k tokens, 58.1–60.1 s.
+    - Total: 2,459 s of prefill, 8.9% of the 27,731 s summed call wall time. This is 3.5× the hybrid re-prefill cost in A7.
 - [ ] **UFH14-A6.** Run every later harness experiment under the Landlock sandbox (`sandbox3.py`) and verify isolation on a real call before relying on it: a planted read of the live campaign store must fail, while the call's own workspace, result dir and wire proxy stay reachable. Origin: C2/cxf1/r2 contamination (A1).
 - [ ] **UFH14-A5.** Phase A verdict: which fixes measurably change P(keep), wall time and prefill seconds on the 27B. Wire the results to the belief kernel; VB-DS41-C95 already exists, so extend it rather than adding a new ladder.
+- [ ] **UFH14-A7 (intake P7). Hybrid re-prefill when the next turn's history diverges inside the previous output.** Code read of frozen v10 `ffc1bac82` plus the F12 wire logs. Report and scripts: `/mnt/raid0/llm/tmp/p6p7-20261003/`.
+  - **Mechanism.**
+    - Context checkpoints are created at only one call site, in the prompt-processing loop (`tools/server/server-context.cpp:3725`).
+    - They are taken at user-message starts and at 4+n_ubatch and 4 tokens before the prompt end (`:3640-3666`, `:3696-3726`).
+    - None is taken during or at the end of generation. `--ctx-checkpoints` (default 32) and `--checkpoint-min-step` (default 8192; `common/common.h:633-634`, `common/arg.cpp:1520-1535`) govern prefill only.
+    - The intake guess that every turn recomputes the previous output (intake-1827#record notes) is **refuted for the common case**. When the next prompt extends the cached tokens exactly, the live recurrent state is already at the end of the previous output and is used as is. On 179 of 230 follow-on F12 turns, `cache_n` = previous prompt + previous output, with zero re-prefill.
+    - The checkpoint matters only when the re-rendered history differs from the generated tokens. The hybrid `pos_min` test (`:3397-3399`, `:3450-3464`; recurrent `seq_rm` rolls back at most `n_rs_seq` tokens, `src/llama-memory-recurrent.cpp:191-200`) then forces a restore, and the newest usable checkpoint is the previous prompt end minus 4.
+  - **Measured.**
+    - 41 of 230 turns (17.8%) show `cache_n` = previous prompt − 4 exactly, with re-prefill = previous output + 4.
+    - Cost: 224,863 tokens and 705 s over 8 calls, 14.8% of all prefill time and 2.5% of wall time.
+    - Divergence points come from `selected slot by LCP similarity` in the server-window logs (35 turns). 13 diverge in the first third of the previous output (reasoning), 10 in the middle, and 12 in the last 10% (message or tool-call tail).
+    - An end-of-generation checkpoint would save **0** tokens, because every divergence precedes the end.
+  - **Next steps, in order.**
+    1. *Root cause, no code.* Set `LLAMA_SERVER_SLOTS_DEBUG=1` on the next :8083 relaunch. It prints the old and new tokens at the mismatch (`server-context.cpp:3407-3447`). Then classify each case: template re-render (fix in `epyc-qwen3x-v1-terse.jinja` or the Responses-to-chat conversion) or non-canonical re-tokenization of sampled text. A render-side fix recovers up to the full 705 s per 8 calls.
+    2. *Only if the cause cannot be removed: experimental-tree code on `llama.cpp-experimental`.* Add generation-time checkpoints every N generated tokens for RS/hybrid slots, in the decode path beside the existing per-round speculative checkpoint (`server-context.cpp:3146-3184`). Each is about 144 MB of 27B linear state (`intake-1847#01`). Restore then lands at the last checkpoint at or before the divergence point. Replayed savings on the 35 located turns: N=1024 saves 92k tokens and 270 s (38% of the class); N=2048 saves 82k and 237 s; an ideal checkpoint exactly at the divergence point saves 105k and 309 s. No flag change in v10 achieves this.
 
 ## Phase B — generalize, model-agnostic
 
@@ -155,4 +180,5 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
 ## Notes
 
 - The C95 harness calls :8083 directly through its own proxy, because it needs raw streams with per-request timings on the wire. It runs at concurrency 1, so it cannot exhaust the pool. Once B6 exists, later harness experiments should go through the gate.
+- **The 16-token verify block is a copy-workload profile, not an agentic one.** HyperQwen's DFLASH_TOKENS=15 gains come from greedy runs where the model reproduces its own context. Its author puts it about 2:1 behind MTP elsewhere, it costs recurrent-state pages per slot, and the source keeps k=7 for agentic clients (`intake-1827#01`, `intake-1827#06`, `intake-1830#record`). Do not tune temperature-1.0 agentic traffic toward it. Bole prices each extra verify position on Qwen3.8-27B at a ~144 MB recurrent snapshot per sequence (`intake-1847#record`). The production prior for block-8 acceptance at temperature 1 is AngelSpec's ~2.5 tokens per step (`intake-1848#01`).
 - Since 2026-09-30 DS41's planner and critic are external models (gpt-6.1-sol, claude-opus-5-5). Whether the 27B returns to the planner seat is an operator decision after A5. It competes for :8083 with the INF-80 X0 window (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`).

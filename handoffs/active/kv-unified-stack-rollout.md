@@ -307,6 +307,13 @@ is olympiad-style reasoning.
 - [ ] **KVU-14 — session-keyed admission hold on shared-pool servers (DESIGN; opens only if dynamic-stack-concurrency.md G5 finds cross-session eviction).** ThunderAgent's contract (intake-1816#1, intake-1816#4, intake-1816#6): a session is REASONING while a request is in flight and ACTING from response completion; capacity = the unified KV pool plus `--cache-ram`; under pressure, hold the NEXT turn of the smallest idle (ACTING) sessions at admission — never mid-decode — and resume shortest-first with hysteresis and a forced-resume timeout (HSF-3 p99). Optionally back the hold with `POST /slots/{id}?action=save` to RAM (the verb KVU-5 uses). Reads the ONE session table (heterogeneous-slot-fabric-residency.md tracked-session index; identity from harness-selection-and-integration.md HS-16); shares the admission queue with KVU-5/KVU-6; no second occupancy notion. Upstream ThunderAgent and Dynamo's plugin are not deployable here (vLLM/SGLang backends only; Dynamo frontend only).
 
 ### C — kernel candidate (v11, guarded)
+- [ ] **KVU-19 (intake P5) — masked-block skip for unified-KV flash attention on `llama.cpp-experimental`.
+  Trigger: KVU-18 measures a decode loss of 5% or more.** Upstream trims only the fully masked *tail* of the KV
+  range, and the launch gate never fires for unified-KV decode (`n_stream` == 1). So a decode or verify step
+  attends over every block that other slots' sequences occupy (`intake-1849#00`). Skip masked blocks anywhere in
+  the range, not just at the tail, for the decode and verify shapes, HIP/gfx90a first. No upstream fix exists:
+  the WMMA-only PR #28943 closed unmerged (`intake-1849#03`). Four-step workflow; validate on the KVU-18 cells
+  and on the DF2 verify shape (n_max 7). Not triggered means no kernel work.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean
@@ -320,6 +327,15 @@ is olympiad-style reasoning.
     reopens it. The orchestrator already classifies the error (KVU-0e).
 
 ### D — measurement follow-ups
+- [ ] **KVU-18 (intake P3) — unified-KV decode cost on :8083's shape. Running in the 2026-10-03 INF-80 X0
+  window** (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`). Measure one slot's decode and verify tok/s at a fixed
+  context while 0, 1 and 3 other slots hold parked long contexts, unified vs split, same binary. Include a cell
+  near the F12 range: 50–150k own context, 15–60k neighbours. The source reports -6.6% S_TG on gfx1201 and
+  "a 15.6k conversation with three others parked generates at the speed of a 62k one" on V100
+  (`intake-1849#02`). Those are other GPUs and are not MI210 expectations. The loss, if any, is independent of
+  drafter acceptance, so it must be measured before 25–30 tok/s agentic decode is blamed on DFlash2 (UFH14-A2
+  in [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md)). A loss of 5% or more triggers
+  KVU-19. Carry the belief-kernel write-side hook from the first cell.
 - [x] **KVU-8 — confirm the throughput verdict with fixed-length or multi-wave generation.** ✅ 2026-09-24 —
   confirmed, with one named substitution. (1) 35B-A3B, both arms, fixed-length L 2048 cells: unified within 2% of
   split in all 4 (per-request −0.6..−1.7%, aggregate −0.7..−1.1%); at 8k/32k the per-request spread is −5.3..+5.6%

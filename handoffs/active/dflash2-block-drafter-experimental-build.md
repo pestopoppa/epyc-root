@@ -192,6 +192,61 @@ shipped MTP (1.5×) is a floor, not the ceiling.
 - [ ] **DF2-DRAFTER-CAPABILITY — generalize:** treat "train a DFlash2 drafter for target model X" as a
       reusable capability (the pipeline, not a one-off), since every new serving candidate will need one.
 
+## OPEN — composing DFlash2 with n-gram lookup (3090/LABD intake, 2026-10-03)
+
+The HyperQwen/LABD wave (intake-1827#record through intake-1849#record) asks whether context-copy lookup adds to DFlash2 on our
+agentic traffic. Two v10 facts constrain every probe. Both were read from the frozen tree `ffc1bac82`:
+
+- **`--spec-type a,b` order is ignored.** `common_speculative_init` builds the chain in a fixed priority:
+  `ngram-simple`, `ngram-map-k`, `ngram-map-k4v`, `ngram-mod`, `ngram-cache`, then the model drafters
+  (`common/speculative.cpp:2973-3009`, comment "this list here defines the priority"). The draft loop takes
+  the **first non-empty draft** and skips the rest for that step (`:3199-3243`). So `draft-dflash,ngram-mod`
+  and `ngram-mod,draft-dflash` are the same server: any n-gram hit displaces the whole DFlash2 block for that
+  step. This is upstream's chosen design. PR #22838 shipped first-non-empty-in-order chaining and closed the
+  scoring design (`intake-1843#01`). Per-position merge, where lookup fills only the positions it is
+  confident about, does not exist upstream (`intake-1843#record`). In llama.cpp the composition is whole-draft
+  fallback (`intake-1833#03`).
+- **`ngram-mod` keeps one pool shared across all sequences and requests.** The comment at
+  `common/speculative.cpp:2334` says "shared across all sequences". `begin()` adds every new prompt to the pool
+  and resets it only when occupancy crosses a threshold (`:2376-2400`). One server therefore drafts from
+  earlier requests' prompts and generations. This is the mechanism behind the July retraction: a repeated
+  prompt on a warm server let ngram copy its own earlier answer, and the claimed 2.80× fell to -17.4%..+2.7%
+  on run 1 only. See [`speculative-decoding-mtp-refresh.md`](speculative-decoding-mtp-refresh.md) §"ngram
+  speculation — RETRACTED 2026-07-31" and research `84067a6e`. **Every n-gram arm must use a fresh server per
+  arm and per rep, distinct prompts, no warm-up, and report `draft_n` per implementation.** The
+  lukaLLM bench followed the same hygiene, and its warm-server probes are the contaminated ones
+  (`intake-1833#04`).
+- **Priors, not expectations.** Every LABD number is greedy and copy-workload-specific. The source itself
+  says to keep k=7 for agentic clients (`intake-1827#04`, `intake-1827#06`). The best llama.cpp composition
+  evidence (Blackwell, Q4_K_M, np1, temperature unrecorded) does not license an MI210 temperature-1.0
+  change without our own replay (`intake-1833#record`).
+
+- [x] **DF2-14 (intake P1) — offline lookup replay on our own agentic transcripts.** ✅ 2026-10-03
+      (`/mnt/raid0/llm/tmp/p1-lookup-replay-20261003/`). CPU-only, no inference. For each generated position
+      in the F12/C95 wire transcripts, test whether a 6-12-token suffix match on the request's own history
+      (prompt plus generated, LABD's rule, `intake-1827#02`) would have proposed the emitted continuation.
+      Report the copy rate and the implied accepted-length ceiling per turn class: tool-call arguments,
+      reasoning, final answer. No external copy-rate evidence exists for coding agents (`intake-1844#01`), so
+      this replay is the only basis for P2.
+      - **Result 2026-10-03: no material signal.** 320 codex turns / 630k generated tokens (F12 DFlash2 subset 220
+        requests / 486k). Lookup coverage (k=8, runs ≥3) is 8.0% overall: reasoning 91.7% of tokens at 5.6%, tool-call
+        args 45%, patches 30%, final answer 17%. Step simulation vs measured DFlash2 (3.20 tok/step): +1.4–2.4%
+        optimistic, −1.0 to −2.6% after overlap (DFlash2 accepted length already tracks lookup coverage, Spearman
+        0.68; 3.04→4.06 as coverage rises). Cross-context control keeps 57% of coverage (generic boilerplate).
+        Temp-1.0 sampled text is a direct acceptance sample (no logprobs needed). Report:
+        `/mnt/raid0/llm/tmp/p1-lookup-replay-20261003/` (`out/position_table_k8.txt`, `out/gated_sims_table.txt`).
+- [ ] **DF2-15 (intake P2) — DFlash2 vs DFlash2+ngram serving A/B. NOT RUN: DF2-14 gate failed 2026-10-03 (≤+1% expected).** Gated on DF2-14 showing a copy rate
+      worth testing. Arms: `draft-dflash` vs `draft-dflash,ngram-mod`, plus `draft-dflash,ngram-map-k4v` per
+      `intake-1833#02`. Run at production shape, temperature 1.0, on replayed multi-turn agentic prompts.
+      Apply the hygiene above: fresh server per arm and rep, distinct prompts, `draft_n` per implementation.
+      Read it knowing the composition is whole-draft fallback with n-gram first. A loss can mean "lookup
+      displaced better DFlash2 blocks", not "lookup has no signal". Only DF2-16 can separate those two.
+- [ ] **DF2-16 (intake P4) — per-position merge plus an entropy gate on `llama.cpp-experimental`. Gated on
+      DF2-15.** Keep the DFlash2 block and replace position i with the lookup token only where a suffix match
+      exists. Gate retrieval on the target's low entropy over the key suffix (`intake-1838#00`; the relaxed
+      verification in that paper is declined). A point-mass proposal keeps rejection sampling lossless
+      (`intake-1827#03`). Not upstream (`intake-1843#01`), so this is experimental-kernel work under the
+      four-step workflow. Measure it against the DF2-15 winner at temperature 1.0.
 
 The runtime receipt chain is fixed and resumable: `experimental_build` → `cpu_gpu_regression` →
 `matched_np1` → `concurrency_grid` → `greedy_parity` → `decision`. Each receipt binds the candidate,
@@ -200,10 +255,35 @@ campaign resumes at the first missing or invalid receipt and never reruns a seal
 must identify this as `campaign_kind=experimental_runtime`, keep the AutoKernel/planner tails open,
 and show only headline np1/np8/parity/decision values while keeping raw grids and receipts collapsed.
 
+### Declined 2026-10-03 — from the 3090/LABD intake, deliberately NOT filed
+
+- **Ship LABD or the 16-token verify block to production on current numbers** (intake-1827#record,
+  intake-1830#record): every gain is greedy and copy-workload-specific, the author's own figure puts it about
+  2:1 behind MTP elsewhere, and it costs recurrent-state pages per slot. Reopen only through DF2-14 → DF2-16.
+- **Context-copy chaining** (intake-1827#record, intake-1828#record): measured -8% at default temperature on
+  chat. It is greedy-only, and under sampling a point-mass copy displaces the drafter's distribution.
+- **WhiFlash router** (intake-1846#record): it routes whole drafts between two model drafters, and we serve one.
+  It says nothing about lookup fusion or sampled traffic, its repo is a README only, and its oracle comparison
+  is not like-for-like.
+- **AsymSpec / ReSpec lossy relaxed verification** (intake-1837#record, intake-1838#record): neither preserves
+  the target distribution. Only ReSpec's entropy gate carries over, into DF2-16.
+- **CacheWise eviction** (intake-1844#record): built and measured on vLLM/H200. Admission and eviction on
+  :8083 are already owned by KVU-5, KVU-6, KVU-14 and UFH14-B2. Keep it as characterization only
+  (prefill-dominance).
+- **AngelSpec D-cut / DFly** (intake-1848#record): these need drafter retraining and serve the vendor's
+  stack. Only the temperature-1 production acceptance prior is used, in UFH14-A2.
+- **`--no-kv-unified`**: there is no evidence it would pay. Unified KV is what lets one slot reach 262144
+  (KVU-16). The decode tax is measured by KVU-18 first (intake-1849#record) and fixed by KVU-19 if it is real,
+  not by splitting the pool.
+- **`--spec-draft-n-max 5` as its own probe**: fold it into the existing n_max sweep (SL-1 is done at
+  {4,6,7,8}; KVU-1b covers the production depth). A one-off n_max 5 cell adds nothing a sweep row cannot.
+
 ## Objective
 
 Decide, on measured evidence, whether the dFlash2 block-diffusion drafter beats our in-file MTP head for
-**Qwen3.8-27B on the MI210**. This is an *alternative* to MTP, not additive — `--spec-type` takes one value.
+**Qwen3.8-27B on the MI210**. This is an *alternative* to MTP, not additive. *(Corrected 2026-10-03: v10
+`--spec-type` accepts a comma list, but it chains by fixed priority with first-non-empty-draft-wins and
+ignores the order you give. See "composing DFlash2 with n-gram lookup" above.)*
 
 ## Why this is a build task and not a bench task
 
@@ -422,6 +502,11 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
 - [ ] **DF2-11 — Drafter-precision sweep.** Fixed Qwen3.8-27B Q8_0 target on MI210, DF2-4 protocol. Drafter arms: BF16, Q8_0 (on disk), Q4_K_M (incoai official), Q2_K (analogalok, 705 MB), plus FFN-only-Q4 and fc-at-Q8_0/rest-Q4_K arms. Report weighted acceptance, per-position acceptance and decode t/s in alternating pairs. Expected decode upside is small (the drafter reads ~2 GB vs ~28 GB target per block, projection); the value is VRAM headroom and settling intake-1256#record and intake-1506. Priors: intake-1505 Table 5 (4-bit drafter about -1% acceptance), intake-1512 (INT4-FFN TPC -0.03 to +0.01, below that paper's own table-to-table noise). ~2-4 GPU-h, ~6 GB downloads; piggyback on the next GPU window.
 - [ ] **DF2-12 — np>1 GDN parity arm.** Qwen3.8-27B DFlash2 at np=4, mixed prompts so slots interleave speculative and non-speculative steps; classify every divergence as near-tie vs degenerative. vLLM #39273 (hybrid GDN state corruption under speculation, still open) reports silent corruption with healthy acceptance on Qwen3.8-27B. Our rollback has no structural analog (`llama-memory-recurrent.cpp:1293-1310`), but np>1 is untested. Evidence: intake-1513.
 - [ ] **DF2-13 — Checkpoint + prompt-reuse test on a GDN target under DFlash2.** Two requests (B extends A's conversation); compare B's output with a cold-cache run of B. The context-checkpoint path carries an upstream TODO (`server-context.cpp:2398-2400`). Evidence: intake-1513.
+      - *2026-10-03 (intake P7, code read plus F12 wire logs):* the reuse path is live in production on every turn.
+        On 179 of 230 follow-on F12 turns, all previous output was reused from the live recurrent state, and
+        41 turns fell back to the prompt-end checkpoint. So a B-extends-A request can exercise both restore
+        and live continuation. Details are under UFH14-A6 in
+        [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md).
 - [ ] **DF2-EXL3 — Integrate speculative serving only after the EXL3 target passes codec-only CPU/HIP gates.** Bind the exact target and drafter revisions, keep draft and target quant methods separate, and require fail-closed tensor/sidecar loading. For Qwen GDN, test direct ReplaySSM commit over short, long, concurrent, reject-heavy, cache-reuse, uniform, and nonuniform paths. Cap both admission and execution allocation for sliding-window drafters. If GLM is selected, validate hidden-plus-residual contraction only on the DFlash path and verify k→k+1 capture mapping. Report acceptance, verifier cost, target throughput, context capacity, and concurrency separately. (`intake-1768#record`, `intake-1769#record`, `intake-1771#record`, `intake-1777#record`, `intake-1778#record`, `intake-1780#record`)
 
 **LiLiCorr monitor:** Revisit candidate-lattice correction only when the native EXL3 target is stable and ordinary DFlash/DSpark serving has passed correctness and throughput gates. Until then it has no active checkbox; the H100 paper and open SGLang implementation add no CPU/gfx90a evidence. (`intake-1773#record`, `intake-1774#record`)
