@@ -2065,7 +2065,7 @@ Filed with the producers, before either has run, per the CLAUDE.md belief-kernel
 `scripts/vidya/adapters/README.md`. Design: `/mnt/raid0/llm/tmp/ri18/DESIGN.md` (`routing-intelligence.md` RI-18).
 RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
-- [ ] **VB-REVIEW-GATE — write the read-side adapter for the `review_gate` tap events** (RI-18 C1; orch main
+- [x] **VB-REVIEW-GATE — write the read-side adapter for the `review_gate` tap events** (RI-18 C1; orch main
   `08edc054`). The orchestrator emits one `review_gate/v1` event per review-site
   evaluation to `/mnt/raid0/llm/tmp/inference_tap_events.jsonl` (fields: the source-table row).
   - Project trigger rate, skip-reason coverage, verdict mix (`ok`/`wrong`/`unavailable`) and gate/verdict/revision
@@ -2074,6 +2074,11 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     `path` values or thresholds. Locator = event, aggregated to a run window.
   - Register as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. No back-fill: before
     C1 is deployed there is no structured record. Project; do not grade.
+  - **DECLINED 2026-10-03** ✅ 2026-10-03. RI-18 scored DROP (`routing-intelligence.md` RI-18, 2026-10-01), and its
+    pre-registered action RI-18c removes the gate, and C1's `review_gate` event with it. An adapter for a producer
+    being deleted is not worth writing. The events the API wrote between C1's deploy and RI-18c stay on disk and are
+    not ingested. Reopen trigger: RI-18c is reversed, or a new review trigger lands with its own event.
+    The source-table row update is prepared for the owning session, not applied.
 - [ ] **VB-RI18 — write the read-side adapter for RI-18's `belief_measurements.jsonl` sidecar** (research
   `scripts/benchmark/ri18_review_gate/run_ri18.py score`, research main `6b2366e2`).
   - Project the per-policy, per-stratum rows (net per 100, accuracy, precision/recall, AUROC, reviewer
@@ -2084,3 +2089,18 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - Register as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. Why now: wiring the
     read side before the first scored run makes the verdict ingestible the day it lands. Project; do not grade (the
     pre-registered rule, PAIRED-CI-1 and BOUNDED-NULL-1 decide).
+  - 2026-10-03: the first scored run exists: `ri18-v1`, DROP, 2026-10-01 18:53Z. Its sidecar is
+    `/mnt/raid0/llm/tmp/ri18/run-v1/belief_measurements.jsonl`, 6 rows. The rows are pooled `pi1`, `piQ@0.60`,
+    `piQ_tstar_splitB`, AUROC, `unavailable` rate and the 0.6 trigger count. It falls short of this task's contract
+    (VB-RI18a).
+  - [ ] **VB-RI18a — close the gap between the RI-18 sidecar and its contract, and make the run durable.** (filed
+    2026-10-03)
+    - No row carries the served orch commit or the store-snapshot sha. Both are in `run_manifest.json` (`served`,
+      `snapshot`). The contract above refuses such rows, so as written the adapter would ingest nothing.
+    - The rows are pooled only. There are no per-stratum or per-split rows, and no reviewer sensitivity or
+      specificity, precision/recall or device-seconds rows; `score.json` holds them all. `protocol_id` is empty.
+    - The whole run lives under `/mnt/raid0/llm/tmp/ri18/`, which is scratch, not git.
+    - Fix: either (a) extend the research `score` sidecar writer and re-run `score`, which is offline, takes seconds,
+      runs no inference and is not a confirmation re-run under RI-18's stopping rule; or (b) have the adapter join
+      `run_manifest.json` through the attestation. Then copy `score.json`, `run_manifest.json`, the sidecar and the
+      per-item records to a durable research results path, and repoint `attestation_path`.

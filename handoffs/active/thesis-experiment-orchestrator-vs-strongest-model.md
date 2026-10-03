@@ -17,9 +17,9 @@ https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ).
 - Before parking: the decision rule was PRE-REGISTERED (X = 0.75, Y = 0.50; OP-66, 2026-09-27), TE-0 to TE-3a were
   done, and the ARCHSWAP was signed (2026-09-28), merged and brought up by B1 (ARCHSWAP-1 to ARCHSWAP-3 below). No
   scored item has run.
-- **Live while parked (the ARCHSWAP residue, workspace-8d):** ARCHSWAP-4, relaunch `:8074` under its own label in a
-  CPU window agreed with workspace-76 (both servers still point at the `architect_critic` slot dir); ARCHSWAP-3b, the
-  A-3 frontdoor scout-stage claim sample at the next frontdoor scout stage. ARCHSWAP-5 is done (2026-09-29).
+- **Live while parked (the ARCHSWAP residue, workspace-ec, formerly workspace-8d):** only ARCHSWAP-3b is left: the A-3
+  frontdoor scout-stage claim sample, taken at the next frontdoor scout stage. ARCHSWAP-4 is done (2026-10-01:
+  `:8074` relaunched under `architect_general`, 0 drift). ARCHSWAP-5 is done (2026-09-29).
 
 **Priority:** parked. The 2026-09-27 narrowed plan ("point all work at the thesis experiment") no longer ranks work
 (operator, 2026-09-28): until the second GPU is in, the working direction is infrastructure and design work with the
@@ -29,7 +29,7 @@ design and documentation work of a frozen item may proceed.
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md) (UFH-13).
 **Depends on:** an autopilot run that trains escalation on the swapped stack (after the second MI210; TE-reopen). The
 ARCHSWAP role-swap package (workspace-8d) was signed 2026-09-28 (receipt `RATIFY-ARCHSWAP-20260927`, OP-68 resolved)
-and is applied; its remaining steps are ARCHSWAP-3b and ARCHSWAP-4 below (ARCHSWAP-5 done 2026-09-29). RI-21 (routing-intelligence.md,
+and is applied; its remaining step is ARCHSWAP-3b below (ARCHSWAP-4 done 2026-10-01, ARCHSWAP-5 done 2026-09-29). RI-21 (routing-intelligence.md,
 RTG-30) is closed by the swap. TE-1 delivered the HS-4 P4 /v1 escalation subset this experiment needed from UFH-01.
 
 ## Start here
@@ -261,7 +261,7 @@ code for a rider), and only if the window has its estimated time left.
     stage after the reload passed unobserved.)
     - 2026-09-29: P1-P3 are all proven, so this sample is the only open item left in ARCHSWAP-3b. It was not taken
       in the :8083 window, which exercised :8083 roles only (no frontdoor scout stage).
-- [ ] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
+- [x] **ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the
   two slot_save_path drifts.
   - Relaunch `architect_critic` (`:8083`) **only between DS41 actor calls, coordinated with workspace-76 over the
     bus**: its planner uses `:8083` by port.
@@ -276,6 +276,14 @@ code for a rider), and only if the window has its estimated time left.
     .../kv_slots/architect_critic` (status: "architect_general pid 2030855 runtime slot_save_path expected
     architect_general; live cmdline has architect_critic"). It needs its own reload in a CPU window, coordinated with
     workspace-76. **Until then both servers point at the `architect_critic` slot dir.**
+  - ✅ 2026-10-01 — the `:8074` half is done, so ARCHSWAP-4 is done. `orchestrator_stack.py reload architect_general`
+    ran from 18:10:45Z to 18:12:51Z in workspace-76's granted gap
+    (`/mnt/raid0/llm/tmp/sequencer-8d/gap-8074-reload.log`). It gave new PID 292218 on v10 `cpu-20260921-ffc1bac82`,
+    slot dir `/mnt/raid0/llm/cache/kv_slots/architect_general`, and /health ok.
+    - `orchestrator_stack.py status` afterwards showed every model server with attest `ok`, i.e. 0 drift
+      (`/mnt/raid0/llm/tmp/sequencer-8d/status-after-8074.log`). The two slot_save_path drifts are cleared.
+    - The host then went down (~2026-10-01 20:57Z to ~10-03 03:20Z). The stack was restarted 2026-10-03 03:5xZ,
+      again with every attest `ok`.
 - [x] **ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the
   pre-swap labels: ✅ 2026-09-29 (all four surfaces; see the last bullet)
   - `decision-aware-routing.md` (the DAR-LAT-3 lines, including the 3i recipe key);
@@ -330,6 +338,15 @@ code for a rider), and only if the window has its estimated time left.
       prompts exceed 300 chars, so the reviewer usually never sees the MC options.
     - RI-18's pre-registered counterfactual (re-rendered pilot pool + `olympiadbench_hard`, 2026-09-30) measures
       whether the review helps at all; its verdict, and its secondary rule on the 300-char cap, feed this review.
+    - 2026-10-03: **RI-18's verdict is DROP** (scored 2026-10-01, `routing-intelligence.md` RI-18). It bears on this
+      review in three ways.
+      - Reviewing every answer costs a net −38.3 per 100 items, CI [−42.7, −34.0]: the 27B verdict flags most correct
+        answers WRONG, and `worker_general`'s rewrite breaks them. That confirms TE-3a (c)'s concern as a measurement.
+      - The 0.6 gate never fired on 579 items.
+      - The 300-char cap stays (HOLD_CAP_300).
+      - RI-18c removes the gate, the verdict and the revision from all five call sites, `v1_escalation` included. After
+        it lands, A2 has no review-gate trigger at all. Any registered A2 variant must name its escalation trigger
+        without it, for example a consultant-answers variant on a different trigger.
   - Then run TE-pilot and A2 under the frozen rule (TE-3 freeze, TE-5, TE-6).
 - [ ] **TE-5 — run (inference; coordinated window; the main session runs it).**
   - Needs the role swap applied and serving proved, TE-1 deployed (TE-reload), TE-pilot's escalation rate read, and

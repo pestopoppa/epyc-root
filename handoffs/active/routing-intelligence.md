@@ -4,12 +4,14 @@
 **Priority**: HIGH for RI-10 decision; MEDIUM for injection-risk fork after J14.
 **Blocked by**: future scored factuality evidence showing enforce-arm lift, or an explicit operator-approved lower-evidence rollout decision.
 **Completed ledger**: [`../completed/routing-intelligence-completed-through-2026-05-28.md`](../completed/routing-intelligence-completed-through-2026-05-28.md)
-**Updated**: 2026-10-01 (RI-16 measured on live `/chat` and closed; RI-24 filed; RI-18 revise redo pinned; RI-18a/b filed)
+**Updated**: 2026-10-03 (RI-18 scored 2026-10-01: DROP; RI-18c filed to apply it; RI-18a/b declined. 2026-10-01: RI-16 closed, RI-24 filed)
 
 ## Start Here
 
-**Current priority (2026-10-01):** RI-18, the `_should_review` gate: finish the run in `/mnt/raid0/llm/tmp/ri18/run-v1`
-(the voided 90 revisions are being redone on the pinned `08edc054` worktree), then `score`. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s p95 before generation); RI-19 and RI-24 cut it. The numbered steps below concern the older RI-10 factual-risk canary.
+**Current priority (2026-10-03):** RI-18c, apply RI-18's pre-registered **DROP**: remove the review gate, verdict and
+revision from all five call sites plus `review_low_q_threshold`. RI-18 was scored 2026-10-01: reviewing every answer
+costs a net −38.3 per 100 items, and the production gate never fires. RI-16 is closed (routing costs ~0.6 s p50 / ~1.2 s
+p95 before generation); RI-19, RI-24 and RI-18c cut it. The numbered steps below concern the older RI-10 factual-risk canary.
 
 Do not implement the old Phase 4/5 sections from the completed ledger. They were superseded by RI-1 through RI-8 landing in March/April 2026. The next implementer should:
 
@@ -76,7 +78,7 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       under the announced DS41 pause, but production frontdoor shares cores 0-95.
     - Belief kernel: the VB-ROUTE-LAT write side now holds these 30 records; the adapter is still owed.
 - [ ] **RI-17 — compare live `/chat` routing against rules-only routing** on the same frozen workload (quality, cost, latency per request), so the KNN/memory layer has to earn its lookups. Reuse the counterfactual harness from `typed-decision-plane.md` TD-10 where it fits. (filed 2026-09-26)
-- [ ] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26)
+- [x] **RI-18 — evaluate the `_should_review` Q gate** (`chat_review.py:57-96`: KNN over the ANSWER text, `avg_q < review_low_q_threshold` → architect review; callers `repl_executor.py:782`, `direct_stage.py:227`, `stream_adapter.py:346`, `chat.py:1604`): measure trigger rate, review cost, and whether reviewed answers improve; keep, retune or remove. (filed 2026-09-26) ✅ 2026-10-01 — **DROP** (pre-registered clause 1); verdict block at the end of this task, applied by RI-18c.
   - 2026-09-28: the "do reviewed answers improve" half waits on RI-22. Until RI-22 lands, the gate has not produced a
     usable verdict on the 27B, so a measurement now would count triggers and zero revisions.
   - 2026-09-29: unblocked. RI-22 is fixed in production (below), so the gate now returns real `OK`/`WRONG` verdicts on
@@ -201,16 +203,84 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
     - A `score` attempt before the redo returned VOID (clause 0: incomplete, revise missing 90). INTERIM only, not a
       verdict: AUROC of Q against wrong answers 0.56 [0.51, 0.62]; π1 net per 100 −36.8 [−41.5, −32.3].
     - Next step: let the pinned redo finish, then read `score`.
-  - [ ] **RI-18a — the driver's `--retriever` default must mirror production's resolution.** The default is `graph`.
+  - ✅ **2026-10-01 18:53Z — VERDICT: DROP (clause 1 fired).** The pinned revise redo (orch `08edc054`, worktree
+    `/mnt/raid0/llm/worktrees/orch-ri18-pin-08edc054`) finished 90/90 in workspace-76's granted gap: segment
+    `revise-20261001T181047Z-1960bd`, end `exit 0`. `score` ran automatically afterwards.
+    - Evidence: `/mnt/raid0/llm/tmp/ri18/run-v1/score.json` (schema `ri18-review-gate-score/v1`, `records_sha256`
+      `134d7ed3…c282f8`, `items_sha256` `af3033f0…b66a`), log `/mnt/raid0/llm/tmp/ri18/score-final.log`, belief sidecar
+      `/mnt/raid0/llm/tmp/ri18/run-v1/belief_measurements.jsonl` (6 rows), manifest `run_manifest.json` (served
+      `08edc054`, research `5f09e028`, reviewer `architect_critic`, store snapshot sha-pinned).
+    - Population: 608 items; 29 answers returned an HTTP error, so `n_primary` = 579 (S1 447, S2 132; split A 289,
+      B 290). Quality detector fired 0; verdict `unavailable` 0; revision failures 0; verdict and revision noise
+      both 1.0 agreement (n 32 and 30).
+    - **Clause 0 (VOID): did not fire.** The earlier void segment (`revise-20261001T121657Z-2fbb99`, code-root drift)
+      is superseded by the pinned redo.
+    - **Clause 1 (DROP): FIRED on its first limb.** π1 (review every eligible answer) has a full-set net of
+      **−38.3 per 100 items, 95% CI [−42.7, −34.0]** (paired bootstrap, 10,000 resamples, stratified by suite):
+      12 fixed, 234 broken, accuracy 72.2% → 33.9%. The upper bound is below 0. The second limb holds too: no
+      policy in {π1, πQ(t*)} has a split-B lower bound above 0 (π1 B [−44.8, −32.4]; πQ(t*) B [0, 0]).
+    - **t\* = 0.30.** Tuned on A, no threshold from 0.30 to 0.90 reviews anything; 0.95 reviews 1 item (net 0) and
+      1.00 reviews 83 (net −32). So t* is the lowest feasible tie at net 0.
+    - **Clause 5 (BOUNDED-NULL-1) applies: 0 eligible gate@0.6 triggers (< 30).** The production policy πQ(0.6) has a
+      net of exactly 0 [0, 0] because it never fires, so its own net is reported **untested**. Clauses 2 and 3 fall
+      back to AUROC plus π1, and π1 is net-harmful, so neither can fire.
+    - **AUROC of −avg_q for frontdoor-wrong: 0.558 [0.511, 0.607].** Q carries a weak signal, but the gate cannot
+      act on it: avg_q ≈ 1.0 on nearly every item, so nothing falls under any threshold below 0.95.
+    - **Clause 4 (REPLACE THE TRIGGER) cannot fire.** It needs π1's lower bound above 0.
+    - **Mechanism:** the cap-300 reviewer says WRONG too often. Sensitivity is 0.94 / 0.91 (A / B), but specificity
+      is only 0.21 / 0.25. `worker_general`'s revision then breaks most of the correct answers it rewrites (break rate
+      0.70 / 0.75) and fixes few wrong ones (fix rate 0.065 / 0.097). Reviewing every answer also adds 9.8 s of p50
+      latency (p95 52 s), 1.7× the frontdoor answer wall, and costs 6,545 CPU-s plus 3,488 GPU-s over 579 items with
+      no net fix, so it fails cost cap X as well.
+    - **Secondary rule (V-full vs the cap-300 prompt): HOLD_CAP_300.** On B, the sensitivity delta is −0.016
+      [−0.098, 0.067], so the lower bound is not above 0. Specificity improves (0.55 vs 0.29), but that is not the
+      rule. `question_cap=1500` does not land.
+    - **Power:** D = 246 discordant items, so the test resolves |net| down to ~7.6 per 100. The observed effect is
+      five times that.
+    - **Caveat (pre-registered, reported regardless):** both strata are closed-form scored tasks (MC with a brief
+      justification; olympiad math), not open chat.
+    - **What DROP means for production.** The gate as configured (`review_low_q_threshold` 0.6, reviewer
+      `architect_critic`) is inert: on this workload it never fires. When review does run, revision is net-harmful.
+      So production loses nothing by the removal, and every request saves the `review_gate` KNN stage (RI-16: 69 ms
+      p50 / 105 ms p95). The pre-registered action is RI-18c below. Under the stopping rule there is no
+      confirmation re-run.
+    - Belief kernel: the write side is the sidecar above (`scripts/vidya/adapters/README.md` row "RI-18 review-gate
+      counterfactual"). The read side is `vidya-belief-substrate-program.md` VB-RI18; the sidecar gaps against its
+      contract are filed there as VB-RI18a.
+  - [ ] **RI-18c — apply the DROP (clause 1's pre-registered action).** (filed 2026-10-03, from the RI-18 verdict)
+    - Remove the gate, the verdict and the revision from all five call sites: `repl_executor.py` ~779-826,
+      `direct_stage.py` ~223-242, `stream_adapter.py` ~346-360, `chat.py` ~1613-1628 and `v1_escalation.py` ~405-466.
+      Also remove the `review_low_q_threshold` config.
+    - C1-C3 (orch `08edc054`) go with it. Each one instruments or parameterises code that DROP deletes: C1 is the
+      `review_gate` tap event, C2 is `review_gate_score`, C3 is the `question_cap`/`answer_cap` parameters. Keeping C1
+      telemetry is **declined**: with no gate there is no evaluation to record. Its adapter VB-REVIEW-GATE is
+      declined with it.
+    - Before editing, run `gitnexus impact _should_review --direction upstream`. The 2026-09-30 build rated it HIGH.
+      Delete the dead tests with the code. Land on orch main; the owning session times the API-only reload.
+    - Done when: the five sites no longer call the verdict or revision; the RI-16 reader shows `review_gate` and
+      `review_verdict` as `null` on live `/chat`; and the targeted suite is green.
+    - Cross-handoff: removing the `v1_escalation` site removes one of the thesis experiment's two A2 escalation
+      triggers. UFH-13 is parked, and TE-reopen's escalation-design review takes this in
+      (`thesis-experiment-orchestrator-vs-strongest-model.md` TE-reopen, 2026-10-03 note).
+  - [x] **RI-18a — the driver's `--retriever` default must mirror production's resolution.** The default is `graph`.
     Production falls back to `TwoPhaseRetriever` when the kuzu graph backend is unavailable
     (`src/api/services/memrl.py` ~488-520, "failure/hypothesis graph scoring inactive, using TwoPhaseRetriever").
     This run's `gate` used `--retriever two_phase` explicitly. Fix: resolve the default the way `memrl.py` does,
     and record the resolved retriever in the segment header. (filed 2026-10-01)
-  - [ ] **RI-18b — the wrapper scripts must read segment `end` and `void` events, not trust the process rc.** The
+    - **DECLINED 2026-10-03** ✅ 2026-10-03. Still unfixed in the driver (research `5f09e028` defaults to `graph`). The
+      scored run passed `--retriever two_phase` explicitly, so the verdict is unaffected. DROP retires what the driver
+      measures, and the stopping rule forbids a re-run, so the driver has no next run. Trigger: any reuse of
+      `ri18_review_gate` under a new registration fixes this first.
+  - [x] **RI-18b — the wrapper scripts must read segment `end` and `void` events, not trust the process rc.** The
     VOIDED `revise` segment logged `void`, then an `end` with `exit: 5` but `reason: complete`, and the chain
     started `noise-revise` 23 s later. The `sequencer-8d` wrappers (`run_ri18_resume_pause.sh`,
     `run_ri18_revise_redo.sh`) must not rely on the process rc alone. Fix: after each segment, read its last `end` event
     from `segments.jsonl`; stop the chain on a `void` event or a non-zero `exit`. (filed 2026-10-01)
+    - ✅ 2026-10-01 for the wrapper that still ran: `run_ri18_revise_redo.sh` reads the last `revise-` segment's
+      `void`/`end` event and stops on a void or a non-zero `exit`. It produced the final 90 revisions. The
+      `run_ri18_resume_pause.sh` half is **DECLINED** (✅ 2026-10-03): that wrapper is retired with the run. The
+      root cause, that the driver's process rc can disagree with the segment's own `end` event, stays in the driver.
+      It is fixed under the same trigger as RI-18a.
 - [ ] **RI-19 — fix or remove the MemRL `ClassificationRetriever` path.** The store holds 0 `classification` memories, so `classify_and_route`/`should_use_direct_mode` (`keyword_matcher.py:294,:373`, enabled by `classifier_config.yaml:110,113`) always fall back to keywords while still paying a retrieval. Either seed/write classification memories and show they beat keywords, or set `use_memrl: false` and delete the dead branch. (filed 2026-09-26)
   - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
     set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the

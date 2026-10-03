@@ -92,6 +92,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   `launch_maps`, `dashboard_status_system_cards`, `planner_prompt_guidance`, `runtime_attestation`.
 - [x] **W5 - Simulated model-swap CI gate**: representative data-only stack swaps execute in the promotion gate and cover generated artifacts plus selected consumers.
 - [x] **W6 - Stack-change runbook and launch hook**: production launch, AutoPilot preflight, and benchmark preflight use the canonical gate; bypasses are explicit diagnostics only.
+- [x] **SCG-DRYRUN — `orchestrator_stack.py start --dry-run` without `--migrate-to` launched the production stack.** ✅ 2026-10-03
+  (orch `99e3e5fe`). Only the `--migrate-to` path reads `--dry-run`. On its own, argparse accepted it and `main()`
+  dispatched to `cmd_start`. On 2026-10-03 workspace-ec ran it on a freshly rebooted host and the whole stack came up.
+  That was benign, because a start was intended next anyway. It now returns 2 with a pointer to `--validate-only`. The
+  tests drive `main()` with `cmd_start` booby-trapped, plus a negative control
+  (`tests/unit/test_orchestrator_stack_validate_only.py`). Same class as the 2026-08-12 inert `--validate-only`
+  (orch `2c421c1c`). Incident: `INC-20261003-start-dry-run-launched-stack`.
+- [ ] **SCG-INERT-FLAGS — sweep `orchestrator_stack.py` for other parsed-but-unread flags.** (filed 2026-10-03, from
+  SCG-DRYRUN) The same defect has now shipped twice (`--validate-only` 2026-08-12, `--dry-run` 2026-10-03), and each
+  was found by accident. Each fix covered only its own flag. Add one structural test: for every subcommand, every
+  parsed option is either read on the path `main()` dispatches to or rejected with a non-zero exit. Drive `main()`
+  with the launch functions booby-trapped, as `99e3e5fe` does. Fix whatever it finds.
 
 ## Dependency Graph
 

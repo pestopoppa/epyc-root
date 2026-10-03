@@ -237,6 +237,24 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
   - The ~13:10Z reload for the `context.get` fix (INF-78 OAB-35, orch `2d97ade2`, PID 1767532) reset the pool to OFF,
     its default. workspace-76 rescheduled `orv`/`orsv` for a later DS41 pause, and will ask workspace-8d to
     re-enable the pool at runtime (`POST /config {"repl_embedding_pool": true}`) before the arm runs.
+  - 2026-10-03 correction: **"runtime-only" was wrong.** The pool was re-enabled 2026-10-01 for workspace-76's `orsv`
+    arm, with no API reload. It came back **ON** after the host reboot (down ~2026-10-01 20:57Z to ~10-03 03:20Z) and
+    the 10-03 stack restart. workspace-ec turned it OFF that morning. The record in `orchestration/runtime_flags.json`
+    reads `set_by api:127.0.0.1`, `ts 2026-10-03T03:51:31Z`, `value false`; the session's own estimate was ~04:0xZ. `POST /config` writes that
+    gitignored override file (`src/features.py` `runtime_flags_path()`), and every API start reads it back. So an
+    experiment enable outlives API restarts and reboots. REPL-EMB-4.5 below.
+- [ ] **REPL-EMB-4.5 — make an experiment-arm flag enable expire.** (filed 2026-10-03, from the 10-03 post-reboot reset)
+  A runtime `POST /config` flag write persists in `orchestration/runtime_flags.json` across API restarts and host
+  reboots. REPL-EMB-4.4 assumed it was runtime-only, and `repl_embedding_pool` came back ON after the reboot, against
+  the REPL-EMB-2.1 kill rule's OFF default.
+  - Fix, in the orchestrator: an experiment enable carries an expiry (a `ttl_s` or `expires_at` on the flag record,
+    honoured at load) or an explicit `restore` step that the enabling session must run. A flag past its expiry
+    loads as its spec baseline and logs a WARNING.
+  - Test: an expired record loads as the baseline; an unexpired one survives a simulated restart.
+  - Reconcile with the 2026-10-01 13:10Z note above, which says that reload reset the pool to OFF. Establish which
+    write paths persist, or whether a reload rewrites the file, before relying on either behaviour.
+  - Until it lands, the enabling session restores the flag itself after the arm, and checks `/config/attest` after
+    any restart.
 
 ### Phase 5 — SEARCH for OAB-8 scouts
 

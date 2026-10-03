@@ -410,3 +410,19 @@ On 2026-10-01 at 12:22Z workspace-8d fast-forwarded the shared orchestrator clon
 at 12:59:07Z ("code_root commit drifted during the segment"), and they must be redone. Rule fed: an
 in-process run pins `--code-root` to a detached worktree at its commit, never the shared clone
 (`handoffs/active/routing-intelligence.md` RI-18; wrapper fix RI-18b).
+
+## INC-20261003-start-dry-run-launched-stack
+On 2026-10-03, on a freshly rebooted host, workspace-ec ran `orchestrator_stack.py start --dry-run`, expecting a
+plan. Only the `--migrate-to` path reads `--dry-run`. Without it, argparse accepted the flag and `main()` dispatched to
+`cmd_start`, so the whole production stack launched. It was benign only because a start was the next step anyway. This
+is the same inert-flag class as the 2026-08-12 `--validate-only` defect (orch `2c421c1c`). Rules fed:
+- the refusal and its tests, orch `99e3e5fe` (`stack-change-governance-pipeline.md` SCG-DRYRUN);
+- a structural sweep for parsed-but-unread flags (`stack-change-governance-pipeline.md` SCG-INERT-FLAGS).
+
+## INC-20261003-runtime-flag-survived-reboot
+On 2026-10-01 `repl_embedding_pool` was enabled with `POST /config` for workspace-76's `orsv` experiment arm. The
+enable was recorded as "runtime-only" (REPL-EMB-4.4), but `POST /config` persists into the gitignored
+`orchestration/runtime_flags.json`, and every API start reads that file back. After the host reboot and the
+2026-10-03 stack restart, the flag came back ON, against the REPL-EMB-2.1 kill rule's OFF default. workspace-ec caught
+it and reset it (record stamped 03:51:31Z). Rule fed: an experiment-arm flag enable carries an expiry or an explicit
+restore step (`handoffs/active/repl-embedding-retrieval.md` REPL-EMB-4.5).
