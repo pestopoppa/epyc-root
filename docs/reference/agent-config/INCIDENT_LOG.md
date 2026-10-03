@@ -426,3 +426,36 @@ enable was recorded as "runtime-only" (REPL-EMB-4.4), but `POST /config` persist
 2026-10-03 stack restart, the flag came back ON, against the REPL-EMB-2.1 kill rule's OFF default. workspace-ec caught
 it and reset it (record stamped 03:51:31Z). Rule fed: an experiment-arm flag enable carries an expiry or an explicit
 restore step (`handoffs/active/repl-embedding-retrieval.md` REPL-EMB-4.5).
+
+## INC-20261003-dflash2-ruling-never-compiled
+On 2026-10-01 the operator found production :8083 (Qwen3.8-27B) serving `--spec-type draft-mtp`, five weeks after
+the 2026-08-27 ruling that DFlash2 is its spec-decode path ("When we promote to production, we will adjust the lean
+registry compiler accordingly"). The ruling lived only as prose, in `autokernel-champion-aggregate.md` (ruling 3)
+and `dflash2-block-drafter-experimental-build.md`; the only checkbox was "DFlash2 selection decision — BLOCKED",
+owned by INF-62, a lane with no write path into the registry. Nothing structural could carry it: the master had no
+drafter list, `compile_lean` had no selection input, `stack_priors` enabled speculation only for `draft-mtp`, and
+the launcher could not emit `-ngld`. The 2026-07-31 `production_recipe: draft-mtp` (an n-gram composition decision
+worded "applies to every role") was hand-copied into each role, so the 27B swap (research `b376dadd`, orch
+`7483d7fb`), the v10 freeze (qualified on DFlash2 vs MTP, yet promoted with only an `update`) and ARCHSWAP all
+re-inherited MTP. Fixed by STACKCHG-DFLASH2-20261003 (signed 2026-10-03T04:39:55Z; research `be2cc414`, orch
+`d3233170` + `5265e09d`); :8083 serves DFlash2 as PID 3793153. Rules fed:
+- an operator recipe ruling becomes a registry field plus a compile check, never handoff prose: DRAFT-SEL-1 (master
+  `drafters`, topology `drafter_selection`, compile fails closed) and SCG-RULING-TO-FIELD, both in
+  `handoffs/active/stack-change-governance-pipeline.md`;
+- every kernel freeze re-selects each role's spec-decode recipe: CH-17 in
+  `handoffs/active/autokernel-champion-aggregate.md`;
+- the other roles with legacy drafter fields: DRAFT-SEL-2.
+
+## INC-20261003-urgent-fix-slowed-by-bundling
+The DFlash2 fix for :8083 took two days and two operator pushes. On 2026-10-01 the session (then workspace-8d)
+prepared the fix, then went idle awaiting an operator decision on VRAM instead of putting the question at once; it
+drained no bus messages while idle, and the host went down that night. On 2026-10-03 the package also bundled an
+unrelated lineup move (Qwen3-VL-30B off the MI210 to cold CPU), which widened review and the signature to eight
+trust-boundary items. The operator had to push twice; the serving fix landed first through an operator-approved
+fast path (operator-terminal relaunch with the target argv, PID 3737649, 04:30Z: 91.7 tok/s single-stream decode,
+acceptance 450/490, vs ~37-41 tok/s on MTP), with the permanent package behind it. Rules fed:
+- for an urgent production fix, offer the fast path first and the permanent package behind it, and do not bundle
+  an unrelated move without the operator choosing to: SCG-FASTPATH in
+  `handoffs/active/stack-change-governance-pipeline.md`;
+- a pending operator decision is put to the operator as options when it arises, never waited on in silence
+  (`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*; already canonical, restated here as the cause).

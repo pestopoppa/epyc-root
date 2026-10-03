@@ -2104,3 +2104,35 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
       runs no inference and is not a confirmation re-run under RI-18's stopping rule; or (b) have the adapter join
       `run_manifest.json` through the attestation. Then copy `score.json`, `run_manifest.json`, the sidecar and the
       per-item records to a durable research results path, and repoint `attestation_path`.
+
+## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03)
+
+- [ ] **VB-SERVING-DF2 — wire the write side for three new serving measurement sources** (filed 2026-10-03,
+  workspace-ec; CLAUDE.md *Belief Kernel — wiring new sources*). STACKCHG-DFLASH2 PACKAGE §7.4 and the :8083
+  KV-sizing package both name these as new measurement producers; none writes a claim tuple yet.
+  - **Orchestrator per-call serving telemetry** (`src/backends/serving_calls`, KVU-17 in
+    `kv-unified-stack-rollout.md`): server-reported `prompt_ms`, `predicted_ms`, `cache_n`, `draft_n`,
+    `draft_n_accepted` per call. Locator = served orch commit × role × port × drafter × endpoint × stream.
+  - **DFlash2 at the production shape** (Q38-T7 in `qwen38-27b-replace-qwen36.md`): decode tok/s paired with a
+    correctness check, coherence at production prompt length, acceptance. Must carry the kernel store build id
+    (`gpu-20260921-ffc1bac82`), the drafter GGUF sha and the full argv.
+  - **Qwen3-VL-30B on CPU** (S-18 in `multimodal-pipeline.md`): decode tok/s and MMMU parity at NUMA_HALF_A `-t 48`.
+  - Also: the measured DFlash2 VRAM components in `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §1.3
+    (drafter weights, GDN state per draft depth, KQ-mask slope) are a capacity source for SSU-F3's claim tuple.
+  - Add one source-table row per producer in `scripts/vidya/adapters/README.md` (row text prepared for the owning
+    session to apply), project each native record into a `ClaimTuple`; do not write a grading rule.
+- [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
+  - discover `logs/serving_calls/serving_calls.jsonl*`;
+  - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
+  - project each `timings` metric (`prompt_ms`, `predicted_ms`, `prompt_per_second`, `predicted_per_second`, `cache_n`, `draft_n_accepted/draft_n`) plus `queue.pre_dispatch_wait_ms` into `ClaimTuple`, with unit and `metric_direction` fixed by the schema (ms and wait: `lower_better`; t/s and acceptance: `higher_better`).
+
+  Rules for what gets projected:
+  - Carry `server.argv_sha256`, `server.binary_realpath`, `server.model_path`, `provenance.orch_commit` and `provenance.run_id` as identity, never graded.
+  - Skip `timings_source="absent"` rows; never emit zeros.
+  - Mark `server.identity_source="absent"` rows unscoped rather than inferring the launch.
+
+  Grading: `Judged/Located` via `claim_tuple.grade()`; no new ladder and no backfill.
+
+  Decide before writing the adapter: should window aggregates (per-role prefill share, queue-wait distribution) be a second producer, or a projection over a sealed window manifest? A per-call tuple cannot carry a share.
+
+  Era row ST1 (`scope: serving_timing`) is in `epyc-orchestrator/orchestration/instrument_eras.yaml` (orch 4e23e553). This is the read side of VB-SERVING-DF2's first producer.

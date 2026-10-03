@@ -272,6 +272,11 @@ code for a rider), and only if the window has its estimated time left.
   - 2026-10-01 12:16Z — production `:8083` was relaunched again on v10 under `architect_critic` (PID 1677674, /health ok,
     VRAM-resident) by the restore step of the champion GPU A/B (`autokernel-champion-aggregate.md` V6R-4d.2). The
     `:8083` half stays done, and the slot dir is still correct.
+  - 2026-10-03 04:44Z — `:8083` relaunched by the stack on the **DFlash2 drafter** (STACKCHG-DFLASH2-20261003, PID
+    3793153; `-md Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash`), same slot dir and shape. Every
+    27B-role latency or decode figure taken before this (P2/P3 proofs, A2 planning numbers) was measured on
+    `draft-mtp` n-max 4; do not compare them with post-swap runs as one arm. Weights and template are unchanged, so
+    answer quality is unaffected by construction (lossless speculation, modulo the DF2-6 near-tie caveat).
   - Still open: **the `:8074` half.** `architect_general` on `:8074` still carries `--slot-save-path
     .../kv_slots/architect_critic` (status: "architect_general pid 2030855 runtime slot_save_path expected
     architect_general; live cmdline has architect_critic"). It needs its own reload in a CPU window, coordinated with
