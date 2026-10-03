@@ -17,8 +17,10 @@
 >   image requests are refused (API runs `ORCHESTRATOR_VISION_VL_BACKEND=server`). Start on demand with
 >   `orchestrator_stack.py start --only worker_vision` (cores 0-47 + 96-143 — overlaps frontdoor). Back on a GPU
 >   when MI210 #2 arrives.
-> - Open: KV-pool step 1 (KVU-15, in progress) and step 2 (KVU-16, `-c 393216`, in packaging); the DFlash2
->   production-shape measurement (Q38-T7).
+> - Open: the DFlash2 production-shape measurement (Q38-T7). **Update 2026-10-03 ~14:30Z:** KV-pool step 1 (KVU-15)
+>   and step 2 (KVU-16) are LIVE — :8083 relaunched 13:14Z at `-c 393216` unified, 262144 per-slot cap, draft n-max 7,
+>   50.78 GiB at load. :8083 is then STOPPED from 13:55Z for workspace-89's INF-80 X0 window (restore = KVU-16e,
+>   ETA ~16:30Z). Full-pool concurrent residency is unproven (KVU-16b/16c).
 
 > **2026-09-28 — UFH-13 PARKED; the working direction until the second MI210 is infra and design (operator, in chat,
 > session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ). Supersedes the 2026-09-27 narrowed plan's ranking.**

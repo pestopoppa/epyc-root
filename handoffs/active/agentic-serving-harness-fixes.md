@@ -62,10 +62,63 @@ Client and harness side (ak-ds41-main):
 Orchestrator and stack side (workspace-ec; items are linked here as they land):
 
 - [x] **UFH14-B2.** ✅ 2026-10-03 (workspace-ec) — orch 2586a7bb on main, API reload: scouts reserve prompt+max_tokens on the token gate; one long prefill (≥16384 est. tokens, env ORCHESTRATOR_KV_POOL_LONG_PREFILL_TOKENS, 0=off) per server, lease ends at first chunk or prompt/250 tok/s; /slots observation holds long requests behind any slot prefilling ≥4096 (covers other uvicorn workers + direct clients like C95); per-request cap = min(slot ctx, model ctx_max). 32 new tests; 4126 related pass. Live alias call via gate ok. Remaining limits: per-worker gate (cross-worker via /slots only), whole-prompt size even when mostly cached; ungated paths documented in /mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md (action_repair_completer if pointed at :8083; prewarmer only :8074). Was: Token-aware pool gate, keyed per server: one long prefill at a time, with all orchestrator traffic, scouts included, going through it. Covers D7. Operator-approved 2026-10-03; deployed as an API-only change. In progress (workspace-ec): orch branch `feat/kv-pool-gate-8083-ec`; tracked as KVU-15 in `kv-unified-stack-rollout.md`.
-- [ ] **UFH14-B3.** KV-pool sizing as a per-model stack rule: slots × expected context, plus a per-request cap. The :8083 instance is a relaunch with `-c 393216` unified and a 262144 per-request cap (stack change, operator signature). Covers D6. In progress (workspace-ec): stack-change package `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/` (token RATIFY-STACKCHG-KVPOOL-20261003); tracked as KVU-16; relaunch after F12.
+- [x] **UFH14-B3.** ✅ 2026-10-03 (workspace-ec) — LIVE: :8083 relaunched 13:14:35Z (PID 4052768) with `-c 393216` unified, per-slot cap 262144 (server log `n_ctx_slot = 262144, kv_unified = 'true'`), draft n-max 7; API reload (PID 4054223) reads per_request 262144 / shared_pool / pool_tokens 393216; load peak 50.78 GiB; alias completion via :8000 correct; pipeline `check --run-promotion-gate` all ok. Receipt RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, root 64d70d17; evidence `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/`. Detail is KVU-16 in `kv-unified-stack-rollout.md`. Was: KV-pool sizing as a per-model stack rule: slots × expected context, plus a per-request cap. The :8083 instance is a relaunch with `-c 393216` unified and a 262144 per-request cap (stack change, operator signature). Covers D6.
+  - [ ] **Open sub-task: the full-pool concurrent-residency proof.** The 4 × 90k probe held (all 200, zero memory-slot
+    lines, KFD peak 51.73 GiB) but peaked at 92,343 cells in flight, under its 300k criterion, so residency is UNPROVEN,
+    not disproven. Tracked as KVU-16b (corrected probe) / KVU-16c (cite workspace-89's P3 run).
 - [ ] **UFH14-B4.** Prefix-cache and `--cache-ram` policy per server. Covers D5 and D6 on the server side.
+  **DESIGNED + API part BUILT 2026-10-03, NOT DEPLOYED, policy not applied** (workspace-ec): design
+  `docs/design/ufh14-b4-prefix-cache-policy-20261003.md`; orch commits 61873d75, acb5a816, 1c3f8e77, c14a098d, 8f354ac3
+  (integrated on `integ/api-reload-2-ec` 10bc5681). Key fix: router `id_slot` pinning hashed the prompt's first 256
+  characters, so every call of a role went to ONE slot and v10 deferred it while other slots were free; pinning is now
+  opt-in (`ORCHESTRATOR_PREFIX_ROUTER_PIN_SLOTS=1`). Instrument: `missed_prefill_share` (lower = better) from
+  `scripts/analysis/prefix_cache_report.py`. Not ticked until PFX-SEL-1 lands; the sub-tasks below are the remainder.
+  - [ ] **UFH14-B4a — PFX-SEL-1 stack-change package, after a metric window.** Design §3.8 / §4.4: master
+    `prefix_cache` per model, topology `prefix_cache_selection`, compiler + launcher + drift checker. No launch flag
+    changes today (derived values equal today's). Prepare it after ≥ 1 window of ≥ 200 post-deploy calls gives a
+    `missed_prefill_share` baseline; one package, operator signature. Raise :8083 `--cache-ram` 65536 → 102400 only if
+    §4.3's decision rule fires (> 5% across two windows, with evictions logged).
+  - [ ] **UFH14-B4b — A/B: the stable head as a system message (design R2, §4.2 item 1).** Split the prompt at a
+    builder-emitted marker into `[system, user]` on the chat lane behind a flag; A/B on the eval tower (quality) and
+    `missed_prefill_share` / `hit_tok` for REPL roles. Largest expected win on hybrids.
+  - [ ] **UFH14-B4c — A/B: `prefix_stable_order` on in production (design R1, §4.2 item 2).** `src/features.py:236`;
+    composes with B4b, same A/B protocol.
+  - [ ] **UFH14-B4d — A/B: move CoT prefixes and worker RAG snippets to the tail (design R6, §4.2 item 3).**
+    `graph/helpers.py:936-940` (CoT before the system prompt), `corpus_retrieval.py:739-780` (`## Reference Code`
+    before `## Task`).
+  - [ ] **UFH14-B4e — delete `escalation_prewarmer` (design §4.2 item 5, delete-lens 4).** It warms
+    `ARCHITECT_SYSTEM_PREFIX`, a string no real architect request contains (`escalation_prewarmer.py:61-65`); A3's
+    client-side warm + stagger is where warming belongs. Review, not A/B: it changes no model input.
+  - [ ] **UFH14-B4f — belief-kernel write side for the per-port prefix-cache report.** Add the report's per-port rows as
+    a projection under B5's `serving_calls` adapter row in `scripts/vidya/adapters/README.md`. Row text PREPARED for the
+    owning session in `/mnt/raid0/llm/tmp/wrapup-ec-kvu16/INDEX_ROWS.md`; read side rides VB-SERVE-TIMING-1.
+  - [ ] **UFH14-B4g — re-measure the 27B DFlash2 prompt-cache entry cost (design §4.4).** It was to ride B3's relaunch
+    (`-lv 4` lines `prompt_save … total state size … (draft: …)` and `created context checkpoint … size`). If those lines
+    are not in the 13:14Z bring-up log, capture them at the post-X0 restore (KVU-16e); feeds PFX-SEL-1's entry cost.
+  - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
+    `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
+    `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.
+  - Declined, not filed: adding `cache_prompt` to the direct callers that omit it (`worker_pool.py:855-867`,
+    `tools/web/research.py:709-716`, design §4.2 item 6) — the server default is `true`, so the edit changes nothing;
+    the design says add it when next touched. Declined: `--cache-reuse` as a generic knob (design §3.6, unsound on
+    every model we run).
 - [x] **UFH14-B5.** ✅ 2026-10-03 (workspace-ec) — orch c6225e8b/f7fad574/9a0d38e0 on main, API reload 04:59Z: per-call records in `logs/serving_calls/serving_calls.jsonl` (role, request_id, queue wait, llama `timings`, outcome incl. cancelled), chat-stream `prompt_eval_ms` fixed (live :8083 call: 2368 ms), progress rows flushed durably, launch/stop banners + `logs/server_launches/<port>.json` at each server's next stack launch; era ST1 (orch 4e23e553); write-side adapter row in `scripts/vidya/adapters/README.md` (root 999954ca), read side = VB-SERVE-TIMING-1 (open). Was: Serving telemetry: a launch banner with ISO-UTC, pid, role and argv; per-call role, request_id and llama `timings`; `prompt_eval_ms` filled in; cancel summaries; queue wait. Plus the belief-kernel write-side adapter, owned by workspace-ec. Covers D8.
 - [ ] **UFH14-B6.** An OpenAI-compatible passthrough on :8000 for a named role (chat/completions and responses, streaming, tools, timings echoed), so harness experiments can go through the gate instead of hitting servers directly. The gap list is pending from workspace-ec. Gap analysis in progress (workspace-ec): `/mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md`.
+  **BUILT 2026-10-03, NOT LIVE** (workspace-ec): orch 3edfdff3 — `POST /v1/passthrough/{role}/chat/completions` and
+  `/responses`, `GET …/models`; raw body forwarded, true SSE streamed unbuffered, server `timings` on the wire, behind the
+  full admission gate (KV-pool tokens, one long prefill, host-wide lease after KVU-15a, per-request cap → 413), one
+  `serving_call.v1` record per call (`caller.source="passthrough"`), localhost only, `ORCHESTRATOR_PASSTHROUGH=0` kill
+  switch. Integrated on `integ/api-reload-2-ec` 10bc5681. The purpose (harness experiments go through the gate) needs
+  it live on :8000, so not ticked until UFH14-DEPLOY-EC lands and a live call proves it.
+  - Declined, not filed: timings on a NON-streamed `/v1/responses` body. llama-server v10 does not emit them
+    (`server-task.cpp:558`) and the kernel is frozen; streamed `/responses` and chat/completions carry them.
+- [ ] **UFH14-DEPLOY-EC — deploy orch `integ/api-reload-2-ec` (B6, B4 API part, KVU-15a, RI-18c, test fixes).**
+  (filed 2026-10-03, workspace-ec) HEAD 10bc5681, worktree `/mnt/raid0/llm/worktrees/orch-integ2-ec`. Gate: the full
+  unit run (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`, in progress at wrap-up) ends 0 failed apart from the known
+  order-dependent test (SCG-TEST-ORDER). Then merge to orch main and `orchestrator_stack.py reload orchestrator`
+  (API only) once :8083 is restored (KVU-16e). Proofs after the reload: one live passthrough streamed call with
+  timings (B6); RI-16 reader shows `review_gate`/`review_verdict` null on live `/chat` (RI-18c); a 2-worker replay
+  with peak 1 long prefill and a cached-prefix request not held (KVU-15a); serving records carry `prefix_fp` (B4).
 
 ## Phase C — holistic audit (starts only after A5)
 

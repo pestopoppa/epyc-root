@@ -214,3 +214,60 @@ reload at 04:59Z, and the era boundary ST1 is at orch 4e23e553.
   orchestrator :8083 traffic since 05:00Z apart from tests.
 - **Arm (b):** uses the new production shape.
 - **Hand-back:** restore through the stack, then a short serving proof.
+
+## KV-pool step 2 LIVE, X0 hand-off, four orch branches integrated (2026-10-03 ~12:10-14:30Z)
+
+**KVU-16 / UFH14-B3: :8083 KV-pool step 2 is LIVE.** Receipt RATIFY-STACKCHG-KVPOOL-20261003 (11:50:52Z); research
+412e8fc1, orch 09e91e1e + 841935ea, root archive 64d70d17 (`artifacts/operator/stack-change-kvpool-20261003/`). Live
+evidence: `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/{apply,evidence}/`.
+- **Bring-up** after workspace-89's "F12 done": `reload architect_critic` → PID 4052768 at 13:14:35Z, argv `-c 393216 …
+  --spec-draft-n-max 7`. The server caps each slot itself ("slot context (393216) exceeds the training context (262144) -
+  capping"; `n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'`); no clamp-to-7 warning.
+- **VRAM:** load peak 50.78 GiB. Measured `vram_non_kv_gib` ≈ 50.78 − 12.75 = 38.03 vs the 39.15 derived (KVU-16a).
+- **API:** `reload orchestrator` → PID 4054223; `context_limits` per_request 262144, kv_unified, shared_pool, pool_tokens
+  393216. Alias completion via :8000 `coder_escalation` correct, draft acceptance logged.
+- **Pipeline:** `stack_change_pipeline check --run-promotion-gate` all ok, runtime_attestation ok.
+- **Concurrency probe: FAIL by its own criterion.** 4 × 89,921-token requests all returned 200 with zero memory-slot and
+  zero context-exceeded lines, all 4 slots processing at once, KFD peak 51.73 GiB. But max cells in flight was 92,343
+  (criterion ≥ 300k): the server prefilled largely serially (done at 263 / 682 / 1328 / 2166 s) and `n_predict 64` freed
+  each request's cells right after its prefill. Full-pool concurrent residency is UNPROVEN, not disproven (KVU-16b
+  corrected probe, or KVU-16c cite workspace-89's P3 run). Also measured: the last of 4 concurrent ~90k prompts finishes
+  after ~36 min — the neighbour-prefill serialisation the one-long-prefill gate makes explicit.
+
+**X0 window handed to workspace-89 at 13:55Z.** `stop architect_critic` verified (PID 4052768 dead, VRAM 0.01 GiB); argv
+record `/mnt/raid0/llm/tmp/ds41-c95/X0_ARGV_8083.txt`. X0 runs on a scratch port. **Production outage: :8083
+(architect_critic and its aliases) is DOWN from 13:55Z** until workspace-89 reports "X0 done", ETA ~16:30Z; restore is
+KVU-16e. Workspace-89 added the P3 probe (llama.cpp #28495, intake-1849#record: unified-KV flash-attention decode cost as
+the pool fills); ≥ 15% decode loss at 300k+ fill would trigger the split per-slot stack change (KVU-16d).
+
+**Four orch branches built and integrated, NOT deployed.** `integ/api-reload-2-ec` HEAD 10bc5681, worktree
+`/mnt/raid0/llm/worktrees/orch-integ2-ec`; full unit run in progress at wrap-up (`/mnt/raid0/llm/tmp/integ2-ec/full_unit3.log`).
+Deploy = UFH14-DEPLOY-EC (after :8083 is restored, API-only reload).
+- **UFH14-B6** passthrough `/v1/passthrough/{role}/{chat/completions,responses,models}` (3edfdff3): true SSE, timings,
+  full gate, serving records. Annotated BUILT, not ticked (its purpose needs it live).
+- **RI-18c** review gate removed at 5 call sites (88d885c6, 8e379f13). Annotated BUILT; done-when needs live `/chat`.
+- **KVU-15a** host-wide flock long-prefill lease + cached-prefix credit (cdf0f9b4). Residual risk, owner's decision
+  "keep the credit and measure": on unified-KV servers the credit assumes the prefix survives in `--cache-ram`; a miss
+  costs one extra concurrent long prefill (KVU-15b measures it).
+- **UFH14-B4** design (durable copy `docs/design/ufh14-b4-prefix-cache-policy-20261003.md`); commits 61873d75, acb5a816,
+  1c3f8e77, c14a098d, 8f354ac3. Key fix: router slot pinning hashed the first 256 characters, sending all of a role's
+  calls to one slot; now opt-in. Proposed: stack rule PFX-SEL-1 (no flag changes today), metric `missed_prefill_share`,
+  four API A/B or review items (UFH14-B4a…h).
+- **19 orch unit-test failures fixed** (`fix/main-test-failures-ec` d97004f6, 9d40c30b): all stale fixtures from
+  STACKCHG-DFLASH2 5265e09d, not production defects; full `tests/unit` afterwards 0 failed. Left: `stack_priors` still
+  classifies the WARM vision roles as `live_stack` (SCG-PRIORS-WARM, a stack change); an order-dependent failure on
+  origin/main (SCG-TEST-ORDER); the orchestrator GitNexus index is ~844 commits stale (SCG-GITNEXUS-ORCH).
+
+**Noted only (workspace-89's lane, they are filing it):** DS41 holds the mi210_0 device claim while running CPU-only.
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-16 `[x]` (live evidence); KVU-15a BUILT note; KVU-15b, KVU-16a-e filed; one written decline |
+| epyc-root | `handoffs/active/agentic-serving-harness-fixes.md` | UFH14-B3 `[x]` + open residency sub-task; B4 and B6 BUILT notes; B4a-h, UFH14-DEPLOY-EC filed; declines |
+| epyc-root | `handoffs/active/routing-intelligence.md` | RI-18c BUILT note |
+| epyc-root | `handoffs/active/stack-change-governance-pipeline.md` | SCG-PRIORS-WARM, SCG-TEST-ORDER, SCG-GITNEXUS-ORCH filed |
+| epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | KV-pool live + :8083 X0 outage line |
+| epyc-root | `docs/design/ufh14-b4-prefix-cache-policy-20261003.md` | durable copy of the B4 design |
+
+Index-row `Next action` refreshes and the adapters-README row are prepared, not applied:
+`/mnt/raid0/llm/tmp/wrapup-ec-kvu16/INDEX_ROWS.md`.

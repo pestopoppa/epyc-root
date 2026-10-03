@@ -168,12 +168,24 @@ is olympiad-style reasoning.
   - The value compiles to `-cram` already. Land it at the same :8083 reload if the operator agrees; a second
     reload costs a planner transient.
 - [ ] **KVU-15a — close step 1's two known gate limits** (filed 2026-10-03, workspace-ec, from the KVU-15 landing,
-  orch 2586a7bb). (1) The long-prefill lease is per uvicorn worker; across the 6 workers it relies on `/slots`, which sees a
+  orch 2586a7bb). **BUILT 2026-10-03, NOT DEPLOYED:** orch cdf0f9b4 (host-wide `fcntl.flock` lease per server,
+  `ORCHESTRATOR_KV_POOL_CROSS_PROCESS_LEASE=0` reverts; new-token sizing from the longest prefix an IDLE slot holds,
+  margin `ORCHESTRATOR_KV_POOL_CACHE_CREDIT_MARGIN_TOKENS`), integrated on orch `integ/api-reload-2-ec` 10bc5681; not
+  ticked until deployed and the done-when replay below has run (deploy = UFH14-DEPLOY-EC in
+  `agentic-serving-harness-fixes.md`). (1) The long-prefill lease is per uvicorn worker; across the 6 workers it relies on `/slots`, which sees a
   long prefill only after ~4096 processed tokens plus a 1.5 s cache, so two workers can start long prefills seconds apart:
   move the lease to a cross-process primitive (flock or the region-lock layer). (2) Size is judged on the whole prompt, so a
   mostly-cached long prompt still waits: subtract the matching slot's cached prefix (`cache_n` from the serving records)
   when estimating new tokens. Done when a 2-worker replay shows peak 1 long prefill and a cached-prefix request is not held.
-- [ ] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** (SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; applied in git: research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17. NOT LIVE: `reload architect_critic` + `reload orchestrator` + serving proof §7.3 incl. the 4×90k probe run after workspace-89's "F12 done"; do not reload :8000 before then.)
+  - [ ] **KVU-15b — measure cache-credit misses on the serving records.** (filed 2026-10-03, workspace-ec; owner's
+    decision was keep the credit and measure) On unified-KV servers the credit assumes the matched prefix survives in
+    `--cache-ram`; a miss costs one extra concurrent long prefill. After KVU-15a is live, count calls admitted with
+    `cache_credited` whose server-reported `cached_prompt_tokens` (`timings.cache_n`) fell short of the credited
+    prefix, over ≥ 200 calls on :8083 (two windows, two-sample persistence). Today `cache_credited` is an admission
+    counter and a passthrough-record field; put it on every `serving_call.v1` record first if it is missing there.
+    Remove or narrow the credit if misses persist above ~5% of credited calls.
+- [x] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** ✅ 2026-10-03 (workspace-ec) — LIVE. SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17 (`artifacts/operator/stack-change-kvpool-20261003/`; live evidence in `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/{apply,evidence}/`). Bring-up after workspace-89's "F12 done": `reload architect_critic` → PID 4052768 at 13:14:35Z, argv `-c 393216 … --spec-draft-n-max 7` (`evidence/argv_8083_live_post_relaunch.txt`); server log "slot context (393216) exceeds the training context (262144) - capping", `n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'`, no clamp-to-7 warning. Load-peak VRAM 50.78 GiB (`evidence/vram_during_reload.log`). API reload → PID 4054223; `context_limits` per_request 262144, kv_unified True, shared_pool True, pool_tokens 393216. Alias completion via :8000 `coder_escalation` correct with draft acceptance logged (`apply/completion.json`). `stack_change_pipeline check --run-promotion-gate` all ok incl. runtime_attestation (`apply/check-final.out`). The 4 × 90k concurrency probe is NOT a pass — see KVU-16b/16c; full-pool concurrent residency is UNPROVEN, not disproven. :8083 has been stopped for the INF-80 X0 window since 13:55Z (KVU-16e restores it).
+  - Original scope:
   (operator-approved 2026-10-03, IN PACKAGING; decision package
   `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §4 step 2). One :8083 relaunch carrying: `-c` 196608 →
   393216 unified at np 4 (+4.86 GiB → ~51.4 GiB, 12.5 GiB free; four concurrent p90 prompts fit); an orchestrator
@@ -186,6 +198,36 @@ is olympiad-style reasoning.
   packaging, run DECISION §4 measurement 1 (zero compute: regress per-slot decode vs pool high-water on the
   existing log); if decode with neighbours is >15% slower at 300k+ fill than at 100k, take option (c) split
   4 × 163840 instead. Fix the "3 GiB" comment at `stack_manifest.py:1690` (code uses 2.0) in the same package.
+  - [ ] **KVU-16a — replace the derived `vram_non_kv_gib` with the measured one.** (filed 2026-10-03, workspace-ec,
+    from the KVU-16 bring-up) The package carries a derived 39.15 GiB; the bring-up measured 50.78 GiB load peak −
+    12.75 GiB KV pool ≈ 38.03 GiB (`evidence/vram_during_reload.log`). Land the measured value in the research master
+    with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
+    and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
+  - [ ] **KVU-16b — a corrected concurrent-residency proof for the 393216 pool.** (filed 2026-10-03, workspace-ec)
+    The probe (`evidence/concurrency-probe-20261003T135133Z.json`) failed its own criterion: max cells in flight 92,343
+    vs ≥ 300k. What held: 4 × 89,921-token requests all 200, zero "failed to find a memory slot", zero "Context size
+    has been exceeded", 4 slots processing at once, KFD peak 51.73 GiB (≤ 62). Why it failed: the server prefilled
+    largely serially (done at 263 / 682 / 1328 / 2166 s) and `n_predict 64` freed each request's cells right after its
+    prefill. Re-run with long generations (`ignore_eos`, n_predict large enough to outlast the slowest neighbour's
+    prefill) so all four contexts are resident at once; sample `/slots` cells and KFD during, not after. Done when
+    peak resident cells ≥ 300k with zero memory-slot lines and KFD ≤ 62 GiB. Closed instead by KVU-16c if that
+    evidence exists. Needs a :8083 window, so it runs after the X0 hand-back (KVU-16e).
+  - [ ] **KVU-16c — or cite workspace-89's P3 parked-neighbour run as the residency proof.** (filed 2026-10-03)
+    Workspace-89's X0 window carries the P3 probe (llama.cpp #28495, intake-1849#record: unified-KV flash-attention
+    decode cost as the pool fills). If its parked-neighbour arm reports peak resident cells ≥ 300k with zero
+    memory-slot lines, cite it here and close KVU-16b; otherwise run KVU-16b.
+  - [ ] **KVU-16d — act on the P3 decode-cost verdict: unified vs split per-slot.** (filed 2026-10-03, workspace-ec)
+    If P3 shows ≥ 15% decode loss at 300k+ pool fill vs ~100k, prepare the option (c) split stack change (4 × 163840,
+    DECISION.md §4) for operator signature; if < 15%, record the verdict here and keep unified. Trigger: workspace-89's
+    P3 result.
+  - [ ] **KVU-16e — restore :8083 after workspace-89's "X0 done" (ETA ~16:30Z 2026-10-03).** (filed 2026-10-03,
+    workspace-ec) `orchestrator_stack.py reload architect_critic`; verify the live argv equals
+    `evidence/argv_8083_live_post_relaunch.txt`, `context_limits` (262144 / unified / pool 393216) and one alias
+    completion via :8000. :8083 is down from 13:55Z (stop verified: PID dead, VRAM 0.01 GiB; X0 argv record
+    `/mnt/raid0/llm/tmp/ds41-c95/X0_ARGV_8083.txt`).
+  - Finding, not filed as a task: 4 concurrent ~90k prompts take ~36 min for the last one (2166 s). That is the
+    neighbour-prefill serialisation the one-long-prefill gate (KVU-15) makes explicit by design; it is a capacity
+    fact, not a defect. Declined as a separate task: the actionable part, unified vs split, is KVU-16d.
 
 ### B — orchestrator
 - [x] **KVU-15 — :8083 KV-pool step 1: close the admission bypasses** ✅ 2026-10-03 (workspace-ec) — orch 2586a7bb on main, API reload: scouts reserve prompt+max_tokens on the token gate; one long prefill (≥16384 est. tokens, env ORCHESTRATOR_KV_POOL_LONG_PREFILL_TOKENS, 0=off) per server, lease ends at first chunk or prompt/250 tok/s; /slots observation holds long requests behind any slot prefilling ≥4096 (covers other uvicorn workers + direct clients like C95); per-request cap = min(slot ctx, model ctx_max). 32 new tests; 4126 related pass. Live alias call via gate ok. Remaining limits: per-worker gate (cross-worker via /slots only), whole-prompt size even when mostly cached; ungated paths documented in /mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md (action_repair_completer if pointed at :8083; prewarmer only :8074). Was: (operator-approved 2026-10-03, IN PROGRESS;
