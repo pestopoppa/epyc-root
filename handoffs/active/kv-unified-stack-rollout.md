@@ -181,6 +181,12 @@ is olympiad-style reasoning.
     aa1d6894; API-only reload → PID 1628390; full `tests/unit` 15979 passed / 0 failed). The flock lease half is live.
     The 2-worker replay waits for the :8083 restore (KVU-16e). The cached-prefix half **cannot pass in production as
     built**: the credit is inert, see the finding and KVU-15c below. Not ticked.
+  - **Post-restore, 2026-10-03 ~15:40Z (workspace-ec): nothing new proven for the lease.** The only dispatched
+    calls since the :8083 restore are three short passthrough calls (15:39Z, `serving_calls.jsonl`), far below the
+    16384-token long-prefill threshold, so neither the flock lease nor the credit was exercised. The 2-worker replay
+    is still the proof. Since 15:43:08Z :8083 runs a `LLAMA_SERVER_SLOTS_DEBUG` window (UFH14-DIAG-EC-a, experiment
+    id `UFH14-A7`), where the credit goes live only because debug exposes slot text: the replay's lease half may run
+    there, but its cached-prefix half must not be read from that window.
   - **Finding, 2026-10-03 (workspace-ec): the cached-prefix credit is inert in production.** It reads the prompt
     text an idle slot holds from `/slots`. v10 returns slot prompt text only under `LLAMA_SERVER_SLOTS_DEBUG`
     (`tools/server/server-context.cpp` `to_json` :699-730; `slot.to_json(slots_debug == 0)` at :2541, prompt only under `!only_metrics` at :726). With debug off, a
@@ -230,6 +236,11 @@ is olympiad-style reasoning.
     with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
     and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
   - [ ] **KVU-16b — a corrected concurrent-residency proof for the 393216 pool.** NOTE (2026-10-03, workspace-89 P3 code read): production runs `cache_idle_slots` ON, so idle slots are flushed to RAM at each task launch and the pool can only fill with ACTIVELY GENERATING sequences. The proof must hold 4 long contexts DECODING at once (long `n_predict`), not parked. P3 part A1 uses `--no-cache-idle-slots`: cite it only as a mechanism result, NOT as a production residency proof. (filed 2026-10-03, workspace-ec)
+    - **Correction (2026-10-03, workspace-ec, from the P3 report):** the idle-purge claim above is a CODE READ, not a
+      measurement. P3 arm A0 ran at the exact production flags and did NOT reproduce the purge: its neighbour slot held
+      0 tokens before the probe task, so the purge path was never exercised (inconclusive). "Production always purges
+      idle slots" is therefore NOT proven. The design rule stands anyway: holding 4 contexts DECODING at once is valid
+      whether or not idle slots are purged. Measuring whether the purge happens is folded into UFH14-B4i's A/B.
     The probe (`evidence/concurrency-probe-20261003T135133Z.json`) failed its own criterion: max cells in flight 92,343
     vs ≥ 300k. What held: 4 × 89,921-token requests all 200, zero "failed to find a memory slot", zero "Context size
     has been exceeded", 4 slots processing at once, KFD peak 51.73 GiB (≤ 62). Why it failed: the server prefilled
@@ -238,17 +249,36 @@ is olympiad-style reasoning.
     prefill) so all four contexts are resident at once; sample `/slots` cells and KFD during, not after. Done when
     peak resident cells ≥ 300k with zero memory-slot lines and KFD ≤ 62 GiB. Closed instead by KVU-16c if that
     evidence exists. Needs a :8083 window, so it runs after the X0 hand-back (KVU-16e).
-  - [ ] **KVU-16c — or cite workspace-89's P3 parked-neighbour run as the residency proof.** (filed 2026-10-03)
+  - [x] **KVU-16c — or cite workspace-89's P3 parked-neighbour run as the residency proof.** (filed 2026-10-03)
+    ✅ 2026-10-03 — resolved: **NOT citable**, so KVU-16b runs. P3 A1 (`/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`)
+    had zero slot-failure lines, but it ran with `--no-cache-idle-slots` (not the production flag), and its ≈355k fill
+    rests on the slot-restore replies: `/slots` showed only 156,971 resident tokens, because restored slots do not
+    report `n_tokens` there. VRAM peak was 51.96 GiB (within ≤ 62 GiB). It is a mechanism result only.
     Workspace-89's X0 window carries the P3 probe (llama.cpp #28495, intake-1849#record: unified-KV flash-attention
     decode cost as the pool fills). If its parked-neighbour arm reports peak resident cells ≥ 300k with zero
     memory-slot lines, cite it here and close KVU-16b; otherwise run KVU-16b.
-  - [ ] **KVU-16d — act on the P3 decode-cost verdict: unified vs split per-slot.** (filed 2026-10-03, workspace-ec)
+  - [x] **KVU-16d — act on the P3 decode-cost verdict: unified vs split per-slot.** (filed 2026-10-03, workspace-ec)
+    ✅ 2026-10-03 — **DECIDED: keep the shared 393216 pool** (operator, 2026-10-03, this session's AskUserQuestion
+    answer: "Keep shared 393k for now"). No split-per-slot stack change. Mitigation: rely on the one-long-prefill gate
+    (KVU-15 / KVU-15a) and fix the kernel. The masked-block skip is KVU-19, implemented directly as KVU-19a.
     - 2026-10-03: P3 trigger MET (KVU-18 A1: −59.5% no-draft at ≈355k nominal fill, three parked neighbours; batched-bench
-      kvu vs no-kvu −15.2% TG). workspace-ec is preparing the option (c) package.
+      kvu vs no-kvu −15.2% TG). workspace-ec is preparing the option (c) package. *(Superseded by the decision above;
+      no package was prepared.)*
+    - **Decision record, the options considered (VRAM at load, approximate):**
+
+      | Option | Shape | VRAM at load | Effect |
+      |---|---|---|---|
+      | split 2 × 262144 | np 2, per-slot | ~52-55 GiB | full per-request context, but only 2 concurrent requests |
+      | split 3 × 196608 | np 3, per-slot | ~57 GiB | per-request cap 196608, 3 concurrent requests |
+      | split 4 × 163840 | np 4, per-slot (DECISION.md §4 option c) | ~59 GiB | per-request cap falls below 262144 |
+      | **keep shared 393216** | np 4, unified | 50.78 GiB (measured) | **CHOSEN**: decode tax with resident neighbours remains until KVU-19 lands |
+
+    - Reopen trigger: KVU-19a fails its validation, or the fold into the champion stalls, while organic traffic shows
+      the neighbour decode tax (serving records, KVU-17).
     If P3 shows ≥ 15% decode loss at 300k+ pool fill vs ~100k, prepare the option (c) split stack change (4 × 163840,
     DECISION.md §4) for operator signature; if < 15%, record the verdict here and keep unified. Trigger: workspace-89's
     P3 result.
-  - [ ] **KVU-16e — restore :8083 after workspace-89's "X0 done" (ETA ~16:30Z 2026-10-03; extended, see below).** (filed 2026-10-03,
+  - [x] **KVU-16e — restore :8083 after workspace-89's "X0 done" (ETA ~16:30Z 2026-10-03; extended, see below).** ✅ 2026-10-03 (filed 2026-10-03,
     workspace-ec) `orchestrator_stack.py reload architect_critic`; verify the live argv equals
     `evidence/argv_8083_live_post_relaunch.txt`, `context_limits` (262144 / unified / pool 393216) and one alias
     completion via :8000. :8083 is down from 13:55Z (stop verified: PID dead, VRAM 0.01 GiB; X0 argv record
@@ -257,6 +287,14 @@ is olympiad-style reasoning.
       then P3 (KVU-18, llama.cpp #28495), then LB1 (rocprof low-bit kernel roofline, operator-approved), then a
       speech stop plus EXL3 correctness. Whisper/TTS will be stopped for ~30 min near the end. The restore also
       unblocks the UFH14-DEPLOY-EC-2 live proofs (B6, RI-18c, KVU-15a, B4).
+    - **DONE 2026-10-03 ~15:35Z (workspace-ec).** workspace-89 sent "speech back + X0 done" at 15:31Z: all its scratch
+      PIDs dead, KFD list empty, VRAM 13 MB. `reload architect_critic` → PID 1064570 at 15:35:49Z, `/health` ok. The
+      launch banner argv (`logs/server_launches/launches.jsonl`) equals `evidence/argv_8083_live_post_relaunch.txt`
+      token for token, `argv_sha256` b865820d… (same as the 13:14Z launch). Completions via :8000 to :8083 correct at
+      15:39Z (UFH14-B6 proof). `context_limits` was not re-read here. `reload whisper tts` → PIDs 1064878 / 1065102,
+      health ok, TTS smoke 57,644 bytes. Production outage: :8083 13:55Z → ~15:35Z; speech ~15:00Z → ~15:35Z.
+    - Later the same day, 15:43:08Z: :8083 relaunched (PID 1083497) with the UFH14-DIAG-EC-a SLOTS_DEBUG override
+      (experiment id `UFH14-A7`, TTL 14400 s). Same argv; a plain `reload architect_critic` restores it.
   - Finding, not filed as a task: 4 concurrent ~90k prompts take ~36 min for the last one (2166 s). That is the
     neighbour-prefill serialisation the one-long-prefill gate (KVU-15) makes explicit by design; it is a capacity
     fact, not a defect. Declined as a separate task: the actionable part, unified vs split, is KVU-16d.
@@ -350,6 +388,23 @@ is olympiad-style reasoning.
     Validate on the KVU-18 A1 cells (same P, 0/1/2/3 neighbours) plus the DF2 verify shape. Whether the split stack
     change (KVU-16d) lands first changes the production stake, not the kernel case: any unified-KV deployment
     with parked neighbours pays this tax.
+  - *(Annotation, workspace-ec, 2026-10-03; this item stays workspace-89's.)* KVU-16d is decided **keep shared
+    393k**, so production keeps paying the tax until this lands. The operator asked for the skip to be implemented
+    DIRECTLY, without waiting on AutoKernel, and folded into the champion. The implementation is KVU-19a (workspace-ec);
+    the champion fold and the full-scale P3 re-measurement stay here with workspace-89.
+  - [ ] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** (filed 2026-10-03, workspace-ec;
+    operator instruction 2026-10-03, implements KVU-19) IN PROGRESS: an Opus subagent on a new `llama.cpp-experimental`
+    branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`).
+    - Scope: the HIP (gfx90a) and CPU flash-attention kernels skip fully masked KV blocks anywhere in the range, not
+      just the tail, for the decode and verify (n_max 7) shapes.
+    - Correctness: `test-backend-ops` cases with multi-sequence masks.
+    - Speed: a small-model micro-bench, with 0/1/3 resident neighbours.
+    - Build into a new `kernels/builds/` dir; a feature commit plus `FOLD.md`, with a trial merge onto the DS41
+      accumulator b3e0b0902.
+    - Hand-off: workspace-89 folds it into the champion with DS41's promoted keeps and runs the full-scale P3
+      re-measurement window (KVU-19). Never touches the frozen production tree.
+    - Done when `test-backend-ops` passes with the new masks, the micro-bench shows the neighbour tax reduced, and
+      `FOLD.md` plus the trial-merge result are handed to workspace-89.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean
@@ -390,6 +445,9 @@ is olympiad-style reasoning.
     - Consequences: KVU-19 is triggered (≥5%). KVU-16d's ≥15%-at-≥300k condition is met — workspace-ec is preparing the
       split-per-slot stack-change package there (their item). Belief-kernel wiring: VB-KVU-P3 in
       [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md).
+    - *(Annotation, workspace-ec, 2026-10-03.)* The operator decided KVU-16d as keep shared 393k, so no split package
+      is being prepared. The skip is implemented directly as KVU-19a. A0 being inconclusive leaves the production
+      idle-purge claim a code read (see the KVU-16b correction).
 - [x] **KVU-8 — confirm the throughput verdict with fixed-length or multi-wave generation.** ✅ 2026-09-24 —
   confirmed, with one named substitution. (1) 35B-A3B, both arms, fixed-length L 2048 cells: unified within 2% of
   split in all 4 (per-request −0.6..−1.7%, aggregate −0.7..−1.1%); at 8k/32k the per-request spread is −5.3..+5.6%

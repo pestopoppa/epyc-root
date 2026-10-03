@@ -130,6 +130,8 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   - [ ] **Open sub-task: the full-pool concurrent-residency proof.** The 4 × 90k probe held (all 200, zero memory-slot
     lines, KFD peak 51.73 GiB) but peaked at 92,343 cells in flight, under its 300k criterion, so residency is UNPROVEN,
     not disproven. Tracked as KVU-16b (corrected probe) / KVU-16c (cite workspace-89's P3 run).
+    2026-10-03: KVU-16c resolved as NOT citable (P3 A1 ran `--no-cache-idle-slots`, and `/slots` showed 156,971 resident
+    tokens), so KVU-16b's corrected probe is the proof.
 - [ ] **UFH14-B4.** Prefix-cache and `--cache-ram` policy per server. Covers D5 and D6 on the server side.
   **API part DEPLOYED 2026-10-03 ~14:50Z (UFH14-DEPLOY-EC: orch main, API PID 1628390); policy not applied.**
   The first post-reload serving records carry `request.prefix_fp`; they are the 3 refused passthrough calls at
@@ -140,6 +142,13 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   characters, so every call of a role went to ONE slot and v10 deferred it while other slots were free; pinning is now
   opt-in (`ORCHESTRATOR_PREFIX_ROUTER_PIN_SLOTS=1`). Instrument: `missed_prefill_share` (lower = better) from
   `scripts/analysis/prefix_cache_report.py`. Not ticked until PFX-SEL-1 lands; the sub-tasks below are the remainder.
+  **2026-10-03 ~15:40Z — `prefix_fp` PROVEN on dispatched calls (passthrough lane).** After the :8083 restore, the three
+  dispatched passthrough calls to :8083 at 15:39:37-15:39:39Z (`outcome=ok`, orch_commit aa1d6894) carry
+  `request.prefix_fp`, with `timings.cache_n` 0 / 155 / 155 (`logs/serving_calls/serving_calls.jsonl`, read-only). The
+  primitives lane has no post-deploy dispatched record yet: the only primitives records since the deploy are two
+  `/chat` sub-calls that timed out at placement (15:39-15:41Z) and carry no `request` block. So the primitives-lane
+  half of the B4 proof waits for one dispatched primitives call (UFH14-DEPLOY-EC-2). Records after 15:43:08Z are from
+  the SLOTS_DEBUG window (DIAG-EC-a); they are fine for `missed_prefill_share` but are tagged `UFH14-A7`.
   - [ ] **UFH14-B4a — PFX-SEL-1 stack-change package, after a metric window.** Design §3.8 / §4.4: master
     `prefix_cache` per model, topology `prefix_cache_selection`, compiler + launcher + drift checker. No launch flag
     changes today (derived values equal today's). Prepare it after ≥ 1 window of ≥ 200 post-deploy calls gives a
@@ -162,6 +171,12 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   - [ ] **UFH14-B4g — re-measure the 27B DFlash2 prompt-cache entry cost (design §4.4).** It was to ride B3's relaunch
     (`-lv 4` lines `prompt_save … total state size … (draft: …)` and `created context checkpoint … size`). If those lines
     are not in the 13:14Z bring-up log, capture them at the post-X0 restore (KVU-16e); feeds PFX-SEL-1's entry cost.
+    - 2026-10-03 (workspace-ec, read-only log read): the lines are logged at default verbosity, so `-lv 4` is not
+      needed, but they appear only when a long prompt is saved. None exist yet on the 393216 / n-max-7 instances
+      (`logs/llama-server-8083.log` from line 223777: the 13:14Z, 15:35Z and 15:43Z launches; only short calls since).
+      The previous shape (np 4 / 196608, spec `n_max=4`, lines 130227-130857) gives a prior: 1631.2 MiB at 39,875 tokens
+      (draft 156.7 MiB) and 3306.0 MiB at 84,951 tokens (draft 333.8 MiB), ≈ 40-42 KiB per token. Still open: read the
+      first `prompt_save` line on the current shape once a long call lands.
   - [ ] **UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**
     v10 defaults `cache_idle_slots` ON: with `--cache-ram` + `--kv-unified`, every idle slot is saved to RAM and cleared
     from the KV pool as soon as any new task starts (server-context.cpp:2469-2483). So on :8083 a paused agent context
@@ -169,6 +184,10 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     A/B per server, both arms read with `prefix_cache_report.py`: per-turn agent latency, `hit_tok`, `missed_prefill_share`,
     `cache_ram` evictions, and VRAM headroom. Default ON against OFF. OFF keeps idle contexts resident, but the pool then
     fills with idle cells. Whatever wins becomes a PFX-SEL-1 field.
+    - 2026-10-03 correction (P3 report): the purge is a code read. P3 A0, at the exact production flags, did NOT
+      reproduce it (the neighbour slot held 0 tokens, so the path never ran). Arm ON of this A/B must first show that the
+      purge happens on organic traffic (`saving idle slot` lines plus `/slots` `n_tokens` dropping on a busy neighbour),
+      or the A/B has nothing to compare. This replaces a separate A0 re-run, which is not filed.
   - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
     `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
     `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.
@@ -177,7 +196,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     the design says add it when next touched. Declined: `--cache-reuse` as a generic knob (design §3.6, unsound on
     every model we run).
 - [x] **UFH14-B5.** ✅ 2026-10-03 (workspace-ec) — orch c6225e8b/f7fad574/9a0d38e0 on main, API reload 04:59Z: per-call records in `logs/serving_calls/serving_calls.jsonl` (role, request_id, queue wait, llama `timings`, outcome incl. cancelled), chat-stream `prompt_eval_ms` fixed (live :8083 call: 2368 ms), progress rows flushed durably, launch/stop banners + `logs/server_launches/<port>.json` at each server's next stack launch; era ST1 (orch 4e23e553); write-side adapter row in `scripts/vidya/adapters/README.md` (root 999954ca), read side = VB-SERVE-TIMING-1 (open). Was: Serving telemetry: a launch banner with ISO-UTC, pid, role and argv; per-call role, request_id and llama `timings`; `prompt_eval_ms` filled in; cancel summaries; queue wait. Plus the belief-kernel write-side adapter, owned by workspace-ec. Covers D8.
-- [ ] **UFH14-B6.** An OpenAI-compatible passthrough on :8000 for a named role (chat/completions and responses, streaming, tools, timings echoed), so harness experiments can go through the gate instead of hitting servers directly. The gap list is pending from workspace-ec. Gap analysis in progress (workspace-ec): `/mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md`.
+- [x] **UFH14-B6.** ✅ 2026-10-03 (workspace-ec) — LIVE and proven on :8083, see the proof below. An OpenAI-compatible passthrough on :8000 for a named role (chat/completions and responses, streaming, tools, timings echoed), so harness experiments can go through the gate instead of hitting servers directly. The gap list is pending from workspace-ec. Gap analysis in progress (workspace-ec): `/mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md`.
   **BUILT 2026-10-03, NOT LIVE** (workspace-ec): orch 3edfdff3 — `POST /v1/passthrough/{role}/chat/completions` and
   `/responses`, `GET …/models`; raw body forwarded, true SSE streamed unbuffered, server `timings` on the wire, behind the
   full admission gate (KV-pool tokens, one long prefill, host-wide lease after KVU-15a, per-request cap → 413), one
@@ -191,6 +210,20 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     region in its build_and_measure window. Evidence: `/mnt/raid0/llm/tmp/integ2-ec/stream-smoke.txt` and
     `logs/serving_calls/serving_calls.jsonl`. :8083 is stopped for workspace-89's X0 window, so the end-to-end proof
     (one streamed call with timings) waits for the restore (KVU-16e). Not ticked until then.
+  - **PROVEN 2026-10-03 15:39Z on :8083** (after the KVU-16e restore; `architect_critic`, production flags, before
+    the 15:43Z SLOTS_DEBUG relaunch):
+    - non-stream chat/completions: correct answer ("56"), with timings;
+    - streamed chat/completions: 33 SSE chunks, timings on the last;
+    - streamed `/v1/responses`: 27 events ending in `response.completed`, with timings.
+    - Each call wrote one `serving_call.v1` record with `caller.source=passthrough`, orch_commit aa1d6894,
+      `passthrough.http_status` 200, `sse_events` 0 / 33 / 27 and `request.prefix_fp` (`logs/serving_calls/serving_calls.jsonl`).
+    - Gap found: `caller.port` is absent (null) on every passthrough record. Filed as UFH14-B6b.
+  - [ ] **UFH14-B6b — passthrough records must carry `caller.port`.** (filed 2026-10-03, workspace-ec, from the B6
+    proof) Primitives records set `caller.port` (8083, 8070); passthrough records do not. Cause: `write_serving_record`
+    replaces the `caller` block that `serving_calls.build_record` built with its own dict, which has `backend_url`
+    but no `port` (`src/api/routes/passthrough.py:757-764`). `server.port` is present, so per-port joins work today
+    only by reading the other field. Add `port` (parsed from `base_url`, the same value as `server.port`) to the
+    passthrough `caller` block, with a test. Done when a passthrough record carries `caller.port` equal to `server.port`.
   - [ ] **UFH14-B6a — passthrough refusal records must name the refusing gate in structured fields.** (filed
     2026-10-03, workspace-ec, from the 14:51-14:58Z refusals) Today a refusal record has `outcome=refused`,
     `dispatched=false` and free-text `error.message`, plus `error.type` (`lock_unavailable`). It has no structured
@@ -229,6 +262,20 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - KVU-15a: the 2-worker replay is pending. Its cached-prefix half cannot pass in production until KVU-15c (see
       `kv-unified-stack-rollout.md`).
     - B4: `prefix_fp` is present on refusal records but not yet on a dispatched call.
+
+    **Status at ~15:45Z, after the :8083 restore (KVU-16e done 15:35Z):**
+    - B6: **PROVEN.** Non-stream, streamed chat and streamed `/v1/responses` through the passthrough to :8083, all with
+      timings (15:39Z). UFH14-B6 ticked. Gap: `caller.port` null, filed as B6b.
+    - B4: **PROVEN for the passthrough lane** (3 dispatched records with `request.prefix_fp`). Still open: one
+      dispatched primitives-lane record carrying `prefix_fp`.
+    - RI-18c: **suggestive, not proof.** A live `/chat` (~15:39-15:41Z) showed `routing_stage_ms.review_gate` and
+      `review_verdict` null, but the call failed with "placement timeout role=frontdoor", because DS41 holds the CPU
+      regions. The matching serving records (parent `api-ac5d8649777e`, matched by time and role only) are two :8070
+      sub-calls that timed out undispatched. The gate only runs after an answer exists, so null here proves nothing.
+      Still open: one COMPLETED `/chat` in a DS41 open window.
+    - KVU-15a: **nothing new proven.** The post-restore calls are all short, so the lease was never exercised. The
+      2-worker replay is still open. Its cached-prefix half waits for KVU-15c, and must not be read from the SLOTS_DEBUG
+      window that started at 15:43:08Z.
 - [x] **UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03
   (workspace-ec) Orch main aa1d6894 (branch `feat/diag-env-override-ec`, ada71720 rebased). It is CLI-only, so no
   reload was needed.
@@ -251,6 +298,11 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     So serving records from the window are not a KVU-15b/15c baseline; tag them by the experiment id. Done when the
     readback shows the declared deviation during the window and `declared_env_attestation` is clean after the
     restore.
+    - *(Annotation, workspace-ec, 2026-10-03; this item belongs to the window owner.)* APPLIED 15:43:08Z: the launch
+      banner (`logs/server_launches/launches.jsonl`) shows `reload architect_critic --diag-env-override
+      LLAMA_SERVER_SLOTS_DEBUG=1 --experiment-id UFH14-A7 --override-ttl-s 14400` → PID 1083497, the same argv as
+      production. The id is `UFH14-A7`, not the `ufh14-a7-slotsdebug-<date>` form above; records can still be tagged by
+      it, so this is not filed. Readback and the plain-reload restore are still pending (TTL ends ~19:43Z).
 
 ## Phase C — holistic audit (starts only after A5)
 

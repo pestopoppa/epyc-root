@@ -349,3 +349,80 @@ fill, llama.cpp #28495) → LB1 (rocprof low-bit kernel roofline, operator-appro
 | epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | X0 extension and the reload-2 line |
 
 Index-row `Next action` refreshes are prepared, not applied: `/mnt/raid0/llm/tmp/wrapup-ec-reload2/INDEX_ROWS.md`.
+
+## ~15:30-15:45Z — X0 window ended; :8083 and speech restored; P3 verdict acted on; B6 proven live (per-task wrap-up)
+
+**Restore (KVU-16e, done).** workspace-89 sent "speech back + X0 done" at 15:31Z: all its scratch PIDs dead, KFD
+list empty, VRAM 13 MB. Restored through the stack:
+- `reload architect_critic` → :8083 PID 1064570 at 15:35:49Z, `/health` ok. The launch banner argv equals
+  `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/evidence/argv_8083_live_post_relaunch.txt` token for token
+  (`argv_sha256` b865820d…, the same as the 13:14Z KVU-16 launch).
+- `reload whisper tts` → PIDs 1064878 / 1065102, health ok, TTS smoke OK (57,644 bytes).
+- Production outage windows: :8083 13:55Z → ~15:35Z; speech ~15:00Z → ~15:35Z.
+- At 15:43:08Z :8083 was relaunched again (PID 1083497) with the UFH14-DIAG-EC-a override
+  (`LLAMA_SERVER_SLOTS_DEBUG=1`, experiment id `UFH14-A7`, TTL 14400 s) for the A3/A4/A7 multi-turn window. The
+  argv is unchanged. Serving records after that time are from a debug window: no KVU-15b/15c baseline.
+
+**workspace-89's window results (theirs, summarised and cited here, not claimed).**
+- X0 (`/mnt/raid0/llm/tmp/x0-27b-quants/results/report.md`): Q4_K_M has no speed case on the 27B; KLD 0.0076; it
+  would free 11.36 GiB.
+- Folded probe (`…/results/probe/`): DFlash2 at the production shape ≈ MTP, 41.6 / 40.4 / 36.9 / 32.1 tok/s at
+  2k / 16k / 50k / 80k.
+- LB1 (`/mnt/raid0/llm/tmp/lb1-profile-20261003/report.md`): Q8_0 MMVQ reaches 70% of the HBM roofline; MMQ at
+  M = 8/16 reaches ~31%.
+- EXL3 (`…/results/exl3/`): the first on-device run passes the synthetic suite.
+- P3 (`/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`) confirms llama.cpp #28495 on MI210 / v10: flash
+  attention attends over every occupied unified-pool cell.
+  - A1, mechanism (`--no-cache-idle-slots`): a 57k decode with 3 × ~100k neighbours resident is −57.6% drafted and
+    −59.5% no-draft. The ~355k fill rests on the slot-restore replies; `/slots` showed only 156,971 tokens because
+    restored slots do not appear there. VRAM peak 51.96 GiB; zero memory-slot lines.
+  - A0, exact production flags: the idle purge did NOT reproduce. The neighbour held 0 tokens, so the path never ran.
+    "Production always purges idle slots" is therefore not proven; the KVU-16b and UFH14-B4i notes are corrected.
+  - B, `llama-batched-bench` 4 × 16k concurrent: −15.2% decode and −28.6% prefill, `-kvu` vs `-no-kvu`.
+  - Both triggers are met: split-per-slot (KVU-16d) and masked-block skip (KVU-19).
+
+**Operator decisions, 2026-10-03 (this session, AskUserQuestion answer and chat).**
+- (a) KVU-16d: **"Keep shared 393k for now."** No split-per-slot stack change. Rely on the one-long-prefill gate and
+  fix the kernel. The options considered are recorded in KVU-16d: 2 × 262k (~52-55 GiB), 3 × 196k (~57), 4 × 163k
+  (~59), keep shared (chosen). KVU-16d is closed as decided-keep.
+- (b) Implement the masked-block skip DIRECTLY, without waiting on AutoKernel, and fold it into the champion. Filed as
+  KVU-19a (workspace-ec), cross-referencing KVU-19 (workspace-89's). IN PROGRESS: an Opus subagent on a new
+  `llama.cpp-experimental` branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`). Scope:
+  the HIP and CPU FA kernels, `test-backend-ops` with multi-sequence masks, a small-model micro-bench, a new
+  `kernels/builds/` dir, and a feature commit plus `FOLD.md` with a trial merge onto the DS41 accumulator b3e0b0902.
+  workspace-89 does the champion fold, with DS41's promoted keeps, and coordinates the full-scale P3 re-measurement.
+
+**Live proofs after the restore (UFH14-DEPLOY-EC-2).**
+- UFH14-B6 passthrough: **PROVEN** on :8083 at 15:39Z, at production flags:
+  - non-stream: correct ("56"), with timings;
+  - streamed chat: 33 SSE chunks, timings on the last;
+  - streamed `/v1/responses`: 27 events, `response.completed`, timings.
+  - The records carry `caller.source=passthrough`, orch_commit aa1d6894, `http_status` 200 and `request.prefix_fp`.
+  - Gap: `caller.port` is null on passthrough records. Cause: `passthrough.py:757-764` replaces the `caller` block
+    without `port`. Filed as UFH14-B6b. B6 is ticked.
+- B4 `prefix_fp`: proven on the 3 dispatched passthrough records (`cache_n` 0 / 155 / 155). No dispatched
+  primitives-lane record exists since the deploy: the two `/chat` sub-calls timed out at placement. That half stays open.
+- RI-18c: a live `/chat` showed `routing_stage_ms.review_gate` and `review_verdict` null, but the call failed with
+  "placement timeout role=frontdoor" (DS41 holds the CPU regions). The gate, when present, ran only after an answer, so this
+  is suggestive, not proof. Still open: one completed `/chat` in a DS41 open window.
+- KVU-15a lease: nothing new proven. All post-restore calls were short, so neither the lease nor the credit was
+  exercised. The 2-worker replay is still open.
+- UFH14-B4g: no `prompt_save` lines on the 393216 / n-max-7 shape yet. A prior from the 196608 shape is recorded:
+  ≈ 40-42 KiB per token.
+
+**Checkbox flips (4):** KVU-16e, KVU-16d (decided keep), KVU-16c (resolved, not citable), UFH14-B6. Annotated
+only, not ticked: KVU-19, KVU-18, UFH14-DIAG-EC-a (other owners), RI-18c, KVU-15a, UFH14-DEPLOY-EC-2 (proofs still
+open). **Filed (2):** KVU-19a, UFH14-B6b. **Declines (4):**
+- a separate A0 re-run: folded into the UFH14-B4i A/B, which must first show the purge on organic traffic;
+- the DIAG override's experiment-id form (`UFH14-A7` vs `ufh14-a7-slotsdebug-<date>`): records are still tagged;
+- workspace-89's X0 / LB1 / EXL3 / folded-probe follow-ups: their items (INF-80, UFH14-A*), not filed here;
+- a split-package draft: the operator decided keep-shared.
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-16e `[x]`; KVU-16d `[x]` decided keep, with an options table and a reopen trigger; KVU-16c `[x]` not citable; KVU-16b A0 correction; KVU-15a post-restore note; KVU-19a filed; KVU-19 and KVU-18 annotated |
+| epyc-root | `handoffs/active/agentic-serving-harness-fixes.md` | UFH14-B6 `[x]` with the live proof; B6b filed; B4 `prefix_fp` proof; B4g prior; B4i correction; B3 residency note; DEPLOY-EC-2 status; DIAG-EC-a applied (annotation) |
+| epyc-root | `handoffs/active/routing-intelligence.md` | RI-18c: live attempt suggestive, not proof (not ticked) |
+| epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | restore, SLOTS_DEBUG window, KVU-16d decision, KVU-19a |
+
+Index-row `Next action` refreshes are prepared, not applied: `/mnt/raid0/llm/tmp/wrapup-ec-x0/INDEX_ROWS.md`.

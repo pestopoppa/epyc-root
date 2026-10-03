@@ -259,6 +259,11 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
       The live `/chat` RI-16 reading (`review_gate` / `review_verdict` null) is still open. It waits for the :8083
       restore (KVU-16e in `kv-unified-stack-rollout.md`; X0 hand-back ~17:15Z), tracked as UFH14-DEPLOY-EC-2. Not
       ticked until that reading exists.
+    - **2026-10-03 ~15:40Z, after the :8083 restore: suggestive, NOT proof** (workspace-ec). A live `/chat` showed
+      `routing_stage_ms.review_gate` and `review_verdict` both null, but the call failed with "placement timeout
+      role=frontdoor": DS41 holds the CPU regions. The gate, when present, ran only after an answer existed, so a null on a call that
+      never produced an answer cannot show it was removed. Still open: one COMPLETED `/chat` in a DS41 open window
+      (`cpu-window.json`), read with the RI-16 reader. Not ticked.
     - Remove the gate, the verdict and the revision from all five call sites: `repl_executor.py` ~779-826,
       `direct_stage.py` ~223-242, `stream_adapter.py` ~346-360, `chat.py` ~1613-1628 and `v1_escalation.py` ~405-466.
       Also remove the `review_low_q_threshold` config.

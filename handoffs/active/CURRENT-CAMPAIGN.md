@@ -25,6 +25,13 @@
 >   (whisper/TTS ~30 min near the end) + EXL3 correctness. The second API-only reload went live ~14:50Z (orch main,
 >   PID 1628390: passthrough B6, review gate removed RI-18c, host-wide long-prefill lease KVU-15a, B4 API part); their
 >   live proofs wait for the :8083 restore (UFH14-DEPLOY-EC-2).
+>   **~15:35Z: X0 window ended; :8083 and speech are RESTORED** (KVU-16e): :8083 PID 1064570 on the KVU-16 argv
+>   (argv_sha256 b865820d…), whisper/TTS reloaded and healthy. Outage: :8083 13:55Z → 15:35Z, speech ~15:00Z → 15:35Z.
+>   From **15:43:08Z :8083 runs a SLOTS_DEBUG diagnostic window** (PID 1083497, experiment `UFH14-A7`, TTL 4 h;
+>   UFH14-DIAG-EC-a); a plain `reload architect_critic` restores it. Passthrough B6 is proven live. The operator
+>   decided **KVU-16d: keep the shared 393k pool** (no split-per-slot change); the unified-KV decode tax (P3: −59.5%
+>   with three resident ~99k neighbours) is fixed in the kernel instead: masked-block skip KVU-19a → champion fold
+>   via workspace-89 (KVU-19).
 
 > **2026-09-28 — UFH-13 PARKED; the working direction until the second MI210 is infra and design (operator, in chat,
 > session https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ). Supersedes the 2026-09-27 narrowed plan's ranking.**
