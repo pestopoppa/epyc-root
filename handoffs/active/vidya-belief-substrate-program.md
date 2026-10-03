@@ -2019,6 +2019,12 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   proposition; no-reply calls are misses. Carry `recovered_by` for run-1 calls rebuilt by `run2.py finalize`. Add the write-side
   `belief_measurements.jsonl` to `run2.py`/`grade.py` BEFORE DS41-C102 runs, so orv/orsv rows are born with their tuple. Copy the dir
   somewhere durable first — `/mnt/raid0/llm/tmp` is scratch.
+  - 2026-10-03 extension (UFH14-A1 F12 run): two more arms, same grading pass and same ladder, no new source class.
+    `cxf1` (F1 serving fixes) and `cxf12` (F1 + F2 answer protocol), 4 calls each on C2/C4, per-call
+    `results/C{2,4}/cxf{1,12}/r{1,2}/result.json`; grades already in `grading/report.{md,json}` (cxf12 P(keep) 0.75, 0 exact / 3
+    partial; cxf1 0.50, 2 partial). Project them with the existing locator. One call (C2/cxf1/r2) is graded `contaminated=True`:
+    carry that flag into the tuple and exclude it from any pooled arm verdict. Later runs (`run3.py`, Landlock sandbox) must emit the
+    write-side `belief_measurements.jsonl` row at call end — see UFH14-A5.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
 ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)

@@ -874,13 +874,34 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Verdict (indicative, n tiny): harness matters some (codex inline best, found C1 zmm-widen), capability dominates
     (no exact match, 2-3.5 factual errors vs 0, ≥50% no reply in ~90 min). orv/orsv not run → DS41-C102.
   - Report: `/mnt/raid0/llm/tmp/ds41-c95/grading/report.md` (+ `report.json`); design `/mnt/raid0/llm/tmp/ds41-c95/README.md`.
+  - **F12 follow-up (UFH14-A1, 2026-10-03)** — 8 solo codex calls on DFlash2 :8083 (C2, C4), graded blind with the other arms:
+    cxf12 (F1 serving fixes + F2 answer protocol) P(keep) 0.75 (0 exact, 3 partial), 4/4 answered, 2.25 mean errors, median wall
+    3880 s; cxf1 (F1 only) 0.50 (2 partial), 4/4 answered, 1 call contaminated (C2/cxf1/r2 browsed the live store anchor-gen-007);
+    unfixed cx 0.50 with 2/4 answered; DeepSeek as-ran 0.75 (3 exact, 0 errors). The fixes recover the no-reply calls but not
+    exactness: the 27B still finds no exact keep and makes 2-2.25 factual errors per answer against DeepSeek's 0. Detail and the
+    sandbox fix: [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md) UFH14-A1/A6.
 - [x] DS41-C96 — graph-sync gate fault: `GLU`/`UNARY` passed to `test-backend-ops -o` match no `op_desc()`, so the suite was always 0/0; `backend_ops_selector` expands them to sub-ops (e29dca63). ✅ 2026-10-01
   - Route now 29 ops (incl. TOPK_MOE chain; EXP/EXPM1 excluded, fail on anchor); empty suite still fails
     closed. Caused the run 10w abstention storm (rows 203-224). Shared-walk-defect caveat → DS41-C99.
 - [x] DS41-C97 — runtime treatments deduplicated by normalized launch delta in a sidecar identity ledger; duplicates refused `refused_duplicate` / gate `runtime_treatment_identity` (42f434a5). ✅ 2026-10-01
   - Both passive-wait rows map to identity 746aeb3181543057; `serial_scheduling` outcome classes fixed. Limit:
     simultaneous same-treatment proposals from two lanes are not deduplicated.
-- [ ] DS41-C98 — keep admission: 8 bench keeps since the +11.18% promotion summed to +0.101% serving (row 253 measured_divergence). Rethink admitting keeps on non-decisive positive bench A/Bs (e.g. require decisiveness, or a cheaper serving confirm per keep) — decision package for operator.
+- [x] DS41-C98 — keep admission: 8 bench keeps since the +11.18% promotion summed to +0.101% serving (row 253 measured_divergence). Rethink admitting keeps on non-decisive positive bench A/Bs (e.g. require decisiveness, or a cheaper serving confirm per keep) — decision package for operator. ✅ 2026-10-03 — **operator chose D: status quo** (keep admitting positive non-decisive keeps; HOLD on a diverged gate).
+  - Package: `/mnt/raid0/llm/tmp/ds41-c98-package-20261003.md` (options A decisive-only, B confirm re-measure (recommended), C provisional tier + ROLLBACK, D status quo).
+  - **Findings that stand regardless of the choice:**
+    - Post-053c keeps are statistically indistinguishable from noise. 15 same-build anchor-guard A/As (5 pairs): mean +0.24%,
+      SD 1.35%, max |2.38|%. All 9 post-053c keeps (+0.37 to +2.27%) sit inside that envelope. Of 26 measured post-053c source
+      candidates, 10 were positive (all-null expectation 13 ± 2.5); mean effect −0.49%.
+    - In DS41 "bench" and "serving" are the same instrument (`matched_process_v2`, 5 pairs, recipe `ds41-00d118d44-cpu-t48-dspark-b2`).
+      Gate 3's divergence is winner's curse on positive noise draws, not a proxy that fails to transfer, so there is no cheaper
+      per-keep serving confirm: a confirm is one more A/B.
+    - The floor drives everything (DS41-C92): at 4.533% a real +2% effect is almost never admissible by any rule; at 1.876% most are.
+    - The real wins came from decisive keeps (load-threads-48, tinyblas-zmm-widen); only one non-decisive keep (gemm4xn-2x-unroll) is independently confirmed.
+  - Consequence of D: the tip keeps accumulating unverified changes and gate 4 (after 8 keeps) is expected to diverge again.
+  - Keep since the decision: run 10z kept `akm-ds41-q8-rn3-single-pair-loop` (+0.568%, 5 pairs, floor 3.412%, not decisive; commit
+    `b3e0b0902` at 14:20Z, `sgemm.cpp` only) and built anchor-gen-017 from it (its experiments.db row was not yet written at 14:26Z, while the anchor guard A/A ran). That is held keep 10 on the tip, 2/8 toward gate 4,
+    and like the others it is inside the A/A envelope.
+  - Defects found by the package → DS41-C104/C105/C106.
 - [ ] DS41-C99 — e2e correctness oracle for scheduling-only routes (cpu_graph_sync): compare --autokernel-harden output hashes vs anchor; op-level suites can't see shared deterministic walk defects (C96 caveat).
 - [ ] DS41-C100 — UFH-12 context.search (hybrid lexical+dense, rrf_fuse, pointers only) in the orchestrator REPL; add an orsv arm to C95 once deployed (coordinate the API reload with workspace-8d).
   - 2026-10-01: built and live (orch `b384cdbb`; branch d02942f7 + 002b6fc4, dense-index timeout fix by workspace-8d →
@@ -890,6 +911,9 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     source row and task drafted in the C95 wrap-up, applied by the owning session. Copy the dir durably first (`tmp` is scratch).
 - [ ] DS41-C102 — orv/orsv arms (27B via orchestrator REPL; + UFH-12 context.search) orchestrator 500 int('') bug FIXED 2026-10-01 (orch 2d97ade2: context.get dict-style default; root cause model wrote context.get('inbox','')); operator chose a DS41 pause to run them 2026-10-01; needs frontdoor quiet (REPL delegates to worker roles on :8070) and repl_embedding_pool re-enabled after any API reload.
 - [ ] DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
+- [ ] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling.
+- [ ] DS41-C105 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
+- [ ] DS41-C106 — `AccumulatorPolicy` names a `ROLLBACK` divergence action (research `scripts/kernel_rnd/autokernel/loop/accumulate.py:141`) that nothing in `run.py` handles; `run.py:3049` always builds the HOLD default. Either implement ROLLBACK (reset the tip to the champion of record, discard the bundle, re-anchor) or remove the enum value so a config cannot select a no-op.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

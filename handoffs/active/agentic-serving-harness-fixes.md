@@ -1,6 +1,6 @@
 # Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit
 
-**Status**: active. Phase A is in flight: the F12 run on DFlash2 started 2026-10-03.
+**Status**: active. Phase A: A1 (F12 run) done and graded 2026-10-03; A2 running inside the INF-80 X0 window; A3/A4 implemented and offline-tested, GPU test pending.
 **Created**: 2026-10-03, by operator directive in session ak-ds41-main:
 
 > "yes, i want all the harness bugs we identified to be fixed. The fixes shoudl be as general as possible (not limited solely to the 27B model) as I'm sure they would affect the usage of any of the models in the orchestrator stack. A full review/audit of how fixes should holistically be folded into the orchestrator's mgmt shoudl be performed after they are demonstrated on the 27B model."
@@ -41,11 +41,30 @@
 
 ## Phase A — demonstrate on the 27B (production Qwen3.8-27B Q8_0, DFlash2, :8083)
 
-- [ ] **UFH14-A1.** F12 run: the cxf1 arm (F1: solo, 1 h idle timeout, compaction at 150k) and the cxf12 arm (F1 plus F2: JSON-first answer, forced answer at 65% of budget, refine turn, 8k thinking cap). 8 solo calls on C2 and C4, graded blind against all C95 arms. Covers D1 and D4, partly D2.
+- [x] **UFH14-A1.** ✅ 2026-10-03 — F12 run: the cxf1 arm (F1: solo, 1 h idle timeout, compaction at 150k) and the cxf12 arm (F1 plus F2: JSON-first answer, forced answer at 65% of budget, refine turn, 8k thinking cap). 8 solo calls on C2 and C4, graded blind against all C95 arms. Covers D1 and D4, partly D2.
   - Launcher: `/mnt/raid0/llm/tmp/ds41-c95/f12_launch2.sh`. Log: `logs/f12_launch2.log`.
+  - **Result** (blind Opus grades, `/mnt/raid0/llm/tmp/ds41-c95/grading/report.md`; per-call `results/C{2,4}/cxf{1,12}/r{1,2}/result.json`). n = 4 calls per arm, so OBSERVATION grade only:
+
+    | arm | answered | keep exact / partial | P(keep) | mean factual errors | median wall s |
+    |---|---|---|---|---|---|
+    | DeepSeek as-ran (calibration) | 3/4 + 1 abstain | 3 / 0 | 0.75 | 0.0 | — |
+    | cx (unfixed codex inline) | 2/4 | 0 / 2 | 0.50 | 2.0 | 5401 |
+    | **cxf1** (F1) | 4/4 | 0 / 2 | 0.50 | 1.75 | 4640 |
+    | **cxf12** (F1+F2) | 4/4 | 0 / 3 | 0.75 | 2.25 | 3880 |
+
+  - **What F1 fixed:** no client timeouts, aborts or cold re-prefills; prompt-cache hit rate 90–96% per call. F1 alone still needed salvage (answer rebuilt from the transcript) on 2 of 4 calls.
+  - **What F2 fixed:** cxf12 answered within its own turns on all 4 calls, with a ~16% shorter median wall than cxf1. It did not reduce factual errors (2.25 vs 1.75) and found no exact keep.
+  - **DFlash2 on agentic traffic:** draft acceptance 29–34% on temperature-1.0 planner traffic, decode 25–30 tok/s at 57–152k context (well below the 91.7 tok/s single-stream short-context figure).
+  - **Contamination:** C2/cxf1/r2 browsed the live campaign store (`anchor-gen-007`), so it saw post-anchor state; the grader flagged it. The harness had no filesystem isolation.
+  - **Fixed offline (not yet GPU-tested):** a Landlock filesystem sandbox (`/mnt/raid0/llm/tmp/ds41-c95/sandbox3.py`; mount and user namespaces are unavailable in this container, Landlock ABI 6 needs no privilege) plus the A3 and A4 implementations in `run3.py`/`proxy3.py`. They close A3/A4 only after a GPU run.
+  - The separate DFlash2 decode probe crashed on fresh slots (`KeyError 'params'`); fixed in `probe_decode.py` and folded into the INF-80 X0 window (A2).
 - [ ] **UFH14-A2.** DFlash2 decode-vs-context probe on the production shape, to compare against the MTP probe and to separate drafter speed from harness effects.
+  - 2026-10-03: running inside the INF-80 EXL3-X0 window (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`) after the `probe_decode.py` fix. Agentic-traffic acceptance from A1 (29–34%) is context for it, not a substitute.
 - [ ] **UFH14-A3.** Prefix warming plus staggered starts for parallel arms. Issue one warm request for the shared context, then start the arms so they hit the prompt cache. Measure the cold-prefill share and decode stall against an unstaggered A/B. Covers D5.
+  - 2026-10-03: implemented in `/mnt/raid0/llm/tmp/ds41-c95/run3.py` + `proxy3.py`, offline-tested only. Close after the GPU A/B.
 - [ ] **UFH14-A4.** Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
+  - 2026-10-03: implemented in `run3.py` + `proxy3.py`, offline-tested only. Close after a GPU run measures re-prefill tokens per compaction.
+- [ ] **UFH14-A6.** Run every later harness experiment under the Landlock sandbox (`sandbox3.py`) and verify isolation on a real call before relying on it: a planted read of the live campaign store must fail, while the call's own workspace, result dir and wire proxy stay reachable. Origin: C2/cxf1/r2 contamination (A1).
 - [ ] **UFH14-A5.** Phase A verdict: which fixes measurably change P(keep), wall time and prefill seconds on the 27B. Wire the results to the belief kernel; VB-DS41-C95 already exists, so extend it rather than adding a new ladder.
 
 ## Phase B — generalize, model-agnostic

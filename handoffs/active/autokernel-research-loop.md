@@ -5259,6 +5259,11 @@ and emits no `evaluation_event`, so it correctly produces zero claim rows. If AK
 under the governed path, it flows through the existing `autokernel_evaluation_event.py` adapter and
 still needs no new row — which is the wiring working as designed, not a gap.
 
+**Cross-reference (2026-10-03).** Low-bit GPU decode kernels as an AutoKernel GPU target are filed as **EXL3-LB1** in
+[`exl3-cpu-mi210-implementation.md`](exl3-cpu-mi210-implementation.md) (INF-80), sequenced after the EXL3-X0 pre-gate. Its first
+measurement (rocprof roofline fraction of Q4_K vs Q8_0 MMVQ and small-M MMQ at 27B shapes, with VGPR/waves) is read against this
+section's occupancy-knee finding.
+
 ## 23. Cross-run memory, and two corrections to our own G17 record (2026-08-21)
 
 _Via `/research-intake` Stage-4, operator-approved. Sources: intake-1221 (SwizzlePerf), intake-1228..1231
