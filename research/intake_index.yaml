@@ -469,6 +469,7 @@
   cross_references:
     chapters:
     - 01-speculative-decoding.md
+  notes: "2026-10-03 re-encounter: ref (9) of the HyperQwen/LABD essay (intake-1832); cited for the rejection-sampling losslessness of point-mass lookup drafts."
 - id: intake-017
   arxiv_id: '2302.01318'
   url: https://arxiv.org/abs/2302.01318
@@ -1061,6 +1062,7 @@
   cross_references:
     chapters:
     - 03-prompt-lookup.md
+  notes: "2026-10-03 re-encounter: surfaced in the LABD-wave upstream search as the retrieval-drafting baseline lineage; not re-dived."
 - id: intake-040
   arxiv_id: '2312.00752'
   url: https://arxiv.org/abs/2312.00752
@@ -1877,6 +1879,7 @@
   cross_references:
     chapters:
     - 03-prompt-lookup.md
+  notes: "2026-10-03 re-encounter: surfaced by two LABD-wave dives as the closest prior art for per-position fusion of retrieval drafts into a model draft tree; not re-dived."
 - id: intake-072
   arxiv_id: '2504.12337'
   url: https://arxiv.org/abs/2504.12337
@@ -5135,7 +5138,7 @@
   handoffs_updated:
   - mtp-speculative-decoding.md
   - ssm-hybrid-acceleration.md
-  notes: 'DFlash targets the EXACT model we''re optimizing (Qwen3.5-35B-A3B) with impressive 2.4-2.8x GPU speedups. However, CRITICAL BLOCKER: DFlash requires SGLang or vLLM — NO llama.cpp support, no GGUF, no CPU inference path. The block diffusion approach is fundamentally GPU-oriented (parallel denoising requires batched matmuls). For our CPU-bound EPYC stack, this is not directly adoptable. Our MTP-1 approach (78.5% acceptance, Step 7 pending) achieves comparable projected gains (1.5-1.7x) within llama.cpp natively. DFlash validates that Qwen3.5-35B-A3B is highly amenable to speculative decoding — the model architecture cooperates well with draft-verify paradigms. If we ever add GPU serving (vLLM/SGLang backend), DFlash becomes immediately relevant. The EAGLE-3 comparison (DFlash 2.5x faster) is notable because EAGLE-3 already failed on our GGUF stack (0% acceptance, intake-005). Block diffusion''s parallel drafting is orthogonal to tree verification — could theoretically combine with our tree speculation for dense models.'
+  notes: 'DFlash targets the EXACT model we''re optimizing (Qwen3.5-35B-A3B) with impressive 2.4-2.8x GPU speedups. However, CRITICAL BLOCKER: DFlash requires SGLang or vLLM — NO llama.cpp support, no GGUF, no CPU inference path. The block diffusion approach is fundamentally GPU-oriented (parallel denoising requires batched matmuls). For our CPU-bound EPYC stack, this is not directly adoptable. Our MTP-1 approach (78.5% acceptance, Step 7 pending) achieves comparable projected gains (1.5-1.7x) within llama.cpp natively. DFlash validates that Qwen3.5-35B-A3B is highly amenable to speculative decoding — the model architecture cooperates well with draft-verify paradigms. If we ever add GPU serving (vLLM/SGLang backend), DFlash becomes immediately relevant. The EAGLE-3 comparison (DFlash 2.5x faster) is notable because EAGLE-3 already failed on our GGUF stack (0% acceptance, intake-005). Block diffusion''s parallel drafting is orthogonal to tree verification — could theoretically combine with our tree speculation for dense models. 2026-10-03 re-encounter: cited as ref (5) of the operator-submitted HyperQwen/LABD essay (intake-1832). Current version is v2 (revised 2026-05-28, "Accepted at ICML 2026. Camera-ready version."); abstract ">6x lossless" and "up to 2.5x higher speedup than EAGLE-3", block size 16 (10 for LLaMA 3.1) re-confirmed; the essay''s "single denoising step" is the paper''s "single forward pass".'
   deep_dive: research/deep-dives/dflash-dart-diffusion-speculation.md
   deep_dive_findings:
   - Drafter IS portable to GGUF — 5-layer transformer with shared embed/LM head, 0.5B params, ~300MB Q4_K_M
@@ -11415,7 +11418,7 @@
   ingested_date: '2026-04-09'
   notes: 'Duplicate — project page for intake-158. Contains additional benchmark detail: 6.17x on MATH-500, 5.91x on AIME24, 5.85x on AIME25 (Qwen3-8B). Clarifies architecture: Feature Fusion + KV Injection + Parallel Drafting (block size 16). Key insight: multi-layer DFlash generating 16 tokens has lower latency than 1-layer EAGLE-3 generating 8 tokens.
 
-    '
+     2026-10-03 re-encounter: ref (6) of the HyperQwen/LABD essay (intake-1832); not re-dived.'
   cross_references:
     intake:
     - intake-158
@@ -41538,7 +41541,7 @@
   novelty_justification: 'grep of /workspace/research/intake_index.yaml returned 0 hits for 2605.20104 / ''prune-then-graft'' / ''hybrid tree construction'' — not previously ingested. The index already covers the two ingredients separately: retrieval-based SD (intake-039 REST 2311.08252, intake-071 RASD 2503.03434) and tree pruning / dynamic draft trees (intake-047 Sequoia 2402.12374, intake-055 EAGLE-2 2406.16858, intake-056 OPT-Tree 2406.17276, intake-070 EAGLE-3 2503.01840). Graft''s unification — treating retrieval as *budget compensation* to refill slots freed by confidence pruning, explicitly to break the pruning-only accepted-length ceiling, with stage-adaptive retrieval templates — is a genuinely new mechanism not present in chapters 01/03/10 or prior entries. High.'
   relevance_justification: 'The current active git branch is spec-dec-mtp-refresh-2026-06-22 and speculative-decoding/MTP is the live optimization focus (active handoffs speculative-decoding-mtp-refresh.md, qwen-mtp-llamacpp-port.md). Graft is a training-free, drafter-agnostic draft-tree construction layer, i.e. orthogonal to and stackable on top of our native MTP/NEXTN drafter — exactly the ''draft-tree technique portable to llama.cpp'' framing of the queue reason. Method-relevance is high. DEPLOY caveat (kept in verdict/contradicting_evidence, not downgrading relevance because the branch is active): the published baseline is EAGLE-3, which our index (intake-070 / intake-158 DFlash note) records as having ''already failed on our GGUF'', and it uses a GPU-resident adjacency matrix — so the as-shipped implementation is not a CPU llama.cpp drop-in.'
   verdict_justification: 'adopt_patterns, not new_opportunity or adopt_component. The transferable value is the mechanism, not the code: (1) prune-then-graft budget compensation, (2) calibrated pruning checkpoints at confidence-discriminative depths, (3) stage-adaptive retrieval templates. These can be mined to augment our MTP draft tree with a CPU-resident top-k successor / n-gram (prompt-lookup family, chapter 03) refill of pruned branches. It is not adopt_component because the released stack rests on EAGLE-3 (GGUF-incompatible in our fork) plus a GPU-resident adjacency matrix, and all numbers are GPU-measured — nothing pulls cleanly into bandwidth-bound CPU v6 as-is. new_opportunity is over-strong given those blockers.'
-  notes: 'Fetched via ar5iv (https://ar5iv.org/abs/2605.20104 -> 301 to ar5iv.labs.arxiv.org/abs/2605.20104); returned content title/abstract match the queue reason (tree pruning + high-confidence token retrieval, 5.41x peak), so the arXiv id resolves to the claimed paper. Discovered as an expansion candidate from the primary entry github.com/deepseek-ai/DeepSpec (a spec-dec method collection); DeepSeek authorship of Graft is NOT confirmed — the author list above is from the paper itself, so no major-lab credibility credit was awarded (credibility_score=1: fresh unreviewed preprint, ~May 2026, no independent corroboration of its own numbers). referenced_arxiv_ids are BEST-EFFORT: ar5iv returned only a ''sample'' reference list; ids listed (EAGLE-3 2503.01840, EAGLE-2 2406.16858, Sequoia 2402.12374, OPT-Tree 2406.17276, REST 2311.08252, RASD 2503.03434, DFlash 2602.06036) are the entries whose techniques the fetch explicitly named and that already exist in our index; the raw reference list was not fully enumerated. DART (intake-159) also does ''N-gram-enforced tree pruning'' and is a sibling technique worth comparing.'
+  notes: 'Fetched via ar5iv (https://ar5iv.org/abs/2605.20104 -> 301 to ar5iv.labs.arxiv.org/abs/2605.20104); returned content title/abstract match the queue reason (tree pruning + high-confidence token retrieval, 5.41x peak), so the arXiv id resolves to the claimed paper. Discovered as an expansion candidate from the primary entry github.com/deepseek-ai/DeepSpec (a spec-dec method collection); DeepSeek authorship of Graft is NOT confirmed — the author list above is from the paper itself, so no major-lab credibility credit was awarded (credibility_score=1: fresh unreviewed preprint, ~May 2026, no independent corroboration of its own numbers). referenced_arxiv_ids are BEST-EFFORT: ar5iv returned only a ''sample'' reference list; ids listed (EAGLE-3 2503.01840, EAGLE-2 2406.16858, Sequoia 2402.12374, OPT-Tree 2406.17276, REST 2311.08252, RASD 2503.03434, DFlash 2602.06036) are the entries whose techniques the fetch explicitly named and that already exist in our index; the raw reference list was not fully enumerated. DART (intake-159) also does ''N-gram-enforced tree pruning'' and is a sibling technique worth comparing. 2026-10-03 re-encounter: surfaced in the LABD-wave search (model drafts + retrieval merged in a tree); bears on fill-tail vs override vs tree for DFlash2+lookup; not re-dived.'
 - id: intake-743
   arxiv_id: '2605.13986'
   url: https://arxiv.org/abs/2605.13986
@@ -106962,6 +106965,7 @@
     unindexed and cited by our own handoff: issue #25117 (DFlash 0.48x on AMD gfx1151 APU). Two further
     open defects in this PR do not affect our single-MI210 text-only path: vision/M-RoPE requests fail
     under draft-dflash, and tensor-parallel -sm tensor triggers a GGML_ASSERT on multi-GPU.
+    2026-10-03 re-encounter: lukaLLM (intake-1833) and r/LocalLLaMA 1vvncyh (intake-1842) benchmarked the FIRST commit of this PR (z-lab/llama.cpp-fork@5ecbe1ac, b10498); merged into xsn/dflash2 2026-08-27 and to master via #27816 (first tagged build b10658).
   claim_anchors:
   - claim_index: 0
     kind: json-pointer
@@ -111092,6 +111096,7 @@
     reproducing this upstream to answer the reporter''s CUDA question (we have no NVIDIA GPU, and
     gfx90a is a THIRD architecture that would not resolve the HIP-vs-core question either way);
     DECLINE indexing issue 25117 for now (already on intake-1264''s decline ledger).
+    2026-10-03 re-encounter (round-2 dive of the LABD wave): still open, labelled stale 2026-09-23, one comment total, no fix PR; the issue's own np4 control at temperature 1.0 is healthy (0.51-0.66), so it is unlikely to explain our np4 DFlash2 acceptance of 29-34%.
 - id: intake-1278
   arxiv_id:
   url: https://huggingface.co/answerdotai/answerai-colbert-small-v1
@@ -182051,8 +182056,7 @@
   - The final path walk is explicitly sequential, narrowing any description of the entire selector as parallel.
   - The acceptance table covers five datasets, not five model or workload families.
   - The throughput headline lacks the experimental detail needed for replay or CPU/MI210 transfer.
-  notes: Live HTML captured 2026-09-25 and content-pinned by byte SHA-256; the publisher does not expose an immutable
-    revision.
+  notes: "Live HTML captured 2026-09-25 and content-pinned by byte SHA-256; the publisher does not expose an immutable\n    revision. 2026-10-03 re-encounter: ref (7) of the HyperQwen/LABD essay (intake-1832). Re-verified: Table 4 mean acceptance length DFlash 2 4.80 (MTP 4.28, DSpark 3.62) at block size 8 (7 draft tokens); \"2.7-3.4x the throughput of autoregressive decoding at batch size 1\" on one H200 / SGLang (C8 2.27-2.85x, C32 1.01-1.45x per the card). AngelSpec (intake-1848) reports production-replay AL 2.50 at T=1 for a block-8 DFlash-family drafter, ~half the benchmark figure."
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the selector and convolution contracts, but measure the sequential walk separately
@@ -182452,7 +182456,7 @@
   - The synthetic −9.2% result is below the report's own 13.6% floor and is not evidence of regression.
   - The output-identity script was written but not run.
   - No CPU, ROCm or AMD execution is reported.
-  notes: Pinned report SHA-256 f7f74b6a; driver SHA-256 66bfdf15; raw JSONL SHA-256 c5bf6df6.
+  notes: "Pinned report SHA-256 f7f74b6a; driver SHA-256 66bfdf15; raw JSONL SHA-256 c5bf6df6. 2026-10-03 re-encounter: the LABD wave (intake-1827/1833/1842) supplies the multi-turn edit-workload counterpart to this entry's single-prompt regimes; same llama.cpp draft-dflash,ngram-* composition (first-non-empty priority, PR #22838 semantics)."
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt the content-stratified benchmark and noise-floor rule; the source proves acceptance
@@ -202014,11 +202018,7 @@
     concurrency.
   - Local GDN evidence in intake-1574 shows verification alone cannot detect recurrent-state rollback corruption.
   - The accepted decline of the heswithme NVFP4 target is unrelated to this BF16 draft artifact and is not minted.
-  notes: Operator explicitly reopened and selected this previously declined upstream source. Exact URL dedup found no entry
-    (the GGUF mirror is a different URL/artifact). HF API revision 015e795645c74b1a0eeef3b570031fb62e769bc5; README sha256
-    be141ff737af8779959cb5ecaefb458ac3c214a5020aa40f69d4d1dc6f42494a; config sha256 873e3556509b0da06e29654ba00d4944888d4b5e8a33afde25f7eb27d321e980;
-    safetensors header length 8928 and header sha256 0c2c70601b30f8d1ca7d5794b817779ba2dcf1956cfc7d4f83e87091e1ab7c8c. Tensor
-    inventory mechanically counted from the pinned header.
+  notes: "Operator explicitly reopened and selected this previously declined upstream source. Exact URL dedup found no entry\n    (the GGUF mirror is a different URL/artifact). HF API revision 015e795645c74b1a0eeef3b570031fb62e769bc5; README sha256\n    be141ff737af8779959cb5ecaefb458ac3c214a5020aa40f69d4d1dc6f42494a; config sha256 873e3556509b0da06e29654ba00d4944888d4b5e8a33afde25f7eb27d321e980;\n    safetensors header length 8928 and header sha256 0c2c70601b30f8d1ca7d5794b817779ba2dcf1956cfc7d4f83e87091e1ab7c8c. Tensor\n    inventory mechanically counted from the pinned header. 2026-10-03 re-encounter: ref (7) of the HyperQwen/LABD essay (intake-1832); z-lab/Qwen3.8-27B-DFlash2 card states it mirrors this repo (identical config sha 873e3556509b)."
   verification: dive-verified
   ingested_date: '2026-09-25'
   reader_should_conclude: Adopt revision 015e7956 as the official BF16 reference fixture and treat its H200 table as the target
@@ -228630,3 +228630,2622 @@
   - 'Stage-3 plan approved 2026-09-26 (docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md): INF03-AGPR-1
     (GATED) in agentic-rocm-kernel-authoring.md; AK-MMQ-H5 compiler-cell recording in autokernel-research-loop.md; SC84a;
     MFMA-form row in docs/runbooks/rocm-upgrade-checklist.md (runbook, not a handoff).'
+- id: intake-1827
+  arxiv_id: null
+  url: https://github.com/syv-ai/HyperQwen
+  source_type: repo
+  title: 'HyperQwen (formerly syv-ai/qwen38-27b-rtx3090) — Qwen3.8-27B on one RTX 3090 via patched vLLM: DFlash2
+    + lookup-augmented block drafting (LABD), 16-token verify, prefix caching'
+  authors:
+  - mhenrichsen (Mads Henrichsen, syv.ai)
+  - Dmtrii-tesla (chains layer, ported back)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - inference_serving
+  - local_inference
+  - ssm_hybrid
+  - quantization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - On one RTX 3090 at 250 W the stack serves Qwen3.8-27B at 127 tok/s single-stream and 381 tok/s when the answer
+    quotes its own prompt (25k context; profile C = DFLASH_TOKENS=15, 4 slots, 56k).
+  - 'Lookup ablation at 25k context, GREEDY, task "reproduce the first 60 lines verbatim": DFlash2 without lookup
+    4.72 tok/step / 159 tok/s; with lookup at verify k=7 7.83 / 260; with lookup and a 16-token verify block (DFLASH_TOKENS=15)
+    14.97 / 381. On "reproduce every command" the long block is SLOWER than k=7 (173 -> 166 tok/s).'
+  - 'LABD mechanism (code): one Triton program per request finds the longest (6..12-token) suffix match of the request''s
+    own full token history (prompt + generated), most recent on ties, and fuses its continuation per position with
+    the drafter block: head positions are taken from lookup at match >= NSTRONG (shipped 6, so any match overrides),
+    tail positions 7..14 at match >= NMIN_TAIL (4); lookup positions get point-mass draft logits.'
+  - 'Lossless argument: a point-mass q is a legal rejection-sampler proposal (accept probability becomes p(x));
+    greedy requests never read q.'
+  - Every LABD/reproduction number is greedy (temperature 0). No LOOKUP on/off A/B exists at temperature > 0; the
+    only lookup off/on A/B (native-3090 reproduction, temperature unstated) found LOOKUP=0 +10.33% faster on prose
+    and code unresolved. The maintainer advises keeping DFLASH_TOKENS at 7 for chat or agentic clients (positions
+    7-14 take 72 of 11,069 accepted tokens on real chat prompts).
+  - 'Context-copy chaining (separate, default-off, greedy-only patch) measured -8% at T=default on chat and +7.0%
+    on a 25k greedy copy cell; the maintainer''s mechanism: under sampling a point-mass copy displaces the drafter''s
+    distribution-aware proposals.'
+  - 'Long context: DFlash2 past 64k wins only on reproduction and loses to SPEC=mtp CTX=long about 2:1 elsewhere;
+    the 16-token verify costs recurrent-state pages per slot (--mamba-cache-mode align), halving slots.'
+  techniques:
+  - lookup-augmented block drafting (LABD)
+  - suffix match over request history (Triton)
+  - per-position drafter/lookup fusion
+  - point-mass draft distribution
+  - verify block decoupled from drafter block (16 vs 8)
+  - adaptive long-block scheduling
+  - context-copy chains
+  - hybrid prefix caching (attention KV + DeltaNet state)
+  - W4A16/W4A8 Marlin sm_86
+  - int8 lm_head/embeddings
+  - KVarN 4/2-bit KV
+  reported_results:
+  - 'SELF-REPORTED, RTX 3090 250 W, greedy, 25k ctx: reproduce-60-lines 159 (no lookup) / 260 (lookup k=7) / 381
+    (lookup k=15) tok/s; 14.97 tok/step of 16.'
+  - 'SELF-REPORTED, greedy: reproduce-every-command 153 / 173 / 166 tok/s (long block slower).'
+  - 'SELF-REPORTED demo (2026-08-20, vLLM 0.27.1, temperature 0): chat 151.7 vs stock-vLLM-no-spec 47.4; code (31-token
+    prompt) 241.0 vs 46.9; 25,160-token document, 1,373 tokens out, decode 3.819 s / 359.2 tok/s vs 31.586 s / 42.3
+    tok/s; TTFT ~23 s both lanes.'
+  - 'SELF-REPORTED LABD v1 (commit f05ab55, 2026-08-19, 24k doc, greedy): reproduce-every-command 3.60 -> 4.65 tok/step,
+    105 -> 131 tok/s; C1 chat 118-122 -> 125-127 tok/s; 0.075 ms/step at 32k.'
+  - 'SELF-REPORTED: prefix cache follow-up turn TTFT 0.56 s vs 22.4 s on a 25k document; batch mode ~1,035 tok/s
+    at C64, 46 tok/s single-stream; speculation wins below ~8 concurrent users.'
+  - 'SELF-REPORTED issue #38 (2026-08-26): chains copy 25k greedy 256.9 -> 274.8 tok/s (+7.0%); C1 chat T=default
+    129.7/126.6 -> 117.6 ungated / 123.5 gated.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 03-prompt-lookup.md
+    - 10-advanced-speculative-decoding.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-serving-harness-fixes.md
+    - speculative-decoding-mtp-refresh.md
+    - exl3-cpu-mi210-implementation.md
+    experiments: []
+    intake_entries:
+    - intake-158
+    - intake-1264
+    - intake-1571
+    - intake-1573
+    - intake-1567
+    - intake-1828
+    - intake-1833
+  recommended_actions:
+  - 'Project-derived candidate (operator review): measure lookup-draft acceptance on OUR temperature-1.0 planner
+    traffic before adopting any LABD-style change; every published gain is greedy.'
+  - 'Project-derived candidate: treat the 16-token verify as a copy-workload profile, not a default — the source
+    itself advises k=7 for agentic clients.'
+  contradicting_evidence:
+  - 'Own native-3090 reproduction: LOOKUP=0 +10.33% faster on prose (novel generation), code unresolved (docs/reproductions/native-3090.md:205,213).'
+  - 'Issue #22: TP=2 measured exactly zero acceptance at positions 7-14; issue #40: TP=2 long block -27% at C1 (later
+    attributed to a wiring gap).'
+  - start_qwen.sh:286 records adaptive 8<->16 verify length producing WRONG turn-2 output on a KVarN prefix-cache
+    hit; root cause open.
+  notes: 'Pinned read: HEAD e1459c7631774f56de2f9425437d54e7e72ea688 (2026-09-30), 439 commits; syv-ai/qwen38-27b-rtx3090
+    301-redirects here (redirect check done; dedup against both URLs clean). Apache-2.0. Patch series applied with
+    --fuzz 0 onto installed vLLM 0.30.0 (exported from cpuchip/vllm qwen38/0.30); DFlash2 itself is upstream vLLM
+    PR #52816 (intake-1758-era entry at url vllm-project/vllm/pull/52816). Raw artifacts + sha256 under /mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/hyperqwen/
+    (README 08e992da2f3b, optimizations.md bd25a53bd65a, lookup patch 193fd88aae62). Doc/code drift: docs/optimizations.md:297
+    says NSTRONG 8 / AGREE 2, shipped code is 6/0. Repo-internal inconsistency on the headline: 381 (README, optimizations.md),
+    382 (single-user/README.md:364,485), 388 vs 259 (start_qwen.sh:257). HyperQwen issue #102 (hybrid prefix reuse
+    under alternation) and issue #72/#98 (sm80 fault) noted; #72 was previously declined from intake-1567 Stage
+    2b. Essay-restatement chain: r/LocalLLaMA 1vsy4l2 / 1vtup5s (intake-1829/1830) -> X TeksEdge (intake-1831) ->
+    X Oluwaphilemon1 + operator essay (intake-1832). HyperQwen issue #102 (open, read 2026-10-03 in round-2): vLLM
+    hybrid prefix reuse is quantised to the hybrid attention block and the block holding the previous request''s
+    end is never served back (maintainer-reproduced formula cached_tokens = max(0, floor(n_prefix / B) - 1) * B,
+    temperature 0). llama.cpp analogue (inference from code, unmeasured): hybrid/RS context checkpoints are taken
+    at user-message starts and ~4 / 4+n_ubatch tokens before prompt end, not at generation end, so each agentic
+    turn may recompute the previous assistant output + tool result.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: LABD is the per-position, wider-verify version of llama.cpp draft-dflash,ngram-*; its
+    gains are real but GREEDY and copy-workload-specific. Do NOT quote 381/359/260 as expectations for temperature-1.0
+    agentic traffic; the source itself says keep k=7 for agentic clients and found lookup net-negative on novel
+    prose.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: README:26/28/83 confirmed verbatim; 381 is greedy and repo-internally also stated as 382/388.
+  - claim_index: 1
+    effect: narrowed
+    note: Essay said "DFlash2 alone ~260"; 260 is DFlash2 WITH lookup at k=7, DFlash2 alone is 159. Long block loses
+      on reproduce-every-command.
+  - claim_index: 2
+    effect: unaffected
+    note: Code-confirmed (patch :344/:372/:453-456, envs :31-40). Docs claim different defaults (drift).
+  - claim_index: 3
+    effect: narrowed
+    note: Lossless holds in theory; in practice the adaptive 8<->16 length produced wrong output on a KVarN prefix-cache
+      hit (start_qwen.sh:286).
+  - claim_index: 4
+    effect: unaffected
+    note: Second reader grep found no LOOKUP on/off A/B at T>0 anywhere in repo or issues.
+  - claim_index: 5
+    effect: unaffected
+    note: 'Issue #38 comment 5430766065 verbatim; chains are a separate patch, not LABD.'
+  - claim_index: 6
+    effect: unaffected
+    note: README:90 and optimizations.md:327 verbatim.
+  dive_corrections: '2026-10-03 Stage 2 (round 1, two independent readers): CONFIRMED 127/381 headline, LABD mechanism
+    from code, prefix-cache 22.4 -> 0.56 s, batch ~1,035/46, 2:1 MTP loss past 64k. OVERTURNED essay framings: "DFlash2
+    alone ~260" (260 = DFlash2+lookup; alone = 159); "+29% / 105->131 / 0.075 ms" are LABD v1 (f05ab55) numbers,
+    superseded at HEAD; stock-vLLM code baseline 46.9 not ~37; "~82 -> 114 -> 138" progression not at HEAD (HEAD:
+    46 -> MTP 66/79 -> fast MTP ~114 -> DFlash2 118/126 -> +LOOKUP 130 -> k=15 133; 138.5 is pre-lookup DFlash2
+    best runs). NARROWED: all LABD numbers greedy; chains are a separate default-off greedy-only patch. Found an
+    unresolved correctness defect with adaptive verify length + KVarN prefix cache.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:26
+    quote: 'On an RTX 3090 at 250 W: 127 tok/s single-stream'
+    quote_sha256: bb5e8382b5255715c328816410115a2e2d47dd630146884ea40b11687765983e
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:28
+    quote: and 381 tok/s when the answer quotes its own prompt.
+    quote_sha256: 141190f7e392748a3b5c69915a2bf3fe8f610611da648c3b03e306854c4285a8
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:83
+    quote: '| **C** | add `DFLASH_TOKENS=15` | `--profile single` | 381 tok/s while quoting, at 4 slots and 56k
+      |'
+    quote_sha256: a4282be23365461d9c565318dff431b83a24dd9c343f22c0338483ecb5a8a3a4
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: docs/optimizations.md:306
+    quote: Measured at 25k context, greedy, against the same server with the previous version
+    quote_sha256: 03845209783a612ea985099cf938c3f2dd55f13cb305a1e97e4a7ae05ee7ed6e
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: docs/optimizations.md:309
+    quote: '| | no lookup | default (`DFLASH_TOKENS=7`) | `DFLASH_TOKENS=15` |'
+    quote_sha256: b2a9627f2a0ed5a5b576aad3e58c0a3d2f00fe7ad87445048ad6addfed178703
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: docs/optimizations.md:311
+    quote: '| reproduce the first 60 lines verbatim | 4.72 / 159 | 7.83 / 260 | **14.97 / 381** |'
+    quote_sha256: 455181fc58d21f9a382e49d73f13fda8c850a61095497587267568d9ed58a4ab
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: docs/optimizations.md:314
+    quote: '| reproduce every command | 4.62 / 153 | 5.23 / 173 | 5.32 / 166 |'
+    quote_sha256: a325a7c196d93e660cd0cd9d937d0bb11d41d8970aeddfc8520851c54bda659f
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:453
+    quote: '    take_head = (match_len >= nstrong) | ((match_len >= nmin) & (agree >= agree_min))'
+    quote_sha256: 2cd97f914df576dafb8155ecb4e67cc3cff43bd6c7e38f7150f91abd53668de3
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:455
+    quote: '    take_tail = (match_len >= nmin_tail) & (take_head | (agree >= draft_block))'
+    quote_sha256: 9cb35665cbb53f27cb6e9f2636fae9369d4c551bbb52122933d08e6de8b43062
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:456
+    quote: '    from_lookup = tl.where(tail, take_tail, take_head) & (idx < valid) & kmask'
+    quote_sha256: 2c08e83dfa6e7b6c560c8b700adba59198d4657535899fa3c54c6bbd5594a9e8
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:372
+    quote: '            score = tl.where(alive, match.to(tl.int64) * SCORE_STRIDE + e.to(tl.int64), -1)'
+    quote_sha256: eb4caa500c8e3112067643a134937defd04dea4e70745bb1ffb9751e06f552bc
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:344
+    quote: '    base = all_token_ids_ptr + req_state.to(tl.int64) * all_token_ids_stride'
+    quote_sha256: 1c77780c4b805924161835cfdc113db9118a5a0902951e27a431bf8eb1288716
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/speed-knobs-envs.patch:33
+    quote: '    VLLM_DFLASH2_LOOKUP_NSTRONG: int = 6'
+    quote_sha256: 5716d1a0756dfe8ac61893c904d1c8f1b2c66ba5f09a0995722fbf58ce8dfaa7
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: patches/speed-knobs-envs.patch:34
+    quote: '    VLLM_DFLASH2_LOOKUP_AGREE: int = 0'
+    quote_sha256: 73c1a188e4f9cc0ea77d60c39c5b0caa09831edbab74be3fab09b7dbb3292bd9
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:301
+    quote: +sampler (accept probability becomes p(x), and the residual (p - q)+ is computed from the
+    quote_sha256: 30c5f0332e77dea8cda340fa20e5efff0d02885a6aaa71079afadfd95dc7094e
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: patches/dflash2-lookup-drafting.patch:302
+    quote: +same buffer), so the output distribution is unchanged. Greedy requests never read q at all.
+    quote_sha256: 6b189b8aeaf78ea9b9d8b41b94696759eb194b062ac58f71fcb215bc06347809
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: single-user/start_qwen.sh:286
+    quote: '  #   baseline, adaptive 8<->16          self-hit 38/793 WRONG   12.71 tok/step'
+    quote_sha256: 00a53f0c57c609bb8d468fed798702d0c63d95ad923c7eb8965f182c19904dae
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: bench/labd_bench.py:98
+    quote: '"max_tokens": MAXTOK, "temperature": 0, "stream": True,'
+    quote_sha256: 32cb038be85bd6e0b2b43172a2a51ff1488777f5279dde35fbd3ec780a6e9003
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: bench/labd_accept.py:169
+    quote: '"temperature": 0, "logprobs": 0, "return_tokens_as_token_ids": True,'
+    quote_sha256: 110bc640c529b8d0989b9b3fba48d68847606d0ce3e65c2557bcc578d2329c8d
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: docs/reproductions/native-3090.md:205
+    quote: '| effect | | **+10.33% (147× the floor), stands** | +0.06% (1× the floor), **unresolved** |'
+    quote_sha256: bf30cf06a20b9f4f97fb72a3ebfb099ccead65abb1cf7d95bb187a395152cf5c
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: docs/reproductions/native-3090.md:213
+    quote: '**On novel generation the lookup lane is net overhead on prose here, and invisible on code.**'
+    quote_sha256: ceccaa7492d6e68dc8dd93918ca0c79d26fd40b8f4a4e106bcc0d6aec2bf72a1
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: single-user/README.md:509
+    quote: '`bench/prompts_real.jsonl`, positions 7-14 take **72 of 11,069 accepted tokens'
+    quote_sha256: 32e9c991e734d86b3edffb9699e978c9306d6c2d913a9b3c9f54e17c8384d096
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: single-user/README.md:515
+    quote: applying edits, where it is worth 47%, and leave it at the default 7 for a chat
+    quote_sha256: b238cf0eb8c2a119b63d8ba542ba27fb17e99709f6e15132a31f293a8fe950cb
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: single-user/README.md:516
+    quote: or agentic client. `DRAFT_TOKENS`/`DFLASH_TOKENS` is one variable you can flip
+    quote_sha256: dac39793c3d933fad7f3fb3b50fe9108619d7ad9a3688f83a5c87891788efc15
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 5
+    kind: line-range
+    locator: github.com/syv-ai/HyperQwen/issues/38 (issue38 comment 5430766065)
+    quote: '**at sampling temperatures the chain hurts** (−8% C1 at T=default here)'
+    quote_sha256: 535646a700cba5e92460dfccaae7044ddfcd732480f4582a487b8d8c7f66265d
+    source_revision: GitHub issue API JSON (retrieved 2026-10-03T13:34Z)
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 5
+    kind: line-range
+    locator: github.com/syv-ai/HyperQwen/issues/38 (issue38 comment 5430766065)
+    quote: The mechanism is fundamental — a point-mass q accepts with probability p(token), so under sampling the
+      context copy displaces the drafter's distribution-aware proposals on exactly the steps it wins under greedy.
+    quote_sha256: 31e577b17da27010f521d106f022e61764d176a1af136c06c9c70d690416342e
+    source_revision: GitHub issue API JSON (retrieved 2026-10-03T13:34Z)
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 5
+    kind: line-range
+    locator: github.com/syv-ai/HyperQwen/issues/38 (issue38 comment 5430766065)
+    quote: '| copy, 25k ctx (greedy) | 256.9 tok/s, 7.85 tok/step | **274.8–274.9**, 7.62 | **+7.0%**, reproduced
+      across two boots |'
+    quote_sha256: aeb1ac5e58d8af0f7db4561380ae7f4106a4f7f6094bb8d4421c21362e7a8034
+    source_revision: GitHub issue API JSON (retrieved 2026-10-03T13:34Z)
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 6
+    kind: line-range
+    locator: README.md:90
+    quote: reproduction and loses to `SPEC=mtp CTX=long` about 2:1 on everything else; at E
+    quote_sha256: b99f50c561b6da8389b6c3c55200eced8d05a6c1ac6b6dcdf35a12aa1cf5f62a
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 6
+    kind: line-range
+    locator: docs/optimizations.md:327
+    quote: '`--mamba-cache-mode align` reserves recurrent-state pages per slot per speculative block.'
+    quote_sha256: b760a8c3374a3520ea2aefb9c4be477ee02fe198c369628fca81b5b27927a20a
+    source_revision: syv-ai/HyperQwen@e1459c7631774f56de2f9425437d54e7e72ea688
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+- id: intake-1828
+  arxiv_id: null
+  url: https://github.com/Dmtrii-tesla/dflash2-ngram-vllm
+  source_type: repo
+  title: 'dflash2-ngram-vllm — vLLM 0.27.1 patches: DFlash2 backport + LABD (copied from HyperQwen) + drafter-free
+    n-gram "chains" (dual RTX 3090 port)'
+  authors:
+  - Dmtrii-tesla (git author "Antitesla")
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - inference_serving
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  expanded_from: null
+  verdict: superseded
+  credibility_score: 1
+  key_claims:
+  - 'Three patches against vLLM 0.27.1: DFlash2 backport (vLLM PR #52816), LABD lookup fusion, and "chains" that
+    skip the drafter forward and graph replay while context copies keep landing, exiting at the first rejected token.'
+  - 'SELF-REPORTED, TP=2 on 2x RTX 3090, verify k=5, greedy, 1 prompt x 5 runs per class: prose 149.1 tok/s (31.8%
+    acceptance), code 205.2 (51.1%, x1.38), verbatim 231.2 (69.9%, x1.55) — ratios against prose on the SAME lookup-on
+    server; the clean A/B against LOOKUP=0 CHAIN=0 is "left as an exercise".'
+  - The verbatim workload is four pangram sentences repeated 48 times (self-repeating corpus).
+  - 'The LABD patch is byte-identical to HyperQwen''s at commit bd424b48 (2026-08-20); the README credits only the
+    llama.cpp draft-dflash,ngram-map-k4v configuration; the author acknowledged building on HyperQwen in HyperQwen
+    issue #38.'
+  techniques:
+  - context-copy chains
+  - LABD (copied)
+  - point-mass draft rewrite
+  - CUDA-graph-safe host state machine
+  reported_results:
+  - 'SELF-REPORTED, greedy, TP=2 2x3090, k=5: prose 149.1 / code 205.2 / verbatim 231.2 tok/s; no off-arm baseline.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1833
+    - intake-1573
+  recommended_actions:
+  - None beyond intake-1827; the chains mechanism is greedy-only and measured -8% under sampling upstream.
+  contradicting_evidence:
+  - 'HyperQwen issue #38 clean A/B: chains +7.0% on greedy copy, -3% code, -1.7% greedy chat, -8% chat at T=default
+    ungated.'
+  notes: 'Pinned read: only commit 8fb3a6044158fd74c096b3cb1b274edbe4b490c6 (2026-08-24); not a GitHub fork (api
+    fork=false). Raw under /mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/dflash2-ngram-vllm/ (README 5a053a71d1a9,
+    lookup patch 5df09ef03b59 = HyperQwen bd424b48). The essay''s "independent DFlash2+lookup: code-editing +35%,
+    forced reproduction +52%, one-shot coding +1%, prose slower" numbers are NOT from this repo — they are lukaLLM''s
+    llama.cpp README (intake-1833). This repo IS the essay''s "dual-3090 port". Postmortem docs/postmortem-v1-ru.md
+    is written in an AI-agent voice.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: A greedy-only downstream repackaging of HyperQwen LABD plus chains; it is NOT independent
+    corroboration of HyperQwen and its x1.55 has no lookup-off baseline. Cite intake-1827 instead.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on:
+  - entry: intake-1827
+    claim_index: 3
+    why: LABD patch is a byte copy of HyperQwen bd424b48; a retraction of the HyperQwen LABD mechanism or its lossless
+      argument applies here unchanged.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: README and patches confirm.
+  - claim_index: 1
+    effect: narrowed
+    note: Essay "~1.55x verbatim, no gain on prose" — 1.55x is vs prose on the same lookup-on server; there is no
+      on/off comparison.
+  - claim_index: 2
+    effect: unaffected
+    note: bench_workloads.py:24-28 verbatim.
+  - claim_index: 3
+    effect: overturned
+    note: Essay framed this as an independent DFlash2+lookup implementation; it is a byte copy of HyperQwen LABD
+      with one original layer (chains).
+  dive_corrections: '2026-10-03 Stage 2 (round 1): OVERTURNED independence (byte-identical LABD patch, author admission
+    in HyperQwen #38); REATTRIBUTED the essay''s +35/+52/+1/-30% to lukaLLM (intake-1833); NARROWED x1.55 (no lookup-off
+    baseline, greedy, synthetic pangram corpus). Verdict superseded by intake-1827 (origin).'
+  claim_anchors:
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:144
+    quote: '| prose    | novel story — nothing to copy from context   | 149.1 ± 0.2 | 31.8% | x1.00 |'
+    quote_sha256: f0afd73dd15e2027782ada615c7c982c725af647deaa3de0378dc56d5ef6a9cd
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:145
+    quote: '| code     | writes an LRU-cache module — self-repeats indentation/boilerplate | 205.2 ± 6.6 | 51.1%
+      | **x1.38** |'
+    quote_sha256: 610c49719f30297f4dda0190172806f5af6221c3c8e0ad592f0b2cc8072100f6
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:146
+    quote: '| verbatim | continues text already present in its own context — chains fully engaged | 231.2 ± 0.1
+      | 69.9% | **x1.55** |'
+    quote_sha256: 97bc82a265dc0a6894037572456946dcdfa744b15a82fd864bb7122f2f9a3413
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:154
+    quote: vLLM 0.27.1, verify block `k=5`, greedy decoding, 1536 output tokens,
+    quote_sha256: ee9792068264130b59d3637db13bdddf1069d5d6152a8ac65eaaa751e750325e
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:162
+    quote: The clean A/B against `CHAIN=0 LOOKUP=0` needs a server restart, so it is left
+    quote_sha256: df726de8e2f923a4eaed4bda4bba572eef91a15f60d720123de017d655bc7a27
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: bench/bench_workloads.py:104
+    quote: '            "temperature": 0.0,'
+    quote_sha256: eaa6a6fbdff8270f1d302c52070d3a512b63c953d32c63fac385f227cdde88da
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: bench/bench_workloads.py:24
+    quote: '    "The quick brown fox jumps over the lazy dog near the riverbank at dawn. "'
+    quote_sha256: 2873933f1ce9b215df1b0c7fbf607c5065380fb944de4bc50113ac4898607674
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: bench/bench_workloads.py:28
+    quote: ) * 48
+    quote_sha256: 4bf998279762cd87b20589cf58b0c7f8c3bee77faee3974480f4a3bda84e9140
+    source_revision: Dmtrii-tesla/dflash2-ngram-vllm@8fb3a6044158fd74c096b3cb1b274edbe4b490c6
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: github.com/syv-ai/HyperQwen/issues/38 (issue38 comment 5410240495)
+    quote: most of that 2× is the LABD layer (which this repo's users already have)
+    quote_sha256: 06a25244d5929bf76d41e92893fd88e20afc45034404486ecd12fa383fe22cef
+    source_revision: GitHub issue API JSON (retrieved 2026-10-03T13:34Z)
+    verified_by: research-intake/stage2-second-reader (subagent, 2026-10-03)
+- id: intake-1829
+  arxiv_id: null
+  url: https://www.reddit.com/r/LocalLLaMA/comments/1vsy4l2/i_pushed_qwen3827b_limits_again_dflash2_134_tps/
+  source_type: blog
+  title: 'r/LocalLLaMA: "I pushed Qwen3.8-27B limits again... Dflash2 - 134 tps on a RTX 3090" (u/iamMess = HyperQwen
+    author, LABD v1 announcement)'
+  authors:
+  - u/iamMess (mhenrichsen, syv.ai)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  expanded_from: null
+  verdict: superseded
+  credibility_score: 1
+  key_claims:
+  - 'Progression stated by the author: 82 tps single request (earlier post) -> ~114 single-user -> ~138 tps at DEFAULT
+    SAMPLING on real chat prompts (up from ~124) with DFlash2; 942 tps at 64 concurrent.'
+  - 'LABD v1: a Triton kernel scans the request''s own history for the most recent occurrence of the last 6-12 generated
+    tokens: +29% tokens/step and 105 -> 131 tps on "reproduce every command", +5% on ordinary chat, 0.075 ms/step.'
+  - 'Author comment: unlike vLLM''s ngram (a replacement drafter), both drafters run and the kernel picks per position,
+    and the verifier block is decoupled from the drafter block.'
+  - DFlash2 is best for 1-4 concurrent users (each request reserves 8 recurrent-state slots, so MTP wins again at
+    8+).
+  techniques:
+  - LABD v1
+  - per-position fusion
+  - hybrid prefix caching
+  reported_results:
+  - 'SELF-REPORTED 2026-08-19, single 3090, vLLM 0.27.1 patched: ~138 tps default sampling chat; LABD v1 105 ->
+    131 tps (greedy per commit f05ab55); prefix cache 24k doc turn 2+ 23 s -> 0.85-1.35 s.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1830
+  recommended_actions:
+  - None; superseded by the repo (intake-1827).
+  contradicting_evidence: null
+  notes: Posted 2026-08-19T20:28Z. Origin of the essay's "+29% / 105->131 / +5% / 0.075 ms" figures, which are LABD
+    v1 and superseded at HyperQwen HEAD. The "~138" is DFlash2 at default sampling on chat (a T>0 number but with
+    no lookup-off arm). Reddit .json blocked; read via .rss.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Author self-report of LABD v1; numbers are historical. Use intake-1827 for current figures.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim in post body/comment.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim in post body/comment.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim in post body/comment.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim in post body/comment.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED verbatim; established this (not HyperQwen HEAD) as the source
+    of the essay''s LABD v1 numbers. Superseded by intake-1827.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: reddit_1vsy4l2.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: Today it's ~138 tps at default sampling on real chat prompts (up from ~124), 942 tps at 64 concurrent
+    quote_sha256: b6e470e666ef2575d93bbffcb7eda1ef6049878b950b0c463f8bf61e631d265c
+    source_revision: r/LocalLLaMA 1vsy4l2 RSS retrieved 2026-10-03 (sha256 dd37c6800998)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: reddit_1vsy4l2.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: +29% tokens/step and 105 → 131 tps on "reproduce every command" work, +5% on ordinary chat, 0.075 ms
+      per step.
+    quote_sha256: 55eb7329f574ce60e38d56fdc1cdcd2c7ea6e5b1429722dde22398a3cd04b9e8
+    source_revision: r/LocalLLaMA 1vsy4l2 RSS retrieved 2026-10-03 (sha256 dd37c6800998)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: reddit_1vsy4l2.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: we substitute the drafter if there is no match. So for us, both the drafters run and the kernel picks
+      per position. Also our verifier block is decoupled from the drafter's block.
+    quote_sha256: 622d174fdd5f73b5cf747d2afc157aabf5e3a4c10602fa4462b222d5c602ba66
+    source_revision: r/LocalLLaMA 1vsy4l2 RSS retrieved 2026-10-03 (sha256 dd37c6800998)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: reddit_1vsy4l2.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: DFlash2 is best for 1-4 concurrent users (each request reserves 8 recurrent-state slots, so MTP wins
+      again at 8+ concurrent)
+    quote_sha256: de71dd648a3d63fe7abf7e8ecd255564a4008111805b5554a32a3ee500c5f6ad
+    source_revision: r/LocalLLaMA 1vsy4l2 RSS retrieved 2026-10-03 (sha256 dd37c6800998)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1830
+  arxiv_id: null
+  url: https://www.reddit.com/r/LocalLLaMA/comments/1vtup5s/
+  source_type: blog
+  title: 'r/LocalLLaMA 1vtup5s (u/iamMess, 2026-08-20): DFLASH_TOKENS=15 16-token verify, 260 -> 382 tps on 25k
+    document reproduction; "about 2:1 behind plain MTP everywhere else"'
+  authors:
+  - u/iamMess (mhenrichsen, syv.ai)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1829
+  verdict: superseded
+  credibility_score: 1
+  key_claims:
+  - 'DFLASH_TOKENS=15 verifies 16 tokens per step: 260 -> 382 tps reproducing a 25k-token document, +9% on ordinary
+    chat; costs half the request slots and 8k of context, so opt-in.'
+  - 'Author''s honest summary: +53% where the model reproduces its context, about 2:1 behind plain MTP everywhere
+    else, with twice the TTFT — a mode for RAG front-ends and coding assistants applying edits, not a default.'
+  - An int8 KV cache roughly doubles the DFlash2 long-context pool (138,696 tokens instead of 69,758).
+  techniques:
+  - 16-token verify block filled by lookup
+  reported_results:
+  - 'SELF-REPORTED, single 3090, greedy (per repo caption): 260 -> 382 tps (25k document reproduction); +9% ordinary
+    chat.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1829
+  recommended_actions:
+  - None beyond intake-1827.
+  contradicting_evidence: null
+  notes: Source cited by TeksEdge (intake-1831). The "2:1 behind plain MTP everywhere else" caveat is the load-bearing
+    line the essay softened.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: The author himself scopes the 16-token verify to context-reproduction workloads and reports
+    it ~2:1 behind MTP elsewhere; do not read it as a general decode speedup.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim in post body.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim in post body.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim in post body.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED verbatim; superseded by intake-1827 (repo HEAD reports 381 and
+    HQ start_qwen.sh 388/259).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: reddit_1vtup5s.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: 'DFLASH_TOKENS=15 verifies 16 tokens per step: 260 to 382 tps reproducing a 25k-token document, +9% on
+      ordinary chat. Costs half the request slots and 8k of context, so it''s opt-in.'
+    quote_sha256: 684a21c004fabd15c95aafdb0e085f4db9a0fe1914bea4c7920b56615d1867cd
+    source_revision: r/LocalLLaMA 1vtup5s RSS retrieved 2026-10-03 (sha256 50522edd9ceb)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: reddit_1vtup5s.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: 'Honest result: +53% where the model reproduces its context, about 2:1 behind plain MTP everywhere else,
+      with twice the TTFT.'
+    quote_sha256: 5a34dc8e356cdedab2897e744e5c06474a9811df8a8c2df23a52739d1e8ba72c
+    source_revision: r/LocalLLaMA 1vtup5s RSS retrieved 2026-10-03 (sha256 50522edd9ceb)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: reddit_1vtup5s.rss.xml item content (html-unescaped twice, tags stripped, whitespace-normalized)
+    quote: An int8 cache roughly doubles it, 138,696 tokens instead of 69,758.
+    quote_sha256: ee38d76af16dc089a8c3588f3f929b742d5a4c3102c0cfa404e86acceaaca9ae
+    source_revision: r/LocalLLaMA 1vtup5s RSS retrieved 2026-10-03 (sha256 50522edd9ceb)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1831
+  arxiv_id: null
+  url: https://x.com/TeksEdge/status/2090595990114037832
+  source_type: blog
+  title: 'X post (David Hendrickson / @TeksEdge, 2026-08-21): "~381 tok/s on a SINGLE RTX 3090 with Qwen3.8-27B"
+    — restatement of r/LocalLLaMA 1vtup5s'
+  authors:
+  - David Hendrickson (@TeksEdge)
+  categories:
+  - speculative_decoding
+  - local_inference
+  novelty: low
+  relevance: low
+  discovered_via: input
+  expanded_from: null
+  verdict: superseded
+  credibility_score: 0
+  key_claims:
+  - 'Restates HyperQwen/iamMess: ~82 -> ~114 (MTP) -> ~138 (DFlash2 + lookup) -> ~381; 16-token verify; ~260 ->
+    ~382 on ~25K document reproduction; ~15 of 16 accepted; ~133 on ordinary chat.'
+  techniques: []
+  reported_results:
+  - RESTATEMENT — no independent measurement.
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1830
+    - intake-1827
+  recommended_actions:
+  - None.
+  contradicting_evidence: null
+  notes: Posted 2026-08-21T00:25Z, ~4 h after r/LocalLLaMA 1vtup5s, which it links along with syv-ai/qwen38-27b-rtx3090
+    (now HyperQwen). 161,581 views. Restatement, not corroboration.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Pure restatement; never count as corroboration of intake-1827.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on:
+  - entry: intake-1830
+    why: Every number is restated from the iamMess post; it has no independent evidence.
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Numbers match the source posts; "~138 = DFlash2 + lookup" conflates a default-sampling DFlash2 chat figure
+      posted the day LABD v1 landed.
+  dive_corrections: '2026-10-03 Stage 2: labelled RESTATEMENT; numbers traced to intake-1829/1830.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: api_fxtwitter_com_TeksEdge_status_2090595990114037832.json tweet.text
+    quote: Longer verification + context lookup 👉 🔥 ~382 tok/s
+    quote_sha256: d46e519dc16277ae834944118c9c8397cd64b61566e3bc68529f72cec5c4a5bf
+    source_revision: api.fxtwitter.com status 2090595990114037832 retrieved 2026-10-03 (sha256 b3b17179ff46)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1832
+  arxiv_id: null
+  url: https://x.com/Oluwaphilemon1/status/2106349101834981541
+  source_type: blog
+  title: 'Operator-submitted essay "Context-Lookup Verification: Why Qwen3.8-27B Can Reach ~381 Tokens per Second
+    on One RTX 3090", restating X post @Oluwaphilemon1 (2026-10-03)'
+  authors:
+  - FHILY (@Oluwaphilemon1) — X post
+  - operator-submitted essay (no byline) restating it plus cited sources
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - local_inference
+  - benchmark_methodology
+  novelty: low
+  relevance: high
+  discovered_via: input
+  expanded_from: null
+  verdict: superseded
+  credibility_score: 0
+  key_claims:
+  - Headline ~381 tok/s decode for Qwen3.8-27B on one 24 GB RTX 3090 at 250 W is a context-reproduction workload
+    result; ordinary chat ~133 tok/s on the same weights.
+  - Attributes "+35% code-editing, +52% forced reproduction, ~+1% one-shot coding, fresh prose slower" to an "independent
+    DFlash2+lookup" and "~1.55x verbatim, no gain prose" to a dual-3090 port.
+  - Lists community single-3090 baselines (Q4 GGUF no spec ~33, MTP-2 ~48, Q8 DFlash2 at 160k ~60, two-card AutoRound+DFlash2
+    ~97/~80).
+  techniques:
+  - LABD
+  - 16-token verify
+  - prefix caching
+  reported_results:
+  - RESTATEMENT; see dive_corrections for which numbers hold.
+  referenced_arxiv_ids:
+  - '2602.06036'
+  - '2211.17192'
+  cross_references:
+    chapters: []
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1828
+    - intake-1829
+    - intake-1830
+    - intake-1831
+    - intake-1833
+    - intake-158
+    - intake-298
+    - intake-1571
+    - intake-1715
+    - intake-016
+  recommended_actions:
+  - Cite the primary entries (1827/1833/1571), never this essay.
+  contradicting_evidence:
+  - Community baselines ~33/~48/~60/~97/~80 not found in any cited source; HyperQwen single-user README L114 "137
+    | 97 | 46 | 33" is per-stream tok/s at 1/2/4/8 concurrent streams and may have been mislabelled.
+  notes: 'Operator pasted the essay inline on 2026-10-03; its reference (1) is this X post (created 2026-10-03T11:42Z;
+    embeds TeksEdge''s video, paraphrases TeksEdge line by line, names neither developer nor repo). Essay references
+    already indexed: (5) arXiv 2602.06036 = intake-158 (now v2, ICML 2026 camera-ready); (6) z-lab.ai/projects/dflash
+    = intake-298; (7) incoai checkpoint = intake-1715 / inco.ai blog = intake-1571; (9) arXiv 2211.17192 = intake-016.
+    (4) r/LocalLLaMA = intake-1829/1830; (3) = intake-1831; (2) = intake-1827; (8) = intake-1828; (10) Qwen3.8-27B
+    card = intake-1841.'
+  verification: dive-overturned
+  ingested_date: '2026-10-03'
+  reader_should_conclude: The essay is a restatement with several misattributions; its headline numbers hold only
+    as greedy copy-workload results. Do not cite it; cite intake-1827 (mechanism, numbers), intake-1833 (llama.cpp
+    combo numbers), intake-1571 (DFlash2 vendor figures).
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on:
+  - entry: intake-1827
+    why: Every quantitative claim restates HyperQwen or its author posts.
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 381 and 133 confirmed but greedy; "~82 -> ~114 -> ~138 -> ~381" mixes posts; "DFlash2 alone ~260" is wrong
+      (260 = with lookup; alone 159).
+  - claim_index: 1
+    effect: reattributed
+    note: +35/+52/+1.2/-30% are lukaLLM llama.cpp README (intake-1833), not the vLLM port; the dual-3090 port (intake-1828)
+      is a HyperQwen copy whose x1.55 has no lookup-off baseline.
+  - claim_index: 2
+    effect: overturned
+    note: Not found in any cited source (social-source reader, 2026-10-03).
+  dive_corrections: '2026-10-03 Stage 2: OVERTURNED as a source of record. Holds: 381/133 headline (greedy), prefix
+    TTFT 22.4->0.56 s, ~15/16 accepted, 359.2 vs 42.3 tok/s demo, model architecture, DFlash2 vendor figures (AL
+    4.80, 2.7-3.4x at C1, block 8 -> 7), DFlash paper (>6x, 2.5x vs EAGLE-3, block 16). Wrong/misattributed: DFlash2-alone
+    260; stock code ~37 (46.9); +29%/105->131/0.075 ms are LABD v1; +35/+52/+1/-30 belong to lukaLLM; "independent"
+    dual-3090 port is a byte copy; community baselines unfound; "single denoising step" is the paper''s "single
+    forward pass".'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: api_fxtwitter_com_Oluwaphilemon1_status_2106349101834981541.json tweet.text
+    quote: |-
+      ~381 tok/s
+      Longer verification blocks + context lookup
+    quote_sha256: c62211ad117d6e012357b95a7536a26885da20593d5775adee6a1b0aaddc0824
+    source_revision: api.fxtwitter.com status 2106349101834981541 retrieved 2026-10-03 (sha256 16d44fdfa6fb)
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1833
+  arxiv_id: null
+  url: https://github.com/lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP
+  source_type: repo
+  title: 'lukaLLM DFlash2_Qwen3.8_3.6_27B_LlamaCPP — llama.cpp DFlash2 (PR #27342 first commit) + ngram-mod / ngram-map-k4v
+    composition on Qwen3.8-27B, RTX PRO 6000 Blackwell'
+  authors:
+  - lukaLLM
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - benchmark_methodology
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1828
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - 'Base is z-lab/llama.cpp-fork@5ecbe1ac (build b10498, the FIRST commit of PR #27342), RTX PRO 6000 Blackwell,
+    Qwen3.8-27B Q4_K_M target + incoai DFlash2 Q4_K_M drafter, -c 262144, f16 KV, --parallel 1, --spec-draft-n-max
+    7.'
+  - 'Adding ngram-mod + ngram-map-k4v to draft-dflash: code-editing 18-turn session turns 1-9 181.89 -> 245.84 tok/s
+    (+35%); forced-length synthetic medians 176.57 -> 267.82 (+52%, degeneration-prone); LiveCodeBench x100 153.91
+    -> 155.83 (+1.2%, medians -2.7%); fresh prose single request 158.9 -> 111.6 (-30%).'
+  - 'k4v alone on top of DFlash2 is better than both n-gram types together: build phase 304.92 tok/s (4.68x vs no-spec);
+    turns 10-18 (86k -> 229k context, mostly whole-file rewrites) DFlash2 175.7 vs +k4v 363.7 vs +mod 373.9 vs +both
+    342.3 tok/s.'
+  - In llama.cpp the composition is per-step priority with whole-draft fallback (ngram types first, DFlash2 only
+    if no n-gram draft). At this base the server caps drafts by remaining context, not --spec-draft-n-max, so n-gram
+    drafts ran 48-64 tokens wide while only the DFlash2 drafter self-clamped to 7.
+  - 'Hygiene: the 18-turn bench used a fresh container per arm, 18 distinct prompts, no warmup (n-gram-only turn
+    1 at 1% acceptance proves an empty pool); the LCB and prose acceptance probes re-sent prompts to a warm server
+    and are contaminated by ngram-mod''s cross-request shared pool. Identical-config runs spread 14.7% on DFlash2.'
+  techniques:
+  - draft-dflash,ngram-mod,ngram-map-k4v composition
+  - per-step priority fallback
+  - fresh-container per arm benchmarking
+  reported_results:
+  - 'SELF-REPORTED, Blackwell, 18-turn bench at server/model default sampling (value not recorded; llama.cpp default
+    0.80 unless GGUF sets it): turns 1-9 181.89 -> 245.84 (+35%), k4v alone 304.92; turns 10-18 175.7 -> 363.7 (k4v).'
+  - 'SELF-REPORTED, temperature 0: synthetic 4096/4096 medians 176.57 -> 267.82; LCB x100 means 153.91 -> 155.83;
+    prose n=1 158.9 -> 111.6.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 03-prompt-lookup.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-1264
+    - intake-1573
+    - intake-1827
+    - intake-1277
+  recommended_actions:
+  - 'Project-derived candidate: any llama.cpp combo arm on v10 must account for our local per-request draft cap
+    (server-context.cpp:489 clamps every draft to --spec-draft-n-max), otherwise it measures a capped regime this
+    source never ran.'
+  - 'Project-derived candidate: prefer ngram-map-k4v (per-request) over ngram-mod (pool shared across sequences
+    and requests) at np4.'
+  contradicting_evidence:
+  - 'README:354 explanation "only 7 draft slots ... crowd each other out" is wrong for its own base: n-gram drafts
+    were not capped at 7 (upstream server-context.cpp:451).'
+  notes: 'Pinned read HEAD 1523944423f3ed925caabdea54b04c15a5611ef1 (2026-08-29); raw + upstream sources at base
+    under /mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/lukallm/ (README 2bb7dc1f5ed6). Independent of HyperQwen
+    (no mention; runs 2026-08-19..21). Real source of the essay''s "+35% / +52% / ~+1% / prose slower" figures.
+    Upstream state (searched 2026-10-03): no llama.cpp PR fuses n-gram drafts into DFlash drafts per position; #22546
+    chains-of-speculators closed unmerged; #23184 draft-mtp->ngram-mod pipeline closed not_planned; #27839/#27897
+    crash combining draft-dflash+draft-mtp+ngram-mod. OUR v10 differs: local commit 84c84faf ("server: add per-request
+    speculative draft cap") clamps every draft to the launch/request n_max; DFlash2 self-clamps to block_size-1
+    = 7; need_n_rs_seq() sizes the recurrent rollback ring to draft.n_max.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: The best llama.cpp evidence that draft-dflash plus a per-request n-gram drafter helps
+    on multi-turn code editing (+35% build phase, ~2x on whole-file rewrites) and hurts fresh prose; but it ran
+    Blackwell, Q4_K_M, np1, uncapped n-gram width and unrecorded sampling temperature. It does not license a production
+    change on MI210 at temperature 1.0 without our own replay.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: README:36, setup script and compose file confirm.
+  - claim_index: 1
+    effect: narrowed
+    note: Numbers confirmed; synthetic is degeneration-prone, LCB medians negative, prose n=1 with contaminated
+      acceptance.
+  - claim_index: 2
+    effect: unaffected
+    note: README:336 and thermal log lines confirm.
+  - claim_index: 3
+    effect: unaffected
+    note: Read from upstream speculative.cpp/server-context.cpp at 5ecbe1ac; turn-10 559 tok/s (>10 tokens/verify)
+      corroborates widths >8.
+  - claim_index: 4
+    effect: unaffected
+    note: stack.sh --force-recreate, lcb_speed.sh:81 re-send, README:363 14.7% spread.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED all four essay-attributed numbers as THIS repo''s (not the vLLM
+    port''s); NARROWED synthetic (+52% = forced-length medians, means +79%, degeneration) and LCB (+1.2% means,
+    -2.7% medians); OVERTURNED the author''s "7 draft slots crowd each other out" (n-gram drafts were uncapped);
+    surfaced v10''s local per-request draft cap as a transfer blocker.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:36
+    quote: '`b10498`, commit `5ecbe1ac`'
+    quote_sha256: ea31fcafdbf321c4b644d72a3bfb01c123d4e8ccb16c9d704faac60fc938f2a3
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:168
+    quote: '| Editing code, 18-turn session, turns 1-9 | 181.89 | 245.84 | **+35%** |'
+    quote_sha256: 38976b713b8b47ea4092e51498548ee5749f3c29e551bbd75874bbdfc20bbb0e
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:169
+    quote: '| Forced-length synthetic, 4 096 in / 4 096 out (medians) | 176.57 | 267.82 | +52% |'
+    quote_sha256: 3d3db6f072f7bc82ee1928cdacd01dc10c006389e6ff7ea48ba8ae534a7b3460
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:170
+    quote: '| One-shot coding problems, LiveCodeBench × 100 | 153.91 | 155.83 | +1.2% |'
+    quote_sha256: 42effd80f30f38ad6368d6e8437bbf96a5920389f30f7341c50d62660eceb145
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:171
+    quote: '| Writing fresh prose, one request | 158.9 | 111.6 | **−30%** |'
+    quote_sha256: 151c4b3d2b3ddcaad5d3bd016f0c589c017e6ffe5ceb7fb60677c44c5dfce9a6
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:336
+    quote: '| **+ `ngram-map-k4v`** | **304.92** | **4.68×** | 343.52 | 6.03× | 64.2% | 1.41 |'
+    quote_sha256: 449babf93ecec2b9ffa76f1562f3a58f5d5ba1e2cadc2d283ee37a11a9f13089
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: common_speculative.cpp:1877
+    quote: // shared across all sequences
+    quote_sha256: 5eb923e4677340fe320fc2d7b38633f93b1816db6de9f78ff7dbd0db188bd923
+    source_revision: 'ggml-org/llama.cpp PR #27342 @5ecbe1ac17ec0484c5b44af0bd580cdc9c428ed4'
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: line-range
+    locator: server-context.cpp:489
+    quote: n_draft_max = std::min(n_draft_max, task->params.speculative.draft.n_max);
+    quote_sha256: 779501b4af62e68ea44f7a863d4c8a2470a4adf618ce43d3c1d770fa0b52c4a6
+    source_revision: production-consolidated-v10@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:363
+    quote: Three identical-configuration runs spread **14.7%** on DFlash2
+    quote_sha256: 48fa5db5acf9d490cf32bfcccbe14945f7dbfc1eb853e57a534060ae22196901
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1834
+  arxiv_id: '2610.01108'
+  url: https://arxiv.org/abs/2610.01108
+  source_type: paper
+  title: 'AgSpec: Pushing the Limits of Retrieval-Based Speculative Decoding in Coding Agent Pipelines'
+  authors:
+  - Sumin Lee
+  - Sukmin Cho
+  - Suengjae Lim
+  - Youngjin Kwon
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - agent_architecture
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1827
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - 'Retrieval-based SD for coding-agent pipelines with three corpora (session: prompts, tool outputs, generations
+    shared across calls/agents; workspace: opened files also stored in the agent''s output format; global: earlier
+    traces) on SAM / SuffixDecoding engines: 2.27-4.37x vs autoregressive at batch 1 and 1.08-4.76x at batch 16.'
+  - The session corpus (cross-call reuse) raises accepted length 1.6-2.1x over a per-call corpus — the largest single
+    lever.
+  - Online draft-length scale alone gives +66% throughput as rejected draft share falls 78% -> 50%.
+  - All results GREEDY with fixed seed; max model length 16,000; session corpus admits only the trailing 2,048 prompt
+    tokens; one RTX PRO 6000 Blackwell; no hybrid with a model drafter (EAGLE-3 is only a baseline).
+  techniques:
+  - session/workspace/global corpora
+  - output-format file indexing
+  - quantile-adaptive draft length
+  reported_results:
+  - 'SELF-REPORTED, greedy, SWE-bench Verified + TeamBench, Devstral-24B/Gemma3-27B/Qwen3.6-27B, vLLM 0.17.1: 2.27-4.37x
+    (bs1), 1.08-4.76x (bs16).'
+  referenced_arxiv_ids:
+  - '2411.04975'
+  cross_references:
+    chapters:
+    - 03-prompt-lookup.md
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1835
+    - intake-1827
+  recommended_actions:
+  - 'Project-derived candidate: cross-call corpus scope (llama.cpp ngram-cache dynamic file vs per-request ngram-map-k4v)
+    is the transferable idea; numbers do not transfer to T=1.0 / 100k+ context.'
+  contradicting_evidence:
+  - Greedy only; 16k max length; no copy-rate statistic in text (Fig. 1b is image-only).
+  notes: v1 (2026-10-01). HTML sha 61e1bde4c8c8, raw at /mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/papers/.
+    No code link found. AgSpec Tables 4-8 values render as images; not verified.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Closest workload match (coding agents re-emitting context) but greedy, 16k-context and
+    model-drafter-free; use it for corpus-scope and draft-length policy, not for expected speedups on our stack.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim in v1 HTML.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim in v1 HTML.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim in v1 HTML.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim in v1 HTML.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED headline and ablations (self-reported); OVERTURNED the Stage-1
+    hope of a model-drafter hybrid (none); temperature greedy only.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §4.2
+    quote: reaching 2.27–4.37 $\times$ the throughput of autoregressive decoding at batch size 1 and 1.08–4.76 $\times$
+      at batch size 16.
+    quote_sha256: 3f70fb917efeb2b4b069fdea4cbb854634763fa51461e6c9818198a25827e89e
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §4.4.1 Fig.6(a)
+    quote: corpus with the session corpus raises AL by $1.6$ – $2.1\times$ , as agents repeatedly reproduce code
+      and outputs from earlier calls.
+    quote_sha256: 871306d4100a8f1579bec2c78c463ce94d48b049c2de6114b3f1665007069036
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §4.4.2 Fig.7(c)
+    quote: The online scale alone raises throughput by 66%, as the share of rejected draft tokens falls from 78%
+      to 50%.
+    quote_sha256: da845c9b1dae38811eeac56328c80ad0ce5d27cac04ff75d87b19c606900c643
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: App A Table 1
+    quote: Models | Devstral-Small-2507 AWQ 4-bit, Gemma3-27B-it W4A16, and Qwen3.6-27B AWQ INT4, with greedy decoding.
+    quote_sha256: e7a1cf1f0df1b8567d235fbc07977a18bf36ae80c97b0cba8f4e3f4b5c92380f
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Reproducibility Statement
+    quote: We used greedy decoding (Table 1) and the same fixed seed across runs, including model calls that generate
+      tool-call requests.
+    quote_sha256: 17e6011740ebbeea9ddd7ee1d983caf5efa26d5d1f2543e68553878b87ee7231
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: App A Table 1
+    quote: Trailing $2{,}048$ prompt tokens and generated tokens, shared within a session and reset afterward.
+    quote_sha256: fc96fe6cfbc4cace2994d4b08f4bc57550a32a2487a7686ea288f0f9a7acd3f3
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: App A Table 1
+    quote: chunked prefill on, and maximum model length $16{,}000$ .
+    quote_sha256: 0119bbae9a41a12abd52ffceb81c2795ca9c76004ba70d0181fd627cd3f1809a
+    source_revision: arXiv:2610.01108v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1835
+  arxiv_id: '2411.04975'
+  url: https://arxiv.org/abs/2411.04975
+  source_type: paper
+  title: 'SuffixDecoding: Extreme Speculative Decoding for Emerging AI Applications'
+  authors:
+  - Gabriele Oliaro
+  - Zhihao Jia
+  - Daniel Campos
+  - Aurick Qiao
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - agent_architecture
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1827
+  verdict: worth_investigating
+  credibility_score: 4
+  key_claims:
+  - On SWE-Bench SuffixDecoding accepts 7.8 tokens per step on average vs 3.2 for PLD (Llama-3.1-8B, H100, bs1);
+    2.5x on SWE-Bench, 5.3x on AgenticSQL.
+  - Hybrid with EAGLE-3 is a WHOLE-DRAFT switch on a score threshold tau; standalone (tau=0) is best on AgenticSQL
+    at 5.35x.
+  - Adaptive speculation length MAX_SPEC = alpha * match length, alpha in [1,4] for agentic applications.
+  - Simulated results are explicitly greedy; real-hardware temperature is not stated; claims exact output-distribution
+    preservation.
+  techniques:
+  - suffix tree over prompt + prior outputs
+  - adaptive speculation length
+  - score-threshold hybrid with EAGLE-3
+  reported_results:
+  - 'SELF-REPORTED (greedy simulation): SWE-Bench 7.8 vs PLD 3.2 accepted/step; per-token acceptance ~0.30 (appendix);
+    OpenHands on vLLM TP4 1.8-4.5x.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 03-prompt-lookup.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1834
+    - intake-1840
+    - intake-1836
+  recommended_actions:
+  - 'Project-derived candidate: gate any lookup draft by match-length-based expected accepted length vs the model
+    drafter (tau near drafter mean), instead of unconditional n-gram priority.'
+  contradicting_evidence:
+  - Per-token acceptance ~0.30 even greedy; long accepted runs come from very long drafts.
+  notes: 'v3 current (NeurIPS). HTML sha d60eceec455c. Upstreamed to vLLM as PR #25784 (intake-1840). Code snowflakedb/ArcticInference.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Canonical agentic lookup-drafting result; greedy-only evidence and whole-draft (not per-position)
+    hybrid.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim in v3 HTML.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim in v3 HTML.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim in v3 HTML.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim in v3 HTML.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED; temperature>0 NOT-FOUND-IN-SOURCE.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §4.1
+    quote: In SWE-Bench, SuffixDecoding achieves 7.8 mean accepted tokens per step, while PLD only accepts 3.2 tokens
+      per step on average.
+    quote_sha256: ca3559e88fc2d1769cab81fb5a8dd4f98a32b2ad2a49dcbfd4b8be385e1d35ef
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §3 Hybrid
+    quote: If $\texttt{SCORE}(T_{spec})>\tau$ , where $\tau$ is a configurable threshold, then SuffixDecoding’s
+      draft tokens are used. Otherwise, we use a fall-back speculation method, such as EAGLE-3
+    quote_sha256: 95b24ad6eeeaa8d9c933029269dc023444c868145723e77a2f422603cbb13727
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: App B.1 Table 4
+    quote: Here, the standalone SuffixDecoding ( $\tau=0$ ) achieves the best overall speedup ( $5.35\times$ )
+    quote_sha256: d9ea67679e99aee172e5e48b83f2bc0394a6e0de2f8dd51d2e37959a2b81c91f
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §3
+    quote: In practice, we found that $\alpha\in[1,4]$ works well for agentic applications.
+    quote_sha256: 025a0944a0cbf2706d9e74f723b5de3e606a37d64b8807f7fb885e3f03087351
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4 setup
+    quote: we can accurately simulate speculative verification for greedy sampling by verifying that speculated
+      token
+    quote_sha256: e42b7a74bf7f412f3eb686a1c930b578cf3d55e2891a7b4853b2fe8626da413a
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4.3
+    quote: Since SuffixDecoding exactly preserves the output distribution of the LLM, it matches the original model’s
+      37.2% score on SWE-Bench Verified.
+    quote_sha256: 3c2133988c355533aa8c306a5072c6e4be6a3d42f4dd0a83977be2c3da77b81a
+    source_revision: arXiv:2411.04975v3
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1836
+  arxiv_id: '2606.01019'
+  url: https://arxiv.org/abs/2606.01019
+  source_type: paper
+  title: 'Hybrid Verified Decoding: Learning to Allocate Verification in Speculative Decoding'
+  authors:
+  - Xin Su
+  - Dawid Majchrowski
+  - Fangyuan Yu
+  - Vanshil Atul Shah
+  - Sebastian Rogawski
+  - Pawel Morkisz
+  - Anahita Bhiwandiwalla
+  - Phillip Howard
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1827
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - A small MLP predicts the cache (lookup) draft's accepted length; the cache draft is verified when the prediction
+    is >= 6, else EAGLE-3 drafts — whole-draft selection, not per-position fusion.
+  - 'Agentic workloads: 2.73x average speedup over EAGLE-3 (inflated by a weak Llama EAGLE-3 baseline; loses to
+    a frequency-score hybrid on Qwen3-4B aggregate).'
+  - Only 4.8-8.9% of proposed cache drafts are high-payoff; the cache draft is chosen in ~9-19% of cycles.
+  - Temperature 0.0; max length 16,384; H100; code promised (MIT), not released.
+  techniques:
+  - learned verify-slot allocation
+  - predicted accepted length gate
+  reported_results:
+  - 'SELF-REPORTED, temperature 0: 2.73x average vs EAGLE-3 on agentic sets.'
+  referenced_arxiv_ids:
+  - '2411.04975'
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1835
+    - intake-1827
+  recommended_actions:
+  - 'Project-derived candidate: same gate shape as SuffixDecoding tau; a learned gate is premature until a static
+    gate shows value.'
+  contradicting_evidence:
+  - Weak-baseline inflation on Llama; Qwen3-4B aggregate loss to simpler hybrid.
+  notes: v1. HTML sha d70ea6ddc43c.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Evidence that lookup drafts should replace the model draft only in a small minority of
+    high-confidence states; greedy only.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: App B verbatim.
+  - claim_index: 1
+    effect: narrowed
+    note: Average arithmetically correct; baseline weakness and Qwen3-4B loss noted.
+  - claim_index: 2
+    effect: unaffected
+    note: Tables 2, 11-13.
+  - claim_index: 3
+    effect: unaffected
+    note: Table 6, App F.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED mechanism (whole-draft gate); NARROWED 2.73x headline.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: App B Runtime Use
+    quote: Hybrid Verified Decoding selects the cache draft when the predicted accepted length is at least 6. Otherwise,
+      it uses the model-based drafter.
+    quote_sha256: 6421cc5f318a54ac7ebe7ace0a6bf898c6905ad5bff14ed5909cb2141060f863
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §3.3
+    quote: cache drafts with $\hat{y}_{t}\geq\tau$ are sent to verification, while lower-scoring states use a model-based
+      drafter.
+    quote_sha256: ca14226174f2d63c2debc245b8426a6b64dc295eccfd46ad33d653b2ef58da56
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Abstract
+    quote: where it outperforms EAGLE3 in every setting with a 2.73x average speedup
+    quote_sha256: df8984be12e7502d97d56256368c8c4fc9a5472865216053af93e95d1b18cda4
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5.3 Table 2
+    quote: Across the three target models, 4.8%, 6.6%, and 8.9% of proposed cache drafts meet the oracle high-payoff
+      criterion.
+    quote_sha256: 7128fd5e8fa5140dd24024abcf818c3247c9449bf2aac7fbaa01c631932d759e
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: App A Table 6
+    quote: Temperature | 0.0
+    quote_sha256: 8620716496559172ea07e53956fe72a8af4bc64d4e6674a18dab82a1e0373451
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: App F
+    quote: Our code will be released under the MIT License.
+    quote_sha256: 910a462441a9cdf86b63e8462af70a354bc025606fe352236f88330c84fafa04
+    source_revision: arXiv:2606.01019v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1837
+  arxiv_id: '2608.26004'
+  url: https://arxiv.org/abs/2608.26004
+  source_type: paper
+  title: 'AsymSpec: Context-Asymmetric Speculative Decoding for Agentic LLMs'
+  authors:
+  - (see arXiv abs page; not recorded at Stage-1 depth)
+  categories:
+  - speculative_decoding
+  - context_management
+  - agent_architecture
+  novelty: medium
+  relevance: low
+  discovered_via: search
+  expanded_from: intake-1827
+  verdict: not_applicable
+  credibility_score: 1
+  key_claims:
+  - 'Drafter reads full context while the verifier reads a compressed view (delta-logit fusion, JSD gate): ~90%
+    of full-context accuracy at 1.3-1.7x throughput.'
+  - 'Not lossless: does not preserve a strict target distribution; calibrated for greedy emission (tau=0).'
+  techniques:
+  - context-asymmetric drafting
+  - JSD acceptance gate
+  reported_results:
+  - SELF-REPORTED, greedy, Qwen3-32B verifier + Qwen3-4B drafter.
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1834
+  recommended_actions:
+  - 'Decline: lossy, conflicts with exactness requirement.'
+  contradicting_evidence: null
+  notes: 'v1. Read at Stage-1 depth with two anchors; not dived. not_applicable justification: the method gives
+    up exactness (target-distribution preservation), which production serving requires; it is not merely out-competed.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Lossy; do not consider for production speculative decoding.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §3.3
+    quote: Unlike standard SD, AsymSpec does not preserve a strict target distribution; it is a speculative-style
+      steering scheme calibrated for greedy emission.
+    quote_sha256: c5709c31b4ef853c81694f8a4162fc913e6fdc26a1d6ea3825f2c24a862a1e62
+    source_revision: arXiv:2608.26004v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §4 setup
+    quote: All generation uses greedy decoding ( $\tau=0$ ).
+    quote_sha256: 7192fbe9da7ac45ff6d9c33dc57926d3e9be87c03f481ec33f564c2ddf4a2eca
+    source_revision: arXiv:2608.26004v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1838
+  arxiv_id: '2511.01282'
+  url: https://arxiv.org/abs/2511.01282
+  source_type: paper
+  title: 'When, What, and How: Rethinking Retrieval-Enhanced Speculative Decoding (ReSpec)'
+  authors:
+  - (see arXiv abs page; not recorded at Stage-1 depth)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1827
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - Retrieval is triggered only when the target model's minimum entropy over the key suffix is <= 1.5 (predictability
+    gate).
+  - Candidate match positions scored by EMA of past acceptance; top 3 form a draft tree.
+  - Retrieved drafts use RELAXED (lossy) verification.
+  - Spec-Bench 3.05x vs EAGLE-2 2.30x on Vicuna-7B; greedy, A100, bs1.
+  techniques:
+  - entropy-gated retrieval
+  - EMA-scored match positions
+  - relaxed verification
+  reported_results:
+  - 'SELF-REPORTED, greedy: Spec-Bench 3.05x vs EAGLE-2 2.30x.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 03-prompt-lookup.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1835
+    - intake-1836
+  recommended_actions:
+  - 'Candidate pattern: low-entropy gate for lookup drafts at temperature 1.0 (our server has target logits); decline
+    relaxed verification.'
+  contradicting_evidence: null
+  notes: v1. Read at Stage-1 depth (abstract + method sections with anchors); not dived.
+  verification: stage1-unverified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: The entropy gate is the transferable idea for sampled traffic; the relaxed verification
+    is not acceptable.
+  handoffs_updated: []
+  handoffs_created: []
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §3.2.1
+    quote: Retrieval is triggered if $H_{\text{min}}\leq\theta_{\text{entropy}}$ ( $\theta_{\text{entropy}}=1.5$
+      is used in our experiments §4), indicating sufficient predictability.
+    quote_sha256: dcef476e983d7fba95c4d8004957d22e965003cdcbea1c754eb460aae11f4da6
+    source_revision: arXiv:2511.01282v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §1 contributions
+    quote: while retrieval-based drafts employ relaxed verification inspired by Spec-Verification
+    quote_sha256: a2f95ff810eadd4033aaac1d884b045a9d40b4f1fd8165e8166f1370483f2bbc
+    source_revision: arXiv:2511.01282v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §4.1
+    quote: We adopt greedy decoding for strict verification and employ FP16 precision with a batch size of 1.
+    quote_sha256: 26bfeb95874b68a407c1201c7343a01cfe351e1594ef694ace46a98355f8c992
+    source_revision: arXiv:2511.01282v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1839
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/24344
+  source_type: repo
+  title: 'vLLM PR #24344 "[Spec Decode][Hybrid] Add ngram-eagle SD method" (open since 2025-09-05)'
+  authors:
+  - (vLLM contributor; not recorded)
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1828
+  verdict: worth_investigating
+  credibility_score: null
+  key_claims:
+  - Open upstream PR running an n-gram and an EAGLE drafter in one step (composition shape; Stage-1 read of title/state
+    only).
+  techniques:
+  - ngram + EAGLE hybrid drafter
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1835
+  recommended_actions:
+  - Monitor only; not dived.
+  contradicting_evidence: null
+  notes: Seen in a GitHub search result 2026-10-03 (state OPEN). Composition semantics (per-position vs whole-draft)
+    not read.
+  verification: stage1-unverified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Unverified pointer to upstream vLLM composition work; read before citing.
+  handoffs_updated: []
+  handoffs_created: []
+- id: intake-1840
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/25784
+  source_type: repo
+  title: 'vLLM PR #25784 "[Spec Decode] Integrate Suffix Decoding from Arctic Inference" (merged 2025-11-03)'
+  authors:
+  - Aurick Qiao et al. (Snowflake)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - inference_serving
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1835
+  verdict: worth_investigating
+  credibility_score: null
+  key_claims:
+  - Adds SuffixDecoding (suffix trees over prompt and prior responses, FIFO eviction) as a vLLM spec method; beats
+    the ngram speculator on Spec-Bench and Blazedit (H200).
+  - No temperature > 0 claim; a comment reports ~1.5 ms speculate + 0.4 ms update CPU overhead per step at concurrency
+    64.
+  techniques:
+  - suffix decoding (vLLM)
+  reported_results:
+  - 'SELF-REPORTED, H200: lower TPOT than ngram on Spec-Bench/Blazedit.'
+  referenced_arxiv_ids:
+  - '2411.04975'
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1835
+  recommended_actions:
+  - Reference implementation only.
+  contradicting_evidence: null
+  notes: Merge commit 2c19d96777939dd3473eabfacbe1948a3ea0b4be; PR JSON at raw/papers/vllm_pr25784.json.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Proof that suffix/lookup drafting is upstream in vLLM; not evidence about sampled acceptance.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: PR body.
+  - claim_index: 1
+    effect: unaffected
+    note: PR body/comments.
+  dive_corrections: '2026-10-03 Stage 2 (with intake-1835): CONFIRMED merged; temperature>0 NOT-FOUND.'
+- id: intake-1841
+  arxiv_id: null
+  url: https://huggingface.co/Qwen/Qwen3.8-27B
+  source_type: repo
+  title: 'Qwen3.8-27B model card (Qwen) — 64-layer hybrid: 48 Gated DeltaNet + 16 gated attention, 24Q/4KV, MTP
+    head'
+  authors:
+  - Qwen team (Alibaba)
+  categories:
+  - ssm_hybrid
+  - speculative_decoding
+  novelty: low
+  relevance: medium
+  discovered_via: input
+  expanded_from: null
+  verdict: already_integrated
+  credibility_score: null
+  key_claims:
+  - 64 layers in layout 16 x (3 x (Gated DeltaNet -> FFN) -> 1 x (Gated Attention -> FFN)); attention heads 24 for
+    Q and 4 for KV, head dim 256.
+  - Checkpoint total_size 55,562,855,904 bytes (includes vision encoder and MTP); mtp_num_hidden_layers 1.
+  techniques: []
+  reported_results: []
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - qwen38-27b-replace-qwen36.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+  recommended_actions:
+  - None; this is our production target.
+  contradicting_evidence: null
+  notes: HF sha 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0 (config sha256 191e0af23210, card 57e4bdb258ee). Essay
+    ref (10). Essay "BF16 ~54 GB" is 55.6 GB incl. vision + MTP.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Architecture facts for our production target; recurrent layers make wide verify blocks
+    cost rollback state.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Card lines 40-46, config layer_types.
+  - claim_index: 1
+    effect: unaffected
+    note: index.json, config.json.
+  dive_corrections: '2026-10-03 Stage 2: CONFIRMED essay architecture claims; BF16 size narrowed to 55.6 GB incl.
+    vision/MTP.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:41
+    quote: '- Hidden Layout: 16 × (3 × (Gated DeltaNet → FFN) → 1 × (Gated Attention → FFN))'
+    quote_sha256: 1b9a7c5567a735f5526e252d5ba9900ab4e4d473640095fd1bb1641480d7c133
+    source_revision: huggingface.co/Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:46
+    quote: '- Number of Attention Heads: 24 for Q and 4 for KV'
+    quote_sha256: 391adf0bcd3e75c3fb84682733e151642065545cf4613b7355e6b0cb7b3ce61b
+    source_revision: huggingface.co/Qwen/Qwen3.8-27B@1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1842
+  arxiv_id: null
+  url: https://www.reddit.com/r/LocalLLaMA/comments/1vvncyh/i_benchmark_dflash_2_pr_build_in_llamacpp_on_qwen/
+  source_type: blog
+  title: 'r/LocalLLaMA 1vvncyh (u/FantasticNature7590, 2026-08-22): "I benchmark DFlash 2 (PR build) in llama.cpp
+    on Qwen 3.8 27B ... 2.26x on 100 real coding prompts, 4.68x with one n-gram drafter on top"'
+  authors:
+  - u/FantasticNature7590 (posts the lukaLLM repo results)
+  categories:
+  - speculative_decoding
+  - retrieval_augmented_decoding
+  - benchmark_methodology
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1833
+  verdict: superseded
+  credibility_score: 1
+  key_claims:
+  - '2.26x (67.97 -> 153.91 tok/s) for DFlash2 on 100 LiveCodeBench prompts, temperature 0, n=100, RTX PRO 6000
+    Blackwell, PR #27342 @5ecbe1ac, np1.'
+  - 4.68x (65.1 -> 304.9 tok/s) for DFlash2 + ngram-map-k4v is ONE session of the copy-heavy build phase (a Gradio
+    file re-emitted and extended every turn), model-default sampling (temperature unrecorded), unseeded, raw sessions
+    unpublished, 4-15% noise floor.
+  - n-gram drafts were not capped at 7 in the PR build (server n_max = remaining context); only DFlash2 self-clamps.
+  - A commenter (4x3080) reports DFlash2 decaying to 5-7 tok/s after 20-25 minutes at large context while MTP holds
+    26-33 tok/s (anecdotal).
+  techniques:
+  - draft-dflash,ngram-map-k4v composition
+  reported_results:
+  - 'SELF-REPORTED: LCB x100 greedy 67.97 -> 153.91 (2.26x); build phase n=1 65.1 -> 304.9 (4.68x, temperature unrecorded).'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1833
+    - intake-1573
+  recommended_actions:
+  - None beyond intake-1833.
+  contradicting_evidence:
+  - Long-context decay anecdote in comments (DFlash2 5-7 tok/s vs MTP 26-33 after 20-25 min).
+  notes: 'Same benchmark tables as the lukaLLM repo (intake-1833 TABLE 9/10); the 4.68x is README:336 there. Read
+    via .rss (json blocked). Raw: raw/r2/reddit_1vvncyh.rss.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Social restatement of intake-1833; the 4.68x is n=1 copy-heavy, unrecorded temperature,
+    uncapped drafts — not transferable.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on:
+  - entry: intake-1833
+    why: All numbers are the lukaLLM repo tables.
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: CSV TABLE 9 greedy n=100.
+  - claim_index: 1
+    effect: narrowed
+    note: n=1 session, unrecorded temperature, copy-heavy workload.
+  - claim_index: 2
+    effect: unaffected
+    note: PR-build server code.
+  - claim_index: 3
+    effect: unaffected
+    note: Comment verbatim; anecdotal.
+  dive_corrections: '2026-10-03 Stage 2b (round 2): CONFIRMED as self-reported; NARROWED 4.68x (n=1, copy-heavy,
+    temperature unrecorded); fresh-container-per-arm rules out the July-2026 repeated-prompt artifact as the main
+    driver.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: post title
+    quote: 2.26x on 100 real coding prompts, 4.68x with one n-gram drafter on top
+    quote_sha256: 3c4156e474c01fcde0da697ee025823219921aa726d3b86998bd23d5074ef36e
+    source_revision: r/LocalLLaMA 1vvncyh RSS retrieved 2026-10-03
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: lukaLLM README (TABLE 10 note)
+    quote: Model-default sampling, natural stop, no token cap
+    quote_sha256: 5cab3dbca87ca18c4b5497f4cd8eced2c27144b7a66053913451fdad664b3e33
+    source_revision: lukaLLM/DFlash2_Qwen3.8_3.6_27B_LlamaCPP@1523944423f3ed925caabdea54b04c15a5611ef1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: comment u/runsleeprepeat
+    quote: keeps dropping down to 5-7 tps
+    quote_sha256: b1af25dd306722b69ed1b956c0ce64a21866dd87fc33f548a308538b66fe7810
+    source_revision: r/LocalLLaMA 1vvncyh RSS retrieved 2026-10-03
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1843
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/22546
+  source_type: repo
+  title: 'llama.cpp PR #22546 "chains of speculators" (best-draft-wins scoring; closed unmerged 2026-05-11, superseded
+    by #22838 first-non-empty chaining)'
+  authors:
+  - petersid2022
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1833
+  verdict: superseded
+  credibility_score: null
+  key_claims:
+  - 'Design: all speculators run sequentially and the best draft (scored p_acc x length) is verified — whole-draft
+    selection, not per-position fusion.'
+  - 'Closed by ggerganov as superseded by PR #22838 (merged 2026-05-11), which shipped "--spec-type a,b" chaining
+    as first-non-empty-in-order (ngram-* before draft-*) rather than scoring.'
+  - 'Own numbers: temperature 0, seed 42, 3 runs, one prompt, L4 GPU: ngram_cache +8.9%, enabled_all +7.9%, acceptance
+    20.1%.'
+  techniques:
+  - best-draft-wins speculator chaining
+  reported_results:
+  - 'SELF-REPORTED greedy, L4: +7.9-8.9%.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - speculative-decoding-mtp-refresh.md
+    experiments: []
+    intake_entries:
+    - intake-1833
+    - intake-1573
+  recommended_actions:
+  - 'Knowledge: llama.cpp upstream has no per-position drafter fusion; issue #23184 (draft-mtp -> ngram-mod pipeline)
+    closed stale/not_planned 2026-07-12 with no maintainer reply. Any fusion is our own experimental-tree work.'
+  contradicting_evidence: null
+  notes: 'Master pinned 9bf55f4a3677af697d914d959eaa70f93cfdc494 (2026-10-03): common_speculative_draft still first-non-empty-wins;
+    no per-position merge, no verify-width decoupling. Raw: raw/r2/gh_pulls_22546*.json, gh_issues_23184*.json,
+    gh_pulls_22838.json. PR #22838 (merged 2026-05-11, 68e7ea3e) read in round 3: the --spec-type comma list is
+    parsed into a bitmask, so CLI ORDER IS IGNORED; fixed priority ngram-simple > ngram-map-k > ngram-map-k4v >
+    ngram-mod > ngram-cache > draft-*; the PR''s "--spec-type ngram-mod,mtp" example was forward-looking (MTP was
+    a TODO at merge). No maintainer rationale or numbers in the thread.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Upstream llama.cpp chose simple first-non-empty chaining; LABD-style per-position fusion
+    does not exist upstream as of 2026-10-03.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: PR body/comments verbatim.
+  - claim_index: 1
+    effect: unaffected
+    note: PR body/comments verbatim.
+  - claim_index: 2
+    effect: unaffected
+    note: PR body/comments verbatim.
+  dive_corrections: '2026-10-03 Stage 2b (round 2): CONFIRMED design and closure reason; #23184 folded here (stale-bot
+    close, projections only).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: PR body
+    quote: all speculators run sequentially, best one wins
+    quote_sha256: 1711f4f4be4581de4c9eba1088965eed30f0d3c91bbaed967e3ed299ea6d1fc8
+    source_revision: api.github.com pulls/22546 retrieved 2026-10-03
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: ggerganov comment
+    quote: 'Superseded by #22838'
+    quote_sha256: d0540f5d47ebcf456bcf54e69144e8fae6b20094ed1b26fc42371c8ec99c1e30
+    source_revision: api.github.com issues/22546/comments retrieved 2026-10-03
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1844
+  arxiv_id: '2606.16824'
+  url: https://arxiv.org/abs/2606.16824
+  source_type: paper
+  title: 'CacheWise: Understanding Workloads and Optimizing KVCache Management for Efficiently Serving LLM Coding
+    Agents'
+  authors:
+  - Tiwari
+  - Chugh
+  - Rickert
+  - Peter
+  - Mahajan
+  - Shen
+  categories:
+  - kv_cache
+  - agent_architecture
+  - inference_serving
+  novelty: medium
+  relevance: low
+  discovered_via: search
+  expanded_from: intake-1834
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - Collects real Claude Code traces (CATraces, ~10M tokens) and finds coding-agent requests prefill-heavy (~21x
+    prefill:decode vs chat) and tool-triggered (~20x user-initiated at the median).
+  - Does NOT measure output copy/re-emission rate; the released traces are redacted (text replaced by "<redacted>"),
+    so copy rate cannot be computed from them.
+  - 'Prefix-aware admission + tool-aware eviction: evictions -2-2.6x, goodput +1.64-2x, P50 latency 13-14x lower
+    (P99 worse), Qwen2.5-Coder-32B on 2xH200, deterministic replay.'
+  techniques:
+  - tool-aware KV eviction
+  - prefix-aware admission
+  reported_results:
+  - 'SELF-REPORTED replay (no sampling): goodput +1.64-2x at N>10 sessions.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 04-radix-attention.md
+    handoffs:
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-1834
+  recommended_actions:
+  - 'Decline for now: multi-session HBM thrash at N>10 is not our np4 regime; revisit if slot count grows.'
+  contradicting_evidence: null
+  notes: v1 (2026-06-15). Dataset github.com/cachewise-project/cachewise-coding-traces @181c435a (one session sampled;
+    README says sanitized).
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Useful prefill-dominance characterization of coding agents; provides no copy-rate evidence
+    for lookup drafting.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: §3.
+  - claim_index: 1
+    effect: unaffected
+    note: Full-text grep + sampled trace.
+  - claim_index: 2
+    effect: unaffected
+    note: Abstract/§6.
+  dive_corrections: '2026-10-03 Stage 2b (round 2): OVERTURNED the Stage-2 hope that it holds a copy-rate statistic;
+    CONFIRMED prefill dominance.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Introduction
+    quote: We address this gap by collecting a dataset of real-world coding assistant traces.
+    quote_sha256: 31147a1550f95249a38a0d6fb656028ff2594fb7292ac9e7231f9546e2dead5d
+    source_revision: arXiv:2606.16824v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §3
+    quote: each request must prefill a substantially higher number of tokens
+    quote_sha256: 278536911c8a2de8fc3b76fefe22ee8e270a46f23a2af0e1e2c58dabbd6a0c5b
+    source_revision: arXiv:2606.16824v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §6 setup
+    quote: We replay the traces collected in our dataset for our experiments deterministically.
+    quote_sha256: 800a491202c81b75411ecac96e37738b55e5d085d40ec547043283976629462c
+    source_revision: arXiv:2606.16824v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1845
+  arxiv_id: '2601.11580'
+  url: https://arxiv.org/abs/2601.11580
+  source_type: paper
+  title: 'Speculative Decoding: Performance or Illusion?'
+  authors:
+  - Xiaoxuan Liu
+  - Jiaxiang Yu
+  - Jongseok Park
+  - Ion Stoica
+  - Alvin Cheung
+  categories:
+  - speculative_decoding
+  - benchmark_methodology
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1836
+  verdict: adopt_patterns
+  credibility_score: 4
+  key_claims:
+  - All results at temperature 0 with no truncation (vLLM 0.10.1.1, H100) — no sampled acceptance data despite the
+    "production" framing.
+  - Speedup shrinks with batch (EAGLE 1.73x -> 1.21x from batch 1 to 128); verification is 42-95% of time.
+  - n-gram (prompt lookup) beats EAGLE/EAGLE-3 only when prompt-output BLEU exceeds ~0.6 (code editing), up to +53%
+    (k=3)/+100% (k=5); overlap measured only prompt-vs-output, not against the evolving context.
+  - Oracle per-step combination of n-gram and model drafter exposes up to 2.2x further speedup (simulated upper
+    bound, perfect selector).
+  - Wider verification (SGLang tree k=21) helps at batch 1 but falls below 1x at batch 64 on all workloads.
+  techniques:
+  - oracle drafter combination
+  - prompt-output BLEU as n-gram predictor
+  reported_results:
+  - 'SELF-REPORTED, temperature 0, H100: InstructCoder n-gram 7.27 mean generated/step vs EAGLE 4.24; ShareGPT n-gram
+    2.02.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters:
+    - 06-benchmarking-framework.md
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1836
+    - intake-1573
+  recommended_actions:
+  - 'Pattern: predict lookup value from measured context-output overlap on our own logs before any arm; no number
+    transfers to T=1.0/long context.'
+  contradicting_evidence:
+  - Fills batches by replicating each request (warm prefix cache), not discussed by the authors.
+  notes: v2 (2026-03-18); MLSys 2026 oral confirmed via proceedings page. Previously only referenced (not an entry)
+    in another entry's referenced_arxiv_ids.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Independent greedy evidence that n-gram drafting pays only on high prompt-output overlap
+    and that drafter combination has headroom only with a good selector; wide verify loses under load.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Verbatim v2 HTML.
+  - claim_index: 1
+    effect: unaffected
+    note: Verbatim v2 HTML.
+  - claim_index: 2
+    effect: unaffected
+    note: Verbatim v2 HTML.
+  - claim_index: 3
+    effect: unaffected
+    note: Verbatim v2 HTML.
+  - claim_index: 4
+    effect: unaffected
+    note: Verbatim v2 HTML.
+  dive_corrections: '2026-10-03 Stage 2b (round 2): CONFIRMED; NARROWED "production" framing (temperature 0 only;
+    replicated-request batches).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: §3.1
+    quote: Decoding is performed with temperature set to 0 and no sampling truncation
+    quote_sha256: fcbad30697fcc1c688e3d4307470b362b3ec638b92037f1ca75fc276e69068cb
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: §4
+    quote: decreases from 1.73 × to 1.21 × as the batch size increases from 1 to 128.
+    quote_sha256: 595d4b7dc87e803be27a91d3d542fd39ca3e760033f9d88550f8ff21943728e1
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5
+    quote: n -gram consistently outperforms EAGLE and EAGLE-3 across all batch sizes.
+    quote_sha256: d3d83bbfcd18a466f7ea4e67e77a19f85145f4e61bae0255c2c590e8f13520c8
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: §5
+    quote: We leave an analysis that measures overlap with respect to this evolving context for future work.
+    quote_sha256: 6b64720baf6cb30af9ddc42ef76bbdaaa564449f24ad9bddec768bc05073ba53
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: §6
+    quote: Oracle_Combine exposes substantial additional headroom, achieving up to a 2.2 × further speedup.
+    quote_sha256: dd8d5ae5d729a2d0fd6e85e9b99becd4a42f55f15d1d76b2dd1f77421bdc2193
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: §6
+    quote: By batch size 64, the k = 21 tree falls below 1 × speedup on all workloads
+    quote_sha256: 45c6952e84bbc59bb98caa5eb95cf286a4a5447d1c3ac6aa9a2baa909f4bad7f
+    source_revision: arXiv:2601.11580v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1846
+  arxiv_id: '2606.07710'
+  url: https://arxiv.org/abs/2606.07710
+  source_type: paper
+  title: 'WhiFlash: Accelerating Speculative Decoding with Token-Level Cross-Paradigm Routing'
+  authors:
+  - Kwon
+  - Williams
+  - Li
+  - Kouris
+  - Venieris
+  categories:
+  - speculative_decoding
+  - routing_intelligence
+  novelty: medium
+  relevance: medium
+  discovered_via: search
+  expanded_from: intake-1845
+  verdict: adopt_patterns
+  credibility_score: 2
+  key_claims:
+  - A per-round router (entropy-based or neural) picks EAGLE-3 or DFlash for each speculation round — whole-draft
+    choice between two MODEL drafters; retrieval/n-gram drafting explicitly out of scope.
+  - WhiFlash-Neural mean AL 6.26 on Qwen3-8B (+22.3% vs EAGLE-3, +18.5% vs DFlash), ~64% of the best-single-to-Oracle-Token
+    gap (57% on agentic); throughput +6-9% over DFlash.
+  - Oracle-Token is computed in float32 vs bfloat16 for all other methods (not like-for-like).
+  - H100 batch 1, HF Transformers; temperature never stated; released repo contains only a README.
+  techniques:
+  - per-round drafter routing
+  - entropy routing policy
+  reported_results:
+  - 'SELF-REPORTED, H100 bs1, temperature unstated: mean speedup 3.87x vs DFlash 3.55x.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1845
+    - intake-1836
+  recommended_actions:
+  - 'Pattern only: a cheap target-entropy gate could replace llama.cpp''s fixed ngram-first priority; decline an
+    MTP<->DFlash2 router (no code, operator rule 27B always DFlash2).'
+  contradicting_evidence:
+  - Llama oracle ALs not monotone (Oracle-Prompt 4.51 < EAGLE-3 4.99); fp32 oracle.
+  notes: v2 (2026-09-01). html sha 41412b9e36cb. github.com/SamsungLabs/WhiFlash @db065b63 is a placeholder.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Realised ~60% of oracle drafter-routing headroom (+6-9% throughput) between two model
+    drafters; says nothing about lookup fusion or sampled traffic.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: §3.
+  - claim_index: 1
+    effect: narrowed
+    note: Headroom share computed from Table 1 by the dive.
+  - claim_index: 2
+    effect: unaffected
+    note: Appendix.
+  - claim_index: 3
+    effect: unaffected
+    note: §5 setup; repo checked.
+  dive_corrections: '2026-10-03 Stage 2b (round 3): OVERTURNED the round-2 hope that it routes model vs retrieval
+    drafters per token; CONFIRMED per-round model-drafter routing.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: W1 in html_2606.07710v2.m.txt
+    quote: we design a token-level router that dynamically routes each decoding step to the highest-performing draft
+      model at run time, using either an entropy-based or neural policy.
+    quote_sha256: a9fb9b6d9b4e42478d172013bd665dcc85b56bd3ea2391eef003d77b23603cdb
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: W2 in html_2606.07710v2.m.txt
+    quote: In contrast to these retrieval-dependent systems, WhiFlash relies either on a learned neural router or
+      on readily available runtime metrics, rather than historical text caches, to make fine-grained paradigm-switching
+      decisions.
+    quote_sha256: 93c48ba63c276ad2e0ef5fbe609337dd59d9cbc407242f125005ad7677c7d961
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: W3 in html_2606.07710v2.m.txt
+    quote: WhiFlash-Neural attains a mean AL of 6.26 tokens on Qwen3-8B, a 22.3% gain over EAGLE-3 and an 18.5%
+      gain over DFlash. It also surpasses Oracle-Task by 6.8% and Oracle-Prompt by 5.7% and closes much of the gap
+      (short of merely 8.0%) to the performance ceiling represented by Oracle-Token.
+    quote_sha256: 789ca33014ca641aa95edfd38bef4965cbade7d6d6277486b8da1e9e6666523f
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: W4 in html_2606.07710v2.m.txt
+    quote: To maintain identical sequences across drafters, Oracle-Token is computed in float32, while all other
+      methods use bfloat16.
+    quote_sha256: 8b6ca4a826d3016f02ea162bac9788256336721b91295905d7d23429c8073438
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: W5 in html_2606.07710v2.m.txt
+    quote: Unless otherwise stated, measurements are based on NVIDIA H100 GPUs at a batch size of 1
+    quote_sha256: 12373d00b7f747fdc58d328a644613c0509263c427121844210a3683a2e147f4
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: W6 in html_2606.07710v2.m.txt
+    quote: we use the model and tokeniser implementations for Qwen3 and Llama3.1 provided by the Hugging Face Transformers
+      framework
+    quote_sha256: f706094ed503b26bdef25ad0655c37257011f70671cd7e06f7f42978e6f6b719
+    source_revision: arXiv:2606.07710v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1847
+  arxiv_id: '2608.01651'
+  url: https://arxiv.org/abs/2608.01651
+  source_type: paper
+  title: 'Bole: Efficient Tree Speculation for Hybrid-Attention Language Models'
+  authors:
+  - Li Wang
+  - Yi Su
+  - Xiabao Wu
+  - Chiran You
+  - Yongchao Liu
+  - Zhan Qiu
+  - Juelu Zhang
+  - Jiajun Zheng
+  - Fangxin Liu
+  - Jie Zhang
+  - Chen Tian
+  - Chengying Huan
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - kv_cache
+  - inference_serving
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1845
+  verdict: worth_investigating
+  credibility_score: 2
+  key_claims:
+  - 'On hybrid GDN models, serial GDN traversal grows with tree size: 8 -> 64 nodes raises linear layers'' share
+    of the target forward from 4% to 27% (Qwen3.5-9B, A100, figure only).'
+  - 'Engines materialize a full post-update GDN state per tree node; Table I: Qwen3.5-27B linear state ~144 MB per
+    request, 14.1 GB of snapshots for a 100-node tree vs 151 MB for Bole''s token-scale factors.'
+  - State materialization consumes 38% (A100) and 86% (GB10) of serial verification time — a bandwidth cost.
+  - Optimal total tree budget differs by GPU (128 tokens A100, 256 GB10); temperature/sampling configuration never
+    stated; SGLang v0.5.12, native MTP tree drafter.
+  techniques:
+  - factorised GDN tree verification
+  - token-scale state factors
+  reported_results:
+  - 'SELF-REPORTED, temperature unstated: up to 4.72x vs AR, 2.03x vs SGLang-Tree (GB10); OpenHands replay TPOT
+    -33.8 to -50.3% vs SGLang-Tree.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - gpu-acceleration-path.md
+    experiments: []
+    intake_entries:
+    - intake-1827
+    - intake-1841
+  recommended_actions:
+  - 'Cost model: every extra verify position on Qwen3.8-27B costs a ~144 MB-class recurrent snapshot per sequence;
+    matches our own 0.58 GiB saving for n_max 8->7 at np4 (~0.145 GiB per position per sequence). A 16-wide verify
+    at np4 would add ~4.6 GiB (derived, unmeasured).'
+  contradicting_evidence: null
+  notes: 'v1 (2026-08-03); HTML stamped "HPCA 2027 Submission #814 / Confidential Draft" yet public. html sha 6f08ce25129e.
+    No code found.'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Wider verification on hybrid GDN models is expensive mainly through per-position recurrent-state
+    materialization (memory + bandwidth); price any 8 -> 16 verify widening on that basis.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Figure-only; no 8-vs-16 point.
+  - claim_index: 1
+    effect: unaffected
+    note: Table I.
+  - claim_index: 2
+    effect: unaffected
+    note: § analysis.
+  - claim_index: 3
+    effect: narrowed
+    note: Tree budget, not chain width; temperature unstated.
+  dive_corrections: '2026-10-03 Stage 2b (round 3): CONFIRMED state-materialization cost model; per-request 27B
+    state figure independently consistent with our registry n_max 8->7 ring saving.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: B1 in html_2608.01651v1.m.txt
+    quote: |-
+      growth: increasing the tree from 8 to 64 nodes raises the linear layers’
+      share of the target forward from 4% to 27%.
+    quote_sha256: 614a9430d5b170aa21dfe20e4201ad089612d5b9430b57bdb75726bc1a9cbdc1
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: B2 in html_2608.01651v1.m.txt
+    quote: |-
+      Existing engines materialize a
+      complete post-update GDN state for every tree node because one
+      in-place state cannot represent diverging branches.
+    quote_sha256: d4683a507cb8590592ae610512f2351c4d902d6f870a3047a06bc73ea307ff5a
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: B3 in html_2608.01651v1.m.txt
+    quote: 'Both representations scale linearly with $T$ , but their coefficients differ:'
+    quote_sha256: c995b4d218f8ecd9ae629673b1ac358d7f7f3be6adbf9287f02ac66d3e2a58a0
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: B5 in html_2608.01651v1.m.txt
+    quote: |-
+      State materialization consumes 38% and 86% of serial verification time
+      on A100 and GB10, respectively
+    quote_sha256: a0ecbadef417db30b93a94450ed69d9fdd4ac704086e47bec4c1b8599a6243d5
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: B4 in html_2608.01651v1.m.txt
+    quote: |-
+      The peak occurs at 128 total tree tokens
+      on A100 but at 256 tokens on GB10. A single fixed budget is therefore
+      suboptimal across GPU architectures.
+    quote_sha256: edfbcd5afd279fcf85dad312d0077fd6a2d39fe0729d18fc42d83fb74147d056
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: B6 in html_2608.01651v1.m.txt
+    quote: |-
+      All tree methods use the same native MTP drafter, model weights,
+      sampling configuration, and total proposal-token budget.
+    quote_sha256: 1c78ae66a5b6a14b9510a1d4ef9268641cd28f735456b04f246e9848f48a82ba
+    source_revision: arXiv:2608.01651v1
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1848
+  arxiv_id: '2607.25852'
+  url: https://arxiv.org/abs/2607.25852
+  source_type: paper
+  title: 'AngelSpec: Towards Real-World High Performance Inference with Speculative Decoding'
+  authors:
+  - Hong Liu
+  - Rui Cen
+  - Junhan Shi
+  - Guangshuo Qin
+  - Jiebin Zhang
+  - Tianyu Liu
+  - Runzhi Fan
+  - Guoliang Zhao
+  - Ruobing Xie
+  - Kai Zhang
+  - Song Liu
+  - Guanghua Yu
+  - Jianchen Zhu
+  categories:
+  - speculative_decoding
+  - inference_serving
+  - benchmark_methodology
+  - training_distillation
+  novelty: medium
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1845
+  verdict: adopt_patterns
+  credibility_score: 3
+  key_claims:
+  - Replays Hunyuan PRODUCTION traffic against Hy3-295B-A21B (TP=8, 8x H20) at the Table 7 protocol (temperature
+    1).
+  - Production mean acceptance length is 2.50 (DFly) / 2.46 (D-cut) for a block-8 DFlash-family drafter that scores
+    ~4.79 on benchmarks at temperature 1 — production ~48% lower.
+  - Production speedup vs AR peaks ~1.33x (DFly) and reaches 1.45x (D-cut at c56) vs 1.79-2.40x on benchmarks at
+    temperature 1.
+  - 'Block size 5 -> 8 raises accepted length 3.39 -> 4.25 (profiling, temperature 0); MTP after TTT at T=0.9: acceptance
+    51.3% -> 63.3%.'
+  techniques:
+  - DFly drafter training
+  - D-cut high-concurrency pruning
+  - test-time training for MTP
+  reported_results:
+  - 'SELF-REPORTED, production replay at T=1: AL 2.50 / 2.46; 1.33-1.45x vs AR.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - dflash2-block-drafter-experimental-build.md
+    - agentic-serving-harness-fixes.md
+    experiments: []
+    intake_entries:
+    - intake-1571
+    - intake-1827
+  recommended_actions:
+  - 'Cite as external T=1 production prior: block-drafter acceptance on real traffic is about half the benchmark
+    figure (AL 2.50 of 8 ~= 21% per draft), consistent with our 29-34%.'
+  contradicting_evidence:
+  - Traffic mix not described; live-traffic temperature only by inheritance from Table 7; abstract says Hy3-A21B,
+    conclusion Hy3-A20B.
+  notes: v2 (2026-07-29). html sha a99bb09f401d. Code Tencent/AngelSpec @d3412bed (real; vLLM/SGLang patches). Previously
+    only named in a declined-source list (2026-09-25 Stage 2g close-out of another entry); now ingested.
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: Independent production evidence at temperature 1 that block-drafter acceptance roughly
+    halves vs benchmarks; supports treating our 29-34% DFlash2 acceptance as expected rather than a defect.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Temperature by inheritance.
+  - claim_index: 1
+    effect: unaffected
+    note: § production replay; Table 3.
+  - claim_index: 2
+    effect: unaffected
+    note: § production replay.
+  - claim_index: 3
+    effect: unaffected
+    note: §5 profiling; MTP TTT section.
+  dive_corrections: '2026-10-03 Stage 2b (round 3): CONFIRMED production-replay acceptance and speedup; no n-gram/lookup
+    combination present (NOT-FOUND).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: A1 in html_2607.25852v2.m.txt
+    quote: we replay Hunyuan production traffic against Hy3-295B-A21B with TP=8 on $8\times$ H20 GPUs, following
+      the same measurement protocol as Table
+    quote_sha256: 23ebbbd35b56c265549d13a4e30c6c168819a5709efedaf90e575cfccad435ce
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: A2 in html_2607.25852v2.m.txt
+    quote: Averaged over the sweep, mean acceptance length is $2.50$ for DFly and $2.46$ for D-cut, a reduction
+      of roughly $1.5\%$ .
+    quote_sha256: 1a41ac2588f8ca2dc3ca00ca1cf94195769cec2584fff64e238c9486aa1b20fb
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: A4 in html_2607.25852v2.m.txt
+    quote: 'Table 3: Main draft-quality results on Qwen3-8B and Hy3-A21B at temperature 1, no thinking.'
+    quote_sha256: 9780afa0ae87515b004aa387f414342b4ae4b671b6f93a02dd95b85fbb3dcfb9
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: A3 in html_2607.25852v2.m.txt
+    quote: Measured against AR, DFly peaks near $1.33\times$ between c24 and c40 and then falls back to $1.25\times$
+      at c64, whereas D-cut keeps improving to $1.45\times$ at c56 and $1.44\times$ at c64.
+    quote_sha256: adb31d842a340db586e53043b46d92d18aa2a0fd2c648113044417eb40e7b8b0
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: A6 in html_2607.25852v2.m.txt
+    quote: Increasing the block size from 5 to 8 improves the average accepted length from 3.39 to 4.25.
+    quote_sha256: 30251463d0b007514d579c0d7a1104c9589dd34df7d73b993fd7eea70cffc754
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: A5 in html_2607.25852v2.m.txt
+    quote: At $T=0.9$ , the same model improves average acceptance from $51.3\%$ to $63.3\%$ and MAL from $2.54$
+      to $2.90$ .
+    quote_sha256: 7a3fee5ca4935e434a623a41042f38231bb0c7f2adbafd7535da8b0fe7831442
+    source_revision: arXiv:2607.25852v2
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+- id: intake-1849
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/28495
+  source_type: repo
+  title: 'llama.cpp issue #28495 — unified-KV CUDA/HIP flash attention trims only the masked TAIL of the KV range,
+    so each sequence pays for cells of other/released sequences in the shared pool'
+  authors:
+  - (reporter + DanoPTT, V100 and gfx1201 measurements in thread)
+  categories:
+  - kv_cache
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: search
+  expanded_from: intake-1277
+  verdict: new_opportunity
+  credibility_score: null
+  key_claims:
+  - 'Mechanism: flash_attn_mask_to_KV_max only trims fully-masked blocks at the tail, and its launch gate (Q->ne[1]
+    >= 1024 || Q->ne[3] > 1) never fires for decode with unified KV (n_stream==1 keeps ne[3]==1), so a decode/verify
+    step attends over the whole occupied pool.'
+  - Prompt processing loses 27-54% depending on resident neighbours (e.g. -27.2% S_PP gfx1201; V100 637 -> ~325
+    t/s with one unrelated 49k conversation resident).
+  - 'Decode is also affected despite the reporter''s "pp only" framing: -6.6% S_TG (gfx1201) and on V100 "a 15.6k
+    conversation with three others parked generates at the speed of a 62k one" (23.58 -> 18.5 t/s).'
+  - 'No fix merged: WMMA-only PR #28943 closed unmerged 2026-09-22 ("needs a human to do the software design");
+    ggerganov in #19523: "The unified KV cache is not well supported by the CUDA backend".'
+  techniques:
+  - KV range masking
+  - interior live-block skipping (proposed)
+  reported_results:
+  - 'SELF-REPORTED: -27% to -54% pp, -6.6% tg (gfx1201), V100 decode 23.58 -> 18.5 t/s with three parked neighbours;
+    temp 0.7, f16 KV.'
+  referenced_arxiv_ids: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - kv-unified-stack-rollout.md
+    - agentic-serving-harness-fixes.md
+    - dflash2-block-drafter-experimental-build.md
+    experiments: []
+    intake_entries:
+    - intake-1277
+    - intake-1827
+  recommended_actions:
+  - 'Project-derived candidate (operator review): paired --kv-unified vs neighbours-parked decode probe on the MI210
+    at np4 before attributing agentic decode (25-30 tok/s) to the drafter; experimental-tree interior-skip kernel
+    only if the probe shows >=5% decode loss.'
+  contradicting_evidence:
+  - Reporter states generation is unaffected; the same thread's batched-bench and V100 data contradict it.
+  notes: 'Read 2026-10-03 via gh api (raw/r3b/, sha per file). OUR v10 tree (ffc1bac8, read-only) HAS THE GAP: ggml/src/ggml-cuda/fattn-common.cuh:1094
+    launch gate; tail-only scan fattn-common.cuh:666-719; result only caps the loop end (fattn-vec.cuh:257, fattn-tile.cuh:960,
+    fattn-mma-f16.cuh:1826-1827,1872-1873); n_kv = used_max_p1 padded to 256 (src/llama-kv-cache.cpp:1275). rocWMMA
+    is not compiled into our libggml-hip.so (0 strings matches), so #28943 would not apply; our path is MFMA mma
+    / tile / vec. Live :8083 already runs -np 4 -c 393216 -ub 2048 --kv-unified q8_0 --spec-type draft-dflash --spec-draft-n-max
+    7, so decode/verify at 57-152k per request may scan up to ~393k occupied cells. Decode loss on gfx90a UNMEASURED.
+    Related: #19523 (closed; Vulkan fix #19582; CUDA side never fixed), #27544 (Vulkan MTP n-max>1 np>1, kv-unified=false,
+    vec->GEMM above width 8; watch only).'
+  verification: dive-verified
+  ingested_date: '2026-10-03'
+  reader_should_conclude: A plausible, unmeasured decode tax on our np4 unified-KV MI210 server that is independent
+    of drafter acceptance; measure it before blaming DFlash2 for 25-30 tok/s agentic decode. The source numbers
+    are other GPUs (gfx1201, V100) and must not be quoted as MI210 expectations.
+  handoffs_updated: []
+  handoffs_created: []
+  depends_on: []
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Confirmed in thread and in our frozen tree code.
+  - claim_index: 1
+    effect: unaffected
+    note: Thread tables verbatim.
+  - claim_index: 2
+    effect: narrowed
+    note: OVERTURNS the reporter's pp-only framing using the thread's own data.
+  - claim_index: 3
+    effect: unaffected
+    note: 'PR #28943 + #19523 comments.'
+  dive_corrections: '2026-10-03 Stage 2b (round 3): CONFIRMED mechanism and presence in v10; OVERTURNED "decode
+    unaffected"; no upstream fix.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v10 ggml/src/ggml-cuda/fattn-common.cuh:1094
+    quote: if (mask && K->ne[1] % FATTN_KQ_STRIDE == 0 && (Q->ne[1] >= 1024 || Q->ne[3] > 1)) {
+    quote_sha256: 4fea69c173d3073533ee77b97e02bb24fc810d24e4c886ecf5d8cb98b562ce49
+    source_revision: production-consolidated-v10@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: v10 src/llama-kv-cache.cpp:1275
+    quote: result = std::max(std::min(cells.size(), std::max(n_pad_cur, GGML_PAD(cells.used_max_p1(), n_pad_cur))),
+      result);
+    quote_sha256: abde40488b373d8b3c3342528216e1f9fc169488151da4338ee451644f170937
+    source_revision: production-consolidated-v10@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '#28495 comment 5560879161'
+    quote: '| `-kvu` S_PP | 885.55 | 792.90 | **644.39** | **-27.2%** |'
+    quote_sha256: a32f19106309ab1c832fa66703d78e099c93d6dc8a4c0b3d5b8d13e9b4fa7435
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: '#28495 comment 5825158107'
+    quote: '| one unrelated 49k conversation resident | 325.12 / 303.37 t/s |'
+    quote_sha256: a6674ba0d12dcfa85c7c671daa5b2fcf877db99c167ea9674fd5b4587298e760
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '#28495 body'
+    quote: Generation speed is essentially unaffected — the loss is in prompt processing only.
+    quote_sha256: a85c03206421da4bdf9fdc0659719bff47b71f2a6fe07125807a21ab16afb8c0
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '#28495 comment 5560879161'
+    quote: '| `-kvu` S_TG | 24.84 | 24.20 | 23.20 | -6.6% |'
+    quote_sha256: a3b929bce5de71875935dd6f4e698ea53e7402858723a3c7a9dd2901909eab7e
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: '#28495 comment 5823360170'
+    quote: So a 15.6k conversation with three others parked generates at the speed of a 62k one.
+    quote_sha256: 95ef350cc777fd94ffac47743d50a0473e5039f13d00ccc652df4d02e478a043
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '#28943 comment 5778750133'
+    quote: The way this is implemented still introduces too much technical debt. This needs a human to do the software
+      design.
+    quote_sha256: c79e7c8f4d05d4cd81e00a3fa2da6799911337b44b022a6af68d0c133bde351e
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: '#19523 comment 3891269533'
+    quote: The unified KV cache is not well supported by the CUDA backend
+    quote_sha256: 79366ddbd765f9d7d5c9294bcb75aed6f6c79ca58bb003e545e79e88ec58a6e5
+    source_revision: gh api GET retrieved 2026-10-03T13:52Z
+    verified_by: research-intake/stage2 (subagent, 2026-10-03)

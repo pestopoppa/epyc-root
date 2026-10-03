@@ -1,402 +1,102 @@
 {
-  "session_id": "intake-hipkittens-gemm-ladder-20260926",
-  "started_at": "2026-09-26T18:05:00Z",
-  "last_checkpoint": "2026-09-27T00:10:00Z",
-  "phase": 5,
-  "stage": "stage4-complete",
-  "session_kind": "research-intake Stage 1 (single operator-submitted blog + 2 expansion entries), run by a subagent of the DS41/AutoKernel main session",
-  "lane_note": "Worktree /mnt/raid0/llm/worktrees/intake-hipkittens-gemm-20260926, branch intake/hipkittens-gemm-20260926, rebuilt on origin/main 7e931704 after intake/orch-prior-art-20260926 landed with intake-1783..1821. This session's entries renumbered 1783/1784/1785 -> 1822/1823/1824 (pre-renumber commit 7e337804 kept as branch backup/intake-hipkittens-gemm-pre-renumber, delete at close-out).",
-  "previous_session": "intake-orch-prior-art-20260926 (stage4-complete; preserved at /mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-orch-prior-art-stage4.json). Earlier: intake-exl3-sglang-throughput-20260925 (/mnt/raid0/llm/tmp/dive-hipkittens-gemm/previous-research-session-exl3-stage4.json)",
-  "mandate": "Ingest the AMD ROCm blog 'An Educational GEMM Ladder for Helios GPUs' and distill AutoKernel hypotheses relevant to MI210 (gfx90a) and EPYC 9655 (Zen 5).",
-  "raw_submissions": {
-    "operator_url_with_tracking_params_stripped": "https://rocm.blogs.amd.com/software-tools-optimization/hipkittens-gemm-ladder/README.html"
-  },
-  "max_existing_intake_id_at_start": 1782,
-  "next_intake_id": 1827,
+  "session_id": "intake-3090-labd-20261003",
+  "started_at": "2026-10-03T13:10:00Z",
+  "stage": "stage2-complete (3 rounds: Stage 2 + Stage 2b x2); Stage 3 NOT started",
+  "session_kind": "research-intake Stages 1-2, run by a subagent of the main session; PREPARE-only (ruling b) \u2014 all writes under /mnt/raid0/llm/tmp/intake-3090-labd-20261003/",
+  "mandate": "Operator-submitted essay on Qwen3.8-27B ~381 tok/s on one RTX 3090 (HyperQwen / LABD / DFlash2 + context lookup); relevance to MI210 llama.cpp v10 DFlash2 serving on agentic traffic.",
+  "id_allocation_basis": "origin/main a1d41895 (2026-10-03T12:14Z) last id intake-1826; main session must re-check before applying",
+  "next_intake_id": 1850,
   "entries_processed": [
-    "intake-1822",
-    "intake-1823",
-    "intake-1824",
-    "intake-1825",
-    "intake-1826"
+    "intake-1827",
+    "intake-1828",
+    "intake-1829",
+    "intake-1830",
+    "intake-1831",
+    "intake-1832",
+    "intake-1833",
+    "intake-1834",
+    "intake-1835",
+    "intake-1836",
+    "intake-1837",
+    "intake-1838",
+    "intake-1839",
+    "intake-1840",
+    "intake-1841",
+    "intake-1842",
+    "intake-1843",
+    "intake-1844",
+    "intake-1845",
+    "intake-1846",
+    "intake-1847",
+    "intake-1848",
+    "intake-1849"
   ],
-  "entries_remaining": [],
   "expansion_cap": 10,
-  "expansion_count": 2,
-  "expansion_entries": {
-    "intake-1823": "gluon-gemm-tutorial (via intake-1824 prerequisite link)",
-    "intake-1824": "mi450-lds-optimization (linked from intake-1822 Level 6)"
-  },
+  "expansion_count": 9,
   "expansion_refused": [
     {
-      "seed": "intake-1822",
-      "candidate": "https://siboehm.com/articles/22/CUDA-MMM",
-      "reason": "CUDA SGEMM worklog that inspired the ladder; canonical and widely known, NVIDIA-specific; adds no gfx90a/Zen5-specific mechanism beyond intake-1822/1784. Low relevance."
+      "seed": "intake-1827",
+      "reason": "cap headroom kept for Stage-2b; RASD/REST/2605.20104 already indexed (re-encounter notes)"
     },
     {
-      "seed": "intake-1822",
-      "candidate": "https://chipsandcheese.com/p/amds-instinct-mi455x-aiming-for-the",
-      "reason": "Independent MI455X architecture analysis (surfaced by Tier-2b search); would corroborate CDNA5 hardware facts only, which are not load-bearing for gfx90a/Zen5 hypotheses. Candidate for a Stage-2 dive-surfaced list if the operator wants hardware-fact corroboration."
-    },
-    {
-      "seed": "intake-1822",
-      "candidate": "https://www.amd.com/content/dam/amd/en/documents/products/accelerators/instinct/amd-instinct-mi455x_brochure.pdf",
-      "reason": "Product brochure, no technique content."
-    },
-    {
-      "seed": "intake-1824",
-      "candidate": "arXiv:2505.23819 (Linear Layouts, resolved)",
-      "reason": "Triton compiler-theory paper; relevance to our llama.cpp HIP kernels low."
+      "seed": "intake-1828",
+      "reason": "Metrale PR #83, CopySpec, ArcticInference cache.py: low marginal value over SuffixDecoding/PR #25784"
     }
   ],
+  "dedup": {
+    "swept": "unbounded grep over views/epyc-root-main research/intake_index.yaml @a1d41895 and /workspace copy",
+    "redirects": "syv-ai/qwen38-27b-rtx3090 -> syv-ai/HyperQwen (301)",
+    "collisions": [
+      "2602.06036=intake-158",
+      "z-lab.ai/projects/dflash=intake-298",
+      "inco.ai/blog/dflash2=intake-1571",
+      "incoai/Qwen3.8-27B-DFlash2=intake-1715",
+      "2211.17192=intake-016",
+      "llama.cpp#27117=intake-1277",
+      "RASD=intake-071",
+      "2311.08252=intake-039",
+      "2605.20104=intake-742"
+    ]
+  },
+  "selected_for_dive": {
+    "round1_stage2": [
+      "intake-1827",
+      "intake-1828",
+      "intake-1833",
+      "intake-1834",
+      "intake-1835",
+      "intake-1836"
+    ],
+    "round2_stage2b": [
+      "intake-1842",
+      "intake-1843",
+      "intake-1844",
+      "intake-1845",
+      "HyperQwen#102 (folded into 1827)",
+      "llama.cpp#27117 refresh (intake-1277 note)"
+    ],
+    "round3_stage2b": [
+      "intake-1846",
+      "intake-1847",
+      "intake-1848",
+      "llama.cpp#28495/#22838/#27544 (see report)"
+    ]
+  },
+  "selection_authority": "Operator pre-approved main-thread recommendations, verbatim: \"No more than three stage 2 sweeps where i already approve all recommendations made by the main thread.\"",
+  "second_reader": {
+    "intake-1827": "86 anchors mechanically re-found (dive/anchors_hq_ngram_secondreader.json)",
+    "intake-1828": "included",
+    "papers": "dive/anchors_papers.py, raw/r3/anchors*.py"
+  },
   "steering_ledger": [
     {
       "seq": 1,
       "stage": 1,
-      "verbatim": "The teams focused on very recent AMD Instinct but I wonder if anything could be distilled into AutoKernel hypotheses that could be relevant for our hardware.",
-      "disposition": "planned",
-      "plan_ref": "Stage-3 plan items (pending): GPU MMQ hypotheses H3/H7/H8/H9/H10/H5 + static register audit; CPU gemm4xN set via DS41 inbox note 41 (placed by coordinator)"
-    },
-    {
-      "seq": 2,
-      "stage": 2,
-      "verbatim": "Operator decision: Stage 2 deep dives on BOTH intake-1822 (GEMM ladder + HipKittens gemm_*.cpp examples: rung mechanisms, and whether their builtins exist on gfx90a / ROCm 6.2) and intake-1823 (Gluon GEMM tutorial + ROCm/gfx950-gluon-tutorials: gfx90a support, whether the AGPR/VGPR cleanup pass and the spill lessons apply to our HIP builds). Also on GEMM_IQK_Q8_0: the operator chose \"let the loop propose it\" (it stays priority 0 in DS41's inbox note 41-..., which I already placed); no direct A/B from you.",
-      "disposition": "planned",
-      "plan_ref": "stage2 dives intake-1822, intake-1823; GGML_IQK_Q8_0 A/B declined for this lane (DS41 loop owns it)",
-      "relayed_by": "coordinator"
-    },
-    {
-      "seq": 3,
-      "stage": 2,
-      "verbatim": "Operator Stage-2 gate decision: - INGEST+DIVE: (1) LLVM PR #159493 (+#148079 bundled); (2) arXiv 2609.15627 \"DeepSeek-V4-Flash on AMD gfx90a\" \u2014 resolve the real ID/title first; if it doesn't resolve to a real paper, record that and don't fabricate. - DECLINE everything else surfaced (incl. the chipsandcheese gfx1250-LLVM and MI455X articles). Record the declines in the steering ledger. Continue the skill flow on your lane: Stage 2 for the two new sources, then prepare the Stage-3 plan (the six proposed handoff tasks, updated with whatever #159493 and the arXiv paper change), honoring the gating flag (items 2 and 3 are under the 2026-09-08 no-pure-kernel-research directive \u2014 present them as gated).",
-      "disposition": "planned",
-      "plan_ref": "stage2b: intake-1825 (arXiv 2609.15627), intake-1826 (LLVM PR #159493 + #148079); declines recorded in stage2_declines; Stage-3 plan items 2/3 marked GATED",
-      "relayed_by": "coordinator"
-    },
-    {
-      "seq": 4,
-      "stage": 3,
-      "verbatim": "Operator decisions: - OD-1: ACCEPT your recommendations (DSpark 2607.05147 = re-encounter on intake-738 + set its arxiv_id; decline DeepSeek-V4 tech report 2606.19348 and DeepSeek-V4.1-Flash 2609.19969 for this lane \u2014 they go to a DS41-focused intake later). Record in the steering ledger. - Stage 3: APPROVED AS PLANNED \u2014 apply P1\u2013P8 exactly as written (P2 + INF03-AGPR-1 carry the GATED marker). - DS41 inbox note 42: I hold it and place it at the next loop boundary \u2014 do not write the inbox.",
-      "disposition": "planned",
-      "plan_ref": "Stage 4 applies P1-P8; OD-1 closes the Stage-2 gate",
-      "relayed_by": "coordinator"
+      "verbatim": "No more than three stage 2 sweeps where i already approve all recommendations made by the main thread.",
+      "disposition": "context-only",
+      "plan_ref": "scope bound honoured: Stage 2 + two Stage-2b rounds; Stage 3 not started"
     }
   ],
-  "source_fetches": {
-    "intake-1822": {
-      "url": "https://rocm.blogs.amd.com/software-tools-optimization/hipkittens-gemm-ladder/README.html",
-      "retrieved": "2026-09-26T18:09:01Z",
-      "sha256": "4b340b504a0729383b0588ac11b7b4f85e367f84427d78b205501b9fc2e9b04f",
-      "last_modified": "Mon, 14 Sep 2026 17:14:15 GMT",
-      "route": "curl raw HTML + local text extraction"
-    },
-    "intake-1823": {
-      "url": "https://rocm.blogs.amd.com/software-tools-optimization/gluon-gemm-tutorial/README.html",
-      "sha256": "c87dd56cfef425a0d5bf5a7dd19dd461ca4a5b80ad98a8c91d4afdc7324b73cb"
-    },
-    "intake-1824": {
-      "url": "https://rocm.blogs.amd.com/software-tools-optimization/mi450-lds-optimization/README.html",
-      "sha256": "c1d546a88cbdc0c0843da3f036e1cefb57b7c39ab6d113cab377b296e994110b"
-    }
-  },
-  "dedup": {
-    "method": "unbounded grep of url/arxiv/title terms over the lane index AND the concurrent orch-prior-art worktree index; alias path artificial-intelligence/hipkittens-gemm-ladder also checked",
-    "result": "no collision; related prior entries intake-947 (HipKittens paper/repo, dived), intake-966 (amd-brr blog), intake-961 (Triton PR #5018)"
-  },
-  "code_reads": {
-    "tree": "/mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925",
-    "head": "cafb59c3bf67a0e903b1c7218dcdf0b3916f80fc",
-    "branch": "experimental/fastload-ds41-20260925",
-    "mode": "read-only, no builds"
-  },
-  "contradiction_pass": {
-    "intake-1822": "No external criticism found in a bounded search (provisional). Internal transfer caveat from intake-947 dive item 4 (64 KiB LDS cannot double buffer; HK loses 3/5 sizes on MI325X)."
-  },
-  "dive_recommendations": [
-    {
-      "rank": 1,
-      "intake": "intake-1822",
-      "why": "its rungs will seed AutoKernel hypotheses; the HipKittens gemm_*.cpp examples would settle whether each rung's mechanism is as described and which LLVM builtins it uses (gfx90a availability)"
-    },
-    {
-      "rank": 2,
-      "intake": "intake-1823",
-      "why": "closest-to-gfx90a ladder (MFMA/wave64/512 VGPR); repo would settle Gluon's gfx90a support and the amdgcnas peephole's applicability"
-    }
-  ],
-  "explicit_declines": [
-    {
-      "intake": "intake-1824",
-      "reason": "relevance low, gfx1250-only mechanisms; knowledge_only"
-    }
-  ],
-  "stage1_gate": {
-    "validate_intake": "exit 0 (OK: 1781 entries validated)",
-    "git_status_handoffs": "clean",
-    "expansion": "2 <= 10"
-  },
-  "selected_for_dive": [
-    "intake-1822",
-    "intake-1823"
-  ],
-  "id_collision_check": {
-    "checked_at": "2026-09-26T19:10Z",
-    "origin_main_max": "intake-1782",
-    "orch_prior_art_landed": false,
-    "action": "keep 1783-1785 committed, unpushed"
-  },
-  "renumber": {
-    "at": "2026-09-26",
-    "map": {
-      "intake-1783": "intake-1822",
-      "intake-1784": "intake-1823",
-      "intake-1785": "intake-1824"
-    },
-    "reason": "concurrent orch-prior-art session landed first with 1783..1821",
-    "dive_scratch": {
-      "intake-1822": "/mnt/raid0/llm/tmp/dive-intake-1822/",
-      "intake-1823": "/mnt/raid0/llm/tmp/dive-intake-1823/"
-    },
-    "external_citation_to_update": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/inbox/41-ds41-gemm-ladder-hypotheses-20260926.md cites intake-1783 -> must read intake-1822 (coordinator edits; this lane does not write the inbox)"
-  },
-  "stage2_dives": {
-    "intake-1822": {
-      "verdict": "adopt_patterns stands; dive-verified",
-      "claims": {
-        "0": "CONFIRMED arithmetic / narrowed (in-code factors 1.79x)",
-        "1": "PARTIAL (L5 bundles BLOCK_K 32->128; L4 prose wrong)",
-        "2": "PARTIAL (L10 and L12 bundle changes; L10 layout prose wrong)",
-        "3": "PARTIAL (vendor facts; chipsandcheese contradicts remote-L2 figure)",
-        "4": "CONFIRMED as author statement only"
-      },
-      "code": "HazyResearch/HipKittens@be1c91841b81 kernels/cdna5/gemm/bf16fp32/gfx1250/",
-      "scratch": "/mnt/raid0/llm/tmp/dive-intake-1822/"
-    },
-    "intake-1823": {
-      "verdict": "adopt_patterns stands; dive-verified",
-      "claims": {
-        "0": "CONFIRMED",
-        "1": "PARTIAL/narrowed (spill is scheduler x RA policy)",
-        "2": "REATTRIBUTED (RA hints do most of the work)",
-        "3": "CONFIRMED",
-        "4": "CONFIRMED"
-      },
-      "repo": "ROCm/gfx950-gluon-tutorials@4d7d632a (blog-era a447df3)",
-      "scratch": "/mnt/raid0/llm/tmp/dive-intake-1823/"
-    }
-  },
-  "second_reader": {
-    "anchors": 28,
-    "found": 28,
-    "page_hashes": "MATCH",
-    "gaps_closed_by_parent": [
-      "L4 +25%",
-      "L11 +6%",
-      "CDNA 5 Table 3 caption",
-      "two-half L2"
-    ],
-    "binary_recheck": "Q8_0 J=64/J=32 metadata MATCH",
-    "routing_recheck": "CONFIRMED dense Q8_0 pp512 never reaches MMQ on CDNA2",
-    "files": "/mnt/raid0/llm/tmp/dive-intake-1822/second-reader/"
-  },
-  "stage2_surfaced_sources": [
-    {
-      "id": "https://chipsandcheese.com/p/amds-instinct-mi455x-aiming-for-the",
-      "settles": "hardware-fact corroboration and the remote-L2 contradiction",
-      "bears_on": "intake-1822",
-      "recommendation": "ingest (no dive)"
-    },
-    {
-      "id": "https://chipsandcheese.com/p/scrying-the-amd-gfx1250-llvm-tea",
-      "settles": "LLVM-derived independent confirmation of TDM/split barriers/clusters",
-      "bears_on": "intake-1822",
-      "recommendation": "ingest-and-dive (small)"
-    },
-    {
-      "id": "https://chipsandcheese.com/p/amd-advancing-ai-2026-talking-cdna5",
-      "settles": "nothing new (vendor interview)",
-      "bears_on": "intake-1822",
-      "recommendation": "decline"
-    },
-    {
-      "id": "https://siboehm.com/articles/22/CUDA-MMM and https://hazyresearch.stanford.edu/blog/2025-11-09-amd-brr (already intake-966)",
-      "settles": "nothing for gfx90a",
-      "bears_on": "intake-1822",
-      "recommendation": "decline"
-    },
-    {
-      "id": "HipKittens issues/PRs #57-#86; AIatAMD / Simran Arora X posts",
-      "settles": "nothing (restatement)",
-      "bears_on": "intake-1822",
-      "recommendation": "decline"
-    },
-    {
-      "id": "llvm/llvm-project PR #159493 (Select VGPR MFMAs by default) + PR #148079 bundled",
-      "settles": "whether a ROCm/LLVM upgrade removes the AGPR copy tax on <=256-thread MFMA kernels",
-      "bears_on": "intake-1823 (also intake-1415/1421)",
-      "recommendation": "ingest-and-dive"
-    },
-    {
-      "id": "arXiv 2609.15627 (search-snippet title 'DeepSeek-V4-Flash on AMD gfx90a'; id and title NOT yet resolved)",
-      "settles": "whether Triton/AIter/CK paths run on gfx90a (bears on intake-961 school-4 claim)",
-      "bears_on": "intake-1823",
-      "recommendation": "ingest-and-dive (resolve id first)"
-    },
-    {
-      "id": "llvm PR #216372; Triton Gluon AMD API docs; tutorial gfx942_experiment branch; triton 44f9161a; ROCm/aiter #179; lightseekorg/tokenspeed PR #1655",
-      "settles": "post-upgrade detail / companion artifacts / gfx950-only adoption",
-      "bears_on": "intake-1823",
-      "recommendation": "decline"
-    }
-  ],
-  "stage2_gate": {
-    "dives": "complete",
-    "second_reader": "complete",
-    "dive_surfaced_list": "presented to coordinator/operator 2026-09-26; selection pending",
-    "stage3": "not started"
-  },
-  "stage2_declines": [
-    {
-      "source": "https://chipsandcheese.com/p/amds-instinct-mi455x-aiming-for-the",
-      "bears_on": "intake-1822",
-      "reason": "operator declined 2026-09-26 (hardware-fact corroboration for CDNA5 only; not load-bearing for gfx90a/Zen5)"
-    },
-    {
-      "source": "https://chipsandcheese.com/p/scrying-the-amd-gfx1250-llvm-tea",
-      "bears_on": "intake-1822",
-      "reason": "operator declined 2026-09-26"
-    },
-    {
-      "source": "https://chipsandcheese.com/p/amd-advancing-ai-2026-talking-cdna5",
-      "bears_on": "intake-1822",
-      "reason": "operator declined (vendor interview, restatement)"
-    },
-    {
-      "source": "https://siboehm.com/articles/22/CUDA-MMM; hazyresearch amd-brr (already intake-966)",
-      "bears_on": "intake-1822",
-      "reason": "operator declined (no gfx90a content)"
-    },
-    {
-      "source": "HipKittens issues/PRs #57-#86; AIatAMD and Simran Arora X posts",
-      "bears_on": "intake-1822",
-      "reason": "operator declined (restatement)"
-    },
-    {
-      "source": "llvm PR #216372",
-      "bears_on": "intake-1823",
-      "reason": "operator declined (post-upgrade detail)"
-    },
-    {
-      "source": "Triton Gluon AMD API docs; tutorial gfx942_experiment branch; triton 44f9161a",
-      "bears_on": "intake-1823",
-      "reason": "operator declined (companion artifacts / source read already covers)"
-    },
-    {
-      "source": "ROCm/aiter #179; lightseekorg/tokenspeed PR #1655",
-      "bears_on": "intake-1823",
-      "reason": "operator declined"
-    },
-    {
-      "source": "arXiv:2606.19348 (DeepSeek-V4 tech report)",
-      "bears_on": "intake-1825",
-      "reason": "operator declined for this lane 2026-09-26; route to a DS41-focused intake"
-    },
-    {
-      "source": "arXiv:2609.19969 (DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression)",
-      "bears_on": "intake-1825",
-      "reason": "operator declined for this lane 2026-09-26; route to a DS41-focused intake"
-    }
-  ],
-  "stage2b": {
-    "intake-1825": {
-      "source": "https://arxiv.org/abs/2609.15627",
-      "resolved": "2026-09-26 arxiv abs+API: 'DeepSeek-V4-Flash on AMD gfx90a: Correctness Recovery and Inference Performance Engineering', v2, published 2026-09-14",
-      "verification": "dive-verified",
-      "scratch": "/mnt/raid0/llm/tmp/dive-intake-1825/",
-      "page_sha256": "4dfe4f873ce4353164789fd945dd3cb2613e3743319ea445f991d069be787b3b"
-    },
-    "intake-1826": {
-      "source": "https://github.com/llvm/llvm-project/pull/159493 (+ #148079 bundled)",
-      "verification": "dive-verified",
-      "scratch": "/mnt/raid0/llm/tmp/dive-intake-1826/",
-      "merge_commits": {
-        "159493": "95687721874d2e32296cc377e819eee15dfb8ae7",
-        "148079": "695660cdfd1ca65cd6e02e6950d10c990dfa0036"
-      }
-    }
-  },
-  "stage2b_surfaced_sources": [
-    {
-      "id": "arXiv:2607.05147",
-      "title": "DSpark: Confidence-Scheduled Speculative Decoding with Semi-Autoregressive Generation (resolved)",
-      "settles": "intake-738's 'no arXiv id exists' provenance note",
-      "bears_on": "intake-1825 / intake-738",
-      "recommendation": "record as a re-encounter on intake-738 (set arxiv_id) in Stage 4; no new entry"
-    },
-    {
-      "id": "arXiv:2606.19348",
-      "title": "DeepSeek-V4: Towards Highly Efficient Million-Token Context Intelligence (resolved)",
-      "settles": "architecture source for CSA/HCA/mHC; referenced inside intake-1257/1323 without its own entry",
-      "bears_on": "intake-1825; DS41",
-      "recommendation": "decline for this lane; ingest in a DS41-focused intake"
-    },
-    {
-      "id": "arXiv:2609.19969",
-      "title": "DeepSeek-V4.1-Flash: Pushing the Limits of KV Cache Compression (resolved)",
-      "settles": "DS41 attention/KV facts (not cited by 2609.15627; found by search)",
-      "bears_on": "intake-1825; DS41",
-      "recommendation": "decline for this lane; ingest in a DS41-focused intake"
-    },
-    {
-      "id": "llvm PRs #161996, #145024, #154323",
-      "settles": "folded into intake-1826 notes",
-      "bears_on": "intake-1826",
-      "recommendation": "no entry"
-    },
-    {
-      "id": "llvm PRs #170335/#180751/#185604/#205901; issue #131954; TheRock SUPPORTED_GPUS.md; ROCm 10.0.0 compatibility matrix",
-      "settles": "upgrade-time monitor / cite-only",
-      "bears_on": "intake-1826",
-      "recommendation": "decline (cite in runbook row)"
-    }
-  ],
-  "second_reader_2b": {
-    "intake-1825": "26/26 re-found, hashes match, page hash match; 6 anchors added for unanchored wording; claims 1 and 2 reworded (near 0.24, no decode hot-path cost, historical TP4/EP1, hedged ledger attribution)",
-    "intake-1826": "18/18 re-found, hashes match; merge dates/SHAs confirmed; therock-7.14 true / rocm-7.2.0 false re-fetched byte-identical; claim 0 'by default', claim 3 optimized-RA-path precision",
-    "files": [
-      "/mnt/raid0/llm/tmp/dive-intake-1825/second-reader/",
-      "/mnt/raid0/llm/tmp/dive-intake-1826/second-reader/"
-    ]
-  },
-  "stage3_plan": "docs/research-intake/hipkittens-gemm-ladder-stage3-plan-20260926.md",
-  "stage3_open_gate": null,
-  "stage3_approved": "2026-09-26 (operator, via coordinator): approved as planned",
-  "stage4": {
-    "applied": [
-      "P1 agentic-rocm-kernel-authoring.md: INF03-REGAUDIT-1, INF03-AGPR-1 (GATED), INF03-GLUON-X (pre-ticked)",
-      "P2 autokernel-research-loop.md: AK-MMQ-H3/H7/H8/H10/H5/SK (GATED) + pre-ticked record",
-      "P3 docs/runbooks/rocm-upgrade-checklist.md: MFMA-form row",
-      "P4 autokernel-champion-aggregate.md: CH-6 correction note",
-      "P5 deepseek-v41-flash-evaluation.md: DS41-C52 edited, DS41-C53, DS41-C54",
-      "P6 vidya-belief-substrate-program.md: SC84a",
-      "P7 rocm-verify-profile-backend.md: RVP-ATT-1",
-      "P8 intake-1822/1823/1825/1826 integrated; intake-961 narrowed; intake-738 arxiv_id 2607.05147 + re-encounter"
-    ],
-    "new_open_tasks": 13,
-    "pre_ticked": 2,
-    "validate_intake": "exit 0",
-    "index_state_check": "exit 0",
-    "promotion": {
-      "lane_pushed": "origin/intake/hipkittens-gemm-20260926",
-      "main_fast_forward": "c7d8d676..e43a7589",
-      "locks": "wrapup + push held as ak-ds41-main, released",
-      "git_cherry_origin_main": "empty"
-    },
-    "close_out": {
-      "lane_worktree": "removed after this commit lands",
-      "backup_branch": "backup/intake-hipkittens-gemm-pre-renumber deleted",
-      "other_intake_worktrees": "intake-exl3-sglang-20260925 and intake-orch-prior-art-20260926 are clean and fully in origin/main; left for operator-confirmed removal (memory rule: confirm deletes)",
-      "shared_clone": "/workspace research/intake_index.yaml + .research-session.json are dirty working copies (max intake-1707) on a local main 117 commits behind origin/main (HEAD max intake-1527): newer than local HEAD, older than origin/main; not reset (the reset-to-HEAD rule does not apply and the shared checkout's main is stale)"
-    }
-  }
+  "stage2_declined_sources": "see report.md \u00a7 Declined dive-surfaced sources",
+  "stage3_open_gate": "operator: Stage-3 plan mode"
 }
