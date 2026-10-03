@@ -182,7 +182,7 @@ is olympiad-style reasoning.
   4 × 163840 instead. Fix the "3 GiB" comment at `stack_manifest.py:1690` (code uses 2.0) in the same package.
 
 ### B — orchestrator
-- [ ] **KVU-15 — :8083 KV-pool step 1: close the admission bypasses** (operator-approved 2026-10-03, IN PROGRESS;
+- [x] **KVU-15 — :8083 KV-pool step 1: close the admission bypasses** ✅ 2026-10-03 (workspace-ec) — orch 2586a7bb on main, API reload: scouts reserve prompt+max_tokens on the token gate; one long prefill (≥16384 est. tokens, env ORCHESTRATOR_KV_POOL_LONG_PREFILL_TOKENS, 0=off) per server, lease ends at first chunk or prompt/250 tok/s; /slots observation holds long requests behind any slot prefilling ≥4096 (covers other uvicorn workers + direct clients like C95); per-request cap = min(slot ctx, model ctx_max). 32 new tests; 4126 related pass. Live alias call via gate ok. Remaining limits: per-worker gate (cross-worker via /slots only), whole-prompt size even when mostly cached; ungated paths documented in /mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md (action_repair_completer if pointed at :8083; prewarmer only :8074). Was: (operator-approved 2026-10-03, IN PROGRESS;
   `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §3(d), §4 step 1). All 17 pool-exhaustion episodes in
   the 8083 log were four ~45-55k contexts filling the 196k pool, and `logs/orchestrator.log` holds zero
   `SharedKVPoolAdmission` queue lines: the load never passed through the gate. No relaunch, API reload only:
