@@ -426,3 +426,98 @@ open). **Filed (2):** KVU-19a, UFH14-B6b. **Declines (4):**
 | epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | restore, SLOTS_DEBUG window, KVU-16d decision, KVU-19a |
 
 Index-row `Next action` refreshes are prepared, not applied: `/mnt/raid0/llm/tmp/wrapup-ec-x0/INDEX_ROWS.md`.
+
+## ~17:15Z — Per-task wrap-up: KVU-19a mask-skip built; parked roles, KVU-15c and B6b deployed; speech down (workspace-ec)
+
+**KVU-19a — masked-KV-block skip for unified-KV flash attention, BUILT (operator: implement directly, not via
+AutoKernel, and fold into the champion).**
+- Problem: with a shared (unified) KV pool, decode and verify attend over every cell other slots occupy. P3 measured
+  −59.5% no-draft decode with three ~99k neighbours resident. Upstream trims only the masked tail, and its launch gate
+  never fires for unified-KV decode.
+- Base, branch and builds: base champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`). Branch
+  `experimental/fa-maskskip-20261003` is pushed to `fork`; ac97e305a (GPU plus `test_flash_attn_ext_unified`) and
+  a0d0ae238 (CPU). Store builds `kernels/builds/gpu-20261003-a0d0ae238` and `cpu-20261003-a0d0ae238` (build 10310);
+  linkage PASS for both. The frozen production tree was not touched.
+- Kernels: all 4 HIP FA kernels, the CDNA2 fused-combine vec path, and CPU. A new scan kernel marks live/dead 256-cell
+  blocks per query tile. On gfx90a, plain decode uses vec, and verify/batched/prefill use WMMA. Knobs:
+  `GGML_CUDA_FA_MASK_SKIP=0` (one binary is its own control) and `GGML_CUDA_FA_MASK_SKIP_MIN_KV` (default 4096).
+- Correctness (dev build, before the final q8_0 converter change): `test-backend-ops` FLASH_ATTN_EXT on ROCm0
+  2920/2920, including 52 new unified-KV cases. 64-case skip on/off bit-identical. Against the unpatched champion,
+  58/64 bit-identical and 6 at nmse ≤ 3e-7 (codegen). CPU 86/86 bit-identical.
+- Kernel micro-bench (dev build, contended GPU, indicative only), 27B attention shape: decode (vec) 2446 → 401 µs at
+  +112k foreign cells; drafted verify (WMMA) 4443 → 788 µs (+18% residual vs +590%). 0 foreign: +4-5%, within noise,
+  to be re-measured.
+- Upstream: #28495 open; the maintainer-requested approach builds on `flash_attn_mask_to_KV_max`; PR #28943 closed,
+  #29510 draft.
+- Latent upstream hazard: a branch inside the D=512/576 GQA tile loop made the output nondeterministic on gfx90a even
+  with the skip off. Filed as KVU-19a-2.
+- Fold: trial merge and cherry-pick onto DS41 accumulator b3e0b0902 are both clean. workspace-89 folds it into the
+  champion. FOLD.md copied durably to `docs/design/fa-masked-block-skip-20261003-fold.md`.
+- Pending, in the coordinated GPU block after ~18:15Z: `gpu_slot.sh` (~20-25 min, < 2 GiB: store-build exactness,
+  micro-bench with 3 alternating rounds, P3-mini on gemma-3-1b, batched-bench `-kvu` vs `-no-kvu`,
+  `test-backend-ops`) as KVU-19a-1, and the 27B P3 re-run, new build vs `MASK_SKIP=0`, on workspace-89's harness with a
+  binary override. Falsifiable expectations: at L3, drafted ≥ ~33 tok/s (was 15.4) and no-draft ≥ ~19 (was 8.3);
+  batched `-kvu` within ~5% of `-no-kvu`.
+
+**Deployed on orch main (API-only reloads).**
+- 52fa84d8 (on fa7075f8): parked-role support. `src/runtime/gpu_window.py` adds a window file and CLI, a fast 503
+  `role_parked` at every choke point (primitives, `/v1/chat/completions`, passthrough, backend backstop by port), and
+  preempt-on-request. It also adds a structured `refusal` block (`gate`, `http_status`, `retry_after_s`) on every
+  passthrough refusal (UFH14-B6a). Not built: routing escalations around a parked target (filed as UFH14-B6d).
+- 0d8455a2: passthrough records carry `caller.port` (UFH14-B6b).
+- 0f0bfa19: the KVU-15c prefix-history credit (`src/scheduling/prefix_history.py`) and a `kv_admission` block on
+  serving records.
+- Live proofs are queued in the GPU-block runner: KVU-15c credit, KVU-15a lease, and the first live `caller.port`.
+  `serving_calls.jsonl` has no record since 15:41Z.
+
+**AutoKernel GPU stance (operator).** The upcoming AutoKernel campaign is CPU-only, so the standing GPU-lending
+pattern is moot. Parked-role stays as infrastructure for one-off GPU windows.
+
+**Speech is DOWN (operator).** workspace-89 relayed the instruction: "just take the speech servers down, the full stack
+isn't needed at this time". Whisper and TTS were stopped through the stack at ~16:4xZ, and stay down until the operator
+asks for them back. The operator declined parking the other CPU servers.
+
+**Coordination incident.** My mask-skip subagent ran GPU tests 16:17-16:50:12Z, during workspace-89's timed A3/A4 on
+:8083. workspace-89 marks those calls perturbed. The P3-mini run was stopped at the coordinator's request. Recorded as
+INC-20261003-subagent-gpu-tests-in-peer-window, and the rule is added to `benchmark-analyst.md` → *Scarce windows*:
+no GPU run, subagents included, during any session's GPU measurement window; GPU work only in coordinated slots.
+
+**GPU-block runner prepared** (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/`, RUNBOOK.md plus 5 scripts, dry-run and
+mock self-test OK, nothing run against :8083): `deploy_ec2_lease.py` (DEPLOY-EC-2: KVU-15a lease and KVU-15c credit),
+`q38_t7.py` (Q38-T7), `kvu16b_residency.py` (KVU-16b), `b4g_entry_cost.py` (UFH14-B4g), `b4i_idle_slots_ab.py`
+(UFH14-B4i). It takes ~1.5-2 h, with :8083's roles parked for most of it and :8083 stopped for B4i.
+
+**Findings.**
+- The tts OpenMP active wait burned 32 CPU-min in 21 min after the 15:35Z restore. Filed as SCG-SPEECH-OMP-PASSIVE.
+- `logs/llama-server-8083.log` shows **211 idle-slot purges of non-empty slots** on organic traffic (11.5 M tokens,
+  lines 35430-130878, at the previous np 4 / 196608 shape). The "not reproduced" status, which came from P3 A0, is
+  corrected in KVU-16b and UFH14-B4i.
+- Primitives-lane serving records have no `long_prefill` field. Filed as KVU-15d.
+- The Q38-T7 VB-SERVING-DF2 adapter row is owed. Row text is prepared.
+
+**Checkbox flips (3):** UFH14-B6a, UFH14-B6b, and UFH14-B6c (parked roles, recorded as done). Annotated only, not
+ticked: KVU-19a (built; store-build GPU validation pending), KVU-15c (deployed; live proof pending), KVU-15b,
+KVU-16b, Q38-T7, UFH14-B4g, UFH14-B4i, UFH14-DEPLOY-EC-2, VB-SERVING-DF2, and KVU-19 (workspace-89's).
+**Filed (8):** KVU-19a-1, KVU-19a-2, KVU-15d, UFH14-B6a-1, UFH14-B6d, SCG-SPEECH-OMP-PASSIVE, VB-FA-MASKSKIP, and the
+B6c `[x]` record. **Declines (5):**
+- MMA with `nstages > 1` does not skip: nothing on this host uses it (NVIDIA Ampere+ only).
+- The WMMA rows=8 residual (+18% at 112k): capping `parallel_blocks` would need a host sync, which FOLD.md judges not
+  worth it.
+- The CPU change is exact but within noise on this host. It is not a claimed speedup, and no CPU speed task is filed.
+- A speech restore task: the restore is at the operator's request; CURRENT-CAMPAIGN carries the posture.
+- workspace-89's perturbed A3/A4 calls: their items (UFH14-A*); annotated only, through the incident entry.
+
+| Repo | File | Change |
+|---|---|---|
+| epyc-root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-19a built (annotation) + KVU-19a-1/-2 filed; KVU-19 annotated; KVU-15c deployed (annotation); KVU-15d filed; KVU-15b field half done; KVU-16b purge evidence + runner |
+| epyc-root | `handoffs/active/agentic-serving-harness-fixes.md` | UFH14-B6a `[x]`, B6b `[x]`, B6c `[x]` (parked roles, AK CPU-only stance); B6a-1, B6d filed; B4g, B4i (purge evidence), DEPLOY-EC-2 runner notes |
+| epyc-root | `handoffs/active/qwen38-27b-replace-qwen36.md` | Q38-T7 runner note |
+| epyc-root | `handoffs/active/vidya-belief-substrate-program.md` | VB-SERVING-DF2 annotation; VB-FA-MASKSKIP filed |
+| epyc-root | `handoffs/active/stack-change-governance-pipeline.md` | SCG-SPEECH-OMP-PASSIVE filed |
+| epyc-root | `handoffs/active/CURRENT-CAMPAIGN.md` | ~17:15Z posture: speech down, AK CPU-only, reloads, KVU-19a, GPU block |
+| epyc-root | `docs/design/fa-masked-block-skip-20261003-fold.md` | new: durable copy of FOLD.md |
+| epyc-root | `docs/reference/agent-config/INCIDENT_LOG.md` | INC-20261003-subagent-gpu-tests-in-peer-window |
+| epyc-root | `docs/guides/agent-workflows/benchmark-analyst.md` | *Scarce windows*: no GPU work in a peer's GPU window, subagents included |
+
+Index-row `Next action` refreshes and adapter-row text are prepared, not applied:
+`/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`.

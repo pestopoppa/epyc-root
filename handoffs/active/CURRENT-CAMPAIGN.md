@@ -7,6 +7,26 @@
 
 ---
 
+> **2026-10-03 ~17:15Z — speech DOWN, AutoKernel CPU-only, mask-skip built (workspace-ec wrap-up). Supersedes the
+> speech lines in the ~04:45Z block below.**
+> - **Speech (whisper :9000 STT and tts :9002) is DOWN on operator instruction**, relayed by workspace-89: "just
+>   take the speech servers down, the full stack isn't needed at this time". It was stopped through the stack at
+>   ~16:4xZ. It stays down until the operator asks for it back. When it returns, SCG-SPEECH-OMP-PASSIVE applies: an idle
+>   tts-server burned 32 CPU-min in 21 min.
+> - **The operator declined parking the other CPU servers.** Frontdoor, workers, :8074 and the embedders keep serving.
+> - **The upcoming AutoKernel campaign is CPU-only** (operator). The standing GPU-lending pattern is moot. Parked-role
+>   support (orch 52fa84d8, `src/runtime/gpu_window.py`, fast 503 `role_parked`, preempt-on-request; UFH14-B6c) stays as
+>   infrastructure for one-off GPU windows.
+> - **API-only reloads, orch main:** 52fa84d8 (parked roles + structured `refusal.gate`, UFH14-B6a) and 0f0bfa19
+>   (KVU-15c prefix-history credit, `kv_admission` on serving records; UFH14-B6b `caller.port`). Live proofs are queued.
+> - **KVU-19a masked-block skip is BUILT** (`experimental/fa-maskskip-20261003`, store builds `*-20261003-a0d0ae238`;
+>   fold record `docs/design/fa-masked-block-skip-20261003-fold.md`). workspace-89 folds it into the champion.
+> - **Coordinated GPU block after ~18:15Z:** the KVU-19a store-build validation (`gpu_slot.sh`, < 2 GiB), the 27B P3
+>   re-run on workspace-89's harness (new build vs `GGML_CUDA_FA_MASK_SKIP=0`), and the GPU-block runner
+>   (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/RUNBOOK.md`: DEPLOY-EC-2 lease and credit, Q38-T7, KVU-16b, B4g, B4i).
+>   :8083's roles are parked or :8083 is stopped for ~1.5-2 h of it. No GPU work outside coordinated slots
+>   (INC-20261003-subagent-gpu-tests-in-peer-window).
+
 > **2026-10-03 ~04:45Z — GPU posture (workspace-ec wrap-up, STACKCHG-DFLASH2-20261003). Supersedes the :8083
 > drafter and :8086 lines in the blocks below.**
 > - **:8083 serves Qwen3.8-27B on the DFlash2 drafter**, stack-launched (PID 3793153): `-md

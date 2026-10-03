@@ -32,3 +32,8 @@
   live-only checks, such as startup-log regexes, thread placement, directories that must exist, and `set -e`
   interactions. Run each check read-only against real logs or the live production process first, and have
   it print what it saw. (origin: INC-20260929-dry-run-missed-live-checks)
+- **No GPU work inside another session's GPU measurement window — subagents included.** A small footprint is
+  not "no interference": any kernel launch shares the GPU's compute and memory bandwidth with the measured
+  server. GPU tests, micro-benchmarks and smoke runs go only into a coordinated slot. A main that dispatches a
+  subagent able to touch the GPU either hands it that slot or tells it not to use the GPU.
+  (origin: INC-20261003-subagent-gpu-tests-in-peer-window)

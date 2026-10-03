@@ -128,6 +128,18 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
   owner's :8083 window: the coherence gate at production prompt length; MTP vs DFlash2 decode paired with a
   correctness check at production context; acceptance rate on organic traffic; n-max 7 vs 8 (7 saves ~0.58 GiB of
   GDN state with identical drafting — rides KVU-16). Wire the result as a belief-kernel source (VB-SERVING-DF2).
+  - 2026-10-03 ~17:15Z (workspace-ec): runner prepared, dry-run OK, not yet run: `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/q38_t7.py` (RUNBOOK step 3,
+    :8083 serving at the current KVU-16 shape, 393216 unified / n-max 7, with its roles parked; ~23 min).
+    - Phase A: the codified 24-prompt production mix (`inf70/agents/e3-alpha/prompts.json`, recipe WORKLOAD: greedy,
+      max_tokens 200, thinking off), DFlash2 arm vs a `speculative.n_max: 0` arm, classified with the INF-70 classifier.
+    - Phase B: decode vs context at ~2k/16k/50k/80k with a greedy needle question per length as the paired
+      correctness check. It compares 1:1 with the 2026-10-01 MTP table, which was on the pre-KVU-16 196608 pool, so the
+      comparison crosses server shapes.
+    - Phase C: 4 concurrent ~16k streams. Draft acceptance is recorded for every call.
+    - PASS needs every needle answered and no SALAD / EARLY-EOS / EMPTY / HTTP-ERROR on the DFlash2 arm; a
+      correctness FAIL marks the speed numbers INVALID. Output: `results/q38_t7/<ts>/{calls.jsonl,report.json,report.md}`,
+      schema `epyc.gpublock.q38_t7.v1`. Runs in the coordinated GPU block after ~18:15Z. The adapter row text for
+      VB-SERVING-DF2 is prepared in `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`.
 - [x] **Q38-T8 — DFlash2 load-time VRAM peak sampled DURING the load** (PACKAGE M-2). ✅ 2026-10-03 — the sampler
   armed before `reload architect_critic` (`/mnt/raid0/llm/tmp/stack-change-dflash2-20261003/apply/vram_during_reload.log`,
   0.5 s cadence) reads 44.31 GiB card-total on the OLD process (04:44:36Z), 0.01 GiB at unload (04:44:39Z), and a

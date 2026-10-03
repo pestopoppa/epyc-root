@@ -197,6 +197,21 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   task that does so** (filed 2026-10-03, same incident). Add to the stack-change skill's intake: any operator
   ruling that names a launch recipe ("use X for model Y") is a stack-change intent, not handoff prose; the
   handoff carries only a pointer to the package or to an open `- [ ]` task.
+- [ ] **SCG-SPEECH-OMP-PASSIVE — give the speech servers a passive OMP wait policy.** (filed 2026-10-03,
+  workspace-ec) After the 15:35Z speech restore, tts-server burned **32 CPU-minutes in 21 minutes** while idle:
+  its OpenMP team busy-waits between requests. That spin lands on cores 24-39, inside the frontdoor's `-t 96` set.
+  - Cause to confirm first: the whisper and tts entries in `orchestration/launch_manifest.yaml` declare no
+    `OMP_WAIT_POLICY` / `KMP_BLOCKTIME`, and `stack_env.build_service_env` starts from the parent env. So the policy
+    is either the OpenMP runtime default or an ambient `active` inherited from the launcher. Read
+    `/proc/<pid>/environ` of the next speech launch to tell which.
+  - Fix: declare `OMP_WAIT_POLICY: passive` (plus `KMP_BLOCKTIME: "0"` if the binary links LLVM libomp) in both
+    service `env` blocks. The embedder precedent is `repl-embedding-retrieval.md` A3. This is a launch-env change on
+    the stack surface, so it goes through the stack-change pipeline with operator signature. Pair it with one TTS RTF
+    and one STT RTF check, so the passive wake-up latency does not cost real-time.
+  - Done when an idle speech server shows < 1 CPU-minute per 10 minutes (sampled during the idle period, not after)
+    and the TTS/STT RTFs stay within their recorded real-time figures.
+  - Speech is DOWN from ~16:4xZ 2026-10-03 on operator instruction. The package can be prepared now; its live
+    proof waits for the next speech start, which the operator asks for.
 
 ## Dependency Graph
 

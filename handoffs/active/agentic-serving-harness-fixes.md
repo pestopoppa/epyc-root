@@ -177,6 +177,9 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       The previous shape (np 4 / 196608, spec `n_max=4`, lines 130227-130857) gives a prior: 1631.2 MiB at 39,875 tokens
       (draft 156.7 MiB) and 3306.0 MiB at 84,951 tokens (draft 333.8 MiB), ≈ 40-42 KiB per token. Still open: read the
       first `prompt_save` line on the current shape once a long call lands.
+    - 2026-10-03 (workspace-ec): runner prepared, dry-run OK: `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/b4g_entry_cost.py` (RUNBOOK step 5, :8083
+      serving with its roles parked). It parses the log window and triggers one long call only if no `prompt_save`
+      line exists yet; it reports MiB per 1k tokens, fixed MiB and R². Runs in the coordinated GPU block after ~18:15Z.
   - [ ] **UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**
     v10 defaults `cache_idle_slots` ON: with `--cache-ram` + `--kv-unified`, every idle slot is saved to RAM and cleared
     from the KV pool as soon as any new task starts (server-context.cpp:2469-2483). So on :8083 a paused agent context
@@ -188,6 +191,14 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       reproduce it (the neighbour slot held 0 tokens, so the path never ran). Arm ON of this A/B must first show that the
       purge happens on organic traffic (`saving idle slot` lines plus `/slots` `n_tokens` dropping on a busy neighbour),
       or the A/B has nothing to compare. This replaces a separate A0 re-run, which is not filed.
+    - **2026-10-03 second correction (workspace-ec, read-only log read): the purge is real on organic traffic.**
+      `logs/llama-server-8083.log` holds 211 idle-slot purges of non-empty slots (lines 35430-130878, 11.5 M tokens;
+      latest line 130621, `id 2 | clearing prompt with 84951 tokens`), all at the previous np 4 / 196608 kv-unified
+      shape. So the A/B has something to compare. Arm ON still has to show the purge at the current 393216 shape,
+      which is a smaller precondition than proving it at all.
+    - Runner prepared, dry-run OK: `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/b4i_idle_slots_ab.py` (RUNBOOK step 6). It runs on a scratch :18083 with
+      :8083 STOPPED for VRAM: the production argv with `--no-cache-idle-slots` for arm OFF, captured-PID launch and
+      kill scripts, and a linkage plus KFD proof at launch. Runs in the coordinated GPU block after ~18:15Z.
   - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
     `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
     `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.
@@ -218,13 +229,18 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - Each call wrote one `serving_call.v1` record with `caller.source=passthrough`, orch_commit aa1d6894,
       `passthrough.http_status` 200, `sse_events` 0 / 33 / 27 and `request.prefix_fp` (`logs/serving_calls/serving_calls.jsonl`).
     - Gap found: `caller.port` is absent (null) on every passthrough record. Filed as UFH14-B6b.
-  - [ ] **UFH14-B6b — passthrough records must carry `caller.port`.** (filed 2026-10-03, workspace-ec, from the B6
+  - [x] **UFH14-B6b — passthrough records must carry `caller.port`.** ✅ 2026-10-03 (filed 2026-10-03, workspace-ec, from the B6
     proof) Primitives records set `caller.port` (8083, 8070); passthrough records do not. Cause: `write_serving_record`
     replaces the `caller` block that `serving_calls.build_record` built with its own dict, which has `backend_url`
     but no `port` (`src/api/routes/passthrough.py:757-764`). `server.port` is present, so per-port joins work today
     only by reading the other field. Add `port` (parsed from `base_url`, the same value as `server.port`) to the
     passthrough `caller` block, with a test. Done when a passthrough record carries `caller.port` equal to `server.port`.
-  - [ ] **UFH14-B6a — passthrough refusal records must name the refusing gate in structured fields.** (filed
+    - ✅ 2026-10-03 (workspace-ec): orch 0d8455a2 on main, deployed by the API-only reload that shipped 0f0bfa19.
+      `write_serving_record` now stages the same `port` and `backend_url` the primitives lanes do. Tests: a served and
+      a refused passthrough record both carry `caller.port` (`tests/unit/test_passthrough_route.py`). No live
+      passthrough record exists since the reload (`serving_calls.jsonl` last written 15:41Z); the next passthrough
+      call, e.g. the GPU-block runner's step 1, shows it live.
+  - [x] **UFH14-B6a — passthrough refusal records must name the refusing gate in structured fields.** ✅ 2026-10-03 (filed
     2026-10-03, workspace-ec, from the 14:51-14:58Z refusals) Today a refusal record has `outcome=refused`,
     `dispatched=false` and free-text `error.message`, plus `error.type` (`lock_unavailable`). It has no structured
     field naming the gate: region lock, KV pool, per-request cap or backend semaphore. The blockers
@@ -232,6 +248,46 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     the client received 503. Add `refusal: {gate, blockers, wait_ms}` and the returned status, set on every refusal
     path in `src/api/routes/passthrough.py`, with one test per gate. Done when each gate's refusal record carries
     its gate name and the client's status code.
+    - ✅ 2026-10-03 (workspace-ec): orch 52fa84d8 on main, API-only reload. Every passthrough refusal goes through
+      `_Refused`, which now builds `refusal = {gate, http_status, retry_after_s}` and puts it in both the HTTP body and
+      the serving record (gates: `backend_unavailable`, `admission_queue_full`, `client_closed`, `lock_unavailable`,
+      `upstream_unreachable`, `passthrough_error`, `role_parked`; an undispatched `ContextOverflowError` records
+      `context_overflow`). Tests: `test_passthrough_refusals_carry_structured_gate` and
+      `test_passthrough_returns_503_role_parked_with_refusal_gate` (`tests/unit/test_gpu_window_parked_role.py`).
+      The done-when (gate name + client status on every refusal record) holds by construction. Two parts of the
+      original spec did not land; they are filed as B6a-1.
+    - [ ] **UFH14-B6a-1 — structured `blockers` and `wait_ms` on refusal records, and a test per gate.** (filed
+      2026-10-03, workspace-ec, from the B6a landing) The B6a spec asked for `refusal: {gate, blockers, wait_ms}`.
+      52fa84d8 ships `gate`, `http_status` and `retry_after_s` only. For `lock_unavailable` the blockers (e.g.
+      `['autokernel-cpu']`) are still only inside `detail`, and the wait before refusal is not recorded. Thread the
+      region-lock blockers and the measured wait into `_Refused(refusal=...)` at `passthrough.py` `lock_unavailable`
+      and `admission_queue_full`. Add one test per gate: today one generic `_Refused` test plus `role_parked` cover
+      them. Done when a `lock_unavailable` record carries `refusal.blockers` as a list and `refusal.wait_ms`.
+  - [x] **UFH14-B6c — parked-role support for one-off GPU windows (`src/runtime/gpu_window.py`).** ✅ 2026-10-03
+    (workspace-ec; built and deployed this session, recorded here so the checklist is complete) orch fa7075f8 +
+    52fa84d8 on main, API-only reload.
+    - An MI210 window file (`/mnt/raid0/llm/tmp/gpu-window/mi210.json`) parks roles or ports with a holder and an
+      expected end. CLI: `python -m src.runtime.gpu_window park|status|restore`.
+    - A request that resolves to a parked role or port fails in microseconds with 503 `role_parked` (Retry-After from
+      the expected end, holder in the body), instead of connection-refused or a slow timeout. It is checked at every
+      choke point: primitives `_real_call` (before the contention gate, role semaphore and region locks),
+      `/v1/chat/completions`, the passthrough (models listing too), and a backstop by port in
+      `LlamaServerBackend.infer` / `infer_stream_text`.
+    - A real request writes `preempt_requested_at` (preempt-on-request), so the window holder can decide to yield.
+    - Refusals are recorded as `outcome=refused`, `dispatched=false` with `refusal.gate=role_parked`.
+    - Tests: `tests/unit/test_gpu_window_parked_role.py` (345 lines). First live use: the GPU-block runner's step 2
+      (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/RUNBOOK.md`).
+    - Stance (operator, 2026-10-03): the upcoming AutoKernel campaign is **CPU-only**, so the standing
+      GPU-lending pattern this was built for is moot. Parked-role stays as infrastructure for one-off GPU windows
+      (X0-style measurement blocks, KVU-19 P3 re-runs).
+  - [ ] **UFH14-B6d — route escalations around a parked target.** (filed 2026-10-03, workspace-ec, the part of
+    B6c that was not built) Today a request whose role is parked gets a fast 503 `role_parked`; nothing re-routes
+    it. An escalation chain whose next hop is parked (for example `coder_escalation` or `architect_critic` on :8083)
+    fails instead of trying the next eligible role. In the routing/escalation layer, treat a parked target like an
+    unavailable one: skip to the next role in the chain when one exists, record the skip on the serving record, and
+    return `role_parked` only when no alternative remains. Direct role calls and the passthrough keep the 503: a
+    named-role caller asked for that role. Done when a test with :8083's roles parked shows an escalation served by
+    the next eligible role, with the skip recorded.
   - Declined, not filed: passthrough for multi-endpoint fleets such as frontdoor. Frontdoor returns 422 by design
     (`passthrough.py:236-243`; the KV-pool gate is per URL). No harness experiment targets frontdoor: C95, the
     AutoKernel actor and the opencode/codex local-model configs all address single-endpoint roles. Supporting it
@@ -276,6 +332,14 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - KVU-15a: **nothing new proven.** The post-restore calls are all short, so the lease was never exercised. The
       2-worker replay is still open. Its cached-prefix half waits for KVU-15c, and must not be read from the SLOTS_DEBUG
       window that started at 15:43:08Z.
+
+    **~17:15Z (workspace-ec): the remaining proofs have a runner.** KVU-15c is now deployed (orch 0f0bfa19), so the
+    cached-prefix half can pass in production. The GPU-block runner
+    (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/RUNBOOK.md`, 5 scripts, dry-run OK) proves the lease and the KVU-15c
+    credit with `deploy_ec2_lease.py` (step 1: :8083 serving and not parked, right after a plain reload that ends the
+    SLOTS_DEBUG window). It also reports whether a primitives-lane record carries `request.prefix_fp`. Primitives
+    records have no `long_prefill` field (KVU-15d). RI-18c still needs one completed `/chat` in a DS41 open window.
+    Scheduled for the coordinated GPU block after ~18:15Z.
 - [x] **UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03
   (workspace-ec) Orch main aa1d6894 (branch `feat/diag-env-override-ec`, ada71720 rebased). It is CLI-only, so no
   reload was needed.

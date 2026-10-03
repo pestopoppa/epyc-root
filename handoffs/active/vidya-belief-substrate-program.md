@@ -2127,6 +2127,24 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     (drafter weights, GDN state per draft depth, KQ-mask slope) are a capacity source for SSU-F3's claim tuple.
   - Add one source-table row per producer in `scripts/vidya/adapters/README.md` (row text prepared for the owning
     session to apply), project each native record into a `ClaimTuple`; do not write a grading rule.
+  - 2026-10-03 ~17:15Z (workspace-ec): the Q38-T7 producer now exists: `q38_t7.py` in the GPU-block runner
+    (`/mnt/raid0/llm/tmp/gpu-block-27b-20261003/`), schema `epyc.gpublock.q38_t7.v1`, not yet run. The adapter README row for it
+    (line 341, still naming the old 196608 shape and no producer) has replacement text PREPARED in
+    `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`, for the owning session to apply. First step for the
+    adapter: copy the runner's `results/` tree durably (tmp is scratch).
+- [ ] **VB-FA-MASKSKIP — write side for the KVU-19a masked-block-skip measurements** (filed 2026-10-03, workspace-ec;
+  CLAUDE.md *Belief Kernel — wiring new sources*). New producers:
+  - the FA kernel micro-bench and exactness harness (`/mnt/raid0/llm/tmp/fa-maskskip-20261003/harness/`, driven by
+    `gpu_slot.sh`): µs per FA op by rows × foreign cells × arm (base / skip on / skip off), and per-case output hashes;
+  - P3-mini (gemma-3-1b) and small batched-bench `-kvu` vs `-no-kvu` from the same `gpu_slot.sh`.
+  The full-scale 27B P3 re-run uses workspace-89's `p3_kvu_probe` and projects under VB-KVU-P3, not here. Bind the
+  store build id (`gpu-20261003-a0d0ae238`), the branch commits ac97e305a / a0d0ae238, the knob values
+  (`GGML_CUDA_FA_MASK_SKIP`, `GGML_CUDA_FA_MASK_SKIP_MIN_KV`) and KFD residency. Caution that must ride every
+  projection: the 2026-10-03 dev-build micro-bench ran on a contended GPU and is indicative only; only `gpu_slot.sh`
+  store-build rounds count. n = 3 alternating rounds, no codified protocol, so tuples grade `Judged/Located` through
+  `claim_tuple.grade()`; no new ladder. Source-table row text PREPARED in
+  `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`. Done when the row is applied and a strict adapter projects the
+  store-build `gpu_slot.sh` records (copied durably first) into `ClaimTuple`s.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;

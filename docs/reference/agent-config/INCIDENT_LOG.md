@@ -459,3 +459,18 @@ acceptance 450/490, vs ~37-41 tok/s on MTP), with the permanent package behind i
   `handoffs/active/stack-change-governance-pipeline.md`;
 - a pending operator decision is put to the operator as options when it arises, never waited on in silence
   (`agents/shared/OPERATING_CONSTRAINTS.md` → *Act, Don't Defer*; already canonical, restated here as the cause).
+
+## INC-20261003-subagent-gpu-tests-in-peer-window
+On 2026-10-03 workspace-ec dispatched an Opus subagent to build and validate the KVU-19a FlashAttention masked-block
+skip. From 16:17Z to 16:50:12Z it ran GPU work on the shared MI210 (`test-backend-ops -o FLASH_ATTN_EXT -b ROCm0`, a
+kernel micro-benchmark, and a gemma-3-1b P3-mini run), while workspace-89 was running its timed A3/A4 measurements on
+:8083. The subagent's work was small (< 2 GiB VRAM) but not idle: it shared the GPU's compute and memory bandwidth
+with the measured server. workspace-89 marks the A3/A4 calls in that interval as perturbed, and the subagent's own
+micro-benchmark numbers are indicative only, because :8083 was serving. The P3-mini run was stopped at the
+coordinator's request. Nothing claimed the GPU: the subagent had no window, and "small footprint" was treated as
+"no interference". Rules fed:
+- no GPU run by any agent, subagents included, during another session's GPU measurement window; GPU work runs only
+  in a coordinated slot, and a main that dispatches a GPU-capable subagent gives it the slot or forbids GPU use:
+  `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
+- the store-build re-validation moved to the coordinated GPU block: KVU-19a-1 in
+  `handoffs/active/kv-unified-stack-rollout.md`.
