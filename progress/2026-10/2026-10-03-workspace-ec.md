@@ -156,3 +156,61 @@ replaced by 37.92); S-16 (Qwen3-VL-30B already serves :8086).
 | epyc-root | `docs/reference/agent-config/INCIDENT_LOG.md` | two INC-20261003 entries |
 
 Index-row and adapter-README edits are prepared, not applied: `/mnt/raid0/llm/tmp/wrapup-ec-dflash2/INDEX_ROWS.md`.
+
+## Serving telemetry, KV-pool steps 1-2, UFH-14 Phase B, X0 window (2026-10-03 ~04:50-12:10Z)
+
+**Serving telemetry (KVU-17 / UFH14-B5), live.** Orch c6225e8b, f7fad574 and 9a0d38e0 were deployed by an API-only
+reload at 04:59Z, and the era boundary ST1 is at orch 4e23e553.
+- **Per-call records:** one record per llama-server call goes to `logs/serving_calls/serving_calls.jsonl`. It carries
+  role, port, request_id, queue wait, llama `timings`, outcome and orch commit.
+- **`prompt_eval_ms` fixed.** The chat-stream path had hard-coded `prompt_eval_ms=0` and ignored the last-chunk `timings`.
+  A live :8083 call now records 2,368 ms prompt eval and 113 ms queue wait.
+- **Progress rows no longer lost.** Each uvicorn worker buffered up to 10 rows, so an unclean shutdown dropped them. Rows
+  are now flushed at task completion, after 30 s, or at exit.
+- **Launch banners:** every stack launch now writes `logs/server_launches/<port>.json`.
+- **Belief-kernel wiring:** adapter row and VB-SERVE-TIMING-1 at root 999954ca.
+- **Test-isolation bug:** 2 synthetic `contention_denied` rows written by a test into the live
+  `/workspace/logs/progress/2026-10-03.jsonl` were deleted on the operator's word. The isolation fix is filed as
+  SCG-TEST-LOGDIR.
+
+**KV-pool decision.** The analysis is at `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md`.
+- **Hybrid model.** The 27B is a hybrid: only 16 of 64 layers hold growing KV, at 34,816 B/token q8_0. Measured marginal
+  cost is 42 KiB/token including the KQ mask and flash-attention scratch.
+- **Why the pool exhausted:** it was mostly traffic that bypassed the gate.
+
+**Step 1 (KVU-15 / UFH14-B2), live.** Orch 2586a7bb, deployed by an API reload.
+- Scouts are now admitted by tokens.
+- One long prefill at a time per server: ≥16384 estimated tokens, lease ends at the first chunk or prompt/250 tok/s.
+  The gate also observes `/slots`. `ORCHESTRATOR_KV_POOL_LONG_PREFILL_TOKENS=0` turns it off.
+- The per-request cap comes from config: min(slot ctx, model ctx_max).
+- Verified with a live gated call.
+- Limits: the gate runs per uvicorn worker; size is judged on the whole prompt, so a mostly-cached prompt still waits.
+- `:8000` is not an OpenAI-compatible passthrough (no `/v1/responses`, replayed streaming, no timings). That is
+  UFH14-B6, gap list in `/mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md`.
+
+**Step 2 (KVU-16 / UFH14-B3), signed and applied in git, NOT yet live.**
+- **Signed:** operator receipt RATIFY-STACKCHG-KVPOOL-20261003, 11:50:52Z, at the terminal.
+- **Commits:** research 412e8fc1, orch 09e91e1e and 841935ea, root archive 64d70d17.
+- **Change:** `-c 393216` unified; the v10 server clamps each slot to n_ctx_train 262144 itself. Draft n-max 7.
+- **Correction:** I had told the operator "two full 262k requests fit". That was wrong: 393216 holds one 262k request
+  plus 131k, or 4 × 98k. The operator signed knowing this.
+- **Bugs fixed in the package:**
+  - step 1 would have misread the new pool as split, which disables admission;
+  - a single `update` wrote stale priors;
+  - a stale template `draft_max: 4` override.
+- **Pipeline state:** `update` and `check` show only the 2 expected live-drift lines.
+- **Relaunch pending.** `reload architect_critic`, then `reload orchestrator`, plus serving proof (§7.3, including the 4 ×
+  90k concurrency probe) wait for workspace-89's "F12 done".
+- **Hold:** the API must NOT be reloaded before the relaunch, because the new code expects the 393k pool.
+
+**UFH-14 (workspace-89's handoff, operator directive "fix all harness bugs, model-agnostic, demo on 27B first").**
+- Phase B items: B5 ticked, B2 ticked, B3 in flight.
+- B4 (prefix-cache and cache-ram policy) is not started. Next after B3.
+- B6 (passthrough) is scoped.
+
+**INF-80 EXL3-X0 window granted to workspace-89.**
+- **When:** 2-3 h exclusive :8083, immediately after the KV-pool proof.
+- **Production handling:** `stop architect_critic`; its roles fail fast with no failover. Serving records show no
+  orchestrator :8083 traffic since 05:00Z apart from tests.
+- **Arm (b):** uses the new production shape.
+- **Hand-back:** restore through the stack, then a short serving proof.
