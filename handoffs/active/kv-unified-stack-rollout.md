@@ -167,6 +167,12 @@ is olympiad-style reasoning.
   - Recommendations: 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086.
   - The value compiles to `-cram` already. Land it at the same :8083 reload if the operator agrees; a second
     reload costs a planner transient.
+- [ ] **KVU-15a — close step 1's two known gate limits** (filed 2026-10-03, workspace-ec, from the KVU-15 landing,
+  orch 2586a7bb). (1) The long-prefill lease is per uvicorn worker; across the 6 workers it relies on `/slots`, which sees a
+  long prefill only after ~4096 processed tokens plus a 1.5 s cache, so two workers can start long prefills seconds apart:
+  move the lease to a cross-process primitive (flock or the region-lock layer). (2) Size is judged on the whole prompt, so a
+  mostly-cached long prompt still waits: subtract the matching slot's cached prefix (`cache_n` from the serving records)
+  when estimating new tokens. Done when a 2-worker replay shows peak 1 long prefill and a cached-prefix request is not held.
 - [ ] **KVU-16 — :8083 KV-pool step 2: one stack change for `-c 393216`, a 262144 per-request cap, n-max 7** (SIGNED 2026-10-03T11:50:52Z, RATIFY-STACKCHG-KVPOOL-20261003; applied in git: research 412e8fc1, orch 09e91e1e + 841935ea, archive root 64d70d17. NOT LIVE: `reload architect_critic` + `reload orchestrator` + serving proof §7.3 incl. the 4×90k probe run after workspace-89's "F12 done"; do not reload :8000 before then.)
   (operator-approved 2026-10-03, IN PACKAGING; decision package
   `/mnt/raid0/llm/tmp/kv-sizing-8083-20261003/DECISION.md` §4 step 2). One :8083 relaunch carrying: `-c` 196608 →
