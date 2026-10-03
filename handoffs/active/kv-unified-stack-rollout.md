@@ -243,6 +243,8 @@ is olympiad-style reasoning.
     decode cost as the pool fills). If its parked-neighbour arm reports peak resident cells ≥ 300k with zero
     memory-slot lines, cite it here and close KVU-16b; otherwise run KVU-16b.
   - [ ] **KVU-16d — act on the P3 decode-cost verdict: unified vs split per-slot.** (filed 2026-10-03, workspace-ec)
+    - 2026-10-03: P3 trigger MET (KVU-18 A1: −59.5% no-draft at ≈355k nominal fill, three parked neighbours; batched-bench
+      kvu vs no-kvu −15.2% TG). workspace-ec is preparing the option (c) package.
     If P3 shows ≥ 15% decode loss at 300k+ pool fill vs ~100k, prepare the option (c) split stack change (4 × 163840,
     DECISION.md §4) for operator signature; if < 15%, record the verdict here and keep unified. Trigger: workspace-89's
     P3 result.
@@ -344,6 +346,10 @@ is olympiad-style reasoning.
   the range, not just at the tail, for the decode and verify shapes, HIP/gfx90a first. No upstream fix exists:
   the WMMA-only PR #28943 closed unmerged (`intake-1849#03`). Four-step workflow; validate on the KVU-18 cells
   and on the DF2 verify shape (n_max 7). Not triggered means no kernel work.
+  - **TRIGGERED 2026-10-03** by KVU-18 (no-draft decode −32.6% with one ~99k parked neighbour, −59.5% with three).
+    Validate on the KVU-18 A1 cells (same P, 0/1/2/3 neighbours) plus the DF2 verify shape. Whether the split stack
+    change (KVU-16d) lands first changes the production stake, not the kernel case: any unified-KV deployment
+    with parked neighbours pays this tax.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean
@@ -357,7 +363,7 @@ is olympiad-style reasoning.
     reopens it. The orchestrator already classifies the error (KVU-0e).
 
 ### D — measurement follow-ups
-- [ ] **KVU-18 (intake P3) — unified-KV decode cost on :8083's shape. Running in the 2026-10-03 INF-80 X0
+- [x] **KVU-18 (intake P3) — unified-KV decode cost on :8083's shape. Running in the 2026-10-03 INF-80 X0
   window** (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`). Measure one slot's decode and verify tok/s at a fixed
   context while 0, 1 and 3 other slots hold parked long contexts, unified vs split, same binary. Include a cell
   near the F12 range: 50–150k own context, 15–60k neighbours. The source reports -6.6% S_TG on gfx1201 and
@@ -366,6 +372,24 @@ is olympiad-style reasoning.
   drafter acceptance, so it must be measured before 25–30 tok/s agentic decode is blamed on DFlash2 (UFH14-A2
   in [`agentic-serving-harness-fixes.md`](agentic-serving-harness-fixes.md)). A loss of 5% or more triggers
   KVU-19. Carry the belief-kernel write-side hook from the first cell.
+  - ✅ 2026-10-03 — **both triggers MET.** Report `/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`; native records `a1.json`, `a0.json`, `b.json`,
+    `p3_result.json`. MI210, v10 `ffc1bac82` kernel store, Qwen3.8-27B Q8_0 + DFlash2, :8083 production argv (pool 393216).
+    - *A1, mechanism* (`--no-cache-idle-slots`, so parked neighbours stay resident): slot 0 holds P = 57,082 tokens and
+      decodes 512 tokens; neighbours are one ~99.4k prefill plus two slot restores of it. No-draft decode (isolates
+      attention): base 20.39 tok/s → **−32.6% / −49.5% / −59.5%** with 1 / 2 / 3 neighbours; drafted 36.28 tok/s →
+      −29.6% / −47.2% / −57.6%. Acceptance unchanged (0.393–0.397). ABA drift −0.61% (L0 before vs after). Zero
+      slot-failure, purge or restore-failure log lines. Nominal fill at L3 ≈ 57k + 3 × 99.4k ≈ 355k (0.90 of the pool).
+    - *Caveat on the fill figure:* `/slots` reported only 156,971 resident tokens (0.399) at L1–L3, because the two
+      restored slots never show `n_tokens` there; the restore replies report 99,378 tokens each, and the monotone L1→L3
+      loss says the restored cells are attended. The ≥300k condition rests on the restore records, not on `/slots`.
+    - *A0, production flags* (`cache_idle_slots` default on): **inconclusive** — the neighbour slot held 0 tokens before
+      the probe task, so the "new task purges an idle neighbour" path was never exercised. Not re-filed as a task: the
+      production default parks neighbours in RAM, and A1 already answers the decode-cost question the triggers ask.
+    - *B, `llama-batched-bench`* (no drafter, pl 4, 4 × 16k, n_kv 65,792): kvu vs no-kvu S_TG 47.17 vs 55.64 t/s
+      (**−15.2%**), S_PP 587.4 vs 823.3 t/s (**−28.6%**).
+    - Consequences: KVU-19 is triggered (≥5%). KVU-16d's ≥15%-at-≥300k condition is met — workspace-ec is preparing the
+      split-per-slot stack-change package there (their item). Belief-kernel wiring: VB-KVU-P3 in
+      [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md).
 - [x] **KVU-8 — confirm the throughput verdict with fixed-length or multi-wave generation.** ✅ 2026-09-24 —
   confirmed, with one named substitution. (1) 35B-A3B, both arms, fixed-length L 2048 cells: unified within 2% of
   split in all 4 (per-request −0.6..−1.7%, aggregate −0.7..−1.1%); at 8k/32k the per-request spread is −5.3..+5.6%

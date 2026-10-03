@@ -2142,3 +2142,24 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   Decide before writing the adapter: should window aggregates (per-role prefill share, queue-wait distribution) be a second producer, or a projection over a sealed window manifest? A per-call tuple cannot carry a share.
 
   Era row ST1 (`scope: serving_timing`) is in `epyc-orchestrator/orchestration/instrument_eras.yaml` (orch 4e23e553). This is the read side of VB-SERVING-DF2's first producer.
+
+## VB-KVU-P3 — 2026-10-03 MI210 X0-window measurements (filed 2026-10-03, ak-ds41-main)
+
+- [ ] **VB-KVU-P3 — write side + projection for the 2026-10-03 X0-window measurement records** (CLAUDE.md *Belief
+  Kernel — wiring new sources*; source row in `scripts/vidya/adapters/README.md`). None of these is covered by
+  VB-SERVE-TIMING-1, which reads only the orchestrator's per-call `serving_call.v1` records; these are standalone
+  probe and profiler outputs that today exist only under `/mnt/raid0/llm/tmp/` (scratch).
+  - **KVU-18 / P3** (`/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/{a1,a0,b,p3_result}.json`, producer
+    `p3_kvu_probe.py`): per-level decode tok/s (drafted and no-draft), acceptance, neighbour count and restore
+    records, ABA drift; batched-bench S_PP/S_TG kvu vs no-kvu. Locator = run × level × variant × rep. Caution that
+    must ride every projection: `/slots` under-reports restored slots (fill comes from the restore records).
+  - **INF-80 EXL3-X0** (`results/shape_{a,b}.*.json`, `kld.{base,q4}.json`, `summary.json`; producers
+    `x0_shape_a.py`, `x0_shape_b.py`, `x0_kld.py`): per-launch serving tok/s, acceptance, own-PID VRAM peak, HIP
+    dlopen proof; KLD/PPL statistics. Locator = run × arm × shape × np × context × sampling × launch.
+  - **UFH14-A2 probe** (`results/probe/probe-decode-vs-context.*.json`): the DFlash2 production-shape cells also
+    satisfy VB-SERVING-DF2's "DFlash2 at the production shape" producer — project them there, not twice.
+  - **EXL3-LB1 profile** (`/mnt/raid0/llm/tmp/lb1-profile-20261003/summary.json`): per-kernel % of HBM roofline,
+    VGPR/waves, dispatches. Locator = model × shape (tg128/pp8/pp16) × kernel × weight type.
+  - First step: copy the four result trees to a durable research results path and record their digests (tmp is
+    scratch). Then one strict adapter per producer; all grade `Judged/Located` through `claim_tuple.grade()` (n ≤ 3,
+    no codified protocol). No new ladder.

@@ -58,8 +58,20 @@
   - **Contamination:** C2/cxf1/r2 browsed the live campaign store (`anchor-gen-007`), so it saw post-anchor state; the grader flagged it. The harness had no filesystem isolation.
   - **Fixed offline (not yet GPU-tested):** a Landlock filesystem sandbox (`/mnt/raid0/llm/tmp/ds41-c95/sandbox3.py`; mount and user namespaces are unavailable in this container, Landlock ABI 6 needs no privilege) plus the A3 and A4 implementations in `run3.py`/`proxy3.py`. They close A3/A4 only after a GPU run.
   - The separate DFlash2 decode probe crashed on fresh slots (`KeyError 'params'`); fixed in `probe_decode.py` and folded into the INF-80 X0 window (A2).
-- [ ] **UFH14-A2.** DFlash2 decode-vs-context probe on the production shape, to compare against the MTP probe and to separate drafter speed from harness effects.
-  - 2026-10-03: running inside the INF-80 EXL3-X0 window (`/mnt/raid0/llm/tmp/x0-27b-quants/PLAN.md`) after the `probe_decode.py` fix. Agentic-traffic acceptance from A1 (29–34%) is context for it, not a substitute.
+- [x] **UFH14-A2.** DFlash2 decode-vs-context probe on the production shape, to compare against the MTP probe and to separate drafter speed from harness effects.
+  - ✅ 2026-10-03 — ran folded into the INF-80 EXL3-X0 window: one launch of the production :8083 argv (np4, `-c 393216 --kv-unified`, q8_0 KV, DFlash2 n_max 7), Q8_0, solo, real DS41 planner context (C2+C4), thinking on, 1500 generated tokens, 2 reps. Table: `/mnt/raid0/llm/tmp/x0-27b-quants/results/probe/probe-decode-vs-context.md` (JSON beside it).
+
+    | context | DFlash2 drafted tok/s | acceptance | no-draft tok/s | MTP drafted tok/s (2026-10-01 probe) |
+    |---|---|---|---|---|
+    | ~2k | 41.6 | 0.33 | 29.6 | 36.8 |
+    | ~16k | 40.4 | 0.35 | 25.8 | 40.8 |
+    | ~50k | 36.9 | 0.39 | 21.6 | 38.8 |
+    | ~80k | 32.1 | 0.39 | 18.5 | 30.0 |
+
+    - **Answer to the A2 question:** DFlash2 decode at the production shape is about the MTP probe's (`/mnt/raid0/llm/tmp/ds41-c95/probe-decode-vs-context.md`), with roughly half MTP's acceptance (0.33–0.39 vs 0.43–0.74). The drafter is not why agentic decode sits at 25–30 tok/s: no-draft decode itself falls from 29.6 to 18.5 tok/s between 2k and 80k, and the drafted/no-draft ratio grows with context (×1.41 → ×1.74). The other named suspect, the unified-KV neighbour tax, is now measured (KVU-18: −58/−60% at three parked ~100k neighbours).
+    - The MTP probe ran on 2026-10-01 against the then-live :8083 shape (pre-KVU-16), so the comparison is across server shapes as well as drafters; n = 2 reps per cell.
+    - *Observation, not a conclusion:* the canonical-recipe np1 figure (76.4 tok/s, acceptance 0.73; EXL3-X0 shape a) is ~1.8× the production-shape np1 figure (~41 tok/s, acceptance ~0.37). The two shapes differ in prompt content (benchmark vs real planner context), KV type (f16 vs q8_0), unified KV, pool size, n_max (8 vs 7) and thinking, so the gap is confounded; no single cause is claimed. Declined as a task for now: splitting it needs a one-factor-at-a-time grid on :8083, and nothing in UFH-14 waits on the answer.
+    - Agentic-traffic acceptance from A1 (29–34%) remains context, not a substitute.
   - *F12 production-traffic numbers, 2026-10-03.* These are not the probe, so the box stays open. Re-derived from `wire_timing` in `/mnt/raid0/llm/tmp/ds41-c95/results/C{2,4}/cxf{1,12}/r{1,2}/result.json`, 8 calls. Server: :8083 PID 3793153, `-np 4 -c 196608 --kv-unified`, `--spec-draft-n-max 8` clamped to 7. This is the pre-KVU-16 shape.
     - DFlash2 draft acceptance: 0.290–0.343.
     - Median decode on turns of ≥1k tokens: 24.6–30.2 tok/s.
