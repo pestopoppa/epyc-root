@@ -2,9 +2,9 @@
 
 **Category**: `search_retrieval`
 **Confidence**: verified
-**Last compiled**: 2026-09-27 (wrap-up compile: UFH-12 kill rule PRE-REGISTERED — recall@5, M = 0.10 over the best lexical arm with a paired lower bound > 0, n ≥ 120, cheapest within 0.05; A0 neighbour cap partial, A3 OMP passive NULL; REPL-EMB-0.3/1.4 frozen behind the offline eval); previous: 2026-09-26 late (REPL-EMB-0.3: the GPU half of D1 is its own package, bounded by 1.52 GiB free VRAM; the parallel embedder client fixed in orch `120b55b7`); previous: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
+**Last compiled**: 2026-10-03 (wrap-up compile: UFH-12 `context.search` landed as an opt-in experiment arm (orch `b384cdbb`; BM25 + flat cosine fused with `rrf_fuse`, pointers only); REPL-EMB-1.1/1.2/1.3 ticked in minimal form; the REPL-EMB-2.1 kill rule still governs any default; a runtime enable of `repl_embedding_pool` survived a reboot (REPL-EMB-4.5)); previous: 2026-09-27 (wrap-up compile: UFH-12 kill rule PRE-REGISTERED — recall@5, M = 0.10 over the best lexical arm with a paired lower bound > 0, n ≥ 120, cheapest within 0.05; A0 neighbour cap partial, A3 OMP passive NULL; REPL-EMB-0.3/1.4 frozen behind the offline eval); previous: 2026-09-26 late (REPL-EMB-0.3: the GPU half of D1 is its own package, bounded by 1.52 GiB free VRAM; the parallel embedder client fixed in orch `120b55b7`); previous: 2026-09-26 (UFH-12 Phase 0 applied: pool 0.95× → 4.96×; G1 0.86–0.91 short of 0.95; operator KEEP + in-flight cap REPL-EMB-1.4); previous: 2026-09-17 (incremental: H2 query-length instrument landed (unmeasured), PREFIX-1 verified on both consumers with live qd-v1 index at 29,611 chunks, C7 attribution fix, trace FTS recency-vs-bm25 fix, lexical memory-eval arms); earlier: 2026-09-14 — DCP discovery gets a zero-decode instrument (ContextBench primary with a wrapped scorer, Loc-Bench V1 secondary), graph neighbours attach to lexical hits instead of forming a stage, and a self-reported ripwire-vs-GitNexus head-to-head is not evidence; earlier 2026-08-25 — the encoder never applies its trained `[Q]`/`[D]` prefix tokens — wave-2 retrieval compile: the prefix-guard silent-corruption fix (`4e5e84c0`), a published "MaxSim ceiling" that is a `query_maxlen = 32` truncation artefact, our length exposure re-sited from the query side to the document side, and the ONNX export-and-contract layer; earlier 2026-08-22 note: encoder-retirement record correction, K11 lexical null result, code↔docs federation.
 (measured 25× more perturbing than INT8 quantization, 62.5% top-1 agreement, OP-24 decision), the (last additions 2026-08-22: encoder-retirement record correction, K11 lexical null result, code↔docs federation)
-**Sources**: see per-section source lists (added 2026-09-27 wrap-up compile: repl-embedding-retrieval REPL-EMB-2.1/0.3/1.4/B.1 and the narrowed-plan section, the 2026-09-27 orch-design and narrowed-plan progress logs) (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
+**Sources**: see per-section source lists (added 2026-10-03 wrap-up compile: repl-embedding-retrieval REPL-EMB-1.1/1.2/1.3/4.4/4.5, 2026-10-01 workspace-8d progress, INCIDENT_LOG INC-20261003-runtime-flag-survived-reboot, autokernel-orchestrator-actor-backend OAB-35) (added 2026-09-27 wrap-up compile: repl-embedding-retrieval REPL-EMB-2.1/0.3/1.4/B.1 and the narrowed-plan section, the 2026-09-27 orch-design and narrowed-plan progress logs) (added 2026-09-17: internal-kb-rag H2/C7, colbert-reranker PREFIX-1 verification, trace-bm25 and tooling logs, CME retrieval arms)
 
 ## Compiled Update — 2026-09-17: the query-length instrument exists, PREFIX-1 is verified on both consumers, and trace FTS finally ranks by bm25
 
@@ -1351,3 +1351,39 @@ The embedder placement package was signed at 17:46Z and applied from ~18:11 to 1
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — § Narrowed plan, REPL-EMB-2.1 as registered, the 0.3/1.4 freeze markers, B.1.
 - [2026-09-27 orch-design progress](../progress/2026-09/2026-09-27-orch-design.md) — § UFH-12 embedder policy arms A0 and A3, § OP-66.
 - [2026-09-27 narrowed-plan progress](../progress/2026-09/2026-09-27-narrowed-plan.md) — the kill-rule draft and the freeze list.
+
+
+## Compiled Update — 2026-10-03: `context.search` is live as an opt-in arm, and its flag outlived a reboot
+
+**Confidence: verified** for what landed and how it behaves with the field off: a golden test pins byte-identity.
+No retrieval-quality result exists yet. REPL-EMB-2.2, the offline eval, still decides any default.
+
+- **`context.search` landed on orch main `b384cdbb`** (series `d02942f7`..`b384cdbb`) as a per-request opt-in.
+  - The field is `ChatRequest.context_search`, default false, and it requires `context_bundle`.
+  - It returns pointers only; reads still go through `context.get`. Its accounting is a separate
+    `context_pulls.search` block, so the pull fields stay exact.
+  - With the field off, the root block, view and echo are byte-identical to `08edc054` (golden test `5cae6c6b`).
+- **The retrieval stack, in minimal form:**
+  - **REPL-EMB-1.1:** a pooled async embedding client (`src/embedding_pool/`, flag `repl_embedding_pool`, default
+    OFF).
+  - **REPL-EMB-1.2:** a line-aware chunker that keeps each chunk's section, char span and first line number.
+  - **REPL-EMB-1.3:** BM25 plus a flat cosine index fused with `rrf_fuse`, one index per embedding model. Every
+    fallback is labelled in `mode`, for example `lexical_fallback:index_timeout`.
+  - The index build budget per search is clamp(5 + n/25, 10, 60) s, and the build resumes on the next search.
+  - Post-cap G1 is 0.921 / 0.918 / 0.862 on :8070 / :8080 / :8180, below the 0.95 target, so REPL-EMB-1.4 stays
+    frozen.
+- **The kill rule still governs any default.** `context.search` stays opt-in and the pool stays OFF unless REPL-EMB-2.2
+  passes: hybrid recall@5 minus lexical ≥ 0.10, n ≥ 120, bootstrap lower bound > 0.
+- **The flag outlived a reboot.** The pool was enabled for one experiment arm (`orsv`) with `POST /config`. That
+  write persists in `orchestration/runtime_flags.json`, so the pool came back ON after the host reboot and was reset
+  on 2026-10-03.
+  - REPL-EMB-4.5: an experiment enable carries an expiry or an explicit restore step.
+  - Until it lands, the enabling session restores the flag itself and checks `/config/attest` after any restart.
+- **The `orsv` arm has not run yet.** Its first attempt hit the `context.get(name, '')` HTTP 500, fixed by OAB-35.
+
+### Source References
+
+- [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-1.1/1.2/1.3 (landed), 4.4 (deployed), 4.5 (filed), the kill rule.
+- [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — the context.search landing and the deploy for `orsv`.
+- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-runtime-flag-survived-reboot.
+- [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35, the dict-idiom crash that blocked the arm.

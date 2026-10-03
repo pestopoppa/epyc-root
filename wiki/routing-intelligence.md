@@ -2,8 +2,8 @@
 
 **Category**: `routing_intelligence`
 **Confidence**: verified
-**Last compiled**: 2026-09-29 (wrap-up compile: RI-22 review gate was a silent no-op on the 27B, fixed by RI-23 moving thinking-on roles to the chat lane (verdicts 2/2 vs 0/2); ARCHSWAP live; UFH-13 parked on an untrained router; frozen items get a trigger that can fire; TD-11 single typed-routing owner); previous: 2026-09-27 late (wrap-up compile: DAR-LAT-3h G1 chose T96 — 48 threads fails parity, THP shim no gain, nothing applied; DAR-LAT, LRC-1/2 and TD-28 frozen behind the UFH-13 thesis experiment; `/v1` escalation opt-in for arm A2; SSU-F17 roles bind to server ids); previous: 2026-09-27 (wrap-up compile: DAR-LAT-3h v2 signed and split, threads and THP shim as independent G1 factors; DAR-LAT-3i FA_SPLIT_KV long-context decision); previous: 2026-09-26 late (P-SERVE-SEL-1 landed `3573028b`; DAR-LAT-3h files the :8074 recipe-reconciliation package); previous: 2026-09-26 (orch prior-art intake: DAR-LAT latency prior and saturation guard at weight 0; P-SERVE-SEL-1 load-sweep A/B, blocked on the :8074 `-t 96` recipe drift); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (operator wrap-up compile, main-ak-seat: OP-47 applied — the RTG-09 duration axis is LIVE as era E18); earlier: 2026-09-24 (wrap-up compile: RTG-09 — the reward's speed axis becomes wall-clock task duration against derived per-role p50/p90 baselines, landed DEFAULT-OFF and byte-identical because a reward-distribution change is a `routing_reward` era boundary, awaiting the OP-47 ratification; a host-only alias was leaking into scoring as its own role); earlier: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
-**Sources**: 93+ documents (added 2026-09-29 wrap-up compile: routing-intelligence RI-14/RI-15/RI-18/RI-21/RI-22/RI-23/RI-23a/RI-23b, thesis-experiment PARKED status/ARCHSWAP-1..5/TE-reopen, typed-decision-plane operator rulings 2026-09-29, decision-aware-routing Q2 trigger and completed sibling, learned-routing-controller LRC-TD-1 fold, CURRENT-CAMPAIGN 2026-09-28 posture, the 2026-09-27/28 orch-design and 2026-09-29 ri23-live and jev-rulings progress logs) (added 2026-09-27 late wrap-up compile: decision-aware-routing DAR-LAT-3h outcome and freeze markers, the DAR-LAT-3h RESULT.md, learned-routing-controller LRC-1/2, typed-decision-plane TD-28, model-stack-single-source-update-pipeline SSU-F17, the thesis-experiment handoff, the 2026-09-27 orch-design progress log) (added 2026-09-27 wrap-up compile: decision-aware-routing DAR-LAT-3h/3i, the DAR-LAT-3h package v2 and signature receipt) (added 2026-09-24 operator wrap-up compile: decision-aware-routing OP-47 ticks, the 2026-09-24 td21 progress log) (added 2026-09-24 wrap-up compile: decision-aware-routing RTG-09, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: learned-routing-controller EPD-1/EPD-1-orig) (added 2026-09-23: typed-decision-plane TD-16..20 and the TD-9 receipt note, decision-aware-routing URE-1/DAR-SPLIT-1/regret-gate notes, routing-intelligence RI-15 and the Laya comparator, learned-routing-controller freeze annotations, the 2026-09-23 intake-jev-exl3 session record) (added 2026-09-19: typed-decision-plane TD-6/7/9/10/11/15, the 2026-09-18 intake-jev-sageattn session record) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-2/TD-3b/TD-5/TD-7, the intake session record, and the backlog-churn note) (added 2026-09-17 research-intake: RI-14, LRC-TD-1, the typed-decision-plane stub, and the intake session record) (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
+**Last compiled**: 2026-10-03 (wrap-up compile: RI-16 measured — routing costs ~0.6 s p50 / ~1.2 s p95 before generation; RI-18 review gate scored DROP under its pre-registered clause 1, net −38.3 per 100 items, the production gate never fires; RI-18c applies it; RI-24 filed); previous: 2026-09-29 (wrap-up compile: RI-22 review gate was a silent no-op on the 27B, fixed by RI-23 moving thinking-on roles to the chat lane (verdicts 2/2 vs 0/2); ARCHSWAP live; UFH-13 parked on an untrained router; frozen items get a trigger that can fire; TD-11 single typed-routing owner); previous: 2026-09-27 late (wrap-up compile: DAR-LAT-3h G1 chose T96 — 48 threads fails parity, THP shim no gain, nothing applied; DAR-LAT, LRC-1/2 and TD-28 frozen behind the UFH-13 thesis experiment; `/v1` escalation opt-in for arm A2; SSU-F17 roles bind to server ids); previous: 2026-09-27 (wrap-up compile: DAR-LAT-3h v2 signed and split, threads and THP shim as independent G1 factors; DAR-LAT-3i FA_SPLIT_KV long-context decision); previous: 2026-09-26 late (P-SERVE-SEL-1 landed `3573028b`; DAR-LAT-3h files the :8074 recipe-reconciliation package); previous: 2026-09-26 (orch prior-art intake: DAR-LAT latency prior and saturation guard at weight 0; P-SERVE-SEL-1 load-sweep A/B, blocked on the :8074 `-t 96` recipe drift); previous: 2026-09-25 (System One and evolutionary-agents intake); previous: 2026-09-24 (operator wrap-up compile, main-ak-seat: OP-47 applied — the RTG-09 duration axis is LIVE as era E18); earlier: 2026-09-24 (wrap-up compile: RTG-09 — the reward's speed axis becomes wall-clock task duration against derived per-role p50/p90 baselines, landed DEFAULT-OFF and byte-identical because a reward-distribution change is a `routing_reward` era boundary, awaiting the OP-47 ratification; a host-only alias was leaking into scoring as its own role); earlier: 2026-09-23 (evening wrap-up compile: the episodic store's outcome field was written once at INSERT and never updated; update_q_value now re-derives it from the updated Q on every update, with NO backfill, so rows either side of the fix carry two different semantics); earlier: 2026-09-23 (research-intake jev-exl3: TD-9's AUROC 0.758 is not calibration evidence — the same receipt carries ECE 0.2416; Laya's fitted calibration holds in-task only (ECE 0.030 vs 0.204 held-out); the Kev pointer head is a trained readout, not a zero-shot fix; TD-16..20 filed; the DAR "≥5% regret" gate: implemented metric identically 0, single-draw oracle regret sits near noise, 8.40/8.09pp has no committed artifact, DAR-SPLIT-1 filed); 2026-09-19 (routing replay settled: TD-7 diagnostic 3.0% agreement / native 0/200 on multi-token labels; TD-9 single-token codes → 200/200 resolved, 93.5% agreement as incumbent anchoring; TD-10 counterfactual −0.0104, enforcement OFF; TD-11 filed; TD-6 id_only default); 2026-09-17 (wrap-up sweep: the typed-decision shadow implemented at the routing review gate — flag off, no enforcement; the TD-2 6.25%/37.5% contamination and 0.0625/0.267 ECE numbers; TD-7 replay is the labeled window); 2026-09-17 (research-intake delta: RI-14/LRC-TD-1 file a candidate-scoring arm for the routing classifier, gated on TD-2 calibration; incremental: DAR-6 swarm fan-out code deleted and flag inert; A9 livecodebench stratum labels vacuous); earlier: 2026-08-25 (the role-keyed gate's geometry blind spot measured and demoted — OP-21 overlap re-bench 1.121 vs disjoint control 1.360; the marker-polarity REFUSE guard; the ROUTE-A1 seam never-co-place verification; SC19 contention-capture write side wired; the NIB2-57a bilinear-scorer fabricated-tps fix; and the X-MAS current-runtime correction to shadow; earlier 2026-08-16 compile retained) (harness/scaffold selection enters the routing surface as a dimension — with the correction that the widely-quoted separation figure varies the optimizer's coding agent, not the target harness; plus the model-arm candidate-surface discipline from the Qwen3.8-27B refresh; earlier routing-memory findings retained below)
+**Sources**: 93+ documents (added 2026-10-03 wrap-up compile: routing-intelligence RI-16/RI-18/RI-18a-c/RI-24, thesis-experiment TE-reopen RI-18 note, 2026-09-30 and 2026-10-01 workspace-8d progress, 2026-10-03 workspace-ec progress, INCIDENT_LOG INC-20261001-shared-clone-drift-voided-ri18-revise, vidya VB-RI18/VB-REVIEW-GATE) (added 2026-09-29 wrap-up compile: routing-intelligence RI-14/RI-15/RI-18/RI-21/RI-22/RI-23/RI-23a/RI-23b, thesis-experiment PARKED status/ARCHSWAP-1..5/TE-reopen, typed-decision-plane operator rulings 2026-09-29, decision-aware-routing Q2 trigger and completed sibling, learned-routing-controller LRC-TD-1 fold, CURRENT-CAMPAIGN 2026-09-28 posture, the 2026-09-27/28 orch-design and 2026-09-29 ri23-live and jev-rulings progress logs) (added 2026-09-27 late wrap-up compile: decision-aware-routing DAR-LAT-3h outcome and freeze markers, the DAR-LAT-3h RESULT.md, learned-routing-controller LRC-1/2, typed-decision-plane TD-28, model-stack-single-source-update-pipeline SSU-F17, the thesis-experiment handoff, the 2026-09-27 orch-design progress log) (added 2026-09-27 wrap-up compile: decision-aware-routing DAR-LAT-3h/3i, the DAR-LAT-3h package v2 and signature receipt) (added 2026-09-24 operator wrap-up compile: decision-aware-routing OP-47 ticks, the 2026-09-24 td21 progress log) (added 2026-09-24 wrap-up compile: decision-aware-routing RTG-09, the 2026-09-24 noninf-tier2 progress log) (added 2026-09-23 evening wrap-up compile: learned-routing-controller EPD-1/EPD-1-orig) (added 2026-09-23: typed-decision-plane TD-16..20 and the TD-9 receipt note, decision-aware-routing URE-1/DAR-SPLIT-1/regret-gate notes, routing-intelligence RI-15 and the Laya comparator, learned-routing-controller freeze annotations, the 2026-09-23 intake-jev-exl3 session record) (added 2026-09-19: typed-decision-plane TD-6/7/9/10/11/15, the 2026-09-18 intake-jev-sageattn session record) (added 2026-09-17 wrap-up sweep: typed-decision-plane TD-2/TD-3b/TD-5/TD-7, the intake session record, and the backlog-churn note) (added 2026-09-17 research-intake: RI-14, LRC-TD-1, the typed-decision-plane stub, and the intake session record) (added 2026-09-17: DAR-6 removal note, A9 livecodebench caveat, sub-scorer-fix consumer map)
 
 ## Compiled Update — 2026-09-24 (operator wrap-up compile): the duration axis is live as era E18
 
@@ -1348,3 +1348,89 @@ Role selection has no latency or load term today. Its only cost input is histori
 - [2026-09-29 RI-23 live progress](../progress/2026-09/2026-09-29-workspace-8d-ri23-live.md) — RI-23/RI-23a landing and the 15:04Z serving proof.
 - [2026-09-29 Jev-rulings progress](../progress/2026-09/2026-09-29-workspace-8d-jev-rulings.md) — the rulings and the duplicate-owner folds.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-09-28 posture: UFH-13 parked, infra-and-design direction until the second MI210.
+
+
+## Compiled Update — 2026-10-03: routing costs ~0.6 s before generation, and the review gate is dropped
+
+**Confidence: verified.** RI-16 comes from 30 live `/chat` requests read with the per-stage timers. RI-18 is a
+pre-registered counterfactual with a frozen decision rule: 608 items, paired bootstrap CIs, a seeded tune/confirm
+split. External-validity caveat: both of RI-18's strata are closed-form scored tasks, not open chat.
+
+- **RI-16: routing latency on live `/chat`.** Timers landed as orch `78847544` and were deployed 2026-09-30 04:52Z.
+  The sample is n=30, all on the chat path:
+
+  | stage | p50 ms | p95 ms |
+  |---|---|---|
+  | priors | 156 | 275 |
+  | route | 197 | 529 |
+  | xmas | 26 | 96 |
+  | factual_risk | 0.06 | 85 |
+  | route_total | 542 | 1027 |
+  | mode | 58 | 69 |
+  | review_gate | 69 | 105 |
+  | total | 622 | 1159 |
+
+  - Routing costs about 0.6 s at p50 and 1.2 s at p95 before generation starts. That is the same order as typed
+    routing's 590 ms native single-token median.
+  - The docs' "<1 ms MLP / 10-50 ms KNN" figures do not describe the request path.
+  - `priors` is the MemRL `ClassificationRetriever` path, which RI-19 found has 0 memories to retrieve. Removing it
+    is worth about 156 ms p50 per request.
+  - RI-24 targets `route` next: count the prompt embeddings per request and compute each one once.
+  - Caveats: one session, and the GPU was busy with harness replays.
+- **RI-18: the post-answer review gate.** The gate runs a KNN over the answer text; if `avg_q < 0.6`, the 27B gives a
+  verdict and `worker_general` revises the answer.
+  - **Design:** the review was forced on every item, using the production functions:
+    - S1: the UFH-13 pilot pool, re-rendered to "justify briefly, then `Answer: <letter>`" (453 items);
+    - S2: `olympiadbench_hard` (155 items).
+  - **Three structural observations, made before the run:**
+    - answers under 50 chars skip the gate, so it is inert on letter-only prompts;
+    - `min_q_value=0.3` hides 16.5% of frontdoor routing memories (5,484 of 33,293) from the KNN;
+    - the verdict prompt truncates the question to 300 chars, which hides the MC options on 86% of pilot-pool
+      prompts.
+- **Verdict: DROP. Pre-registered clause 1 fired, 2026-10-01 18:53Z.** The primary population is n = 579: 29 of the
+  608 answers were HTTP errors.
+
+  | Result | Value |
+  |---|---|
+  | π1 (review every eligible answer), full set | net −38.3 per 100 items, 95% CI [−42.7, −34.0] |
+  | π1, answers fixed / broken | 12 fixed, 234 broken |
+  | π1, accuracy | 72.2% → 33.9% |
+  | π1, split B (confirm) | [−44.8, −32.4] |
+  | Production gate πQ(0.6) | 0 eligible triggers, net 0 [0, 0]; untested under BOUNDED-NULL-1 |
+  | t* (tuned on split A) | 0.30, a tie at net 0 |
+  | AUROC of −avg_q for frontdoor-wrong | 0.558 [0.511, 0.607] |
+
+  - Q carries a weak signal, but avg_q ≈ 1.0 on nearly every item, so no threshold below 0.95 selects anything.
+  - **Mechanism.** The cap-300 reviewer flags most correct answers WRONG: sensitivity 0.94 / 0.91, specificity
+    0.21 / 0.25 on A / B. The revision then breaks most of what it rewrites (break rate 0.70 / 0.75) and fixes few
+    wrong answers (0.065 / 0.097).
+  - **Cost.** Reviewing every answer adds 9.8 s of p50 latency (p95 52 s) and costs 6,545 CPU-s plus 3,488 GPU-s
+    over 579 items, with no net fix.
+  - **The secondary rule reads HOLD_CAP_300.** On split B the full-question prompt's sensitivity delta is −0.016
+    [−0.098, 0.067], so `question_cap=1500` does not land.
+  - **Power.** There are D = 246 discordant items, which resolves |net| down to about 7.6 per 100. The observed
+    effect is five times that.
+- **What follows from DROP.**
+  - **RI-18c** removes the gate, the verdict and the revision from all five call sites (`repl_executor`,
+    `direct_stage`, `stream_adapter`, `chat.py`, `v1_escalation`), plus `review_low_q_threshold`.
+  - Production loses nothing. The gate never fires, and when review does run it is net-harmful. Every request saves
+    the `review_gate` stage (69 ms p50).
+  - The instrumentation (C1-C3, orch `08edc054`) goes with the gate. RI-18a/b and VB-REVIEW-GATE are declined.
+  - After RI-18c lands, the thesis experiment's A2 arm has no review-gate trigger. Any registered A2 variant must name
+    another escalation trigger.
+- **The run was voided once, and redone.** On 2026-10-01 at 12:22Z the shared orchestrator clone was fast-forwarded
+  while the `revise` segment ran in-process from it. The driver's integrity check voided all 90 revisions ("code_root
+  commit drifted during the segment"). The redo pinned `--code-root` to a detached worktree at `08edc054`.
+  - Rule: an in-process run pins its code root to a detached worktree at its commit, never to the shared clone.
+  - Before the redo, an INTERIM `score` returned VOID (clause 0) with π1 at −36.8 [−41.5, −32.3]. It was not a
+    verdict.
+
+### Source References
+
+- [Routing intelligence](../handoffs/active/routing-intelligence.md) — RI-16 table, RI-18 pre-registration, verdict block, RI-18a/b/c, RI-24.
+- [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — the TE-reopen note: A2 loses its review-gate trigger after RI-18c.
+- [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — RI-16 reading, RI-18 status and void.
+- [2026-09-30 progress](../progress/2026-09/2026-09-30.md) — RI-18 design approval (Q1-Q3) and the structural observations.
+- [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the scored verdict and its derived actions.
+- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261001-shared-clone-drift-voided-ri18-revise.
+- [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-RI18 sidecar and VB-RI18a gaps.
