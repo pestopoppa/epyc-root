@@ -14,7 +14,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 
 | ID | Track | Handoff | Next action | Deps |
 |----|-------|---------|-------------|------|
-| UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-4 :8074 relaunch in a CPU window with workspace-76; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
+| UFH-13 | thesis experiment (PARKED) | [thesis-experiment-orchestrator-vs-strongest-model.md](thesis-experiment-orchestrator-vs-strongest-model.md) | ARCHSWAP-3b A-3 frontdoor scout-stage claim sample; else PARKED until autopilot trains on the swapped stack, then TE-reopen | — |
 | UFH-01 | harness selection and integration | [harness-selection-and-integration.md](harness-selection-and-integration.md) | HS-4 P0.4b/c — republish the Harness Card (HS-7) and freeze OpenCode at tag v1.18.31=014614d3; then P0-split | RTG-09 |
 | UFH-03 | memento block reasoning compression | [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md) | S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) | — |
 | UFH-04 | minddr deep research mode | [minddr-deep-research-mode.md](minddr-deep-research-mode.md) | Phase-2 — Provision a pinned gfx90a training env, then run the MI210 training-viability smoke; the run waits on E5 Stage-B host release | — |
@@ -24,7 +24,7 @@ inference-bearing steps only; their design and documentation work may proceed (`
 | UFH-09 | fuzzy workflow authoring gui | [fuzzy-workflow-authoring-gui.md](fuzzy-workflow-authoring-gui.md) | FW-1 — sketch the two-layer workflow example as a pseudocode loop block, and record what the GUI must expose | — |
 | UFH-10 | browser agent surface | [browser-agent-surface.md](browser-agent-surface.md) | Dormant — revisit when a workflow needs interactive browsing; mechanism advances via RTG-56 TD-12..15 | RTG-56, RTG-33 |
 | UFH-11 | AMD AI Lab website publication | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) | WEB-1 — obtain the contact destination and reviewed-page launch choice for GitHub Pages | — |
-| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-2.2 offline recall eval (wire VB-UFH12-RETR first); re-enable pool at runtime on ws-76's orv/orsv request | UFH-07, INF-78, EVL-37, UFH-01 |
+| UFH-12 | repl embedding retrieval | [repl-embedding-retrieval.md](repl-embedding-retrieval.md) | REPL-EMB-4.5 expiry for experiment flag enables; REPL-EMB-2.2 offline recall eval (wire VB-UFH12-RETR first) | UFH-07, INF-78, EVL-37, UFH-01 |
 
 ## Cross-domain
 
