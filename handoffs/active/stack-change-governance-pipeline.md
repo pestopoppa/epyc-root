@@ -99,6 +99,10 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   tests drive `main()` with `cmd_start` booby-trapped, plus a negative control
   (`tests/unit/test_orchestrator_stack_validate_only.py`). Same class as the 2026-08-12 inert `--validate-only`
   (orch `2c421c1c`). Incident: `INC-20261003-start-dry-run-launched-stack`.
+- [ ] **SCG-TEST-LOGDIR — tests must never write to the live `/workspace/logs/progress/`.** (filed 2026-10-03,
+  workspace-ec) An API test falls back to that directory when run from a worktree with no `logs/`; on 2026-10-03 it
+  wrote 2 synthetic `contention_denied` rows into the live 2026-10-03 progress file (deleted with operator OK).
+  Point the fallback at a tmp dir under pytest (conftest fixture) and add a test that the live dir is untouched.
 - [ ] **SCG-INERT-FLAGS — sweep `orchestrator_stack.py` for other parsed-but-unread flags.** (filed 2026-10-03, from
   SCG-DRYRUN) The same defect has now shipped twice (`--validate-only` 2026-08-12, `--dry-run` 2026-10-03), and each
   was found by accident. Each fix covered only its own flag. Add one structural test: for every subcommand, every

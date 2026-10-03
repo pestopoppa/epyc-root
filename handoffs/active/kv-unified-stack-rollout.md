@@ -192,7 +192,9 @@ is olympiad-style reasoning.
     collapse (`kv_pool_admission.py`);
   - re-point remaining direct :8083 clients (AutoKernel/DS41 harnesses, opencode, codex, Hermes, C95) at :8000.
   Done when a replay of concurrent long prompts through :8000 queues FIFO with zero "failed to find a memory slot".
-- [ ] **KVU-17 — serving telemetry: record per-call server timings, including streamed chat** (IN PROGRESS
+- [x] **KVU-17 — serving telemetry: record per-call server timings, including streamed chat** ✅ 2026-10-03 —
+  LANDED orch c6225e8b/f7fad574/9a0d38e0 on main, API reload 04:59Z; a live :8083 call logged prompt_eval_ms 2368 ms,
+  queue wait 113 ms, role/request_id/orch_commit (logs/serving_calls/serving_calls.jsonl). Was (IN PROGRESS
   2026-10-03; scratch `/mnt/raid0/llm/tmp/serving-timing-ec/`, new `src/backends/serving_calls` module, 44 tests
   pass on the candidate `llama_server.py`). The chat-stream path ignored the `timings` object llama-server
   attaches to the last chunk and hard-coded `prompt_eval_ms = 0.0`, so every streamed completion logged zero

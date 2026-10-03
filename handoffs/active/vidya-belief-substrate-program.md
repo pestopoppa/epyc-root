@@ -2121,3 +2121,18 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     (drafter weights, GDN state per draft depth, KQ-mask slope) are a capacity source for SSU-F3's claim tuple.
   - Add one source-table row per producer in `scripts/vidya/adapters/README.md` (row text prepared for the owning
     session to apply), project each native record into a `ClaimTuple`; do not write a grading rule.
+- [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
+  - discover `logs/serving_calls/serving_calls.jsonl*`;
+  - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
+  - project each `timings` metric (`prompt_ms`, `predicted_ms`, `prompt_per_second`, `predicted_per_second`, `cache_n`, `draft_n_accepted/draft_n`) plus `queue.pre_dispatch_wait_ms` into `ClaimTuple`, with unit and `metric_direction` fixed by the schema (ms and wait: `lower_better`; t/s and acceptance: `higher_better`).
+
+  Rules for what gets projected:
+  - Carry `server.argv_sha256`, `server.binary_realpath`, `server.model_path`, `provenance.orch_commit` and `provenance.run_id` as identity, never graded.
+  - Skip `timings_source="absent"` rows; never emit zeros.
+  - Mark `server.identity_source="absent"` rows unscoped rather than inferring the launch.
+
+  Grading: `Judged/Located` via `claim_tuple.grade()`; no new ladder and no backfill.
+
+  Decide before writing the adapter: should window aggregates (per-role prefill share, queue-wait distribution) be a second producer, or a projection over a sealed window manifest? A per-call tuple cannot carry a share.
+
+  Era row ST1 (`scope: serving_timing`) is in `epyc-orchestrator/orchestration/instrument_eras.yaml` (orch 4e23e553). This is the read side of VB-SERVING-DF2's first producer.
