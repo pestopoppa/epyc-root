@@ -1,0 +1,7 @@
+== promotion-gate set
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================= 202 passed, 1 warning in 54.82s ========================
+== related set
+================== 713 passed, 1 warning in 62.33s (0:01:02) ===================

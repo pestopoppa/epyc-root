@@ -1,0 +1,12 @@
+live snapshot (read-only /proc + /sys), first read 2026-10-03T03:5xZ:
+pid 29330 :8083 lstart Sat Oct 3 03:46:44 2026 KFD 39.15 GiB
+pid 29716 :8086 lstart Sat Oct 3 03:46:48 2026 KFD 22.33 GiB; card used 61.52/63.98 GiB
+
+re-read 2026-10-03T04:28:28Z:
+    PID                  STARTED COMMAND
+  29330 Sat Oct  3 03:46:44 2026 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 8083 -np 4 -c 196608 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --spec-type 
+kfd pid 29330 39.15 GiB llama-server
+kfd pid 32889 0.00 GiB whisper-server
+kfd pid 33130 0.00 GiB tts-server
+card used 39.16 / 63.98 GiB
+listeners on :8086: 0

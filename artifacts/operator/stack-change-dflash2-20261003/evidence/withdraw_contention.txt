@@ -1,0 +1,4 @@
+withdrawn pairs: ["- roles: ['architect_general', 'worker_vision']", "- roles: ['architect_critic', 'worker_vision']", "- roles: ['frontdoor', 'worker_vision']"]
+remaining stamped roles (placement identical): ['architect_critic', 'architect_general', 'frontdoor']
+topology_hash 5d772b2c4698b2ae -> 560d489bb6df16b9
+wrote /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-new/orchestrator/orchestration/contention_matrix.yaml

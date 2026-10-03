@@ -1,0 +1,7 @@
+NOTE: 4 unusable shape(s) in the table, named by ZERO instances. Not a blocker here; delete them rather than annotating them.
+  [undersubscription] shape 'NUMA_Q0A' = ('0-23,96-119', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+  [undersubscription] shape 'NUMA_Q0B' = ('24-47,120-143', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+  [undersubscription] shape 'NUMA_Q1A' = ('48-71,144-167', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+  [undersubscription] shape 'NUMA_Q1B' = ('72-95,168-191', 48) is SMT-OVERsubscribed: 48 threads over 24 physical cores. _assert_instance_invariants fatals on this at import.
+TOPOLOGY CHECK PASS: 5 roles, 7 instances, 8 shapes
+topology_check rc=0

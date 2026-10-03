@@ -1,0 +1,68 @@
+numa_mode: ok
+  detail: evaluated numa_mode: both (source: declared:stack_topology.yaml)
+shared_with_derivations: ok
+  detail: port_map, role_launch_meta, numa_config, roles.<alias>.model and _LEGACY_SERVER_URL_FALLBACKS all recompute from server_mode.*.shared_with
+lean_registry: ok
+  detail: content fresh vs master: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/research/orchestration/model_registry.yaml
+  detail: local cache key (gitignored): matches
+descriptors: ok
+  detail: fresh: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/orchestrator/orchestration/model_descriptors.yaml
+stack_priors: ok
+  detail: fresh: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/orchestrator/orchestration/derived/stack_priors.yaml
+procedure_enums: ok
+  detail: checked: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/orchestrator/orchestration/procedures/add_model_to_registry.yaml, /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/orchestrator/orchestration/procedure.schema.json
+operator_summary: ok
+  detail: fresh: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-base/orchestrator/docs/generated/current_stack_summary.md
+guard: ok
+guard_all_surfaces: warnings
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/test_reviewer_pool_gen.py:143: # (qwen35_122b_q4km / glm_52_ud_iq2m) unresolved to exercise that path. [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:62: reviewer_agent, architect_coding) that Role._missing_ resolves. If this [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_chat_request_role_validation.py:74: "architect_coding", [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: asserts Role._missing_ resolves the legacy "architect_coding" label to live architect_general. This fixture must keep the legacy string to prove backward-compatible normalization.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:309: scoring_config={"timeout": 5, "judge_role": "thinking_reasoning"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_debug_scorer_hard_fail.py:311: assert calls[0]["json"]["force_role"] == "thinking_reasoning" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_fleet_layer_fallback.py:48: "architect_critic": {"port": 8074, "model_role": "qwen35_122b_q4km"}, [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:133: assert "thinking_reasoning" not in WORKING_VALUES  # Role with no server [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_openai_role_override_contract.py:272: "thinking_reasoning",  # a Role member with no server (retired) [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_pipeline_routing.py:32: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.waived.legacy_test.retired_role_in_tests: tests/unit/test_q_reward_role_key.py:106: for role in ("architect_coding", "mock"): [exception: classification=legacy_test; owner=test-infrastructure; expires=2026-12-31; rationale=Intentional retired-role coverage: iterates the legacy "architect_coding" key to prove q-reward role-key handling stays stable for historical replay data. Migrating would drop legacy-key regression coverage.]
+  warn: hardcoded_surface.legacy_test.retired_role_in_tests: tests/unit/test_registry_loader.py:18: _RETIRED_ARCHITECT_ROLE = "architect_coding" [remediation: label as retired-role coverage or migrate fixture to stack priors]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/chapters/10-escalation-and-routing.md:429: signals.thinking_requested = True  # Route to thinking_reasoning model [remediation: generate current stack tables or label snapshot as historical]
+  warn: hardcoded_surface.historical_doc.retired_role_in_operator_docs: docs/diagrams/orchestration_topology.md:34: THR[thinking_reasoning] [remediation: generate current stack tables or label snapshot as historical]
+guard_strict: ok
+reasoning_effort_certifications: ok
+  detail: declared prompt-effort levels match their certified model/quant/kernel era
+stack_manifest_registry: ok
+  detail: stack manifest launch roles match registry process_layout/server_mode
+q_scorer_priors: ok
+  detail: live q_scorer prior sources are stack-prior derived
+runtime_attestation: ok
+  detail: no concrete live process drift detected
+declared_env_attestation: ok
+  detail: compared: handoff_dashboard:8100 pid 17710 (handoff_dashboard, 0 declared keys)
+  detail: compared: frontdoor:8070 pid 26641 (frontdoor, 7 declared keys)
+  detail: compared: server_8080:8080 pid 26998 (frontdoor, 7 declared keys)
+  detail: compared: server_8180:8180 pid 27425 (frontdoor, 7 declared keys)
+  detail: compared: architect_general:8074 pid 27908 (architect_general, 7 declared keys)
+  detail: compared: architect_critic:8083 pid 29330 (architect_critic, 7 declared keys)
+  detail: compared: worker_vision:8086 pid 29716 (worker_vision, 7 declared keys)
+  detail: compared: embedder:8090 pid 30042 (embedder, 7 declared keys)
+  detail: compared: embedder_1:8091 pid 30247 (embedder_1, 7 declared keys)
+  detail: compared: embedder_2:8092 pid 30583 (embedder_2, 7 declared keys)
+  detail: compared: embedder_3:8093 pid 30801 (embedder_3, 7 declared keys)
+  detail: compared: embedder_4:8094 pid 31033 (embedder_4, 7 declared keys)
+  detail: compared: embedder_5:8095 pid 31251 (embedder_5, 7 declared keys)
+  detail: compared: document_formalizer:9001 pid 32144 (document_formalizer, 4 declared keys)
+  detail: compared: sd_server:8190 pid 32258 (sd_server, 2 declared keys)
+  detail: compared: whisper:9000 pid 32889 (whisper, 1 declared keys)
+  detail: compared: tts:9002 pid 33130 (tts, 4 declared keys)
+  detail: not attested (no declared env contract): orchestrator:8000 pid 31526
+simulated_fixtures: reference
+  detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+promotion_gate: reference
+  detail: no-inference promotion target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py tests/unit/test_build_server_command_helpers.py tests/unit/test_seeding_infra.py tests/unit/test_seeding_infra_additional.py tests/unit/test_seeding_infra_branching.py tests/unit/test_seed_specialist_routing_main_and_retry.py
+summary: ok
+acceptance: no-inference checks passed
+warnings: 13 unique (13 total)
+surface_warnings: legacy_test=8, historical_doc=2, waived_legacy_test=3
+promotion_gate: run uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py tests/unit/test_build_server_command_helpers.py tests/unit/test_seeding_infra.py tests/unit/test_seeding_infra_additional.py tests/unit/test_seeding_infra_branching.py tests/unit/test_seed_specialist_routing_main_and_retry.py
+surface_inventory: run uv run python scripts/validate/stack_change_guard.py --list-hardcoded-surface-rules

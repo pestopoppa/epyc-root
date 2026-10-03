@@ -1,0 +1,761 @@
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -2,7 +2,8 @@
+ # AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+ #
+ # This file is compiled at every `orchestrator_stack.py start` from the master
+-# registry at /mnt/raid0/llm/tmp/ri23a-20260929/research/orchestration/model_registry.yaml
++# registry at /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/SANDBOX/research/orchestration/model_registry.yaml
++# with drafter selection from /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/SANDBOX/orchestrator/orchestration/stack_topology.yaml
+ # by src/registry/registry_compiler.py.
+ #
+ # Runtime stack truth lives in the MASTER registry. The next start detects master
+@@ -10,8 +11,8 @@
+ # temporarily skip the compile (e.g. during a master schema change), set
+ # ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+ #
+-# Compiled at: 2026-09-29T10:29:10+00:00
+-# Cache key:   0f7451edfead1a61...
++# Compiled at: 2026-10-03T04:25:15+00:00
++# Cache key:   45c193a288123b46...
+ # Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+ # =============================================================================
+ 
+@@ -372,9 +373,9 @@
+   - worker_math
+   - toolrunner
+   - ingest_long_context
++  warm_mmap:
+   - worker_vision
+   - vision_escalation
+-  warm_mmap: []
+ escalation_chains:
+   coder:
+     description: 'Code generation escalation path. 2026-07-31: this became a REAL escalation — frontdoor (:8070, CPU, Qwen3.6-35B-A3B MoE Q8) now hands off to coder_escalation (:8083, MI210 ROCm0, Qwen3.6-27B
+@@ -1555,11 +1556,14 @@
+   canonical: true
+   ratified_by: operator
+   ratified_on: 2026-07-31
++  amended_on: 2026-10-03
++  amended_by_receipt: RATIFY-STACKCHG-DFLASH2-20261003
+   supersedes: 'All prior per-role prose describing `draft-mtp` alone as the production recipe, and the `ngram_candidate_spec_type` field (RETIRED — see below).
+ 
+     '
+-  production_recipe: draft-mtp
+-  statement: 'Production runs `--spec-type draft-mtp` — MTP self-draft ALONE. The n-gram lane is NOT composed in. This applies to every role that has a working draft path.
++  default_spec_type: draft-mtp
++  statement: 'No n-gram composition: a role that speculates runs ONE drafter, never `ngram-mod,<drafter>`. WHICH drafter is a per-model list here (`roles.<model_role>.drafters`) and a per-server selection
++    in the orchestrator''s stack_topology.yaml (`drafter_selection`). Legacy rows without `drafters` still hand-carry `spec_type: draft-mtp` until migrated.
+ 
+     '
+   superseded_recipe: 'REVERSED 2026-07-31 (same day it was adopted). The composed recipe `ngram-mod,draft-mtp` was adopted on the expectation of a large upside on repetitive / token-reuse context, with
+@@ -1598,6 +1602,8 @@
+     '
+   exceptions:
+     ingest_long_context:
++      status: closed
++      closed_on: 2026-10-03
+       model: Qwen3-Next-80B-A3B-Instruct
+       spec_type: none
+       category: OPTIMUM
+@@ -1752,6 +1758,18 @@
+       inherits_spec_from: architect_critic
+       lookup: false
+       corpus_retrieval: true
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection:
++        server: architect_critic
++        model_role: qwen38_27b_q8_local
++        drafter: dflash2
++        source: stack_topology.drafter_selection
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++        inherited_by: coder_escalation
+     throughput: 47.79
+     previous_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+   worker:
+@@ -1804,10 +1822,10 @@
+       architecture: qwen3vlmoe
+       ctx_max: 262144
+     previous_model: Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf
+-    memory_gb: 0
++    memory_gb: 18.3
+     vram_mb: 21049
+-    tier: hot
+-    device: ROCm0
++    tier: warm
++    device: none
+     acceleration:
+       type: baseline
+     throughput: 112.2
+@@ -1824,7 +1842,8 @@
+         k: q8_0
+         v: q8_0
+       kv_kib_per_token_f16: 64.0
+-      vram_non_kv_gib: 32.8
++      vram_non_kv_gib: 36.34
++      vram_non_kv_drafter: dflash2
+     chat_template_kwargs:
+       enable_thinking: true
+       reasoning_effort: medium
+@@ -1845,16 +1864,23 @@
+     - ingest_long_context
+     agent_file_compression_operating_point: none
+     model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-    draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+     memory_gb: 27
+     vram_gib: 36.7
+     tier: hot
+     acceleration:
+       type: speculative_decoding
+-      spec_type: draft-mtp
+-      draft_max: 4
+-      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+       lookup: false
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection: &id001
++        server: architect_critic
++        model_role: qwen38_27b_q8_local
++        drafter: dflash2
++        source: stack_topology.drafter_selection
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+     device: ROCm0
+     ngl: all
+     numa_instances: 1
+@@ -1862,6 +1888,7 @@
+     - 8083
+     throughput: 47.79
+     previous_model: Qwen3-235B-A22B-Q4_K_M.gguf
++    draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+   architect_general:
+     no_mmap: true
+     url: http://localhost:8074
+@@ -1945,9 +1972,19 @@
+     acceleration:
+       type: none
+       inherits_spec_from: architect_critic
+-      spec_type: draft-mtp
+-      draft_max: 4
+       lookup: false
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection:
++        server: architect_critic
++        model_role: qwen38_27b_q8_local
++        drafter: dflash2
++        source: stack_topology.drafter_selection
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++        inherited_by: ingest_long_context
+     throughput: null
+     throughput_previous_model: 14.4-20.8
+     benchmark_score: null
+@@ -2043,6 +2080,18 @@
+       inherits_spec_from: architect_critic
+       lookup: false
+       corpus_retrieval: true
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection:
++        server: architect_critic
++        model_role: qwen38_27b_q8_local
++        drafter: dflash2
++        source: stack_topology.drafter_selection
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++        inherited_by: coder_escalation
+     performance:
+       inherits_from: architect_critic
+       baseline_tps: 30.87
+@@ -2111,8 +2160,18 @@
+     acceleration:
+       type: none
+       inherits_spec_from: architect_critic
+-      spec_type: draft-mtp
+-      draft_max: 4
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection:
++        server: architect_critic
++        model_role: qwen38_27b_q8_local
++        drafter: dflash2
++        source: stack_topology.drafter_selection
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++        inherited_by: ingest_long_context
+     performance:
+       baseline_tps: null
+       optimized_tps: null
+@@ -2258,10 +2317,6 @@
+     - coder
+     acceleration:
+       type: speculative_decoding
+-      spec_type: draft-mtp
+-      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-      draft_max: 4
+-      k: 4
+       p_split: 0
+       lookup: false
+       notes: '2026-07-31: architect MTP via the MTP-embedded Qwen3.6-27B variant (draft = same GGUF as model; launcher omits -md for same-realpath drafts). Served on MI210 (ROCm0) with -ngl all -fa on.
+@@ -2269,6 +2324,12 @@
+ 
+         '
+       benchmarked: 2026-07-31
++      spec_type: draft-dflash
++      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++      draft_max: 8
++      n_gpu_layers_draft: 99
++      k: 8
++      drafter_selection: *id001
+     performance:
+       superseded_model_history:
+         model: Qwen3-235B-A22B-Q4_K_M
+@@ -2464,8 +2525,7 @@
+     - vision
+     - agentic_vision
+     serving:
+-      device: ROCm0
+-      n_gpu_layers: 999
++      device: none
+       n_ctx: 16384
+       image_min_tokens: 1024
+       cache_ram: 0
+@@ -2501,7 +2561,7 @@
+ 
+         '
+     memory:
+-      residency: hot
++      residency: warm
+       pinned: false
+     server:
+       endpoint: http://localhost:8086
+@@ -2546,7 +2606,7 @@
+     candidate_roles:
+     - vision
+     serving:
+-      device: ROCm0
++      device: none
+       n_ctx: 16384
+     acceleration:
+       type: baseline
+@@ -2565,9 +2625,9 @@
+       benchmark_date: 2026-07-31
+       evidence: data/vision_mmmu_cutover_20260731/results.json
+     memory:
+-      residency: hot
++      residency: warm
+       pinned: false
+-      note: No additional residency — shares worker_vision's single 21049 MB VRAM allocation. This role adds ZERO memory cost.
++      note: No additional residency — shares worker_vision's single allocation (CPU since 2026-10-03; was 21049 MB VRAM). This role adds ZERO memory cost.
+     server:
+       endpoint: http://localhost:8086
+       api_format: openai_multimodal
+@@ -2871,7 +2931,7 @@
+         decode_t_s: 55.46
+       challenger_under_evaluation:
+         name: dflash2-block8
+-        status: np1_only_NOT_SELECTABLE
++        status: SUPERSEDED_BY_drafters.dflash2
+         measured_2026_08_20:
+           np: 1
+           dflash2_block8_decode_t_s: 70.0
+@@ -2888,6 +2948,27 @@
+         - np2/4/8 scaling (this role serves np up to 8; the np1 win does not transfer by assumption, and the upstream PR's own reviewers report scaling problems at concurrency >1)
+         - exact greedy parity vs --spec-type none at temp 0 (losslessness is CLAIMED, not yet verified here; an unverified-parity config must not become a serving selection however fast it is)
+         - block-verify dispatch proof (our gfx90a MMQ patch a6b4b5263 is MTP-verify-shaped, ne11<=1; a block verify is ne11~8 and may miss that path)
++    drafters:
++      mtp:
++        spec_type: draft-mtp
++        draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++        draft_max: 4
++        evidence:
++        - artifacts/architect-bench-gpu-20260814/mtp_nmax_sweep_20260819/
++        - artifacts/np_context_kvu_study_20260924/q38_27b_q8_depth/
++      dflash2:
++        spec_type: draft-dflash
++        draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++        draft_max: 8
++        ngld: 99
++        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++        min_kernel: production-consolidated-v10
++        operator_rulings:
++        - '2026-08-27 epyc-root handoffs/active/autokernel-champion-aggregate.md ruling 3: DFlash2 for Qwen3.8-27B, rest of stack on MTP; lean compiler selects per role'
++        - '2026-10-01 operator: ALWAYS use dflash2 (for the 27B)'
++        evidence:
++        - artifacts/architect-bench-gpu-20260814/dflash2_np1_20260820/campaign-summary.json
++        qualification_note: v10 was qualified on candidate DFlash2 vs v9 MTP self-draft (epyc-root artifacts/operator/v10-qualification-20260921-ffc1bac82.json)
+     memory:
+       residency: cold
+       pinned: false
+--- a/orchestration/derived/stack_priors.yaml
++++ b/orchestration/derived/stack_priors.yaml
+@@ -48,18 +48,18 @@
+   - quality_overall
+   - memory_cost
+   fallback_policy: Consumers may use local fallback values only as explicit degraded mode when this generated contract is missing or invalid.
+ status: compiled
+ coverage_scope: descriptor_role_bindings
+ precedence_spec: docs/reference/stack-truth-precedence.md
+ source_artifacts:
+   registry:
+     path: orchestration/model_registry.yaml
+-    sha256: 7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f
++    sha256: e881dbf84f95e23e7033f76ed425b969e62173e4076ee9cc065b0a86494f63f7
+     repo_commit: null
+   descriptors:
+     path: orchestration/model_descriptors.yaml
+-    sha256: 5f70d4a1cceae290a92c1f661caeb5af5f05466b400b42a24d8f28ef1525f73b
++    sha256: f7d25400853ee7ee42f7ebaa21bf2e0f1caaaca12379fcac399858c4c726dc3b
+     repo_commit: null
+   stack_manifest:
+     path: scripts/server/stack_manifest.py
+@@ -71,15 +71,15 @@
+     repo_commit: null
+   launch_manifest:
+     path: orchestration/launch_manifest.yaml
+-    sha256: 66fe456dc9c3fe323239571d4f32794c93391741986bffb875a925729b54b8c1
++    sha256: 54757eaef051ff39ee9d826bf011f642391b6e49acd0ca38265feb624a7b2df6
+     repo_commit: null
+   stack_topology:
+     path: orchestration/stack_topology.yaml
+-    sha256: 33f3f36a285659bdd63477dfbe1bd86f734a04137257674001a83e79f76a0bac
++    sha256: 15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1
+     repo_commit: null
+   orchestrator_stack:
+     path: scripts/server/orchestrator_stack.py
+-    sha256: 595f664afb2265719de15fb1604ab21f2a73d66a0027c16d08974b7252857824
++    sha256: d8ca18053d3055b74c22e16912f0dc99de176f562d3520045c594f6db623bd79
+     repo_commit: null
+   stack_paths:
+     path: scripts/server/stack_paths.py
+@@ -123,7 +123,7 @@
+         - default
+         requirements:
+           model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+         runtime:
+           binary_family: llama.cpp
+           binary_path: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+@@ -161,10 +161,10 @@
+             override_kv: []
+             spec:
+               enabled: true
+-              type: draft-mtp
++              type: draft-dflash
+               disabled_by: null
+-              draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-              draft_max: 4
++              draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
++              draft_max: 8
+               draft_min: null
+               draft_p_min: null
+               draft_p_split: null
+@@ -172,6 +172,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: 99
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -198,9 +199,9 @@
+         a scalar.
+       memory_cost: 1.0
+     acceleration:
+-      spec_type: draft-mtp
++      spec_type: draft-dflash
+       draft_compat:
+-      - qwen3.8-27b-q8_0
++      - qwen3.8-27b-dflash2-q8_0
+       enable_thinking: true
+       thinking_control:
+         mode: toggle_on
+@@ -208,8 +209,8 @@
+       kv:
+         k: null
+         v: null
+-      draft_max: 4
+-      k: 4
++      draft_max: 8
++      k: 8
+       p_split: 0
+       lookup: false
+     model:
+@@ -396,6 +397,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -531,7 +533,7 @@
+         - default
+         requirements:
+           model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+         runtime:
+           binary_family: llama.cpp
+           binary_path: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+@@ -580,6 +582,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -606,9 +609,9 @@
+         a scalar.
+       memory_cost: 1.0
+     acceleration:
+-      spec_type: draft-mtp
++      spec_type: draft-dflash
+       draft_compat:
+-      - qwen3.8-27b-q8_0
++      - qwen3.8-27b-dflash2-q8_0
+       enable_thinking: true
+       thinking_control:
+         mode: toggle_on
+@@ -616,8 +619,8 @@
+       kv:
+         k: null
+         v: null
+-      draft_max: 4
+-      k: 4
++      draft_max: 8
++      k: 8
+       p_split: 0
+       lookup: false
+     model:
+@@ -823,6 +826,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -973,7 +977,7 @@
+         - default
+         requirements:
+           model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
++          draft_model_path: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+         runtime:
+           binary_family: llama.cpp
+           binary_path: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+@@ -1022,6 +1026,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -1048,9 +1053,9 @@
+         a scalar.
+       memory_cost: 1.0
+     acceleration:
+-      spec_type: draft-mtp
++      spec_type: draft-dflash
+       draft_compat:
+-      - qwen3.8-27b-q8_0
++      - qwen3.8-27b-dflash2-q8_0
+       enable_thinking: true
+       thinking_control:
+         mode: toggle_on
+@@ -1058,8 +1063,8 @@
+       kv:
+         k: null
+         v: null
+-      draft_max: 4
+-      k: 4
++      draft_max: 8
++      k: 8
+       p_split: 0
+       lookup: false
+     model:
+@@ -1361,9 +1366,9 @@
+         a scalar.
+       memory_cost: 1.0
+     acceleration:
+-      spec_type: draft-mtp
++      spec_type: draft-dflash
+       draft_compat:
+-      - qwen3.8-27b-q8_0
++      - qwen3.8-27b-dflash2-q8_0
+       enable_thinking: true
+       thinking_control:
+         mode: toggle_on
+@@ -1371,8 +1376,8 @@
+       kv:
+         k: null
+         v: null
+-      draft_max: 4
+-      k: 4
++      draft_max: 8
++      k: 8
+       p_split: 0
+       lookup: false
+     model:
+@@ -1691,6 +1696,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -1821,7 +1827,7 @@
+       ports:
+       - 8086
+       slots: 1
+-      tier: hot
++      tier: warm
+       effective_context_tokens: 65536
+       binary: llama.cpp
+       binary_dir: null
+@@ -1833,7 +1839,7 @@
+           primary_role: worker_vision
+           mode: vision
+           alias: true
+-          cpu_shape_class: gpu_host_lane
++          cpu_shape_class: half
+           vision_type: worker
+           slots: 1
+         primary_roles:
+@@ -1845,11 +1851,9 @@
+           model_path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+         runtime:
+           binary_family: llama.cpp
+-          binary_path: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+-          binary_dir: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+-          ld_library_path:
+-          - /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+-          - /opt/rocm/lib
++          binary_path: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
++          binary_dir: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin
++          ld_library_path: []
+           env_policy: canonical
+           kmp_blocktime: null
+           cache:
+@@ -1870,7 +1874,7 @@
+           flags:
+             flash_attn: true
+             jinja: false
+-            device: ROCm0
++            device: none
+             device_draft: null
+             n_gpu_layers: null
+             image_min_tokens: null
+@@ -1891,6 +1895,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: shared
+       contention_class: light
+@@ -1931,7 +1936,7 @@
+         basis: role-relevant axis vision_language via mmmu
+       quality_advisories:
+       - No whole-suite quality prior; domain evidence only (mmmu, tool_compliance_local, vision_language). quality_overall is null BY DESIGN — read the per-axis evidence instead of expecting a scalar.
+-      memory_cost: 1.0
++      memory_cost: 2.0
+     acceleration:
+       spec_type: baseline
+       draft_compat: []
+@@ -2094,6 +2099,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -2296,6 +2302,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -2498,6 +2505,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -2700,6 +2708,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -2902,6 +2911,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: exclusive
+       contention_class: heavy
+@@ -3032,7 +3042,7 @@
+       ports:
+       - 8086
+       slots: 1
+-      tier: hot
++      tier: warm
+       effective_context_tokens: 65536
+       binary: llama.cpp
+       binary_dir: null
+@@ -3044,7 +3054,7 @@
+           primary_role: worker_vision
+           mode: vision
+           alias: false
+-          cpu_shape_class: gpu_host_lane
++          cpu_shape_class: half
+           vision_type: worker
+           slots: 1
+         primary_roles:
+@@ -3056,11 +3066,9 @@
+           model_path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+         runtime:
+           binary_family: llama.cpp
+-          binary_path: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+-          binary_dir: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+-          ld_library_path:
+-          - /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+-          - /opt/rocm/lib
++          binary_path: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin/llama-server
++          binary_dir: /mnt/raid0/llm/kernels/builds/cpu-20260921-ffc1bac82/bin
++          ld_library_path: []
+           env_policy: canonical
+           kmp_blocktime: null
+           cache:
+@@ -3081,9 +3089,9 @@
+           flags:
+             flash_attn: true
+             jinja: false
+-            device: ROCm0
++            device: none
+             device_draft: null
+-            n_gpu_layers: 999
++            n_gpu_layers: null
+             image_min_tokens: 1024
+             cache_ram: 0
+             chat_template_file: null
+@@ -3102,6 +3110,7 @@
+               ngram_mod_n_min: null
+               ngram_mod_n_max: null
+               ngram_mod_n_match: null
++              n_gpu_layers_draft: null
+     policy:
+       lock_class: shared
+       contention_class: light
+@@ -3142,7 +3151,7 @@
+         basis: role-relevant axis vision_language via mmmu
+       quality_advisories:
+       - No whole-suite quality prior; domain evidence only (mmmu, tool_compliance_local, vision_language). quality_overall is null BY DESIGN — read the per-axis evidence instead of expecting a scalar.
+-      memory_cost: 1.0
++      memory_cost: 2.0
+     acceleration:
+       spec_type: baseline
+       draft_compat: []
+--- a/orchestration/model_descriptors.yaml
++++ b/orchestration/model_descriptors.yaml
+@@ -1,16 +1,16 @@
+ descriptor_version: 3
+ status: compiled
+ coverage_scope: active_roles_from_stack_manifest
+ source_registries:
+   lean:
+     path: orchestration/model_registry.yaml
+     repo_commit: null
+-    sha256: 7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f
++    sha256: e881dbf84f95e23e7033f76ed425b969e62173e4076ee9cc065b0a86494f63f7
+   research:
+     path: /mnt/raid0/llm/tmp/stack-change-dflash2-20261003/SANDBOX/research/orchestration/model_registry.yaml
+     repo_commit: null
+-    sha256: aa1229cd39fa6eca8efe15a3e964a8162c314d45cfcabad4fecaff03adcdfae1
++    sha256: 8c6d0599c4ca447716934e7a0ff37f714c09a28b08967e244af8fca73d7ccd02
+ model_id_policy:
+   canonical_shape: family-params-active-quant
+   invariant: model records are keyed by physical model identity, never by role name
+@@ -469,9 +469,9 @@
+       protocol: server_mode throughput
+       value_tps: 47.79
+   acceleration:
+-    spec_type: draft-mtp
++    spec_type: draft-dflash
+     draft_compat:
+-    - qwen3.8-27b-q8_0
++    - qwen3.8-27b-dflash2-q8_0
+     enable_thinking: true
+     thinking_control:
+       mode: toggle_on
+@@ -479,8 +479,8 @@
+     kv:
+       k: null
+       v: null
+-    draft_max: 4
+-    k: 4
++    draft_max: 8
++    k: 8
+     p_split: 0
+     lookup: false
+   serving:
+--- a/docs/generated/current_stack_summary.md
++++ b/docs/generated/current_stack_summary.md
+@@ -9,22 +9,22 @@
+ Source: `orchestration/derived/stack_priors.yaml`
+ 
+ Source fingerprints:
+-- orchestration/derived/stack_priors.yaml: `3734f038aa8cdf9733bf0c43ee7c3d923991d76e3afb19d2fdd2964ac7706a99`
+-- orchestration/model_registry.yaml: `7ff34c2d7555a4ce191986526919351fa3cde7ba5e75f9a4519d2bbdeea0728f`
+-- orchestration/model_descriptors.yaml: `5f70d4a1cceae290a92c1f661caeb5af5f05466b400b42a24d8f28ef1525f73b`
++- orchestration/derived/stack_priors.yaml: `266dc5007d4d73dcb21ea48872f3c98e6399f97a30675f9f02a43ab797020d46`
++- orchestration/model_registry.yaml: `e881dbf84f95e23e7033f76ed425b969e62173e4076ee9cc065b0a86494f63f7`
++- orchestration/model_descriptors.yaml: `f7d25400853ee7ee42f7ebaa21bf2e0f1caaaca12379fcac399858c4c726dc3b`
+ 
+ | Role | Port | Model | Tier | Acceleration | Requirements | Throughput | Description |
+ |---|---:|---|---|---|---|---:|---|
+-| architect_critic | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
++| architect_critic | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-dflash (lookup=false, draft_max=8) | draft=Qwen3.8-27B-DFlash2-Q8_0.gguf | 47.79 | live_stack; binding=server_mode.direct; status=compiled |
+ | architect_general | 8074 | Qwen3.8-Flash-Next-UD-IQ4_XS | hot | draft-mtp (lookup=false, draft_max=4) | draft=mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf | 52.7 | live_stack; binding=server_mode.direct; status=compiled |
+-| coder_escalation | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
++| coder_escalation | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-dflash (lookup=false, draft_max=8) | draft=Qwen3.8-27B-DFlash2-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
+ | frontdoor | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.direct; status=compiled |
+-| ingest_long_context | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.8-27B-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
++| ingest_long_context | 8083 | Qwen3.8-27B-Q8_0 | hot | draft-dflash (lookup=false, draft_max=8) | draft=Qwen3.8-27B-DFlash2-Q8_0.gguf | 47.79 | live_stack; binding=stack_manifest.alias->server_mode.direct; status=compiled |
+ | toolrunner | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+-| vision_escalation | 8086 | Qwen3-VL-30B-A3B-Instruct | hot | baseline | mmproj=mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf | 112.2 | live_stack; binding=server_mode.shared_with; status=compiled |
++| vision_escalation | 8086 | Qwen3-VL-30B-A3B-Instruct | warm | baseline | mmproj=mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf | 112.2 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | worker | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.direct; status=compiled |
+ | worker_explore | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | worker_general | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | worker_math | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+ | worker_summarize | 8070, 8080, 8180 | Qwen3.6-35B-A3B-MTP-Q8_0 | hot | draft-mtp (lookup=false, draft_max=4) | embedded_nextn=Qwen3.6-35B-A3B-MTP-Q8_0.gguf | 40.22 | live_stack; binding=server_mode.shared_with; status=compiled |
+-| worker_vision | 8086 | Qwen3-VL-30B-A3B-Instruct | hot | baseline | mmproj=mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf | 112.2 | live_stack; binding=server_mode.direct; status=compiled |
++| worker_vision | 8086 | Qwen3-VL-30B-A3B-Instruct | warm | baseline | mmproj=mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf | 112.2 | live_stack; binding=server_mode.direct; status=compiled |

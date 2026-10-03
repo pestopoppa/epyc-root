@@ -1,0 +1,12 @@
+compile_lean                       risk=LOW      impacted=   6 direct=2 procs=1 file=src/registry/registry_compiler.py procs=['cmd_start']
+cache_key                          risk=LOW      impacted=   5 direct=1 procs=1 file=src/registry/registry_compiler.py procs=['cmd_start']
+load_or_compile                    risk=LOW      impacted=   6 direct=2 procs=1 file=src/registry/registry_compiler.py procs=['cmd_start']
+_launch_runtime_record             risk=HIGH     impacted=   6 direct=2 procs=0 file=src/registry/stack_priors.py procs=[]
+_append_spec_decode_args           risk=UNKNOWN  impacted=   0 direct=None procs=None file=None procs=[]
+_append_runtime_spec_args          risk=LOW      impacted=   4 direct=2 procs=1 file=scripts/server/orchestrator_stack.py procs=['start_server']
+start_orchestrator                 risk=UNKNOWN  impacted=   0 direct=None procs=None file=None procs=[]
+_lean_registry_step                ERROR Target '_lean_registry_step' not found
+run_stack_change_pipeline          risk=LOW      impacted=   2 direct=1 procs=0 file=scripts/registry/stack_change_pipeline.py procs=[]
+validate_all                       risk=LOW      impacted=   8 direct=2 procs=1 file=src/registry/registry_validator.py procs=['cmd_start']
+_derived_runtime_field_warnings    ERROR Target '_derived_runtime_field_warnings' not found
+main                               risk=UNKNOWN  impacted=   0 direct=None procs=None file=None procs=[]

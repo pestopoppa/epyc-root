@@ -1,0 +1,21 @@
+Using CPython 3.14.7
+Creating virtual environment at: .venv
+   Building epyc-orchestrator @ file:///mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-pristine/orchestrator
+      Built epyc-orchestrator @ file:///mnt/raid0/llm/tmp/stack-change-dflash2-20261003/sandbox-pristine/orchestrator
+warning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.
+         If the cache and target directories are on different filesystems, hardlinking may not be supported.
+         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.
+Installed 151 packages in 587ms
+role                   inst   port          class     dev    n_ctx  slots    kv GiB  nonKV GiB
+architect_critic          0   8083  gpu_host_lane     GPU   196608      4     6.375      36.34
+architect_general         0   8074           full    host   262144      1    24.000        nan
+frontdoor                 0   8070           full    host   262144      4     2.656        nan
+frontdoor                 1   8080           half    host   262144      1     2.656        nan
+frontdoor                 2   8180           half    host   262144      1     2.656        nan
+worker_vision             0   8086           half    host    65536      1     3.188      19.26
+
+GPU  required 42.72 GiB / budget 62.00 GiB (capacity 64.00), KV 6.38 -> OK
+       architect_critic           42.72 GiB
+HOST required 254.46 GiB (219.30 weights + 35.16 KV) / budget 1069.4158 GiB
+CAPACITY PASS
+capacity.sh rc=0

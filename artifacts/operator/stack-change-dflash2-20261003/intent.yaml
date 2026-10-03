@@ -1,0 +1,34 @@
+# stack-change phase 0 — intent (operator-decided). The ONLY input.
+schema: epyc.stack_change_intent.v1
+id: STACKCHG-DFLASH2-20261003
+operator_directives:
+  - "2026-10-01: ALWAYS use dflash2 (Qwen3.8-27B on :8083)"
+  - "2026-10-03: Vision down, canonical DFlash2 (Qwen3-VL-30B :8086 leaves the MI210 until the 2nd MI210)"
+  - "2026-08-27 ruling 3: DFlash2 for Qwen3.8-27B only; the lean compiler selects per role"
+
+retire: []          # NOTHING is retired. Qwen3-VL-30B stays registered, not deprecated.
+
+assign: {}          # no role changes host or model. architect_critic keeps Qwen3.8-27B-Q8_0;
+                    # coder_escalation / ingest_long_context stay aliases on it.
+
+drafter:            # structural fix DRAFT-SEL-1
+  master:           # research orchestration/model_registry.yaml
+    roles.qwen38_27b_q8_local.drafters:
+      mtp:     {spec_type: draft-mtp,    draft_model: Qwen3.8-27B-Q8_0.gguf (self), draft_max: 4}
+      dflash2: {spec_type: draft-dflash, draft_model: Qwen3.8-27B-DFlash2-Q8_0.gguf, draft_max: 8, ngld: 99}   # canonical recipe value (qwen3.8-27b-q8-gpu-dflash2-np4.json)
+    speculative_decoding_policy.production_recipe: demote -> default_spec_type (n-gram composition scope only)
+    hand_carried_spec_fields: delete (architect_critic host/role, ingest_long_context alias rows)
+  topology:         # orchestrator orchestration/stack_topology.yaml
+    drafter_selection: {architect_critic: dflash2}
+  compiler: project selection -> lean -> stack_priors -> launcher argv (-md, -ngld, --spec-type draft-dflash)
+
+topology:
+  architect_critic:   # unchanged production shape (np 4, kv-unified, flash-attn, same template/slot path)
+    n_ctx: 196608
+    kv_quant: {k: q8_0, v: q8_0}
+    vram_non_kv_gib: 36.34   # re-derived for DFlash2; UNVALIDATED until measured at load
+
+lineup:
+  worker_vision:      # :8086 Qwen3-VL-30B — MI210 -> CPU NUMA_HALF_A (0-47,96-143, -t 48), tier WARM (cold: not started by default start)
+    action: device-move + tier hot->warm (NOT retire, NOT deprecate; weights stay; operator reassesses on MI210 #2)
+  vision_escalation:  {action: rides worker_vision; routing while down must be stated}

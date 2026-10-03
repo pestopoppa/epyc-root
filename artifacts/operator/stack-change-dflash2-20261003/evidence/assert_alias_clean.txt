@@ -1,0 +1,4 @@
+checking 9 alias relationship(s): coder_escalation, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_general, worker_math, worker_summarize
+
+PASS: every alias relationship checked is well-formed.
+assert_alias_clean rc=0

@@ -1,0 +1,1860 @@
+--- a/orchestration/stack_topology.yaml
++++ b/orchestration/stack_topology.yaml
+@@ -49,6 +49,32 @@
+     cost frontdoor and ingest_long_context roughly 2x for months.
+ 
+ # =============================================================================
++# DRAFTER SELECTION — "which speculative drafter each launching server runs"
++# =============================================================================
++# DRAFT-SEL-1 (2026-10-01). The MASTER registry lists every ACCEPTABLE drafter for
++# a MODEL (`roles.<model_role>.drafters`, with launch params). THIS section picks
++# ONE per launching server; registry_compiler.compile_lean projects it into the
++# lean registry, stack_priors and the launcher argv. Nothing else may restate a
++# drafter: the compiler FAILS on a hand-carried spec_type/draft_model/draft_max for
++# a model that declares `drafters`, and FAILS when such a model lists >1 drafter
++# and this section names none for its server. There is deliberately NO default —
++# a default is how :8083 re-inherited draft-mtp across two model swaps
++# (orch 7483d7fb, ARCHSWAP-20260927) while the operator had ruled DFlash2.
++#
++# Keys are LAUNCHING servers (server_mode keys), never aliases: a drafter is a
++# property of the process, and every alias in its shared_with inherits it.
++# Values are drafter ids from the master list, or the reserved `none`
++# (deliberately no speculation).
++#
++# Servers whose model has not been migrated to `drafters:` are absent here and
++# keep their legacy hand-carried master fields (compile warning) until migrated.
++drafter_selection:
++  # Qwen3.8-27B-Q8_0 on MI210. Operator: 2026-08-27 ("the superior spec decode path
++  # for running qwen3.8-27b") and 2026-10-01 ("ALWAYS use dflash2"). Recipe:
++  # epyc-inference-research/artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
++  architect_critic: dflash2
++
++# =============================================================================
+ # PER-ROLE NUMA WIRING — "which CPUs and how many threads each role gets"
+ # =============================================================================
+ # Loaded by scripts/server/stack_numa.py as NUMA_CONFIG. Until 2026-08-01 this
+@@ -291,9 +317,20 @@
+     # MMMU-250 cutover measured (taskset -c 184-191, -t 8). The 24-thread
+     # node-1 quarter was sized for a ~4 GB host-resident 7B; the 30B is
+     # VRAM-resident and needs host threads, not host cores.
++    # ── STACKCHG-DFLASH2-20261003: OFF THE MI210, onto CPU, COLD (tier warm). ──────────────────────
++    # Operator 2026-10-03: the 27B on :8083 runs DFlash2 (~43 GiB), which does not fit
++    # beside this 22.3 GiB VL on one MI210. The topology forces a cpuset for any launched
++    # role, so it is DECLARED: NUMA_HALF_A = cores 0-47 + SMT siblings 96-143 (NPS4 nodes
++    # 0,1), -t 48, interleave=0,1. GPU-disjoint (the 27B's host lane 184-191 is in half B).
++    # It overlaps frontdoor :8070 (0-95) and :8080 (half A) WHEN STARTED; it is never
++    # started by a default `start`. No mlock (cold: would pin 18.3 GiB while up).
++    # The operator reassesses this placement when the 2nd MI210 arrives.
+     instances:
+-      - {cpu_shape: GPU_HOST_LANE, port: 8086}
+-    gpu_host_lane: true
++      - {cpu_shape: NUMA_HALF_A, port: 8086}
++    numa_pre_evict_gib: 40   # INF-70/C7 CPU role: force even interleave (see header)
++    numactl_policy: interleave=0,1
++    # (was, MI210) instances: [{cpu_shape: GPU_HOST_LANE, port: 8086}], gpu_host_lane: true,
++    # numactl_policy: membind=3 — restore these with device ROCm0 on the 2nd MI210.
+     # 2026-08-01 W1 CUTOVER: Qwen2.5-VL-7B CPU -> Qwen3-VL-30B-A3B Q4_K_M on
+     # MI210 (ROCm0), and vision_escalation is now an ALIAS on this same process
+     # rather than a second server on :8087.
+@@ -303,7 +340,6 @@
+     # This was membind=1 while the role sat on the node-1 quarter; leaving it
+     # would have bound host allocations to a node the threads no longer touch,
+     # which is the exact cross-node defect the 2026-07-30 placement audit found.
+-    numactl_policy: membind=3
+ 
+   # vision_escalation ENTRY REMOVED 2026-08-01 (W1 cutover). It is no longer a
+   # process: worker_vision and vision_escalation are ONE MI210 server on :8086
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -129,8 +129,9 @@
+   - architect_general  # 2026-09-27 swap: now the :8074 Flash-Next process, which D1 keeps hot
+   - architect_critic   # 2026-08-01 W1: tier hot per OPERATOR DECISION D1 ("keep it hot"); the :8083 27B since the 2026-09-27 swap
+   - ingest_long_context
+-  - worker_vision
+-  - vision_escalation
++  # worker_vision / vision_escalation REMOVED STACKCHG-DFLASH2-20261003: :8086 is a COLD (warm-tier) CPU
++  # role while the MI210 carries DFlash2. Keeping them here would make the /health fallback
++  # probes report a deliberately-stopped server as down.
+ 
+ # Roles that must never run concurrently (large/latency-sensitive paths).
+ #
+@@ -263,7 +264,7 @@
+   # 2026-08-01 W1 CUTOVER: one MI210 vision process serving BOTH role names.
+   # vision_escalation lost its own entry — it no longer launches anything.
+   worker_vision:
+-    tier: hot
++    tier: warm   # STACKCHG-DFLASH2-20261003: CPU, cold — `start` skips it; start --only/--include-warm worker_vision
+     mode: vision
+     vision_type: worker
+     # aliases DERIVED: server_mode.worker_vision.shared_with -> [vision_escalation]
+--- a/orchestration/contention_matrix.yaml
++++ b/orchestration/contention_matrix.yaml
+@@ -46,34 +46,44 @@
+ # threads) of every relabeled instance was asserted equal to the post-swap NUMA_CONFIG, and no
+ # measured value, date or provenance changed. topology_hash restamped 4893e37e5d603c80 -> 5d772b2c4698b2ae.
+ # A relabel is not a re-measurement: re-run contention_matrix.py when placement next changes.
+-topology_hash: "5d772b2c4698b2ae"
++# STACKCHG-DFLASH2-20261003 DECLARED WITHDRAWAL (tools/withdraw_contention_role.py, epyc-root
++# artifacts/operator/stack-change-dflash2-20261003). worker_vision moved GPU_HOST_LANE
++# 184-191/-t8 -> NUMA_HALF_A 0-47,96-143/-t48 as a COLD (warm-tier) CPU role, so its
++# 3 measured pair(s) no longer describe any placement: WITHDRAWN from `pairs` (kept verbatim
++# below, commented) and re-declared under `unknown_pairs`. The other stamped roles ['architect_critic', 'architect_general', 'frontdoor']
++# were asserted to have IDENTICAL numa_config in base and candidate; no measured value,
++# date or provenance changed. The stamp now covers worker_vision's DECLARED new placement.
++# topology_hash restamped 5d772b2c4698b2ae -> 560d489bb6df16b9. worker_vision pairs gate as UNKNOWN
++# (background QUEUE / foreground ALLOW). Re-bench with contention_matrix.py if it goes hot.
++# Withdrawn entries:
++#     - roles: ['architect_general', 'worker_vision']
++#       instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_general", "threads": 96}
++#       instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
++#       seq_aggregate_tps: 55.82
++#       parallel_aggregate_tps: 4.36
++#       ratio: 0.08
++#       samples: 1
++#       verdict: "block"
++#     - roles: ['architect_critic', 'worker_vision']
++#       instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
++#       instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
++#       seq_aggregate_tps: 45.2
++#       parallel_aggregate_tps: 47.1
++#       ratio: 1.04
++#       samples: 1
++#       verdict: "allow"
++#     - roles: ['frontdoor', 'worker_vision']
++#       instance_a: {"cpu_list": "0-47,96-143", "instance_idx": 1, "label": "half0", "port": 8080, "regions": ["q0", "q1"], "role": "frontdoor", "threads": 48}
++#       instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
++#       seq_aggregate_tps: 58.64
++#       parallel_aggregate_tps: 82.5
++#       ratio: 1.41
++#       samples: 1
++#       verdict: "allow"
++topology_hash: "560d489bb6df16b9"
+ default_floor: 0.85
+ 
+ pairs:
+-  - roles: ['architect_general', 'worker_vision']
+-    instance_a: {"cpu_list": "0-95", "instance_idx": 0, "label": "full", "port": 8074, "regions": ["q0", "q1", "q2", "q3"], "role": "architect_general", "threads": 96}
+-    instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
+-    seq_aggregate_tps: 55.82
+-    parallel_aggregate_tps: 4.36
+-    ratio: 0.08
+-    samples: 1
+-    verdict: "block"
+-  - roles: ['architect_critic', 'worker_vision']
+-    instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
+-    instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
+-    seq_aggregate_tps: 45.2
+-    parallel_aggregate_tps: 47.1
+-    ratio: 1.04
+-    samples: 1
+-    verdict: "allow"
+-  - roles: ['frontdoor', 'worker_vision']
+-    instance_a: {"cpu_list": "0-47,96-143", "instance_idx": 1, "label": "half0", "port": 8080, "regions": ["q0", "q1"], "role": "frontdoor", "threads": 48}
+-    instance_b: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8086, "regions": [], "role": "worker_vision", "threads": 8}
+-    seq_aggregate_tps: 58.64
+-    parallel_aggregate_tps: 82.5
+-    ratio: 1.41
+-    samples: 1
+-    verdict: "allow"
+   - roles: ['architect_critic', 'frontdoor']
+     instance_a: {"cpu_list": "184-191", "instance_idx": 0, "label": "inst0", "port": 8083, "regions": [], "role": "architect_critic", "threads": 8}
+     instance_b: {"cpu_list": "0-47,96-143", "instance_idx": 1, "label": "half0", "port": 8080, "regions": ["q0", "q1"], "role": "frontdoor", "threads": 48}
+@@ -94,6 +104,12 @@
+ unknown_pairs:
+   - roles: ['architect_general', 'frontdoor']
+     reason: "overlap_substituted (overlap_measured): no disjoint live placement exists for this role pair; an overlapping-geometry number must not enter the role-keyed gate as the pair's verdict — re-bench the geometry you want with `bench-nway` from a manifest"
++  - roles: ['architect_general', 'worker_vision']
++    reason: "placement_withdrawn (STACKCHG-DFLASH2-20261003): worker_vision moved GPU_HOST_LANE 184-191/-t8 -> NUMA_HALF_A 0-47,96-143/-t48 as a COLD (warm-tier) CPU role; the measured pair described the old placement and was withdrawn. Re-bench with contention_matrix.py before worker_vision becomes a hot role"
++  - roles: ['architect_critic', 'worker_vision']
++    reason: "placement_withdrawn (STACKCHG-DFLASH2-20261003): worker_vision moved GPU_HOST_LANE 184-191/-t8 -> NUMA_HALF_A 0-47,96-143/-t48 as a COLD (warm-tier) CPU role; the measured pair described the old placement and was withdrawn. Re-bench with contention_matrix.py before worker_vision becomes a hot role"
++  - roles: ['frontdoor', 'worker_vision']
++    reason: "placement_withdrawn (STACKCHG-DFLASH2-20261003): worker_vision moved GPU_HOST_LANE 184-191/-t8 -> NUMA_HALF_A 0-47,96-143/-t48 as a COLD (warm-tier) CPU role; the measured pair described the old placement and was withdrawn. Re-bench with contention_matrix.py before worker_vision becomes a hot role"
+ 
+ 
+ # ─────────────────────────────────────────────────────────────────────
+--- a/stack_templates/default.yaml
++++ b/stack_templates/default.yaml
+@@ -12,8 +12,9 @@
+ #     1×96t FULL instance + 2×48t HALF instances. The four-quarter lineup
+ #     (8280/8380, 8282/8382, 8385/8485, 8187..8487) was RETIRED and its ports
+ #     freed — they must not be revived here.
+-#   * architect_critic and worker_vision are MI210 roles: the model is on the
+-#     GPU and only 8 HOST threads are pinned, on GPU_HOST_LANE (184-191).
++#   * architect_critic is the MI210 role: the model is on the GPU and only 8
++#     HOST threads are pinned, on GPU_HOST_LANE (184-191). worker_vision is a
++#     COLD CPU role on NUMA_HALF_A since STACKCHG-DFLASH2-20261003 (WARM: not started by default).
+ #   * architect_general (:8074) is the whole-machine CPU process (the 122B that
+ #     vacated architect_general on 2026-08-01, Qwen3.8-Flash-Next since
+ #     2026-09-22); coder_escalation and ingest_long_context alias architect_critic,
+@@ -174,12 +175,12 @@
+     # 63.6%). Was Qwen2.5-VL-7B / 4.4 GB.
+     model: Qwen3-VL-30B-A3B-Instruct
+     quant: Q4_K_M
+-    tier: HOT
++    tier: WARM   # STACKCHG-DFLASH2-20261003: CPU, cold — not launched by a default start (was HOT, MI210)
+     ram_gb: 17.3
+     full:
+       port: 8086
+-      numa: GPU_HOST_LANE
+-      threads: 8
++      numa: HALF_A
++      threads: 48
+ 
+   vision_escalation:
+     # 2026-08-01 W1 vision unification: the standalone :8087 instance was
+--- /dev/null
++++ b/src/registry/drafter_selection.py
+@@ -0,0 +1,404 @@
++"""Drafter SELECTION: master lists every acceptable drafter, topology picks one.
++
++DRAFT-SEL-1 (proposed 2026-10-01). Origin: production :8083 served Qwen3.8-27B with
++`--spec-type draft-mtp` although the operator had ruled DFlash2 the 27B's spec-decode
++path (2026-08-27, autokernel-champion-aggregate ruling 3; restated 2026-10-01 "ALWAYS
++use dflash2"). The drafter was a hand-copied per-role field (`acceleration.spec_type`,
++`draft_model`, `draft_max`) restated in five places for one process, under a global
++`speculative_decoding_policy.production_recipe: draft-mtp`. Every model swap
++(7483d7fb, ARCHSWAP-20260927) changed the model path and re-inherited the copied
++MTP fields; nothing structural could carry a different drafter to the launch.
++
++The contract this module enforces:
++
++* MASTER  ``roles.<model_role>.drafters`` — a mapping ``{drafter_id: recipe}`` of every
++  ACCEPTABLE drafter for THAT MODEL, each with its launch parameters.
++* TOPOLOGY ``stack_topology.yaml -> drafter_selection.<server>`` — which drafter_id
++  the server (the launching PRIMARY, never an alias) runs. ``none`` is reserved and
++  means "launch without speculation" on purpose.
++* COMPILER projects the selected recipe into the lean view (``server_mode.<server>``,
++  ``roles.<server>`` and every alias in ``shared_with``) and stamps the provenance.
++* A server whose model declares ``drafters`` may NOT hand-carry drafter fields in the
++  master; the projection is the only writer.
++
++Models without ``drafters`` are LEGACY rows: their hand-carried fields still pass
++through unchanged (with a warning) so the fix can migrate one model at a time.
++"""
++
++from __future__ import annotations
++
++import json
++from dataclasses import dataclass, field
++from pathlib import Path
++from typing import Any
++
++import yaml
++
++_REPO_ROOT = Path(__file__).resolve().parents[2]
++DEFAULT_TOPOLOGY_PATH = _REPO_ROOT / "orchestration" / "stack_topology.yaml"
++
++SELECTION_SECTION = "drafter_selection"
++NO_SPECULATION = "none"
++# serving_shape key naming the drafter `vram_non_kv_gib` was derived for (optional).
++VRAM_DRAFTER_KEY = "vram_non_kv_drafter"
++
++# Acceleration keys that DESCRIBE THE DRAFTER. When a model declares `drafters`, none
++# of these may be written by hand on a server/role/alias that serves it.
++DRAFTER_FIELDS: tuple[str, ...] = (
++    "spec_type",
++    "draft_model",
++    "draft_model_path",
++    "draft_max",
++    "k",
++    "draft_min",
++    "draft_p_min",
++    "draft_p_split",
++    "n_gpu_layers_draft",
++    "threads_draft",
++    "ngram_mod_n_min",
++    "ngram_mod_n_max",
++    "ngram_mod_n_match",
++)
++
++# Recipe keys a `drafters.<id>` entry may carry, and the acceleration key each
++# projects to. Anything else in a drafter entry is metadata (evidence, rulings,
++# recipe pointer); only `recipe` is copied into the lean's `drafter_selection` stamp.
++_RECIPE_TO_ACCEL: dict[str, str] = {
++    "spec_type": "spec_type",
++    "draft_model": "draft_model",
++    "draft_max": "draft_max",
++    "draft_min": "draft_min",
++    "draft_p_min": "draft_p_min",
++    "draft_p_split": "draft_p_split",
++    "ngld": "n_gpu_layers_draft",
++    "threads_draft": "threads_draft",
++}
++_REQUIRED_RECIPE_KEYS = ("spec_type", "draft_model")
++
++# --spec-type tokens the production kernel (v10, ffc1bac82) accepts for a drafter
++# recipe: common/speculative.cpp:42 maps "draft-dflash"; draft-mtp is the NEXTN path.
++KNOWN_SPEC_TYPES = frozenset({"draft-mtp", "draft-dflash", "draft-simple", "draft-eagle3"})
++
++
++class DrafterSelectionError(ValueError):
++    """The master/topology pair does not determine exactly one drafter per server."""
++
++
++@dataclass
++class Resolution:
++    selected: dict[str, dict[str, Any]] = field(default_factory=dict)
++    errors: list[str] = field(default_factory=list)
++    warnings: list[str] = field(default_factory=list)
++
++
++def load_drafter_selection(topology_path: Path | None = None) -> dict[str, str]:
++    """Return ``{server_role: drafter_id}`` from stack_topology.yaml (empty if absent)."""
++    path = topology_path or DEFAULT_TOPOLOGY_PATH
++    if not path.exists():
++        return {}
++    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
++    raw = data.get(SELECTION_SECTION) or {}
++    if not isinstance(raw, dict):
++        raise DrafterSelectionError(
++            f"{path}: `{SELECTION_SECTION}` must be a mapping server_role -> drafter_id"
++        )
++    out: dict[str, str] = {}
++    for server, drafter in raw.items():
++        if not isinstance(drafter, str) or not drafter:
++            raise DrafterSelectionError(
++                f"{path}: {SELECTION_SECTION}.{server} must be a drafter id string, "
++                f"got {drafter!r}"
++            )
++        out[str(server)] = drafter
++    return out
++
++
++def selection_cache_bytes(selection: dict[str, str]) -> bytes:
++    """Canonical bytes of the selection, for the lean compile cache key."""
++    return json.dumps(selection, sort_keys=True, separators=(",", ":")).encode("utf-8")
++
++
++def _model_role_of(server: str, entry: dict[str, Any]) -> str:
++    model_role = entry.get("model_role")
++    return model_role if isinstance(model_role, str) and model_role else server
++
++
++def _alias_set(server_mode: dict[str, Any]) -> dict[str, str]:
++    """alias role -> host server, from every server_mode.<host>.shared_with."""
++    aliases: dict[str, str] = {}
++    for host, entry in server_mode.items():
++        if isinstance(entry, dict) and isinstance(entry.get("shared_with"), list):
++            for alias in entry["shared_with"]:
++                aliases[str(alias)] = host
++    return aliases
++
++
++def _hand_carried(block: Any) -> list[str]:
++    if not isinstance(block, dict):
++        return []
++    return [key for key in DRAFTER_FIELDS if key in block]
++
++
++def _validate_recipe(model_role: str, drafter_id: str, recipe: Any) -> list[str]:
++    where = f"roles.{model_role}.drafters.{drafter_id}"
++    if not isinstance(recipe, dict):
++        return [f"{where} must be a mapping"]
++    errors = [f"{where} is missing required key {key!r}" for key in _REQUIRED_RECIPE_KEYS
++              if not recipe.get(key)]
++    spec_type = recipe.get("spec_type")
++    if isinstance(spec_type, str) and spec_type not in KNOWN_SPEC_TYPES:
++        errors.append(
++            f"{where}.spec_type {spec_type!r} is not a drafter spec type the production "
++            f"kernel accepts ({sorted(KNOWN_SPEC_TYPES)})"
++        )
++    draft_max = recipe.get("draft_max")
++    if draft_max is not None and (
++        not isinstance(draft_max, int) or isinstance(draft_max, bool) or draft_max < 1
++    ):
++        errors.append(f"{where}.draft_max must be a positive int, got {draft_max!r}")
++    return errors
++
++
++def resolve(
++    master: dict[str, Any],
++    active_roles: set[str],
++    selection: dict[str, str],
++) -> Resolution:
++    """Decide the drafter for every ACTIVE launching server. Pure; never raises."""
++    res = Resolution()
++    server_mode = master.get("server_mode") or {}
++    roles = master.get("roles") or {}
++    aliases = _alias_set(server_mode)
++
++    for server, drafter_id in sorted(selection.items()):
++        if server in aliases:
++            res.errors.append(
++                f"stack_topology.{SELECTION_SECTION}.{server}: {server!r} is an ALIAS on "
++                f"{aliases[server]!r}'s process; a drafter is a property of the launching "
++                f"process. Select it on {aliases[server]!r}."
++            )
++        elif server not in active_roles:
++            res.warnings.append(
++                f"stack_topology.{SELECTION_SECTION}.{server}={drafter_id!r} names a role "
++                f"that is not in the active launch set; the selection is inert."
++            )
++
++    for server in sorted(active_roles):
++        entry = server_mode.get(server)
++        if not isinstance(entry, dict) or server in aliases:
++            continue
++        model_role = _model_role_of(server, entry)
++        model_row = roles.get(model_role) if isinstance(roles.get(model_role), dict) else {}
++        drafters = model_row.get("drafters")
++        chosen = selection.get(server)
++
++        if not drafters:
++            if chosen is not None and chosen != NO_SPECULATION:
++                res.errors.append(
++                    f"stack_topology.{SELECTION_SECTION}.{server}={chosen!r}, but the model "
++                    f"it serves (roles.{model_role}) lists no `drafters`. Add the drafter "
++                    f"to the master registry first; topology may only select from that list."
++                )
++            elif _hand_carried(entry.get("acceleration")):
++                res.warnings.append(
++                    f"LEGACY drafter on {server!r}: master hand-carries "
++                    f"{_hand_carried(entry.get('acceleration'))} for roles.{model_role}, which "
++                    f"declares no `drafters`. Migrate it (DRAFT-SEL-1)."
++                )
++            continue
++
++        if not isinstance(drafters, dict):
++            res.errors.append(f"roles.{model_role}.drafters must be a mapping id -> recipe")
++            continue
++        for drafter_id, recipe in drafters.items():
++            res.errors.extend(_validate_recipe(model_role, str(drafter_id), recipe))
++
++        # The projection is the ONLY writer once a model declares drafters.
++        holders = [
++            (f"server_mode.{server}.acceleration", entry.get("acceleration")),
++            (f"roles.{server}.acceleration", (roles.get(server) or {}).get("acceleration")),
++        ]
++        for alias in entry.get("shared_with") or []:
++            holders.append((f"server_mode.{alias}.acceleration",
++                            (server_mode.get(alias) or {}).get("acceleration")))
++            holders.append((f"roles.{alias}.acceleration",
++                            (roles.get(alias) or {}).get("acceleration")))
++        for where, block in holders:
++            carried = _hand_carried(block)
++            if carried:
++                res.errors.append(
++                    f"{where} hand-carries drafter fields {carried} although "
++                    f"roles.{model_role} declares `drafters`. Delete them: the compiler "
++                    f"projects the drafter chosen by stack_topology.{SELECTION_SECTION}."
++                )
++        for key in ("draft_model", "draft_model_path"):
++            if key in entry:
++                res.errors.append(
++                    f"server_mode.{server}.{key} is hand-carried although "
++                    f"roles.{model_role} declares `drafters`. Delete it; the projection "
++                    f"writes server_mode.{server}.draft_model from the selected drafter."
++                )
++
++        if chosen is None:
++            if len(drafters) == 1:
++                (only_id,) = drafters
++                res.selected[server] = {"model_role": model_role, "drafter": str(only_id),
++                                        "source": "sole_drafter"}
++            else:
++                res.errors.append(
++                    f"{server!r} serves roles.{model_role}, which lists {len(drafters)} "
++                    f"acceptable drafters {sorted(drafters)}, and stack_topology."
++                    f"{SELECTION_SECTION} selects none. Add `{server}: <one of "
++                    f"{sorted(drafters)}>` there. There is deliberately no default: a "
++                    f"silent default is how :8083 re-inherited draft-mtp."
++                )
++            continue
++        if chosen == NO_SPECULATION:
++            res.selected[server] = {"model_role": model_role, "drafter": NO_SPECULATION,
++                                    "source": f"stack_topology.{SELECTION_SECTION}"}
++            continue
++        if chosen not in drafters:
++            res.errors.append(
++                f"stack_topology.{SELECTION_SECTION}.{server}={chosen!r} is not an acceptable "
++                f"drafter for roles.{model_role} (master lists {sorted(drafters)})."
++            )
++            continue
++        res.selected[server] = {"model_role": model_role, "drafter": chosen,
++                                "source": f"stack_topology.{SELECTION_SECTION}"}
++
++    # The VRAM capacity figure is a function of the drafter (weights, draft context, GDN
++    # rollback ring sized by draft_max). A server that names the drafter its
++    # `serving_shape.vram_non_kv_gib` was derived for must run THAT drafter; flipping the
++    # selection without re-deriving the figure would pass the capacity gate on a stale
++    # number and fail at HIP allocation time (STACKCHG-DFLASH2-20261003).
++    for server, sel in sorted(res.selected.items()):
++        shape = (server_mode.get(server) or {}).get("serving_shape")
++        derived_for = shape.get(VRAM_DRAFTER_KEY) if isinstance(shape, dict) else None
++        if derived_for is not None and derived_for != sel["drafter"]:
++            res.errors.append(
++                f"server_mode.{server}.serving_shape.vram_non_kv_gib was derived for drafter "
++                f"{derived_for!r} ({VRAM_DRAFTER_KEY}), but {server!r} runs {sel['drafter']!r}. "
++                f"Re-derive vram_non_kv_gib for the selected drafter and update "
++                f"{VRAM_DRAFTER_KEY} in the same change."
++            )
++    return res
++
++
++def _accel_fields(recipe: dict[str, Any]) -> dict[str, Any]:
++    out: dict[str, Any] = {}
++    for recipe_key, accel_key in _RECIPE_TO_ACCEL.items():
++        if recipe.get(recipe_key) is not None:
++            out[accel_key] = recipe[recipe_key]
++    if "draft_max" in out:
++        out["k"] = out["draft_max"]  # RegistryLoader reads `k` (registry_loader.py:407)
++    return out
++
++
++def _stamp(server: str, sel: dict[str, Any], recipe: dict[str, Any] | None) -> dict[str, Any]:
++    stamp = {"server": server, "model_role": sel["model_role"],
++             "drafter": sel["drafter"], "source": sel["source"]}
++    if recipe and isinstance(recipe.get("recipe"), str):
++        stamp["recipe"] = recipe["recipe"]  # evidence/rulings stay on the master row
++    return stamp
++
++
++def project(lean: dict[str, Any], master: dict[str, Any], resolution: Resolution) -> None:
++    """Write the selected drafter into the lean view, in place."""
++    server_mode = lean.get("server_mode") or {}
++    roles = lean.get("roles") or {}
++    master_roles = master.get("roles") or {}
++
++    for server, sel in resolution.selected.items():
++        host = server_mode.get(server)
++        if not isinstance(host, dict):
++            continue
++        if sel["drafter"] == NO_SPECULATION:
++            recipe = None
++            fields: dict[str, Any] = {}
++            accel_type = "none"
++        else:
++            recipe = master_roles[sel["model_role"]]["drafters"][sel["drafter"]]
++            fields = _accel_fields(recipe)
++            accel_type = "speculative_decoding"
++        stamp = _stamp(server, sel, recipe)
++
++        for block_owner in (host, roles.get(server)):
++            if not isinstance(block_owner, dict):
++                continue
++            accel = dict(block_owner.get("acceleration") or {})
++            for key in DRAFTER_FIELDS:
++                accel.pop(key, None)
++            accel["type"] = accel_type
++            accel.update(fields)
++            accel["drafter_selection"] = stamp
++            block_owner["acceleration"] = accel
++        host.pop("draft_model_path", None)
++        if "draft_model" in fields:
++            # stack_priors._server_mode_launch_requirement_overrides turns this into
++            # requirements.draft_model_path, which outranks acceleration.draft_model.
++            host["draft_model"] = fields["draft_model"]
++        else:
++            host.pop("draft_model", None)
++
++        # Aliases share the process, so they read the host's drafter, never their own.
++        for alias in host.get("shared_with") or []:
++            for block_owner in (server_mode.get(alias), roles.get(alias)):
++                if not isinstance(block_owner, dict):
++                    continue
++                accel = dict(block_owner.get("acceleration") or {})
++                for key in DRAFTER_FIELDS:
++                    accel.pop(key, None)
++                accel["type"] = "none"  # "launches no draft of its own"
++                accel["inherits_spec_from"] = server
++                accel.update(fields)    # what the process actually runs, for readers
++                accel["drafter_selection"] = dict(stamp, inherited_by=alias)
++                block_owner["acceleration"] = accel
++
++
++def check_lean(lean: dict[str, Any], selection: dict[str, str]) -> list[str]:
++    """Validator rule over the COMPILED lean: projection present, intact, and current."""
++    errors: list[str] = []
++    server_mode = lean.get("server_mode") or {}
++    roles = lean.get("roles") or {}
++    aliases = _alias_set(server_mode)
++    for server, entry in sorted(server_mode.items()):
++        if not isinstance(entry, dict) or server in aliases:
++            continue
++        model_role = _model_role_of(server, entry)
++        drafters = (roles.get(model_role) or {}).get("drafters")
++        chosen = selection.get(server)
++        if chosen is not None and chosen != NO_SPECULATION and (
++            not isinstance(drafters, dict) or chosen not in drafters
++        ):
++            errors.append(
++                f"drafter_selection: topology selects {chosen!r} for {server!r}; "
++                f"roles.{model_role}.drafters does not list it"
++            )
++            continue
++        if not drafters:
++            continue
++        if chosen is None and len(drafters) > 1:
++            errors.append(
++                f"drafter_selection: {server!r} serves {model_role!r} "
++                f"({len(drafters)} drafters) with no topology selection"
++            )
++            continue
++        expected_id = chosen or next(iter(drafters))
++        stamp = (entry.get("acceleration") or {}).get("drafter_selection") or {}
++        if stamp.get("drafter") != expected_id:
++            errors.append(
++                f"drafter_selection: lean server_mode.{server} carries drafter "
++                f"{stamp.get('drafter')!r}, topology selects {expected_id!r} - the lean is "
++                f"stale or hand-edited; recompile from master"
++            )
++            continue
++        if expected_id == NO_SPECULATION:
++            continue
++        want = _accel_fields(drafters[expected_id])
++        have = {k: (entry.get("acceleration") or {}).get(k) for k in want}
++        if have != want:
++            errors.append(
++                f"drafter_selection: lean server_mode.{server}.acceleration {have} differs "
++                f"from roles.{model_role}.drafters.{expected_id} {want}"
++            )
++    return errors
+--- a/src/registry/registry_compiler.py
++++ b/src/registry/registry_compiler.py
+@@ -37,6 +37,15 @@
+ 
+ import yaml
+ 
++from src.registry.drafter_selection import (
++    DEFAULT_TOPOLOGY_PATH,
++    DrafterSelectionError,
++    load_drafter_selection,
++    project as project_drafters,
++    resolve as resolve_drafters,
++    selection_cache_bytes,
++)
++
+ _REPO_ROOT = Path(__file__).resolve().parents[2]
+ 
+ log = logging.getLogger("registry.compiler")
+@@ -150,11 +159,17 @@
+     return normalized
+ 
+ 
+-def cache_key(master_path: Path, active_roles: set[str]) -> str:
+-    """SHA-256 of master file bytes + sorted active role names.
++def cache_key(
++    master_path: Path,
++    active_roles: set[str],
++    topology_path: Path | None = None,
++) -> str:
++    """SHA-256 of master bytes + sorted active role names + drafter selection.
+ 
+-    Recompiles when EITHER side changes. Stable across runs when neither
+-    changes — repeated `cmd_start` calls hit the cache.
++    Recompiles when ANY input changes. The drafter selection (stack_topology.yaml
++    `drafter_selection`) is a compile INPUT since DRAFT-SEL-1: without it in the key,
++    a topology-only drafter change would hit the cache and never reach the lean view.
++    Only that section is hashed, so NUMA-only topology edits do not churn the lean.
+     """
+     h = hashlib.sha256()
+     h.update(master_path.read_bytes())
+@@ -162,6 +177,8 @@
+     for r in sorted(active_roles):
+         h.update(r.encode("utf-8"))
+         h.update(b"\x00")
++    h.update(b"drafter_selection\x00")
++    h.update(selection_cache_bytes(load_drafter_selection(topology_path)))
+     return h.hexdigest()
+ 
+ 
+@@ -259,10 +276,18 @@
+     return active
+ 
+ 
+-def compile_lean(master_path: Path, active_roles: set[str]) -> dict:
+-    """Project master registry through the active stack manifest.
++def compile_lean(
++    master_path: Path,
++    active_roles: set[str],
++    topology_path: Path | None = None,
++) -> dict:
++    """Project master registry through the active stack manifest AND the topology's
++    drafter selection.
+ 
+-    Returns a dict in the same shape RegistryLoader expects.
++    Returns a dict in the same shape RegistryLoader expects. Raises
++    DrafterSelectionError when the master/topology pair does not determine exactly
++    one drafter for every launching server whose model declares `drafters`
++    (src/registry/drafter_selection.py has the rules).
+     """
+     with master_path.open("r", encoding="utf-8") as f:
+         master = yaml.safe_load(f)
+@@ -296,11 +321,26 @@
+         else:
+             out[section] = {k: v for k, v in src.items() if k in needed}
+ 
++    # DRAFT-SEL-1: the drafter is SELECTED by topology from the master's list, never
++    # hand-carried per role. Resolution runs over the launching servers only.
++    selection = load_drafter_selection(topology_path)
++    resolution = resolve_drafters(master, active_roles, selection)
++    for warning in resolution.warnings:
++        log.warning("%s", warning)
++    if resolution.errors:
++        raise DrafterSelectionError(
++            "drafter selection does not resolve:\n  - " + "\n  - ".join(resolution.errors)
++        )
++    project_drafters(out, master, resolution)
++
+     return out
+ 
+ 
+ def _format_header_banner(
+-    master_path: Path, active_roles: set[str], cache_key_value: str
++    master_path: Path,
++    active_roles: set[str],
++    cache_key_value: str,
++    topology_path: Path | None = None,
+ ) -> str:
+     """Top-of-file comment block for the compiled output."""
+     now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+@@ -311,6 +351,7 @@
+         "#\n"
+         "# This file is compiled at every `orchestrator_stack.py start` from the master\n"
+         f"# registry at {master_path}\n"
++        f"# with drafter selection from {topology_path or DEFAULT_TOPOLOGY_PATH}\n"
+         "# by src/registry/registry_compiler.py.\n"
+         "#\n"
+         "# Runtime stack truth lives in the MASTER registry. The next start detects master\n"
+@@ -331,6 +372,7 @@
+     active_roles: set[str],
+     output_path: Path,
+     cache_key_path: Path,
++    topology_path: Path | None = None,
+ ) -> dict:
+     """Cache-aware compile.
+ 
+@@ -349,7 +391,7 @@
+     if not master_path.exists():
+         raise FileNotFoundError(f"master registry not found: {master_path}")
+ 
+-    current_key = cache_key(master_path, active_roles)
++    current_key = cache_key(master_path, active_roles, topology_path)
+     cached_key = (
+         cache_key_path.read_text().strip()
+         if cache_key_path.exists()
+@@ -366,7 +408,7 @@
+     # Compile, then avoid rewriting an already-current generated file when only
+     # the external cache-key file is missing or stale. This keeps default-on
+     # startup from dirtying the tracked registry via timestamp-only banner churn.
+-    compiled = compile_lean(master_path, active_roles)
++    compiled = compile_lean(master_path, active_roles, topology_path)
+     if output_path.exists():
+         with output_path.open("r", encoding="utf-8") as f:
+             existing = yaml.safe_load(f)
+@@ -375,7 +417,7 @@
+             cache_key_path.write_text(current_key)
+             return compiled
+ 
+-    banner = _format_header_banner(master_path, active_roles, current_key)
++    banner = _format_header_banner(master_path, active_roles, current_key, topology_path)
+     output_path.parent.mkdir(parents=True, exist_ok=True)
+     with output_path.open("w", encoding="utf-8") as f:
+         f.write(banner)
+@@ -411,6 +453,12 @@
+         default=_REPO_ROOT / "orchestration/model_registry.yaml",
+     )
+     p.add_argument(
++        "--topology",
++        type=Path,
++        default=DEFAULT_TOPOLOGY_PATH,
++        help="stack_topology.yaml whose `drafter_selection` picks each server's drafter",
++    )
++    p.add_argument(
+         "--cache-key",
+         type=Path,
+         default=_REPO_ROOT / "orchestration/.lean_cache_key",
+@@ -434,17 +482,18 @@
+         active = active_roles_from_launch_meta(ROLE_LAUNCH_META)
+ 
+     if args.dry_run:
+-        compiled = compile_lean(args.master, active)
++        compiled = compile_lean(args.master, active, args.topology)
+         yaml.safe_dump(compiled, sys.stdout, sort_keys=False, default_flow_style=False)
+         return 0
+ 
+     if args.force and args.cache_key.exists():
+         args.cache_key.unlink()
+ 
+-    out = load_or_compile(args.master, active, args.output, args.cache_key)
++    out = load_or_compile(args.master, active, args.output, args.cache_key, args.topology)
+     print(f"OK: {len(out.get('roles', {}))} roles in compiled output")
+     print(f"  master:    {args.master}")
+     print(f"  output:    {args.output}")
++    print(f"  topology:  {args.topology}")
+     print(f"  cache key: {args.cache_key}")
+     print(f"  active:    {sorted(active)}")
+     return 0
+--- a/src/registry/registry_validator.py
++++ b/src/registry/registry_validator.py
+@@ -15,6 +15,10 @@
+ 3. **YAML duplicate keys at the same path**: PyYAML silently keeps the LAST
+    declaration. Detect and reject.
+ 
++5. **Drafter selection** (DRAFT-SEL-1, 2026-10-01): the drafter a server runs must
++   be one its model's master `drafters` list declares, chosen by
++   `stack_topology.yaml -> drafter_selection`; see `_check_drafter_selection`.
++
+ 4. **`numa_ports` / `numa_instances` disagreeing with the declared NUMA
+    topology** (added 2026-08-12, handoff P1-5). `server_mode.<role>.numa_ports`
+    is the registry's copy of a fleet that `orchestration/stack_topology.yaml`
+@@ -383,6 +387,32 @@
+     return errors
+ 
+ 
++def _check_drafter_selection(
++    registry: dict[str, Any], topology_path: Path | None = None
++) -> list[str]:
++    """DRAFT-SEL-1 over the COMPILED lean registry (the file cmd_start validates).
++
++    * topology selects a drafter the model's `drafters` list does not contain -> error
++    * a launching server whose model lists >1 drafter and has no selection -> error
++    * the lean's projected drafter differs from what topology selects, or its spec
++      fields differ from the master recipe (stale or hand-edited lean) -> error
++
++    Hand-carried drafter fields are caught one hop earlier, in compile_lean, because
++    after projection they are indistinguishable from the projection's own output.
++    """
++    from src.registry.drafter_selection import (
++        DrafterSelectionError,
++        check_lean,
++        load_drafter_selection,
++    )
++
++    try:
++        selection = load_drafter_selection(topology_path)
++    except DrafterSelectionError as exc:
++        return [f"drafter_selection: {exc}"]
++    return check_lean(registry, selection)
++
++
+ def validate_all(registry_path: str | Path) -> list[str]:
+     """Run all checks. Returns list of error strings. Empty list = OK.
+ 
+@@ -398,6 +428,7 @@
+     errors += _check_cross_section_conflicts(registry)
+     errors += _check_gguf_port_consistency(registry)
+     errors += _check_numa_ports_vs_topology(registry)
++    errors += _check_drafter_selection(registry)
+     return errors
+ 
+ 
+--- a/src/registry/stack_priors.py
++++ b/src/registry/stack_priors.py
+@@ -1447,6 +1447,25 @@
+     return "draft-mtp" in {token.strip() for token in spec_type.split(",")}
+ 
+ 
++# DRAFT-SEL-1: drafter spec types that launch with a DRAFT MODEL (`-md`), as
++# opposed to the NEXTN self-draft above. Before this, any spec_type without the
++# `draft-mtp` token fell through to the DISABLED spec, so selecting DFlash2 in the
++# registry would have launched :8083 with no speculation at all — the same
++# fall-through class the 2026-07-31 composed-recipe fix closed for `ngram-mod,draft-mtp`.
++_EXTERNAL_DRAFTER_SPEC_TYPES = frozenset({"draft-dflash", "draft-simple", "draft-eagle3"})
++
++
++def _spec_type_launches_drafter(spec_type: str | None) -> bool:
++    """True when ``spec_type`` needs a resolved drafter path and an enabled spec."""
++    if _spec_type_has_mtp(spec_type):
++        return True
++    if not isinstance(spec_type, str) or not spec_type:
++        return False
++    return bool(
++        {token.strip() for token in spec_type.split(",")} & _EXTERNAL_DRAFTER_SPEC_TYPES
++    )
++
++
+ def _positive_int_prior(
+     *containers: dict[str, Any] | None,
+     key: str,
+@@ -2137,6 +2156,7 @@
+         "ngram_mod_n_min": None,
+         "ngram_mod_n_max": None,
+         "ngram_mod_n_match": None,
++        "n_gpu_layers_draft": None,
+     }
+     # 2026-06-26 v6 cutover: spec_type carries the v6 MTP token 'draft-mtp' (bare
+     # 'mtp' is invalid in v6). It is preserved verbatim from the registry
+@@ -2210,7 +2230,7 @@
+                 else None,
+             }
+         )
+-    elif _spec_type_has_mtp(spec_type_prior) and role == primary_role:
++    elif _spec_type_launches_drafter(spec_type_prior) and role == primary_role:
+         # 2026-06-26 v6 cutover: emit a NON-NULL draft-mtp spec ONLY for the PRIMARY
+         # role that launches the server (role == primary_role). ALIAS roles
+         # (shared_with_first_n, e.g. coder_escalation / worker_summarize sharing
+@@ -2231,11 +2251,34 @@
+             server_cfg,
+             models_dir=_PATHS.get("models_dir"),
+         )
++        if not _spec_type_has_mtp(spec_type_prior):
++            # An EXTERNAL drafter must be a DIFFERENT file. The resolver falls back to the
++            # model path (NEXTN self-draft) and the launcher suppresses -md for a
++            # same-realpath draft, so a draft-dflash role with no resolvable drafter would
++            # launch `--spec-type draft-dflash` with no -md and die at load. Refuse here,
++            # at compile, instead of at HIP load time in production.
++            model_for_role = requirements.get("model_path")
++            if not nextn_draft_path or (
++                isinstance(model_for_role, str)
++                and os.path.realpath(str(nextn_draft_path)) == os.path.realpath(model_for_role)
++            ):
++                raise ValueError(
++                    f"role {role!r}: spec_type {spec_type_prior!r} needs an external drafter "
++                    f"GGUF distinct from the model; resolved draft {nextn_draft_path!r}. "
++                    "Declare it in the master roles.<model_role>.drafters recipe."
++                )
+         draft_max_prior = acceleration.get("draft_max")
++        # `-ngld` for an EXTERNAL drafter (DFlash2 recipe: ngld 99). Declared only by
++        # the projected drafter recipe; absent -> not emitted (llama-server default).
++        ngld_prior = acceleration.get("n_gpu_layers_draft")
+         spec.update(
+             {
+                 "enabled": True,
+                 "type": spec_type_prior,
++                "n_gpu_layers_draft": ngld_prior
++                if (isinstance(ngld_prior, int) and not isinstance(ngld_prior, bool))
++                or (isinstance(ngld_prior, str) and ngld_prior in ("all", "auto"))
++                else None,
+                 "draft_model_path": str(nextn_draft_path) if nextn_draft_path else None,
+                 "draft_max": draft_max_prior
+                 if isinstance(draft_max_prior, int) and not isinstance(draft_max_prior, bool)
+--- a/scripts/registry/stack_change_pipeline.py
++++ b/scripts/registry/stack_change_pipeline.py
+@@ -635,8 +635,8 @@
+             status="ok",
+             details=["skipped: no research (master) registry configured"],
+         )
++    bootstrap_warnings: list[str] = []
+     try:
+-        from scripts.server.stack_manifest import ROLE_LAUNCH_META
+         from src.registry.registry_compiler import (
+             active_roles_from_launch_meta,
+             compile_lean,
+@@ -650,13 +650,35 @@
+         # does not project. Mixing the two makes the cache key never match, so the
+         # step would report "stale" on every run — a guard that always fires is as
+         # useless as one that never does.
+-        active = (
+-            set(config.roles)
+-            if config.roles is not None
+-            else active_roles_from_launch_meta(ROLE_LAUNCH_META)
+-        )
++        if config.roles is not None:
++            active = set(config.roles)
++        else:
++            try:
++                from scripts.server.stack_manifest import ROLE_LAUNCH_META
++            except ValueError as import_exc:
++                if check:
++                    raise
++                # BOOTSTRAP (STACKCHG-DFLASH2-20261003). stack_manifest validates the
++                # launcher against the LEAN at import — the very file this step is about
++                # to regenerate. A change that flips a field both sides declare (here
++                # worker_vision tier hot -> warm) is refused against the STALE lean, so
++                # the lean could never be recompiled and the pipeline could never apply
++                # it. During `update` only, derive the same active set from the same
++                # inputs _build_role_launch_meta uses — launch_manifest role_launch_meta
++                # plus MASTER server_mode.<role>.shared_with — compile, and let the later
++                # steps re-import stack_manifest against the fresh lean (a failed import
++                # is not cached), where every import-time gate runs for real.
++                ROLE_LAUNCH_META = _launch_meta_from_sources(config)
++                bootstrap_warnings.append(
++                    "BOOTSTRAP: stack_manifest refused to import against the stale lean "
++                    f"({str(import_exc).splitlines()[-1].strip()[:240]}); active set derived "
++                    "from launch_manifest.yaml + master shared_with. Later steps re-import "
++                    "against the regenerated lean."
++                )
++            active = active_roles_from_launch_meta(ROLE_LAUNCH_META)
+         cache_path = config.lean_registry.parent / ".lean_cache_key"
+-        expected_key = cache_key(config.research_registry, active)
++        topology = _topology_path(config)
++        expected_key = cache_key(config.research_registry, active, topology)
+         current_key = cache_path.read_text().strip() if cache_path.exists() else ""
+ 
+         if check:
+@@ -669,7 +691,7 @@
+             # projection exactly), and a matching key over a hand-edited lean
+             # would be a false "fresh". NIB2-69: the projection is the fact; the
+             # key is reported only as cache state.
+-            compiled = compile_lean(config.research_registry, active)
++            compiled = compile_lean(config.research_registry, active, topology)
+             committed = (
+                 _load_yaml(config.lean_registry) if config.lean_registry.exists() else None
+             )
+@@ -702,7 +724,7 @@
+         if cache_path.exists():
+             cache_path.unlink()  # force, as the CLI's --force does
+         out = load_or_compile(
+-            config.research_registry, active, config.lean_registry, cache_path
++            config.research_registry, active, config.lean_registry, cache_path, topology
+         )
+     except Exception as exc:  # noqa: BLE001
+         return PipelineStep(
+@@ -711,11 +733,13 @@
+             errors=[
+                 f"lean registry compile from master failed: {exc}",
+                 f"master: {config.research_registry}",
++                f"drafter selection: {_topology_path(config)} (drafter_selection)",
+             ],
+         )
+     return PipelineStep(
+         name="lean_registry",
+         status="ok",
++        warnings=bootstrap_warnings,
+         details=[
+             f"recompiled from master: {config.research_registry}"
+             f" -> {config.lean_registry}",
+@@ -724,6 +748,30 @@
+     )
+ 
+ 
++def _launch_meta_from_sources(config: StackChangePipelineConfig) -> dict[str, dict]:
++    """ROLE_LAUNCH_META's role/alias skeleton, read from its SOURCES without importing
++    stack_manifest (whose import-time gates read the lean being regenerated).
++
++    Mirrors stack_manifest._build_role_launch_meta/_derived_aliases: role keys and their
++    meta from launch_manifest.yaml `role_launch_meta`; aliases = `launcher_only_aliases`
++    then MASTER `server_mode.<role>.shared_with`. Only the keys
++    active_roles_from_launch_meta reads are produced.
++    """
++    manifest = _load_yaml(config.repo_root / "orchestration" / "launch_manifest.yaml") or {}
++    master = _load_yaml(config.research_registry) or {}
++    server_mode = master.get("server_mode") or {}
++    out: dict[str, dict] = {}
++    for role, declared in (manifest.get("role_launch_meta") or {}).items():
++        meta = dict(declared) if isinstance(declared, dict) else {}
++        extras = [str(a) for a in meta.pop("launcher_only_aliases", None) or []]
++        shared = (server_mode.get(role) or {}).get("shared_with") or []
++        aliases = extras + [str(a) for a in shared if isinstance(a, str) and a not in extras]
++        if aliases:
++            meta["shared_with_first_n"] = aliases
++        out[str(role)] = meta
++    return out
++
++
+ def _check_descriptors(config: StackChangePipelineConfig) -> PipelineStep:
+     try:
+         expected = compile_model_descriptors(
+@@ -1121,6 +1169,65 @@
+     return validate_against_registry(str(config.lean_registry), roles=config.roles)
+ 
+ 
++def _fresh_capacity_import(repo_root: Path) -> subprocess.CompletedProcess:
++    """Seam for tests: import stack_manifest in a NEW interpreter, as every
++    `orchestrator_stack.py` command does, so its import-time capacity gate reads the
++    lean registry as it is on disk NOW."""
++    return subprocess.run(
++        [sys.executable, "-c",
++         "import sys; sys.path.insert(0, sys.argv[1]); import scripts.server.stack_manifest",
++         str(repo_root)],
++        cwd=repo_root,
++        text=True,
++        capture_output=True,
++        check=False,
++        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
++    )
++
++
++def _serving_shape_capacity_step(config: StackChangePipelineConfig) -> PipelineStep:
++    """The import-time VRAM/host capacity gate, re-run on the lean this run produced.
++
++    STACKCHG-DFLASH2-20261003: `stack_manifest.validate_serving_shape_capacity()` runs
++    at MODULE IMPORT. This pipeline imports stack_manifest before `update` rewrites the
++    lean, so an `update` that compiles an over-capacity lineup reported every step
++    green while every later `orchestrator_stack.py` command (status, reload, start)
++    died at import. Measured on the DFlash2 candidate with Qwen3-VL still on the card:
++    `update` green, fresh import "ROCm0 OVERSUBSCRIBED by 3.16 GiB".
++    """
++    default_lean = config.repo_root / "orchestration" / "model_registry.yaml"
++    manifest = config.repo_root / "scripts" / "server" / "stack_manifest.py"
++    if config.lean_registry.resolve() != default_lean.resolve() or not manifest.exists():
++        return PipelineStep(
++            name="serving_shape_capacity",
++            status="skipped",
++            # A detail, not a warning: only fixture/lane configs point the lean
++            # elsewhere; every production run uses the default lean and runs the gate.
++            details=["COULD-NOT-CHECK: stack_manifest reads <repo_root>/orchestration/"
++                     "model_registry.yaml only; this config's lean is elsewhere"],
++        )
++    try:
++        result = _fresh_capacity_import(config.repo_root)
++    except OSError as exc:
++        return PipelineStep(name="serving_shape_capacity", status="failed",
++                            errors=[f"capacity import failed to launch: {exc}"])
++    if result.returncode == 0:
++        return PipelineStep(
++            name="serving_shape_capacity",
++            status="ok",
++            details=["fresh-process stack_manifest import: capacity gate passed on "
++                     f"{default_lean}"],
++        )
++    tail = (result.stderr or result.stdout or "").strip().splitlines()
++    reason = next((line for line in reversed(tail) if line.strip()), "no output")
++    return PipelineStep(
++        name="serving_shape_capacity",
++        status="failed",
++        errors=[f"stack_manifest import fails on the compiled lean (every "
++                f"orchestrator_stack.py command would die at import): {_clip_output(reason)}"],
++    )
++
++
+ def _q_scorer_prior_sources_step(
+     config: StackChangePipelineConfig,
+     *,
+@@ -1387,6 +1494,7 @@
+         )
+     )
+     report.steps.append(_reasoning_effort_certifications_step(config))
++    report.steps.append(_serving_shape_capacity_step(config))
+     report.steps.append(_stack_manifest_registry_step(config, prior_ok=report.ok))
+     report.steps.append(_q_scorer_prior_sources_step(config, prior_ok=report.ok))
+     report.steps.append(_runtime_attestation_step(prior_ok=report.ok))
+--- a/scripts/server/autokernel_enrollment.py
++++ b/scripts/server/autokernel_enrollment.py
+@@ -508,7 +508,9 @@
+         raise EnrollmentExportError(
+             "loaded launcher configuration differs from pinned source inputs")
+     active_roles = active_roles_from_launch_meta(ROLE_LAUNCH_META)
+-    compiled = compile_lean(Path(source_by_name["master_registry"].path), active_roles)
++    # DRAFT-SEL-1: the drafter selection is a compile input; use the PINNED topology.
++    compiled = compile_lean(Path(source_by_name["master_registry"].path), active_roles,
++                            Path(source_by_name["topology"].path))
+     loaded_lean = yaml.safe_load(Path(source_by_name["lean_registry"].path).read_text())
+     if compiled != loaded_lean:
+         raise EnrollmentExportError("compiled lean registry is stale for pinned master/launch roles")
+--- a/scripts/server/orchestrator_stack.py
++++ b/scripts/server/orchestrator_stack.py
+@@ -461,9 +461,14 @@
+     ngram_mod_n_min: str | None = None,
+     ngram_mod_n_max: str | None = None,
+     ngram_mod_n_match: str | None = None,
++    n_gpu_layers_draft: str | None = None,
+ ) -> None:
+     if draft_model_path and not _same_real_model_path(model_path, draft_model_path):
+         cmd.extend(["-md", draft_model_path])
++        # -ngld only means something for a SEPARATE draft model (DFlash2: 99). A
++        # same-file NEXTN self-draft has no draft model to place.
++        if n_gpu_layers_draft:
++            cmd.extend(["-ngld", n_gpu_layers_draft])
+     if spec_type:
+         cmd.extend(["--spec-type", spec_type])
+     if draft_max:
+@@ -577,6 +582,7 @@
+     draft_p_min = spec.get("draft_p_min")
+     draft_p_split = spec.get("draft_p_split")
+     threads_draft = spec.get("threads_draft")
++    ngld = spec.get("n_gpu_layers_draft")
+     _append_spec_decode_args(
+         cmd,
+         model_path=model_path,
+@@ -619,6 +625,12 @@
+         ngram_mod_n_match=_runtime_positive_int(spec, "ngram_mod_n_match", "")
+         if "ngram_mod_n_match" in spec
+         else None,
++        n_gpu_layers_draft=(
++            str(ngld)
++            if (isinstance(ngld, int) and not isinstance(ngld, bool) and ngld >= 0)
++            or (isinstance(ngld, str) and ngld in ("all", "auto"))
++            else None
++        ),
+     )
+ 
+ 
+@@ -2475,6 +2487,22 @@
+     # already carries AUTOPILOT_TOOL_SENTINELS=1, but the orchestrator API was
+     # previously restarted without it and quietly lost tool-use activation.
+     env["AUTOPILOT_TOOL_SENTINELS"] = "1"
++    # STACKCHG-DFLASH2-20261003: the VL backend FOLLOWS the vision role's tier. With
++    # `auto`, a vision request that finds :8086 down falls back to spawning
++    # llama-mtmd-cli per request (src/vision/analyzers/vl_describe.py): a full 30B +
++    # mmproj load on UNPINNED CPU cores, -t 8, 120 s timeout — an ad-hoc CPU tenant the
++    # topology never declared, landing on whatever cores the scheduler picks (the DS41
++    # CPU A/B windows included). While worker_vision is not a HOT role, vision must
++    # REFUSE ("All vision paths failed") rather than degrade that way; start the cold
++    # server (`start --only worker_vision`) to serve images. An explicitly exported
++    # value wins, so the operator can still opt into `auto`/`cli`.
++    if "ORCHESTRATOR_VISION_VL_BACKEND" not in env:
++        from scripts.server.stack_manifest import ROLE_LAUNCH_META as _LAUNCH_META
++
++        _vision_tier = str((_LAUNCH_META.get("worker_vision") or {}).get("tier", "hot"))
++        env["ORCHESTRATOR_VISION_VL_BACKEND"] = (
++            "auto" if _vision_tier.lower() == "hot" else "server"
++        )
+     # LangGraph Phase 3: per-node migration for live roles only.
+     # The retired architect_coding role is intentionally not enabled here.
+     for key in LANGGRAPH_PHASE3_LIVE_ENV_VARS:
+--- a/scripts/server/stack_commands.py
++++ b/scripts/server/stack_commands.py
+@@ -611,6 +611,14 @@
+     "runtime.flags.spec.draft_p_min": ("dedicated", (), ""),
+     "runtime.flags.spec.threads_draft": ("dedicated", (), ""),
+     "runtime.flags.spec.draft_min": ("int_flag", ("--spec-draft-n-min",), ""),
++    # DRAFT-SEL-1: draft-model offload depth for an EXTERNAL drafter (DFlash2 on the
++    # :8083 27B: `-ngld all`). The launcher emits it only beside `-md`; it is None on
++    # every self-draft / non-speculating role, where the generic check expects no flag.
++    "runtime.flags.spec.n_gpu_layers_draft": (
++        "int_or_token_flag",
++        ("-ngld", "--gpu-layers-draft", "--n-gpu-layers-draft", "--spec-draft-ngl"),
++        "",
++    ),
+     "runtime.flags.spec.draft_p_split": ("float_flag", ("--draft-p-split",), ""),
+     "runtime.flags.spec.ngram_mod_n_min": ("positive_int_flag", ("--spec-ngram-mod-n-min",), ""),
+     "runtime.flags.spec.ngram_mod_n_max": ("positive_int_flag", ("--spec-ngram-mod-n-max",), ""),
+--- /dev/null
++++ b/tests/unit/test_drafter_selection.py
+@@ -0,0 +1,243 @@
++"""DRAFT-SEL-1: master lists every acceptable drafter, topology selects one per server.
++
++Origin: production :8083 ran Qwen3.8-27B with `--spec-type draft-mtp` although the
++operator had ruled DFlash2 its spec-decode path. The drafter was hand-copied per role
++and re-inherited across two model swaps. These tests pin the structure that replaces
++the copy: one list per model (master), one selection per server (topology), one
++writer (the compiler), and a validator over the compiled artifact.
++"""
++
++from __future__ import annotations
++
++from pathlib import Path
++
++import pytest
++import yaml
++
++from src.registry.drafter_selection import (
++    DrafterSelectionError,
++    NO_SPECULATION,
++    check_lean,
++    load_drafter_selection,
++    resolve,
++)
++from src.registry.registry_compiler import cache_key, compile_lean
++
++MODEL = "/models/Q38-27B.gguf"
++DFLASH = "/models/Q38-27B-DFlash2.gguf"
++
++
++def _master(*, drafters=None, host_accel=None, alias_accel=None, host_extra=None):
++    host = {
++        "port": 8083,
++        "model_role": "q38_local",
++        "model": MODEL,
++        "shared_with": ["coder_escalation"],
++        "acceleration": dict(host_accel or {"type": "speculative_decoding", "lookup": False}),
++        **(host_extra or {}),
++    }
++    q38 = {"model": {"path": MODEL}}
++    if drafters is not None:
++        q38["drafters"] = drafters
++    return {
++        "runtime_defaults": {},
++        "server_mode": {
++            "architect_critic": host,
++            "coder_escalation": {
++                "port": 8083,
++                "model_role": "q38_local",
++                "acceleration": dict(alias_accel or {"type": "none",
++                                                     "inherits_spec_from": "architect_critic"}),
++            },
++        },
++        "roles": {
++            "architect_critic": {"acceleration": {"type": "speculative_decoding", "p_split": 0}},
++            "coder_escalation": {"acceleration": {"type": "none"}},
++            "q38_local": q38,
++        },
++    }
++
++
++TWO = {
++    "mtp": {"spec_type": "draft-mtp", "draft_model": MODEL, "draft_max": 4},
++    "dflash2": {"spec_type": "draft-dflash", "draft_model": DFLASH, "draft_max": 8,
++                "ngld": 99, "recipe": "artifacts/serving-recipes/x.json"},
++}
++ACTIVE = {"architect_critic", "coder_escalation"}
++
++
++def _write(tmp_path: Path, master: dict, selection: dict | None) -> tuple[Path, Path]:
++    m = tmp_path / "master.yaml"
++    m.write_text(yaml.safe_dump(master))
++    t = tmp_path / "stack_topology.yaml"
++    t.write_text(yaml.safe_dump({"schema_version": "stack_topology.v1",
++                                 **({"drafter_selection": selection} if selection else {})}))
++    return m, t
++
++
++# --- resolution ---------------------------------------------------------------------
++
++def test_topology_selection_is_projected_into_host_roles_and_aliases(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "dflash2"})
++    lean = compile_lean(m, ACTIVE, t)
++    host = lean["server_mode"]["architect_critic"]
++    assert host["acceleration"]["spec_type"] == "draft-dflash"
++    assert host["acceleration"]["draft_model"] == DFLASH
++    assert host["acceleration"]["draft_max"] == 8
++    assert host["acceleration"]["k"] == 8  # RegistryLoader reads k
++    assert host["acceleration"]["n_gpu_layers_draft"] == 99
++    assert host["draft_model"] == DFLASH  # becomes requirements.draft_model_path in priors
++    assert host["acceleration"]["drafter_selection"]["drafter"] == "dflash2"
++    assert lean["roles"]["architect_critic"]["acceleration"]["spec_type"] == "draft-dflash"
++    assert lean["roles"]["architect_critic"]["acceleration"]["p_split"] == 0  # non-drafter kept
++    alias = lean["server_mode"]["coder_escalation"]["acceleration"]
++    assert alias["type"] == "none" and alias["inherits_spec_from"] == "architect_critic"
++    assert alias["spec_type"] == "draft-dflash"
++
++
++def test_switching_the_selection_changes_only_the_projection(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "mtp"})
++    host = compile_lean(m, ACTIVE, t)["server_mode"]["architect_critic"]
++    assert host["acceleration"]["spec_type"] == "draft-mtp"
++    assert host["acceleration"]["draft_max"] == 4
++    assert "n_gpu_layers_draft" not in host["acceleration"]
++
++
++def test_sole_drafter_needs_no_selection(tmp_path):
++    m, t = _write(tmp_path, _master(drafters={"mtp": TWO["mtp"]}), None)
++    acc = compile_lean(m, ACTIVE, t)["server_mode"]["architect_critic"]["acceleration"]
++    assert acc["spec_type"] == "draft-mtp"
++    assert acc["drafter_selection"]["source"] == "sole_drafter"
++
++
++def test_explicit_none_disables_speculation(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": NO_SPECULATION})
++    acc = compile_lean(m, ACTIVE, t)["server_mode"]["architect_critic"]["acceleration"]
++    assert acc["type"] == "none" and "spec_type" not in acc
++
++
++# --- the failure modes ----------------------------------------------------------------
++
++def test_selection_of_unlisted_drafter_fails(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "eagle3"})
++    with pytest.raises(DrafterSelectionError, match="not an acceptable drafter"):
++        compile_lean(m, ACTIVE, t)
++
++
++def test_selection_for_model_without_drafters_fails(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=None), {"architect_critic": "dflash2"})
++    with pytest.raises(DrafterSelectionError, match="lists no `drafters`"):
++        compile_lean(m, ACTIVE, t)
++
++
++def test_multiple_drafters_without_selection_fails_no_silent_default(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), None)
++    with pytest.raises(DrafterSelectionError, match="selects none"):
++        compile_lean(m, ACTIVE, t)
++
++
++@pytest.mark.parametrize("where", ["host", "alias", "host_top_level"])
++def test_hand_carried_drafter_field_fails_when_model_declares_drafters(tmp_path, where):
++    kwargs = {"drafters": TWO}
++    if where == "host":
++        kwargs["host_accel"] = {"type": "speculative_decoding", "spec_type": "draft-mtp"}
++    elif where == "alias":
++        kwargs["alias_accel"] = {"type": "none", "spec_type": "draft-mtp", "draft_max": 4}
++    else:
++        kwargs["host_extra"] = {"draft_model": MODEL}
++    m, t = _write(tmp_path, _master(**kwargs), {"architect_critic": "dflash2"})
++    with pytest.raises(DrafterSelectionError, match="hand-carried|hand-carries"):
++        compile_lean(m, ACTIVE, t)
++
++
++def test_selection_keyed_by_alias_fails(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO),
++                  {"architect_critic": "dflash2", "coder_escalation": "mtp"})
++    with pytest.raises(DrafterSelectionError, match="ALIAS"):
++        compile_lean(m, ACTIVE, t)
++
++
++def test_recipe_missing_required_key_or_unknown_spec_type_fails(tmp_path):
++    bad = {"mtp": TWO["mtp"], "dflash2": {"spec_type": "dflash", "draft_max": 8}}
++    m, t = _write(tmp_path, _master(drafters=bad), {"architect_critic": "dflash2"})
++    with pytest.raises(DrafterSelectionError) as exc:
++        compile_lean(m, ACTIVE, t)
++    assert "draft_model" in str(exc.value) and "'dflash'" in str(exc.value)
++
++
++def test_legacy_hand_carried_row_without_drafters_passes_with_warning():
++    master = _master(drafters=None,
++                     host_accel={"type": "speculative_decoding", "spec_type": "draft-mtp"})
++    res = resolve(master, ACTIVE, {})
++    assert res.errors == [] and any("LEGACY" in w for w in res.warnings)
++    assert res.selected == {}
++
++
++def test_inactive_selection_is_a_warning_not_an_error():
++    res = resolve(_master(drafters=TWO), ACTIVE,
++                  {"architect_critic": "dflash2", "retired_role": "mtp"})
++    assert res.errors == [] and any("inert" in w for w in res.warnings)
++
++
++# --- cache key and validator --------------------------------------------------------
++
++def test_cache_key_changes_when_only_the_selection_changes(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "dflash2"})
++    k1 = cache_key(m, ACTIVE, t)
++    t.write_text(yaml.safe_dump({"drafter_selection": {"architect_critic": "mtp"}}))
++    assert cache_key(m, ACTIVE, t) != k1
++
++
++def test_check_lean_passes_fresh_projection_and_catches_hand_edit(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "dflash2"})
++    lean = compile_lean(m, ACTIVE, t)
++    selection = load_drafter_selection(t)
++    assert check_lean(lean, selection) == []
++    lean["server_mode"]["architect_critic"]["acceleration"]["spec_type"] = "draft-mtp"
++    assert any("differs" in e for e in check_lean(lean, selection))
++
++
++def test_check_lean_catches_stale_lean_after_topology_change(tmp_path):
++    m, t = _write(tmp_path, _master(drafters=TWO), {"architect_critic": "dflash2"})
++    lean = compile_lean(m, ACTIVE, t)
++    assert any("stale" in e for e in check_lean(lean, {"architect_critic": "mtp"}))
++
++
++def test_live_27b_is_selected_to_dflash2():
++    """Pins the operator's 2026-10-01 rule against the checked-in inputs."""
++    selection = load_drafter_selection()
++    assert selection.get("architect_critic") == "dflash2"
++
++
++def test_validate_all_actually_calls_the_drafter_check(monkeypatch, tmp_path):
++    from src.registry import registry_validator
++
++    monkeypatch.setattr(registry_validator, "_check_drafter_selection",
++                        lambda registry, topology_path=None: ["drafter-sentinel"])
++    path = tmp_path / "lean.yaml"
++    path.write_text(yaml.safe_dump({"server_mode": {}, "roles": {}}))
++    assert "drafter-sentinel" in registry_validator.validate_all(path)
++
++
++# --- STACKCHG-DFLASH2-20261003: VRAM figure is bound to the drafter it was derived for ---
++
++def test_vram_figure_derived_for_another_drafter_fails():
++    master = _master(drafters=TWO,
++                     host_extra={"serving_shape": {"vram_non_kv_gib": 32.8,
++                                                   "vram_non_kv_drafter": "mtp"}})
++    res = resolve(master, ACTIVE, {"architect_critic": "dflash2"})
++    assert any("vram_non_kv_drafter" in e and "'mtp'" in e for e in res.errors)
++
++
++def test_vram_figure_derived_for_the_selected_drafter_passes():
++    master = _master(drafters=TWO,
++                     host_extra={"serving_shape": {"vram_non_kv_gib": 36.34,
++                                                   "vram_non_kv_drafter": "dflash2"}})
++    res = resolve(master, ACTIVE, {"architect_critic": "dflash2"})
++    assert res.errors == []
++    assert res.selected["architect_critic"]["drafter"] == "dflash2"
++
++
++def test_vram_drafter_key_is_optional():
++    master = _master(drafters=TWO, host_extra={"serving_shape": {"vram_non_kv_gib": 36.34}})
++    assert resolve(master, ACTIVE, {"architect_critic": "dflash2"}).errors == []
+--- /dev/null
++++ b/tests/unit/test_external_drafter_launch.py
+@@ -0,0 +1,122 @@
++"""DRAFT-SEL-1: an EXTERNAL drafter (DFlash2) survives priors compilation and reaches argv.
++
++Before the fix, `_launch_runtime_record` only enabled spec for a spec_type containing
++`draft-mtp`; `draft-dflash` fell through to the DISABLED spec, so selecting DFlash2 in
++the registry would have launched :8083 with NO speculation. And the launcher had no
++`-ngld` emission, which the DFlash2 recipe (ngld 99) requires.
++"""
++
++from __future__ import annotations
++
++import importlib
++import sys
++from pathlib import Path
++
++import pytest
++
++ROOT = Path(__file__).resolve().parents[2]
++sys.path.insert(0, str(ROOT))
++sys.path.insert(0, str(ROOT / "scripts" / "server"))
++
++from src.registry.stack_priors import _launch_runtime_record  # noqa: E402
++
++orchestrator_stack = importlib.import_module("orchestrator_stack")
++
++MODEL = "/models/Qwen3.8-27B-Q8_0.gguf"
++DFLASH = "/models/Qwen3.8-27B-DFlash2-Q8_0.gguf"
++
++
++def _runtime(accel: dict, *, role: str = "architect_critic", primary: str = "architect_critic"):
++    return _launch_runtime_record(
++        role=role,
++        descriptor={},
++        server_cfg={"acceleration": accel, "draft_model": accel.get("draft_model")},
++        role_cfg=None,
++        launch_cfg={
++            "launch": {
++                "primary_roles": [primary],
++                "modes": ["default"],
++                "requirements": {"model_path": MODEL,
++                                 "draft_model_path": accel.get("draft_model")},
++                "runtime": {},
++            }
++        },
++    )
++
++
++def test_draft_dflash_spec_is_enabled_with_drafter_path_and_ngld() -> None:
++    spec = _runtime({"type": "speculative_decoding", "spec_type": "draft-dflash",
++                     "draft_model": DFLASH, "draft_max": 8,
++                     "n_gpu_layers_draft": 99})["flags"]["spec"]
++    assert spec["enabled"] is True
++    assert spec["type"] == "draft-dflash"
++    assert spec["draft_model_path"] == DFLASH
++    assert spec["draft_max"] == 8
++    assert spec["n_gpu_layers_draft"] == 99
++
++
++def test_draft_mtp_spec_is_unchanged_and_carries_no_ngld() -> None:
++    spec = _runtime({"type": "speculative_decoding", "spec_type": "draft-mtp",
++                     "draft_model": MODEL, "draft_max": 4})["flags"]["spec"]
++    assert spec["enabled"] is True and spec["type"] == "draft-mtp"
++    assert spec["n_gpu_layers_draft"] is None
++
++
++def test_alias_of_a_dflash_host_does_not_launch_its_own_drafter() -> None:
++    spec = _runtime({"type": "none", "spec_type": "draft-dflash", "draft_model": DFLASH,
++                     "draft_max": 8, "n_gpu_layers_draft": 99},
++                    role="coder_escalation")["flags"]["spec"]
++    assert spec["enabled"] is False
++
++
++def test_argv_for_dflash2_emits_md_ngld_spec_type_and_depth() -> None:
++    cmd: list[str] = []
++    orchestrator_stack._append_spec_decode_args(
++        cmd, model_path=MODEL, draft_model_path=DFLASH, spec_type="draft-dflash",
++        draft_max="8", n_gpu_layers_draft="99",
++    )
++    assert cmd == ["-md", DFLASH, "-ngld", "99",
++                   "--spec-type", "draft-dflash", "--spec-draft-n-max", "8"]
++
++
++def test_argv_for_same_file_mtp_omits_md_and_ngld() -> None:
++    cmd: list[str] = []
++    orchestrator_stack._append_spec_decode_args(
++        cmd, model_path=MODEL, draft_model_path=MODEL, spec_type="draft-mtp",
++        draft_max="4", n_gpu_layers_draft="99",
++    )
++    assert "-md" not in cmd and "-ngld" not in cmd
++    assert cmd == ["--spec-type", "draft-mtp", "--spec-draft-n-max", "4"]
++
++
++@pytest.mark.parametrize("ngld,expected", [(99, "99"), ("all", "all"), (None, None), (-1, None)])
++def test_runtime_spec_args_project_ngld(ngld, expected) -> None:
++    cmd: list[str] = []
++    runtime = {"flags": {"spec": {"enabled": True, "type": "draft-dflash",
++                                  "draft_model_path": DFLASH, "draft_max": 8,
++                                  "n_gpu_layers_draft": ngld}}}
++    orchestrator_stack._append_runtime_spec_args(cmd, runtime, MODEL)
++    if expected is None:
++        assert "-ngld" not in cmd
++    else:
++        assert cmd[cmd.index("-ngld") + 1] == expected
++
++
++# --- STACKCHG-DFLASH2-20261003: fail closed at compile, and attest -ngld live ---
++
++@pytest.mark.parametrize("draft_model", [MODEL, None])
++def test_external_drafter_without_a_distinct_drafter_refuses_at_compile(draft_model) -> None:
++    """draft-dflash whose drafter resolves to the target itself (or nothing) would launch
++    `--spec-type draft-dflash` with no -md and die at load; refuse at compile instead."""
++    with pytest.raises(ValueError, match="external drafter"):
++        _runtime({"type": "speculative_decoding", "spec_type": "draft-dflash",
++                  "draft_model": draft_model, "draft_max": 8})
++
++
++def test_runtime_attestation_maps_the_ngld_field() -> None:
++    """Every speculating role's priors now carry spec.n_gpu_layers_draft; the derived
++    attestation checklist reports an unmapped declared field, so it must be mapped."""
++    stack_commands = importlib.import_module("stack_commands")
++    mode, flags, _ = stack_commands._RUNTIME_FIELD_CHECKS["runtime.flags.spec.n_gpu_layers_draft"]
++    assert mode == "int_or_token_flag"
++    assert "-ngld" in flags
+--- a/tests/unit/test_build_server_command_helpers.py
++++ b/tests/unit/test_build_server_command_helpers.py
+@@ -230,8 +230,9 @@
+     assert oss.VISION_ESCALATION_MODEL in cmd
+     assert oss.VISION_ESCALATION_MMPROJ in cmd
+     assert "--mmproj" in cmd
+-    # Was "none" (CPU-only 7B lane); the unified VL process is MI210-resident.
+-    assert _flag_value(cmd, "--device") == "ROCm0"
++    # Was "none" (CPU-only 7B lane), then ROCm0 (MI210, 2026-08-01). STACKCHG-DFLASH2-20261003: the VL
++    # process is a COLD CPU role while the MI210 carries DFlash2 -> "none" again.
++    assert _flag_value(cmd, "--device") == "none"
+     assert _flag_value(cmd, "--reasoning") == "off"
+     # Still no expert-count override: the registry corrected int:4 to "use the
+     # GGUF default of 8" on 2026-07-31.
+@@ -275,16 +276,19 @@
+     #   * the compiled stack prior — launch entry cpu_shape_class gpu_host_lane.
+     # If anyone re-rosters the VL role onto a CPU quarter, all three must move
+     # together or this fails.
+-    from scripts.server.stack_numa import GPU_HOST_LANE
+-
+-    lane_cpus, lane_threads = GPU_HOST_LANE
+-    assert oss.NUMA_CONFIG["worker_vision"]["gpu_host_lane"] is True
+-    assert oss.NUMA_CONFIG["worker_vision"]["instances"][0][0] == lane_cpus
++    # STACKCHG-DFLASH2-20261003: re-rostered, as this test demands, all together: the VL role is a COLD
++    # CPU role on NUMA_HALF_A (0-47,96-143, -t 48) while the MI210 carries DFlash2.
++    from scripts.server.stack_numa import NUMA_HALF_A
++
++    half_cpus, half_threads = NUMA_HALF_A
++    assert "gpu_host_lane" not in oss.NUMA_CONFIG["worker_vision"]
++    assert oss.NUMA_CONFIG["worker_vision"]["instances"][0][0] == half_cpus
+     assert {
+         entry["cpu_shape_class"]
+         for entry in _stack_prior_role("worker_vision")["serving"]["launch"]["entries"]
+-    } == {"gpu_host_lane"}
+-    assert cmd[cmd.index("-t") + 1] == str(lane_threads)
++    } == {"half"}
++    assert cmd[cmd.index("-t") + 1] == str(half_threads)
++    assert _flag_value(cmd, "--device") == "none"
+ 
+ 
+ @pytest.mark.parametrize(
+@@ -378,8 +382,9 @@
+ 
+     cmd = oss.build_server_command(None, 8086, vision_mode=True, vision_type="worker")
+ 
+-    assert _flag_value(cmd, "--device") == "ROCm0"
+-    assert "none" not in _all_flag_values(cmd, "--device")
++    # STACKCHG-DFLASH2-20261003: the shared :8086 process is a COLD CPU role -> exactly one `--device none`,
++    # never a GPU device (the dispatcher must not re-add ROCm0 behind the builder).
++    assert _all_flag_values(cmd, "--device") == ["none"]
+ 
+ 
+ def test_build_embedding_command_enables_embeddings_and_cls_pool() -> None:
+@@ -1304,7 +1309,9 @@
+     # reads the role's compiled declaration, and vision_escalation declares ROCm0.
+     # Asserting "none" here was pinning the defect that launched GPU-declared roles
+     # with every device disabled. Polarity flipped, strength unchanged.
+-    assert out == ["VISION", "--device", "ROCm0"]
++    # STACKCHG-DFLASH2-20261003: vision_escalation rides the COLD CPU :8086 process -> "none" (declared, not
++    # assumed: the tail still reads the role's compiled declaration).
++    assert out == ["VISION", "--device", "none"]
+     # numa_instance defaults to 0 (full) and is forwarded post-da1aed6 so quarters
+     # get NUMA_CONFIG -t (was always -t 96).
+     m.assert_called_once_with(8087, "escalation", 0)
+--- a/tests/unit/test_orchestrator_stack_reload.py
++++ b/tests/unit/test_orchestrator_stack_reload.py
+@@ -2268,3 +2268,44 @@
+         "quarter",
+     ]
+     assert captured["env"] is None
++
++
++# --- STACKCHG-DFLASH2-20261003: the VL backend follows the vision role's tier ---------
++
++def _start_api_capturing_env(monkeypatch, tmp_path: Path) -> dict:
++    captured: dict[str, object] = {}
++
++    class FakeProc:
++        pid = 4321
++
++        def poll(self):
++            return None
++
++    def fake_popen(cmd, **kwargs):
++        captured["env"] = kwargs["env"]
++        return FakeProc()
++
++    monkeypatch.setattr(stack, "LOG_DIR", tmp_path)
++    monkeypatch.setattr(stack, "_pids_on_port", lambda _port: [])
++    monkeypatch.setattr(stack, "_write_orchestrator_marker", lambda **_kwargs: tmp_path / "marker")
++    monkeypatch.setattr(stack, "wait_for_health", lambda *args, **kwargs: True)
++    monkeypatch.setattr(stack, "_set_oom_protection", lambda *_args, **_kwargs: None)
++    monkeypatch.setattr(stack.subprocess, "Popen", fake_popen)
++    assert stack.start_orchestrator() is not None
++    return captured["env"]  # type: ignore[return-value]
++
++
++@pytest.mark.parametrize("tier,expected", [("warm", "server"), ("hot", "auto")])
++def test_vl_backend_follows_vision_tier(monkeypatch, tmp_path: Path, tier, expected) -> None:
++    from scripts.server import stack_manifest
++
++    monkeypatch.delenv("ORCHESTRATOR_VISION_VL_BACKEND", raising=False)
++    meta = {**stack_manifest.ROLE_LAUNCH_META,
++            "worker_vision": {**stack_manifest.ROLE_LAUNCH_META["worker_vision"], "tier": tier}}
++    monkeypatch.setattr(stack_manifest, "ROLE_LAUNCH_META", meta)
++    assert _start_api_capturing_env(monkeypatch, tmp_path)["ORCHESTRATOR_VISION_VL_BACKEND"] == expected
++
++
++def test_explicit_vl_backend_wins(monkeypatch, tmp_path: Path) -> None:
++    monkeypatch.setenv("ORCHESTRATOR_VISION_VL_BACKEND", "cli")
++    assert _start_api_capturing_env(monkeypatch, tmp_path)["ORCHESTRATOR_VISION_VL_BACKEND"] == "cli"
+--- a/tests/unit/test_orchestrator_stack_threads.py
++++ b/tests/unit/test_orchestrator_stack_threads.py
+@@ -188,17 +188,20 @@
+     registry = yaml.safe_load(
+         (ROOT / "orchestration" / "model_registry.yaml").read_text()
+     )["server_mode"]
+-    assert registry["worker_vision"]["device"] == "ROCm0"
++    # STACKCHG-DFLASH2-20261003: COLD CPU role while the MI210 carries DFlash2 (was ROCm0).
++    assert registry["worker_vision"]["device"] == "none"
+ 
+     instances = _instances("worker_vision")
+     assert len(instances) == 1, "worker_vision should be single-instance (one GPU server)"
+     cpus, port, threads = instances[0]
+ 
+     assert port == registry["worker_vision"]["port"]
+-    assert stack_numa.NUMA_INSTANCE_SHAPE_CLASSES["worker_vision"] == ("gpu_host_lane",)
+-    assert (cpus, threads) == stack_numa.GPU_HOST_LANE
+-    assert stack_numa.NUMA_CONFIG["worker_vision"]["gpu_host_lane"] is True
+-    assert _nodes_spanned(cpus) == {3}, "the GPU host lane is node-aligned on node 3"
++    # STACKCHG-DFLASH2-20261003: one CPU half (NPS4 nodes 0,1), GPU-disjoint from the 27B's lane on node 3.
++    assert stack_numa.NUMA_INSTANCE_SHAPE_CLASSES["worker_vision"] == ("half",)
++    assert (cpus, threads) == stack_numa.NUMA_HALF_A
++    assert "gpu_host_lane" not in stack_numa.NUMA_CONFIG["worker_vision"]
++    assert _nodes_spanned(cpus) == {0, 1}, "NUMA_HALF_A spans exactly NPS4 nodes 0 and 1"
++    assert stack_numa.NUMA_CONFIG["worker_vision"]["numactl_policy"] == "interleave=0,1"
+ 
+ 
+ # Live NPS4 topology, verified 2026-07-30 via `numactl --hardware`.
+--- a/tests/unit/test_scheduling_contention.py
++++ b/tests/unit/test_scheduling_contention.py
+@@ -119,7 +119,12 @@
+         "missing": sorted(expected - measured - unknown),
+         "stale": sorted((measured | unknown) - expected),
+     }
+-    assert m.get_pair("architect_general", "worker_vision") is not None
++    # STACKCHG-DFLASH2-20261003: worker_vision moved GPU_HOST_LANE -> a COLD CPU half
++    # (NUMA_HALF_A). Its measured pairs described the old placement and were
++    # WITHDRAWN into `unknown_pairs` (declared, never silently missing): no stale
++    # number may gate the new placement until it is re-benched.
++    assert m.get_pair("architect_general", "worker_vision") is None
++    assert ("architect_general", "worker_vision") in unknown
+     # ingest_long_context serves on its registry host's process; that host's
+     # pair with worker_vision is the row that now carries its contention.
+     import yaml
+@@ -128,7 +133,8 @@
+         (ROOT / "orchestration" / "model_registry.yaml").read_text(encoding="utf-8")
+     )["server_mode"]
+     ingest_host = mode["ingest_long_context"].get("alias_of") or "ingest_long_context"
+-    assert m.get_pair(ingest_host, "worker_vision") is not None
++    assert m.get_pair(ingest_host, "worker_vision") is None
++    assert tuple(sorted((ingest_host, "worker_vision"))) in unknown
+ 
+ 
+ def test_real_matrix_declares_current_nway_role_classes(real_matrix_path: Path) -> None:
+--- a/tests/unit/test_stack_change_pipeline.py
++++ b/tests/unit/test_stack_change_pipeline.py
+@@ -398,6 +398,9 @@
+         "guard_all_surfaces",
+         "guard_strict",
+         "reasoning_effort_certifications",
++        # 2026-10-03 STACKCHG-DFLASH2: the import-time capacity gate re-run in a fresh
++        # process on the lean THIS run wrote (update was green over an over-capacity lean).
++        "serving_shape_capacity",
+         "stack_manifest_registry",
+         "q_scorer_priors",
+         "runtime_attestation",
+@@ -1008,7 +1011,11 @@
+     assert no_key.status == "ok", no_key.errors
+     assert any("local cache key (gitignored): <none> !=" in d for d in no_key.details)
+ 
+-    (lean.parent / ".lean_cache_key").write_text(cache_key(master, roles))
++    # DRAFT-SEL-1: the drafter selection is a compile input, so the key is taken over
++    # THIS config's topology (as the step does), not the repo default.
++    (lean.parent / ".lean_cache_key").write_text(
++        cache_key(master, roles, pipeline._topology_path(config))
++    )
+     _registry(lean, throughput=99.0)  # hand-edited lean, key still matches master
+     edited = pipeline._lean_registry_step(config, check=True)
+     assert edited.status == "stale"
+@@ -1031,3 +1038,56 @@
+         raise RuntimeError("proc unreadable")
+     monkeypatch.setattr(pipeline, "_declared_env_attestation_result", boom)
+     assert pipeline._declared_env_attestation_step().status == "failed"
++
++
++# --- STACKCHG-DFLASH2-20261003: capacity gate re-run on the lean this run wrote ---------
++
++def _default_lean_config(tmp_path: Path) -> StackChangePipelineConfig:
++    (tmp_path / "orchestration").mkdir(parents=True, exist_ok=True)
++    (tmp_path / "scripts" / "server").mkdir(parents=True, exist_ok=True)
++    (tmp_path / "scripts" / "server" / "stack_manifest.py").write_text("")
++    return StackChangePipelineConfig(
++        mode="check", repo_root=tmp_path,
++        lean_registry=tmp_path / "orchestration" / "model_registry.yaml",
++    )
++
++
++def test_serving_shape_capacity_fails_when_fresh_import_refuses(monkeypatch, tmp_path) -> None:
++    refusal = "ValueError: device ROCm0 (GPU) OVERSUBSCRIBED by 3.16 GiB"
++    monkeypatch.setattr(
++        pipeline, "_fresh_capacity_import",
++        lambda root: subprocess.CompletedProcess([], 1, "", f"Traceback\n{refusal}\n"),
++    )
++    step = pipeline._serving_shape_capacity_step(_default_lean_config(tmp_path))
++    assert step.status == "failed"
++    assert any("OVERSUBSCRIBED by 3.16 GiB" in e for e in step.errors)
++
++
++def test_serving_shape_capacity_passes_on_clean_import(monkeypatch, tmp_path) -> None:
++    monkeypatch.setattr(pipeline, "_fresh_capacity_import",
++                        lambda root: subprocess.CompletedProcess([], 0, "", ""))
++    assert pipeline._serving_shape_capacity_step(_default_lean_config(tmp_path)).status == "ok"
++
++
++def test_serving_shape_capacity_is_not_a_pass_for_a_non_default_lean(tmp_path) -> None:
++    cfg = StackChangePipelineConfig(mode="check", repo_root=tmp_path,
++                                    lean_registry=tmp_path / "elsewhere.yaml")
++    step = pipeline._serving_shape_capacity_step(cfg)
++    assert step.status == "skipped"
++    assert step.ok is True and step.errors == []
++    assert any("COULD-NOT-CHECK" in d for d in step.details)
++
++
++def test_lean_bootstrap_roles_from_sources_match_role_launch_meta() -> None:
++    """The bootstrap path (stack_manifest refused against a stale lean) must derive the
++    SAME active set the compiler gets from ROLE_LAUNCH_META on a consistent tree."""
++    from scripts.server.stack_manifest import ROLE_LAUNCH_META
++    from src.registry.registry_compiler import active_roles_from_launch_meta
++
++    root = pipeline.REPO_ROOT
++    cfg = StackChangePipelineConfig(
++        mode="update", repo_root=root,
++        research_registry=root / "orchestration" / "model_registry_full.yaml",
++    )
++    assert active_roles_from_launch_meta(pipeline._launch_meta_from_sources(cfg)) == \
++        active_roles_from_launch_meta(ROLE_LAUNCH_META)
+--- a/tests/unit/test_stack_numa_evict.py
++++ b/tests/unit/test_stack_numa_evict.py
+@@ -40,8 +40,10 @@
+ # 2026-09-27 ARCHITECT SWAP (operator-decided): the full-CPU Flash-Next process
+ # (:8074, pre-evicts 40 GiB) is architect_general; the MI210 27B GPU host lane
+ # (:8083, never evicts) is architect_critic.
+-CPU_LLAMA_SERVER_ROLES = {"frontdoor", "eval_batch_frontdoor", "architect_general"}
+-GPU_HOST_LANE_ROLES = {"architect_critic", "worker_vision"}
++# STACKCHG-DFLASH2-20261003: worker_vision moved GPU host lane -> cold CPU (NUMA_HALF_A): it is now a CPU
++# llama-server role and pre-evicts like every other one.
++CPU_LLAMA_SERVER_ROLES = {"frontdoor", "eval_batch_frontdoor", "architect_general", "worker_vision"}
++GPU_HOST_LANE_ROLES = {"architect_critic"}
+ 
+ 
+ def _registry_alias_rows() -> dict[str, str]:
+--- a/tests/unit/test_stack_priors_compiler.py
++++ b/tests/unit/test_stack_priors_compiler.py
+@@ -1431,7 +1431,8 @@
+             "primary_role": "worker_vision",
+             "mode": "vision",
+             "alias": False,
+-            "cpu_shape_class": "gpu_host_lane",
++            # STACKCHG-DFLASH2-20261003: cold CPU on NUMA_HALF_A (was gpu_host_lane).
++            "cpu_shape_class": "half",
+             "vision_type": "worker",
+             "slots": 1,
+         }
+@@ -1462,7 +1463,10 @@
+     assert runtime["flags"]["flash_attn"] is True
+     assert runtime["flags"]["jinja"] is False
+     assert runtime["flags"]["spec"]["enabled"] is False
+-    assert role["priors"]["memory_cost"] == 1.0
++    # STACKCHG-DFLASH2-20261003: the stack manifest now declares worker_vision
++    # tier WARM (cold CPU, not started by default), so its residency cost is the
++    # warm cost (was 1.0 = hot while it was MI210-resident).
++    assert role["priors"]["memory_cost"] == 2.0
+ 
+ 
+ def test_compile_refuses_missing_descriptor_without_allow_incomplete(tmp_path: Path) -> None:

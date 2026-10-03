@@ -178,7 +178,9 @@ def main() -> int:
     for row in sm.serving_shape_instances():
         declared = (row.get("device") or "").strip() or None
         on_gpu = bool(row["on_gpu"])
-        gpu_by_registry = bool(declared) and declared.lower() not in {"cpu", "host"}
+        # `none` is the launcher's own CPU spelling: _append_device_args emits it verbatim
+        # as `--device none` (STACKCHG-DFLASH2-20261003 moved worker_vision to it).
+        gpu_by_registry = bool(declared) and declared.lower() not in {"cpu", "host", "none"}
         if on_gpu and not gpu_by_registry:
             problems.append(
                 f"[device] {row['role']}[{row['numa_instance']}] :{row['port']} has shape_class "
