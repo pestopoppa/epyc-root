@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "AUTOKERNEL-LANES-START-IN-PARALLEL-LOCAL-STEPS-WAIT-ON-EVERY-CLAIM",
+  "gate_id": "RATIFY-AK-LANES-20261004",
+  "operator_decision": "operator ruling 2026-10-04: a second AutoKernel lane starts at once and is never gated on a CPU window; only its local steps contend, on region claims",
+  "ratified_at": "2026-10-04T18:23:43Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "target": "agents/shared/OPERATING_CONSTRAINTS.md",
+  "section": "Inference and Benchmarks",
+  "rule": "AutoKernel lanes start in parallel (hosted planning overlaps the other lane's measurements); in any multi-loop deployment every local step of an actor phase (compile, op-test, build) waits on every other loop's region claim, including one held under the same role name; a pinned research worktree runs with PYTHONPATH starting at the worktree root so the shared venv's editable install cannot shadow it",
+  "origin": "2026-10-04 Q38FN lane launch (DS41-C111): ak-check skipped role autokernel-cpu as its own claim, so one loop's author could compile inside the other loop's measurement (DS41-C122); the shared venv's editable install shadowed the pinned worktree's scripts.lib.canonical_recipe",
+  "evidence": "research aef2da6c (ak-check cross-loop peer); root 82b7483c (benchmark-analyst.md 'Running more than one AutoKernel lane')",
+  "not_changed": "adds one bullet only; no line rewritten; section heading unchanged",
+  "patch": {
+    "path": "artifacts/operator/ak-lanes-20261004.patch",
+    "sha256": "9c7f5e17b80ecb3f79de9e42a5d8e45e9cd511e6ce430a463f5aae2f50f75832"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "16c4a2375ec5105dc0597d4d9da584079a38053d5c63aae6cec70ca863eabeb3",
+      "sha256_after": "c752be8a456461dc28e6489ba4438978ffdd4e6e4c7fa110786a29ce01d10c5f"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_ak_lanes_20261004.receipt.json",
+  "applied_by": "scripts/operator/ratify_ak_lanes_20261004.sh"
+}

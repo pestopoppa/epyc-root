@@ -156,6 +156,14 @@ investigation; Appendix)
   agent-harness traffic, as run metadata. Procedure: `docs/guides/agent-workflows/benchmark-analyst.md`
   → *Your own load, and what counts as noise*. (origin: 2026-09-30 — subagent pytest during a DS41
   floor calibration verified the floor at 4.533% instead of ~1.9%; operator ruling 2026-10-04)
+- **AutoKernel lanes: start in parallel, and every local step waits on every other loop's claim.** A second lane
+  starts at once and is never gated on a CPU window: its hosted planning overlaps the other lane's measurements,
+  and only its local steps contend, on region claims (operator, 2026-10-04). In any multi-loop deployment, check
+  that every local step of an actor phase (compile, op-test, build) waits on the other loop's region claim, including
+  one held under the same role name. A pinned research worktree runs with `PYTHONPATH` starting at the worktree
+  root, because the shared venv's editable install otherwise shadows it. Procedure:
+  `docs/guides/agent-workflows/benchmark-analyst.md` → *Running more than one AutoKernel lane*. (origin: 2026-10-04,
+  research `aef2da6c` and the Q38FN lane launch, DS41-C111/C122)
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
