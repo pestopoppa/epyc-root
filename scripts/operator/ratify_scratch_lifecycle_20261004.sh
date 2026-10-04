@@ -34,14 +34,16 @@
 #
 # PINS. Any mismatch is refused. If the target has moved, REGENERATE the bundle; never force or fuzz.
 #   patch                                   see PATCH_SHA256
-#   OPERATING_CONSTRAINTS.md   pre-state    see OC_PRE_SHA256   (epyc-root origin/main ab84e579)
-#   OPERATING_CONSTRAINTS.md   post-state   see OC_POST_SHA256
+#   OPERATING_CONSTRAINTS.md   NOT hash-pinned: another pending bundle (ratify_ak_ds41_lessons_20261004.sh)
+#                              inserts into other sections of the same file, and either may land first. The
+#                              guard is instead: `git apply --check` (exact context, no fuzz), each anchor
+#                              absent before and present exactly once after, and a diff that only ADDS lines.
 #
 # The bundle emits the MEASUREMENT.md section-5 consolidated receipt over its own amendment (a doctrine
 # amendment anchors in its own target), then the decision receipt and keyed index, and commits exactly
 # four paths through a private index seeded from HEAD. Pushing is left to you; the command is printed.
 #
-# IDEMPOTENT. When the target is at its post-state pin and all three receipts exist, a re-run prints
+# IDEMPOTENT. When the target carries all three anchors and all three receipts exist, a re-run prints
 # ALREADY RATIFIED and exits 0. Every other partial state is refused.
 #
 # ROOT defaults to the checkout this script lives in. Override it with ROOT=<epyc-root checkout>.
@@ -67,8 +69,13 @@ ANCHOR_DOWNLOAD='- **Download through `scripts/utils/safe_download.py`**, never 
 ANCHOR_FANOUT="- **Every subagent brief names its scratch root** — the owning handoff's declared \`**Scratch**:\`"
 
 PATCH_SHA256="164711786bc93f19dfb30e7bd8d8e0329c6407e79544406b5ddf317573b148c7"
-OC_PRE_SHA256="5e86348f075ad35fb9cdb1f1b39ef788c6bed582961b54ff8128473c4b0fef09"
-OC_POST_SHA256="49311a6c02a1ca311f523ae80f87ab54cc35906618f24659d379aaa3043fd84d"
+anchors_present() { # prints how many of the three anchors occur in the target
+  local n=0 a
+  for a in "$ANCHOR_SCRATCH" "$ANCHOR_DOWNLOAD" "$ANCHOR_FANOUT"; do
+    grep -qF -- "$a" "$ROOT/$OC_REL" && n=$((n + 1))
+  done
+  echo "$n"
+}
 
 MODE="review"; DO_COMMIT=1; ATTEST=""
 while [ "$#" -gt 0 ]; do
@@ -103,7 +110,7 @@ oc_now="$(sha "$ROOT/$OC_REL")"
 # ---------------------------------------------------------------- verify (read-only)
 if [ "$MODE" = "verify" ]; then
   ok=1
-  [ "$oc_now" = "$OC_POST_SHA256" ] || { say "  FAIL  $OC_REL is ${oc_now:0:12}, expected post-state ${OC_POST_SHA256:0:12}"; ok=0; }
+  [ "$(anchors_present)" = 3 ] || { say "  FAIL  $OC_REL carries $(anchors_present)/3 amendment anchors"; ok=0; }
   for f in "$RECEIPT_REL" "$INDEX_REL" "$CONSOLIDATED_REL"; do
     [ -f "$ROOT/$f" ] || { say "  FAIL  $f missing"; ok=0; }
   done
@@ -117,13 +124,14 @@ if [ "$MODE" = "verify" ]; then
 fi
 
 # ---------------------------------------------------------------- idempotence / partial states
-if [ "$oc_now" = "$OC_POST_SHA256" ]; then
+if [ "$(anchors_present)" = 3 ]; then
   if [ -f "$ROOT/$RECEIPT_REL" ] && [ -f "$ROOT/$INDEX_REL" ] && [ -f "$ROOT/$CONSOLIDATED_REL" ]; then
-    say "ALREADY RATIFIED: $OC_REL is at its post-state pin and all three receipts exist. Nothing to do."
+    say "ALREADY RATIFIED: $OC_REL carries all three anchors and all three receipts exist. Nothing to do."
     exit 0
   fi
   die "half-applied state: $OC_REL is amended but a receipt is missing. Resolve by hand."
 fi
+[ "$(anchors_present)" = 0 ] || die "half-applied state: $OC_REL carries $(anchors_present)/3 anchors. Resolve by hand."
 [ -f "$ROOT/$INDEX_REL" ] && die "keyed index $INDEX_REL already exists, so this gate is already spent. Double-signing is refused."
 for f in "$RECEIPT_REL" "$CONSOLIDATED_REL"; do
   [ -f "$ROOT/$f" ] && die "$f already exists but $OC_REL is not amended. Resolve by hand."
@@ -140,7 +148,7 @@ pin() { # pin <label> <expected> <found>
   fi
 }
 pin "patch hash"                              "$PATCH_SHA256"  "$(sha "$ROOT/$PATCH_REL")"
-pin "OPERATING_CONSTRAINTS.md pre-state hash" "$OC_PRE_SHA256" "$oc_now"
+printf '  ok    %-44s (%s, not pinned — see PINS)\n' "OPERATING_CONSTRAINTS.md pre-state" "${oc_now:0:12}"
 dirty="$(git -C "$ROOT" status --porcelain -- "${COMMIT_PATHS[@]}" 2>/dev/null || echo 'GIT-STATUS-FAILED')"
 if [ -n "$dirty" ]; then printf '  FAIL  %-44s\n%s\n' "commit paths clean in git" "$dirty"; fail=1
 else printf '  ok    %-44s\n' "commit paths clean in git"; fi
@@ -162,7 +170,7 @@ if [ "$MODE" = "review" ]; then
   say "== amendment diff ($PATCH_REL) =="
   cat "$ROOT/$PATCH_REL"
   say ""
-  say "REVIEW ONLY: nothing written. Would amend $OC_REL (post-state pin ${OC_POST_SHA256:0:12}),"
+  say "REVIEW ONLY: nothing written. Would amend $OC_REL (three bullets added),"
   say "emit the section-5 consolidated receipt, the decision receipt and the keyed index, and commit those four paths."
   say "Apply with ONE command:"
   say "    ROOT=$ROOT bash $SCRIPT_PATH --apply --attest $GATE_ID"
@@ -194,10 +202,7 @@ git -C "$ROOT" apply "$ROOT/$PATCH_REL" || { restore; die "git apply failed; tar
 say ""
 say "== postflight =="
 oc_after="$(sha "$ROOT/$OC_REL")"
-if [ "$oc_after" != "$OC_POST_SHA256" ]; then
-  restore; die "post-state hash mismatch (expected ${OC_POST_SHA256:0:12}, found ${oc_after:0:12}); target restored. Nothing changed."
-fi
-printf '  ok    %-44s (%s)\n' "OPERATING_CONSTRAINTS.md post-state hash" "${oc_after:0:12}"
+printf '  ok    %-44s (%s)\n' "OPERATING_CONSTRAINTS.md post-state" "${oc_after:0:12}"
 if python3 - "$TMPD/oc.bak" "$ROOT/$OC_REL" "$ANCHOR_SCRATCH" "$ANCHOR_DOWNLOAD" "$ANCHOR_FANOUT" <<'PYEOF'
 import difflib, sys
 a = open(sys.argv[1], encoding="utf-8").read().split("\n")
@@ -236,7 +241,7 @@ python3 "$ROOT/scripts/operator/ratification_receipt.py" emit \
   --operator "$RATIFY_OPERATOR" \
   --no-evidence-reason "workflow doctrine, not a measured claim; the disk audit is /mnt/raid0/llm/tmp/disk-audit-20261003/ (outside the repo) and the DS41 EPYC_ROOT_REPO crash is recorded in the 2026-10-04 coordinator relay" \
   --validation "python3 $CHECKER_REL --repo-root ." \
-  --validation "test \"\$(sha256sum $OC_REL | cut -d' ' -f1)\" = $OC_POST_SHA256" \
+  --validation "test \"\$(sha256sum $OC_REL | cut -d' ' -f1)\" = $oc_after" \
   --validation "test \"\$(grep -c '^## Filesystem and Storage\$' $OC_REL)\" = 1" \
   --out "$ROOT/$CONSOLIDATED_REL" || receipt_rc=$?
 if [ "$receipt_rc" -ne 0 ]; then
@@ -249,7 +254,7 @@ fi
 # ---------------------------------------------------------------- decision receipt + keyed index
 if ! python3 - "$ROOT" "$RATIFIED_AT" "$GATE_ID" "$RECEIPT_REL" "$INDEX_REL" "$CONSOLIDATED_REL" \
      "$RATIFY_OPERATOR" "$PATCH_REL" "$PATCH_SHA256" "$SCRIPT_REL" \
-     "$OC_PRE_SHA256" "$OC_POST_SHA256" <<'PYEOF'
+     "$oc_now" "$oc_after" <<'PYEOF'
 import json, os, sys
 (root, ts, gate, receipt_rel, index_rel, consolidated_rel, operator, patch_rel, patch_sha, script_rel,
  oc_pre, oc_post) = sys.argv[1:13]
@@ -307,8 +312,8 @@ GIT_INDEX_FILE="$PIDX" git -C "$ROOT" read-tree HEAD \
 GIT_INDEX_FILE="$PIDX" git -C "$ROOT" add -- "${COMMIT_PATHS[@]}" \
   || die "could not stage into the private index. The amendment and receipts ARE applied (not rolled back). Commit by hand: $commit_manual"
 staged_oc="$(GIT_INDEX_FILE="$PIDX" git -C "$ROOT" show ":$OC_REL" | sha256sum | awk '{print $1}')"
-[ "$staged_oc" = "$OC_POST_SHA256" ] \
-  || die "the staged $OC_REL (${staged_oc:0:12}) does not match its post-state pin: something edited it after postflight. NOT committed."
+[ "$staged_oc" = "$oc_after" ] \
+  || die "the staged $OC_REL (${staged_oc:0:12}) does not match the postflight state: something edited it after postflight. NOT committed."
 staged_list="$(GIT_INDEX_FILE="$PIDX" git -C "$ROOT" diff --cached --name-only HEAD | sort)"
 expected_list="$(printf '%s\n' "${COMMIT_PATHS[@]}" | sort)"
 [ "$staged_list" = "$expected_list" ] \
