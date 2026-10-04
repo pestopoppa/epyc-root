@@ -1,18 +1,32 @@
 {
   "by_type": {
-    "docs": 117,
+    "docs": 118,
     "handoff-active": 177,
     "handoff-blocked": 2,
     "handoff-completed": 206,
-    "progress": 517,
+    "progress": 519,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-03T12:13:20Z",
-  "mode": "touch",
-  "scan_time": "2026-10-03T12:13:20Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 2,
+      "removed": 0
+    },
+    "at": "2026-10-04T10:14:41Z",
+    "scope_paths": [
+      "docs/reviews/research-intake-practical-applications-20261004.md",
+      "progress/2026-10/2026-10-04-codex-intake-wrap.md",
+      "progress/2026-10/2026-10-04-intake-decision-tools-stage4.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-04T10:14:41Z",
   "schema_version": 1,
-  "source_set_hash": "9881c8f3526fd117e8c4f5d97d6dfa9cc4d940318d4f338218fc005a579ce03a",
+  "source_set_hash": "6ba8c7cc4f980ba4a331c99f388be490e0105e4522b6958fa4c8a2bf9534270f",
   "sources": [
     {
       "content_hash": "a19d299e64b40a58a665e701e5b8588bf2cb5452991f775be380dd6dc6a59a11",
@@ -8351,6 +8365,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "cf693d2864085fb7f1788f673dd1a9b7e93a10a78c2a84b819aa8c3b561d5b87",
+      "modified": "2026-10-04T10:14:41Z",
+      "path": "progress/2026-10/2026-10-04-codex-intake-wrap.md",
+      "size": 7271,
+      "title": "Research intake \u2014 session wrap-up and practical-application retrospective",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f5e3c21264cae641a284928b2fa4fead83d17e22d2d50ab59da79b1fd378ac15",
+      "modified": "2026-10-04T09:34:58Z",
+      "path": "progress/2026-10/2026-10-04-intake-decision-tools-stage4.md",
+      "size": 9798,
+      "title": "Decision-tools intake \u2014 approved Stage 4",
+      "type": "progress"
+    },
+    {
       "content_hash": "7a9806a387f05ad8a986636ec2e112ac8baa5d4f42c199f388b2ebc5389bf94b",
       "modified": "2026-09-27T19:53:00Z",
       "path": "docs/coordination/session-bus-task-flow-STATUS.md",
@@ -9239,6 +9269,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "da980d3f861b13b42c9e0406d5e396d82b1273b1dc75bc79b128264184d80427",
+      "modified": "2026-10-04T10:06:11Z",
+      "path": "docs/reviews/research-intake-practical-applications-20261004.md",
+      "size": 13461,
+      "title": "Research-intake practical applications \u2014 follow-up review",
+      "type": "docs"
+    },
+    {
       "content_hash": "cd6e962be3f2a230c81e9d737c0270faa577838a591ce889fc5ee546eef9936d",
       "modified": "2026-09-27T19:53:00Z",
       "path": "docs/reviews/retroactive-objective-change-rider-review-20260811.md",
@@ -9287,7 +9325,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1159,
+  "total_new": 1162,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
