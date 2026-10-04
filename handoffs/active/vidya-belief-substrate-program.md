@@ -2249,3 +2249,13 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   projects through VB-COHGATE-1, not twice. With n=1 per cell and no codified protocol, it grades as
   `Judged/Located` via `claim_tuple.grade()`. Write a `belief_measurements.jsonl` from the runner before E1 runs.
   The source-table row text is prepared in the INDEX_ROWS file above. Done when E1's records ingest.
+
+## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
+  [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-18 (fork-vs-fresh equivalence + TTFT),
+  KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
+  Record shape: per-run JSON with binary sha, argv, arm, prompt-set hash, equivalence verdict, TTFT, prefill tokens,
+  unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
+  `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
+  adapter projects it.

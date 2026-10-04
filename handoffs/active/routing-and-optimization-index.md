@@ -60,6 +60,7 @@
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 shadow-mode code (zero-inference); TD-29.M0a prefill tokens on the /completion lane, then TD-29.M4 prefix-cache reuse | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | URGENT KVU-16h VRAM growth attribution; KVU-16f -b 512 A/B; KVU-16b-1 runner fix + re-run; KVU-19b GPU slot; KVU-16g budget | RTG-19, RTG-36, INF-41 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-01 index a P1 worktree from the champion tip (gitnexus-analyze.sh), KPF-02 impact pass, KPF-03 VB-KVU-PF; then KPF-11 fork source | RTG-57, RTG-27, INF-65 |
 
 ## Cross-domain
 
