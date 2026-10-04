@@ -2316,6 +2316,17 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
 The six prospective producers are registered in [the source table](../../scripts/vidya/adapters/README.md#known-and-candidate-sources): REPL containment/Monty slice, paired REPL/OpenCode tasks, Memento selection, observed-outcome routing, native xLLM prefill, and intake payload conformance. Their exact original-write fields, controls and execution conditions are in the [approved plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#approval-and-exact-stage-4-filing-scope). Filing is not implemented capture; absence remains absence until each native hook and projection is verified. Current typed and SFT registrations retain their owners. No application probe, adapter deployment, warrant change or retrospective backfill is authorized by this filing.
 
+**Proposed follow-up — 2026-10-04 retrospective:** VB-RI-OPS-WIRE also owns write-side capture
+for `LRC-RI-CONCURRENCY`'s zero-inference event-loop conformance fixture, newly registered in
+the source table. Bind the actual routing seam, delayed fake-backend identity, every request outcome,
+fixture/read-set/producer digests and exact decided proposition; never interpret it as production
+contention, routing quality or a measured speedup. Reuse existing native test hooks and the shared
+projection rule. `EXL3-GRAPH-1` instead reuses the already-live
+`VB-EXL3-CPU-GFX90A` writer/projection; it creates no second source or ladder.
+The qualitative [retrospective](../../docs/reviews/research-intake-practical-applications-20261004.md)
+itself is not a measurement-rate producer. These are proposed extensions, not amendments to the
+already-completed decision-tools Stage-4 payload or authorization to run new probes.
+
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief

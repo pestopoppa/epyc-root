@@ -1,5 +1,7 @@
 # Agentic ROCm Kernel Authoring — MI210 Verify+Profile Harness
 
+**Scratch**: `/mnt/raid0/llm/tmp/isa-audit-runner-bind/` · worktrees: `/mnt/raid0/llm/worktrees/isa-audit-runner-*` (new runner-binding work; historical evidence paths remain unchanged)
+
 **Status**: active investigation — hardware present; P-GPU-1 ratified. **Corrected 2026-08-10 (operator): P-GPU-1 governs the CLASS OF CLAIM a result may carry, not permission to run — the human boundary is freeze / cutover / promotion.** Benching or profiling a *live server* is still owned by whoever owns that inference. Every "operator-approved GPU runs" phrase below predates this correction; read it as claim-class, not permission.
 **Next action (2026-08-22)**: preserve immutable r19, and keep the relayed C5-3..16/Hawkeye rows as
 the authoring-loop backlog while INF-48 repairs the C6 launch boundary. Do not revive a gfx90a
@@ -1199,6 +1201,8 @@ expectation. No external benchmark was re-measured here.
 - **S3-INF03-DRQ-2:** run matched random, neutral-mutation, non-LLM-mutation, static-opponent, score-only/no-archive, no-history, and archive-depth controls under equal evaluator, model-call, token, and wall budgets; retain every effective config and terminal summary in native receipts. Sources: intake-1600#record, intake-1611#record, intake-1616#record, intake-1617#record.
 
 ## Research Intake Update — 2026-09-26 (GEMM ladders and MFMA form on gfx90a; intake-1822..1826)
+
+- [ ] **INF03-REGAUDIT-RUNNER — PROPOSED: bind the MMQ timing runner to the exact passing static ISA audit.** Refine existing INF03-REGAUDIT-2 coverage for the H10a/H10b rerun consumer: before timing in the next/reused runner, require incumbent/candidate audit records whose binary SHA-256 values match the selected libraries, nonempty relevant MMQ coverage, and the existing passing ISA diff or explicitly named accepted failures. Reuse the current audit/comparator/source; preserve historical experiment evidence rather than rewriting its receipts. Fixture acceptance: matching passing audits proceed; missing records, changed hashes, empty MMQ coverage and unaccepted FAILs stop before any timing process starts; deliberate removed J-cap instances remain permitted by existing policy. No new grading rule, performance campaign, parked-experiment reopening or production change. The historical J-cap run has a passing audit; this is a future enforcement gap, not a claim that it bypassed the gate. [Review](../../docs/reviews/research-intake-practical-applications-20261004.md); record discussion: intake-1826#record.
 
 Dived: intake-1822 (HipKittens Helios GEMM ladder + code), intake-1823 (Gluon GEMM tutorial + repo, and a read-only
 extraction of our production libggml-hip.so), intake-1825 (arXiv 2609.15627, DS-V4-Flash on MI250/gfx90a),

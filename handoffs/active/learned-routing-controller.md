@@ -1226,6 +1226,15 @@ selection (C1-A4).**
 generative scorer. RouteBalance's deployment ladder (intake-1796#04) is a caution only if a generative scorer is ever
 put on the /v1 hot path; then it must be batched or amortised.
 
+**Correction — 2026-10-04:** that conclusion covers the MLP forward only, not embedding/retrieval
+or event-loop concurrency. The current async `/chat` handler enters routing synchronously; learned
+retrieval and classifier feature construction embed before their decision. This exposes an unchecked
+blocking path, not evidence of measured production saturation. The retained paragraph above is
+historical rationale, not a closure of the complete route. See the
+[main-reviewed retrospective](../../docs/reviews/research-intake-practical-applications-20261004.md).
+
+- [ ] **LRC-RI-CONCURRENCY — PROPOSED: qualify and repair blocking embedding/retrieval in the complete routing path.** Recover C1-A6 with a zero-inference conformance probe through the actual `/chat` routing seam and classifier feature construction, using a controllably delayed fake embedder and an independent event-loop sentinel. If routing blocks the sentinel, isolate the blocking operation behind an asynchronous boundary while preserving shared-router synchronization, request-local metadata, deterministic route results, cancellation and error propagation. Acceptance: the probe detects incumbent blocking; the repaired path permits sentinel progress while embedding is pending and accounts for every concurrent request. MLP-only timing cannot close it. Use producer-bound fixture/read-set digests and exact decided propositions before a decision-bearing probe. This filed proposal changes no routing policy, reopens no DAR-LAT/learning freeze and authorizes no production rollout. Record discussion: intake-1796#record.
+
 **Rollout precondition (prose).** The MLP fast path (orch `hybrid_router.py:405-490`) returns before the selection
 score. If `routing_classifier` is ever enabled (LRC-2), first apply the DAR-LAT-2 saturation guard as a post-check on
 the fast-path result (around :411). Otherwise saturated roles bypass the guard.
