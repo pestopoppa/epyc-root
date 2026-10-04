@@ -35,7 +35,7 @@ live before quoting it.
 - **Standing receipt (PAIRED, n=14, operator decision (B): v10 measured once on the current protocol):** P = v10 `ffc1bac82`,
   C = champion `1bceceb05`, current :8083 DFlash2 argv, `ab_probe` serving (probe sha256 `bd195fa6…`). tg **+0.61%**
   [95% CI −0.20, +1.41] (P 40.13 / C 40.37 tok/s); pp −0.21% (floor 9.91%); output identity all-equal C = P; SW-9: C carries
-  all probs, P has the gap. Run `/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z/`;
+  all probs, P has the gap. Raw run dir `/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z/` was DELETED ~11:37Z by a dry-run cleanup (per-launch JSONs and server logs lost; the loop-memory `source.path` now dangles); the full run log, RESULT line and copies of the four loop-memory records are preserved in `artifacts/champion-fold-kvu19-20261004/paired-receipt-20261004T094057Z/` (README);
   ingested via research `production.py ingest-serving` into `loop-memory/production-baseline.ffc1bac82eec.serving_probe-{pp,tg}.json`
   (the v10 serving baseline future champions run single-arm against) and `champion-vs-production.serving_probe.json`.
   Short-context single-stream is neutral, as expected: the fold's gains are at high occupancy (P3 v2 above, KVU-16b replay).
