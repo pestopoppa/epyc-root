@@ -93,8 +93,12 @@ def parse_scratch(text: str) -> Decl | None:
 # OPERATOR DIRECTIVE 2026-10-04 (hard rule): Claude/codex backup logs and session transcripts are NEVER
 # touched by this project (they serve a more senior root-filesystem project). Defense in depth on top of
 # ALLOWED_PARENTS: any path under these prefixes is refused outright, whatever a handoff declares.
-NEVER_TOUCH = ("/home/node/.codex", "/home/node/.claude", "/mnt/raid0/llm/claude-backups",
-               "/mnt/raid0/llm/cloud-llm-vault")
+# Extended 2026-10-04 to every third-party agent harness's state (operator: "what about opencode and any
+# other 3rd party harness really?").
+NEVER_TOUCH = ("/home/node/.codex", "/home/node/.claude", "/home/node/.local/share/claude",
+               "/home/node/.local/share/opencode", "/home/node/.config/opencode", "/home/node/.hermes",
+               "/mnt/raid0/llm/hermes-agent", "/mnt/raid0/llm/claude-backups", "/mnt/raid0/llm/cloud-llm-vault",
+               "/mnt/raid0/llm/tmp/ds41-c95/codex-home", "/mnt/raid0/llm/tmp/ds41-c95/hermes")
 
 
 def _never_touch(path: str) -> bool:
