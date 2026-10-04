@@ -1,0 +1,22 @@
+ggml-cuda: give the HIP-graph MMVQ q8_1 cache a private per-context arena
+
+The graph-cached MMVQ q8_1 buffers (Q8_0/Q4_K/Q6_K, ne11==1, stream 0) were
+held as ggml_cuda_pool_alloc's from the shared ctx.pool() from capture until
+the next capture on the context. With GGML_HIP_NO_VMM the legacy pool is
+best-fit, whole-buffer, 256-slot and never shrinks, so a batch-1 capture's
+~250 small holds consumed every free pool buffer, including the large cuBLAS
+F16 dequant buffers; each following >128-token prefill cudaMalloc'd a fresh
+set, and once >=256 buffers were held the overflow cudaFree + re-drain made
+VRAM grow linearly per decode/prefill alternation (KVU-16h, :8083 51.69 ->
+59.77 GiB). The legacy pool could also cudaFree a released buffer (slot
+overflow, OOM-retry clear_pool) that a captured graph still references.
+
+The cache now carves exact-size, 256-byte aligned slices out of a private
+device arena per context (4 MiB chunks), rewound at each new capture and
+freed only when the context is destroyed. It never touches ctx.pool(); its
+footprint is bounded by the largest single capture's q8_1 demand; every
+address a live graph instance was captured with stays allocated. Kernels,
+launch order and q8_1 contents are unchanged (allocation only).
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ

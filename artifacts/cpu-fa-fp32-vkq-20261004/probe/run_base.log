@@ -1,0 +1,62 @@
+[region-lock] acquiring regions ['q0'] as role='bench' (timeout_s=0.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: taskset -c 0-23 /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/run_probe.sh base
+load: special_eos_id is not in special_eog_ids - the tokenizer config may be incorrect
+................................................................................
+LOADED /mnt/raid0/llm/models/bge-large-en-v1.5-f16.gguf in 0.2s (n_layer=24 n_embd=1024)
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-base.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libllama.so.0.0.10308
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml.so.0.16.0
+MAPS libggml-hip.so: NOT LOADED (CPU-only run)
+init: embeddings required but some input tokens were not marked as outputs -> overriding
+SUMMARY tag=emb kv=f16 R=512 prompt=probe_olymp00.txt n_tokens=288 ubatches=1 decode_rc=0 fa_ops=24 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=6.74295 max_v=7.89062 max_v_chansum=434.157 acc_peak=161.029 acc_final=161.029 vis_max=288 tail=0 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=1.0s VERDICT=PASS
+init: embeddings required but some input tokens were not marked as outputs -> overriding
+SUMMARY tag=emb kv=f16 R=64 prompt=probe_short.txt n_tokens=37 ubatches=1 decode_rc=0 fa_ops=24 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=5.09762 max_v=6.10938 max_v_chansum=60.7641 acc_peak=23.7595 acc_final=23.7595 vis_max=37 tail=0 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=1.0s VERDICT=PASS
+FINAL tag=emb runs=2 runs_nonfinite=0 timed_out=0 wall=1.0s VERDICT=PASS
+......................................................................
+LOADED /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf in 11.8s (n_layer=48 n_embd=2560)
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libllama.so.0.0.10308
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-base.so.0.16.0
+MAPS libggml-hip.so: NOT LOADED (CPU-only run)
+SUMMARY tag=arch_code8k kv=f16 R=512 prompt=code8k.txt n_tokens=10618 ubatches=25 decode_rc=0 fa_ops=300 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=35.625 max_v_chansum=25116.9 acc_peak=237.626 acc_final=160.045 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=209.6s VERDICT=PASS
+FINAL tag=arch_code8k runs=1 runs_nonfinite=0 timed_out=0 wall=209.6s VERDICT=PASS
+......................................................................
+LOADED /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf in 2.5s (n_layer=48 n_embd=2560)
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libllama.so.0.0.10308
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-base.so.0.16.0
+MAPS libggml-hip.so: NOT LOADED (CPU-only run)
+SUMMARY tag=arch_doc8k kv=f16 R=512 prompt=doc8k.txt n_tokens=9243 ubatches=23 decode_rc=0 fa_ops=276 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=33.7812 max_v_chansum=21462 acc_peak=197.855 acc_final=168.393 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=158.7s VERDICT=PASS
+FINAL tag=arch_doc8k runs=1 runs_nonfinite=0 timed_out=0 wall=158.7s VERDICT=PASS
+......................................................................
+LOADED /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf in 2.4s (n_layer=48 n_embd=2560)
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libllama.so.0.0.10308
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-base.so.0.16.0
+MAPS libggml-hip.so: NOT LOADED (CPU-only run)
+SUMMARY tag=arch_probe_long2k_a kv=f16 R=512 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=9 decode_rc=0 fa_ops=108 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=32.3125 max_v_chansum=5244.23 acc_peak=118.377 acc_final=87.4224 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=39.6s VERDICT=PASS
+FINAL tag=arch_probe_long2k_a runs=1 runs_nonfinite=0 timed_out=0 wall=39.6s VERDICT=PASS
+......................................................................
+LOADED /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf in 2.3s (n_layer=48 n_embd=2560)
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-base.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libllama.so.0.0.10308
+MAPS /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml.so.0.16.0
+MAPS libggml-hip.so: NOT LOADED (CPU-only run)
+SUMMARY tag=arch_mixed16k kv=f16 R=512 prompt=mixed16k.txt n_tokens=18940 ubatches=41 decode_rc=0 fa_ops=492 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=34.9688 max_v_chansum=43150.1 acc_peak=195.469 acc_final=110.378 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=352.4s VERDICT=PASS
+FINAL tag=arch_mixed16k runs=1 runs_nonfinite=0 timed_out=0 wall=352.4s VERDICT=PASS
+SUMMARY tag=arch_code8k kv=f16 R=512 prompt=code8k.txt n_tokens=10618 ubatches=25 decode_rc=0 fa_ops=300 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=35.625 max_v_chansum=25116.9 acc_peak=237.626 acc_final=160.045 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=209.6s VERDICT=PASS
+FINAL tag=arch_code8k runs=1 runs_nonfinite=0 timed_out=0 wall=209.6s VERDICT=PASS
+SUMMARY tag=arch_doc8k kv=f16 R=512 prompt=doc8k.txt n_tokens=9243 ubatches=23 decode_rc=0 fa_ops=276 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=33.7812 max_v_chansum=21462 acc_peak=197.855 acc_final=168.393 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=158.7s VERDICT=PASS
+FINAL tag=arch_doc8k runs=1 runs_nonfinite=0 timed_out=0 wall=158.7s VERDICT=PASS
+SUMMARY tag=arch_mixed16k kv=f16 R=512 prompt=mixed16k.txt n_tokens=18940 ubatches=41 decode_rc=0 fa_ops=492 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=34.9688 max_v_chansum=43150.1 acc_peak=195.469 acc_final=110.378 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=352.4s VERDICT=PASS
+FINAL tag=arch_mixed16k runs=1 runs_nonfinite=0 timed_out=0 wall=352.4s VERDICT=PASS
+SUMMARY tag=arch_probe_long2k_a kv=f16 R=512 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=9 decode_rc=0 fa_ops=108 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=30.6056 max_v=32.3125 max_v_chansum=5244.23 acc_peak=118.377 acc_final=87.4224 vis_max=2051 tail=20 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=39.6s VERDICT=PASS
+FINAL tag=arch_probe_long2k_a runs=1 runs_nonfinite=0 timed_out=0 wall=39.6s VERDICT=PASS
+SUMMARY tag=emb kv=f16 R=512 prompt=probe_olymp00.txt n_tokens=288 ubatches=1 decode_rc=0 fa_ops=24 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=6.74295 max_v=7.89062 max_v_chansum=434.157 acc_peak=161.029 acc_final=161.029 vis_max=288 tail=0 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=1.0s VERDICT=PASS
+SUMMARY tag=emb kv=f16 R=64 prompt=probe_short.txt n_tokens=37 ubatches=1 decode_rc=0 fa_ops=24 fa_nonfinite_ops=0 feat_nonfinite=0/0 logits_nonfinite=0 max_fa_out=5.09762 max_v=6.10938 max_v_chansum=60.7641 acc_peak=23.7595 acc_final=23.7595 vis_max=37 tail=0 tail_R=5 first_bad_node=[none] first_bad_feat=[none] t=1.0s VERDICT=PASS
+FINAL tag=emb runs=2 runs_nonfinite=0 timed_out=0 wall=1.0s VERDICT=PASS

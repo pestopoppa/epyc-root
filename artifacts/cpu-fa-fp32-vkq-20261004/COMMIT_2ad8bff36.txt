@@ -1,0 +1,25 @@
+ggml-cpu: FA accumulates VKQ in FP32 for F16 V (workspace-ec)
+
+ggml_compute_forward_flash_attn_ext_f16_one_chunk accumulated the
+un-normalized VKQ = sum_i exp(s_i - M) v_i in FP16 (VKQ16 +
+ggml_vec_mad_f16) whenever V is F16. For diffuse attention that is ~ the
+per-channel sum of V over the visible cells, so 2048 cells x a same-sign
+channel of 32 exceeds FP16_MAX (65504) -> inf -> NaN; below overflow the
+FP16 rounding (ulp 32 at 32k) degrades peaked-attention results too.
+
+The path is taken by every F16-V FA call that is not tiled: verify/spec
+batches and prompt tails with neq1 < GGML_FA_TILE_Q (64) over the whole
+visible KV, and the neq1==1 split-KV decode over nek1/nth cells per thread.
+
+Now F16 V is accumulated into the FP32 VKQ32 with a new fused
+ggml_vec_mad_f32_f16 (vec.h: cvtph + FMA straight into the FP32
+accumulator; AVX512F / AVX2+F16C+FMA paths, portable chunked fallback),
+the same per-element arithmetic as the tiled path and every other V type.
+The fusion matters: a two-pass convert-into-V32 + ggml_vec_mad_f32 costs
+~3x FA op time on Zen5 (store-bound 1 KiB staging per cell); fused it is
+at parity with the legacy FP16 accumulator. GGML_FA_VKQ_F16=1
+restores the legacy FP16 accumulator for bit-exact A/B / replay only.
+
+Co-Authored-By: Claude Opus 5.5 (1M context) <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01FKXdQsgLuwnFVWQ3npGfrJ
+

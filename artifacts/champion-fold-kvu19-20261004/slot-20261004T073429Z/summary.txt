@@ -1,0 +1,58 @@
+VERDICT PASS  fold candidate gpu-20261004-1bceceb05  (/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/slot-20261004T073429Z)
+
+## exactness (harness v2, 141 cases listed)
+E1 skip on == skip off (seq rows on)  [criterion]: PASS crit=ident 119 cases, 119 bit-identical, 0 differ, missing 0, worst nmse 0 (case None)
+E2 skip on == skip off (seq rows off) [criterion]: PASS crit=ident 119 cases, 119 bit-identical, 0 differ, missing 0, worst nmse 0 (case None)
+E3 SEQ_ROWS=0 == KVU-19a build         [criterion]: PASS crit=ident 119 cases, 119 bit-identical, 0 differ, missing 0, worst nmse 0 (case None)
+E4 seq rows on vs off: only vec-routed cases differ: PASS crit=vec_only 119 cases, 99 bit-identical, 20 differ, missing 0, worst nmse 9.13e-06 (case 138)
+E5 on vs CPU reference (19b out_cpu)  nmse<5e-4: PASS crit=ref 119 cases, 0 bit-identical, 119 differ, missing 0, worst nmse 8.97e-05 (case 110)
+E6 on vs candidate CPU build          nmse<5e-4: PASS crit=ref 119 cases, 0 bit-identical, 119 differ, missing 0, worst nmse 8.97e-05 (case 110)
+E7 seqoff vs candidate CPU build      nmse<5e-4: PASS crit=ref 119 cases, 0 bit-identical, 119 differ, missing 0, worst nmse 8.97e-05 (case 110)
+## exactness (harness v1, KVU-19a gate 3: ALL hash skip on == off)
+E8 PASS v1 ALL dca96cef2ba902f2 (on == skipoff == minkv0)
+
+## 27B DFlash2 coherence smoke (greedy, 160 tokens)
+S2 PASS candidate skip on (MIN_KV=0) byte-identical to candidate skip off (cbc04622417e342fb4b7382058a0bb13e28cc7693be8a143219ff386837d53ce)
+S1 PASS candidate(skip off) byte-identical to champion (cbc04622417e342fb4b7382058a0bb13e28cc7693be8a143219ff386837d53ce)
+  champ: 0.15.850.658 I decoded   74 tokens in    2.131 seconds, speed:   34.733 t/s 0.15.850.666 I n_accept  = 53 0.15.850.666 I accept    = 36.054%  peakVRAM=36279619584 
+  off: 0.10.757.886 I decoded   74 tokens in    2.359 seconds, speed:   31.369 t/s 0.10.757.889 I n_accept  = 53 0.10.757.889 I accept    = 36.054%  peakVRAM=36284002304 
+  on: 0.10.054.232 I decoded   74 tokens in    2.113 seconds, speed:   35.022 t/s 0.10.054.233 I n_accept  = 53 0.10.054.233 I accept    = 36.054%  peakVRAM=36284583936 
+  text (champ):
+    | 
+    | 
+    | <|im_start|>user
+    | In three short sentences, explain why the sky is blue and why sunsets are red.<|im_end|>
+    | <|im_start|>assistant
+    | <think>
+    | 
+    | </think>
+    | 
+    | Sunlight scatters off gas molecules in the atmosphere, a process known as Rayleigh scattering. This scattering affects shorter blue wavelengths much more strongly than longer red wavelengths, causing the sky to appear blue during the day. At sunset, sunlight travels through a thicker layer of atmosphere, scattering away the blue light and leaving the reds and oranges to dominate the view.
+    | 
+    | 
+    | 
+
+## test-backend-ops FLASH_ATTN_EXT ROCm0 (done)
+T PASS tbo_flash_attn_ext:   2949/2949 tests passed
+T PASS tbo_unified_minkv0:   81/81 tests passed
+T PASS tbo_hint_seqoff:   81/81 tests passed
+T PASS tbo_unified_skipoff:   81/81 tests passed
+
+## perf2 (median us/op over 2 rounds; informational, expectations in FOLD-CANDIDATE.md)
+shape | champ | on | seqoff
+multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 | 1732.7 | 1084.1 | 1824.9
+multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 | 9168.2 | 5513.6 | 9562.0
+multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 | 3244.1 | 2102.5 | 2149.3
+multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 | 16192.0 | 11004.8 | 11054.0
+multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 | 3405.2 | 2683.3 | 2821.6
+multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 | 17203.5 | 14490.8 | 14337.5
+multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 | 1015.2 | 1024.3 | 1078.2
+multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 | 5088.4 | 5232.9 | 5786.1
+multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 | 2235.8 | 2201.5 | 2633.4
+multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 | 11873.9 | 12279.0 | 12117.5
+single nb=1 own=16384 foreign=0 n_kv=16384 | 270.6 | 276.1 | 280.6
+single nb=1 own=16384 foreign=114688 n_kv=131072 | 2335.3 | 283.5 | 285.8
+single nb=1 own=16384 foreign=49152 n_kv=65536 | 1056.3 | 279.6 | 283.2
+single nb=8 own=16384 foreign=0 n_kv=16384 | 485.5 | 498.2 | 547.4
+single nb=8 own=16384 foreign=114688 n_kv=131072 | 3559.1 | 588.6 | 541.7
+single nb=8 own=16384 foreign=49152 n_kv=65536 | 1801.0 | 511.5 | 514.0

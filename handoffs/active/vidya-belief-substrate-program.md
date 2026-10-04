@@ -2168,6 +2168,40 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Source-table row PREPARED in
     `/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/INDEX_ROWS.md`. Done when the row is applied and the strict adapter that
     VB-FA-MASKSKIP builds also projects these records.
+  - [ ] **VB-FA-MASKSKIP-c — write side for the champion-fold GPU slot (`gpu_slot_fold.sh`) and the standing receipt**
+    (filed 2026-10-04, workspace-ec, from KVU-19b-fold-c1). Producers: `slot-20261004T073429Z/summary.txt` and its
+    per-check files (exactness E1-E8 per case × arm, 27B DFlash2 smoke text sha + accept rate, `test-backend-ops`
+    counts, perf2 µs per shape × arm champ / on / seqoff), durable copy
+    `artifacts/champion-fold-kvu19-20261004/`; and the single-arm standing receipt
+    (`loop-memory/champion-vs-production.<sha12>.json`, schema `epyc.autokernel.champion_vs_production.v1`, written by
+    research `production.refresh()` through `standing_receipt.py`). Bind champion `1bceceb05` (build 10311, store
+    `gpu-20261004-1bceceb05`), base `90c12df42`, the knob tuple, and for the receipt the cited baseline record (FOLD-2
+    G5 `ef81196d5`, sha256 `71344d34…`). Cautions: (1) G0 is vacuous for HIP kernels, so the slot, not G0, carries the
+    GPU claim; (2) the receipt is UNPAIRED against a 26-day-old record across a BIOS change, `calibrated: false`, and
+    its `confidence_interval` field is not a valid paired interval; (3) tg128 never exercises the mask skip. Grade
+    through `claim_tuple.grade()` (`Judged/Located` for the slot; the receipt's unpaired ratio no higher); no new
+    ladder. Source-table row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is
+    applied and the VB-FA-MASKSKIP adapter projects the slot records, and the receipt projects with its caveats.
+- [ ] **VB-KVU16H — write side for the KVU-16h VRAM attribution (allocator shim + phase replay)** (filed 2026-10-04,
+  workspace-ec, CLAUDE.md *Belief Kernel*). Producer: `kvu16h_run.py` + `analyze.py` with the LD_PRELOAD allocator shim
+  → `results/<ts>/summary.{md,json}` (per-phase KFD delta, shim net bytes by allocator class × context, residual,
+  verdict), durable copy `artifacts/kvu16h-vram-20261004/`; the follow-up runner `kvu16h_followup_c.py` (row 4c) emits
+  the fix-vs-control growth per `n_max: 0` event. Bind build, argv sha, `-b/-ub`, shim on/off and the phase script.
+  Cautions: (1) KFD growth and shim net bytes are different quantities (the residual is the runtime's), never fold
+  one into the other; (2) the replay's PLATEAU is a property of its traffic mix, not of production — the production
+  mechanism needs `n_max: 0` alternation; (3) the same transient-peak vs ratchet split as the MI210 VRAM
+  decomposition row. Grade via `claim_tuple.grade()`; no new ladder. Row PREPARED in
+  `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and an adapter projects the
+  20261004T063830Z summary and the row-4c result.
+- [ ] **VB-CPU-FA-VKQ — write side for the CPU FlashAttention FP16-VKQ harness and probe** (filed 2026-10-04,
+  workspace-ec). Producers: the CPU FA harness (`harness-out/{nan,det,perf}_*.txt`: per-case finite/mismatch verdict
+  and nmse vs a CPU-exact reference, determinism hashes, µs per FA op) and the model probe `fa_vkq_probe`
+  (`acc_peak`, `max_v_chansum`, non-finite node per prompt), durable copy `artifacts/cpu-fa-fp32-vkq-20261004/`. Bind
+  build (`cpu-20260925-90c12df42` base, the `2ad8bff36` build), arm (base / fix / `GGML_FA_VKQ_F16=1` legacy) and
+  thread placement. Cautions: (1) the harness's large-V inputs are synthetic stress, not a serving distribution;
+  (2) the probe's `acc_peak` ≤ 238 is for the named prompts on the architect only. Grade via `claim_tuple.grade()`;
+  no new ladder. Row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and
+  an adapter projects the harness summaries.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
