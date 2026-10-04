@@ -1,5 +1,7 @@
 # Vidya Belief-Substrate Program
 
+**Scratch**: `/mnt/raid0/llm/tmp/vidya-belief-substrate-program/` · worktrees: `/mnt/raid0/llm/worktrees/vidya-belief-substrate-program-*`
+
 **Status**: active
 **Created**: 2026-08-09 (via research intake, operator-approved Stage-3 plan `linear-kindling-possum`)
 **Categories**: knowledge_management, agent_architecture
@@ -2273,3 +2275,9 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
   `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
   adapter projects it.
+
+## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4)
+
+- [ ] **VB-RI-OPS-WIRE — Capture and project the selected operational probe findings before their first run.** Register the six prospective source rows above at filing; integrate producer-authored claim elements and exact verifier propositions at each named task's native finalize boundary, reusing existing receipt/test/evaluation/SFT hooks where sufficient. Add only the necessary native-field projections and ingest dispatch; preserve unique run/case/arm/metric identity and bound read-set/raw-output digests. Leave absent protocol, counts, identity, labels and attestations absent; no historical tuple reconstruction. Adapters project ClaimTuple and claim_tuple.grade() alone decides warrant under the existing source-class rules; add no ladder or trust-boundary amendment. Test actual post-hook discovery/projection, missing-field refusal, changed-byte refusal and distinct-case identity before accepting the first result. Production-code fixes may proceed independently of measurement projection, but a new decision-bearing probe may not run before its write-side capture is present.
+
+The six prospective producers are registered in [the source table](../../scripts/vidya/adapters/README.md#known-and-candidate-sources): REPL containment/Monty slice, paired REPL/OpenCode tasks, Memento selection, observed-outcome routing, native xLLM prefill, and intake payload conformance. Their exact original-write fields, controls and execution conditions are in the [approved plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#approval-and-exact-stage-4-filing-scope). Filing is not implemented capture; absence remains absence until each native hook and projection is verified. Current typed and SFT registrations retain their owners. No application probe, adapter deployment, warrant change or retrospective backfill is authorized by this filing.

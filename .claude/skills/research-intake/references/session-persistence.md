@@ -32,6 +32,9 @@ multi-entry intake runs.
 | `entries_processed` | list[string] | Intake IDs already appended to index |
 | `entries_remaining` | list[string] | URLs not yet processed |
 | `state` | object | Arbitrary phase-specific state (cross-ref results, expansion queue, etc.) |
+| `stage` | int or string | Four-stage state; finishing ingestion does not discharge review and filing |
+| `steering_ledger` / `actionable_ledger` | list[object] | Retained verbatim steering and distinct recommendation IDs; never clear on resume |
+| `stage3_filing` | object, optional | Approved plan digest, affected-entry updates and context/opportunity reviews; persisted at Stage 4 |
 
 ## Resume Protocol
 
@@ -43,7 +46,8 @@ On each skill invocation:
    - Offer to resume from where it left off (skip already-processed URLs)
 3. If it exists but `last_checkpoint` is older than 7 days:
    - Warn: "Session {session_id} is {age}d old — intake index or handoffs may have changed"
-   - Suggest starting fresh (delete session file and reprocess all URLs)
+   - Reconcile processed IDs, ledgers and current files before resuming or starting a separate session.
+     Age alone permits no deletion of unreconciled steering or actionable state.
 4. If it does not exist, start a fresh session
 
 ## Checkpoint Protocol
@@ -55,8 +59,51 @@ During Phase 5 (Report & Persist), after each entry is appended to `intake_index
 3. Update `last_checkpoint` to current time
 4. Write `.research-session.json` atomically (write to `.research-session.json.tmp`, then rename)
 
-On successful completion of all entries:
-- Delete `.research-session.json` (session complete, no resume needed)
+On successful completion of Stage-1 ingestion:
+- Preserve `.research-session.json` and its steering/actionable ledgers. Empty entries_remaining
+  means URL ingestion is finished, not that the four-stage campaign is complete.
+- Resume existing ledgers; initialize empty ledgers only for a genuinely new session.
+
+## Proposed filing and reconciled cleanup
+
+The optional structural check is:
+
+```bash
+bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH
+```
+
+Both paths are required together. The default invocation preserves legacy index validation. This
+mode reads; it neither applies patches nor approves work. The main reviews the semantics separately.
+
+During Stage 3, carry proposed entry_updates, opportunity_reviews and optional proposed_stubs in one JSON fence under
+`## Stage-3 filing payload` in the plan. The validator may combine it with the retained checkpoint
+in memory; Stage 3 still writes only the plan. Do not embed the plan's own digest inside its fence.
+At the approved Stage-4 boundary persist session.stage3_filing with:
+
+- plan_sha256: SHA-256 of the exact approved plan bytes, not a self-referential checksum.
+- entry_updates: a list of flat records containing id, integration_disposition, handoffs_updated,
+  handoffs_created and disposition_evidence. Overlay these on copies of the actual entries through
+  existing payload rules; preserve unrelated/unknown fields and existing claim corrections.
+- opportunity_reviews: an object keyed by authoritative packet/task reference (for example P1).
+  Each record has nonempty project_objective, implementation_ref, gap, operational_change,
+  benefit_direction, owner, execution_conditions and closure_basis. Existing fulfilled behavior
+  and monitor/knowledge-only opportunity judgments belong in those grounded reviews.
+- proposed_stubs (optional): complete path/content/index_file/index_row packages; each new active
+  owner needs one existing domain index and a valid five-cell thin row linking to its packaged file.
+
+Reconcile actionable_ledger.ledger_id and its terminal_mapping to the plan's authoritative complete
+recommendation table, preserving each original source/action. Operational follow-through and enabling
+wiring remain distinct recommendations. Resolve plan/task/trigger references and existing owners;
+a new owner requires its approved complete stub and one owning domain-index-row package. Ambiguous
+or unsupported payload/inventory formats are explicit errors, never a successful check of an
+unchanged index. The check establishes structure, references and evidence-field presence only.
+It cannot establish truth, ROI, suitability, fulfilled work or permission; those require main review.
+
+Preserve the checkpoint until approved Stage-4 filing, ledger reconciliation, required validation
+and main semantic review are complete, with their durable records retained. Cleanup eligibility is
+explicit stage4.reconciled=true plus completed Stage 4, not entries_remaining alone. A changed plan digest
+requires renewed scope review; changing the digest is not authorization. Then follow the existing
+verified-push lane-cleanup procedure. Keeping a completed checkpoint as the durable record is valid.
 
 ## Parallel Execution Compatibility
 
@@ -79,8 +126,9 @@ KB governance handoff).
 
 ## Steering ledger (added 2026-07-25)
 
-`.research-session.json` carries a `steering_ledger` array from Stage 1 onward. Every operator
-comment, critique or suggestion made during stages 1-3 is appended **verbatim**:
+`.research-session.json` preserves a `steering_ledger` array from Stage 1 onward. Record every operator
+comment, critique or suggestion made during stages 1-3 **verbatim**. During Stage 3, carry new rows
+and proposed reconciliation only in the plan; checkpoint them at approved Stage 4:
 
 ```json
 "steering_ledger": [

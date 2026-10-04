@@ -1,5 +1,7 @@
 # Typed Decision Plane — one-pass typed decisions over the local stack
 
+**Scratch**: `/mnt/raid0/llm/tmp/typed-decision-plane/` · worktrees: `/mnt/raid0/llm/worktrees/typed-decision-plane-*`
+
 **Status**: in progress — **Owner: the research-intake lane** (operator-assigned 2026-09-17 to `intake-jev-sageattn`; that session is closed, and the lane owns this handoff from 2026-09-23). *Ownership note (operator-directed tidy 2026-09-26):* ownership is unchanged, but TD-21 and every TD-21.N row, plus the TD-1d.1/TD-1d.2/TD-1d.5 closures, were executed 2026-09-24 by a separate operator-dispatched main session with no roster lane (`workspace-8d`; `progress/2026-09/2026-09-24-td21.md`, `progress/2026-09/2026-09-24-main-ak-seat.md:123`), not by the research-intake lane. Implementation landed in `epyc-orchestrator` main from branch `intake/jev-typed-decisions-20260917` (merged; its worktree was retired 2026-09-23 — cut a fresh lane worktree from origin/main for new TD work).
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Categories**: routing_intelligence, cost_aware_routing, inference_serving, tool_implementation, agent_architecture
@@ -241,6 +243,11 @@ episodic memory writing."
   `artifacts_dir/typed_decisions/decision_receipts.jsonl`, `context.py:684-688`), so the receipts form a labelled corpus.
   - Run the shadow off the tool call's critical path (non-blocking, bounded, fail-open, as `shadow.py` does), or its
     latency lands on the user.
+    Execute the original arguments unchanged. Drop/refuse shadow work on saturation or failure without altering
+    the tool result. Capture action identity and explicitly bind bounded request/deadline/cancellation/workload/
+    placement context through the existing context seam; executor submission alone does not carry ContextVars.
+    Attribute shadow inference counters and cost separately from foreground accounting. Append proposed arguments,
+    executed arguments and outcome through the existing decision receipt.
   - Pin the shadow's decode mode explicitly. The integration defaults to native (`context.py:806-812` passes no mode),
     and native needs token probabilities that v10's MTP accept path does not return (SW-9, fixed only in v11). Use JSON
     mode in production until v11; native mode is measured on the champion sidecar (operator ruling 6, 2026-09-29).
@@ -249,10 +256,13 @@ episodic memory writing."
   - [x] **Skip the typed-args call site when the flag is off** (the bullet below). ✅ 2026-09-28 — orchestrator
     `e60ee78a`: `_dispatch_tool` calls `_typed_tool_arguments` only when a prepared action exists; the flag-off test
     proves neither it nor `maybe_typed_arguments` runs and no receipt is written, and fails against the old code.
-  - With the flag off, `context.py:593-597` still calls `_typed_tool_arguments` on every dispatch (it returns at
-    `tool_args_integration.py:177`); skip it at the call site.
-  - Acceptance: tests prove the shadow never alters executed arguments; the stack launcher enables it for one role; a
-    live shadow window yields receipts with typed pick + executed arguments + outcome. No replacement mode before v11.
+  - The flag-off call-site fix above is completed; preserve its no-selector-call/no-receipt behavior.
+  - Acceptance: mocked blocking/failing/saturated selectors never alter executed kwargs or make dispatch await them.
+    Delayed results bind to the original action/outcome. Concurrent foreground/shadow and post-cancellation fixtures
+    prove no metadata crossover, misjoined outcomes, expired execution or contamination of foreground cumulative cost
+    counters. Existing permissions, freshness/fallback and retry tests remain green. After deterministic acceptance,
+    the stack launcher enables shadow for one role in its coordinated window and yields receipts with typed pick,
+    executed arguments and outcome. No replacement mode before v11.
   - [x] **TD-29.M0 — Split the TD-4 cost into decode, extra calls and prefill.** ✅ 2026-10-01 Make the pilot sum tokens across retries,
     keep `prompt_n`/`cache_n` and an explicit call count per case, then re-run the 18 cases. Code is zero-inference; the
     re-run is **GATE: champion-sidecar (CPU window)** (operator ruling 6, 2026-09-29), all arms on the sidecar as part of the TD-29 comparison (TD-29.M1 declined). Acceptance: per-arm decode tokens, prefill tokens, call count and
@@ -269,10 +279,13 @@ episodic memory writing."
       `/completion` lane (the limit is documented in `call_recorder.py:24-27`). Filed as TD-29.M0a.
   - [ ] **TD-29.M0a — Report prefill tokens on the `/completion` lane.** (filed 2026-10-01) Populate `prompt_tokens` and
     `cached_prompt_tokens` from llama-server's `timings.prompt_n`/`timings.cache_n` on the raw `/completion` path
-    (batch and stream transports), and `prompt_ms` on the stream transport. Then `call_recorder` yields
-    `prompt_n`/`cache_n` for every arm. Code and unit tests are zero-inference. Acceptance: a summarize run over a
-    fresh sidecar receipt shows non-null `prompt_n_total`/`cache_n_total` on all three arms. TD-29.M4 needs this
-    first, because prefix reuse cannot be confirmed without `cache_n`.
+    (batch and stream transports), and `prompt_ms` on the stream transport. Carry server-reported `prompt_n`,
+    `cache_n` and streaming `prompt_ms` through raw completion results and primitives metadata into the existing
+    recorder. Preserve absent values as unknown; do not estimate or substitute `tokens_cached`. Code and unit tests
+    are zero-inference. Batch/stream fixtures with known timings must produce exact counts; missing timings remain
+    unknown. A fresh sidecar receipt with server-reported timings must show non-null `prompt_n_total`/`cache_n_total`
+    on all three arms. TD-29.M4 needs this first. TD-31 already owns general prefill optimisation and depends on this
+    plumbing; coordinate the shared seam with workspace-ec without duplicating its prompt/slot work.
   - [x] ~~**TD-29.M1 — Native scoring probe on v10 with speculation disabled per request.**~~ **DECLINED (operator,
     2026-09-29):** the operator prefers testing native mode on the champion directly (ruling 6) over a per-request spec-off
     probe on v10. ✅ 2026-09-29 — resolved to a decline; the text below is kept for the record. Native one-token scoring needs
@@ -284,10 +297,19 @@ episodic memory writing."
     (`src/backends/llama_server.py`). That is not evidence the logprobs come back; the probe is. ~~GATE: mi210-window~~ (declined).
     Acceptance: logprobs present, the native path succeeds on the TD-4 case set, latency measured, with the decode cost
     of losing MTP on that request recorded.
-  - [ ] **TD-29.M2 — Validate-first fallback.** Execute the free-form arguments and invoke the typed path only when schema
-    validation fails, so correct calls pay nothing extra. First measure the real-traffic free-form failure rate from the
-    TD-29 shadow receipts: the TD-4 cases were adversarial, so 12/18 is not a traffic rate. Acceptance: a failure rate
-    with a CI from real receipts, and a design that charges the typed latency only to the failing share.
+  - [ ] **TD-29.M2 — Validate-first fallback.** Validate original kwargs against a lossless supported schema projection
+    and registry-compatible argument validation before asking for repair; explicitly refuse unsupported constraints
+    rather than dropping them. The current converter drops constraints and `additionalProperties: false`, so its
+    output alone is not a full validity check. Valid calls incur zero repair calls; unknown-key, dropped-constraint
+    and genuinely valid fixtures must exercise the actual dispatch contract. For an invalid eligible closed-set
+    call, compute at most one repair proposal and an explicit accept/abstain result, initially in shadow. Acceptance
+    requires complete selected-action validity, host revalidation and an outcome-labelled policy for that exact
+    role/catalogue/readout. Otherwise retain the ordinary structured-failure/REPL repair path. Reuse TD-18 outputs;
+    never multiply marginal head confidences into complete-action correctness. Keep JSON verbalized and native token
+    probability policies separate. Lack of adequate labels prevents enforcement, not shadow implementation.
+    First measure the real-traffic free-form failure rate by role from TD-29 receipts with a CI; TD-4's adversarial
+    12/18 is not a traffic rate. Charge typed latency only to the failing share and include the incumbent's subsequent
+    REPL repair turns in the comparison.
     - Decision note 2026-10-01 (TD-29.K2), re-scoping M2 and M3: free-form is 18/18 on frontdoor (Qwen3.6-35B-A3B)
       against 6/18 on the gemma worker in TD-4. So on frontdoor the typed path buys robustness only, not accuracy on
       this case set. Validate-first is therefore more attractive on frontdoor, not less. If free-form already passes,
@@ -385,7 +407,25 @@ episodic memory writing."
 - [ ] ❄ FROZEN 2026-09-27 — resume only once v11 is promoted (native scoring) AND autopilot has trained on the swapped stack AND UFH-13 re-opened — **TD-28 — typed routing as ADVICE, not enforcement (operator direction 2026-09-26).** TD-10 showed typed routing ~1pp worse as an enforcer (delta -0.0104). A/B a typed routing hint in the frontdoor prompt vs no hint: measure how often frontdoor overrides the hint and whether overrides help (accuracy on overridden vs followed items). Wire the A/B's write side into the belief kernel (`vidya-belief-substrate-program.md` VB-TD-ADVICE).
   ❄ FROZEN 2026-09-27 (operator, narrowed plan): typed advisors add a routing input before the base comparison exists, and 0/200 native scoring (TD-7) makes the advice JSON-fallback only; unfreeze trigger (operator ruling Q2, 2026-09-29; it replaces "the UFH-13 thesis experiment has a recorded verdict", which cannot fire while UFH-13 is PARKED): the v11 promotion ships native scoring (multi-token action labels scored natively) AND autopilot has trained on the swapped stack AND UFH-13 re-opened. The box stays open: frozen is not done.
 
-- [ ] **TD-12 — One-call tool + argument arm (operation × conditional target).** Build a typed-decision arm that asks, in one call, a choice over the role's tools (`ToolRegistry.list_tools(role)`) plus one argument head set per candidate tool whose instructions name the tool they assume, and consume only the chosen tool's heads. A failed head for an UNUSED tool must not reject the pass (today any failure rejects it: `tool_args_integration.py:197-198`). Compare against the current tool-then-arguments path (TD-4) on exact-match tool+argument correctness and wall time over the TD-4 case set extended with a tool-choice step. Citation: intake-1493 (dive-verified; `jev_ultrafast/model.py:94-133` @ 1231850a). Code and unit tests are zero-inference; the live comparison is **GATE: champion-sidecar (CPU window)** (operator ruling 6, 2026-09-29), both arms on the sidecar for a like-for-like comparison (a JSON-mode-only run keeps `mi210-window`). The tool-use eval contract reads this harness as its closed-set arm (TU-TD-1 folded here 2026-09-29).
+- [ ] **TD-12 — One-call tool + argument arm (operation × conditional target).** Build a typed-decision arm that asks,
+  in one call, a choice over the role's tools (`ToolRegistry.list_tools(role)`) plus one argument head set per candidate
+  tool whose instructions name the tool they assume. Namespace conditional argument heads by tool and consume only
+  the resolved operation's complete, schema-valid branch. Keep global JSON/envelope validation strict. Only explicitly
+  permitted, structurally valid failure records in unused branches may be ignored; malformed unused-head objects,
+  malformed envelopes and selected-branch failures still reject. Adapt the conditional schema rather than bypassing
+  the general runner's validation. Do not repair/rerun unused branches. An unresolved selected branch falls back to
+  the incumbent. The current helper accepts one already-selected tool schema and rejects any failed question; this
+  is a new whole-catalogue joint capability, not a demonstrated current unused-tool failure incident.
+  Connect proposals to the TD-29 shadow seam; operation differences never change the original executed tool.
+  Preserve host-owned prepared-action authority, eligible menu, freshness and read-set revalidation. TD-13 must test
+  joint/sibling dependence; joint probabilities are not presumed independent.
+  Compare exact-match tool+argument correctness and wall time against current same-server REPL generation of both
+  operation and arguments on genuinely multi-tool-choice fixtures. Extend TD-4's prescribed-tool cases rather than
+  treating them as an operation-selection baseline; selected-tool typed arguments may be an attribution arm.
+  Citation: intake-1493 (dive-verified; `jev_ultrafast/model.py:94-133` @ 1231850a).
+  Code and unit tests are zero-inference; the live comparison is **GATE: champion-sidecar (CPU window)** (operator
+  ruling 6, 2026-09-29), both arms on the same sidecar. A JSON-mode-only run keeps `mi210-window`.
+  The tool-use eval contract reads this harness as its closed-set arm (TU-TD-1 folded here 2026-09-29).
 - [ ] **TD-13 — Contamination between the operation head and its conditional heads.** Before TD-12's heads are trusted as independent: for each case, answer the chosen tool's argument heads alone and batched with the sibling (unused) tools' heads; report top-answer flip rate per model. Existing receipts (TD-2, TD-3b) cover flat catalogues only. Acceptance: flip rate reported for the worker model; TD-12 adoption gated on it. The run is **GATE: mi210-window** (operator ruling Q3, 2026-09-29).
   - *Acceptance amendment 2026-09-25 (intake-1577#record, intake-1583#record):* randomize and interleave two dependency controls: move one sentinel fact between shared state and an unused sibling head, and prepend/append one semantically irrelevant candidate inside the chosen head. Report chosen-answer flips and pairwise log-odds among unchanged candidates. Treat any effect as a behavioral dependency; do not infer an attention mask, prefix-cache layout, or readout architecture.
 - [ ] **TD-14 — Per-candidate descriptions on `Question`.** Add an optional description per option (today options are a bare label list, `types.py:66-68`, rendered as `candidates: a | b`), rendered in the catalogue, so tool or element tables are grounded without stuffing the shared state. Unit tests; JSON and native arms both render it.
@@ -547,6 +587,66 @@ native single-token path and its sidecar.
 - **Tool arguments (item 1):** closed-set wiring landed in the orchestrator tool path (`src/repl_environment/context.py` `_dispatch_tool`) behind `typed_decisions_tool_args` (default off), fail-open to model-provided args. Shadow-only until v11 (operator ruling Q4, 2026-09-29): TD-29.
 - **Deferred but tracked:** routing replay -> TD-7; judge redundancy -> CJ-13/CJ-14 in `canonical-judge-suite-revamp.md`; episodic pre-write gate -> M-19 in `episodic-memory-integrity.md`; harness items -> HS-TD-1..3 in `harness-selection-and-integration.md`.
 - [x] **TD-8 — Fan-out policy helper.** Implemented + 18 tests (`fanout_policy.py`, provenance-stamped constants). ✅ 2026-09-18
+
+
+## Research Intake Update — 2026-10-04 — P1 acceptance and retained qualifications
+
+Filed from the operator-approved [decision-tools plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md)
+at `3911ec91`. This refines TD-29, TD-29.M0a, TD-12 and TD-29.M2; it creates no checkbox.
+TD-18 owns decision calibration and TD-23 owns backend selection. Workspace-ec retains TD-30/31, including
+TD-30b's judge calibration and TD-31's general prefill work; these are interface dependencies, not duplicated tasks.
+
+**P1 six controls and decision.** Freeze extended TD-4 cases, tool schemas, allowed menus, state/model/build/readout
+identities and outcomes. TD-12's baseline is current same-server REPL generation of operation and arguments;
+M2's baseline is the full failed-call-to-REPL-repair sequence, including subsequent turns. Keep proposed/executed
+operations and args, selected/unused failures, calls, timings, fallback and actual final outcome. A different proposed
+tool needs independent correctness labels: the executed original tool's outcome is not its counterfactual label.
+Tune on development groups only; hold out tool/state families or later traffic. Count all valid/invalid calls,
+unsupported schemas, stale menus, transport failures, abstentions and eventual task failures.
+
+Reject every authority/freshness violation; valid inputs must incur zero repair calls. Before collection record the
+task-specific loss/cost basis and sample/precision budget; otherwise perform conformance only. For the initial shadow
+screen, predeclare TD-12's two-percentage-point exact-action non-inferiority margin, and M2's 5% upper selective-risk
+bound (wrong accepted repairs / all accepted repairs) and 10% lower useful-coverage bound (correct accepted repairs /
+all invalid eligible calls), using the owner's paired/group-aware 95% intervals. The 2pp margin is a maximum tolerable
+offline loss for restricted non-consequential fixtures; 5%/10% are screen tradeoffs, not permission for consequential
+production errors. Insufficient accepted-repair evidence requires abstention. Advance only when held-out bounds pass
+and paired total time/cost per correctly completed action improves with an interval clearing zero.
+Shadowing adds overhead: offline candidate timing estimates substitution economics, while an operational latency
+claim requires a later matched execution comparison. Unresolved precision permits no activation.
+
+**Existing M4 performance follow-through.** Use M4's current sidecar/gate, frozen manifest, current same-server
+incumbent, raw per-case counts/outputs including errors, development/held-out cases and full failure/abstention
+denominators. Predeclare rejection of any result/argument regression. Report paired prefill and total-wall changes
+with constitution-required intervals; claim benefit only when the applicable interval clears zero. If reuse is
+absent, identify and fix only the actual prefix break; if present, make no cache rewrite. TD-31 owns general prompt
+ordering/explicit slot opt-ins; slot-pinning defaults remain unchanged.
+
+**K2/K3/K4/K5/K7 — retained decision qualifications.** Keep corrected release/source-tree/scoring-edition/publication
+scope in the source records; the prior truncated-tree calibration scripts-absence finding was retracted.
+Historical quotations and current vendor pages retain separate attribution. Hosted products supply schema/economics
+context only; the local-only ruling remains. Existing prepared actions own permission, live menus, freshness,
+read-set revalidation and fallback. Preserve raw versus normalized distributions, rounding/invalid mass and confidence
+definitions. Choice top-option correctness calibration, Noul event calibration, ordinal Score quality and logical
+coherence are distinct. Teacher fidelity is not gold correctness; uniform placeholder relevance labels are ineligible.
+Keep per-head/group support, ties, zero-support outcomes, option-order controls, repeat noise, input loss and
+refusal/invalid/transport states explicit. Requested aliases are not resolved artifact identity. External comparisons
+retain method/addendum/scorer/cohort revisions, raw-to-aggregate linkage, complete denominators, timing scope and
+separate code/response-data permissions. Separate observed billing from price/proxy estimates and final-attempt
+elapsed time from retry-inclusive completed-action cost. Same-item threshold fitting is descriptive, not held-out
+certification. Newly landed coherence machinery is reused rather than rebuilt.
+
+**M1/M6/M7/M8 — broader follow-ons, prose only.** TD-23 may compare one compatible local Clef/Flash/AutoTrust candidate
+when it and a sealed workload are available in the existing coordinated window; no candidate is selected here.
+Resolve a particular external score only when it affects that choice and existing reviewed evidence cannot settle it.
+A provisional narrative needed as factual rationale requires separate intake qualification; the five provisional
+records supply no factual premise and this campaign adds no fourth wave. Verify a released hardware/modality path
+only for an actual selected candidate that needs it. Production substitution remains a separately reviewed v11/cutover
+decision. Risk determines safeguards rather than candidate relevance.
+
+Record discussion: intake-1855#record, intake-1859#record, intake-1862#record, intake-1863#record,
+intake-1865#record, intake-1869#record, intake-1875#record, intake-1882#record, intake-1884#record,
+intake-1885#record and intake-1891#record. Their primary anchors and corrections remain the factual warrants.
 
 ## Open Questions
 

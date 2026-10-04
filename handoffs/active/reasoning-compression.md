@@ -1,5 +1,7 @@
 # Reasoning Compression for Inference Cost Reduction
 
+**Scratch**: `/mnt/raid0/llm/tmp/reasoning-compression/` · worktrees: `/mnt/raid0/llm/worktrees/reasoning-compression-*`
+
 **Status**: in-progress
 **Created**: 2026-03-14 (via research intake)
 **Categories**: training_distillation, cost_aware_routing
@@ -656,7 +658,58 @@ _Via `/research-intake` Stage-2 dives 2026-07-28 (7 dives: 903/904/905/906/908/9
 - **[intake-904/906] RRT (ICLR 2025) + MoR (NeurIPS 2025)** — external corroboration (by construction, not controlled comparison) of our TIDE post-mortem: competitive early-exit/adaptive-depth was only ever demonstrated WITH training-time loop/exit losses; neither paper ran a post-hoc control arm. Their throughput figures are not serving numbers (RRT 2.66× = oracle-exit SIMULATION, hardware unspecified; MoR 2.06× = bespoke H100 harness, no prefill workload).
 - **[intake-902/903/907/912] UT / MoEUT / DeepLoop / MoD** — lineage reference rows only (UT = superseded root; MoEUT = loop+MoE ancestor, no checkpoints; DeepLoop = training-time p=1/2 tied-depth normalization rule, useful diligence question for any future looped-checkpoint onboarding; MoD = MoR's routing ancestor).
 
-**Watch-trigger update (supersedes the 2026-05-21 cross-cutting note's condition (b) for the looped lineage)**: the bridge's existence alone no longer flips relevance. New flip triggers: (i) conversion recipe at ≤5B tokens or single-GPU scale, OR (ii) a converted/looped checkpoint ≥7B with instruct tuning, OR (iii) any looped-model GGUF/llama.cpp support upstream.
+**Watch-trigger update (supersedes the 2026-05-21 cross-cutting note's condition (b) for the looped lineage)**:
+the bridge's existence alone no longer flips relevance. The broader conversion/checkpoint-admission triggers remain:
+(i) conversion recipe at ≤5B tokens or single-GPU scale, OR (ii) a converted/looped checkpoint ≥7B with instruct tuning,
+OR (iii) any looped-model GGUF/llama.cpp support upstream. The operator-approved 2026-10-04 RC-XLLM-PREFILL-1 below
+separately files a small native feasibility smoke. Lack of a ≥7B instruct/GGUF release does not veto that smoke;
+it does not erase the original broader admission criteria.
+
+### Research Intake Update — 2026-10-04 — P5 native endpoint-prefill feasibility
+
+Filed from the operator-approved [decision-tools plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md)
+at `3911ec91`. Objective: determine whether the released endpoint-prefill mechanism has an executable CPU/ROCm
+path worth developing for EPYC's long-prefill workloads. The current llama.cpp executor cannot consume its native
+endpoint tensors and terminal-cache banks. This is an independent research runner with one task owner here.
+
+- [ ] **RC-XLLM-PREFILL-1 — Execute the smallest released, bound native teacher/student endpoint-prefill smoke.** Resolve the Part II S teacher directory artifact and matching S student from the pinned catalog; use its existing loaders/file-set/hash checks and teacher_manifest_sha256 binding, not the unbound legacy student-file path. Implement a finite research runner comparing full-depth teacher prefill with student endpoint plus teacher terminal-cache construction, followed by identical-depth teacher decoding. Start CPU/eager, batch one, short frozen inputs, with a claimed eight-core footprint, 8 GiB memory ceiling and thirty-minute execution cap. Permit only a narrowly identified device/attention compatibility shim with operation-level conformance; stop at the first unsupported operation rather than launch a general port. If CPU executes both paths correctly, exercise the same inputs on ROCm in a coordinated GPU window. Retain the runnable path and specific remaining incompatibilities; no persistent endpoint, weight training, GGUF conversion, registry change or production-kernel modification.
+
+**Six controls and decision.** Freeze repository `3af99f493e14fba162625d5dd687abea551a299e`, exact artifacts/manifests/
+tokenizer, native dependencies/runtime/dtype, any shim, inputs/token IDs and logical depth. Baseline is full-depth
+native teacher prefill; it is not the serving model and cannot select a production role. Retain terminal-bank
+shapes/finite checks, logits, continuations, cold startup, warm prefill, cache construction, decode, memory/residency
+and every error per input/arm. Develop on short texts and reserve different texts/lengths untouched for conformance
+and timing. Count every failed load, unsupported operation, memory refusal and failed continuation; CPU success
+does not establish ROCm success. Reject teacher mismatch, incorrect cache structure, failed operation conformance
+or budget overrun. Student/teacher answer equality is not execution conformance; retain approximation loss separately
+from runtime defects. Initial timing is descriptive. Only executable bound paths with held-out prefill savings under
+a predeclared protocol/interval and explicit approximation-quality budget justify a subsequent small quality/latency
+comparison against a current suitable incumbent. No production decision follows from the smoke.
+
+**Execution conditions.** Artifact/tokenizer acquisition and an isolated native dependency environment are named
+implementation dependencies. Claim the eight-core CPU footprint through the current region-lock workflow; ROCm
+requires its coordinated GPU window and verified in-run HIP/VRAM residency. A missing eager operator yields a named,
+tiny operation test/repair and effort estimate; any larger port returns as a concrete ROI proposal. Before the first
+decision-bearing run, land native capture/projection through VB-RI-OPS-WIRE, using the existing ClaimTuple grader.
+Filing establishes no download, installation, successful load or local execution.
+
+**K11 — retained mechanism and source qualifications.** The student predicts the recurrent teacher endpoint;
+one teacher core recurrence and coda construct terminal banks, and teacher decoding retains its original depth.
+This is neither standalone student decoding nor faster decode. Published timing is warmed prefill-only and reports
+task-specific quality losses; it is not an EPYC end-to-end benefit. Family labels omit embeddings, and training-token
+suffixes are not parameter counts. Finite-depth equivalence is not guaranteed by the sufficient limiting theorem:
+retain converging prefix-cache, closed invariant state-set, uniform contraction, context-Lipschitz and continuous
+readout assumptions. Contractive carryover alone does not prove full recurrence contraction. Directory file/hash
+verification and teacher-manifest binding are mandatory; the legacy student-file path lacks the same binding.
+CPU tensor loading does not prove model execution, and documented CUDA/FlashAttention paths do not prove ROCm support.
+Use native architecture loaders rather than assuming Transformers AutoModel compatibility. No universal teacher
+envelope is introduced.
+
+**M5 — broader follow-on, prose only.** A larger runtime port or production-role candidate requires executable
+mechanism evidence, quality/cost justification and a suitable checkpoint. Preserve the original admission watch above;
+do not turn this immediate smoke back into a passive candidate note. Risk determines safeguards rather than relevance.
+Record discussion: intake-1853#record and intake-1854#record; their pinned primary anchors and narrowed corrections
+remain the factual warrants.
 
 - [ ] **Loopie artifact watch (intake-908)**: re-check `huggingface.co/IQuestLab` (Loopie-*-preview) and `github.com/IQuestLab` (loopie / vllm / megatron repos) before any port/eval planning; if released, pull config.json + vLLM diff to scope what a llama.cpp-experimental layer-loop port would need, then revisit the declined 6B-A0.6B CPU smoke test vs Ouro-2.6B-Thinking.
 - [x] Dive-verify the 7 operator-selected lineage intakes and record corrections in the index ✅ 2026-07-28

@@ -231305,12 +231305,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["repl-session-memory-maturity.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Pydantic
   contradicting_evidence:
@@ -231531,8 +231530,7 @@
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
-  - Stage-1 intake only; candidate ownership recorded in cross_references, no integration writes authorized by a
-    reviewed Stage-3 plan.
+  - "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
   authors:
   - Stephen Fluin
   contradicting_evidence:
@@ -231594,12 +231592,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["learned-routing-controller.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - NVIDIA
   contradicting_evidence:
@@ -231842,12 +231839,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P5; RC-XLLM-PREFILL-1 native bound teacher/student runner and watch refinement; K11; larger port/admission M5. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Benhao Huang
   - Chufan Shi
@@ -232029,12 +232025,11 @@
     behavior were not tested. Teacher binding applies to verified directory artifacts; the legacy student-file path
     needs a separate refusal/conformance rule.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P5; RC-XLLM-PREFILL-1 native bound teacher/student runner and watch refinement; K11; larger port/admission M5. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - ifm-ai
   contradicting_evidence:
@@ -232274,12 +232269,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Cloudflare
   contradicting_evidence:
@@ -232436,12 +232430,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["eval-tower-verification.md","tool-use-eval-contract.md","memento-block-reasoning-compression.md","unified-trace-memory-service.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged; P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed; P3/K9 evaluation versus off-policy RL qualification; existing UTM pairing owner unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Adithya S Kolavi
   - Joel Niklaus
@@ -232651,8 +232644,7 @@
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
-  - Stage-1 intake only; candidate ownership recorded in cross_references, no integration writes authorized by a
-    reviewed Stage-3 plan.
+  - "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
   locator_note: Operator-supplied inline essay titled 'System 1 Should Not Be a 27B Model on the Hot Path' in the
     2026-10-03 research-intake message. No published canonical URL for the essay itself; cited OrcaRouter post is
     a separate source. Original text is recoverable only from that conversation.
@@ -232718,8 +232710,7 @@
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
-  - Stage-1 intake only; candidate ownership recorded in cross_references, no integration writes authorized by a
-    reviewed Stage-3 plan.
+  - "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
   authors:
   - OrcaRouter
   contradicting_evidence:
@@ -232777,12 +232768,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Josh Liu
   - Hai Yu
@@ -232932,8 +232922,7 @@
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
-  - Stage-1 intake only; candidate ownership recorded in cross_references, no integration writes authorized by a
-    reviewed Stage-3 plan.
+  - "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
   authors:
   - David Hendrickson
   contradicting_evidence:
@@ -232991,8 +232980,7 @@
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
-  - Stage-1 intake only; candidate ownership recorded in cross_references, no integration writes authorized by a
-    reviewed Stage-3 plan.
+  - "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
   authors:
   - Canberk
   contradicting_evidence:
@@ -233050,12 +233038,11 @@
     coverage-adjusted index skill and latency have separate targets and cohorts. External observations are not independently
     reproduced EPYC gates.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; comprehensive Stage3 plan retains proposals; no handoff or runtime integration
-    authorized.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Apollinário Passos and contributors
   contradicting_evidence:
@@ -233250,12 +233237,11 @@
     coverage-adjusted index skill and latency have separate targets and cohorts. External observations are not independently
     reproduced EPYC gates.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; comprehensive Stage3 plan retains proposals; no handoff or runtime integration
-    authorized.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Tobias Deußer
   - Lorenz Sparrenberg
@@ -233386,12 +233372,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["repl-session-memory-maturity.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Pydantic
   expanded_from: intake-1850
@@ -233525,12 +233510,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Cloudflare
   expanded_from: intake-1855
@@ -233665,8 +233649,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   authors:
   - Michelle Chen
   - Alex Reneau
@@ -233803,12 +233786,11 @@
     remain producer observations, not EPYC decision gates or independent reproductions. Runtime, security and deployment
     behavior were not tested.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["eval-tower-verification.md","tool-use-eval-contract.md","memento-block-reasoning-compression.md","unified-trace-memory-service.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; derived proposals retained for the comprehensive Stage3 plan. No handoff
-    integration or runtime adoption has occurred.
+  - "2026-10-04 operator-approved Stage 4: P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged; P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed; P3/K9 evaluation versus off-policy RL qualification; existing UTM pairing owner unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Adithya S Kolavi and contributors
   expanded_from: intake-1856
@@ -234008,8 +233990,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source/code review complete; comprehensive Stage3 plan retains proposals; no handoff or runtime integration
-    authorized.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   authors:
   - multimodalart and contributors
   expanded_from: intake-1862
@@ -234149,12 +234130,11 @@
     coverage-adjusted index skill and latency have separate targets and cohorts. External observations are not independently
     reproduced EPYC gates.
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source/code review complete; comprehensive Stage3 plan retains proposals; no handoff or runtime integration
-    authorized.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   authors:
   - Keyi Li
   - Yihao He
@@ -234335,12 +234315,11 @@
     finding; qualified version attribution. Not independently reproduced. '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["repl-session-memory-maturity.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     retrieved_utc: '2026-10-03T18:09:55.762669Z'
     sha256: fbf88552d6fa0c1765910d87e95e9da45ee4cdea684c4ad198d198c9330f7414
@@ -234461,12 +234440,11 @@
     patch-version claim overturned, security confidence narrowed. '
   verification: dive-overturned
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["repl-session-memory-maturity.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     retrieved_utc: '2026-10-03T18:09:55.996044Z'
     sha256: 483900b7a8e16bee4790d248383dfd2e6d498c4047592dba6c881bea0feeb7c0
@@ -234710,12 +234688,11 @@
     confirmation; retain empirical provenance and attempt-policy qualifications. '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["tool-use-eval-contract.md","memento-block-reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision: 21c9eabee5fa045ef92a8fb583f54f0045cb1883
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -234902,12 +234879,11 @@
     patterns as source-confirmed designs; do not import external compatibility labels as local certification. '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["tool-use-eval-contract.md","memento-block-reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision: 49aa302ba5c67041d11da128139ba3ae15529543
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -235067,12 +235043,11 @@
     empirical reproduction unperformed. '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["tool-use-eval-contract.md","memento-block-reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision: 2609.04518v1
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -235257,12 +235232,11 @@
     temperature file, serving flags or strategy a running endpoint uses. The response model name is insufficient.
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision: 51740a8891c2a8baefd969237fd44187b3e3a115
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -235401,8 +235375,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision: Retrieved 2026-10-03T18:10:26Z; mutable documentation
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -235534,8 +235507,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision: Retrieved 2026-10-03T18:10:26Z; mutable documentation
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -235686,8 +235658,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision: fc99c6357a9f89f7512c4a987314352addead049
   depends_on:
   - entry: intake-1875
@@ -235851,8 +235822,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision: 21820dc8b455e37aebaf5a83122233b6e564c109
   depends_on: []
   reader_should_conclude: Cite only the qualified source claims at their primary anchors; do not infer local performance,
@@ -236012,8 +235982,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     page: Retrieved 2026-10-03T18:10:26Z
     displayed_release: JevBench v1.5.6
@@ -236139,12 +236108,11 @@
     reading; not legal advice or a full model evaluation. '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["learned-routing-controller.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     model_commit: 77cb9cc1b4fd3a9c77fbb9552c218200bb4dab83
     model_last_modified_utc: '2026-07-04T06:08:26Z'
@@ -236338,12 +236306,11 @@
     code/document claims '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     commit: 6bbdeb33474849b6de2f0cccc9f5e19756abd67e
     commit_utc: '2026-09-30T09:17:09Z'
@@ -236544,8 +236511,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     commit: 8898ef7bc3c151c7b4827a6afbc294907a1c7a64
     commit_utc: '2026-09-27T03:20:26Z'
@@ -236723,12 +236689,11 @@
     only '
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     record_id: 23039006
     record_revision: 6
@@ -236978,12 +236943,11 @@
     Do not certify v1.5.6 result reproduction, runtime identity, or EPYC suitability.","fetch_gaps":[]}'
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     commit: bb05a335bc809e61b20c0f745d25499a82b326fc
     method_sha256: c25d3d8b8512e4d93370a9e0c99705d19b2a9389956ca33b8a4bd2b0ec501c07
@@ -237132,12 +237096,11 @@
     not Round 3 outcomes. The WebSocket server is described as closed-source.
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["repl-session-memory-maturity.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     retrieved_utc: retrieved 2026-10-03T18:31:04.080158+00:00
     sha256: e2facf6bd6492798343470f3caac356c9977ff0975e5e41c2728f137a63cbde2
@@ -237291,12 +237254,11 @@
     | No inference that token-perfect exports alone resolve reward semantics, matched exposure or group identity.'
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["tool-use-eval-contract.md","memento-block-reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     commit: 14c8d7019319d187e3ac3cbee5906ec46d95b89b
     checked_utc: '2026-10-03T18:45:21.688705+00:00'
@@ -237416,12 +237378,11 @@
     than the reference on its listed comparisons.
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["learned-routing-controller.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     commit: 21811ba6ae96966d831a348bb1581d60df91062d
     retrieved_utc: '2026-10-03T18:31:18.106858Z'
@@ -237525,12 +237486,11 @@
     Contributor affiliation/context does not establish independent NVIDIA corroboration.
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["learned-routing-controller.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     issue_updated_utc: '2026-09-22T22:36:28Z'
     retrieved_utc: '2026-10-03T18:30:55.168387Z'
@@ -237636,12 +237596,11 @@
     by the directly reviewed primary license. The linked benchmark repository was not recursively dived.
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["learned-routing-controller.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     page_updated_date: '2026-09-10'
     retrieved_utc: '2026-10-03T18:30:55.152258Z'
@@ -237784,12 +237743,11 @@
     | knowledge-only/context'
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["typed-decision-plane.md","eval-tower-verification.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons; P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     revision: a1308666b5460291772161260f43ed95afa65815
     sha256: null
@@ -237933,8 +237891,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     revision: 523979540d0fad2786208ba07cc8d0fe2711f9ed
     sha256: null
@@ -238083,8 +238040,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     revision: 21bb47b72814cf661539b313844d2d2e26166e54
     sha256: null
@@ -238223,8 +238179,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     revision: retrieved 2026-10-03T18:35:18.325929+00:00
     sha256: 1dbe5a476482a1d1bf7e3416fcad9fb39984738fca27a932db01f4f372342a7f
@@ -238337,8 +238292,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     revision: last reviewed 2026-10-02; retrieved 2026-10-03T18:35:18.557345+00:00
     sha256: 6b87862c1ee74b9829b519370754210fe8df161f6a8348f9524343d37e707caf
@@ -238480,12 +238434,11 @@
     untouched checkpoint-selection test.'
   verification: dive-verified
   ingested_date: '2026-10-03'
-  handoffs_updated: []
+  handoffs_updated: ["tool-use-eval-contract.md","memento-block-reasoning-compression.md"]
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
   source_revision:
     commit: 899549df0350d722c211e6ad847d728e8b2b185a
     checked_utc: '2026-10-03'
@@ -238606,8 +238559,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     retrieved_utc: retrieved 2026-10-03T18:31:04.814820+00:00
     sha256: 3da12f1f8cb7b538b8c60054534b3402276ff8d67840bb2064fd95ba6d10f72c
@@ -238776,8 +238728,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     supporting_repository_commit: e726a387571a1edb1341b6891f9b7d9a642de32c
     parent_reported_commit_time: '2026-10-03 13:48:56'
@@ -238929,8 +238880,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage2 source review; all proposals are retained for the reviewed Stage3 plan. No handoff integration, runtime
-    adoption or EPYC measurement.
+  - "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
   source_revision:
     commit: e726a387571a1edb1341b6891f9b7d9a642de32c
     parent_reported_commit_time: '2026-10-03 13:48:56'

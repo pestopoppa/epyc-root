@@ -11,9 +11,29 @@ an immediate packet, a trigger record, `knowledge-only`, or `decline`.
 
 ## Execution postures
 
+### Context and opportunity before compression
+
+For each packet, record the current EPYC objective, pinned implementation gap, smallest useful
+operational change/probe, expected benefit direction, owner and exact execution conditions. Read both
+implementation and documentation: a historical gap may already be repaired, while a filed enabling
+task may leave its operational consumer unimplemented.
+
+Choose an enabling primitive after this review. Reuse existing receipts, contracts, evaluators and
+adapters; additional wiring needs a concrete missing capability and a consumer. Preserve distinct
+operational and enabling recommendations when the source ledger distinguishes them.
+
+For a `monitor` or `knowledge-only` closure, record which useful immediate step was considered and
+why none remains. Name an observable trigger for `monitor`, or the retained contextual use for
+`knowledge-only`. Nondeployment, missing full reproduction, or HIGH/CRITICAL risk alone does not
+settle the opportunity. Specify safeguards and genuine execution/approval conditions, including
+whether an isolated probe is permitted before production activation.
+
+The main reviews those premises and mappings. Payload validation checks structure and evidence-field
+presence; it cannot determine truth, ROI or whether wiring preserves an operational opportunity.
+
 | Posture | Use when | Stage-3 result |
 |---|---|---|
-| `primitive-now` | A contract, receipt, fixture, adapter, preflight, or shadow runner has immediate project value even if the technique loses. | One owned, reviewable task plus its consumer map. |
+| `primitive-now` | The context review identifies a missing contract, receipt, fixture, adapter, preflight or shadow capability with a concrete consumer and immediate project value. | One owned task plus its consumer map and separately mapped operational follow-through. |
 | `cheap-screen-now` | Existing records or a small controlled probe can decide whether broader work is justified. | One minimum-rigor experiment with a predeclared stop/promotion rule. |
 | `full-reproduction-now` | A named escalation trigger has already fired and no cheaper probe can settle the project decision. | The smallest claim-bearing reproduction needed for that decision, with the fired trigger recorded. |
 | `monitor` | No immediate work remains; an observable future condition would justify it. | Durable trigger prose with an owner; no active checkbox or index next action. |
@@ -86,10 +106,15 @@ condition and materializes a task.
 ### {Plan item ID} — {Immediate project action}
 
 - **Project decision:** {current EPYC choice, risk, bottleneck, or missing capability}
+- **Pinned implementation gap:** {revision, files and current behavior; existing fulfilled work}
+- **Operational opportunity:** {smallest useful change/probe and changed consumer behavior}
+- **Expected benefit direction:** {what should improve and what must remain correct; no invented gain}
+- **Execution conditions:** {implementation/probe/activation conditions, safeguards and actual gates}
 - **Sources and ledger rows:** {complete source-to-action mapping}
 - **Primary owner:** `{handoff}`
 - **Execution posture:** `{primitive-now | cheap-screen-now | full-reproduction-now}`
-- **Reusable primitive:** {artifact useful even if the technique loses}
+- **Enabling primitive:** {specific missing capability, or existing artifact reused/no new primitive}
+- **Operational versus enabling mappings:** {distinct recommendation IDs and their task/trigger refs}
 - **Consumers:**
   - `{direct consumer}` — {interface used}
   - `{evidence or policy consumer}` — {receipt or decision use}
@@ -104,7 +129,9 @@ condition and materializes a task.
 - **Stop/promotion rule:** {predeclared decision}
 - **Dependencies and concurrency:** {critical predecessors and independent lanes}
 - **Broader-reproduction trigger:** {observable condition}
-- **If the trigger is unfired:** `{monitor | knowledge-only | decline}` with no open checkbox
+- **Broader follow-on if unfired:** {owned trigger prose with no checkbox for that broader step}
+- **Closure opportunity review:** {for monitor/knowledge-only, considered immediate step and grounded
+  reason none remains; reference the proposed filing payload}
 ```
 
 Target three to five immediate work packets when that many independent units survive compression. If
@@ -119,26 +146,32 @@ all packets are dependency ordered, state that no safe parallel lane exists.
 **Avoid:** recreate the paper's full benchmark matrix, training recipe, and seed grid because its
 headline result is promising.
 
-**Prefer:** build one typed decision receipt and a frozen local fixture; compare the candidate and
-incumbent on held-out rows with complete failures in the denominator; run a live shadow only after the
-fixture gate passes. Trigger the broad reproduction only if the local screen clears its threshold or
-EPYC must rely on the external benchmark claim.
+**Prefer:** where the pinned typed-decision path already supplies receipts and calibration, reuse
+them. If existing cases prescribe the tool and cannot test operation selection, extend those cases
+with a tool-choice step and compare against the current same-server REPL choice-and-arguments path.
+Keep proposed versus executed actions distinct; an original action's outcome does not label an unused
+alternative. Freeze inputs, retain per-case outcomes and failures, hold out tool/state families and
+predeclare the decision rule. Name the permitted sidecar/window and separate activation conditions.
+Broader reproduction follows only its own fired trigger.
 
 ### Evolutionary selector paper
 
 **Avoid:** launch a new candidate-generation campaign for every published selector.
 
-**Prefer:** freeze the existing journal and candidate graph, replay several selector formulas through
-one adapter and receipt, and stop if they select the same candidate or fail to improve held-out
-continuation. Trigger the paper-faithful environment only after a stable replay gain or a claim need.
+**Prefer:** identify the current selection failure and reuse the journal, candidate graph, replay
+adapter and output carrier where present. Compare selectors on untouched continuation groups with
+the six controls. Repair only a demonstrated adapter gap. Stop under the predeclared rule if no useful
+selection improvement remains; broader reproduction needs its own deciding result or claim need.
 
 ### Specialized multimodal model
 
 **Avoid:** download and benchmark the full model family before a relevant bottleneck exists.
 
-**Prefer:** retain the architecture findings as context and monitor measured visual-token latency,
-memory, and quality. Materialize the model evaluation only when that bottleneck or a named deployment
-need appears.
+**Prefer:** review the selected consumer and its current modality path first. A text-only workload
+with no current visual consumer can support knowledge-only retention with that explicit rationale.
+A live visual consumer with a documented bottleneck can justify a bounded comparison now, even while
+deployment remains gated. Record the actual artifact/runtime conditions and six controls; keep only
+the genuinely future step under an owned observable trigger.
 
 ### One owner, many consumers
 

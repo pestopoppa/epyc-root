@@ -1,5 +1,7 @@
 # Learned Routing Controller: MLP Distillation from Episodic Memory
 
+**Scratch**: `/mnt/raid0/llm/tmp/learned-routing-controller/` · worktrees: `/mnt/raid0/llm/worktrees/learned-routing-controller-*`
+
 **Created**: 2026-04-15
 **Status**: REFRESHED 2026-06-12 (BGE+MLP repair follow-up) — classifier fast-path is **STAGED, not live**: fresh `routing_classifier_weights.npz` now exists and wiring preflight passes, but production still attests `routing_classifier=false` across 6 workers pending a rollout decision. The historical "Phase 1 COMPLETE — 92% val acc, flag enabled" claim below describes pre-reset state; current retrain is 81.0% val acc with thresholded >=0.8 precision 94.4% over 61.6% coverage. The BGE repair blocker is cleared (see [retrain-routing-models.md](retrain-routing-models.md)): 275,960 FAISS vectors, 94.6% coverage, diagnose-only HEALTHY. **Phases 1.5+ are FROZEN per fable5-findings-02** pending a future DAR-1 regret replay >=5% plus per-question eval vectors.
 **Next (start here, 2026-09-27)**: EP-5 — re-run the outcome-label probe on rows updated after `24b43990` (or after
@@ -1132,6 +1134,71 @@ See the fuller root-cause writeup in [decision-aware-routing.md](decision-aware-
 ## Research Intake Update — 2026-09-17 (candidate-scoring arm; intake-1462/1487)
 
 - [x] **LRC-TD-1 — Candidate-scoring arm for the learned controller.** Compare the per-call label-set pattern (option-as-query head intake-1462 or native token logits intake-1487) against the current classifier on the recorded routing corpus; treat as unadopted until TD-2 reports calibration. (Owner stub `typed-decision-plane.md`, RTG-56.) ✅ 2026-09-29 — folded into TD-11 (`typed-decision-plane.md`; operator ruling Q5: TD-11 is the single typed-routing owner). The classifier comparison and the option-as-query arm moved there.
+
+
+## Research Intake Update — 2026-10-04 — P4 observed-outcome routing
+
+Filed from the operator-approved [decision-tools plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md)
+at `3911ec91`. Objective: honor the requested training-data source and test routing under changing role availability
+without treating unobserved alternatives as failures. The source/filter repair is independent of the experimental
+scorer. Scorer implementation precedes its cached comparison. Existing LRC-1/2 freezes remain; TD-11 owns typed routing.
+
+- [ ] **LRC-RI-EXTRACT-SOURCE — Make routing-data extraction honor explicit source and update-count filtering.** Use the requested DB by default; select an NPZ only through the existing explicit embeddings-file argument. Reject a positive min_updates when the selected snapshot cannot enforce it, or enforce it from an actual captured update-count array. Add DB/NPZ branch tests proving the effective source/filter and included/excluded counts; retain action/feature ordering and weights. No live-store mutation, re-embedding, training or routing enablement.
+
+**Extractor acceptance.** With a default cache present, a DB request still uses the test DB. Explicit snapshot
+selection works at zero threshold; a positive threshold without update counts refuses before output. Equivalent
+eligible DB/snapshot fixtures preserve row/action/feature semantics. Existing callers explicitly select their snapshot
+or retain DB behavior. Tests use temporary stores and small arrays. Consumers are extraction and the existing
+training CLI; frozen learning tasks remain frozen.
+
+- [ ] **LRC-SDM-ACTION-SCORER — Add an experimental availability-aware task/action outcome scorer at the existing HybridRouter seam.** Provide an optional injected score_candidates(features, admissible_roles) returning independent estimated correctness rates plus explicit unsupported/abstain states; leave it off in production. Preserve the existing 1,031-column ordering and append semantic action identity (1,037 historical inputs for this six-role screen). Bind actual decision-time covariates explicitly at the live seam; do not silently equate the historical suite-derived proxies with runtime values. Fit only observed question/role cells against raw role_correctness; unseen targets contribute no loss, while observed zero remains a real failure. Weight each question equally across its observed cells unless genuine per-role counts are recovered; total_appearances is not a per-role count. Start with the already-installed CPU HistGradientBoostingRegressor and training-context-only preprocessing reused at prediction. Do not use Q, realized outcomes/latency or test support masks as prediction features. Preserve actual missing covariates as missing, without fabricating retrospective values. Filter against the actual admissible menu and existing preferences/capabilities; use the existing cost policy among supported roles meeting a calibration-set quality floor, otherwise return the incumbent fallback. Keep rates distinct from softmax confidence; invalid rates/errors abstain. Define support from training/calibration evidence, not a finite prediction: a role needs at least 20 independent observed training groups and 10 independent observed calibration groups for this historical screen, plus a calibration quality bound meeting the existing quality floor; otherwise it is unsupported. These are sparse-evidence refusal minima, not sufficiency for calibration. The confidence/precision budget can require more, never fewer on the basis of test masks. Test sparse roles with plausible numeric predictions, availability changes, unknown roles, preference precedence, feature ordering, missing-versus-zero semantics and unchanged incumbent routing when the scorer is disabled.
+
+- [ ] **LRC-SDM-CACHED-SCREEN — Run one grouped observed-outcome challenger comparison on the existing P4.5 cache.** Join arrays and JSONL by verified qid and semantic role mapping; require roles_seen, never correctness>0 as the observation mask. Freeze a suite-stratified 60/20/20 train/calibration/test partition by question/near-duplicate group before expanding to action rows. Refit the existing NumPy MLP architecture and the one CPU tabular recipe on the same training partition through the explicit-partition _train_arm helper; label the cache's hard-label arm a historical P4.5 comparator, not a reproduction of production Q-weighted training; retain existing staged weights only as a descriptive reference unless their disjoint training lineage is proven. Fit preprocessing on train, choose thresholds on calibration, open test once. Use squared_error, max_iter=100, max_leaf_nodes=7, min_samples_leaf=20, l2_regularization=1 and early_stopping=False; include a train-only role-mean baseline and shuffled-label negative control, with no sweep. Retain raw fit error separately from policy-choice quality. An unobserved selected action has unavailable outcome, not zero or an invented prediction-as-label. Count invalid embeddings, unsupported selections and abstentions over every test question. Recover only a bounded set of original existing trial records if the aggregate cannot answer the question; never retune repeatedly on the opened test or overwrite current weights.
+
+**Frozen inputs and evidence limits.** The approved plan records a historical inventory of 540 rows × 1,031 features,
+six semantic roles and seven zero embedding rows. NPZ SHA-256:
+`eb456857e6e667bb87aaa791ba55e765ca231e0fdee58976006d7673a12351cd`; labels JSONL SHA-256:
+`39e3fc21acee3f356e4ece6d5fd1baa4a01dfc546d5fc0394635e76d2a1b7112`.
+This is inventory, not quality evidence. The current builder already rejects zero embeddings; this filing adds no
+new builder-defect task. Cached task/image proxies and prompt/context character lengths are not attested runtime
+TaskIR values. Historical roles lack served model/configuration identity, per-role counts and timestamps.
+
+**Six controls and decision.** Freeze both source hashes, group partition, recipes, source code, label mapping and
+historical weight references. Compare against the existing MLP architecture refitted on identical training groups;
+potentially contaminated staged weights are not the deciding baseline. Keep per-qid/group menus, rates,
+choices/fallbacks, observed-label availability, raw observed rates, errors and timings. Calibration/test groups remain
+disjoint and are never selected using outcomes; preprocessing is train-only. Report all test questions and the paired
+outcome-evaluable subset separately.
+
+Before collection record a sensitivity/power or interval-width budget against available observed cells and the
+operational benefit/cost basis for continuing. Predeclare at least 30 independent matched test groups, at least 90%
+outcome-evaluable choice coverage, and paired observed correctness-rate gain ≥2pp with a positive group-bootstrap
+95% lower bound before proposing a current-stack pilot. Thirty groups is a resampling minimum, not adequate precision;
+90% limits selective comparison; 2pp is the proposed historical minimum useful gain, not a measured economic threshold.
+If the cache cannot support the budget, stop at a descriptive diagnostic. Otherwise classify unmet criteria as
+data-limited, null or inconclusive as appropriate; missing alternate outcomes cannot establish a negative technique
+result. Aggregate-rate comparisons certify neither trial-level calibration nor production gain. A pass yields an
+exact candidate and bounded current-stack pilot proposal, not deployment. Recover original counts/model identity/time
+fields before a current-stack learning claim; that later comparison uses the actual serving incumbent.
+
+**K10 and M4 — retained qualifications and broader follow-ons.** Train-context fitting and immutable recipe/cache
+reuse address only part of leakage; decision-time feature availability, related-case contamination and outcome-derived
+inputs require separate checks. Wrapper Apache licensing does not relicense TabFM assets; exact intended use must meet
+their separate terms. Eager operator paths and `is_cuda` predicates do not establish ROCm compatibility, and relational
+sampling has separate backend dependencies. Classifier replications and tabular benchmark results do not establish
+EPYC routing utility. Gradient-attribution/missingness reports are qualified contributor observations, not causal
+explanations or proof that current predictions fail.
+
+The isolated installed-CPU design diagnostic is allowed under the existing probe posture; it does not reopen LRC-1
+autopilot-data retraining or live routing expansion. Native SDM remains a backend option after a deciding result,
+subject to its exact assets/runtime/operators and eligibility. A current-stack pilot needs its specific owner/window
+and promotion conditions. A useful follow-on encountering an operator gate remains a concrete proposal naming the
+required amendment/cutover. No relational sampler or explanation platform is added. Risk calls for safeguards and
+does not dismiss the candidate. Before the first decision-bearing screen, land its native write-side capture under
+VB-RI-OPS-WIRE; reuse ClaimTuple and the sole shared grader.
+
+Record discussion: intake-1852#record, intake-1881#record, intake-1888#record, intake-1889#record and
+intake-1890#record. Source/code grounding is pinned in the approved plan; no application execution is established.
 
 ## 2026-09-26 audit follow-ups (code + live-process audit)
 

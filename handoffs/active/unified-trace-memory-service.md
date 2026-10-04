@@ -1,5 +1,7 @@
 # Unified Trace / Memory Service
 
+**Scratch**: `/mnt/raid0/llm/tmp/unified-trace-memory-service/` · worktrees: `/mnt/raid0/llm/worktrees/unified-trace-memory-service-*`
+
 **Status**: T1-T6 LANDED 2026-05-06 — `epyc-orchestrator/src/trace/` package: SQLite store with FTS5 + 5 indices, agent_audit parser (JSON + legacy text dual-format), autopilot parser (no-op-when-absent for hosts without journals), progress markdown parser, query CLI (`python -m src.trace.cli {ingest,query,stats}`), 13 unit tests. Live ingest of 11,963 events (re-counted 2026-09-07) from `/workspace/logs` + `/workspace/progress` in <1s; idempotent re-ingest verified. Note that the append-only property covers the `event` table and its ledgers (INSERT OR IGNORE) but NOT the co-located `working_state` table (`harness_schema.py:570`, `:755` `UPDATE … SET superseded = 1`). T6 received a first-class trial-context API/CLI refresh on 2026-06-28 (`epyc-orchestrator` `d20f85b7`) via `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N`, returning exact trial rows plus nearby cross-source timeline context. T7 Hermes ingest deferred until Hermes graduates to daily use.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack — "Trace / Memory Service" box)
 **Categories**: agent_architecture, knowledge_management, autonomous_research
@@ -160,6 +162,12 @@ existing writers (unchanged):
 - **No write path** — the unified store never writes back to source files. Source files remain the single source of truth.
 - **No auth/scopes** — single-user, local-only.
 - **Not a real-time dashboard** — query API only. A dashboard could be built on top later if useful.
+
+## Evaluation capture versus RL eligibility — 2026-10-04
+
+Operator-approved clarification from [P3 operational integration](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#p3-operational-integration--exercise-both-real-tool-loops-and-improve-sft-input-selection) and [K6/K9](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#why-the-general-critiques-are-beliefs-not-work-packets), plan `3911ec91`: UTM is a provenance/query service, not a training rollout engine. Harness/task/seed/turn pairing supports evaluation joins; generic trace validity does not establish exact original token IDs, behavior-logprob or authoritative-mask eligibility for off-policy RL. Evaluation, independently verified complete offline-SFT targets and off-policy RL remain separate consumer contracts. Original behavior logprobs are unnecessary for offline SFT and mandatory only for the distinct off-policy RL consumer.
+
+[M3](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#broader-follow-ons--distinct-from-the-immediate-integrations) requires a named model/workload/objective and eligible original rollouts before full multi-harness RL; implement exact-token export only for that actual consumer. TU-MH-1 and S2-CGE-1 retain their respective evaluation and SFT owners. UTM-P1a.3 remains the existing real-data pairing task, including its store, shared-ID, turn-alignment and inference-window conditions. This clarification adds no implementation checkbox or schema/export work.
 
 ## Cross-References
 

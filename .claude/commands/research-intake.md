@@ -14,11 +14,14 @@ Process research material (papers, blog posts, repos) through the intake pipelin
    `stage1-unverified`.
 2. **Stage 2:** deep-dives operator-selected sources against primary evidence and closes the
    dive-surfaced-source gate.
-3. **Stage 3:** reconciles every actionable, distills them into reusable primitives and cheap decision
-   probes, maps consumers, applies the six-control rigor floor, and records trigger-based escalation
-   paths. Only the reviewed plan file is written.
-4. **Stage 4:** after operator approval, applies exactly the handoff, index, and intake-entry changes
-   named by the plan.
+3. **Stage 3:** reconciles every actionable and reviews current objectives, pinned implementation gaps,
+   useful operational changes/probes, benefit direction and execution conditions before choosing
+   enabling primitives. Preserves distinct operational follow-through and wiring, explicitly reviews
+   monitor/knowledge-only closures, and applies the six-control rigor floor. Proposed filing receives
+   mechanical payload checks plus main semantic review. Only the plan file is written.
+4. **Stage 4:** after operator approval, applies exactly the named changes and reconciles preserved
+   steering/actionable state with the approved plan binding. Checkpoint cleanup follows reconciled,
+   validated Stage-4 close-out; completed Stage-1 ingestion does not authorize deletion.
 
 ## Examples
 

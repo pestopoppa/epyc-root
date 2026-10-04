@@ -9,6 +9,9 @@ set -euo pipefail
 # the validator with it. Baseline established green (0 errors) on 2026-07-14.
 #
 # Usage: bash scripts/validate/validate_intake.sh
+# Proposed filing (read-only): --plan-file PATH --session-file PATH (both required).
+# The opt-in mode checks exact proposed payloads as well as the legacy index;
+# main semantic opportunity/ROI review and operator approval remain separate.
 # Exit: passes through the validator's exit code (0 = valid).
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

@@ -3,6 +3,10 @@
 
 from __future__ import annotations
 
+import argparse
+import copy
+import hashlib
+import json
 import os
 import re
 import sys
@@ -630,7 +634,261 @@ def validate_cross_reference_map(map_path: Path, crossref_dirs: dict) -> list[st
     return errors
 
 
+def _nonempty_text(value: object) -> bool:
+    return isinstance(value, str) and bool(value.strip())
+
+
+def _plan_cells(line: str) -> list[str]:
+    line = line.strip()
+    if not line.startswith("|") or not line.endswith("|"):
+        raise ValueError("unsupported Markdown row: expected enclosing pipes")
+    return [cell.strip() for cell in re.split(r"(?<!\\)\|", line[1:-1])]
+
+
+def _unique_json_object(pairs: list[tuple]) -> dict:
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON key {key!r}")
+        result[key] = value
+    return result
+
+
+def _handoff_path(ref: object, root: Path) -> Path | None:
+    if not _nonempty_text(ref):
+        return None
+    path = Path(ref)
+    roots = (root / "handoffs/active", root / "handoffs/completed")
+    if path.suffix != ".md":
+        return None
+    if len(path.parts) == 1:
+        found = [d / path for d in roots if (d / path).is_file()]
+        if len(found) > 1:
+            return None
+        path = found[0] if found else roots[0] / path
+    elif len(path.parts) == 3 and path.parts[:2] in {
+        ("handoffs", "active"), ("handoffs", "completed"),
+    }:
+        path = root / path
+    else:
+        return None
+    path = path.resolve()
+    return path if path.parent in roots else None
+
+
+def session_cleanup_eligible(session: object) -> bool:
+    """Ingestion completion alone cannot discard steering/actionable state."""
+    if not isinstance(session, dict):
+        return False
+    stage4 = session.get("stage4")
+    return (
+        isinstance(stage4, dict) and stage4.get("reconciled") is True
+        and (session.get("stage") == "stage4-complete"
+             or (session.get("stage") == 4 and stage4.get("status") == "complete"))
+    )
+
+
+def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
+                          categories: set[str], root: Path) -> list[str]:
+    """Read-only structural checks, without approval inference or semantic grading.
+
+    Stage 3 may supply entry_updates/opportunity_reviews and optional proposed_stubs in one JSON fence
+    under '## Stage-3 filing payload' when checkpoint stage3_filing is absent.
+    That fence cannot contain its own hash. Persisted payloads must carry the
+    exact plan digest; Stage 4 never falls back to the fence.
+    """
+    errors = []
+    try:
+        root = Path(root).resolve()
+        plan_bytes = Path(plan_path).read_bytes()
+        text = plan_bytes.decode("utf-8")
+        digest = hashlib.sha256(plan_bytes).hexdigest()
+        if not isinstance(session, dict):
+            raise ValueError("session must be an object")
+        preapproval = "stage3_filing" not in session
+        if preapproval:
+            if session.get("stage") not in (3, "stage3"):
+                raise ValueError("Stage 4 requires persisted session.stage3_filing")
+            sections = re.findall(
+                r"(?ms)^## Stage-3 filing payload[ \t]*\r?\n(.*?)(?=^## |\Z)", text)
+            if len(sections) != 1:
+                raise ValueError("expected one 'Stage-3 filing payload' section")
+            fence = re.fullmatch(
+                r"\s*```json[ \t]*\r?\n(.*?)\r?\n```[ \t]*\s*", sections[0], re.S)
+            if fence is None:
+                raise ValueError("filing payload section must contain exactly one JSON fence")
+            filing = json.loads(fence.group(1), object_pairs_hook=_unique_json_object)
+            if (not isinstance(filing, dict)
+                    or not {"entry_updates", "opportunity_reviews"} <= set(filing)
+                    or set(filing) - {"entry_updates", "opportunity_reviews", "proposed_stubs"}):
+                raise ValueError("Stage-3 fence requires entry_updates/opportunity_reviews and permits optional proposed_stubs only")
+        else:
+            filing = session["stage3_filing"]
+            if not isinstance(filing, dict):
+                raise ValueError("session.stage3_filing must be an object")
+            if filing.get("plan_sha256") != digest:
+                errors.append("stage3_filing.plan_sha256 does not match exact plan bytes")
+
+        marker = "## Complete recommendation mapping\n"
+        if text.count(marker) != 1:
+            raise ValueError("expected one 'Complete recommendation mapping' section")
+        section = text.split(marker, 1)[1].split("\n## ", 1)[0]
+        rows = [_plan_cells(line) for line in section.splitlines()
+                if line.lstrip().startswith("|")]
+        header = ["Ledger row", "Source or review", "Retained recommendation",
+                  "Terminal plan mapping"]
+        if (len(rows) < 3 or rows[0] != header or len(rows[1]) != 4
+                or not all(re.fullmatch(r":?-+:?", cell) for cell in rows[1])):
+            raise ValueError("unsupported recommendation table: expected approved four-column format")
+        recommendations = {}
+        definitions = set(re.findall(
+            r"(?m)^\|[ \t]*([PKM]\d+)(?:[ \t]+[^\n|]*)?[ \t]*\|", text))
+        for cells in rows[2:]:
+            if len(cells) != 4 or not all(cells):
+                raise ValueError("recommendation rows require four nonempty cells")
+            rid, _, _, terminal = cells
+            if rid in recommendations:
+                errors.append(f"plan: duplicate recommendation ID {rid}")
+            recommendations[rid] = terminal
+            refs = set(re.findall(r"\b[PKM]\d+\b", terminal))
+            if refs - definitions:
+                errors.append(f"{rid}: undefined terminal references {sorted(refs - definitions)}")
+            if not refs and not re.fullmatch(r"decline\s*(?::|→)\s*\S.*", terminal):
+                errors.append(f"{rid}: terminal needs a declared P/K/M reference or explicit decline")
+
+        stubs = filing.get("proposed_stubs", [])
+        if not isinstance(stubs, list):
+            raise ValueError("proposed_stubs must be a list")
+        proposed_owners = set()
+        for stub in stubs:
+            if not isinstance(stub, dict) or set(stub) != {
+                "path", "content", "index_file", "index_row",
+            }:
+                raise ValueError("stub package requires path/content/index_file/index_row")
+            path = _handoff_path(stub["path"], root)
+            if (path is None or path.parent != root / "handoffs/active"
+                    or path.exists() or path in proposed_owners):
+                raise ValueError("stub path must name a unique new active handoff")
+            if not _nonempty_text(stub["content"]):
+                raise ValueError("stub content must be nonempty text")
+            domain = r"(?:inference-research|routing-and-optimization|research-evaluation|user-facing-harness|pipeline-integration|reviewer-control-plane)"
+            if (not isinstance(stub["index_file"], str)
+                    or not re.fullmatch(rf"handoffs/active/{domain}-index\.md", stub["index_file"])
+                    or not (root / stub["index_file"]).is_file()):
+                raise ValueError("stub index_file must name an existing domain index")
+            row = stub["index_row"]
+            if not isinstance(row, str) or len(row.splitlines()) != 1:
+                raise ValueError("stub package requires exactly one index row")
+            cells = _plan_cells(row)
+            if (len(cells) != 5 or not all(cells) or len(cells[3]) > 140
+                    or not re.fullmatch(r"[A-Z]+-\d+", cells[0])):
+                raise ValueError("stub index_row violates the five-cell thin-row contract")
+            link = re.fullmatch(r"\[[^\]]+\]\(([^)]+)\)", cells[2])
+            if link is None or _handoff_path(link.group(1), root) != path:
+                raise ValueError("stub index_row must link to its packaged handoff")
+            proposed_owners.add(path)
+
+        updates = filing.get("entry_updates")
+        if not isinstance(updates, list):
+            raise ValueError("stage3_filing.entry_updates must be a list")
+        if not isinstance(entries, list) or not all(isinstance(e, dict) for e in entries):
+            raise ValueError("index entries must be a list of mappings")
+        proposed = copy.deepcopy(entries)
+        by_id = {entry.get("id"): entry for entry in proposed}
+        patch_fields = {"id", "integration_disposition", "handoffs_updated",
+                        "handoffs_created", "disposition_evidence"}
+        seen_updates = set()
+        for patch in updates:
+            if not isinstance(patch, dict) or set(patch) != patch_fields:
+                raise ValueError("entry update requires exactly " + ", ".join(sorted(patch_fields)))
+            eid = patch["id"]
+            if not _nonempty_text(eid) or eid not in by_id or eid in seen_updates:
+                raise ValueError(f"unknown or duplicate entry update ID {eid!r}")
+            seen_updates.add(eid)
+            if not _nonempty_text(patch["integration_disposition"]):
+                raise ValueError(f"{eid}: proposed integration_disposition must be text")
+            for field in ("handoffs_updated", "handoffs_created", "disposition_evidence"):
+                if not isinstance(patch[field], list) or not all(map(_nonempty_text, patch[field])):
+                    raise ValueError(f"{eid}: proposed {field} must contain nonempty strings")
+            for ref in patch["handoffs_updated"] + patch["handoffs_created"]:
+                path = _handoff_path(ref, root)
+                if path is None or not (path.is_file() or path in proposed_owners):
+                    errors.append(f"{eid}: proposed owner {ref!r} does not resolve")
+            by_id[eid].update(copy.deepcopy(patch))
+        errors.extend(validate_index(proposed, categories))
+
+        ledger = session.get("actionable_ledger")
+        if not isinstance(ledger, list) or not ledger:
+            raise ValueError("session.actionable_ledger must be a nonempty list")
+        seen = set()
+        for row in ledger:
+            if not isinstance(row, dict) or not _nonempty_text(row.get("ledger_id")):
+                raise ValueError("actionable ledger row requires a nonempty ledger_id")
+            rid = row["ledger_id"]
+            if rid in seen:
+                errors.append(f"session: duplicate recommendation ID {rid}")
+            seen.add(rid)
+            if not preapproval and (
+                    not _nonempty_text(row.get("terminal_mapping"))
+                    or row["terminal_mapping"] != recommendations.get(rid)):
+                errors.append(f"{rid}: terminal_mapping must exactly match the approved table")
+        if seen != set(recommendations):
+            errors.append(f"recommendation coverage mismatch: missing={sorted(set(recommendations) - seen)}, extra={sorted(seen - set(recommendations))}")
+
+        reviews = filing.get("opportunity_reviews")
+        if not isinstance(reviews, dict):
+            raise ValueError("stage3_filing.opportunity_reviews must be an object")
+        immediate = {packet for packet in definitions if packet.startswith("P")}
+        if immediate - set(reviews):
+            errors.append(f"missing immediate opportunity reviews: {sorted(immediate - set(reviews))}")
+        fields = ("project_objective", "implementation_ref", "gap", "operational_change",
+                  "benefit_direction", "owner", "execution_conditions", "closure_basis")
+        for packet, review in reviews.items():
+            if packet not in definitions and f"**{packet} —" not in text:
+                errors.append(f"opportunity review {packet!r} is not declared in the plan")
+            if not isinstance(review, dict) or not all(_nonempty_text(review.get(f)) for f in fields):
+                errors.append(f"{packet}: opportunity review requires nonempty text in {fields}")
+                continue
+            path = _handoff_path(review["owner"], root)
+            if path is None or not (path.is_file() or path in proposed_owners):
+                errors.append(f"{packet}: opportunity review owner does not resolve")
+
+        # Resolve task references from definitions, never from their own mentions
+        # in the terminal table. Only declared owners are read; no corpus sweep.
+        task_pattern = r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+(?:\.[A-Za-z0-9]+)*"
+        definition_pattern = rf"\*\*({task_pattern})(?=[ \t]*(?:—|:|\*\*))"
+        task_definitions = set(re.findall(definition_pattern, text))
+        owner_refs = [
+            ref for patch in updates
+            for ref in patch["handoffs_updated"] + patch["handoffs_created"]
+        ] + [
+            review["owner"] for review in reviews.values()
+            if isinstance(review, dict) and _nonempty_text(review.get("owner"))
+        ]
+        for ref in set(owner_refs):
+            path = _handoff_path(ref, root)
+            if path is not None and path.is_file():
+                task_definitions.update(re.findall(
+                    definition_pattern, path.read_text(encoding="utf-8")))
+        for stub in stubs:
+            task_definitions.update(re.findall(definition_pattern, stub["content"]))
+        for rid, terminal in recommendations.items():
+            tasks = set(re.findall(rf"(?<![A-Za-z0-9-]){task_pattern}(?![A-Za-z0-9-])", terminal))
+            missing = tasks - task_definitions
+            if missing:
+                errors.append(f"{rid}: undefined terminal task references {sorted(missing)}")
+    except (OSError, UnicodeError, ValueError, TypeError, KeyError, AttributeError) as exc:
+        errors.append(f"plan/session: unsupported format or unreadable input: {exc}")
+    return errors
+
+
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--plan-file", type=Path)
+    parser.add_argument("--session-file", type=Path)
+    args = parser.parse_args()
+    if (args.plan_file is None) != (args.session_file is None):
+        parser.error("--plan-file and --session-file must be supplied together")
     errors = []
     config = load_wiki_config()
     crossref_dirs = _get_crossref_dirs(config)
@@ -656,6 +914,8 @@ def main() -> int:
 
     # Validate index
     if not INDEX_PATH.exists():
+        if args.plan_file is not None:
+            errors.append("plan/session validation requires the intake index")
         print(f"WARNING: Index not found at {INDEX_PATH} — skipping index validation")
         if errors:
             for e in errors:
@@ -684,6 +944,15 @@ def main() -> int:
         errors.extend(check_merge_map(entries))
         for warning in check_duplicate_locators(entries):
             print(f"WARNING: {warning}")
+
+    if args.plan_file is not None:
+        try:
+            session = json.loads(args.session_file.read_text(encoding="utf-8"),
+                                 object_pairs_hook=_unique_json_object)
+            errors.extend(validate_plan_payload(
+                session, args.plan_file, entries, valid_categories, ROOT))
+        except (OSError, UnicodeError, ValueError) as exc:
+            errors.append(f"session-file: unreadable or unsupported JSON: {exc}")
 
     if errors:
         print(f"FAILED: {len(errors)} error(s) found:")

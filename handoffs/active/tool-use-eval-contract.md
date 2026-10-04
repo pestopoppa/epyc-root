@@ -1,5 +1,7 @@
 # Tool-Use Eval Contract — make autopilot trials actually exercise tools
 
+**Scratch**: `/mnt/raid0/llm/tmp/tool-use-eval-contract/` · worktrees: `/mnt/raid0/llm/worktrees/tool-use-eval-contract-*`
+
 **Latest verification (2026-07-05T19:45Z)**: `tool_use_activation=ready`.
 AutoPilot is live as PID `2935890` under the Fable launcher with
 `AUTOPILOT_TOOL_SENTINELS=1`, `AUTOPILOT_PLANNER_HINTS=1`,
@@ -337,6 +339,16 @@ Validation:
 Remaining:
 - Add a native-tools sentinel variant only at a clean restart/window. Do **not** edit `tool_sentinels.yaml` mid-run while live AutoPilot has `AUTOPILOT_TOOL_SENTINELS=1`, because the YAML is part of the active eval mix.
 - Decide native-vs-REPL parity expectations before wiring any objective.
+
+### Research Intake Update — 2026-10-04 (P3)
+
+Operator-approved [P3 operational integration](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#p3-operational-integration--exercise-both-real-tool-loops-and-improve-sft-input-selection) at `3911ec91`; its pinned entry points and controls are part of this task contract.
+
+- [ ] **TU-MH-1 — Make shared file-tool tasks executable acceptance tests for both REPL and OpenCode.** Parameterize the existing HS-4 fixture runner and add an external driver with two execution adapters: /chat forced REPL with delegation disabled, and the pinned OpenCode headless runner through /v1 client mode. Start with file lookup, inventory aggregation and two-file reconciliation using existing capabilities. Give every attempt fresh fixture/session state; keep references and grader files inaccessible to agents. Score final answers through the unchanged deterministic scorer and failure dispositions. Retain OpenCode's executed tool calls/results, whole-session generation and all-call costs, not just one completion or emitted-but-unexecuted calls. Preserve the current P0.4 smoke. Use this driver as the acceptance path for subsequent tool/catalog changes; no new harness or live scoring objective.
+
+**TU-MH-1 controls and decisions.** Freeze fixture bytes, oracle, instructions, tool catalogs, harness/plugin/config revisions and sampling/thinking/budgets. Use the same currently registered frontdoor role in both arms and attest actual serving identity; disable memory, escalation and delegation. Baseline each incumbent harness before comparing any change within it; a cross-harness difference is not automatically a model effect. Keep raw final answers, arguments, executed results and complete-session usage. Develop on six instances and seal twelve different acceptance instances before choosing an efficiency change. Every scheduled attempt receives a disposition; include failed-attempt costs, distinguish coverage/scored correctness, and report common-success costs separately. Conformance requires correct continuation, malformed-call handling, budget termination, matching oracle verdicts and explicit missing counters. Retain the owner's rejection rule for catalog changes: a formerly passing task failing in both of two reruns rejects the change. Only correctness-passing changes may be considered for efficiency; missing usage cannot establish savings. This is a small operational screen, not a portability-equivalence or deployment result. REPL/OpenCode live runs use their coordinated inference window; broader frozen thesis/scouting work is not smuggled into the driver. Coordinate HS-4 runner edits with its existing harness owner; the task has one implementation owner, with scoring as an unchanged interface consumer.
+
+**K6 / K9 / M3 qualification.** This task applies correctness-before-efficiency to actual harness acceptance. Evaluation capture does not certify generic traces for offline SFT or off-policy RL; native-tool transcripts are not automatically Memento-format targets. Full multi-harness RL requires a named model/workload/objective and eligible original rollouts, with exact-token export only for that consumer. New decision-bearing paired runs require native finalize capture/projection under [VB-RI-OPS-WIRE](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#approval-and-exact-stage-4-filing-scope) before their first run; retain the existing P0.4 smoke and its owner.
 
 ## Reporting
 After cutover + verification, update this file's Current-State, append to `progress/2026-06/`, and record the first measured `tool_helpfulness`. Promote the per-suite-objective question to its own decision once data exists.

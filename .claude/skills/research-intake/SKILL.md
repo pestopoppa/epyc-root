@@ -41,8 +41,9 @@ not a waiver of the *review gate*; the correct response to such a comment is to 
 
 ### Steering ledger (required from Stage 1 onward)
 
-Every operator comment during stages 1–3 gets appended **verbatim** to `steering_ledger` in
-`.research-session.json`, with a disposition:
+Record every operator comment during stages 1–3 **verbatim**, with a disposition. Preserve
+`steering_ledger` in `.research-session.json`; during Stage 3, carry new rows and proposed
+reconciliation in the plan only. Apply that reconciliation at the approved Stage-4 boundary:
 
 ```json
 {"seq": 3, "stage": 2, "verbatim": "<exact operator words>",
@@ -81,8 +82,10 @@ Execute phases 0–5 in order. **Phase 1 + Phase 2 can run in parallel** — see
 ### Phase 0 — Session Resume Check
 
 Check for `.research-session.json` in the repo root. If found and <7 days old, offer to resume (skip
-already-processed URLs). If older, warn about staleness and suggest starting fresh. Initialize
-`steering_ledger: []`. See `references/session-persistence.md`.
+already-processed URLs). If older, warn about staleness and reconcile against current files before
+resuming or starting a separate session. Initialize `steering_ledger: []` only for a new session;
+never clear a resumed ledger. Completed Stage-1 ingestion does not complete the four-stage session.
+See `references/session-persistence.md`.
 
 ### Phase 1 — Fetch & Extract
 
@@ -467,24 +470,28 @@ ledger.
 
 ## Stage 3 actionable distillation — required before handoff drafting
 
-Do not translate every verified suggestion directly into a reproduction task. First reduce the complete
-actionable ledger to the smallest set of project actions that can change an EPYC decision or leave a
-reusable capability:
+Before compressing the actionable ledger, review each packet's operational opportunity in current
+EPYC context:
 
-1. Name the current project decision, bottleneck, risk, or missing capability the action could change.
-2. Prefer a reusable primitive that keeps its value if the technique loses: a contract, receipt, fixture,
-   replay adapter, evaluator preflight, shadow runner, cache, or parser.
-3. Give each primitive one primary owner and identify every direct, evidence, policy, and prospective
-   consumer. Search both documentation and implementation surfaces. A consumer gets its own task only
-   when it has distinct integration, schema, or acceptance work.
-4. Prefer existing journals, fixtures, cached candidates, manifests, and shadow traffic over new
-   training, infrastructure, or broad benchmark recreation.
-5. Apply the six-control minimum-rigor floor to every immediate empirical experiment or replay. For
-   deterministic infrastructure, name the corresponding conformance and provenance checks and explain
-   each inapplicable control.
-6. Assign exactly one posture: `primitive-now`, `cheap-screen-now`, `full-reproduction-now` with an
-   already-fired trigger, `monitor` with an observable trigger, `knowledge-only`, or `decline`.
-7. Keep an unfired broader-work trigger as durable prose, with no active checkbox or index next action.
+1. Name the current objective and pin the implementation read that establishes the gap. Trace
+   objective → current gap → changed consumer behavior → deciding evidence.
+2. Name the smallest useful operational change or probe, expected benefit direction, primary owner,
+   and exact execution conditions. Distinguish implementation, isolated evaluation and activation;
+   an activation gate does not automatically prohibit the earlier steps.
+3. Check existing contracts, receipts, fixtures, evaluators and adapters before proposing an enabling
+   primitive. Choose one only for a demonstrated missing capability. Record its consumers and
+   distinct adoption work; reuse existing machinery where sufficient.
+4. Preserve distinct operational follow-through when the source ledger separates it from enabling
+   wiring. A capture/projection task does not discharge the evaluation that produces its findings.
+5. Apply the six-control minimum-rigor floor to immediate empirical experiments or replays. For
+   deterministic infrastructure, explain inapplicable controls and name replacement conformance
+   and provenance checks.
+6. Choose the execution posture after this review. For `monitor` and `knowledge-only`, explicitly
+   explain why no useful immediate operational step remains, citing current implementation and
+   execution conditions. Nondeployment, absence of full reproduction, or a HIGH/CRITICAL graph
+   flag alone is insufficient. Risk determines safeguards and any genuine approval boundary.
+7. Keep an unfired broader-work trigger as owned durable prose, without an active checkbox or
+   index next action for that broader step. Preserve separately justified immediate work.
 
 **Stage 3 MUST NOT default to paper-faithful reproduction.** Full training recipes, large seed grids,
 paper-wide benchmark recreations, and paper-specific infrastructure beyond the reusable primitive enter
@@ -499,7 +506,8 @@ After distillation, build ONE plan covering:
 1. **Action architecture** — cluster overlapping ledger rows into a short immediate program. Target
    three to five work packets when the ledger contains that many independent units; if compression leaves
    fewer, present fewer and state why. Never split work only to meet the target. For every packet name the project decision, covered sources and ledger
-   rows, primary owner, consumers, reusable primitive, smallest deliverable, minimum-rigor controls,
+   rows, pinned implementation gap, expected benefit direction, exact execution conditions, primary
+   owner, consumers, enabling primitive if needed, smallest operational deliverable, minimum-rigor controls,
    stop/promotion rule, broader-reproduction trigger, terminal disposition, dependencies, and safe
    concurrency. Enabling primitives precede only the evaluations that depend on them; unrelated lanes
    need not be serialized.
@@ -523,6 +531,9 @@ After distillation, build ONE plan covering:
      (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
      entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never
      silence.
+7. **Proposed filing payload** — carry exact affected-entry updates and opportunity reviews in the
+   plan using the contract in `references/session-persistence.md`. Stage 3 writes only the plan;
+   it does not checkpoint the proposed payload or edit entries before approval.
 
 **Plan-completeness gates — the plan may not be presented until all pass:**
 
@@ -537,6 +548,10 @@ After distillation, build ONE plan covering:
 - Every proposed target handoff is checked for **frozen/pointer status** before it is named as an
   owner — some handoffs are compatibility pointers that explicitly forbid new task checkboxes.
 - Every immediate action names the project decision it can change.
+- Every packet has the context/opportunity review above before its enabling primitive is chosen.
+- Every `monitor` or `knowledge-only` closure has an explicit opportunity review. Main review must
+  verify its premises, including fulfilled existing work and the scope of actual execution gates.
+- Operational follow-through and enabling wiring retain their distinct recommendation mappings.
 - Every immediate empirical experiment or replay names all six minimum-rigor controls, or gives a
   concrete reason why a control is inapplicable and names the replacement conformance/provenance check.
 - An empirical screen missing an applicable control cannot enter the immediate program. Repair its
@@ -545,11 +560,18 @@ After distillation, build ONE plan covering:
   documentation and implementation surfaces.
 - Consumers do not receive duplicate tasks merely for visibility; separate tasks represent distinct
   adoption work.
-- Every immediate full reproduction names its already-fired trigger; otherwise it is durable `monitor`
-  prose with no active checkbox or index next action.
+- Every immediate full reproduction names its already-fired trigger; otherwise that broader step is
+  durable `monitor` prose with no active checkbox or index next action. This does not close a distinct
+  useful integration or deciding probe.
 - Every technique-specific evaluation follows the shared primitive it depends on. Independent packets
   identify safe concurrency; when every packet is dependency ordered, the plan says no safe parallel
   lane exists rather than manufacturing one.
+- The opt-in proposed-payload check passes:
+  `bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH`.
+  Validate the proposed payload, not merely the unchanged persisted index.
+- The main separately reviews current context, opportunity preservation, benefit direction, gate scope
+  and terminal dispositions. Structural success or nonempty evidence fields do not establish these
+  semantics. Resolve disagreements before presenting the plan.
 
 Iterate with the operator until they approve via **ExitPlanMode**. **No handoff, stub, or
 domain/master-index write happens before approval.**
@@ -590,12 +612,19 @@ silently into the diff. Then:
 - Fill handoffs_updated / handoffs_created **and integration_disposition + disposition_evidence**
   (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
   entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never silence.
-- Run `bash scripts/validate/validate_intake.sh` → exit **0**.
+- At the approved boundary, reconcile plan-carried steering/actionable updates into the session and
+  persist `stage3_filing` with the approved plan's exact-byte SHA-256. Then run
+  `bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH` → exit **0**,
+  alongside existing index validation. The main confirms the applied filing matches the reviewed
+  mappings and semantics; validator success is not approval or deployment evidence.
 - Honor checkbox discipline: every appended task is `- [ ]`; anything already done is
   `- [x] … ✅ YYYY-MM-DD`.
 - Stage only your own files. A parallel session may share this tree — never `git add` a shared
   handoff wholesale.
 - Report: files changed, checkbox flip count, new task count, explicit declines, validator status.
+- Preserve the checkpoint until Stage-4 filing, ledger reconciliation, mechanical validation and main
+  semantic review are complete and their durable records are retained. Stage-1 ingestion completion
+  or checkpoint age alone never authorizes cleanup.
 - **Close out the lane — research-intake is ONE lane, and every intake worktree, branch and shared-clone file it
   touched is this session's to clean.** After the push is verified (`git cherry origin/main` empty): remove the intake
   worktree (`git worktree remove`, never `--force`, never `prune`/`gc`) and its merged local branch; do the same for any
@@ -713,8 +742,9 @@ verification fields promoted; fabrications corrected in-index immediately; `git 
 still clean.
 
 **Stage 3** — Stage-2 close-out gate closed before entry; presented via plan mode; every coverage,
-verification, ROI-distillation, consumer-mapping, minimum-rigor, trigger, ordering, and
-owner-suitability gate passes.
+verification, context/opportunity, consumer-mapping, minimum-rigor, trigger, ordering and
+owner-suitability gate passes; proposed-payload checks pass and main semantic review is resolved.
+Only the plan is written.
 
 **Stage 4** — diff matches the approved plan; `validate_intake.sh` exit 0;
 **`python3 scripts/handoffs/index_state.py --check` exit 0** (every new stub owned by exactly one index
@@ -743,4 +773,4 @@ row, no orphans, no duplicates, generated block fresh); checkbox counts reported
 | "More rigor means recreating the entire paper" | Rigor means controlled, inspectable evidence appropriate to the decision. Apply the six-control floor to the cheap screen; reproduce more only after its trigger fires. |
 | "Every consumer needs its own task" | Enumerate every consumer, but keep one implementation owner. Create consumer tasks only for distinct adoption work; otherwise record the supported contract or dependency. |
 | "We may need this later, so leave an unchecked task" | An unfired condition is trigger prose or `monitor`, not live backlog. Materialize a task when the trigger becomes true. |
-| "The technique may fail, so the work has little value" | Prefer a reusable primitive whose contract, fixtures, receipts, or evaluator remain useful regardless of the technique's result. |
+| "The technique may fail, so the work has little value" | Review the concrete consumer gap and the smallest deciding change/probe. Reuse existing artifacts; add an enabling primitive only where it supplies a missing capability. |

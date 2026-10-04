@@ -1,5 +1,7 @@
 # REPL Session Memory — Maturity Deltas
 
+**Scratch**: `/mnt/raid0/llm/tmp/repl-session-memory-maturity/` · worktrees: `/mnt/raid0/llm/worktrees/repl-session-memory-maturity-*`
+
 **Status**: active — D-a/D-a2/D-a3/D-a4/D-a6, D-b, D-c1, D-e all landed 2026-07-27 (no
 inference, no instrument-era surface). **An adversarial review broke the first pickle boundary the
 same day; fixed in orchestrator `9d30bb60` — see *Security review — round 2*.** Remaining: D-c/D-c2
@@ -378,6 +380,12 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   external state or require an explicit retry/skip resolution, append the reconciliation outcome, and
   retain the original uncertain row. Test crashes before dispatch, after dispatch, after effect but
   before confirmation, duplicate callback, and non-idempotent tool behavior.
+  - **D-g mutation acceptance refinement (operator-approved intake, 2026-10-04):** Before mutating
+    capabilities are admitted, worker death cannot undo a dispatched parent effect; record
+    prepared/dispatched/confirmed/uncertain state and reconcile before retry. Preserve the existing
+    journal states, evidence and crash fixtures above. This refines D-g, not a second implementation.
+    Contract: [approved P2 operational integration](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#p2-operational-integration--contain-execution-then-exercise-monty-on-real-operations)
+    at `3911ec91`, “Dependencies, execution and broader work”.
 - [ ] **D-h — The namespace digest is NOT a rendering job; shape capture must be ADDED first**
   (intake-1316#record). `variable_lineage` records name, type, provenance and tier but **never
   shape** (`state.py:450-462`, re-verified 2026-09-07), so a digest built from lineage alone
@@ -391,3 +399,23 @@ pinned SHA `f25f310b` plus a read of our own tree. Full evidence in intake-901 `
   kernel-to-context egress": the source does not implement it (seven channels; the final
   expression is auto-printed by default and the model must opt OUT). The reframed version is
   strictly stronger than the source and equally cheap.
+
+## Research Intake Update — 2026-10-04
+
+Operator-approved [P2](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#p2--preserve-repl-state-and-contain-unbounded-execution) at `3911ec91`. Its pinned code evidence and acceptance conditions are part of this filing. The constructor/timeout repairs are independent of backend adoption; containment precedes the comparative Monty slice.
+
+- [ ] **D-RI-PICKLE-PASS — Preserve pickled_globals through both existing checkpoint constructors.** Forward the already-signed payload through /chat and SessionPersister into Checkpoint; preserve size limits, unavailable-variable reporting, protocol normalization and fenced writes. Add a regression traversing each producer, SQLite save/load and restore for one supported non-JSON value, plus tampered/unsupported payload refusal.
+- [ ] **D-RI-TIMEOUT-STATE — Make a timed-out REPL environment terminal for reuse and persistence.** Mark timeout at the worker-await boundary, stop further execution in that environment and suppress its API/persister checkpoint writes. Test a bounded delayed worker that finishes after the timeout; no subsequent execute or checkpoint may accept its namespace. Keep lease cleanup and timeout reporting intact; do not claim worker termination or host-effect cancellation.
+
+**Acceptance and consumers.** Tests must fail against the current constructors and timeout path, then pass through the real existing store boundary. Include legacy checkpoints, tampering, lease/fencing loss and a delayed-worker case; never use an infinite background fixture. Consumers are /chat resume, SessionPersister and graph REPL execution. No model calls or holdout are needed for these deterministic invariants.
+
+### Contained CPython and restricted Monty slice
+
+- [ ] **D-RI-CONTAIN — Add a killable, resource-limited CPython execution lane behind the existing REPL interface.** Keep an opt-in spawned/exec'd child warm across a request's cells; acquire the existing session lease before restore. Keep SQLite, signing and fenced persistence in the parent. Initially support JSON-compatible restored state, existing text/context operations and explicitly bounded read-only capabilities; refuse unsupported state, mutations and unbounded callbacks. Broker existing callbacks as bounded value messages with parent-owned authorization, request identity, deadline and lease revalidation; never serialize callable authority. Reuse pinned sandbox launch/teardown mechanisms with private scratch, no direct network/secrets/session-DB access, finite CPU/memory/file/fd budgets and bounded output/IPC before accumulation. Use owned cgroup process/memory limits, not a small UID-wide process limit. On timeout, cancellation, lease loss or crash revoke callback admission, terminate/reap only the captured child, verify owned descendants are gone, reject late replies and resume from the last completed checkpoint. Fail closed if required containment controls are unavailable; never silently fall back to inline execution. Validate successful-cell, state, FINAL/artifact and callback parity; preserve the existing full CPython path outside this explicitly selected lane.
+- [ ] **D-RI-MONTY-SLICE — Implement and run a restricted Monty adapter on twelve existing EPYC REPL cases.** Return the existing ExecutionResult shape and exercise persistent feeds for peek/grep, list/dict/comprehension, artifact/FINAL and state-continuity operations; bridge only their bounded existing callbacks. Compare warm standard CPython, contained CPython and the pinned OSS Monty runtime on identical code/inputs where supported, recording adaptations and refusals. Begin with JSON checkpoint export/import through the existing parent boundary, not opaque Monty dumps. Include denied/delayed callbacks, terminal resource errors and worker disposal. Retain the runnable adapter if it preserves admitted semantics and offers a useful containment or overhead tradeoff; do not enable it by default or infer whole-REPL fitness from this slice.
+
+**Inputs and six controls.** Freeze twelve cases from the existing REPL environment and artifact/FINAL tests identified in [approved P2 operational integration](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#p2-operational-integration--contain-execution-then-exercise-monty-on-real-operations), capability policy, budgets and runtime/source identities. Use eight development and four untouched acceptance cases plus independently prepared fault fixtures. Compare the current warm persistent CPython baseline and the two explicit lanes; record cold launch, warm cell, checkpoint/restore and teardown separately. Keep per-case outputs, errors, state/FINAL/artifact differences, callback sequence, wall/CPU time, in-window memory, output bytes and verified termination. Count every refusal, incompatible import/state, timeout, crash and missing replay input; distinguish admitted-case parity from total coverage. Predeclare zero incorrect successful results, unauthorized effects, stale writes or unverified teardown; fault fixtures use a one-second deadline and at most two additional seconds for teardown. Timing is descriptive screening evidence, not a twelve-case p95 or production speed claim. A compatibility repair consumes its holdout; use a fresh acceptance set before subsequent activation.
+
+**Dependencies, execution and broader work.** D-RI-CONTAIN follows timeout poisoning and uses the existing D-f lease. Its process/callback/persistence blast radius merits impact review and rollback tests; HIGH/CRITICAL risk would increase safeguards, not erase the task. Monty requires a pinned acquired runtime reconciled with the persisted security corrections. Scientific imports, non-JSON persisted state and arbitrary host callbacks remain explicit coverage limits. No UFH-13 marker prohibits these interpreter-only tests; any later model-bearing comparison uses its actual coordinated window. Before mutating capabilities are admitted, apply the D-g acceptance refinement above. Signed restoration and D-f remain completed; D-f1 retains live lease verification.
+
+**K8 / M2 qualification.** Capabilities, host deadlines, disposal and measured slice coverage govern acceptance; historical fixes are not a security certification. Broader capability expansion requires a specific measured useful workload needing a named missing capability. Default activation requires containment/semantic acceptance and a reviewed cutover. These are durable conditions, not additional checkboxes. New decision-bearing containment/slice probes require the selected producer's write-side capture/projection under [VB-RI-OPS-WIRE](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#approval-and-exact-stage-4-filing-scope) before their first run.

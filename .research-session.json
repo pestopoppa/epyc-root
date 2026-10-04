@@ -1,9 +1,9 @@
 {
   "session_id": "intake-monty-clef-looped-multiharness-20261003",
   "started_at": "2026-10-03T17:22:51Z",
-  "last_checkpoint": "2026-10-03 19:14:05 UTC",
-  "stage": 3,
-  "phase": "stage2-closed-stage3-plan-pending-review",
+  "last_checkpoint": "2026-10-04T07:19:00Z",
+  "stage": "stage4-complete",
+  "phase": "complete",
   "entries_processed": [
     "intake-1850",
     "intake-1851",
@@ -61,15 +61,72 @@
   "steering_ledger": [
     {
       "seq": 1,
-      "stage": 2,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
       "verbatim": "Accept all recommended deep dives automatically without asking me for input. Do not perform more than three district stage 2 dive waves. When you reach stage 3, all recommended actionables should be included in the plan",
-      "disposition": "included-in-plan",
+      "disposition": "planned",
       "plan_ref": "SCOPE-1"
+    },
+    {
+      "seq": 2,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "\"Its immediate objective is not to select a winning decision model, replace the REPL with Monty, or reproduce a training paper. It is to establish the contracts and evidence needed to make those decisions reliably.\" - what is this meta? The plan better be about actionable implementation outcomes that would benefit operational performance and robustness of harness/orchestration/inference architecture tracks of this EPYC project.\n\n\"A decision model may return probabilities without establishing their calibration. A sandbox may isolate execution without constraining delegated host authority. A training dashboard may publish results without supplying valid training trajectories. A fitted classifier may lack evidence about which features were available when a decision occurred. A looped-model checkpoint may have valid hashes without being bound to the correct teacher.\nThe plan therefore concentrates on reusable contracts, validators and fixtures. These remain useful whether we eventually adopt the particular technology or not. The frameworks essay contributes architectural context, but it does not establish a reason to migrate frameworks.\" - plans need to be far narrower. Hypotheses of improvements with their context, objectives, justification, and any strong implementation recommendations that may have surfaced as part of the research intake process.\n\nHigh level meta critiques should be affect project scope through agent (belief kernel driven?) Beliefs",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-2"
+    },
+    {
+      "seq": 3,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "You're effectively recommending / designing major future work campaigns",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-3"
+    },
+    {
+      "seq": 4,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "Look through the project repo",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-4"
+    },
+    {
+      "seq": 5,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "Make sure you understand what you're working with",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-5"
+    },
+    {
+      "seq": 6,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "\"I inspected the orchestrator, inference-research repo, current handoffs, and running API revision—not just the research material.\nEPYC already has OpenCode integration, typed decisions, prepared-action validation, prefix caching, persistent REPL state, session fencing, EvalTower recovery, and belief adapters. My earlier plan duplicated that machinery and expanded scope unnecessarily.\" - what? How did you not know this? Doesn't the research intake skill specifically ask to make recommendations within the context of the project's concrete objectives?\n\n\"The revised Stage 3 plan now targets concrete gaps:\nREPL robustness: forward pickled_globals through two constructors that currently drop them; prevent reuse/checkpointing after an execution-thread timeout.\nTool-call performance: finish the existing non-blocking TD-29 shadow and propagate actual prefill/cache counts for its existing cache-reuse investigation.\nEvaluation robustness: expose incomplete sidecar capture and retain reconnect attempts/backoff without changing grades.\nRouting-data correctness: stop a cached snapshot silently overriding the requested database and bypassing min_updates.\" - ok\n\n\"Monty migration, SDM adoption, weight training and looped-model ports are no longer implementation campaigns. General research critiques constrain candidate-selection beliefs instead.\" - why were they deemed not relevant?",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-6"
+    },
+    {
+      "seq": 7,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "\"I applied that requirement poorly. The original plan already acknowledged prepared-action validation, decision receipts, persistent REPL state and session fencing. Saying I subsequently “discovered” that infrastructure was misleading. The failure was allowing generic research concerns to justify new contracts and validators without demonstrating that EPYC lacked them or that they would improve an existing operational path.\nI over-weighted “build reusable primitives” and under-weighted “identify the concrete project need first.”\" - dispatch a subagent to investigate how to make this more robust in the future. I'm now worried that past research intake sessions have ignored crucially actionable work that should've been surfaced. Building reusable primitives isn't bad per se, but it MUST be contextualized among project objectives, otherwise we end up eating resources painting bike sheds so to speak.\n\n\"Monty — execution robustness. EPYC’s execution-thread timeout does not terminate the underlying computation. A disposable, resource-limited execution backend could address a problem that timeout poisoning alone cannot. Existing persistent CPython state weakens the startup-speed argument, but does not eliminate the isolation argument. The relevant question is whether Monty can support a specific EPYC workload and its callbacks—not whether to migrate the entire REPL.\nSDM — routing quality and inference cost. It could challenge the existing routing classifier using the same decision-time features and eligible outcome-labelled cohort. Learning/promotion gates constrain deployment; they do not, by themselves, establish that a small offline comparison is inappropriate. I made the candidate posture too restrictive without establishing that distinction.\nMulti-harness RL — tool-use efficiency and portability. Correctness-gated reductions in tool calls or tokens could benefit EPYC. The project also has actual language-model training machinery; it is not limited to router Q updates. What remains unestablished is the particular checkpoint, workload and training intervention worth testing—not the relevance of weight training itself.\nLooped models — prefill latency. The relevant hypothesis is reducing prefill cost while retaining teacher decoding. That could matter to orchestration paths dominated by repeated long-context prefill. Compatibility and port effort remain unresolved, and the research does not establish an EPYC end-to-end benefit. Those are comparison prerequisites, not grounds for declaring the technique irrelevant.\" - what? There are tons of crucial insights here that should be integrated into our stack's functioning! Are you telling me there aren't actionable operational tasks/handoff work that can be distilled?!?",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-7"
+    },
+    {
+      "seq": 8,
+      "stage": 3,
+      "ts": "2026-10-04T06:56:09Z",
+      "verbatim": "\"That matters here: a promotion freeze is not a reason to suppress a useful integration task. Before editing, I also checked the intake reader’s upstream dependencies: LOW risk, one direct caller. This revision changes only the plan.\" - we can work on ANYTHING if needed. Even critical-flagged gitnexus jobs. They're will always be a will if there potential ROI is high",
+      "disposition": "planned",
+      "plan_ref": "SCOPE-8"
     }
   ],
   "expansion_cap": 10,
   "expansion_count": 6,
-  "workflow_boundary": "Stage2 closed. Stage3 writes only the consolidated plan; handoffs, indices, adapters, runtime and production remain untouched until the reviewed plan is approved.",
+  "workflow_boundary": "Stage4 approved: exact reviewed handoff/index/metadata and workflow hardening only. Application implementations, downloads, model calls/training/inference, cutovers/reloads and grading/trust amendments are not part of this run.",
   "coordination_note": "No roster ID for this API session; drain rejected unknown codex-intake-20261003. Did not impersonate a registered session or amend roster.",
   "expansion_entries": [
     {
@@ -1099,7 +1156,7 @@
   "lane": "/mnt/raid0/llm/worktrees/intake-decision-tools-final-20261003",
   "stage2": {
     "wave_limit": 3,
-    "waves_started": 2,
+    "waves_started": 3,
     "automatic_selection": true,
     "waves": [
       {
@@ -1122,12 +1179,12 @@
           "intake-1868",
           "intake-1859"
         ],
-        "status": "in-progress"
+        "status": "complete"
       },
       {
         "wave": 2,
         "scope": "Automatically accepted sources surfaced by Wave1",
-        "status": "in-progress",
+        "status": "complete",
         "sources": [
           {
             "reserved_id": "intake-1870",
@@ -1169,6 +1226,72 @@
             ]
           }
         ]
+      },
+      {
+        "wave": 3,
+        "status": "complete",
+        "sources": [
+          {
+            "id": "intake-1885",
+            "url": "https://github.com/fstandhartinger/jevbench"
+          },
+          {
+            "id": "intake-1886",
+            "url": "https://pydantic.dev/articles/hack-monty-3"
+          },
+          {
+            "id": "intake-1887",
+            "url": "https://github.com/huggingface/trl"
+          },
+          {
+            "id": "intake-1888",
+            "url": "https://huggingface.co/ayushkaushal4/tabiclv2-replication"
+          },
+          {
+            "id": "intake-1889",
+            "url": "https://github.com/NVIDIA/structured-data-models/issues/947"
+          },
+          {
+            "id": "intake-1890",
+            "url": "https://gomesfellipe.github.io/post/2026-08-06-tabfm-vs-gbm/"
+          },
+          {
+            "id": "intake-1891",
+            "url": "https://github.com/uspraveen/Jevify"
+          },
+          {
+            "id": "intake-1892",
+            "url": "https://github.com/yodablocks/jev-orderby-bench"
+          },
+          {
+            "id": "intake-1893",
+            "url": "https://github.com/Jevals/jevals-data"
+          },
+          {
+            "id": "intake-1894",
+            "url": "https://jevals.com/methodology/"
+          },
+          {
+            "id": "intake-1895",
+            "url": "https://docs.typesafe.ai/model-jaggedness/jev-1.13"
+          },
+          {
+            "id": "intake-1896",
+            "url": "https://huggingface.co/spaces/FineEnvs/data-agent-sft-trackio"
+          },
+          {
+            "id": "intake-1897",
+            "url": "https://www.benchmarkheaven.com/about"
+          },
+          {
+            "id": "intake-1898",
+            "url": "https://www.benchmarkheaven.com/jev-models/v1.5.6"
+          },
+          {
+            "id": "intake-1899",
+            "url": "https://github.com/fstandhartinger/model-market-comparison"
+          }
+        ]
       }
     ],
     "second_reader_required": true,
@@ -1183,7 +1306,9 @@
       "/mnt/raid0/llm/tmp/dive-intake-1850/wave1-report.json",
       "/mnt/raid0/llm/tmp/dive-intake-1856/wave1-report.json"
     ],
-    "dedup_note": "Unbounded parent scalar-locator sweep checked 2750 non-null url/arxiv_id fields; all five initial Wave2 sources are new."
+    "dedup_note": "Unbounded parent scalar-locator sweep checked 2750 non-null url/arxiv_id fields; all five initial Wave2 sources are new.",
+    "status": "complete",
+    "waves_completed": 3
   },
   "wave_limit": 3,
   "waves_started": 3,
@@ -1847,7 +1972,97 @@
     }
   },
   "waves_completed": 3,
-  "plan": "research/intake-stage3-plan-2026-10-03-decision-tools.md",
+  "plan": {
+    "0": "r",
+    "1": "e",
+    "2": "s",
+    "3": "e",
+    "4": "a",
+    "5": "r",
+    "6": "c",
+    "7": "h",
+    "8": "/",
+    "9": "i",
+    "10": "n",
+    "11": "t",
+    "12": "a",
+    "13": "k",
+    "14": "e",
+    "15": "-",
+    "16": "s",
+    "17": "t",
+    "18": "a",
+    "19": "g",
+    "20": "e",
+    "21": "3",
+    "22": "-",
+    "23": "p",
+    "24": "l",
+    "25": "a",
+    "26": "n",
+    "27": "-",
+    "28": "2",
+    "29": "0",
+    "30": "2",
+    "31": "6",
+    "32": "-",
+    "33": "1",
+    "34": "0",
+    "35": "-",
+    "36": "0",
+    "37": "3",
+    "38": "-",
+    "39": "d",
+    "40": "e",
+    "41": "c",
+    "42": "i",
+    "43": "s",
+    "44": "i",
+    "45": "o",
+    "46": "n",
+    "47": "-",
+    "48": "t",
+    "49": "o",
+    "50": "o",
+    "51": "l",
+    "52": "s",
+    "53": ".",
+    "54": "m",
+    "55": "d",
+    "approved_commit": "3911ec91c24a4e0c4f8fa3f1d57e06ae58e49580",
+    "path": "research/intake-stage3-plan-2026-10-03-decision-tools.md",
+    "status": "operator-approved",
+    "packets": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5"
+    ],
+    "new_task_ids": [
+      "D-RI-PICKLE-PASS",
+      "D-RI-TIMEOUT-STATE",
+      "D-RI-CONTAIN",
+      "D-RI-MONTY-SLICE",
+      "EV-RI-CAPTURE-STATUS",
+      "EV-RI-RECONNECT-COST",
+      "TU-MH-1",
+      "S2-CGE-1",
+      "LRC-RI-EXTRACT-SOURCE",
+      "LRC-SDM-ACTION-SCORER",
+      "LRC-SDM-CACHED-SCREEN",
+      "RC-XLLM-PREFILL-1",
+      "ID-RI-OPPORTUNITY-GATE",
+      "VB-RI-OPS-WIRE"
+    ],
+    "refined_task_ids": [
+      "TD-29",
+      "TD-29.M0a",
+      "TD-12",
+      "TD-29.M2"
+    ],
+    "mapping_authority": "Approved plan Complete recommendation mapping; older source postures preserved as historical recommendations, not final filing authority."
+  },
   "stage2_closeout": {
     "status": "PASS",
     "sources_dived": 45,
@@ -1874,145 +2089,193 @@
       "ledger_id": "S1-1850-1",
       "source": "intake-1850",
       "action": "[unverified] Dive callbacks, worker deadlines, authenticated snapshots and disposal after terminal resource errors.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "primitive-now → P2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1850-2",
       "source": "intake-1850",
       "action": "[unverified] Compare supported modules and checkpoint semantics with the existing REPL before proposing an adapter.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "cheap-screen → P2 / D-RI-MONTY-SLICE; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1851-1",
       "source": "intake-1851",
       "action": "[unverified] Map the standardization hypothesis to existing typed contracts and owners; do not infer a framework migration benefit from this essay.",
-      "packet": "K1"
+      "packet": "K1",
+      "terminal_mapping": "knowledge-only → K1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1852-1",
       "source": "intake-1852",
       "action": "[unverified] Dive tabular CPU/ROCm paths, relational sampler dispatch and weight licenses before choosing component adoption.",
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "cheap-screen → P4 / LRC-SDM-CACHED-SCREEN; native/relational follow-on M4; asset terms K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1852-2",
       "source": "intake-1852",
       "action": "[unverified] Consider one provenance-preserving adapter over existing routing/reward feature manifests; exclude outcome-derived fields from prediction inputs.",
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "primitive-now → P4 / LRC-SDM-ACTION-SCORER; K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1853-1",
       "source": "intake-1853",
       "action": "[unverified] Dive convergence assumptions and endpoint/cache construction; review manifest binding before proposing any reproduction.",
-      "packet": "P5"
+      "packet": "P5",
+      "terminal_mapping": "cheap-screen → P5 / RC-XLLM-PREFILL-1; K11",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1854-1",
       "source": "intake-1854",
       "action": "[unverified] Review portable manifest and teacher-binding contracts; check architecture/backend support before local model adoption.",
-      "packet": "P5"
+      "packet": "P5",
+      "terminal_mapping": "cheap-screen → P5 / RC-XLLM-PREFILL-1; K11",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1855-1",
       "source": "intake-1855",
       "action": "[unverified] Review as backend candidate under existing TD-23; verify joint-head execution, batching and calibration before accepting economics.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1856-1",
       "source": "intake-1856",
       "action": "[unverified] Dive token/logprob integrity and per-cell result provenance.",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1856-2",
       "source": "intake-1856",
       "action": "[unverified] Assess one cross-harness receipt schema using existing UTM pairing keys; preserve verifier failures and capture grades.",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1857-1",
       "source": "intake-1857",
       "action": "[unverified] Compare proposed capabilities with existing host-owned menus, freshness gates, abstention and receipts before adding tasks.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1857-2",
       "source": "intake-1857",
       "action": "[unverified] After dives, design a paired small-backend/27B/baseline replay measuring failures, escalation cost and marginal residency under matched traffic.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1858-1",
       "source": "intake-1858",
       "action": "[unverified] Compare requirements with current host-owned menus, freshness checks, abstention and decision/memory contracts.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1859-1",
       "source": "intake-1859",
       "action": "[unverified] Review adapter separation; distinguish teacher fidelity, human-label accuracy and held-out correctness calibration.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1860-1",
       "source": "intake-1860",
       "action": "[unverified] Verify release-card scores, weight/runtime contract and hosted price at primary sources during selected dive.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1861-1",
       "source": "intake-1861",
       "action": "[unverified] Retain reporter, suite, cohort and hosted-versus-weights scope; verify load-bearing numbers at primary release artifacts.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1862-1",
       "source": "intake-1862",
       "action": "[unverified] Compare edition/cohort and denominator contracts with decision receipts; report selective risk/coverage separately from index score.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1863-1",
       "source": "intake-1863",
       "action": "[unverified] Dive per-primitive calibration, threshold selection and exposure controls for TD-23; prefer frozen replay before broad benchmarking.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1864-1",
       "source": "intake-1864",
       "action": "[unverified] Review pinned implementation together with docs for a scoped capability adapter.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "cheap-screen → P2 / D-RI-MONTY-SLICE; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1865-1",
       "source": "intake-1865",
       "action": "[unverified] Consider a compact typed-decision backend candidate inside existing TD-23; first verify loader, head semantics, timing scope and calibration.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1866-1",
       "source": "intake-1866",
       "action": "[unverified] Correct the essay's weights-only generalization; compare model timing, network overhead and realized action latency separately.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1867-1",
       "source": "intake-1867",
       "action": "[unverified] Review manifest and evaluation-identity patterns; resolve current train/eval budget mismatch before treating scripts as a reproduction recipe.",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3 / TU-MH-1 and S2-CGE-1; full reproduction M3; K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1868-1",
       "source": "intake-1868",
       "action": "[unverified] Snapshot scorer edition, benchmark cohort, result provenance and timing scope for every comparison.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "S1-1869-1",
       "source": "intake-1869",
       "action": "[unverified] Dive coherence controls before composing probability-based action rules; consider a reusable label-free probe.",
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MONTY-CONTRACT",
@@ -2030,7 +2293,9 @@
       "broader_trigger": "A reviewed proposal selects Monty as an execution backend; honor the existing tool-surface gate before introducing tools.",
       "ledger_id": "W1-MONTY-CONTRACT",
       "source_group": "Source/code review only; no independent reproduction, benchmarks, inference, installs or writes.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "primitive-now → P2 / D-RI-CONTAIN and D-RI-MONTY-SLICE, bounded execution rather than universal contract",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MONTY-STATE",
@@ -2048,7 +2313,9 @@
       "broader_trigger": "A Monty adapter is approved and durable resume is required.",
       "ledger_id": "W1-MONTY-STATE",
       "source_group": "Source/code review only; no independent reproduction, benchmarks, inference, installs or writes.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "monitor → M2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MONTY-COMPAT",
@@ -2066,7 +2333,9 @@
       "broader_trigger": "Inventory shows a useful bounded workload can migrate without changing its required semantics.",
       "ledger_id": "W1-MONTY-COMPAT",
       "source_group": "Source/code review only; no independent reproduction, benchmarks, inference, installs or writes.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "cheap-screen → P2 / D-RI-MONTY-SLICE; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MONTY-PERFORMANCE",
@@ -2082,7 +2351,9 @@
       "broader_trigger": "Compatibility and lifecycle conformance pass and an EPYC backend choice requires a matched measurement.",
       "ledger_id": "W1-MONTY-PERFORMANCE",
       "source_group": "Source/code review only; no independent reproduction, benchmarks, inference, installs or writes.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MONTY-SECURITY-LINEAGE",
@@ -2099,7 +2370,9 @@
       "broader_trigger": "A source-level discrepancy affects the current candidate's trust boundary.",
       "ledger_id": "W1-MONTY-SECURITY-LINEAGE",
       "source_group": "Source/code review only; no independent reproduction, benchmarks, inference, installs or writes.",
-      "packet": "P2"
+      "packet": "P2",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-RECEIPT",
@@ -2122,7 +2395,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3 / TU-MH-1, scoped existing run outputs; new universal receipt excluded by K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-CAPTURE-CONTRACT",
@@ -2144,7 +2419,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-ATTEMPT-ACCOUNTING",
@@ -2166,7 +2443,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-EXPOSURE-SELECTION",
@@ -2187,7 +2466,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3 / S2-CGE-1; update/checkpoint accounting reserved to M3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-EFFICIENCY-OBJECTIVE",
@@ -2207,7 +2488,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3 / TU-MH-1 and S2-CGE-1; native RL shaping M3; K6",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "MH-FULL-TRAINING",
@@ -2227,7 +2510,9 @@
         "intake-1856",
         "intake-1867"
       ],
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "monitor → M3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "joint-head-protocol",
@@ -2249,7 +2534,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "raw-distribution-contract",
@@ -2271,7 +2558,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "input-loss-and-refusal",
@@ -2293,7 +2582,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "live-menu-authority",
@@ -2316,7 +2607,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K5",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "resolved-identity",
@@ -2338,7 +2631,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "autotrust-mode-isolation",
@@ -2359,7 +2654,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "gold-calibration-and-ood",
@@ -2381,7 +2678,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "primitive-now → P1 / TD-29.M2 using TD-18; K7; backend-specific M1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "decision-economics",
@@ -2403,7 +2702,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "primitive-now → P1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "hardware-and-modality-boundary",
@@ -2424,7 +2725,9 @@
         "intake-1866",
         "intake-1859"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "monitor → M8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "XLLM-ARTIFACT-BINDING",
@@ -2444,7 +2747,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P5"
+      "packet": "P5",
+      "terminal_mapping": "cheap-screen → P5 / RC-XLLM-PREFILL-1; K11",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "XLLM-CLAIM-SCOPE",
@@ -2464,7 +2769,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P5"
+      "packet": "P5",
+      "terminal_mapping": "knowledge-only → K11",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "XLLM-RUNTIME-WATCH",
@@ -2483,7 +2790,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P5"
+      "packet": "P5",
+      "terminal_mapping": "cheap-screen → P5 / RC-XLLM-PREFILL-1; larger port/admission M5",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-FIT-PREDICT-CONTRACT",
@@ -2503,7 +2812,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "primitive-now → P4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-CPU-BASELINE",
@@ -2522,7 +2833,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "cheap-screen → P4 / LRC-SDM-CACHED-SCREEN; native SDM follow-on M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-TABFM-LICENSE",
@@ -2542,7 +2855,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "knowledge-only → K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-EXPLANATION-CAUTION",
@@ -2561,7 +2876,9 @@
         "intake-1854",
         "intake-1852"
       ],
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "monitor → M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "typed-per-head-risk-semantics",
@@ -2584,7 +2901,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "typed-heldout-selective-policy",
@@ -2606,7 +2925,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "primitive-now → P1 / TD-29.M2 using existing calibration; K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "typed-coherence-support-ledger",
@@ -2628,7 +2949,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "index-full-cohort-contract",
@@ -2651,7 +2974,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "index-publication-reconciliation",
@@ -2673,7 +2998,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "timing-cohort-risk-receipt",
@@ -2695,7 +3022,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "primitive-now → P1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "jev-cache-license-boundary",
@@ -2717,7 +3046,9 @@
         "intake-1862",
         "intake-1868"
       ],
-      "packet": "P1"
+      "packet": "P1",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-monty-monty-release-attribution",
@@ -2725,7 +3056,9 @@
       "action": "[unverified] Correct patch attribution to PR381/v0.0.17 and retain unknown remote-commit qualification.",
       "packet": "P2",
       "source_posture": "Parent-only evidence correction; no implementation",
-      "key": "monty-release-attribution"
+      "key": "monty-release-attribution",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-monty-monty-collector-invariant-review",
@@ -2733,7 +3066,9 @@
       "action": "[unverified] Require pin-specific lifetime, reentrancy, traversal and aliasing review; distinguish ordinary tests from Miri-sensitive coverage.",
       "packet": "P2",
       "source_posture": "Static candidate review only",
-      "key": "monty-collector-invariant-review"
+      "key": "monty-collector-invariant-review",
+      "terminal_mapping": "monitor → M2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-monty-monty-authority-minimization",
@@ -2741,7 +3076,9 @@
       "action": "[unverified] Keep secrets outside worker authority and explicitly inventory callback/mount permissions; do not equate subprocess isolation with an OS sandbox.",
       "packet": "P2",
       "source_posture": "Threat-model requirement; no deployment change",
-      "key": "monty-authority-minimization"
+      "key": "monty-authority-minimization",
+      "terminal_mapping": "primitive-now → P2 / D-RI-CONTAIN and D-RI-MONTY-SLICE; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-monty-monty-state-and-lifecycle-boundaries",
@@ -2749,7 +3086,9 @@
       "action": "[unverified] Preserve Wave1 requirements for authenticated snapshots, cumulative host deadlines, terminal-error disposal and import/checkpoint compatibility.",
       "packet": "P2",
       "source_posture": "Carry-forward prerequisites; no adapter authorization",
-      "key": "monty-state-and-lifecycle-boundaries"
+      "key": "monty-state-and-lifecycle-boundaries",
+      "terminal_mapping": "primitive-now → P2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-SDM-TABFM-LICENSE",
@@ -2757,7 +3096,9 @@
       "action": "[unverified] Preserve separate wrapper/asset licenses and compare intended TabFM use against the pinned asset terms before approval.",
       "packet": "P4",
       "source_posture": "primitive-now",
-      "key": "SDM-TABFM-LICENSE"
+      "key": "SDM-TABFM-LICENSE",
+      "terminal_mapping": "knowledge-only → K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-MONTY-CONTRACT",
@@ -2765,7 +3106,9 @@
       "action": "[unverified] Retain explicit capabilities, callback/session deadlines, output/mount bounds and terminal memory/time-error disposal in the execution-adapter contract.",
       "packet": "P2",
       "source_posture": "primitive-now",
-      "key": "MONTY-CONTRACT"
+      "key": "MONTY-CONTRACT",
+      "terminal_mapping": "primitive-now → P2 / bounded containment and slice; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-MONTY-STATE",
@@ -2773,7 +3116,9 @@
       "action": "[unverified] Require authenticated/versioned snapshot provenance and explicit authority reattachment if Monty resume is adopted.",
       "packet": "P2",
       "source_posture": "monitor",
-      "key": "MONTY-STATE"
+      "key": "MONTY-STATE",
+      "terminal_mapping": "monitor → M2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-MONTY-COMPAT",
@@ -2781,7 +3126,9 @@
       "action": "[unverified] Preserve the existing import/value/persistence compatibility inventory proposal.",
       "packet": "P2",
       "source_posture": "primitive-now",
-      "key": "MONTY-COMPAT"
+      "key": "MONTY-COMPAT",
+      "terminal_mapping": "cheap-screen → P2 / D-RI-MONTY-SLICE",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-MONTY-PERFORMANCE",
@@ -2789,7 +3136,9 @@
       "action": "[unverified] Retain warm-pool, replay and sampling qualifications; do not infer EPYC advantage.",
       "packet": "P2",
       "source_posture": "knowledge-only",
-      "key": "MONTY-PERFORMANCE"
+      "key": "MONTY-PERFORMANCE",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-license-MONTY-SECURITY-LINEAGE",
@@ -2797,7 +3146,9 @@
       "action": "[unverified] Preserve the original report's historical exploit/fix reconciliation proposal; this second-reader pass does not resolve it.",
       "packet": "P2",
       "source_posture": "knowledge-only",
-      "key": "MONTY-SECURITY-LINEAGE"
+      "key": "MONTY-SECURITY-LINEAGE",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-RECEIPT",
@@ -2805,7 +3156,9 @@
       "action": "[unverified] Define an effective-run receipt: source/harness revisions, served checkpoint attestation, provider, capture purpose, sampling, budgets, verifier and token-accounting scope.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-RECEIPT"
+      "key": "MH-RECEIPT",
+      "terminal_mapping": "primitive-now → P3 / TU-MH-1 scoped outputs; K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-CAPTURE-CONTRACT",
@@ -2813,7 +3166,9 @@
       "action": "[unverified] Specify exact-ID, behavior-logprob and authoritative-mask eligibility separately from generic trace validity.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-CAPTURE-CONTRACT"
+      "key": "MH-CAPTURE-CONTRACT",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-ATTEMPT-ACCOUNTING",
@@ -2821,7 +3176,9 @@
       "action": "[unverified] Keep append-only attempts and verifier outcomes separate from telemetry/capture success; reuse existing disposition accounting.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-ATTEMPT-ACCOUNTING"
+      "key": "MH-ATTEMPT-ACCOUNTING",
+      "terminal_mapping": "primitive-now → P3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-EXPOSURE-SELECTION",
@@ -2829,7 +3186,9 @@
       "action": "[unverified] Audit sampled/retained episodes, rows, supervised/processed tokens, committed updates, checkpoint selection and unseen-harness coverage.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-EXPOSURE-SELECTION"
+      "key": "MH-EXPOSURE-SELECTION",
+      "terminal_mapping": "primitive-now → P3 / S2-CGE-1; full training accounting M3; K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-HISTORICAL-PROVENANCE",
@@ -2837,7 +3196,9 @@
       "action": "[unverified] Bind every published aggregate to experiment family, checkpoint lineage, attempts, cohort membership and source artifacts; separate plotting samples from raw evidence.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-HISTORICAL-PROVENANCE"
+      "key": "MH-HISTORICAL-PROVENANCE",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-QUALIFICATION-TIERS",
@@ -2845,7 +3206,9 @@
       "action": "[unverified] Distinguish eval compatibility, capture-reader retention, optimizer diagnostic and synchronized reward-normalized training.",
       "packet": "P3",
       "source_posture": "primitive-now; proposal only",
-      "key": "MH-QUALIFICATION-TIERS"
+      "key": "MH-QUALIFICATION-TIERS",
+      "terminal_mapping": "monitor → M3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-GROUPING-AUDIT",
@@ -2853,7 +3216,9 @@
       "action": "[unverified] Record grouping boundary, zero-advantage fraction, baseline population and retained-gradient exposure; preserve uncertainty about portability.",
       "packet": "P3",
       "source_posture": "knowledge-only now; training-consumer-gated",
-      "key": "MH-GROUPING-AUDIT"
+      "key": "MH-GROUPING-AUDIT",
+      "terminal_mapping": "monitor → M3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-EFFICIENCY-OBJECTIVE",
@@ -2861,7 +3226,9 @@
       "action": "[unverified] Keep binary correctness and correctness-conditioned efficiency rewards separate; avoid treating descriptive savings as causal reward benefit.",
       "packet": "P3",
       "source_posture": "knowledge-only/context",
-      "key": "MH-EFFICIENCY-OBJECTIVE"
+      "key": "MH-EFFICIENCY-OBJECTIVE",
+      "terminal_mapping": "primitive-now → P3 / TU-MH-1 and S2-CGE-1; native RL shaping M3; K6",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-mh-MH-FULL-TRAINING",
@@ -2869,7 +3236,9 @@
       "action": "[unverified] Retain full reproduction as a trigger-gated follow-on, not an immediate benchmark or deployment.",
       "packet": "P3",
       "source_posture": "monitor",
-      "key": "MH-FULL-TRAINING"
+      "key": "MH-FULL-TRAINING",
+      "terminal_mapping": "monitor → M3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-auto-mode-isolation",
@@ -2877,7 +3246,9 @@
       "action": "[unverified] Preserve unmerged adapter/base routing and record direct, wide-option and reasoning modes separately.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "auto-mode-isolation"
+      "key": "auto-mode-isolation",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-gold-calibration",
@@ -2885,7 +3256,9 @@
       "action": "[unverified] Separate teacher fidelity, fitted-temperature performance and held-out gold correctness before threshold selection.",
       "packet": "P1",
       "source_posture": "cheap-screen-now",
-      "key": "gold-calibration"
+      "key": "gold-calibration",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-runtime-identity",
@@ -2893,7 +3266,9 @@
       "action": "[unverified] Require resolved weight/head/code/configuration identity, or explicitly mark runtime identity unresolved.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "runtime-identity"
+      "key": "runtime-identity",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-hosted-contract",
@@ -2901,7 +3276,9 @@
       "action": "[unverified] Preserve hosted-specific question/image/context limits and truncation provenance; require a concrete video contract before modality adoption.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "hosted-contract"
+      "key": "hosted-contract",
+      "terminal_mapping": "knowledge-only → K4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-hosted-economics",
@@ -2909,7 +3286,9 @@
       "action": "[unverified] Record inference, round-trip, retry/escalation and total cost separately; evaluate cost per correct eligible decision.",
       "packet": "P1",
       "source_posture": "cheap-screen-now",
-      "key": "hosted-economics"
+      "key": "hosted-economics",
+      "terminal_mapping": "primitive-now → P1",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-label-provenance",
@@ -2917,7 +3296,9 @@
       "action": "[unverified] Track stream, teacher/gold/programmatic/placeholder status and split/group provenance; quarantine uniform relevance labels.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "label-provenance"
+      "key": "label-provenance",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-order-controls",
@@ -2925,7 +3306,9 @@
       "action": "[unverified] Pair shuffled-order tests with fixed-order repeats, stable tie handling and complete failure denominators.",
       "packet": "P1",
       "source_posture": "cheap-screen-now",
-      "key": "order-controls"
+      "key": "order-controls",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-dataset-shortcut-controls",
@@ -2933,7 +3316,9 @@
       "action": "[unverified] Carry text-free picker baselines, gold-string leakage and model/domain overlap alongside accuracy.",
       "packet": "P1",
       "source_posture": "cheap-screen-now",
-      "key": "dataset-shortcut-controls"
+      "key": "dataset-shortcut-controls",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-strict-client-validation",
@@ -2941,7 +3326,9 @@
       "action": "[unverified] Validate exact keys, finite nonnegative mass, normalization and selected-ID consistency before repair; preserve invalid raw output.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "strict-client-validation"
+      "key": "strict-client-validation",
+      "terminal_mapping": "primitive-now → P1 / TD-12 selected-branch validation; K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-clef-benchmark-transparency",
@@ -2949,7 +3336,9 @@
       "action": "[unverified] Attach method/addendum, sample manifest, scoring tolerances, support signature, raw-to-aggregate linkage and timing/price basis to cited external results.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "benchmark-transparency"
+      "key": "benchmark-transparency",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-second-reader-anchor-strengthening",
@@ -2957,7 +3346,9 @@
       "action": "[unverified] Parent should apply the stronger anchors above, retaining publisher-description and static-code qualifications.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "second-reader-anchor-strengthening"
+      "key": "second-reader-anchor-strengthening",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-retract-truncated-tree-absence",
@@ -2965,7 +3356,9 @@
       "action": "[unverified] Retract the Wave-1 calibration README/scripts-drift finding and record that the complete pinned tree includes the advertised scripts and tests.",
       "packet": "P1",
       "source_posture": "knowledge-only",
-      "key": "retract-truncated-tree-absence"
+      "key": "retract-truncated-tree-absence",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-typed-per-head-risk-semantics",
@@ -2973,7 +3366,9 @@
       "action": "[unverified] Keep top-option correctness calibration, Noul event calibration, ordinal Score quality, API confidence and coherence in separate receipt fields.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "typed-per-head-risk-semantics"
+      "key": "typed-per-head-risk-semantics",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-cached-evaluation-support-contract",
@@ -2981,7 +3376,9 @@
       "action": "[unverified] Preserve requested, cached, parsed, scored and excluded counts, per head and per linked group; distinguish conditional metrics from full-attempt outcomes.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "cached-evaluation-support-contract"
+      "key": "cached-evaluation-support-contract",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-typed-heldout-selective-policy",
@@ -2989,7 +3386,9 @@
       "action": "[unverified] Bind per-head thresholds to development groups and retain held-out groups, probability target, tie convention and clustered uncertainty.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "typed-heldout-selective-policy"
+      "key": "typed-heldout-selective-policy",
+      "terminal_mapping": "primitive-now → P1 / TD-29.M2 using TD-18; K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-typed-coherence-support-ledger",
@@ -2997,7 +3396,9 @@
       "action": "[unverified] Add explicit partition assumptions, common-support counts, retry/repeat selection and noise assumptions to coherence receipts.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "typed-coherence-support-ledger"
+      "key": "typed-coherence-support-ledger",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-option-readout-provenance",
@@ -3005,7 +3406,9 @@
       "action": "[unverified] Retain tokenizer/model revisions, option-code mapping, original label mass, thinking mode and requested/resolved identities.",
       "packet": "P1",
       "source_posture": "primitive-now",
-      "key": "option-readout-provenance"
+      "key": "option-readout-provenance",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-response-cache-licence-boundary",
@@ -3013,7 +3416,9 @@
       "action": "[unverified] Record separate code/data permissions and resolve database-to-licence mapping before any response reuse beyond inspection.",
       "packet": "P1",
       "source_posture": "monitor",
-      "key": "response-cache-licence-boundary"
+      "key": "response-cache-licence-boundary",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-bounded-author-log-recomputation",
@@ -3021,7 +3426,9 @@
       "action": "[unverified] Prefer a small, explicitly configured author-log analysis check before any fresh collection or paper-wide recreation.",
       "packet": "P1",
       "source_posture": "monitor",
-      "key": "bounded-author-log-recomputation"
+      "key": "bounded-author-log-recomputation",
+      "terminal_mapping": "monitor → M6",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W2-calib-preregistration-evidence-boundary",
@@ -3029,7 +3436,9 @@
       "action": "[unverified] Label internal thresholds as author-analysis metadata, not independently verified prospective preregistration.",
       "packet": "P1",
       "source_posture": "knowledge-only",
-      "key": "preregistration-evidence-boundary"
+      "key": "preregistration-evidence-boundary",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-VERSIONED-PROTOCOL",
@@ -3037,7 +3446,9 @@
       "action": "[unverified] Bind every comparison to method, addenda, scorer, adapters, sample manifest and ranking-view revisions.",
       "packet": "P1",
       "key": "JB-VERSIONED-PROTOCOL",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-DENOMINATOR-CONTRACT",
@@ -3045,7 +3456,9 @@
       "action": "[unverified] Carry planned, attempted, scorable, valid, calibrated, paired and cost-known counts alongside metrics.",
       "packet": "P1",
       "key": "JB-DENOMINATOR-CONTRACT",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-IDENTITY-RAW-LINKAGE",
@@ -3053,7 +3466,9 @@
       "action": "[unverified] Require resolved weights/head/code/effective configuration plus raw-output-to-aggregate linkage, or mark the result non-replayable.",
       "packet": "P1",
       "key": "JB-IDENTITY-RAW-LINKAGE",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-VALIDITY-CALIBRATION",
@@ -3061,7 +3476,9 @@
       "action": "[unverified] Preserve raw versus normalized distributions, tolerances, strict validity, calibration population and metric convention.",
       "packet": "P1",
       "key": "JB-VALIDITY-CALIBRATION",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-ECONOMICS-SCOPE",
@@ -3069,7 +3486,9 @@
       "action": "[unverified] Separate observed billing, reservation, proxy/reference pricing, adjusted latency and setup time; retain total cost per correct eligible decision.",
       "packet": "P1",
       "key": "JB-ECONOMICS-SCOPE",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-LICENSE-EXPORT",
@@ -3077,7 +3496,9 @@
       "action": "[unverified] Reuse licensed evidence/export patterns while enforcing upstream data terms and sealed-data boundaries.",
       "packet": "P1",
       "key": "JB-LICENSE-EXPORT",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-jevbench-JB-FULL-REPLAY",
@@ -3085,7 +3506,9 @@
       "action": "[unverified] Keep full v1.5.6 reproduction conditional on exact public/private artifact access and a concrete project decision.",
       "packet": "P1",
       "key": "JB-FULL-REPLAY",
-      "source_posture": "monitor"
+      "source_posture": "monitor",
+      "terminal_mapping": "monitor → M6",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-tabular-P4-BASELINE-CONFORMANCE",
@@ -3093,7 +3516,9 @@
       "action": "[unverified] Add effective-config, task-metric, grouping, preprocessing, missingness and estimator/readout checks to any proposed tabular baseline recipe.",
       "packet": "P4",
       "key": "P4-BASELINE-CONFORMANCE",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "cheap-screen → P4 / LRC-SDM-CACHED-SCREEN; K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-tabular-P4-TABULAR-SCREEN",
@@ -3101,7 +3526,9 @@
       "action": "[unverified] Keep tabular execution, quality comparison and explanation testing dormant until backend, license and leakage prerequisites pass.",
       "packet": "P4",
       "key": "P4-TABULAR-SCREEN",
-      "source_posture": "monitor"
+      "source_posture": "monitor",
+      "terminal_mapping": "cheap-screen → P4 / historical CPU design screen now; native portability/explanations M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-jevbench-JB-VERSIONED-PROTOCOL",
@@ -3109,7 +3536,9 @@
       "action": "[unverified] Preserve post-result headline amendment and distinguish historical placement rules from current official addendum ranks.",
       "packet": "P1",
       "key": "JB-VERSIONED-PROTOCOL",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-jevbench-JB-IDENTITY-RAW-LINKAGE",
@@ -3117,7 +3546,9 @@
       "action": "[unverified] Distinguish displayed artifact hashes from independently checked artifacts and execution-attested evaluator revisions.",
       "packet": "P1",
       "key": "JB-IDENTITY-RAW-LINKAGE",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-jevbench-order-controls",
@@ -3125,7 +3556,9 @@
       "action": "[unverified] Record execution sequence and option-order policy separately from order-independent dataset identity.",
       "packet": "P1",
       "key": "order-controls",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-jevbench-JB-LICENSE-EXPORT",
@@ -3133,14 +3566,18 @@
       "action": "[unverified] Keep publication privacy separate from API exposure and operator retention assurances.",
       "packet": "P1",
       "key": "JB-LICENSE-EXPORT",
-      "source_posture": "primitive-now"
+      "source_posture": "primitive-now",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-composite-anchors",
       "source": "intake-1852/1853/1854/1881",
       "action": "Parent persists repaired composite spans, exact sampler quote and sufficient-theorem wording.",
       "packet": "K2",
-      "source_posture": "knowledge-only"
+      "source_posture": "knowledge-only",
+      "terminal_mapping": "knowledge-only → K2",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-label-provenance",
@@ -3148,7 +3585,9 @@
       "action": "[unverified] Preserve stream-specific teacher/provenance and companion placeholder-label qualifications.",
       "packet": "P1",
       "key": "label-provenance",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-gold-calibration",
@@ -3156,7 +3595,9 @@
       "action": "[unverified] Keep teacher-target matching separate from gold correctness and audited holdout quality.",
       "packet": "P1",
       "key": "gold-calibration",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "primitive-now → P1 / TD-29.M2; K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-order-controls",
@@ -3164,7 +3605,9 @@
       "action": "[unverified] Retain shared-K comparisons, fixed-order controls and complete/incomplete permutation denominators.",
       "packet": "P1",
       "key": "order-controls",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-dataset-shortcut-controls",
@@ -3172,7 +3615,9 @@
       "action": "[unverified] Preserve failed G3, eight-versus-six discrepancy, lexical leakage and model/domain overlap.",
       "packet": "P1",
       "key": "dataset-shortcut-controls",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-strict-client-validation",
@@ -3180,7 +3625,9 @@
       "action": "[unverified] Require exact keys, finite bounded probabilities and explicit normalization semantics.",
       "packet": "P1",
       "key": "strict-client-validation",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "primitive-now → P1 / TD-12 and TD-29.M2; K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-runtime-identity",
@@ -3188,7 +3635,9 @@
       "action": "[unverified] Distinguish requested aliases/source pins from resolved runtime artifact attestations.",
       "packet": "P1",
       "key": "runtime-identity",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-paid-call-budget-semantics",
@@ -3196,7 +3645,9 @@
       "action": "[unverified] Label projected spend screening as estimate-based; preserve unknown usage and potentially billed retries.",
       "packet": "P1",
       "key": "paid-call-budget-semantics",
-      "source_posture": "Previously surfaced addition retained"
+      "source_posture": "Previously surfaced addition retained",
+      "terminal_mapping": "knowledge-only → K4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-benchmark-transparency",
@@ -3204,7 +3655,9 @@
       "action": "[unverified] Bind claims to method amendments, evaluator provenance, ranking view, coverage and separate data licenses.",
       "packet": "P1",
       "key": "benchmark-transparency",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-hosted-economics",
@@ -3212,7 +3665,9 @@
       "action": "[unverified] Separate observed billing, reference-price estimates, proxy usage and latency adjustments.",
       "packet": "P1",
       "key": "hosted-economics",
-      "source_posture": "Existing P1 ledger refinement"
+      "source_posture": "Existing P1 ledger refinement",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-MONTY-CONTRACT",
@@ -3220,7 +3675,9 @@
       "action": "[unverified] Retain Round 2 outcome qualifications and the changed Round 3 server/mount boundary.",
       "packet": "P2",
       "key": "MONTY-CONTRACT",
-      "source_posture": "Existing P2 ledger refinement"
+      "source_posture": "Existing P2 ledger refinement",
+      "terminal_mapping": "primitive-now → P2 / bounded execution slice; K8",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-P4-BASELINE-CONFORMANCE",
@@ -3228,7 +3685,9 @@
       "action": "[unverified] Preserve effective-config, metric, grouping, preprocessing, missingness and estimator/readout checks.",
       "packet": "P4",
       "key": "P4-BASELINE-CONFORMANCE",
-      "source_posture": "Existing P4 primitive refinement"
+      "source_posture": "Existing P4 primitive refinement",
+      "terminal_mapping": "cheap-screen → P4 / grouped same-partition baseline; K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "PEER-final-P4-TABULAR-SCREEN",
@@ -3236,7 +3695,9 @@
       "action": "[unverified] Keep quality, portability and explanation execution dormant until backend, license, leakage and authorization prerequisites pass.",
       "packet": "P4",
       "key": "P4-TABULAR-SCREEN",
-      "source_posture": "Existing P4 monitor row retained"
+      "source_posture": "Existing P4 monitor row retained",
+      "terminal_mapping": "cheap-screen → P4 / historical CPU design screen now; broader M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-publication-BH-VERSIONED-PUBLICATION",
@@ -3245,7 +3706,9 @@
       "packet": "P1",
       "key": "BH-VERSIONED-PUBLICATION",
       "source_posture": "primitive-now",
-      "peer_refinement": "[unverified] Record committed/API hash equality separately from displayed scorer-output hashes and private raw-run correctness."
+      "peer_refinement": "[unverified] Record committed/API hash equality separately from displayed scorer-output hashes and private raw-run correctness.",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "ledger_id": "W3-publication-BH-EXPOSURE-IDENTITY",
@@ -3254,7 +3717,9 @@
       "packet": "P1",
       "key": "BH-EXPOSURE-IDENTITY",
       "source_posture": "primitive-now",
-      "peer_refinement": "[unverified] Preserve exposure, self-reported base identity, private raw linkage and unknown pre-run public-code availability as distinct fields."
+      "peer_refinement": "[unverified] Preserve exposure, self-reported base identity, private raw linkage and unknown pre-run public-code availability as distinct fields.",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "wave3-confidence-targets",
@@ -3271,7 +3736,9 @@
       "ledger_id": "W3-context-wave3-confidence-targets",
       "source": "intake-1891/1892/1893/1894/1895",
       "packet": "P1",
-      "peer_refinement": "[unverified] Identify the probability/confidence target of every ECE, selective-risk and mean-confidence field."
+      "peer_refinement": "[unverified] Identify the probability/confidence target of every ECE, selective-risk and mean-confidence field.",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "wave3-common-support-and-ties",
@@ -3288,7 +3755,9 @@
       "ledger_id": "W3-context-wave3-common-support-and-ties",
       "source": "intake-1891/1892/1893/1894/1895",
       "packet": "P1",
-      "peer_refinement": "[unverified] Preserve requested, successful-common, confidence-masked and comparable-pair support separately; expose zero-support and tie-cut outcomes."
+      "peer_refinement": "[unverified] Preserve requested, successful-common, confidence-masked and comparable-pair support separately; expose zero-support and tie-cut outcomes.",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "wave3-collection-provenance",
@@ -3305,7 +3774,9 @@
       "ledger_id": "W3-context-wave3-collection-provenance",
       "source": "intake-1891/1892/1893/1894/1895",
       "packet": "P1",
-      "peer_refinement": "[unverified] Separate final-attempt HTTP elapsed time from parsed-answer and retry-inclusive time; retain requested/response aliases without treating them as immutable weight identity."
+      "peer_refinement": "[unverified] Separate final-attempt HTTP elapsed time from parsed-answer and retry-inclusive time; retain requested/response aliases without treating them as immutable weight identity.",
+      "terminal_mapping": "primitive-now → P3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "wave3-optimistic-hand-off",
@@ -3322,7 +3793,9 @@
       "ledger_id": "W3-context-wave3-optimistic-hand-off",
       "source": "intake-1891/1892/1893/1894/1895",
       "packet": "P1",
-      "peer_refinement": "[unverified] Label same-item threshold selection descriptive, not held-out certification."
+      "peer_refinement": "[unverified] Label same-item threshold selection descriptive, not held-out certification.",
+      "terminal_mapping": "knowledge-only → K7",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "wave3-vendor-page-drift",
@@ -3339,7 +3812,9 @@
       "ledger_id": "W3-context-wave3-vendor-page-drift",
       "source": "intake-1891/1892/1893/1894/1895",
       "packet": "K3",
-      "peer_refinement": "[unverified] Attribute the historical negation quotation to the pinned harness unless historical vendor publication is independently recovered."
+      "peer_refinement": "[unverified] Attribute the historical negation quotation to the pinned harness unless historical vendor publication is independently recovered.",
+      "terminal_mapping": "knowledge-only → K3",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SFT-exposure-and-denominator-qualification",
@@ -3357,7 +3832,9 @@
       "standalone_action": false,
       "ledger_id": "W3-capture-SFT-exposure-and-denominator-qualification",
       "source": "intake-1887/intake-1896",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "primitive-now → P3 / S2-CGE-1 and TU-MH-1; K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "TRL-exact-token-and-group-consumer-contract",
@@ -3376,7 +3853,9 @@
       "standalone_action": false,
       "ledger_id": "W3-capture-TRL-exact-token-and-group-consumer-contract",
       "source": "intake-1887/intake-1896",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "TRL-unscorable-normalization-accounting",
@@ -3393,7 +3872,9 @@
       "standalone_action": false,
       "ledger_id": "W3-capture-TRL-unscorable-normalization-accounting",
       "source": "intake-1887/intake-1896",
-      "packet": "P3"
+      "packet": "P3",
+      "terminal_mapping": "knowledge-only → K9",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-FIT-PREDICT-CONTRACT",
@@ -3411,7 +3892,9 @@
       "broader_trigger": "Authorized comparison after applicable freeze exit.",
       "packet": "P4",
       "ledger_id": "P4-close-SDM-FIT-PREDICT-CONTRACT",
-      "source": "intake-1852/intake-1881"
+      "source": "intake-1852/intake-1881",
+      "terminal_mapping": "primitive-now → P4 / scoped scorer's fitted context and availability; no shared platform",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-TABFM-LICENSE",
@@ -3429,7 +3912,9 @@
       "packet": "P4",
       "merge": "Wave1 and Wave2 versions map to this same primitive.",
       "ledger_id": "P4-close-SDM-TABFM-LICENSE",
-      "source": "intake-1852/intake-1881"
+      "source": "intake-1852/intake-1881",
+      "terminal_mapping": "knowledge-only → K10",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-CPU-BASELINE",
@@ -3444,7 +3929,9 @@
       "broader_trigger": "All comparison-monitor conditions satisfied.",
       "ledger_id": "P4-close-SDM-CPU-BASELINE",
       "source": "intake-1852/intake-1881",
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "cheap-screen → P4 / LRC-SDM-CACHED-SCREEN now; native SDM M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     },
     {
       "key": "SDM-EXPLANATION-CAUTION",
@@ -3459,7 +3946,9 @@
       "broader_trigger": "Explanations become decision-bearing; then define authorized conformance checks.",
       "ledger_id": "P4-close-SDM-EXPLANATION-CAUTION",
       "source": "intake-1852/intake-1881",
-      "packet": "P4"
+      "packet": "P4",
+      "terminal_mapping": "monitor → M4",
+      "plan_ref": "research/intake-stage3-plan-2026-10-03-decision-tools.md#complete-recommendation-mapping"
     }
   ],
   "draft_id_renumbering": {
@@ -3518,7 +4007,7 @@
     },
     "published_records_renumbered": false
   },
-  "approval_status": "Stage3 plan review required; automatic dive acceptance does not authorize Stage4 handoff changes.",
+  "approval_status": "approved",
   "validation": {
     "intake": {
       "exit_code": 0,
@@ -3533,6 +4022,772 @@
       "base_records": 1845,
       "new_records": 50,
       "collisions": []
+    },
+    "stage4": {
+      "status": "passed",
+      "tests": "25 passed, 29 subtests passed in 0.12s",
+      "skill_formats": {
+        "project": 0,
+        "codex_mirror": 0
+      },
+      "shell_syntax": 0,
+      "default_index": {
+        "exit": 0,
+        "entries": 1895
+      },
+      "opt_in_plan_session": {
+        "exit": 0,
+        "entries": 1895
+      },
+      "source_preservation": "50 metadata-only entries; other fields and unrelated entries unchanged",
+      "legacy_validate_index": "exact function source unchanged",
+      "handoff_index": {
+        "exit": 0,
+        "problems": 0
+      },
+      "citation_gate": {
+        "exit": 0,
+        "citations": 384,
+        "documents": 10,
+        "review": 82,
+        "unknown": 5,
+        "ok": 166,
+        "record": 131,
+        "blocking": 0
+      },
+      "semantic_review": "Eight regression dispositions reviewed against actual project context; machine acceptance is not semantic approval.",
+      "evidence_file": "progress/2026-10/2026-10-04-intake-decision-tools-stage4.md",
+      "boundary": "Workflow conformance only; no performance, prevalence, promotion or deployment warrant."
     }
+  },
+  "stage4": {
+    "status": "complete",
+    "approved_verbatim": "Proceed with stage 4",
+    "approved_plan_commit": "3911ec91c24a4e0c4f8fa3f1d57e06ae58e49580",
+    "approved_scope": "Exact operational filing and targeted intake workflow hardening; no application experiment, install, inference, training, runtime or production cutover.",
+    "reconciled": true,
+    "validation_attempts": [
+      {
+        "kind": "CPU admission",
+        "tag": "intake-stage4-validation",
+        "exit": 75,
+        "result": "Timed out while other build held all regions; no tests ran."
+      },
+      {
+        "kind": "relative-path invocation",
+        "exit": 4,
+        "result": "Region wrapper cwd is orchestrator; zero tests collected. Corrected to absolute paths and root pytest.ini."
+      },
+      {
+        "kind": "focused and legacy tests",
+        "exit": 0,
+        "summary": "25 passed, 29 subtests passed in 0.12s",
+        "empirical_warrant": false
+      }
+    ],
+    "completed_at": "2026-10-04T07:19:00Z",
+    "outcomes": {
+      "new_tasks": 14,
+      "new_tasks_open": 13,
+      "new_tasks_closed": 1,
+      "existing_tasks_refined": 4,
+      "existing_checkbox_flips": 0,
+      "entries_updated": 50,
+      "integrated": 30,
+      "knowledge_only": 15,
+      "awaiting_dive": 5,
+      "new_handoffs": 0,
+      "new_index_rows": 0,
+      "source_rows": 6,
+      "application_execution": false
+    }
+  },
+  "stage3_filing": {
+    "entry_updates": [
+      {
+        "id": "intake-1855",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1859",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1863",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1865",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1875",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1882",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1884",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1885",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1850",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1864",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1886",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1856",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "eval-tower-verification.md",
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md",
+          "unified-trace-memory-service.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged; P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed; P3/K9 evaluation versus off-policy RL qualification; existing UTM pairing owner unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1867",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "eval-tower-verification.md",
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md",
+          "unified-trace-memory-service.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged; P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed; P3/K9 evaluation versus off-policy RL qualification; existing UTM pairing owner unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1872",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1873",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1874",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1887",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1896",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "tool-use-eval-contract.md",
+          "memento-block-reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P3; TU-MH-1 cross-harness acceptance driver; K6/K9; broader RL M3; P3; S2-CGE-1 correctness/completeness selector; K6/K9; no weight-training benefit claimed. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1891",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md",
+          "eval-tower-verification.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons; P3; EV-RI-CAPTURE-STATUS and EV-RI-RECONNECT-COST; grades unchanged. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1852",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "learned-routing-controller.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1881",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "learned-routing-controller.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1888",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "learned-routing-controller.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1889",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "learned-routing-controller.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1890",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "learned-routing-controller.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P4; LRC-RI-EXTRACT-SOURCE, LRC-SDM-ACTION-SCORER and LRC-SDM-CACHED-SCREEN; K10; native/current-stack follow-on M4. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1853",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P5; RC-XLLM-PREFILL-1 native bound teacher/student runner and watch refinement; K11; larger port/admission M5. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1854",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "reasoning-compression.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P5; RC-XLLM-PREFILL-1 native bound teacher/student runner and watch refinement; K11; larger port/admission M5. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1851",
+        "integration_disposition": "awaiting_dive",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
+        ]
+      },
+      {
+        "id": "intake-1857",
+        "integration_disposition": "awaiting_dive",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
+        ]
+      },
+      {
+        "id": "intake-1858",
+        "integration_disposition": "awaiting_dive",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
+        ]
+      },
+      {
+        "id": "intake-1860",
+        "integration_disposition": "awaiting_dive",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
+        ]
+      },
+      {
+        "id": "intake-1861",
+        "integration_disposition": "awaiting_dive",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Retained as Stage-1 provisional architecture/narrative context (K1/K7, M7); no factual mechanism or metric may support an operational decision until separate primary-source verification. This campaign closed at three waves; no decline or fourth wave is inferred."
+        ]
+      },
+      {
+        "id": "intake-1862",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1869",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "typed-decision-plane.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P1; TD-29, TD-29.M0a, TD-12 and TD-29.M2 acceptance refinements; K7; M1/M6/M8 remain scoped follow-ons. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1870",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1871",
+        "integration_disposition": "integrated",
+        "handoffs_updated": [
+          "repl-session-memory-maturity.md"
+        ],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "2026-10-04 operator-approved Stage 4: P2; D-RI-PICKLE-PASS, D-RI-TIMEOUT-STATE, D-RI-CONTAIN and D-RI-MONTY-SLICE; K8; broader capabilities M2. Routed owner work only; application implementation, empirical uplift and deployment are not established."
+        ]
+      },
+      {
+        "id": "intake-1866",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1868",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1876",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1877",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1878",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1879",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1880",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1883",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1892",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1893",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1894",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1895",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1897",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1898",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      },
+      {
+        "id": "intake-1899",
+        "integration_disposition": "knowledge_only",
+        "handoffs_updated": [],
+        "handoffs_created": [],
+        "disposition_evidence": [
+          "Reviewed source, scoring-edition, data-license or attribution qualifications retained as K2/K3/K4/K6/K7/K9 and scoped M conditions in research/intake-stage3-plan-2026-10-03-decision-tools.md. No distinct immediate owner change for this record; no deployment, empirical reproduction or whole-entry warrant is inferred."
+        ]
+      }
+    ],
+    "opportunity_reviews": {
+      "P1": {
+        "project_objective": "Correct tool actions at lower total inference/repair cost",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan P1",
+        "gap": "Existing selected-tool integration is synchronous; completion cache counts and validate-first repair do not fully reach their consumers",
+        "operational_change": "Refine TD29/M0a/TD12/M2",
+        "benefit_direction": "Lower completed-action cost; no correctness/authority regression",
+        "owner": "typed-decision-plane.md",
+        "execution_conditions": "Code/fixtures independently; native champion CPU or coordinated JSON MI210; production substitution separate",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "P2": {
+        "project_objective": "Protect REPL availability and persistent state",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan P2",
+        "gap": "Constructors omit pickle payload; wait timeout leaves execution alive",
+        "operational_change": "Four approved state/terminal/containment/Monty-slice tasks",
+        "benefit_direction": "Lower post-timeout resource consumption and no stale checkpoint acceptance",
+        "owner": "repl-session-memory-maturity.md",
+        "execution_conditions": "Opt-in bounded lanes; parent lease/sign/store authority; cgroup controls required; no default cutover",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "P3": {
+        "project_objective": "Robust harness evaluation and useful supervision per token",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan P3",
+        "gap": "Durable capture/reconnect costs missing; one-loop acceptance; truncated and unqualified targets",
+        "operational_change": "Capture/retry fixes, shared acceptance driver and real SFT selector",
+        "benefit_direction": "Detect harness regressions; reduce wasted supervised tokens",
+        "owner": "tool-use-eval-contract.md",
+        "execution_conditions": "Current unchanged scorers; live windows coordinated; independent local labels required; no weight run here",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "P4": {
+        "project_objective": "Outcome-aware routing with available roles",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan P4",
+        "gap": "Implicit NPZ overrides DB/filter; unseen alternatives become zero labels",
+        "operational_change": "Source correction, injected scorer and grouped historical CPU screen",
+        "benefit_direction": "Higher observed outcome rate at useful cost without fabricated labels",
+        "owner": "learned-routing-controller.md",
+        "execution_conditions": "Historical design screen only, train/cal/test isolation; sparse roles refuse; current pilot separately justified",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "P5": {
+        "project_objective": "Test prefilling cost reduction while preserving teacher decode",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan P5",
+        "gap": "llama executable executor cannot consume native endpoint tensors/cache bank",
+        "operational_change": "Finite bound native teacher/student smoke runner",
+        "benefit_direction": "Potential lower prefill cost, executable compatibility evidence first",
+        "owner": "reasoning-compression.md",
+        "execution_conditions": "Small CPU/eager test then coordinated ROCm; artifact binding and narrow shim; no serving-kernel changes",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "ID-RI-OPPORTUNITY-GATE": {
+        "project_objective": "Prevent intake opportunity loss and invalid filing",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan ID-RI-OPPORTUNITY-GATE",
+        "gap": "Primitive-first bias, proposed payload not checked, premature checkpoint cleanup",
+        "operational_change": "Opportunity review plus opt-in payload check and stage-aware cleanup",
+        "benefit_direction": "Fewer dropped operational tasks and structurally invalid updates",
+        "owner": "intake-derived-work-2026-07-25.md",
+        "execution_conditions": "Deterministic fixtures and main semantic review; no corpus migration or grader",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      },
+      "VB-RI-OPS-WIRE": {
+        "project_objective": "Preserve original warrant for selected probe results",
+        "implementation_ref": "orchestrator f8c9c0a3 / research 412e8fc1; pinned code anchors in approved plan VB-RI-OPS-WIRE",
+        "gap": "New producers lack prospective original-write capture",
+        "operational_change": "Register six sources and thin projection task",
+        "benefit_direction": "Results reusable without retroactive tuple invention",
+        "owner": "vidya-belief-substrate-program.md",
+        "execution_conditions": "Capture before each first decision-bearing run; sole existing ClaimTuple grader; no backfill",
+        "closure_basis": "Immediate bounded owner work remains; broader full-reproduction/default-adoption scope is explicitly limited by the approved K/M qualifications."
+      }
+    },
+    "plan_sha256": "4497874a73dca5f0cf5be339497ead65ba8feb8c73a3fc5d5d8677e6a91239e4"
+  },
+  "stage4_reconciled": true,
+  "stage2_early_checkpoint_snapshot": {
+    "wave_limit": 3,
+    "waves_started": 2,
+    "automatic_selection": true,
+    "waves": [
+      {
+        "wave": 1,
+        "scope": "All eight ranked recommendation clusters",
+        "entries": [
+          "intake-1855",
+          "intake-1865",
+          "intake-1866",
+          "intake-1850",
+          "intake-1864",
+          "intake-1856",
+          "intake-1867",
+          "intake-1863",
+          "intake-1869",
+          "intake-1853",
+          "intake-1854",
+          "intake-1852",
+          "intake-1862",
+          "intake-1868",
+          "intake-1859"
+        ],
+        "status": "in-progress"
+      },
+      {
+        "wave": 2,
+        "scope": "Automatically accepted sources surfaced by Wave1",
+        "status": "in-progress",
+        "sources": [
+          {
+            "reserved_id": "intake-1870",
+            "url": "https://verialabs.com/blog/pwning-pydantic-monty/",
+            "bears_on": [
+              "intake-1850",
+              "intake-1864"
+            ]
+          },
+          {
+            "reserved_id": "intake-1871",
+            "url": "https://pydantic.dev/articles/hack-monty-postmortem",
+            "bears_on": [
+              "intake-1850",
+              "intake-1864"
+            ]
+          },
+          {
+            "reserved_id": "intake-1872",
+            "url": "https://huggingface.co/spaces/FineEnvs/data-agent-training-comparison-trackio",
+            "bears_on": [
+              "intake-1856",
+              "intake-1867"
+            ]
+          },
+          {
+            "reserved_id": "intake-1873",
+            "url": "https://github.com/huggingface/OpenEnv",
+            "bears_on": [
+              "intake-1856",
+              "intake-1867"
+            ]
+          },
+          {
+            "reserved_id": "intake-1874",
+            "url": "https://arxiv.org/abs/2609.04518",
+            "bears_on": [
+              "intake-1856"
+            ]
+          }
+        ]
+      }
+    ],
+    "second_reader_required": true,
+    "stage3_actionable_policy": "Include every recommended Stage1/Stage2/steering actionable in the plan, consolidated without silent omissions. Stage4 approval remains separate.",
+    "wave1_reports_received": [
+      "intake-1850",
+      "intake-1864",
+      "intake-1856",
+      "intake-1867"
+    ],
+    "report_artifacts": [
+      "/mnt/raid0/llm/tmp/dive-intake-1850/wave1-report.json",
+      "/mnt/raid0/llm/tmp/dive-intake-1856/wave1-report.json"
+    ],
+    "dedup_note": "Unbounded parent scalar-locator sweep checked 2750 non-null url/arxiv_id fields; all five initial Wave2 sources are new."
   }
 }
