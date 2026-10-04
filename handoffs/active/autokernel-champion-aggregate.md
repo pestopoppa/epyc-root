@@ -8,9 +8,39 @@ fixed production anchor.
 
 ## Start here — open work (2026-09-29)
 
-**The champion is `1bceceb05` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 by the
-KVU-19 fold, `90c12df42` → `1bceceb05`, fast-forward; see the fold ledger entry below). This is the GLOBAL champion
-branch. Builds: `kernels/builds/cpu-20261004-1bceceb05` and `kernels/builds/gpu-20261004-1bceceb05`. Resolve the tip
+**The champion is `61bdb185c` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 twice:
+KVU-19 fold `90c12df42` → `1bceceb05`, then the all-keeps fold `1bceceb05` → `61bdb185c`; see the fold ledger entries
+below). This is the GLOBAL champion branch. Builds: `kernels/builds/cpu-20261004-61bdb185c` and
+`kernels/builds/gpu-20261004-61bdb185c` (10324).
+
+**Fold ledger — 2026-10-04, all-keeps fold (candidate "Y")** (prepared and CAS'd by ak-ds41-main; operator chose scope):
+- **Folded onto `1bceceb05`:** the DS41 port (4 commits) + `ebb68dc55` profiling (compiled out unless `GGML_CPU_PROF`), the
+  serving-gated DS41 keeps (the a1faab471 bundle +7.113% and the COR `053c3bd82` bundle +11.18%), and `656c9a66b`
+  (stack owner's private per-context arena for the HIP-graph MMVQ q8_1 cache; KVU-16h: VRAM growth +0.057 vs +5.83 GiB,
+  decode +1.0% no-draft / +4.9% drafted). Old→new sha map: `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/shamap.tsv`.
+- **Held out:**
+  - **iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`**: Q38FN serving X vs Y −1.26% (no decode gain) and it changes Q38FN output
+    (greedy diverges at token 17 on 1 of 3 prompts, Y ≡ champion on 3/3). Its +40.6% is a 256-row microbench (c5) only.
+    Next: Q38FN prefill A/B + paired task-quality eval before any fold (operator 2026-10-04).
+  - **14 held DS41 keeps** (post-COR, per-keep 5-pair evidence only): two bundle-level nulls — `dca32b0e3` DIVERGED
+    (+0.10% vs 4.533% floor) and the 2026-10-04 Z bundle gate (Z = X + 14 keeps vs X: DS41 −2.51%, floor 4.533%; Q38FN
+    −1.40%; greedy identical). Not folded. Rebased onto Y as `70e7133a1` (Z') in case of re-gating; the C112 shape gate
+    (`9b148baab` limited to per-expert rows ≤ 8) travels with them.
+  - `74ee5c502` (unledgered, `measurement_invalid`) excluded; 3 empty merges dropped.
+- **CPU gates (5g, 2026-10-04, `--gpu-quiet shared`, `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/runs/20261004T125648Z/`):**
+  DS41 X vs COR −1.56% (floor 4.533%, not decisive: the gated keeps reproduce on the new base); Q38FN X vs champion
+  `1bceceb05` +4.52% (no calibrated floor; sign only, from the DS41 keeps since Y has them too); Y greedy ≡ champion.
+- **GPU gates:** X paired receipt vs v10 (14 pairs) tg −0.23% [−0.57, +0.23], pp −0.12%, identity equal; Y smoke: FA
+  2949/2949, MUL_MAT 1139/1139, 27B greedy Y ≡ X byte-identical 3/3; P3 v2 on X matches the KVU-19 champion at L3.
+  **Standing receipt (champion-only, Y vs stored v10 serving baseline, 14 launches, unpaired):** tg +0.35%; pp +18.2%
+  is NOT credible as a gain (unpaired, beyond the 9.91% paired floor, X's paired run 3 h earlier gave −0.12%): read as
+  host drift. Run `receipt-ab/champion-only-61bdb185c-20261004T144303Z/`.
+- **CPU correctness:** G0 0 losses (source + CPU build); test-backend-ops `GGML_IQK=1` MUL_MAT 1139/1139, MUL_MAT_ID
+  815/815, FA 5178/5178; shape_check 28/28; dsv41/repack/gather tests rc 0.
+- **Moved:** guarded CAS `update-ref` `1bceceb05` → `61bdb185c` (fast-forward), `ak-loop-tree` refreshed (`read-tree -m -u`,
+  clean), pushed to fork.
+- **Next fold candidate ready:** `9a3f1392a` (Yfa) = Y + the CPU FA fp16-VKQ overflow fix (ported without the opt-in arms;
+  bit-identical on the KVU-19 FA harness, 86 + 141 cases). Resolve the tip
 live before quoting it.
 
 **Fold ledger — 2026-10-04, KVU-19 fold** (executed by workspace-ec, ledgered by ak-ds41-main):
