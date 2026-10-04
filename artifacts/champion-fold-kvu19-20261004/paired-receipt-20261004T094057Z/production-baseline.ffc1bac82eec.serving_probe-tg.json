@@ -1,0 +1,496 @@
+{
+  "host": {
+    "facts": {
+      "bios_date": "03/23/2026",
+      "bios_release": "5.35",
+      "bios_vendor": "American Megatrends International, LLC.",
+      "bios_version": "4.0",
+      "board_name": "H13SSL-NT",
+      "cpu_model": "AMD EPYC 9655 96-Core Processor",
+      "gpu_vbios": [
+        "113-D67301V-X73"
+      ],
+      "kernel_release": "6.14.0-37-generic",
+      "numa_nodes": 4,
+      "product_name": "Super Server"
+    },
+    "note": "captured by the runner at the measurement"
+  },
+  "launches": 14,
+  "lineage": {
+    "commits_between": [],
+    "note": "the frozen production binary itself, measured by the serving probe"
+  },
+  "measured_at": "2026-10-04T10:34:08.408968Z",
+  "measured_commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+  "median": 40.124758316741236,
+  "production": {
+    "commit": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "label": "production-consolidated-v10"
+  },
+  "protocol": {
+    "argv_provenance": "current :8083 DFlash2 argv (/workspace/repos/epyc-orchestrator/logs/server_launches/8083.json, launch f4f50d018ae14c8680e8c7fe2ba1c24b, argv_sha256 b865820d557feac6a513e47324f0f58b4d60cb98275b2b2db6c1aca9f199ad64) via ab_probe.py args: binary, --port 8197, --slot-save-path swapped",
+    "estimator": "median",
+    "harness": "serving_probe",
+    "kind": "serving_probe",
+    "metric": "tg",
+    "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+    "n_predict": null,
+    "placement": "env -i (ab_arms arm_env) + numactl --membind=3 -- taskset -c 72-79",
+    "probe_tool": "ab_probe.py",
+    "probe_version": "bd195fa6fe3575d50ef4e23a68dd5aad9e61f5201497118cf20abb646489182b",
+    "prompt_set_digest": null,
+    "request_digest": "15ccfe537e5ace1d707d4739d9bdd27eaa177b37bf6b58a2618c4f514fd4cb1b",
+    "request_manifest": {
+      "pp": 6465,
+      "probe": "ab_probe.py probe mtp --identity-tokens 256 --probs-tokens 64 --pp-items 300 --pp-reps 2 --tg-n 256 --tg-reps 2",
+      "reps": 2,
+      "tg": 256,
+      "warmup_launches": 1
+    },
+    "request_manifest_source": "derived from the runner protocol's probe/pp/tg/reps/warmup_launches; the probe's prompts and sampling are pinned by its command and probe_version",
+    "sample_unit": "server_launch",
+    "sampling": null,
+    "server_argv": [
+      "<llama-server>",
+      "-m",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "--host",
+      "127.0.0.1",
+      "--port",
+      "8197",
+      "-np",
+      "4",
+      "-c",
+      "393216",
+      "-t",
+      "8",
+      "-ub",
+      "2048",
+      "--flash-attn",
+      "on",
+      "--jinja",
+      "-ctk",
+      "q8_0",
+      "-ctv",
+      "q8_0",
+      "--kv-unified",
+      "--no-mmap",
+      "-ngl",
+      "all",
+      "--cache-ram",
+      "65536",
+      "--chat-template-file",
+      "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+      "-md",
+      "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+      "-ngld",
+      "99",
+      "--spec-type",
+      "draft-dflash",
+      "--spec-draft-n-max",
+      "7",
+      "--device",
+      "ROCm0",
+      "--slot-save-path",
+      "<slot-save-path>",
+      "--device-draft",
+      "ROCm0"
+    ],
+    "server_argv_sha256": "0e47fcd6fc16fbdb9ffc373cbfb0fdb472c263d3f4eed7cb306f30f0891c4264",
+    "surface": "serving_ab_probe_tg256",
+    "timing_field": "predicted_per_second",
+    "unit": "tok/s (server timings)"
+  },
+  "protocol_kind": "serving_probe",
+  "residency": {
+    "arm-11P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-13P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-15P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-17P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-19P.probe.json": {
+      "load_s": 7,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-21P.probe.json": {
+      "load_s": 7,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-23P.probe.json": {
+      "load_s": 7,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-25P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-27P.probe.json": {
+      "load_s": 7,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-29P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-3P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-5P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-7P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    },
+    "arm-9P.probe.json": {
+      "load_s": 6,
+      "props": {
+        "build_info": "b10303-ffc1bac82",
+        "modalities": {
+          "audio": false,
+          "video": false,
+          "vision": false
+        },
+        "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "ok": true,
+        "port": 8197,
+        "problems": [],
+        "speculative_n_max_props": 3,
+        "speculative_types_props": "none",
+        "summary": "OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+        "total_slots": 4
+      }
+    }
+  },
+  "sample_unit": "server_launch",
+  "samples": [
+    40.57424006027013,
+    40.26696136949246,
+    40.14220141969789,
+    40.10731521378459,
+    40.415880296962996,
+    39.50188834026076,
+    39.679459836317825,
+    40.43535836385,
+    40.5019891622582,
+    39.78092238802436,
+    39.93699447203477,
+    39.86787574431293,
+    39.79807851077962,
+    40.581699957924585
+  ],
+  "schema": "epyc.autokernel.production_baseline.v1",
+  "source": {
+    "kind": "serving-probe runner, production (P) arm",
+    "path": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z/writer-samples.json",
+    "runner_protocol": {
+      "argv": [
+        "<llama-server>",
+        "-m",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "8197",
+        "-np",
+        "4",
+        "-c",
+        "393216",
+        "-t",
+        "8",
+        "-ub",
+        "2048",
+        "--flash-attn",
+        "on",
+        "--jinja",
+        "-ctk",
+        "q8_0",
+        "-ctv",
+        "q8_0",
+        "--kv-unified",
+        "--no-mmap",
+        "-ngl",
+        "all",
+        "--cache-ram",
+        "65536",
+        "--chat-template-file",
+        "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+        "-md",
+        "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+        "-ngld",
+        "99",
+        "--spec-type",
+        "draft-dflash",
+        "--spec-draft-n-max",
+        "7",
+        "--device",
+        "ROCm0",
+        "--slot-save-path",
+        "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z/slots",
+        "--device-draft",
+        "ROCm0"
+      ],
+      "argv_provenance": "current :8083 DFlash2 argv (/workspace/repos/epyc-orchestrator/logs/server_launches/8083.json, launch f4f50d018ae14c8680e8c7fe2ba1c24b, argv_sha256 b865820d557feac6a513e47324f0f58b4d60cb98275b2b2db6c1aca9f199ad64) via ab_probe.py args: binary, --port 8197, --slot-save-path swapped",
+      "estimator": "median",
+      "hardened": false,
+      "harness": "ab_probe",
+      "harness_file": "receipt-ab/ab_arms_fold.sh (workspace-8d ab_arms.sh; C-arm constants + SHA256SUMS ./ form only)",
+      "model": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+      "placement": "env -i (ab_arms arm_env) + numactl --membind=3 -- taskset -c 72-79",
+      "pp": 6465,
+      "probe": "ab_probe.py probe mtp --identity-tokens 256 --probs-tokens 64 --pp-items 300 --pp-reps 2 --tg-n 256 --tg-reps 2",
+      "reps": 2,
+      "sample_unit": "process",
+      "surface": "serving_ab_probe_tg256",
+      "tg": 256,
+      "ubatch": 2048,
+      "warmup_launches": 1
+    },
+    "runner_source": {
+      "arms": [
+        "arm-3P.probe.json",
+        "arm-5P.probe.json",
+        "arm-7P.probe.json",
+        "arm-9P.probe.json",
+        "arm-11P.probe.json",
+        "arm-13P.probe.json",
+        "arm-15P.probe.json",
+        "arm-17P.probe.json",
+        "arm-19P.probe.json",
+        "arm-21P.probe.json",
+        "arm-23P.probe.json",
+        "arm-25P.probe.json",
+        "arm-27P.probe.json",
+        "arm-29P.probe.json",
+        "arm-4C.probe.json",
+        "arm-6C.probe.json",
+        "arm-8C.probe.json",
+        "arm-10C.probe.json",
+        "arm-12C.probe.json",
+        "arm-14C.probe.json",
+        "arm-16C.probe.json",
+        "arm-18C.probe.json",
+        "arm-20C.probe.json",
+        "arm-22C.probe.json",
+        "arm-24C.probe.json",
+        "arm-26C.probe.json",
+        "arm-28C.probe.json",
+        "arm-30C.probe.json"
+      ],
+      "run": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z"
+    },
+    "samples_path": "p_arm.samples",
+    "sha256": "be6abd6d1594c796d1736b76b67bd01596f89acf6fec5d4dcebcfe3ef5b91f69"
+  },
+  "writer": "autokernel.loop.production.write_baseline",
+  "written_at": "2026-10-04T10:34:32.604381Z"
+}
