@@ -28,6 +28,10 @@ live before quoting it.
 - **Perf:** 4×1 decode at 327k occupied cells 9.17 → 5.51 ms; single-row FA with 114k foreign cells 2335 → 284 µs. At
   serving scale (KVU-16b replay on the combined 19a+19b build, `artifacts/gpu-slot-ak-20261004/`), the skip made each
   prefill chunk 4.5× cheaper at 240–280k occupied cells.
+- **Serving-level (P3 v2 A1, 2026-10-04 09:11Z, champion image `gpu-20261004-1bceceb05`, same binary, skip ON vs OFF):** at
+  L3 ≈355k occupied cells with 3 parked neighbours, drafted 34.98 vs 15.74 tok/s (2.22×; loss vs L0 −0.19% vs −55.4%),
+  no-draft 21.53 vs 8.45 (2.55×; −1.4% vs −60.3%); no-draft text sha identical ON = OFF; VRAM own peak 51.7 GiB. Meets
+  KVU-19b's "L3 loss < 10%" for single-sequence decode with neighbours. `/mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T091103Z/`.
 - **Standing receipt:** champion-only, measured against the recorded v10 baseline (FOLD-2 G5 `ef81196d5`, 20 launches,
   median 31.30 tok/s, unpaired by operator rule); result pending at filing.
 - **Loop anchors:** DS41 and Q38FN anchors still have `90c12df42` as an ancestor but are not the champion; both reseed on
