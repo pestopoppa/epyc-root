@@ -129,6 +129,7 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
 | `dashboard/static/handoffs.html` | kanban UI + modal + hand-rolled SVG charts (no framework, no CDN) |
 | `dashboard/static/loop.html` | **THE Kernel R&D page** (`/loop`): the rebuilt AutoKernel loop's state, freshness banner, dispositions incl. negatives, GPU held-vs-busy — **plus** the operator-gated champion evidence merged in from the retired `/kernel`, on its own second envelope. Two producers, two envelopes, neither dating the other |
 | `dashboard/static/cockpit.html` | **AP-50 decision cockpit** (`/cockpit`): view plane over the orchestrator's `epyc.autopilot.decision_cockpit.v1` contract — see *Decision cockpit* below |
+| `dashboard/static/gpu-window.html` | **G1 MI210 window** (`/gpu-window`): view plane over the orchestrator's `epyc.orchestrator.gpu_window_panel.v1`; absent/stale watchdog renders UNKNOWN, never ok |
 | `scripts/handoffs/build_handoff_timeline.py` | git-history → `data/handoff_timeline.json` |
 | `scripts/handoffs/install_timeline_hook.sh` | post-commit hook that regenerates the artifact |
 | `tests/test_handoff_parser.py`, `tests/test_handoff_timeline.py` | `unittest` suites |
@@ -153,6 +154,14 @@ for `:8100`. Neither layer touches the orchestrator API (`:8000`).
   archive page
 - `GET /cockpit` — the AP-50 decision cockpit page. Data plane is the orchestrator
   (`:8000/dashboard/api/decision_cockpit`, data probe `.../decision_cockpit/health`)
+- `GET /gpu-window` — the G1 MI210 window page (holder, grant state, lease, overdue,
+  watchdog age, verdict). Data plane is the orchestrator
+  (`:8000/dashboard/api/gpu_window`, data probe `.../gpu_window/health`); the registry
+  row's `/health` is transport-only
+- `GET /api/gpu_window` — the G1 watchdog's executor-status file
+  (`/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json`) + its `gpu_window`
+  panel envelope (stale at 300 s), so a dead watchdog shows in `/api/health` even while
+  `:8000` is down. The window verdict is the orchestrator's, not this route's
 - `GET /loop` — **THE Kernel R&D page.** The rebuilt AutoKernel loop, and since
   2026-08-30 the operator-gated champion evidence merged in from `/kernel`
 - `GET /api/loop` — the loop's `epyc.autokernel.loop_status.v1` report + its panel

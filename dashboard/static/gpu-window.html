@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPYC — MI210 window</title>
+<style>
+  :root{
+    --bg:#0d1117; --panel:#161b22; --panel2:#1c2129; --border:#30363d;
+    --text:#c9d1d9; --muted:#8b949e; --dim:#6e7681; --accent:#60a5fa; --good:#34d399;
+    --warn:#fbbf24; --bad:#f87171; --p0:#f85149; --unk:#a78bfa;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,
+    "Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+  .muted{color:var(--muted)} .mono{font-family:var(--mono)} .dim{color:var(--dim)}
+  header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    padding:11px 20px;background:rgba(13,17,23,.93);backdrop-filter:blur(6px);border-bottom:1px solid var(--border)}
+  header h1{font-size:16px;margin:0;font-weight:650;white-space:nowrap}
+  header .sub{color:var(--muted);font-size:12px}
+  nav#epyc-nav{display:flex;gap:14px;align-items:center;font-size:13px;flex-wrap:wrap}
+  .hspacer{margin-left:auto}
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;padding:2px 9px;border-radius:20px;
+    border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .badge.ok{color:var(--good)} .badge.ok .dot{background:var(--good)}
+  .badge.warn{color:var(--warn)} .badge.warn .dot{background:var(--warn)}
+  .badge.bad{color:var(--p0)} .badge.bad .dot{background:var(--p0)}
+  .badge.unknown{color:var(--unk)} .badge.unknown .dot{background:var(--unk)}
+  main{padding:16px 20px 40px;max-width:1100px;margin:0 auto}
+  section.panel{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:14px}
+  .ph{font-size:12px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:650;margin-bottom:6px;
+    display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+  .why{color:var(--dim);font-size:12px;margin:0 0 10px}
+  .kv{display:grid;grid-template-columns:170px 1fr;gap:3px 12px;font-size:13px}
+  .kv .k{color:var(--muted)}
+  .unk{color:var(--unk);font-weight:650;letter-spacing:.3px}
+  .deadbody{color:var(--muted);font-size:12px} .deadbody b{color:var(--bad)}
+  .verdict{font-size:22px;font-weight:700;letter-spacing:.4px}
+  .verdict.ok{color:var(--good)} .verdict.window_open{color:var(--warn)} .verdict.alarm{color:var(--p0)}
+  ul.reasons{margin:4px 0 0;padding-left:18px;font-size:13px}
+  @media (max-width:600px){ .kv{grid-template-columns:1fr} main{padding:12px 16px 32px} }
+</style>
+</head>
+<body>
+<header>
+  <h1>MI210 window</h1>
+  <span class="sub">G1 executor — who holds the GPU, and is anything restoring it</span>
+  <nav id="epyc-nav"></nav>
+  <span class="hspacer"></span>
+  <span class="badge unknown" id="health-badge"><span class="dot"></span><span id="health-text">data health unknown</span></span>
+  <span class="badge unknown" id="conn-badge"><span class="dot"></span><span id="conn-text">:8000 — connecting</span></span>
+</header>
+<main>
+  <section class="panel" id="p-verdict">
+    <div class="ph">verdict &amp; health<span class="dim" id="fresh-text"></span></div>
+    <p class="why">Folded by the orchestrator from the G1 watchdog's executor-status file and the live window file.
+      <code>ok</code> = production holds the MI210; <code>window_open</code> = a window is granted and within its
+      lease; <code>alarm</code> = overdue or a restore failed. A missing or stale watchdog is shown as such, never as ok.</p>
+    <div id="gw-verdict"></div>
+  </section>
+  <section class="panel" id="p-window">
+    <div class="ph">window state</div>
+    <div id="gw-window"></div>
+  </section>
+</main>
+
+<script src="/nav.js"></script>
+<script>
+/* ============================================================================
+   EPYC hub — G1 MI210 window. View plane only: the data contract
+   (epyc.orchestrator.gpu_window_panel.v1) is served by the orchestrator at
+   :8000/dashboard/api/gpu_window and fetched cross-origin. No framework.
+   Fail closed: a failed fetch paints every section UNKNOWN, never empty/ok.
+   ========================================================================== */
+const API = location.protocol + '//' + location.hostname + ':8000';
+const FETCH_MS = 10000;
+const POLL_MS = 30000;
+const GW = {lastOk: null};
+
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g,
+  c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function setHtml(id, html){ const el = document.getElementById(id); if (el) el.innerHTML = html; }
+function setBadge(id, textId, cls, text){
+  const el = document.getElementById(id);
+  if (el) el.className = 'badge ' + cls;
+  const t = document.getElementById(textId);
+  if (t) t.textContent = text;
+}
+const UNK = '<span class="unk">UNKNOWN</span>';
+const val = v => (v === null || v === undefined || v === '') ? '<span class="dim">—</span>' : '<span class="mono">' + esc(v) + '</span>';
+function age(s){
+  if (typeof s !== 'number' || !isFinite(s)) return null;
+  if (s < 120) return Math.round(s) + 's';
+  if (s < 7200) return Math.round(s / 60) + 'm';
+  return (s / 3600).toFixed(1) + 'h';
+}
+function kv(rows){
+  return '<div class="kv">' + rows.map(([k, v]) => '<div class="k">' + esc(k) + '</div><div>' + v + '</div>').join('') + '</div>';
+}
+
+function renderVerdict(d){
+  const health = (d && d.health) || {};
+  const status = health.status || 'degraded';
+  const reasons = Array.isArray(health.reasons) ? health.reasons : [];
+  const ex = d ? d.executor : null;
+  const cls = status === 'ok' ? 'ok' : status === 'absent' ? 'bad' : 'warn';
+  setBadge('health-badge', 'health-text', cls, 'data health: ' + status);
+  let html = '';
+  if (d && d.error) html += '<div class="deadbody"><b>gpu_window builder failed</b> — ' + esc(d.error) + '</div>';
+  if (!ex) {
+    html += '<div class="verdict">' + UNK + '</div><div class="deadbody"><b>NO WATCHDOG</b> — the executor status file is ' +
+      'absent or unreadable: the G1 watchdog cron is not installed or not running, so nothing will auto-restore the MI210 window.</div>';
+  } else {
+    const stale = typeof d.watchdog_age_s === 'number' && d.watchdog_age_s > (Number(ex.fresh_for_s) || 180);
+    const v = String(ex.verdict || 'unknown');
+    html += '<div class="verdict ' + esc(v) + '">' + (stale ? UNK + ' <span class="dim" style="font-size:13px">(last seen: ' + esc(v) + ')</span>' : esc(v)) + '</div>';
+    if (stale) html += '<div class="deadbody"><b>STALE</b> — the watchdog last ticked ' + esc(age(d.watchdog_age_s)) +
+      ' ago; the state below is what it saw then, not what is true now.</div>';
+  }
+  html += kv([
+    ['health', '<span class="mono">' + esc(status) + '</span>'],
+    ['watchdog age', d && typeof d.watchdog_age_s === 'number' ? val(age(d.watchdog_age_s)) : UNK],
+    ['last action', ex ? val(ex.last_action) : UNK],
+    ['detail', ex ? val(ex.detail) : UNK],
+  ]);
+  html += reasons.length ? '<ul class="reasons">' + reasons.map(r => '<li>' + esc(r) + '</li>').join('') + '</ul>'
+                         : '<div class="dim" style="font-size:12px;margin-top:4px">no health reasons</div>';
+  setHtml('gw-verdict', html);
+  const f = d && d._freshness;
+  setHtml('fresh-text', f && f.staleness_class ? esc('source freshness: ' + f.staleness_class + (f.reason ? ' — ' + f.reason : '')) : '');
+}
+
+function renderWindow(d){
+  const ex = d ? d.executor : null;
+  const w = (d && d.window) || {};
+  const pick = k => ex && ex[k] !== undefined ? ex[k] : w[k];
+  if (!ex && !Object.keys(w).length) { setHtml('gw-window', '<div class="deadbody"><b>UNKNOWN</b> — neither the executor status nor the window file was readable.</div>'); return; }
+  const overdue = ex ? ex.overdue : null;
+  setHtml('gw-window', (ex ? '' : '<div class="deadbody"><b>window file only</b> — no executor status; lease/overdue/verdict are unknown.</div>') + kv([
+    ['holder', val(pick('holder'))],
+    ['grant_state', val(pick('grant_state'))],
+    ['window_id', val(pick('window_id'))],
+    ['expected_end', val(pick('expected_end'))],
+    ['overdue', overdue === true ? '<span class="mono" style="color:var(--p0)">true</span>' : overdue === false ? val('false') : UNK],
+    ['lease_state', ex ? val(ex.lease_state) : UNK],
+    ['parked_ports', val((pick('parked_ports') || []).join(', '))],
+    ['preempt_requested_at', val(pick('preempt_requested_at'))],
+    ['stack_change_pending', ex ? val(String(ex.stack_change_pending)) : UNK],
+    ['device_held', ex ? val(String(ex.device_held)) : UNK],
+  ]));
+}
+
+function render(d){ renderVerdict(d); renderWindow(d); }
+function renderDead(reason){
+  const msg = '<div class="deadbody"><b>UNKNOWN</b> — the MI210 window panel could not be fetched from ' +
+    esc(API) + '/dashboard/api/gpu_window (' + esc(reason) + '). ' +
+    (GW.lastOk ? 'The last good payload is ' + Math.round((Date.now() - GW.lastOk) / 1000) + 's old and is NOT shown. ' : '') +
+    'The orchestrator API is down, has not reloaded with this route, or CORS is blocking the hub origin.</div>';
+  setBadge('conn-badge', 'conn-text', 'bad', ':8000 — ' + reason);
+  setBadge('health-badge', 'health-text', 'unknown', 'data health unknown');
+  setHtml('fresh-text', '');
+  for (const id of ['gw-verdict', 'gw-window']) setHtml(id, msg);
+}
+async function load(){
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), FETCH_MS);
+  try {
+    const r = await fetch(API + '/dashboard/api/gpu_window', {cache: 'no-store', mode: 'cors', signal: ac.signal});
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const d = await r.json();
+    GW.lastOk = Date.now();
+    setBadge('conn-badge', 'conn-text', 'ok', ':8000 — connected');
+    render(d);
+  } catch (e) {
+    const m = e && e.message ? e.message : String(e);
+    renderDead(/abort/i.test(m) ? 'timed out' : m);
+  } finally { clearTimeout(timer); }
+}
+load();
+setInterval(load, POLL_MS);
+</script>
+</body>
+</html>

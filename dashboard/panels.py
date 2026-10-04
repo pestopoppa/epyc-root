@@ -509,6 +509,35 @@ PANELS: Mapping[str, PanelSource] = _index((
               "refuses to guess in the operator's favour.",
     ),
     PanelSource(
+        panel="gpu_window",
+        kind=KIND_EXPORT,
+        payload_func="gpu_window_payload",
+        route="/api/gpu_window",
+        producer="G1 gpu-window watchdog cron (gpu_window_executor.write_status, every minute)",
+        producer_repo="epyc-orchestrator",
+        evidence="/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json",
+        timestamp_field="generated_at_epoch (fallback generated_at)",
+        absence_means=(
+            "the G1 watchdog cron is not installed or not running — nothing will "
+            "auto-restore the MI210 window"),
+        # The producer declares fresh_for_s=180; stale at 300 s.
+        warn_s=180.0,
+        stale_s=300.0,
+        silent_after_s=300.0,
+        watched=True,
+        gates_health=True,
+        # Absent until the G1 cron is installed on this host, so absence alone does
+        # not redden the GLOBAL fold; it is still listed under `absent`/`attention`,
+        # and the orchestrator's data probe answers 503 absent. A watchdog that
+        # reported and then went silent is a watchdog alarm, which always gates.
+        absence_is_anomalous=False,
+        notes="The /gpu-window page reads the orchestrator's folded panel "
+              "(:8000/dashboard/api/gpu_window, data probe .../gpu_window/health); "
+              "this entry dates the same producer file inside the hub fold so a dead "
+              "watchdog is visible while :8000 is down. The window verdict "
+              "(ok/window_open/alarm) is the orchestrator's, not this envelope's.",
+    ),
+    PanelSource(
         panel="benchmark_artifacts",
         kind=KIND_ARTIFACT,
         payload_func="benchmark_artifacts_payload",

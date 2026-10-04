@@ -29,6 +29,15 @@
       "blurb": "AP-50 decision cockpit: what optimizes the orchestrator, per measurement era: current trial + falsifier, incumbent-vs-candidate deltas (n, SE, replication), proposed/executed/valid/kept/promoted/live funnel with rejection reasons, journal+study lever scoreboard, provenance drill-down (data: :8000/dashboard/api/decision_cockpit; data probe :8000/dashboard/api/decision_cockpit/health — /health here is transport-only)"
     },
     {
+      "id": "gpu-window",
+      "title": "MI210 window",
+      "port": 8100,
+      "path": "/gpu-window",
+      "owner_repo": "epyc-root",
+      "health_path": "/health",
+      "blurb": "G1 MI210 window: holder, grant state, window id, expected end, overdue, lease state, watchdog age, verdict (ok/window_open/alarm) and health reasons. Data plane owned by epyc-orchestrator (:8000/dashboard/api/gpu_window), page owned by epyc-root; data probe :8000/dashboard/api/gpu_window/health — /health here is transport-only"
+    },
+    {
       "id": "handoffs",
       "title": "Handoffs",
       "port": 8100,

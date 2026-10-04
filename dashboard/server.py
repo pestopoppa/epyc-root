@@ -21,6 +21,7 @@ GET /api/kernel/health       Kernel-R&D producer/data health only (non-recursive
 GET /machine                 the machine / live-inference page (data plane: :8000 API)
 GET /autopilot               the autopilot-loop page (data plane: :8000 API)
 GET /cockpit                 the AP-50 decision cockpit (data plane: :8000 API)
+GET /gpu-window              the MI210 window page — G1 executor (data plane: :8000 API)
 GET /amd-ai-lab/             the published AMD AI Lab static site from epyc-web
 GET /nav.js                  the ONE shared cross-dashboard nav, with the registry
                              injected ahead of it as ``window.__EPYC_DASHBOARDS``
@@ -30,6 +31,7 @@ GET /bus                     the session-bus page (static HTML, re-read per requ
 GET /api/bus                 roster, per-agent liveness, inbox depth, operator tokens (+ alarms)
 GET /api/queue               folded work queue (latest row per task_id) + invariant alarms
 GET /api/outcome             the autopilot outcome contract (+ freshness), if exported
+GET /api/gpu_window          the G1 watchdog's executor-status file (+ freshness envelope)
 GET /api/health              the FOLD over ``dashboard/panels.py``: every panel's
                              freshness envelope + watchdog, plus one status that
                              names the worst panel and why
@@ -99,6 +101,9 @@ AUTOPILOT_HTML = _STATIC / "autopilot.html"
 #: AP-50 decision cockpit — view plane only; data contract served by the orchestrator
 #: (``:8000/dashboard/api/decision_cockpit``, schema epyc.autopilot.decision_cockpit.v1).
 COCKPIT_HTML = _STATIC / "cockpit.html"
+#: G1 MI210 window page — view plane only; data contract served by the orchestrator
+#: (``:8000/dashboard/api/gpu_window``, schema epyc.orchestrator.gpu_window_panel.v1).
+GPU_WINDOW_HTML = _STATIC / "gpu-window.html"
 #: THE Kernel-R&D page. There is no ``KERNEL_HTML`` any more: ``static/kernel.html``
 #: was deleted and ``/kernel`` retired to a redirect (``REDIRECT_ROUTES``) on
 #: 2026-08-30, because two pages carried this domain and the other one's producers
@@ -462,6 +467,14 @@ AUTOPILOT_OUTCOME_JSON = Path(os.environ.get(
     "AUTOPILOT_OUTCOME_JSON",
     "/mnt/raid0/llm/tmp/autopilot/outcome_contract.json"))
 BENCHMARK_ARTIFACT_INVENTORY = REPO / "data" / "benchmark_artifact_inventory.json"
+# G1 MI210 window executor status. PRODUCED BY the orchestrator's watchdog cron
+# (``src/runtime/gpu_window_executor.py`` ``write_status``, every minute), a file
+# contract this hub does NOT own. The page reads the orchestrator's folded panel at
+# :8000; the hub reads this file ONLY to date it in the /api/health fold, so a dead
+# watchdog is visible even while :8000 is down. Overridable for testing.
+GPU_WINDOW_STATUS_JSON = Path(os.environ.get(
+    "GPU_WINDOW_STATUS_JSON",
+    "/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json"))
 
 # AutoKernel has two different facts worth showing and they must not be allowed
 # to certify each other:
@@ -14176,6 +14189,53 @@ def outcome_payload() -> dict:
     return data
 
 
+def _read_gpu_window_status() -> tuple:
+    """Read the G1 executor-status file → ``(artifact_present, data)``."""
+    present, data, err = _read_json_object(GPU_WINDOW_STATUS_JSON, "G1 executor status")
+    if data is not None:
+        return True, data
+    shell = {"executor": None, "path": str(GPU_WINDOW_STATUS_JSON)}
+    if err is None:
+        return False, {**shell, "error": "no executor status file — the G1 watchdog "
+                                         "cron is not installed or has never run"}
+    return present, {**shell, "error": err, READER_ERROR_KEY: err}
+
+
+def _gpu_window_observation(data: dict, *, artifact_present: bool = True) -> panels.Observation:
+    """Date the executor status by the producer's own tick time, never file mtime.
+
+    ``generated_at_epoch`` is primary (what the orchestrator's own panel reads);
+    the ISO ``generated_at`` is the fallback. No watermark: the watchdog is a
+    heartbeat, and an unchanged window state on consecutive ticks is the normal case.
+    """
+    evidence = str(GPU_WINDOW_STATUS_JSON)
+    if data.get(READER_ERROR_KEY):
+        return panels.Observation(
+            artifact_present=artifact_present, timestamp=None, source=None,
+            populated=None, detail=data[READER_ERROR_KEY], evidence=evidence)
+    ts, src = None, None
+    epoch = data.get("generated_at_epoch")
+    if isinstance(epoch, (int, float)) and not isinstance(epoch, bool):
+        ts, src = float(epoch), "generated_at_epoch"
+    else:
+        ts = _parse_semantic_timestamp(data.get("generated_at"))
+        src = "generated_at" if ts is not None else None
+    return panels.Observation(
+        artifact_present=artifact_present, timestamp=ts, source=src,
+        populated=None if not artifact_present else bool(data.get("holder")),
+        detail=data.get("error"), evidence=evidence)
+
+
+def gpu_window_payload() -> dict:
+    """The executor-status file + its envelope. Freshness only — the window
+    verdict (ok / window_open / alarm) and its data probe are the orchestrator's
+    (``:8000/dashboard/api/gpu_window[/health]``)."""
+    present, data = _read_gpu_window_status()
+    data["_freshness"] = _panel_envelope(
+        "gpu_window", _gpu_window_observation(data, artifact_present=present))
+    return data
+
+
 def _read_benchmark_inventory() -> tuple:
     """Read the benchmark-artifact inventory → ``(artifact_present, data)``."""
     present, data, err = _read_json_object(
@@ -14469,6 +14529,7 @@ def panel_envelopes() -> dict:
             outcome_data, artifact_present=outcome_present),
         "benchmark_artifacts": lambda: _benchmark_observation(
             bench_data, artifact_present=bench_present),
+        "gpu_window": lambda: gpu_window_payload()["_freshness"],
         "queue": lambda: queue_payload()["_freshness"],
         "bus": lambda: bus_payload()["_freshness"],
         # Same rule as board/queue/bus: the payload already built its envelope
@@ -14805,6 +14866,7 @@ HTML_ROUTES = {
     "/machine": MACHINE_HTML,
     "/autopilot": AUTOPILOT_HTML,
     "/cockpit": COCKPIT_HTML,
+    "/gpu-window": GPU_WINDOW_HTML,
     "/loop": LOOP_HTML,
     "/bus": BUS_HTML,
     "/benchmarks": BENCHMARKS_HTML,
@@ -14877,6 +14939,7 @@ API_ROUTES = {
     "/api/bus": bus_payload,
     "/api/queue": queue_payload,
     "/api/outcome": outcome_payload,
+    "/api/gpu_window": gpu_window_payload,
     "/api/benchmark_artifacts": benchmark_artifacts_payload,
     "/api/dashboards": dashboards_payload,
     "/api/health": health_payload,
