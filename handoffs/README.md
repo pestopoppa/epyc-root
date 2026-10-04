@@ -30,7 +30,7 @@ As of 2026-05-27, `handoffs/active/` contains 84 non-index active handoffs plus 
 ## Handoff Lifecycle
 
 ```
-CREATE   → handoffs/active/{topic}.md
+CREATE   → handoffs/active/{topic}.md  (header carries **Scratch**: its scratch roots — docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots)
 WORK     → update handoff, relevant index, and progress/YYYY-MM/YYYY-MM-DD.md
 BLOCKED  → move to handoffs/blocked/ when the work cannot proceed, or mark active handoff BLOCKED and list it in blocked/BLOCKED.md
 COMPLETE → extract findings, move to handoffs/completed/, and update every index that linked it

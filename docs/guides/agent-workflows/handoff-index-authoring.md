@@ -91,6 +91,43 @@ banner before its own routing table.
 The extraction mandate was the root cause, not anyone's discipline. Tasks now stay in the handoff, which
 is their single source of truth; the index carries one pointer and one next step per handoff.
 
+## Scratch roots — every handoff declares where its scratch lives
+
+Operator, 2026-10-04: *"handoff plans should have strict scratch usage requirements so that wrap-up
+cleanup is as simple and straightforward as possible to verify and execute."* Every handoff carries
+one header line, next to `**Status**` / `**Created**`:
+
+```markdown
+**Scratch**: `/mnt/raid0/llm/tmp/<scratch-id>/` · worktrees: `/mnt/raid0/llm/worktrees/<scratch-id>-*`
+```
+
+or `**Scratch**: none` for work that creates no scratch (doc-only, analysis-only). `<scratch-id>` is
+short and specific to the handoff (its row id or file stem, e.g. `inf73`, `leak-robustness`).
+
+The rules that make cleanup a listing instead of an act of memory:
+
+1. **Everything the work creates lives under the declared roots** — scratch dirs, build dirs,
+   comparison checkouts, downloaded intermediates, and every subagent worktree
+   (`/mnt/raid0/llm/worktrees/<scratch-id>-<purpose>`). A subagent brief names the root it may
+   write to; a subagent never invents a new top-level dir in `/mnt/raid0/llm/tmp`.
+2. **Load-bearing exceptions are declared, with a reason.** A tree or dir that must outlive the
+   task — a campaign's `EPYC_ROOT_REPO`, a watchdog's launch scripts — carries a marker: for a git
+   worktree, `git -C <repo> worktree lock --reason "load-bearing: <who uses it>" <path>` (dirties
+   nothing); for a plain dir, a `KEEP` / `.epyc-keep` file inside it whose text says why; for a
+   plain file, a sibling `<name>.epyc-keep`.
+3. **The wrap-up / `/log` step cleans the roots** —
+   `python3 scripts/system/scratch_cleanup.py plan|apply --handoff handoffs/active/<h>.md`.
+   It removes landed+clean worktrees (only through `worktree_gate.py`, only by
+   `git worktree remove`) and moves plain scratch to the trash (`scripts/safety/guarded_rm.sh`),
+   except KEEP-marked paths, anything a running process uses (cwd, argv or environment), anything a
+   live launcher outside the roots names, anything a kept entry names (transitively), and anything
+   holding an evidence file. Verifying it is `ls` of the root.
+
+Declared paths must sit under `/mnt/raid0/llm/tmp/` or `/mnt/raid0/llm/worktrees/` with a name of at
+least three characters — a bare parent is refused as too broad. `index_state.py --check` warns
+(never fails) on handoffs without the field and on invalid declarations; add the field when you next
+touch a handoff, and always when creating one.
+
 ## Verification
 
 ```bash

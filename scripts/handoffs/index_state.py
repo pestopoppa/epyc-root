@@ -762,6 +762,43 @@ def check(state: dict) -> list[str]:
     return errs
 
 
+def scratch_warnings(state: dict) -> list[str]:
+    """WARNINGS (never failures) for the **Scratch** header field (operator, 2026-10-04).
+
+    Every handoff declares where its scratch lives so the wrap-up / `/log` cleanup step is a
+    listing of that root (scripts/system/scratch_cleanup.py). Existing handoffs predate the field,
+    so a missing one is reported as ONE summary line, while a present-but-invalid declaration is
+    reported per file — that one is always a mistake worth fixing now.
+    """
+    spec = importlib.util.spec_from_file_location(
+        "scratch_cleanup", REPO_ROOT / "scripts" / "system" / "scratch_cleanup.py")
+    try:
+        sc = importlib.util.module_from_spec(spec)
+        sys.modules.setdefault("scratch_cleanup", sc)
+        spec.loader.exec_module(sc)
+    except Exception as exc:  # noqa: BLE001 — a warning pass must never break --check
+        return [f"SCRATCH (warning): cannot load scripts/system/scratch_cleanup.py ({exc})"]
+    paths = handoff_paths()
+    missing, out = [], []
+    for name in sorted(state["handoffs"]):
+        p = paths.get(name)
+        if p is None or "index" in name or name.startswith("CURRENT-CAMPAIGN"):
+            continue
+        try:
+            d = sc.parse_scratch(p.read_text(encoding="utf-8"))
+        except OSError:
+            continue
+        if d is None:
+            missing.append(name)
+        elif d.errors:
+            out.append(f"SCRATCH (warning): {name}: " + "; ".join(d.errors))
+    if missing:
+        out.append(f"SCRATCH (warning): {len(missing)} handoff(s) declare no **Scratch** field "
+                   f"(e.g. {', '.join(missing[:3])}) — add one when you next touch the handoff; "
+                   "docs/guides/agent-workflows/handoff-index-authoring.md § Scratch roots")
+    return out
+
+
 def citation_check() -> list[str]:
     """SC12 gate over the changed handoffs/wiki/docs since HEAD (the `--check` citation phase).
 
@@ -854,6 +891,8 @@ def main(argv: list[str] | None = None) -> int:
         errs += citation_check()
         for e in errs:
             print(e)
+        for w in scratch_warnings(state):
+            print(w)
         print(f"\n{len(errs)} problem(s)")
         return 1 if errs else 0
 
