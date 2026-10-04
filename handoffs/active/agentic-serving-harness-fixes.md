@@ -78,15 +78,28 @@
     - Prompt-cache hit: 0.882–0.959. Two calls sit below 0.90 (C2/cxf1/r2 0.882 and C4/cxf1/r1 0.896); both contain a compaction (A4).
     - Context: 49.8–56.9k at the first request, 109.5–151.5k at the peak.
   - Read the acceptance against the production prior, not the benchmark one. AngelSpec replayed temperature-1 production traffic and measured a block-8 DFlash-family drafter at a mean accepted length of about 2.5 tokens per step, roughly half its benchmark figure (`intake-1848#01`, `intake-1848#02`). Our 29–34% at n_max 7 is in that range and is not by itself a drafter defect. The unified-KV decode tax is a separate, unmeasured suspect (`intake-1849#02`; KVU-18 in [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)).
-- [ ] **UFH14-A3.** Prefix warming plus staggered starts for parallel arms. Issue one warm request for the shared context, then start the arms so they hit the prompt cache. Measure the cold-prefill share and decode stall against an unstaggered A/B. Covers D5.
+- [x] **UFH14-A3.** ✅ 2026-10-04 (GPU run 2026-10-03) Prefix warming plus staggered starts for parallel arms. Issue one warm request for the shared context, then start the arms so they hit the prompt cache. Measure the cold-prefill share and decode stall against an unstaggered A/B. Covers D5.
   - 2026-10-03: implemented in `/mnt/raid0/llm/tmp/ds41-c95/run3.py` + `proxy3.py`, offline-tested only. Close after the GPU A/B.
-- [ ] **UFH14-A4.** Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
+  - **Measured 2026-10-03 (run 3, C2, codex inline, 2 parallel arms, Landlock sandbox; `/mnt/raid0/llm/tmp/ds41-c95/logs/a3-group-report.log`, `results/C2/cxa+a3cold|a3warm/`).** n = 1 group per leg.
+    - *Cold, unstaggered (15:44Z):* first requests `cache_n` 0 / 6,447, prefill 137.7 s / 281.5 s, TTFT after release 140.1 s / 281.6 s; 107,151 cold-prefill tokens in 419.2 s; decode with a neighbour prefilling 14.04 tok/s (n=1) vs clean 18.3 (n=11), estimated stall 93.9 s.
+    - *Warm + 3 s stagger (16:05Z):* the warm requests each prefilled 56,794 tokens (104.2 s, 106.6 s) while the arms were held 246.5 s / 240.4 s; the arms' first requests then hit the cache — `cache_n` 54,751 / 56,794, prefill 8.4 s / 0.2 s, TTFT after release 9.0 s / 0.3 s. 115,641 cold-prefill tokens in 219.4 s (**−48% cold-prefill seconds**); decode with a neighbour prefilling 17.15 vs clean 20.7, estimated stall 137.9 s.
+    - *Verdict:* warming moves the cold prefill off the arms' critical path (TTFT 140–282 s → 0.3–9 s) and halves cold-prefill seconds. The decode-stall comparison is NOT resolved: the warm leg overlapped workspace-ec's subagent GPU tests 16:17–16:50Z (INC-20261003-subagent-gpu-tests-in-peer-window), and the two warm requests prefilled concurrently instead of once. → UFH14-A3a.
+  - [ ] **UFH14-A3a — re-measure the warm leg unperturbed, with ONE warm request.** (filed 2026-10-04) The 10-03 warm leg issued two warm requests (one per arm; 2 × 56.8k tokens) and overlapped foreign GPU work. Issue a single warm request for the shared prefix, then stagger; re-measure decode stall vs the cold leg in a coordinated GPU slot.
+- [x] **UFH14-A4.** ✅ 2026-10-04 (GPU run 2026-10-03) Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).
   - 2026-10-03: implemented in `run3.py` + `proxy3.py`, offline-tested only. Close after a GPU run measures re-prefill tokens per compaction.
   - *Baseline from F12, 2026-10-03, wire logs.* 5 codex compactions across the 8 calls, each a cold pair at `cache_n` = 0:
     - The `tools=[]` compaction request: 147.6–157.1k tokens, 416.7–461.2 s.
     - The post-compaction request: 38.3–39.7k tokens, 58.1–60.1 s.
     - Total: 2,459 s of prefill, 8.9% of the 27,731 s summed call wall time. This is 3.5× the hybrid re-prefill cost in A7.
+  - **Measured 2026-10-03 (run 3, C4, codex inline, `--compact-limit 64000`, Landlock; `logs/a4-base.log`, `logs/a4-fix.log`, `results/C4/cxa+a4base|a4fix/r1/result.json` → `compactions`).** n = 1 call per arm, 2 compactions each (1 completed, 1 cut by the budget).
+    - *Base (16:25Z):* the compaction request went cold — `cache_n` 0, **65,779 re-prefill tokens, 172.3 s**.
+    - *Keep-prefix fix (17:10Z):* the rewritten compaction request shared 19 prefix items — `cache_n` 65,331, **8,912 re-prefill tokens, 40.1 s** (−86% tokens, −77% seconds per compaction).
+    - Unchanged in both arms: the request *after* the compaction re-prefills ~32k tokens at `cache_n` 6,447 (31,858 / 32,594 tokens, 174.9 s / 147.2 s). → UFH14-A4a.
+    - Neither call answered (both `no_answer` at the 2,700 s budget), so A4 says nothing about P(keep); that is A5's question.
+  - [ ] **UFH14-A4a — the post-compaction request still re-prefills ~32k tokens.** (filed 2026-10-04) In both arms the first request after the compaction matched only 6,447 tokens of cache. Diff that request's rendered prompt against the compaction request's to find where they diverge after the system prefix (tool list, task-prompt re-insertion, summary placement), and make the post-compaction prompt extend the compaction prompt.
 - [ ] **UFH14-A6.** Run every later harness experiment under the Landlock sandbox (`sandbox3.py`) and verify isolation on a real call before relying on it: a planted read of the live campaign store must fail, while the call's own workspace, result dir and wire proxy stay reachable. Origin: C2/cxf1/r2 contamination (A1).
+  - 2026-10-03 evidence (run 3, all four A3/A4 calls under Landlock ABI 6, ~2,476 rules, `/tmp` denied; `sandbox-report.json` per call): the sandbox applied and refused real accesses — 19 denials in each A4 call (writes to `/tmp/sgemm*.o`, opening `llama.cpp-experimental-fastload-ds41-20260925/.git`). But the contamination scanner still fired: C2/cxa+a3warm/r1 shows 15 live-campaign-path hits and **101 hits of the post-anchor keep commit `053c3bd82`** with **0** sandbox denials, and C4/cxa+a4fix 21 campaign-path hits. The scanner counts needle mentions, not successful reads, so it cannot tell a denied attempt from a leak; but 101 future-commit hits with no denial means some allowed path exposes post-anchor state. The planted-read probe has not been run. Not flipped.
+  - [ ] **UFH14-A6a — find the a3warm `053c3bd82` leak path and run the planted-read probe.** (filed 2026-10-04) Locate where the 101 hits enter the transcript (scratch clone refs, a bundle file, an allowed binary/log path), close it in `sandbox3.py`'s policy, and make `scan_contamination` cross-check each hit against the denial log. Then the planted read of the live campaign store must fail on a real call.
 - [ ] **UFH14-A5.** Phase A verdict: which fixes measurably change P(keep), wall time and prefill seconds on the 27B. Wire the results to the belief kernel; VB-DS41-C95 already exists, so extend it rather than adding a new ladder.
 - [ ] **UFH14-A7 (intake P7). Hybrid re-prefill when the next turn's history diverges inside the previous output.** Code read of frozen v10 `ffc1bac82` plus the F12 wire logs. Report and scripts: `/mnt/raid0/llm/tmp/p6p7-20261003/`.
   - **Mechanism.**
@@ -122,6 +135,61 @@ Client and harness side (ak-ds41-main):
   - the orchestrator's own agent-loop compaction (HS-4).
 
   Each parameter is derived from the serving server's measured prefill rate and slot context, never hardcoded for one model.
+  - [x] **UFH14-B1a — research side: F1/F2 in the AutoKernel actor seats.** ✅ 2026-10-03 — research `70f6b9f4` on main: `actor_serving.py` (F1: window from the server's `/props`, prefill rate from the orchestrator's serving-call records, idle timeout = 2 full-window prefills × 1.25 clamped [600 s, 4 h], compaction ≤ 0.76 of the window) for opencode seats on a LOCAL llama-server; F2 (`answer_protocol="f2"`, JSON-first, forced answer at 0.65 of the planner budget) planner only. Hosted providers and the codex/claude CLIs are untouched; `codex_config_overrides()` is the extension point.
+  - [x] **UFH14-B1b — orchestrator side (HS-4 agent-loop compaction) — on workspace-ec's branch.** Flip when it lands on orch main with a live call. ✅ 2026-10-04 (workspace-ec)
+    - Landed on orch main `ff92a580` (3a326a7c F1 as proposed, 1d03d9b4 F1 review fixes, cd5d7d97 compaction,
+      63855968 F2, ff92a580 fixes). API-only reload → PID 3858207 (`ps` lstart 02:06:46Z;
+      `/mnt/raid0/llm/tmp/ufh14-b1-ec-review/reload.out`). Live calls: the four 02:49–02:51Z :8083 passthrough records
+      in `logs/serving_calls/serving_calls.jsonl` carry the new `serving_params` block.
+    - Review fixes against workspace-89's proposal: `doomed` was overstated ~2.5x and is now judged against one
+      prefill of the UNCACHED tokens; a sample-cache eviction bug was fixed; the design note's clamp claim was wrong
+      (with any deadline the clamp returns the remaining budget, so F1 can only RECORD `doomed` under a deadline); the
+      passthrough derivation now runs before the gate and the body stays verbatim.
+    - Compaction finding confirmed: `TaskState.context` never reaches a turn prompt. Fixed always-on: a
+      deterministic compaction index, and the overflow path no longer force-compacts; a test proves turn prompts are
+      byte-identical.
+    - Flags, all OFF (attested by the drift check, `t-drift.log`): `derived_prefill_timeout`, `repl_answer_force`,
+      `session_compaction_llm_index`. Always-on: the deterministic index, the overflow path, the `serving_params`
+      record block, the cache fix.
+    - Tests: 45 new, 921 related, drift check, all rc 0 (`/mnt/raid0/llm/tmp/ufh14-b1-ec-review/t-*.log`). The first
+      run had 5 failures: 4 from a fake backend `infer` signature in the test, 1 a real 7-char cap overrun (the
+      separator), fixed in ff92a580.
+    - Observed on the live records: `prefill_source: "unmeasured"` and `allowance_s: 0`, so no long call has been
+      priced yet; the corrected-`doomed` window (B1d) starts only once records show a measured source.
+  - [ ] **UFH14-B1c — opencode/codex provider configs used with local models outside the actor seats.** Apply the same derived parameters.
+    - *(Annotation, workspace-ec, 2026-10-04.)* opencode half APPLIED with the operator's explicit OK
+      (AskUserQuestion, 2026-10-04): `/home/node/.config/opencode/opencode.jsonc` `headerTimeout`/`chunkTimeout` =
+      14,400,000 ms for `qwen-local` and `qwen-gpu`; backup `/mnt/raid0/llm/tmp/ufh14-b1-20261003/opencode.jsonc.bak-20261004`.
+      Codex half: the template `/mnt/raid0/llm/tmp/ufh14-b1-20261003/codex-local-provider-template.toml` was handed to
+      workspace-89 for their CODEX_HOME. Not ticked until the codex half is applied.
+  - [ ] **UFH14-B1d — STACKCHANGE: per-role request timeouts cannot cover a full-context prefill.** (filed 2026-10-04,
+    workspace-ec, from the B1 review) Item: [`docs/design/ufh14-b1-timeout-stackchange-item-20261003.md`](../../docs/design/ufh14-b1-timeout-stackchange-item-20261003.md)
+    (durable copy of `/mnt/raid0/llm/tmp/ufh14-b1-20261003/orch/STACKCHANGE-ITEM.md`). Recommendation: **Option A** —
+    the role value becomes the decode SLA (values unchanged, registry COMMENT-only changes) and `resolve_timeout` adds
+    the derived prefill allowance, which is also what lets `derived_prefill_timeout` survive the dispatch clamp. Check
+    `ingest_long_context` first (300 s; doomed above ~77k tokens on :8083, yet it is the long-document overflow
+    target). **Reject Option C** (raise constants: hand-picked, wrong after the next relaunch). Gate: HELD until one
+    window of CORRECTED `serving_params.doomed` counts per role exists (records with a measured `prefill_source`, after
+    1d03d9b4). Then one stack-change package, operator signature.
+  - [ ] **UFH14-B1e — port the `PROVISIONAL(answer)` REPL primitive behind its own flag, default off.** (filed
+    2026-10-04, workspace-ec; not ported in B1b) Design: `/mnt/raid0/llm/tmp/ufh14-b1-20261003/orch/DESIGN-NOTE.md`
+    "JSON-first and last-complete": a non-terminal primitive storing `state.provisional_answers`; at max turns
+    (`repl_executor.py:771`) the answer is the last provisional that validates against `output_schema`. Done when it
+    lands flagged off with tests, and an A/B task for enabling it is filed.
+  - [ ] **UFH14-B1f — wire the per-turn thinking budget behind its own flag, default off.** (filed 2026-10-04,
+    workspace-ec; not ported in B1b) `serving_params.thinking_budget_fields()` is on orch main but unused. Thread
+    `ChatRequest.thinking_budget` per turn (RI-23 override pattern, `llama_server.py:150-170`) and merge the fields
+    into the chat-lane body after `chat_template_kwargs`; chat lane only. Done when it lands flagged off with a test
+    that the body carries `thinking_budget_tokens` only when the flag is on.
+  - [ ] **UFH14-B1g — enable decision for `repl_answer_force` (F2).** (filed 2026-10-04, workspace-ec; the
+    enable task for a fix that landed OFF) A/B on the eval tower: forced-answer turn at 0.65 of the request budget vs
+    off; rescue rate and accuracy per suite. `derived_prefill_timeout`'s enable rides B1d (Option A). Declined, not
+    filed: enabling `session_compaction_llm_index` — OFF is the intended posture, because the compacted field is
+    never rendered into a turn prompt.
+  - [ ] **UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.**
+    (filed 2026-10-04, workspace-ec, from the B1 design note's "other constant to retire next") The long-prefill lease
+    expiry should read `serving_params.rate_at(samples, prompt)`, keeping 250 as the floor. Done when the lease
+    expiry uses the measured rate with a test, and the env override still wins.
 
 Orchestrator and stack side (workspace-ec; items are linked here as they land):
 
@@ -340,6 +408,28 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     SLOTS_DEBUG window). It also reports whether a primitives-lane record carries `request.prefix_fp`. Primitives
     records have no `long_prefill` field (KVU-15d). RI-18c still needs one completed `/chat` in a DS41 open window.
     Scheduled for the coordinated GPU block after ~18:15Z.
+
+    **2026-10-04 02:48–02:52Z (workspace-ec): lease and credit PROVEN** in the GPU block (it started 01:59Z, not
+    18:15Z on 10-03, because of missed notices). Evidence `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/ec2_lease/`;
+    :8083 at production flags (`slots_debug_env: null`, server PID 1703677). The parent stays open for the two parts
+    below that are still unproven.
+    - [x] **UFH14-DEPLOY-EC-2a — KVU-15a lease, live.** ✅ 2026-10-04 (run `20261004T025039Z`, PASS) Two concurrent
+      ~24k-token passthrough prompts (architect_critic, coder_escalation). The flock lease was held by 2 different API
+      worker PIDs (3858210, 3858214), never at once (max holders 1 over 1042 samples); :8083 had at most 1 slot
+      prefilling; B waited 48.9 s for A's prefill (`queue_wait_ms` 48870.97). The first attempt (`20261004T024825Z`)
+      failed only because the runner's lane B used /v1 client mode without the required `x_session_id` (HTTP 422).
+    - [x] **UFH14-DEPLOY-EC-2b — KVU-15c cached-prefix credit, live.** ✅ 2026-10-04 (run `20261004T024825Z`, credit
+      PASS) Call 2 (26,026-token prompt extending call 1) was credited 18,829 tokens from `fp_history` vs server
+      `cache_n` 22,178 (ratio 0.849, inside 0.5–1.5). It was judged a 7,197-token prefill, so `long_prefill: false`,
+      and it was NOT held (`queue_wait_ms` 5.3).
+    - [ ] **UFH14-DEPLOY-EC-2c — RI-18c: one COMPLETED live `/chat` with `review_gate`/`review_verdict` null.** Needs
+      a DS41 open window (CPU regions free).
+    - [ ] **UFH14-DEPLOY-EC-2d — B4: one dispatched primitives-lane record carrying `request.prefix_fp`.** No
+      primitives call ran in the block (`primitives-lane prefix_fp present: []`). The record's `long_prefill` field is
+      KVU-15d.
+    - [ ] **UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** (filed
+      2026-10-04, workspace-ec) In /v1 client mode the passthrough requires it, so the default config 422s. Make the
+      default two passthrough lanes (as re-run), or add `x_session_id` to the client-mode body, and dry-run it.
 - [x] **UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03
   (workspace-ec) Orch main aa1d6894 (branch `feat/diag-env-override-ec`, ada71720 rebased). It is CLI-only, so no
   reload was needed.
@@ -351,7 +441,7 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     restores the declared environment.
   - Tests: 51 new (`tests/unit/test_diag_env_override.py`).
   - Purpose: UFH14-A7 step 1.
-  - [ ] **UFH14-DIAG-EC-a — apply it for workspace-89's A3/A4 multi-turn GPU window, then restore.** (filed
+  - [x] **UFH14-DIAG-EC-a — apply it for workspace-89's A3/A4 multi-turn GPU window, then restore.** ✅ 2026-10-04 (filed
     2026-10-03) At the start of the window, the session that owns that window's :8083 reloads runs it with
     `--experiment-id ufh14-a7-slotsdebug-<date>` and a TTL ≤ 14400 s (re-apply if the window runs longer). Prove it
     with the readback, then restore with a plain `reload architect_critic` at the window's end. Two side effects
@@ -367,6 +457,18 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       LLAMA_SERVER_SLOTS_DEBUG=1 --experiment-id UFH14-A7 --override-ttl-s 14400` → PID 1083497, the same argv as
       production. The id is `UFH14-A7`, not the `ufh14-a7-slotsdebug-<date>` form above; records can still be tagged by
       it, so this is not filed. Readback and the plain-reload restore are still pending (TTL ends ~19:43Z).
+    - **RESTORED 2026-10-04T01:58:23Z (workspace-ec, which applied it):** a plain `reload architect_critic` → PID
+      3843823; the record is archived (`epyc-orchestrator/logs/env_overrides/architect_critic.history.jsonl`) and
+      `env_override readback --expect-declared` is ok. **Gap:** the TTL expired at 19:44Z on 10-03 and nothing
+      restored it, because the A3/A4-done notice was missed, so `declared_env_attestation` sat in its post-expiry ERROR
+      state for ~6 h (19:44Z → 01:58Z). The same missed notices delayed the GPU block from 18:15Z to 01:59Z.
+      Follow-up: UFH14-DIAG-EC-b.
+  - [ ] **UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.**
+    (filed 2026-10-04, workspace-ec, from DIAG-EC-a's ~6 h expired ERROR) The expiry is already an ERROR in
+    `declared_env_attestation`, but nothing routed it to a session. At expiry, post a bus nudge to the session that
+    applied the override (recorded in `logs/env_overrides/<component>.json`) and raise it on the hub's health fold.
+    Do not auto-restore: a reload is the window owner's call. Done when a test with an expired record emits exactly
+    one nudge naming the component and the restore command.
 
 ## Phase C — holistic audit (starts only after A5)
 

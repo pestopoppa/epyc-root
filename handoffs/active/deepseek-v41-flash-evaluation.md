@@ -912,9 +912,76 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C102 — orv/orsv arms (27B via orchestrator REPL; + UFH-12 context.search) orchestrator 500 int('') bug FIXED 2026-10-01 (orch 2d97ade2: context.get dict-style default; root cause model wrote context.get('inbox','')); operator chose a DS41 pause to run them 2026-10-01; needs frontdoor quiet (REPL delegates to worker roles on :8070) and repl_embedding_pool re-enabled after any API reload.
 - [ ] DS41-C103 — if the 27B is reconsidered as a planner: use codex with INLINE context (best arm, P(keep) 0.5 partial) and a longer budget; the 4500 s budget is the main failure (≥50% no-reply).
 - [ ] DS41-C104 — belief-kernel defect: `keep_claims()` in research `scripts/kernel_rnd/autokernel/loop/claims.py:27-48` stamps `effect.status = verified` (basis `oracle`+`paired_ab`) on every kept row with an oracle pass and any pairs, decisive or not, so all 14 non-decisive keeps read as verified effects. Mark `verified` only when the comparison is decisive; non-decisive keeps get `unverified` (or a `within_floor` status), plus a test and a re-projection of existing kept rows. A defect, not a choice — independent of the C98 ruling.
-- [ ] DS41-C105 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
+- [x] DS41-C105 — ✅ 2026-10-04 — the DS41 loop takes the `mi210_0` GPU device claim although the campaign is CPU-only, which blocks GPU windows (X0, UFH-14) for no reason. Drop the GPU claim for CPU-only targets. A fix is in progress on a research branch (another session's subagent); close when it lands and a live run shows no `mi210_0` claim.
   - 2026-10-03: **fixed, pending deploy.** Research main `4a815f00` adds `--cpu-measurement-gpu-quiet {off,q3}`, default `off`. Root cause: `loop/run.py:124-153` `_q3_cpu_gpu_quiet_window` took the claim on purpose — measurement hygiene from INF-70 (2026-09-08) to keep GPU work off the CPU floor — and it never excluded production :8083 anyway. It deploys through the DS41 boundary swap already armed (`/mnt/raid0/llm/tmp/ds41-scope-20260926/swap_noclaim_10aa.log`; at 15:23Z it showed only the run 10z pause request). Flip when that log shows run 10aa alive and a live run holds no `mi210_0` claim.
+  - 2026-10-04: **deployed and verified.** Runs 10aa/10ab and the current watchdog run (`state-wd3-20261004T023130`) run research main with the default `--cpu-measurement-gpu-quiet off`; their argv carries no `q3`. The GPU windows that followed ran on `mi210_0` while the loop was live — the CPU window's neighbours and the EXL3-LB1 seed #1 A/B (02:11–02:24Z) — with no claim refusal.
 - [ ] DS41-C106 — `AccumulatorPolicy` names a `ROLLBACK` divergence action (research `scripts/kernel_rnd/autokernel/loop/accumulate.py:141`) that nothing in `run.py` handles; `run.py:3049` always builds the HOLD default. Either implement ROLLBACK (reset the tip to the champion of record, discard the bundle, re-anchor) or remove the enum value so a config cannot select a no-op.
+- [ ] DS41-C107 — AutoKernel seed ledger: Fable CPU seeds (inbox 56) + structural seeds (inbox 57). Operator 2026-10-04: "I want to see autokernel progressively nail all of these".
+  - Sources: `/mnt/raid0/llm/tmp/cpu-lowbit-seeds-20261003/hypotheses-fable-cpu.md` (inbox 56) and
+    `/mnt/raid0/llm/tmp/cpu-structural-seeds-20261004/hypotheses-structural.md` (inbox 57 = DS41 note; Q38FN note in the
+    same dir, not yet in any campaign inbox). The inbox copies live in the campaign store
+    (`store/inbox/56-ds41-fable-cpu-lowbit-seeds-20261003.md`, `57-ds41-structural-sync-numa-seeds-20261004.md`); the
+    `tmp` originals are scratch.
+  - Every sub-task closes the same way: the loop keeps it, rejects it with a measured A/B, or abstains with a recorded
+    reason. Cite the experiments.db row. Q38FN-only seeds wait for the Q38FN lane (DS41-C111). Do not re-seed the
+    classes both notes list (barrier primitives, OMP wait, pairwise fusion, map-owner, NUMA_MIRROR, in-body gemm4xN).
+  - [ ] DS41-C107-s00a — no-code falsifier: `bench_readbw` 2×2 at 48t, {interleave, local} × {4K, THP}; ≤1.05× kills s01+s13. DS41+Q38FN. Closes: run + recorded verdict.
+  - [ ] DS41-C107-s00b — no-code falsifier: `GGML_CPU_PROF` node profile, served Q38FN recipe N=5; sets kill thresholds for s14-s17/s19. Q38FN. Closes: profile + thresholds recorded.
+  - [ ] DS41-C107-s01 — `akm-cpu-numa-quartered-weights`: mbind row quarter q to node q (PLACE, +10-25%). DS41+Q38FN. Gated by s00a. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s02 — `akm-cpu-q8-rn5plus-single-pass`: mnpack streams A twice at N=5..7, so make it one pass (+15-20% UD). Q38FN-UD. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s03 — `akm-cpu-hc-norm-mixes-splitk-fusion`: rms_norm→hc_mixes as one 48t split-K op (TOL, +5-6%). DS41. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s04 — `akm-cpu-rmsnorm-vector-sumsq`: vectorise the serial double Σx² chain (TOL, +2.5-3%), bundle with s03. DS41+Q38FN. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s05 — `akm-cpu-q8k-bsums-vector` + `akm-cpu-q82x4-zmm-quant`: vectorise the activation quantisers (+2-3% Q38FN, +1-2% DS41). Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s06 — `akm-cpu-small-node-prelude-collapse`: cut the 7.7 µs/node fixed cost (+1.5-3%). DS41+Q38FN. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s07 — `akm-cpu-q8-gemv-n1-4row-zmm`: real N=1 Q8_0 kernel in place of the ymm vec_dot (TOL, +3-8%). Q38FN-UD. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s08 — `akm-cpu-iq4xs-scale-fold`: fewer int ops per IQ4_XS superblock (BE-int, +3-6%). Q38FN-uniform. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s09 — `akm-cpu-next-node-slab-prefetch`: prefetch next-node rows during barrier spin (+1-3%). DS41+Q38FN. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s10 — `akm-cpu-qwen4exp-fused-decode-nle8`: model-code workstream, not a kernel route. Q38FN. Expected to close as a recorded abstain (the structural note says do not seed it).
+  - [ ] DS41-C107-s11 — `akm-cpu-q4k-vector-scale-unpack`: SIMD make_q4_scales (+1-3%); never pair with a 2-row unroll. DS41. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s12 — `akm-cpu-mmid-n2plus-prelude-parallel`: parallelise the MoE N>1 prelude (+0.5-1%); bundle or drop. DS41+Q38FN. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s13 — `akm-cpu-struct-moe-expert-group-numa`: (A) node-affine MoE slab with s01 (+5-15% MoE path); (B) after R1. DS41+Q38FN. Closes: keep / measured reject / recorded abstain.
+  - [ ] DS41-C107-s14 — `akm-cpu-struct-cogroup-independent-nodes`: siblings on 12t groups (+3-5% DS41, +6-10% Q38FN). Needs R1. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s15 — `akm-cpu-struct-norm-to-q8-fusion`: norm quantises src1 into wdata (+2-3% DS41, +3-5% Q38FN); carrier: new_helpers. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s16 — `akm-cpu-struct-solo-rows-verify-width`: key the solo gate on graph N≤8 (+1-2% DS41, +4-8% Q38FN). cpu_graph_sync. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s17 — `akm-cpu-struct-sibling-gemv-pack`: pack same-input projections at load (+1-3% DS41, +2-4% Q38FN). Needs R2. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s18 — DS41 width arm: draft-dspark n-max 3 (N=4) as a declared runtime arm (no code). DS41. Closes: keep / measured-A/B reject / recorded abstain.
+  - [ ] DS41-C107-s19 — `akm-cpu-struct-q4e-hc-fused-ops`: port DS41 fused HC ops to qwen4exp (~1,500 nodes/token, +12-20%). Needs R2. Q38FN. Closes: keep / measured reject / recorded abstain.
+  - [ ] DS41-C107-s20 — `akm-cpu-struct-mtp-width-arm`: spec-draft-n-max 5/6 runtime arm; flat on UD until s02. Recipe change = operator ruling. Q38FN. Closes: measured A/B or recorded abstain.
+- [ ] DS41-C108 — new AutoKernel admission routes R1/R2/R3 for the structural seeds (spec: `hypotheses-structural.md` §Routes). **In progress.**
+  - [ ] DS41-C108-R1 — `cpu_graph_sched` (extends `cpu_graph_sync`: graph_plan/compute bodies, threadpool field appends; repetition + model identity on both targets), unlocks s13(B)/s14.
+    2026-10-04: uncommitted in `/mnt/raid0/llm/worktrees/research-ak-routes-struct` (`feat/ak-routes-struct` @ 741c85d8, `gates.py` +97/−2).
+  - [ ] DS41-C108-R2 — `cpu_model_fused_op` (qwen4exp builders/loader + append-only ggml op; model_identity, + DS41 serving A/B if shared files touched), unlocks s17/s19. Not started.
+  - [ ] DS41-C108-R3 — `cpu_graph_optimize` (optional: the NULL `graph_optimize` hook annotates co-groups at plan time; gated like R1), an alternative home for s14/s13(B). Not started.
+  - Closes when R1 and R2 are merged to research main and deployed at a DS41 boundary, and each has admitted one seed candidate (R3 is built or dropped with a reason).
+- [x] DS41-C109 — per-keep measurement overhead cut: `--accumulate-bench-every-keeps` (3) + `--anchor-guard-aa-window-s` (21600, digest-proven A/A skip) (research 42309a9a). ✅ 2026-10-03
+- [x] DS41-C110 — widened CPU source admission: `new_helpers`, multi-route bodies, routes `cpu_norm_numerics`/`cpu_mul_mat_body`/`cpu_weight_placement`, fusion ref (e36b879f). ✅ 2026-10-03
+- [ ] DS41-C111 — Q38FN lane binding (`lane_targets.py`, `--lane-targets/--lane`, cross-target keep veto; research 741c85d8) landed, not started. Closes when a Q38FN lane run starts.
+- [ ] DS41-C112 — **the held keeps after COR cut Qwen3.8-Flash-Next prefill 30–40%: bisect before any champion fold.** (filed 2026-10-04) CPU window 2026-10-03 (INF-70 XFER-1,
+  `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`): vs champion `90c12df42`, COR `053c3bd82` gives Q38FN uniform pp256 −4.4% (inconclusive) and pp5 −7.2% (slower 3/3), but the
+  held-keep tip `b3e0b0902` (anchor-gen-017) gives pp256 **−29.4% [−38.6, −20.2]** (UD n=1: −40.6%); decode +2–10% unresolved, token-identical greedy output. Bisect the keeps between
+  COR and `b3e0b0902` on Q38FN pp256 (and pp5), name the culprit, and make cross-model prefill part of the gate-4 / champion-fold check (DS41-C111's cross-target veto is the mechanism).
+- [ ] DS41-C113 — **the DS41 launchers depend on a scratch worktree path.** (filed 2026-10-04; INC-20261004-cleanup-removed-load-bearing-worktree) `ds41_watchdog.sh`, `swap_*.sh` in
+  `/mnt/raid0/llm/tmp/ds41-scope-20260926/` export `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`; its removal on 2026-10-04 crashed DS41 (02:25Z, relaunched 02:36Z).
+  Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
+  watchdog from falling to fallback args on a missing-dependency death. Robustness work in progress by another ak-ds41-main subagent; close when the relaunched loop runs on the new path.
+- [ ] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
+  - "Lossless": the native checkpoint's routed experts are already FP4 (`config.json` `expert_dtype: fp4`, MXFP4-class
+    E2M1 + E8M0 per 32 = 4.25 bpw, `.weight` + `.scale` per expert). Repacking those blocks bit-for-bit into GGUF MXFP4
+    is lossless; antirez's Q4_K experts (4.5 bpw) are a lossy requant (unsloth: ~5.2% RMSE). DS4-Flash public
+    evidence: KLD 0.0290 → 0.0102, top-1 +2.3 pp. Bytes −2.0% (N=1) / −3.5% (N=3 verify): ~+1–2% decode plus a
+    possible DSpark α gain. Source: `docs/reviews/cpu-quant-research-20261003.md` §1.4, §3.3; `docs/reviews/quant-variant-survey-20261003.md` §2.
+  - Gate (i): MXFP4-vs-Q4_K CPU microbench in the next CPU window at DS41 expert shapes (from the GGUF header), N=1
+    and N=3, t48, champion experimental build. MXFP4 runs on CPU_REPACK `mxfp4_8x8_q8_0` (AVX2), not iqk
+    (`iqk_typeA_supported` excludes it); the 2026-10-03 iqk IQ4_NL/MXFP4 allowlist `8c4b282ae` was slower and diverged
+    (INF-70 XFER-4) and was not folded. If MXFP4 repack is slower than iqk Q4_K at N=3, the swap is quality-only
+    with a speed regression — decide with the operator then.
+  - Gate (ii): disk. The FP4 source is **not on disk** (`models/deepseek-ai/DeepSeek-V4.1-Flash/` is 17 MB of
+    metadata; the index lists 510.3 GB in 48 shards, 43 carrying experts). Spliced file ≈ 502 GB; the incumbent
+    antirez file stays; a streaming shard-by-shard splice peaks at ≈ 513 GB vs 500 GB free on 2026-10-04 → needs an
+    operator disk plan or a reclaim before the download.
+  - Work once gated: splice tool keeping antirez's `e4m3_e8m0_32_row264` engram and KV names (loader
+    `src/models/deepseek41.cpp:26-40`), bit-identity check on sampled blocks, coherence + KLD vs incumbent, the
+    DSpark α A/B, T8 admission. ~2 sessions.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

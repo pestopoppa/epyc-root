@@ -13,6 +13,7 @@ Operational detail for *how a kind of work is done* lives here, not in agent pro
 - `docs/guides/agent-workflows/handoff-closure-audit.md` — `scripts/handoffs/closure_audit.py`: verifies that the code a TICKED box cites exists on `origin/main` (classes a/b/c/d/e, `--strict-idents`, the triage-override file, and how to reopen a phantom closure)
 - `docs/guides/agent-workflows/orchestrator-lifecycle.md` — lifecycle and stabilization-closure guidance for orchestrator work in `epyc-orchestrator`: API-only reload, contention probes, response diagnostics as acceptance criteria
 - `docs/guides/agent-workflows/test-suite-conventions.md` — the two measured vacuous-pass shapes, the `test_*.py` = must-be-collectable naming rule, the sanctioned bridge stanzas, and why an exemption can be correct
+- `cleanup-reference-check.md` (this folder) — before any cleanup or reclaim removes a path, check live process environments and argv, launch and watchdog scripts, crontab and campaign state for it, and hold a live run's watchdog first; idle, clean and landed is not unused (INC-20261004-cleanup-removed-load-bearing-worktree)
 - `docs/guides/agent-workflows/filesystem-containment-guard.md` — the INC-20260823 mechanical guard: one shared scanner, two surfaces (Claude PreToolUse hook + opencode plugin), the CLASS A/B policy, and the operator ack/allowlist override forms
 
 ## Design Rule

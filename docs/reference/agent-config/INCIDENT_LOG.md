@@ -474,3 +474,22 @@ coordinator's request. Nothing claimed the GPU: the subagent had no window, and 
   `docs/guides/agent-workflows/benchmark-analyst.md` → *Scarce windows*;
 - the store-build re-validation moved to the coordinated GPU block: KVU-19a-1 in
   `handoffs/active/kv-unified-stack-rollout.md`.
+
+## INC-20261004-cleanup-removed-load-bearing-worktree
+On 2026-10-04 the operator-approved disk cleanup run by ak-ds41-main (evidence `/mnt/raid0/llm/tmp/disk-cleanup-20261004/`:
+`manifest.tsv`, `removed.log`, `df_before.txt`/`df_after.txt`; 268 removals, 435 GiB freed, root overlay 99% → 86%) removed
+`/mnt/raid0/llm/worktrees/root-main-epyc-root-repo` at 02:25:11Z (`removed.log` line 178). It had passed every check the
+cleanup applied: landed (head `117370a8630f` an ancestor of origin/main), clean, idle for more than 7 days, no process cwd or
+open fds inside, not cited by any handoff or campaign input. But the DS41 AutoKernel launch, swap and watchdog scripts in
+`/mnt/raid0/llm/tmp/ds41-scope-20260926/*.sh` (`ds41_watchdog.sh:31`, `swap_runtime_arms_10l.sh:49`, `swap_twolane_10n.sh:56`)
+export `EPYC_ROOT_REPO` to that path. DS41's next batch claim failed at ~02:25Z and two watchdog relaunches died; the worktree
+was restored at 02:30Z with `git worktree add --detach <path> 117370a8630f`, and DS41 was relaunched alive at 02:36Z. About
+11 minutes of loop time were lost; no measurement was corrupted. "Unused" had been defined by cwd and open files, and an
+env-var reference in a launcher is invisible to that check until the next launch. Rules fed:
+- before removing a worktree/checkout/store, scan `/proc/*/environ` and cmdlines, live launch and watchdog scripts,
+  crontab and campaign/state dirs for the path, and honour KEEP / LOAD-BEARING markers:
+  `docs/guides/agent-workflows/cleanup-reference-check.md`;
+- hold a long-running loop's watchdog before a risky infra change, so a broken dependency cannot exhaust its quick-death
+  budget and push it onto fallback args (same guide);
+- launchers must not point a production loop at a scratch worktree path: DS41-C113 in
+  `handoffs/active/deepseek-v41-flash-evaluation.md`.

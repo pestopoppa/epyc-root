@@ -2025,6 +2025,13 @@ VB-NPD-1) are activation records in the durable-triggers list above.
     partial; cxf1 0.50, 2 partial). Project them with the existing locator. One call (C2/cxf1/r2) is graded `contaminated=True`:
     carry that flag into the tuple and exclude it from any pooled arm verdict. Later runs (`run3.py`, Landlock sandbox) must emit the
     write-side `belief_measurements.jsonl` row at call end — see UFH14-A5.
+  - 2026-10-04 extension (UFH-14 run-3 A3/A4, `run3.py`): four more arms, same source class and ladder (UFH14-A5: extend,
+    no new ladder). Per-call `results/C2/cxa+a3{cold,warm}/r<k>/result.json` and `results/C4/cxa+a4{base,fix}/r<k>/result.json`
+    add three fields the earlier projection does not cover: `first_request` (prompt_n, cache_n, cache_hit, prompt_s,
+    decode_tps, held_s, ttft_after_release_s), `compactions` (n, rewritten, reprefill tokens/s sums, unfinished) and
+    `sandbox_denials` (denied_hits). Project each as an OBSERVATION metric on the existing context × arm × repeat locator,
+    with its own unit and direction; `sandbox_denials.denied_hits` is a run-validity fact carried on the tuple, not graded.
+    A `compactions.unfinished > 0` call is censored. These arms are pre-hook too: copy `results/C{2,4}/cxa+a*` durably first.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
 ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)
@@ -2181,3 +2188,34 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - First step: copy the four result trees to a durable research results path and record their digests (tmp is
     scratch). Then one strict adapter per producer; all grade `Judged/Located` through `claim_tuple.grade()` (n ≤ 3,
     no codified protocol). No new ladder.
+  - 2026-10-04 extension: the kernel-route A/B (VB-KQROUTE-1) ran `x0_shape_b.py` as its serving leg,
+    `/mnt/raid0/llm/tmp/kqroute-build-20261003/results/20261004T021143Z/x0b/{A,B}/shape_b.q4.rep1.json`
+    (`x0.shape_b.launch.v1`). Same producer class as INF-80 EXL3-X0 above, so it projects through this task's
+    shape_b adapter with the arm's kernel-store build id added to the locator; it is not a second source.
+
+## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KQROUTE-1 — write side + projection for the GPU kernel-route A/B harness** (CLAUDE.md *Belief Kernel —
+  wiring new sources*; source row in `scripts/vidya/adapters/README.md`). Producer
+  `/mnt/raid0/llm/tmp/kqroute-build-20261003/ab_kqroute.sh`; first run `results/20261004T021143Z/` (EXL3-LB1 seed #1,
+  gfx90a MMVQ→MMQ route, commit `289cbafa3`). Inputs: per-launch `bench.<model>.<round><arm>.json` llama-bench JSON with
+  `.stderr.log` and `.vram.txt`, `route.*.log`, `tbo.{A,B}.log` (`test-backend-ops` correctness), `report.txt`.
+  First step: copy the raw evidence (the whole `results/<ts>/` tree, plus `patched_commit.txt` and the linkage logs) to a
+  durable location and record digests — `/mnt/raid0/llm/tmp` is scratch. Then a strict adapter: locator = run × model ×
+  test (pp<n>/tg128) × arm × launch; arm = kernel-store build id from the launch (A `gpu-20260929-90c12df42`, B
+  `gpu-20261003-289cbafa3-kqroute`); carry binary digest, ggml linkage proof and own-PID VRAM; a `tbo` FAIL voids that
+  arm's speed rows; report the A-spread as the floor. The `x0b/` serving leg projects under VB-KVU-P3, not here. n = 2 A /
+  1 B per test, no protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Add a write-side
+  `belief_measurements.jsonl` to `ab_kqroute.sh` before its next run.
+- [ ] **VB-CPU-XFER-1 — write side + projection for the CPU transfer A/B harness (`q38fn-transfer` `report.py`)**
+  (CLAUDE.md *Belief Kernel — wiring new sources*; source row in `scripts/vidya/adapters/README.md`). One source class,
+  two runs: `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/runs/20261003T172030Z/` and the iqk allowlist A/B
+  `/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/` (same `report.py`). Inputs per run: per-launch
+  `bench-*.jsonl` llama-bench JSON, `.sidecar.json` (load time, THP state, foreign CPU %, NUMA placement), greedy coherence
+  token ids, `REPORT.txt`. First step: copy the raw evidence (both run dirs plus `report.py`/`run_transfer.sh` and their
+  digests) to a durable location — `/mnt/raid0/llm/tmp` is scratch. Then a strict adapter: unit = one launch, value =
+  `avg_ts` (t/s, higher = better), locator = run × model × round × arm; sidecar-excluded launches (foreign CPU over
+  `FOREIGN_MAX_PCT`, THP shim off) are declined with the reason, never projected; the coherence comparison against the
+  reference arm rides as a verifier fact per arm; arm identity from `build_commit`/binary digest and the env arm. n =
+  rounds per arm, no protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Add a write-side
+  `belief_measurements.jsonl` to `report.py report` before its next run.

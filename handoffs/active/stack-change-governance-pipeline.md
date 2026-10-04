@@ -109,6 +109,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
   vision roles as `live_stack`, so seeding's DEFAULT_ROLES include :8086, which a default `start` no longer launches.
   Fix the compiler classification (launch tier HOT only, or an explicit `warm` class), recompile, and add a test that
   a WARM role never lands in DEFAULT_ROLES. Derived output changes, so it ships as a stack-change package.
+  - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
+    STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md` §1b; `--validate-only`
+    VALID, 68 pins). Scoped to seeding: the compiler stamps `serving.default_launch`; `DEFAULT_ROLES` and
+    `discover_active_roles` drop `worker_vision` / `vision_escalation` (:8086). `live_stack` is KEPT, because ~40
+    declared consumers need it (`live_stack_role_records` is CRITICAL in impact analysis); two helpers sit beside it.
+    7 new tests plus a negative control. Argv identity 11/11, no relaunch. Not ticked until signed and applied.
+- [ ] **SCG-PRIORS-WARM-b — switch the default-start readers to `live_stack_default_launch_role_records()`.** (filed
+  2026-10-04, workspace-ec, from STACKCHG-HYGIENE PACKAGE §8 A-3; after SCG-PRIORS-WARM is applied) The RESIDENT
+  consumers that mean "expected up after a default start" still read `live_stack`: `/health` core probes (a missing
+  :8086 reports `not_realized` → `degraded`), `cli_orch` status, `stack_commands status`, `autopilot/preflight_audit`,
+  the `host_health` rewarm list, `corpus_quality_gate`, `kv_compress` compress-all and autopilot `/slots` polling.
+  Needs an API + autopilot reload. Done when `/health` is not `degraded` with :8086 down by design, with tests.
 - [ ] **SCG-TEST-ORDER — fix the order-dependent `test_safety_gate_baseline_eligibility` failure.** (filed 2026-10-03,
   workspace-ec) `test_reproduced_promotion_uses_representative_median…` fails or passes depending on test order, on
   origin/main as well as the integration branch. Find the leaked state (module global, env, or monkeypatch order),
@@ -188,6 +200,18 @@ consumer, and refuse launch or CI if any model-specific quantity remains stale.
     SIDECAR `mtp-Qwen3.8-27B-Q8_0.gguf`, while production MTP self-drafts from the model file — so AK's MTP
     denominator is not the production argv. List the sidecar as `drafters.mtp_sidecar` or fix the recipe.
   Done when no served or rollback-anchor model compiles with a `LEGACY drafter` warning.
+  - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
+    STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
+    VALID, 68 pins): frontdoor + aliases (35B-A3B MTP) and `architect_general` (Flash-Next MTP) move to DRAFT-SEL-1
+    `roles.<model>.drafters` form; the :8074 `spec_overrides` is retired; the Qwen3.6-27B rollback anchor gets
+    `drafters` (MTP only, DFlash stays gated). `LEGACY drafter` warnings 2 → 0; argv identity 11/11 live servers, so
+    no relaunch. Not ticked until signed and applied. The residuals the package leaves (A-5) are DRAFT-SEL-2b.
+- [ ] **DRAFT-SEL-2b — the drafter residuals STACKCHG-HYGIENE left (PACKAGE §8 A-5).** (filed 2026-10-04,
+  workspace-ec) None produces a `LEGACY drafter` warning today, so DRAFT-SEL-2's done-when does not cover them:
+  the top-level `dflash_drafters:` (Qwen3-8B, Qwen3-Coder-30B-A3B; fold onto target rows if rostered, else delete);
+  the untracked `qwen3.8-27b-q8-gpu-mtp.json` sidecar-MTP recipe mismatch (list `drafters.mtp_sidecar` or fix the
+  recipe); the alias `server_mode.worker.draft_model` that no check reads; and the gemma rows the package names.
+  Ships as one stack-change package. Done when each is folded, deleted or explicitly declined in that package.
 - [ ] **SCG-FASTPATH — the stack-change skill offers the fast path first for an urgent production fix**
   (filed 2026-10-03, from `INC-20261003-urgent-fix-slowed-by-bundling`). When live serving is wrong and the
   operator wants it fixed now, phase 0 presents (a) an operator-terminal relaunch with the target argv, then (b)
