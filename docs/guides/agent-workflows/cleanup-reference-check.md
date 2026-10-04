@@ -25,6 +25,35 @@ INC-20261004-cleanup-removed-load-bearing-worktree in `docs/reference/agent-conf
 The check failed because it defined "unused" by cwd and open files. A reference in a launcher's environment
 does not show up in either until the next launch.
 
+## Never a candidate: harness state and session transcripts (operator hard rule, 2026-10-04)
+
+Some trees are excluded before the check below even starts. **Claude and Codex backup logs and session transcripts
+are never touched:** not deleted, moved, truncated, vacuumed, compacted or "reaped". That holds under disk pressure,
+holds when an operator has approved a cleanup, and holds for any retention script. In the operator's words:
+*"Claude/codex backup logs should NOT BE TOUCHED UNDER ANY CIRCUMSTANCES. They are historical transcripts used by a
+root filesystem project far more senior to anything performed in this project repo."* The rule covers **every
+third-party agent harness's own state**, not just Claude and Codex:
+
+| Tree | What it is |
+|---|---|
+| `/home/node/.claude`, `/home/node/.local/share/claude` | Claude Code transcripts, backups, share state |
+| `/mnt/raid0/llm/claude-backups` | the claude-backups job's output |
+| `/home/node/.codex`, `/mnt/raid0/llm/tmp/ds41-c95/codex-home` | Codex sessions, logs and history DBs (incl. harness homes) |
+| `/home/node/.local/share/opencode`, `/home/node/.config/opencode` | opencode store and config |
+| `/home/node/.hermes`, `/mnt/raid0/llm/hermes-agent`, `/mnt/raid0/llm/tmp/ds41-c95/hermes` | hermes state |
+| `/mnt/raid0/llm/cloud-llm-vault` | cloud harness vault |
+
+Code enforces it: `scripts/system/scratch_cleanup.py` refuses every path under its `NEVER_TOUCH` list, whatever a
+handoff declares (root `722b7196`, `b639dc8e`). `scripts/system/codex_retention_reaper.py` has its `apply` path
+permanently disabled (exit 4, report-only). The authoritative list is the `NEVER_TOUCH` constant: a new harness gets added
+there first. If a harness store's growth matters, **report it** (the report-only reaper, `host_hygiene_tick.py`'s
+grower ranking) and leave the decision to the operator.
+
+One operator-approved exception exists: `scripts/system/opencode_event_reaper.sh`. It prunes only opencode's
+`event` streaming table in idle sessions and never sessions, messages or parts. It is not a precedent for any other
+reaper. The doctrine half is prepared for ratification into `agents/shared/OPERATING_CONSTRAINTS.md` →
+*Destructive operations* (`scripts/operator/ratify_harness_state_never_touch_20261004.sh`).
+
 ## The check: run all of it, per path, before removing anything
 
 Run it for each candidate path `P`, using its realpath and any alias that `scripts/safety/path_identity.sh`

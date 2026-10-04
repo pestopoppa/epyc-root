@@ -1252,7 +1252,7 @@ it. If someone needs one of these done, it needs an owner first.
 | **METH-2** | the back-to-back A/A registration rule **and its own correction** (bracketing is worse than pooling when there is no trend) — a methodology rule with no home outside INF-70's file | `cpu-decode-roofline-program.md` -> METH-2 |
 | **NOFOLD-1** | `feature/tree-draft-v6` **MUST NOT FOLD**; the constraint existed nowhere in `handoffs/active/` until INF-70 recorded it | `cpu-decode-roofline-program.md` -> NOFOLD-1 |
 | **HYG-2b** | the commit-hygiene hook **still misparses compound shell commands** (and blocks its own idiom) | `cpu-decode-roofline-program.md` -> HYG-2b |
-| **G2-CONC** | blocking promotion gate — **must run on the PROMOTION CANDIDATE binary, never inherited from an ancestor** | `cpu-decode-roofline-program.md` -> G2-CONC |
+| **G2-CONC** | blocking promotion gate — **must run on the PROMOTION CANDIDATE binary, never inherited from an ancestor**; coherence via the shared `coherence_gate` tiers 0–2 (paired byte-identity vs anchor → ground truth + `degeneracy.v2` on real ids → paired judge), never INF-70 `classify.py` (CLS-RECT 2026-10-04) | `cpu-decode-roofline-program.md` -> G2-CONC |
 | **UP-1 / UP-2** | **four upstream ggml contributions**, patches **ready and UNSUBMITTED**. Promoted to git so they survive a scratch sweep; submission has no owner | `data/inf70-upstream-patches-2026-09-08/` (`epyc-inference-research`, commit `1780fa7b` (on main as `56ef1404`)) |
 
 Two items from INF-70 were **transferred and ARE owned here** and are deliberately absent from the table

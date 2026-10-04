@@ -124,7 +124,10 @@ The rules that make cleanup a listing instead of an act of memory:
    holding an evidence file. Verifying it is `ls` of the root.
 
 Declared paths must sit under `/mnt/raid0/llm/tmp/` or `/mnt/raid0/llm/worktrees/` with a name of at
-least three characters — a bare parent is refused as too broad. `index_state.py --check` warns
+least three characters — a bare parent is refused as too broad. A declaration can never reach harness state: Claude/Codex
+transcripts and backups, and every third-party harness's state, are refused by `scratch_cleanup.py`'s
+`NEVER_TOUCH` list whatever a handoff declares (operator hard rule 2026-10-04,
+[cleanup-reference-check.md](cleanup-reference-check.md) → *Never a candidate*). `index_state.py --check` warns
 (never fails) on handoffs without the field and on invalid declarations; add the field when you next
 touch a handoff, and always when creating one.
 
