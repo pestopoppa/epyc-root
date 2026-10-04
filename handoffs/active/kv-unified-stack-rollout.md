@@ -167,7 +167,7 @@ is olympiad-style reasoning.
   - Recommendations: 65536 MiB on :8083 (floor 24576), 32768 on :8070, 16384–32768 on :8074, 0 on :8086.
   - The value compiles to `-cram` already. Land it at the same :8083 reload if the operator agrees; a second
     reload costs a planner transient.
-- [ ] **KVU-15a — close step 1's two known gate limits** (filed 2026-10-03, workspace-ec, from the KVU-15 landing,
+- [x] **KVU-15a — close step 1's two known gate limits** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec, from the KVU-15 landing,
   orch 2586a7bb). **BUILT 2026-10-03, NOT DEPLOYED:** orch cdf0f9b4 (host-wide `fcntl.flock` lease per server,
   `ORCHESTRATOR_KV_POOL_CROSS_PROCESS_LEASE=0` reverts; new-token sizing from the longest prefix an IDLE slot holds,
   margin `ORCHESTRATOR_KV_POOL_CACHE_CREDIT_MARGIN_TOKENS`), integrated on orch `integ/api-reload-2-ec` 10bc5681; not
@@ -187,6 +187,15 @@ is olympiad-style reasoning.
     is still the proof. Since 15:43:08Z :8083 runs a `LLAMA_SERVER_SLOTS_DEBUG` window (UFH14-DIAG-EC-a, experiment
     id `UFH14-A7`), where the credit goes live only because debug exposes slot text: the replay's lease half may run
     there, but its cached-prefix half must not be read from that window.
+  - **PASSED LIVE 2026-10-04 02:48–02:52Z (workspace-ec), production flags** (SLOTS_DEBUG off, `slots_debug_env:
+    null`), evidence `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/ec2_lease/`:
+    - Lease half (run `20261004T025039Z`): two concurrent ~24k-token passthrough prompts; the flock lease was held by
+      2 different API worker PIDs (3858210, 3858214), never at once (max holders 1, 1042 samples); :8083 max 1 slot
+      prefilling; B waited 48.9 s for A's prefill. Peak 1 long prefill across workers.
+    - Cached-prefix half (run `20261004T024825Z`): call 2 extended call 1, was credited 18,829 tokens (KVU-15c
+      `fp_history`), sized as a 7,197-token prefill (`long_prefill: false`) and admitted after 5.3 ms, i.e. not held.
+    - Both halves of the done-when hold, so ticked. The credit run was sequential rather than inside the 2-worker
+      replay; the lease run had no cached prefix (both `cache_n` 0). UFH14-DEPLOY-EC-2a/2b record the same proofs.
   - **Finding, 2026-10-03 (workspace-ec): the cached-prefix credit is inert in production.** It reads the prompt
     text an idle slot holds from `/slots`. v10 returns slot prompt text only under `LLAMA_SERVER_SLOTS_DEBUG`
     (`tools/server/server-context.cpp` `to_json` :699-730; `slot.to_json(slots_debug == 0)` at :2541, prompt only under `!only_metrics` at :726). With debug off, a
@@ -194,7 +203,7 @@ is olympiad-style reasoning.
     reports only `id`, `is_processing`, `n_ctx` and `speculative`. So the credit always falls back to whole-prompt
     sizing. That is safe, but the credit is never applied. Step 1's `/slots` prefill observation is unaffected,
     because it reads token counts, not text.
-  - [ ] **KVU-15c — re-base the cached-prefix credit on orchestrator-side prefix history, not `/slots` text.** (filed
+  - [x] **KVU-15c — re-base the cached-prefix credit on orchestrator-side prefix history, not `/slots` text.** ✅ 2026-10-04 (filed
     2026-10-03, workspace-ec, from the finding above)
     - Keep a per-port history of recent `prefix_fp` fingerprints and the server-reported `cache_n` from the UFH14-B4
       serving records. Credit a request with the longest prefix that history says a slot or `--cache-ram` holds,
@@ -221,6 +230,12 @@ is olympiad-style reasoning.
         `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/RUNBOOK.md`, :8083 serving and not parked, SLOTS_DEBUG off). PASS
         means call 2's record has `cache_credit_source == "fp_history"`, `cache_credited_tokens > 0` and
         credited / `timings.cache_n` within 0.5-1.5. It runs in the coordinated GPU block after ~18:15Z.
+    - **PASSED LIVE 2026-10-04 ~02:49-02:50Z (workspace-ec)**, :8083 at production flags (`slots_debug_env: null`):
+      call 2 `kv_admission.cache_credit_source == "fp_history"`, `cache_credited_tokens` 18,829 vs server
+      `timings.cache_n` 22,178 (ratio 0.849); call 1 recorded `cache_credit_unavailable` `{fp_history: no_match,
+      slots_text: slots_no_prompt}`, so the fallback is visible. The KVU-15a done-when also passes (above). Evidence
+      `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/ec2_lease/20261004T024825Z/report.json`. This opens the
+      KVU-15b count (≥ 200 credited calls).
   - [ ] **KVU-15d — primitives-lane serving records must say whether the call held the long-prefill lease.** (filed
     2026-10-03, workspace-ec, found while preparing the GPU-block runner) Passthrough records carry
     `passthrough.long_prefill`, but primitives-lane `serving_call.v1` records have no `long_prefill` field, only
@@ -260,6 +275,11 @@ is olympiad-style reasoning.
     12.75 GiB KV pool ≈ 38.03 GiB (`evidence/vram_during_reload.log`). Land the measured value in the research master
     with its evidence pointer through the stack-change pipeline (registry value, DRAFT-SEL-1 `check_lean` reads it),
     and recompile. Done when `check` passes and the lean carries 38.03 with an evidence path.
+    - *(Annotation, workspace-ec, 2026-10-04.)* **PACKAGED, VALID, awaiting the operator's signature** in
+      STACKCHG-HYGIENE-20261003 (`/mnt/raid0/llm/tmp/stack-change-hygiene-20261003/PACKAGE.md`; `--validate-only`
+      VALID, 68 pins; `validate-main.out`): 39.15 derived → 38.03 measured (50.7822 GiB load peak − 12.75 GiB KV pool;
+      evidence copied to `evidence/vram_during_reload_8083_20261003.log`). Argv identity 11/11 live servers, so no
+      relaunch. Not ticked until signed, applied and `check` passes.
   - [ ] **KVU-16b — a corrected concurrent-residency proof for the 393216 pool.** NOTE (2026-10-03, workspace-89 P3 code read): production runs `cache_idle_slots` ON, so idle slots are flushed to RAM at each task launch and the pool can only fill with ACTIVELY GENERATING sequences. The proof must hold 4 long contexts DECODING at once (long `n_predict`), not parked. P3 part A1 uses `--no-cache-idle-slots`: cite it only as a mechanism result, NOT as a production residency proof. (filed 2026-10-03, workspace-ec)
     - **Correction (2026-10-03, workspace-ec, from the P3 report):** the idle-purge claim above is a CODE READ, not a
       measurement. P3 arm A0 ran at the exact production flags and did NOT reproduce the purge: its neighbour slot held
@@ -434,7 +454,11 @@ is olympiad-style reasoning.
     workspace-89 was asked to run it on its harness in the coordinated GPU block after ~18:15Z. Falsifiable
     expectations: at L3, drafted ≥ ~33 tok/s (was 15.4) and no-draft ≥ ~19 (was 8.3); batched-bench `-kvu` S_TG within
     ~5% of `-no-kvu` (was −15.2%); L0 unchanged within noise. Its records project under VB-KVU-P3.
-  - [ ] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** (filed 2026-10-03, workspace-ec;
+  - *(Annotation, workspace-ec, 2026-10-04; this item stays workspace-89's.)* KVU-19a-1 passed on the store build
+    (02:25-02:47Z), but the batched-bench expectation above already FAILS at small scale: 4×16k `-kvu` S_TG 444 vs
+    `-no-kvu` 542/551 t/s (base 437). The skip is per tile, and a batched decode tile spans all sequences. Single-
+    sequence decode/verify behind idle neighbours is fixed (P3-mini 82 → 169 steps/s). Per-row skipping is KVU-19b.
+  - [x] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec;
     operator instruction 2026-10-03, implements KVU-19) IN PROGRESS: an Opus subagent on a new `llama.cpp-experimental`
     branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`).
     - Scope: the HIP (gfx90a) and CPU flash-attention kernels skip fully masked KV blocks anywhere in the range, not
@@ -468,7 +492,7 @@ is olympiad-style reasoning.
         #28943 closed, #29510 is a draft. Drop ac97e305a for the upstream design when it lands.
       - Fold: trial merge and cherry-pick onto DS41 accumulator b3e0b0902 are both clean. workspace-89 does the
         champion fold (KVU-19).
-    - [ ] **KVU-19a-1 — validate the STORE build on the GPU (`gpu_slot.sh`).** (filed 2026-10-03, workspace-ec) The
+    - [x] **KVU-19a-1 — validate the STORE build on the GPU (`gpu_slot.sh`).** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec) The
       correctness and micro-bench numbers above come from the dev build. Run
       `/mnt/raid0/llm/tmp/fa-maskskip-20261003/gpu_slot.sh` (~20-25 min, < 2 GiB) in a coordinated GPU slot, never
       during another session's GPU measurement window (INC-20261003-subagent-gpu-tests-in-peer-window). It covers
@@ -476,6 +500,21 @@ is olympiad-style reasoning.
       vs `-no-kvu`, and `test-backend-ops` with `GGML_CUDA_FA_MASK_SKIP_MIN_KV` default and 0. Done when
       `test-backend-ops` passes on the store build, skip on/off is bit-identical, and the 0-foreign micro-bench row is
       within noise of the champion. Then tick KVU-19a. Scheduled for the coordinated GPU block after ~18:15Z.
+      - **PASSED 2026-10-04 02:25-02:47Z (workspace-ec)** on the store build, results
+        `/mnt/raid0/llm/tmp/fa-maskskip-20261003/slot-20261004T022552Z/` (VRAM before/after equal).
+        - Exactness (`exact.txt`): skip off vs on 64/64 bit-identical; base (champion) vs on 58/64, worst nmse 3.05e-7.
+          `test-backend-ops -o FLASH_ATTN_EXT` 2920/2920 twice (`MIN_KV` default and 0).
+        - Kernel micro-bench, 3 alternating rounds (`perf_results.txt`): nb=1 at +114,688 foreign cells base ~2003 µs
+          vs on ~282 µs (7.1x); nb=8 at +114,688 3808 vs 584 µs; 0 foreign 271 vs 275 µs (noise).
+        - P3-mini, gemma-3-1b, 8k own, 3×32k idle neighbours (`p3mini_results.txt`): draft 1 base 82 → on 169 steps/s
+          (no-neighbour ~182-197); draft 8 41.8 → 89.5 (no-neighbour ~99.5).
+        - Batched-bench, 4 concurrent 16k sequences (`bb_*.jsonl`): S_PP kvu base 13,205 → new 21,017 t/s (no-kvu
+          ~20,000); S_TG kvu base 437 → new 444 vs no-kvu 542/551.
+        - **FINDING: the skip does NOT help concurrent decodes.** A batched decode's query tile spans every sequence,
+          so its live-block set is their union and nothing is dead. Production flushes idle slots (211 organic
+          purges, KVU-16b), so concurrent decode is the production-relevant case. Filed as KVU-19b.
+        - KVU-19a's done-when holds (tests pass, neighbour tax reduced for single-sequence decode/verify, fold record
+          handed to workspace-89, whose P3 v2 on this build is queued), so KVU-19a is ticked.
     - [ ] **KVU-19a-2 — report or investigate the latent D=512/576 tile-kernel nondeterminism upstream.** (filed
       2026-10-03, workspace-ec, from the KVU-19a build) A no-op branch inside the KV loop of the D=512/576 GQA tile
       FA kernel made its output run-to-run nondeterministic on gfx90a (~1e-4 nmse), even with the skip disabled.
@@ -484,6 +523,13 @@ is olympiad-style reasoning.
       on an experimental branch, then file an upstream llama.cpp issue with the repro. Detail: the fold record's
       *Not done / follow-ups*. Done when an upstream issue link is recorded here, or the repro shows it is not
       reproducible on the unpatched kernel.
+    - [ ] **KVU-19b — per-sequence (per-query-row) block skipping inside a multi-sequence FA tile.** (filed
+      2026-10-04, workspace-ec, owner workspace-ec, from KVU-19a-1's batched-bench finding) KVU-19a marks a KV block
+      dead only if it is dead for EVERY query row in the tile, so a batched decode over 4 sequences sees the union
+      and skips nothing: S_TG kvu 444 vs no-kvu 542/551 t/s. Skip per query row (or regroup query rows by sequence)
+      inside the tile, on `llama.cpp-experimental` from the current champion, HIP/gfx90a first, keeping the 64-case
+      exactness harness and `test-backend-ops` green. Done when batched-bench `-kvu` S_TG at 4×16k is within ~5% of
+      `-no-kvu` and single-sequence results do not regress.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean

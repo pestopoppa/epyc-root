@@ -140,6 +140,9 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
       correctness FAIL marks the speed numbers INVALID. Output: `results/q38_t7/<ts>/{calls.jsonl,report.json,report.md}`,
       schema `epyc.gpublock.q38_t7.v1`. Runs in the coordinated GPU block after ~18:15Z. The adapter row text for
       VB-SERVING-DF2 is prepared in `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`.
+  - 2026-10-04 (workspace-ec, note only): **RUNNING** since 02:52:47Z in the GPU block (which started 01:59Z, not
+    18:15Z), output `results/q38_t7/20261004T025247Z/`; preflight `slots_debug_env: null`, `argv_nmax7: true`, :8083
+    parked. Not complete; the queue after it is KVU-16b, B4g, B4i, then workspace-89's P3 v2 on the mask-skip build.
 - [x] **Q38-T8 — DFlash2 load-time VRAM peak sampled DURING the load** (PACKAGE M-2). ✅ 2026-10-03 — the sampler
   armed before `reload architect_critic` (`/mnt/raid0/llm/tmp/stack-change-dflash2-20261003/apply/vram_during_reload.log`,
   0.5 s cadence) reads 44.31 GiB card-total on the OLD process (04:44:36Z), 0.01 GiB at unload (04:44:39Z), and a
