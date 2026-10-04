@@ -40,7 +40,7 @@
 | RTG-32 | scaffold autopilot cost lever deployment | [scaffold-autopilot-cost-lever-deployment.md](scaffold-autopilot-cost-lever-deployment.md) | T0.1 — Verify AutoPilot is down (no autopilot.py, no journal activity) and get operator go-ahead for the capability-registry row | — |
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | — |
 | RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then resume live canaries | — |
-| RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | Retire the stale q* nomenclature on half-sized instances, reviewed together with the contention_nway_restricted_count label | — |
+| RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | REGION-SIBLING-1: merge fix/region-lock-smt-siblings-ec 4ae008a8 after operator approval (OP-77); then the q* nomenclature review | — |
 | RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-ENVOVR-EXPIRED; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-38 | standardized stack update pipeline finalizat | [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | W4 swap-CI — prove representative stack changes move generated descriptors, priors and gate execution together | — |
 | RTG-39 | swarm dataset distillation | [../blocked/swarm-dataset-distillation.md](../blocked/swarm-dataset-distillation.md) | BLOCKED on strand Phase B — correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp | EVL-45 |
@@ -59,8 +59,8 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 shadow-mode code (zero-inference); TD-29.M0a prefill tokens on the /completion lane, then TD-29.M4 prefix-cache reuse | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | URGENT KVU-16h VRAM growth; KVU-16f -b 512 A/B; KVU-16b-1 re-run; KVU-19b-fold-c1 (ws-ec) + rework-c2; V11-FA-1/2 pre-rebase A/B; KVU-16g | RTG-19, RTG-36, INF-41 |
-| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-27b-ack (workspace-ec acks branch B d63f7aa9), then KPF-27d shadow windows; KPF-01..03 P1 + VB-KVU-PF | RTG-57, RTG-27, INF-65 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16h-confirm row 4c, then -fold; fold-c1 receipt + P3 B; gpu_slot3 (rework-c2); V11-FA slot; KVU-16g-1 row 5c; CPU-FA-VKQ-1 | RTG-19, RTG-36, INF-41 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | Land P2 branch B v2 (KPF-27b acked 2026-10-04), then KPF-27d shadow windows with FORK=auto; re-cut KPF-17a for 1bceceb05 | RTG-57, RTG-27, INF-65 |
 
 ## Cross-domain
 
