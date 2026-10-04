@@ -75,7 +75,11 @@ the rollback (`git revert` set + any symlink restores).
 The only human gate.
 
 ### 7 — apply
-Patch set onto the real trees → `update --numa-mode <declared>` →
+First set the machine-readable pending marker, which the G1 MI210 window executor
+refuses on (`epyc-orchestrator`):
+`python -m src.runtime.gpu_window_executor stack-change-pending set --change-id <id> --phase apply`
+(switch to `--phase bring-up` at phase 8; `... stack-change-pending clear` only after
+phase 8's serving proof passes). Then patch set onto the real trees → `update --numa-mode <declared>` →
 `check --run-promotion-gate`.
 
 ### 8 — bring up
