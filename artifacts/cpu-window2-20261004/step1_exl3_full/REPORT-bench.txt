@@ -1,0 +1,22 @@
+q38fn-transfer report  run=/mnt/raid0/llm/tmp/cpu-window2-20261004/step1_exl3_full  reference arm=U
+unit = one llama-bench launch (process); value = launch avg_ts (t/s, higher=better);
+effect = arm/ref - 1 within the same round (serpentine order), median over rounds [min, max].
+
+MODEL q38   rounds=[1, 2, 3]
+  pp5    ref U: median    70.59 t/s  between-launch cv 3.13%  n=3
+         E: median    49.86 t/s  effect -30.92% [-31.30, -29.37]  n=3  -> SLOWER in 3/3 rounds, each < -6.3%
+         I: median    87.60 t/s  effect +24.11% [+17.30, +28.72]  n=3  -> FASTER in 3/3 rounds, each > 6.3%
+  pp256  ref U: median   193.80 t/s  between-launch cv 8.00%  n=3
+         E: median   171.89 t/s  effect -16.67% [-24.06, -8.02]  n=3  -> inconclusive (mixed signs / inside noise)
+         I: median   259.64 t/s  effect +33.97% [+26.78, +36.14]  n=3  -> FASTER in 3/3 rounds, each > 16.0%
+  tg128  ref U: median    32.17 t/s  between-launch cv 6.89%  n=3
+         E: median    26.11 t/s  effect  -6.84% [-29.31, -6.33]  n=3  -> inconclusive (mixed signs / inside noise)
+         I: median    34.66 t/s  effect +11.41% [+2.59, +24.35]  n=3  -> inconclusive (mixed signs / inside noise)
+
+COHERENCE (greedy, 2 prompts x 48 tokens, token ids vs reference arm)
+  q38      E: p1: IDENTICAL; p2: DIFFERS at token 45; p3: DIFFERS at token 22
+  q38      U: p1: reference; p2: reference; p3: reference
+           ref text p1: " Paris. The capital of Germany is Berlin. The capital of Italy is Rome. The capital of Spain is Madrid. The ca"
+
+Claim grammar: n is launches per arm (small); a FASTER verdict is a sign claim with the
+per-round range as its bound, not a promotion gate. MTP is not exercised (pp5 is the verify-shape proxy).

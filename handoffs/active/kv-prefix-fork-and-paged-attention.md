@@ -1,7 +1,8 @@
 # KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views
 
 **Status**: ACTIVE. Operator-approved program (2026-10-04: *"all sound like crucial features to fold into our
-champion. We shouldn't be afraid of large efforts."*). Nothing is built yet; P0 and P1 are dispatchable now.
+champion. We shouldn't be afraid of large efforts."*). P0 and P1 are dispatchable now. P2's prefix index (KPF-27
+branch A, flag OFF) landed on orchestrator main 2026-10-04; its gate half (branch B) waits for workspace-ec's ack.
 **Created**: 2026-10-04 (drafted for ak-ds41-main from the KV-serving survey)
 **Priority**: HIGH. Four subagents with one 60k-token trunk prefill it four times today and hold four copies
 (~180k cells, ~6 GB of the :8083 pool). Fan-out child TTFT is minutes when it could be seconds.
@@ -21,7 +22,8 @@ orchestrator prefix-cache rows), [`agentic-serving-harness-fixes.md`](agentic-se
 
 ## Why this exists
 
-Survey [`/mnt/raid0/llm/tmp/kv-serving-survey-20261004/REPORT.md`](/mnt/raid0/llm/tmp/kv-serving-survey-20261004/REPORT.md)
+Survey [`artifacts/gpu-block-27b-20261004/analysis/kv-serving-survey-REPORT.md`](../../artifacts/gpu-block-27b-20261004/analysis/kv-serving-survey-REPORT.md) (durable copy of
+`/mnt/raid0/llm/tmp/kv-serving-survey-20261004/REPORT.md`)
 (§0, §4) ranks five levers for concurrent long-context serving on :8083 (Qwen3.8-27B Q8_0 hybrid GDN + full
 attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carries **Recs 2-5**:
 
@@ -41,9 +43,13 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
   against 19b, P5 reuses their block-liveness scan.
 - **Context only, not a task here:** workspace-ec is preparing a :8083 stack-change package with
   `-b 512 -ub 512` + `--no-cache-idle-slots` (root cause:
-  [`/mnt/raid0/llm/tmp/kvu16b-rootcause-20261004/REPORT.md`](/mnt/raid0/llm/tmp/kvu16b-rootcause-20261004/REPORT.md)
+  [`artifacts/gpu-block-27b-20261004/analysis/kvu16b-rootcause-REPORT.md`](../../artifacts/gpu-block-27b-20261004/analysis/kvu16b-rootcause-REPORT.md)
   §4 fix 1). Once live, it is the production shape every gate here runs at. `--no-cache-idle-slots` keeps idle
   trunks resident, which gives P1 more fork sources and makes P2's unique-cell gate matter more.
+  Measured 2026-10-04 (ak-ds41-main GPU slot, [`artifacts/gpu-slot-ak-20261004/`](../../artifacts/gpu-slot-ak-20261004/),
+  fixed decoding predicate): skip OFF `-b 512` vs `-b 2048` gives 3.5–4.2× decode while a neighbour prefills, −3.1 GiB
+  KFD peak, and −26% solo shallow prefill; skip ON (19a+19b incl. commit 2) with `-b 512` gives 14× summed decode
+  during the last prefill, with all 4 requests decoding at 8–11 tok/s.
 
 ## Start here
 
@@ -53,8 +59,8 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
 4. In parallel with P1: **KPF-25** (byte-stable trunks) and **KPF-21** (trunk-first ordering). Both pay off with
    the existing `--cache-ram` copy restore even before the fork lands.
 5. **KPF-30** (live-block fraction) can run as soon as KVU-19b's build exists. It needs no P1.
-6. P4 waits on the v11 FA-path audit (`/mnt/raid0/llm/tmp/v11-fa-path-audit-20261004/REPORT.md`, in progress at
-   drafting) and the v11 rebase. P5 waits on P1 and a rocprof profile.
+6. P4 waits on the v11 FA-path audit ([`artifacts/v11-fa-path-audit-20261004/REPORT.md`](../../artifacts/v11-fa-path-audit-20261004/REPORT.md), complete
+   2026-10-04; actionables V11-FA-1..4 in RTG-57) and the v11 rebase. P5 waits on P1 and a rocprof profile.
 
 ## Standing rules for every phase
 
@@ -100,6 +106,13 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
   never to model the cache itself (P2). Every phase's done-when is a measurement on the live server, never green
   unit tests over an unwired path.
 - The wiki sweep should compile this lesson into `wiki/kv-cache.md` when P1's gate closes (KPF-04).
+- **2026-10-04 revival (KPF-27).** The radix tree came back in a different role: an index that records where
+  prefixes are and lets the gate act on it (credit, LPM, trunk hold, fork plan), never a cache model and
+  never a slot allocator. Three rules made it safe to revive: (1) the server is the source of truth — every
+  slot entry is bound to `/slots` `id_task` and dropped the moment the server disagrees; (2) a client key is
+  the WIRE text, not a canonicalized or client-tokenized one; (3) it is wired into paths every request
+  already crosses (the KV pool gate and the serving record), with a flag-off test that proves nothing else
+  changed — the January module failed on exactly that last point.
 
 ## What already exists in our tree (v10 `ffc1bac82`, read-only line refs)
 
@@ -325,6 +338,46 @@ KPF-22..24 and KPF-26 need P1 live.
 - [ ] **KPF-26: P2 gate.** Replay a real fan-out (an HS-19 scouting round or a delegate wave) through :8000 on the
   P1 build: trunk prefilled once (server `timings`), child TTFT, peak unique cells, admission waits, and **task
   outcome unchanged** on the replay set vs the pre-P2 path. Two windows; records under VB-KVU-PF.
+- [ ] **KPF-27: revived prefix index (radix tree) — orchestrator side, behind `ORCHESTRATOR_PREFIX_INDEX`
+  (default OFF).** Branches `feat/rtg58-p2-prefix-index` (branch A: index, record observation, `idle` pin) and
+  stacked `feat/rtg58-p2-prefix-index-gate` (branch B, `d63f7aa9`: KV pool gate wiring — GitNexus HIGH on
+  `SharedKVPoolAdmission.acquire/_admissible/release`, lands only after workspace-ec acknowledges). **Branch A landed
+  on epyc-orchestrator main 2026-10-04 as `2833e3a2` + audit fix `99348f54`** (flag OFF; API not reloaded). Branch B
+  is stacked on `2833e3a2`, so it rebases onto `99348f54` before landing. Module `src/inference/prefix_index.py`: one
+  index per physical server, path-compressed trie over chained 512-char block hashes, entries `slot` (bound to
+  `/slots` `id_task`), `pending`, `served`, `inflight`; reconciled with `/slots` at every gate poll; verified slots
+  shared host-wide via `{tmp_dir}/kv_prefix_index.{host}_{port}.json`. Design, blast radius, the eight server questions
+  for P1's INTERFACE.md and the test record:
+  [`artifacts/rtg58-p2-prefix-index-20261004/DESIGN.md`](../../artifacts/rtg58-p2-prefix-index-20261004/DESIGN.md).
+  - [x] KPF-27a: audit of the January `radix_cache.py` (keep LPM semantics; fix stale-slot bug and missing
+    path compression; drop client slot allocation and client tokenizer). Regression test for the stale-slot bug.
+    ✅ 2026-10-04 — landed with branch A (`2833e3a2`, `test_stale_slot_regression_from_the_january_radix_cache`).
+  - [ ] KPF-27b: wiring — serving-record observation (`recorded_call`, `passthrough.write_serving_record`),
+    `CachingBackend` pin policy `idle` (branch A); KV pool gate (`prefix_key` on primitives, passthrough,
+    scouts; credit, LPM, trunk hold, fork credit, fork plan) on branch B. 2026-10-04: the branch A half is on main
+    (`2833e3a2` + `99348f54`); the branch B half waits on KPF-27b-ack.
+  - [ ] KPF-27b-ack: workspace-ec acknowledges the HIGH blast radius of branch B (acquire/_admissible/release)
+    before it lands, as for KPF-12/13.
+  - [x] KPF-27c: flag-off proof (`tests/unit/test_prefix_index_flag_off.py`) and wiring tests through the
+    passthrough route and `llm_call` → `/completion`. ✅ 2026-10-04 — branch A 237 passed, branch B 350 passed; the
+    one wider failure (`test_canonicalization_throughput`) fails identically on untouched main (DESIGN.md §6).
+  - [ ] KPF-27d: land on main (owning session), then a **shadow window** on :8083 with the flag on and
+    `_FORK` off: record `prediction_abs_err_tokens/predictions`, `slot_prediction_hits/slot_predictions` and
+    the `stale_drops` mix from `get_status()`; done when two windows are recorded (VB-KVU-PF). 2026-10-04: branch A
+    is landed; branch B and both shadow windows are open.
+  - [ ] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI
+    timings, checkpoint positions, `/props` fork capability, unique cells) into `reconcile`/`lookup`, and send
+    `checkpoint_at` from the trunk-first path (KPF-21).
+- KPF-21 note: trunk-first is implemented centrally in the gate (`ORCHESTRATOR_PREFIX_INDEX_FORK=1`, branch B), not
+  per fan-out site; KPF-21 stays open for the prefill-only trunk request with `checkpoint_at` (needs KPF-15).
+- KPF-22 note: the bounded LPM bypass is implemented in KPF-27 branch B (`_prefix_index_admissible`, at most
+  `ORCHESTRATOR_PREFIX_INDEX_LPM_MAX_SKIPS` passes per waiter). KVU-6's and INF-05 KV-3's owners record the
+  overlap; KPF-22 closes after KPF-26 measures it.
+- KPF-23 note: decision recorded in `prefix_cache.py`'s docstring (landed with branch A) — `PrefixRouter` kept as the
+  legacy opt-in; index pin policy `idle` pins only verified idle slots; hash routing retires after the KPF-27d shadow
+  metric.
+- KPF-24 note: `cache_credit_source: "prefix_index"` added on branch B; fork credit on the reservation behind
+  `_FORK`; switch from the client estimate to the server's unique-cell figure once KPF-16 publishes it.
 
 ### P3: sequence-affine KV cell allocation (workspace-ec) — effort: measure S (~2-3 days), build S-M (~1 week)
 
@@ -350,10 +403,11 @@ Measure first. The build is gated on the measurement.
 
 ### P4: upstream #29510 `kv_rows` port as an A/B arm vs KVU-19b (workspace-ec) — effort M-L (HIP MMA + vec), ~2-4 weeks, at the v11 rebase
 
-**Gated on the #26046 v11 FA-path audit** (`/mnt/raid0/llm/tmp/v11-fa-path-audit-20261004/REPORT.md`, in progress
-at drafting). v11 moves verify and prefill from rocWMMA onto MMA/MFMA (upstream removed the rocWMMA FA in #26046,
+**Gated on the #26046 v11 FA-path audit** ([`artifacts/v11-fa-path-audit-20261004/REPORT.md`](../../artifacts/v11-fa-path-audit-20261004/REPORT.md), complete
+2026-10-04). v11 moves verify and prefill from rocWMMA onto MMA/MFMA (upstream removed the rocWMMA FA in #26046,
 2026-07-24), which changes where 19a/19b and `kv_rows` live. Diff on hand:
-`/mnt/raid0/llm/tmp/kv-serving-survey-20261004/pr29510.diff`.
+`/mnt/raid0/llm/tmp/kv-serving-survey-20261004/pr29510.diff` (scratch snapshot of the open PR as of 2026-10-04; it is
+upstream code, so it is not copied into this repo — re-fetch with `gh pr diff 29510 -R ggml-org/llama.cpp`).
 
 - [ ] **KPF-40: pre-check (read-only, zero compute).** Read the v11 audit. Re-derive which of our ubatch shapes
   `get_n_kv_slices()` accepts on the **hybrid** split (`llama-memory-hybrid.cpp:89`, `split_equal`), which may
@@ -442,8 +496,11 @@ at drafting). v11 moves verify and prefill from rocWMMA onto MMA/MFMA (upstream 
 - **Orchestrator**: `src/scheduling/kv_pool_admission.py`, `src/scheduling/prefix_history.py`,
   `src/inference/prefix_cache.py`, `src/api/routes/chat_pipeline/scout_stage.py`, `src/parallel_step_executor.py`,
   `src/typed_decisions/fanout_policy.py`, `src/api/routes/delegate.py`, `src/backends/serving_calls`.
-- **Evidence and inputs**: the survey (`/mnt/raid0/llm/tmp/kv-serving-survey-20261004/REPORT.md`, `pr29510.diff`);
-  the KVU-16b root cause (`/mnt/raid0/llm/tmp/kvu16b-rootcause-20261004/REPORT.md`); the KVU-19a fold record
+- **Evidence and inputs**: the survey (`artifacts/gpu-block-27b-20261004/analysis/kv-serving-survey-REPORT.md`; the
+  `pr29510.diff` snapshot stays in `/mnt/raid0/llm/tmp/kv-serving-survey-20261004/`); the v11 FA-path audit
+  (`artifacts/v11-fa-path-audit-20261004/`); the KVU-16b root cause
+  (`artifacts/gpu-block-27b-20261004/analysis/kvu16b-rootcause-REPORT.md`); the 2026-10-04 skip OFF/ON × `-b` replay
+  (`artifacts/gpu-slot-ak-20261004/`); the P2 prefix-index design (`artifacts/rtg58-p2-prefix-index-20261004/DESIGN.md`); the KVU-19a fold record
   (`docs/design/fa-masked-block-skip-20261003-fold.md`).
 
 ## Not filed here (explicit)

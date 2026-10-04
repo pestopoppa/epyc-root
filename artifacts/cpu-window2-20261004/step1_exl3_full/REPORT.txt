@@ -1,0 +1,42 @@
+STEP 1 -- EXL3 3.05bpw full model (E) vs UD-IQ4_XS (U, ref) vs IQ4_XS-uniform (I)
+COHERENCE (greedy, 48 tokens, token ids vs U): expect SIMILAR, not identical
+  p1: common prefix 48/48 tokens, positional match 100%, distinct-token ratio 0.40
+       E: " Paris. The capital of Germany is Berlin. The capital of Italy is Rome. The capital of Spain is Madrid. The capital of Portugal is Lisbon. The capital"
+       U: " Paris. The capital of Germany is Berlin. The capital of Italy is Rome. The capital of Spain is Madrid. The capital of Portugal is Lisbon. The capital"
+  p2: common prefix 45/48 tokens, positional match 94%, distinct-token ratio 0.73
+       E: ":\n\n1.  **Latency:** The L3 cache is closer to the cores than the memory controller, so it can provide faster access to data.\n2.  **Bandwidth:** The L3"
+       U: ":\n\n1.  **Latency:** The L3 cache is closer to the cores than the memory controller, so it can provide faster access to data.\n2.  **Bandwidth:** The L3"
+  p3: common prefix 22/48 tokens, positional match 46%, distinct-token ratio 0.48
+       E: "    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n   "
+       U: "    if n < 0:\n        raise ValueError(\"Input must be a non-negative integer\")\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a"
+
+BENCH (q38fn-transfer report.py; arms U=UD@champ, I=uniform@champ, E=EXL3@exl3-tree; effect = arm/U - 1 per round)
+q38fn-transfer report  run=/mnt/raid0/llm/tmp/cpu-window2-20261004/step1_exl3_full  reference arm=U
+unit = one llama-bench launch (process); value = launch avg_ts (t/s, higher=better);
+effect = arm/ref - 1 within the same round (serpentine order), median over rounds [min, max].
+
+MODEL q38   rounds=[1, 2, 3]
+  pp5    ref U: median    70.59 t/s  between-launch cv 3.13%  n=3
+         E: median    49.86 t/s  effect -30.92% [-31.30, -29.37]  n=3  -> SLOWER in 3/3 rounds, each < -6.3%
+         I: median    87.60 t/s  effect +24.11% [+17.30, +28.72]  n=3  -> FASTER in 3/3 rounds, each > 6.3%
+  pp256  ref U: median   193.80 t/s  between-launch cv 8.00%  n=3
+         E: median   171.89 t/s  effect -16.67% [-24.06, -8.02]  n=3  -> inconclusive (mixed signs / inside noise)
+         I: median   259.64 t/s  effect +33.97% [+26.78, +36.14]  n=3  -> FASTER in 3/3 rounds, each > 16.0%
+  tg128  ref U: median    32.17 t/s  between-launch cv 6.89%  n=3
+         E: median    26.11 t/s  effect  -6.84% [-29.31, -6.33]  n=3  -> inconclusive (mixed signs / inside noise)
+         I: median    34.66 t/s  effect +11.41% [+2.59, +24.35]  n=3  -> inconclusive (mixed signs / inside noise)
+
+  q38      E: p1: IDENTICAL; p2: DIFFERS at token 45; p3: DIFFERS at token 22
+  q38      U: p1: reference; p2: reference; p3: reference
+
+Claim grammar: n is launches per arm (small); a FASTER verdict is a sign claim with the
+per-round range as its bound, not a promotion gate. MTP is not exercised (pp5 is the verify-shape proxy).
+
+PERPLEXITY wiki.test.raw c512 (lower = better; no high-precision reference on disk => PPL fallback)
+  U: final 2.9925 +/- 0.06315  chunks 40  PPL@40 chunks = 2.9925
+  I: final 3.5244 +/- 0.07817  chunks 40  PPL@40 chunks = 3.5244
+  E: final 2.8909 +/- 0.05905  chunks 40  PPL@40 chunks = 2.8909
+  EXL3 vs UD at 40 chunks: -3.40% PPL
+  caveat: wikitext overlaps the Q38FN memorised n-gram/PLE set and the public Q8_0 KLD floor is 0.022-0.027
+  (cpu-quant-research-20261003/report.md), so small PPL gaps between 4-bit-class files are not resolvable as quality;
+  the project gate is a paired per-item task eval, not PPL.

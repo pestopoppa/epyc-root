@@ -1,0 +1,22 @@
+{
+  "schema": "llama-host-prof/1",
+  "units": {"time": "us", "per": "token"},
+  "n_eval": 1,
+  "n_p_eval": 454,
+  "decode_us_per_token": 36595.000,
+  "prefill_us_per_token": 12988.782,
+  "phases": [
+    {"phase": "20llm_graph_input_embd", "decode_us_per_token": 1.000, "decode_calls": 1, "prefill_us_total": 45.000, "prefill_calls": 76},
+    {"phase": "26llm_graph_input_mem_hybrid", "decode_us_per_token": 5.000, "decode_calls": 1, "prefill_us_total": 406.000, "prefill_calls": 76},
+    {"phase": "19llm_graph_input_pos", "decode_us_per_token": 73.000, "decode_calls": 282, "prefill_us_total": 80.000, "prefill_calls": 151},
+    {"phase": "23llm_graph_input_out_ids", "decode_us_per_token": 68.000, "decode_calls": 282, "prefill_us_total": 33.000, "prefill_calls": 151},
+    {"phase": "19llm_graph_input_ple", "decode_us_per_token": 73.000, "decode_calls": 1, "prefill_us_total": 3353.000, "prefill_calls": 76},
+    {"phase": "N20llama_model_qwen4exp19llm_graph_input_qsaE", "decode_us_per_token": 4.000, "decode_calls": 1, "prefill_us_total": 213.000, "prefill_calls": 76},
+    {"phase": "ctx.mctx_apply", "decode_us_per_token": 161.000, "decode_calls": 282, "prefill_us_total": 493.000, "prefill_calls": 151},
+    {"phase": "ctx.build_alloc_set_inputs", "decode_us_per_token": 12286.000, "decode_calls": 282, "prefill_us_total": 45458.000, "prefill_calls": 151},
+    {"phase": "ctx.graph_compute", "decode_us_per_token": 726704.000, "decode_calls": 282, "prefill_us_total": 6790973.000, "prefill_calls": 151},
+    {"phase": "22llm_graph_input_embd_h", "decode_us_per_token": 405.000, "decode_calls": 281, "prefill_us_total": 1497.000, "prefill_calls": 75},
+    {"phase": "23llm_graph_input_attn_kv", "decode_us_per_token": 877.000, "decode_calls": 281, "prefill_us_total": 362.000, "prefill_calls": 75},
+    {"phase": "24llm_graph_input_sampling", "decode_us_per_token": 123.000, "decode_calls": 281, "prefill_us_total": 17.000, "prefill_calls": 75}
+  ]
+}

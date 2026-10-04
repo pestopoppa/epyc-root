@@ -1,0 +1,5 @@
+50343614c4c9b94d634dc50dbe0c715a691f974e19be771a150e860bf4134298  /mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003/build/bin/libggml-cpu.so.0.16.0
+dc44fe484a2f426ec073d5aacb17dd5ad5791daf80f125da4210d683f19bac2a  /mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003/build/bin/libggml-base.so.0.16.0
+f55d258378045fb9db8f399576295dd99979265a4144aaaaaef243c560d1cf15  /mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003/build/bin/llama-bench
+81fb22eba9b60592e8d706c72a21f755654f54716f8c99ccdc43990e0b01a730  /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/libggml-cpu.so.0.16.0
+853321d7c4524b0a3c736a34262cab4e080e8f28748021e43cd0fb57c4bd3ec4  /mnt/raid0/llm/kernels/builds/cpu-20260925-90c12df42/bin/llama-bench

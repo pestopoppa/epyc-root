@@ -1,0 +1,4 @@
+[kvu_on_b512] healthy in 4.0 s pid 241228 build b10312-c7f5ac9ad slots 4x262144 hip-proof True live env {'LD_LIBRARY_PATH': '/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin:/opt/rocm/lib'}
+[kvu_on_b512] coherence: sha 821d2f3d3a563435 finish stop text 'Sunlight contains all colors, but shorter blue wavelengths scatter more effectively in the atmosphere than longer red wavelengths, making the sky appear blue du'
+[kvu_on_b512] replay verdict PASS wall 926.1 s KFD peak 48.585 GiB TTFT [163.9, 195.1, 238.0, 232.7]
+[kvu_on_b512] done status ok teardown {'pid': 241228, 'already_exited': False, 'sent': ['TERM'], 'verified_dead': True, 'returncode': 0} KFD own peak 48.585 GiB

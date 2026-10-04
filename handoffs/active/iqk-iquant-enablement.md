@@ -108,6 +108,12 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
     same-top-1 within 1 pp; a paired per-item task eval no worse than UD. If any fails, the port is closed. If all
     pass, port in `llama.cpp-experimental`: register about 15 types (decide the ID policy first), compile the vendored
     iqk kernels and quantizer, respect the `715383cde` OOB class — 2–4 sessions.
+  - 2026-10-04 (ak-ds41-main, backlog drain): backlog item c3 (IQ4_K/IQ4_KS on Q38FN via the ik instrument) is
+    **BLOCKED** on this item's Steps 0 and 1. Checked on disk: `/mnt/raid0/llm/ik_llama.cpp` has no `qwen4exp` arch,
+    no IQ4_K/KS Q38FN GGUF exists, and no Q8_0/BF16 Q38FN source exists. So c3 cannot run inside the drain; it needs
+    the scratch ik build (Step 0) and the ~5.8 h Q8_0 download (Step 1) first. Schedule:
+    `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md` row 3. Justification bar: INF-70 XFER-3 (uniform IQ4_XS is
+    +24-34% faster than UD at +17.8% PPL, `artifacts/cpu-window2-20261004/`).
 
 ## Decision gates
 

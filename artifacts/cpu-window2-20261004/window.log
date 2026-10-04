@@ -1,0 +1,31 @@
+[03:07:12] [pause_measure2] === pause_measure2 mode=exec (no DS41 stop/relaunch); window dir /mnt/raid0/llm/tmp/cpu-window2-20261004
+[03:07:12] [pause_measure2] DS41 cpu-window (/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/store/cpu-window.json): state=closed holds=true phase=build_and_measure label=proposing a hypothesis est_close=null expires=2026-10-04T03:09:09.403920Z
+[03:07:12] [pause_measure2] DS41 loop-status: {"state":"running","step":"[lane1] building and gating","generated_at":"2026-10-04T03:07:11.145967Z"}
+[03:07:12] [pause_measure2] DS41 loop pids: [4129900 4130481 ]; watchdog current: /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-wd3-20261004T023130
+[03:07:13] [pause_measure2] region-lock status:  q0 HELD autokernel-cpu[None] autokernel-experimental-serving; q1 HELD autokernel-cpu[None] autokernel-experimental-serving; q2 HELD autokernel-cpu[None] autokernel-experimental-serving; q3 HELD autokernel-cpu[None] autokernel-experimental-serving;
+[04:40:39] [pause_measure2] DS41 window open (state=open holds=false phase=planner label=proposing a hypothesis est_close=2026-10-04T04:43:33.712373Z expires=2026-10-04T04:42:37.427444Z); taking region-lock 0-95 (attempt 1)
+[04:40:39] [window] === cpu-window2 window_steps mode=exec (CPU_WINDOW2_LOCKED=1)
+[04:40:39] [window] OK window lock:  q0 HELD bench[None] cpu-window2-20261004; q1 HELD bench[None] cpu-window2-20261004; q2 HELD bench[None] cpu-window2-20261004; q3 HELD bench[None] cpu-window2-20261004;
+[04:40:42] [window] load at window start: host busy 130% of one CPU, load 7.02 37.52 53.08, build 0%, DS41-loop 0%, gpu procs 0, top: python:101% | light -> proceed
+[04:40:42] [window] === step0_struct_falsifiers (cap 660 s; window used 3 s): bash /mnt/raid0/llm/tmp/cpu-window2-20261004/bin/step0_struct_falsifiers.sh --execute --budget-s 600 
+[04:41:33] [window] step0_struct_falsifiers rc=0 wall=51 s
+[04:41:33] [window] === step1_exl3_full (cap 2000 s; window used 54 s): bash /mnt/raid0/llm/tmp/cpu-window2-20261004/bin/step1_exl3_full.sh --execute --budget-s 1900 
+[04:59:30] [window] step1_exl3_full rc=0 wall=1077 s
+[04:59:30] [window] === step2_exl3_microbench (cap 600 s; window used 1131 s): bash /mnt/raid0/llm/tmp/cpu-window2-20261004/bin/run_mb2.sh --execute --budget-s 540 
+[04:59:40] [window] step2_exl3_microbench rc=3 wall=10 s
+[04:59:40] [window] === step3_mxfp4_q4k (cap 480 s; window used 1141 s): bash /mnt/raid0/llm/tmp/cpu-window2-20261004/bin/step3_mxfp4_q4k.sh --execute 
+[04:59:47] [window] step3_mxfp4_q4k rc=3 wall=7 s
+[04:59:47] [window] === step4_q38fn_anchor (cap 1440 s; window used 1148 s): bash /mnt/raid0/llm/tmp/cpu-window2-20261004/bin/step4_q38fn_anchor.sh --execute 
+[04:59:51] [window] step4_q38fn_anchor rc=3 wall=4 s
+[04:59:51] [window] own pid 2391962 (pause_measure2 python3) still alive -> kill_own
+[04:59:51] [window] window_steps got a signal -> TERM current step group (own timeout pid none)
+[04:59:51] [window] own pid 2391962 (pause_measure2 python3) still alive -> kill_own
+[05:00:11] [window] own pid 2391962 ignored TERM -> KILL
+[05:00:11] [pause_measure2] window finished rc=137; region lock released (DS41's next tail can take it)
+[05:00:11] [pause_measure2] own-pid sweep: 39 registered, 0 needed killing
+[05:00:11] [pause_measure2] region-lock status after:  q0 HELD autokernel-cpu[None] autokernel-experimental-serving; q1 HELD autokernel-cpu[None] autokernel-experimental-serving; q2 HELD autokernel-cpu[None] autokernel-experimental-serving; q3 HELD autokernel-cpu[None] autokernel-experimental-serving;
+[05:00:11] [pause_measure2] DS41 cpu-window after: state=closing holds=false phase=build_and_measure label=critic pass 2: reviewing the diff est_close=2026-10-04T04:45:08.958991Z expires=2026-10-04T05:02:03.975037Z
+[05:00:11] [pause_measure2] step 4 did not write START-COMMANDS.sh -- see /mnt/raid0/llm/tmp/cpu-window2-20261004/step4_q38fn_anchor/run.log
+[05:00:11] [pause_measure2] PAUSE_MEASURE2 DONE
+[05:00:12] [window] own pid 2391962 confirmed dead
+[05:00:12] [window] own-pid sweep: 39 registered, 1 needed killing

@@ -1,0 +1,13 @@
+[iqk] ACTIVE: MoE mul_mat_id via ik kernels (type=21 activation=15 n_as=512)
+[iqk] ACTIVE: MoE mul_mat_id via ik kernels (type=23 activation=15 n_as=512)
+[iqk] ACTIVE: MoE mul_mat_id via ik kernels (type=21 activation=15 n_as=512)
+[iqk] ACTIVE: ik_llama GEMM kernels engaged (first mul_mat type=14 activation=99 ne00=2560)
+0.07.640.367 I 
+0.07.640.496 I system_info: n_threads = 48 (n_threads_batch = 48) / 192 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.07.640.518 I perplexity: tokenizing the input ..
+0.07.966.240 I perplexity: tokenization took 325.714 ms
+0.07.966.362 I perplexity: calculating perplexity over 40 chunks, n_ctx=512, batch_size=512, n_seq=1
+0.10.702.035 I perplexity: 2.74 seconds per pass - ETA 1.82 minutes
+[1]2.3405,[2]3.5953,[3]3.1800,[4]2.6768,[5]2.3720,[6]2.2014,[7]2.0757,[8]2.0894,[9]2.0712,[10]2.0902,[11]2.0077,[12]2.0775,[13]2.2097,[14]2.2296,[15]2.3588,[16]2.4821,[17]2.4982,[18]2.6562,[19]2.7408,[20]2.6503,[21]2.5734,[22]2.5964,[23]2.5573,[24]2.5112,[25]2.5062,[26]2.4810,[27]2.4637,[28]2.4704,[29]2.5294,[30]2.5033,[31]2.5337,[32]2.5997,[33]2.6395,[34]2.6757,[35]2.7174,[36]2.8050,[37]2.8546,[38]2.8805,[39]2.9410,[40]2.9925,
+1.59.784.730 I Final estimate: PPL = 2.9925 +/- 0.06315
+

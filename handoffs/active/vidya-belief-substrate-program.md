@@ -2281,3 +2281,17 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 - [ ] **VB-RI-OPS-WIRE — Capture and project the selected operational probe findings before their first run.** Register the six prospective source rows above at filing; integrate producer-authored claim elements and exact verifier propositions at each named task's native finalize boundary, reusing existing receipt/test/evaluation/SFT hooks where sufficient. Add only the necessary native-field projections and ingest dispatch; preserve unique run/case/arm/metric identity and bound read-set/raw-output digests. Leave absent protocol, counts, identity, labels and attestations absent; no historical tuple reconstruction. Adapters project ClaimTuple and claim_tuple.grade() alone decides warrant under the existing source-class rules; add no ladder or trust-boundary amendment. Test actual post-hook discovery/projection, missing-field refusal, changed-byte refusal and distinct-case identity before accepting the first result. Production-code fixes may proceed independently of measurement projection, but a new decision-bearing probe may not run before its write-side capture is present.
 
 The six prospective producers are registered in [the source table](../../scripts/vidya/adapters/README.md#known-and-candidate-sources): REPL containment/Monty slice, paired REPL/OpenCode tasks, Memento selection, observed-outcome routing, native xLLM prefill, and intake payload conformance. Their exact original-write fields, controls and execution conditions are in the [approved plan](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#approval-and-exact-stage-4-filing-scope). Filing is not implemented capture; absence remains absence until each native hook and projection is verified. Current typed and SFT registrations retain their owners. No application probe, adapter deployment, warrant change or retrospective backfill is authorized by this filing.
+
+## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief
+  Kernel*; source row in `scripts/vidya/adapters/README.md`). Producers: `kvu16b_residency.py` (workspace-ec, run
+  `artifacts/gpu-block-27b-20261004/results/kvu16b/`, the invalid-PASS predicate) and its fixed-predicate slot copy
+  `kvu16b_residency_slot.py` + `slot_report.py` (ak-ds41-main, `artifacts/gpu-slot-ak-20261004/`, arms skip OFF/ON ×
+  `-b 2048`/`-b 512`). Records: per-request TTFT, max requests decoding at once, max resident cells, decode tok/s per
+  request while all decode and while each prefill runs, s/iteration by occupied-cell bucket, KFD peak, coherence sha.
+  Bind build id, argv sha, live knob env (`GGML_CUDA_FA_MASK_SKIP`, `GGML_CUDA_FA_SEQ_ROWS`), `-b/-ub`, and the
+  predicate version. Cautions that ride every projection: the original runner's PASS is INVALID (stale `n_decoded`);
+  skip-ON arms are the 19a+19b build INCLUDING commit 2, never the fold. One replay per arm, no protocol →
+  `Judged/Located` via `claim_tuple.grade()`; no new ladder. Done when the runner (after KVU-16b-1) emits the record and
+  the adapter projects the two durable runs above.

@@ -1,0 +1,30 @@
+[gpu-slot 05:08:08Z] PREFLIGHT (bin /mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin, scratch port 18183)
+  build: 10312 (lib soname; binary NOT executed); provenance: commit `c7f5ac9ad1d2e926e56dded947e60c0551a15dd2`, build **10312**, branch `experimental/fa-maskskip-batched-20261004`
+  knob GGML_CUDA_FA_MASK_SKIP compiled into libggml-hip.so
+  knob GGML_CUDA_FA_SEQ_ROWS compiled into libggml-hip.so
+  knob strings present: GGML_CUDA_FA_MASK_SKIP GGML_CUDA_FA_MASK_SKIP_MIN_KV GGML_CUDA_FA_SEQ_ROWS 
+  linkage PASS llama-server (env -u LD_LIBRARY_PATH, LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin:/opt/rocm/lib) -> /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T050808Z/linkage.llama-server.txt
+  all paths present (binary, models, template, argv sources, contexts, references, sysfs, scripts)
+  prod argv source: /mnt/raid0/llm/epyc-orchestrator/logs/server_launches/8083.json (launch 2026-10-04T02:48:09.776Z, pid 1703677, argv_sha256 b865820d557f); sha256 b865820d557feac6; X0 cross-check: identical (after the launch prefix)
+  VRAM free: 0.01/64.0 GiB used (< 2), no KFD process holds VRAM
+  :8083 parked (not listening)
+  scratch port 18183 free
+  disk free 474 GB under /mnt/raid0/llm/tmp/gpu-slot-ak-20261004 (P3 slot file ~3.5 GB, logs < 1 GB)
+  device claim mi210_0 (advisory read): state free; holder -
+  GPU window file (info): holder autokernel, parked [8083], until 2026-10-04T06:52:46+00:00
+  host load 74.97 79.13 73.02; CPU region locks: none taken by this slot
+[gpu-slot 05:08:08Z] results /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T050808Z; budget 93 min; order kvu_off_b2048,kvu_off_b512,kvu_on_b2048,kvu_on_b512,p3
+[slot-claim] holding mi210_0 for: gpu-slot-ak-20261004: KVU-16b replay (skip on/off, b512) + P3v2 on gpu-20261004-c7f5ac9ad, scratch :18183
+[slot 05:08:09Z +0.0m] kvu_off_b2048: start (replay cap 20.0 min, remaining 93.0 min)
+[slot 05:28:42Z +20.6m] kvu_off_b2048: done rc 0 verdict CAPPED in 20.56 min
+[slot 05:28:42Z +20.6m] kvu_off_b512: start (replay cap 20.0 min, remaining 72.4 min)
+[slot 05:50:15Z +42.1m] kvu_off_b512: done rc 0 verdict CAPPED in 21.55 min
+[slot 05:50:15Z +42.1m] kvu_on_b2048: start (replay cap 20.0 min, remaining 50.9 min)
+[slot 06:04:27Z +56.3m] kvu_on_b2048: done rc 0 verdict PASS in 14.21 min
+[slot 06:04:27Z +56.3m] kvu_on_b512: start (replay cap 20.0 min, remaining 36.7 min)
+[slot 06:20:04Z +71.9m] kvu_on_b512: done rc 0 verdict PASS in 15.61 min
+[slot 06:20:04Z +71.9m] p3 pair1: SKIPPED (21.1 min left < 31.5)
+[slot 06:20:04Z +71.9m] p3 pair2: SKIPPED (21.1 min left < 31.5)
+wrote /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T050808Z/report.md (151 lines)
+[slot 06:20:04Z +71.9m] ALL DONE rc 0 (report rc 0) in 71.9 min -> /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T050808Z/report.md
+[gpu-slot 06:20:04Z] DONE rc=0  report: /mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T050808Z/report.md

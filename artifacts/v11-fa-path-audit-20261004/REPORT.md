@@ -275,3 +275,12 @@ Local FA-touching commits come from `git log a8dc0e326..HEAD -- fattn* hip.h ggm
 - **DF2-9 / CH-8:** `/workspace/handoffs/active/dflash2-block-drafter-experimental-build.md:419-432,520-541` and `/workspace/wiki/hardware-optimization.md:4724-4752`.
 - **Register audit source:** `/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0`.
 - **Upstream:** #26046, #26220, #19806, #21519, #27870, #28576, #28907, #29559, #29572, #29231, #29510.
+
+> Appended 2026-10-04 by workspace-ec from the author's copy (`/mnt/raid0/llm/tmp/v11-fa-path-audit-20261004/REPORT.md`). Sources: `/mnt/raid0/llm/tmp/v11-fa-ab-20261004/{PICKS_ON_ROUTE.md,NCOLS_CAP.md,df29/RECIPE.md}`.
+
+## Corrections (2026-10-04 ~07:10Z, from workspace-ec's v11fa slot prep — supersede the matching claims above)
+
+1. #27870 and #28576 touch ONLY the MMA kernel; the champion (rocWMMA ON) never takes MMA for cache-backed D=256, so folding them now is behaviour-neutral. They matter only on the v11 route.
+2. DF2-9: the failing prompts were 60–340 tokens, not ~2k. The route is the >32-row D=256 MMA config `<256,256,8,8>` (CDNA picks ncols2=8 for our GQA 6), NOT `<256,256,32,2>`. The "314 VGPR spill on <32,2>" finding applies to RDNA/GQA-2 shapes, not ours. Leading hypothesis: fp16 VKQ overflow on diffuse attention, which #28576's fp32 VKQ should fix (v11fa arm C vs B tests it).
+3. Missed shape: the DFlash2 drafter's 9-row block (D=128) runs WMMA today and moves to MMA on v11 — include it in the A/B.
+4. v11fa adds arm D: a CDNA D=256 ncols patch (16-col `<8,2>`, spill-free with fp32 VKQ), knob-gated.
