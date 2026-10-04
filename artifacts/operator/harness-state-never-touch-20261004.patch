@@ -1,0 +1,21 @@
+diff --git a/agents/shared/OPERATING_CONSTRAINTS.md b/agents/shared/OPERATING_CONSTRAINTS.md
+index de11abf..8a56a4e 100644
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -287,6 +287,16 @@ treated as two copies when both were aliases of one physical tree.)
+      hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.
+      (origin: INC-20261004-cleanup-removed-load-bearing-worktree — an approved cleanup removed a landed, clean, 7-day-idle worktree that
+      DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)
++   - **Harness state and session transcripts are never a candidate.** Claude and Codex backup logs and
++     session transcripts, and every third-party agent harness's own state (opencode, hermes, Claude
++     share, harness codex homes), are never deleted, moved, truncated, vacuumed or reaped: not under
++     disk pressure, not inside an approved cleanup, not by a retention script. They are historical
++     transcripts used by a more senior project outside this repo. Report their growth; never reclaim
++     it. Code enforces the list (`scripts/system/scratch_cleanup.py` `NEVER_TOUCH`;
++     `codex_retention_reaper.py` apply permanently disabled); the tree list and the one approved
++     exception (the opencode `event`-table reaper) are in
++     `docs/guides/agent-workflows/cleanup-reference-check.md` → *Never a candidate*. (operator hard
++     rule, 2026-10-04)
+ 2. **Trash-first, always:** recursive deletes of data go through
+    `scripts/safety/guarded_rm.sh`, which moves the target to `/mnt/raid0/llm/.trash/` and logs
+    a manifest (recoverable until `scripts/safety/trash-sweep.sh --older-than DAYS` ages it

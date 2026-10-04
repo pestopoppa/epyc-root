@@ -377,6 +377,13 @@ expert masking with stock `--override-kv <arch>.expert_used_count=int:N`.
         reverting a bundled commit, split it and revert only the gated-out parts; a feature's test travels with it
         through every consolidation. Origin: INC-20260925. The operator ratifies; no session edits `CLAUDE.md` for
         this.
+        2026-10-04 correction and status: INC-20260925 lost **our own** OpenMP parallel repack (`52ddd3200`,
+        upstream PR #18239 closed unmerged) in the bundled v6 Stage 1a revert. It did not lose an upstream kernel.
+        `docs/reference/agent-config/INCIDENT_LOG.md` already says this correctly. Repeat the correction wherever a
+        summary calls the lost code "upstream". The operator was offered the OP-58 sign-off package in chat on
+        2026-10-04, and it is still **unratified**. Nothing else depends on it. The DS41-C116 kernel-preservation
+        gate (`kernel_coverage.py`, G0 at fold, research `4f8f11c7`) now enforces the "test travels with the
+        feature" half in code, without the rule being ratified.
 
   - [ ] **V6R-4c — the fast loader's AUTO reader team must equal the compute thread count.** Found by INF-77 DS41-C57
         (2026-09-27, `/mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/`). `llama-model-loader.cpp:1689` sizes the auto pread
