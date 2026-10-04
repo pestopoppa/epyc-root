@@ -248,7 +248,23 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - 2026-10-03 (workspace-ec): runner prepared, dry-run OK: `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/b4g_entry_cost.py` (RUNBOOK step 5, :8083
       serving with its roles parked). It parses the log window and triggers one long call only if no `prompt_save`
       line exists yet; it reports MiB per 1k tokens, fixed MiB and R². Runs in the coordinated GPU block after ~18:15Z.
-  - [ ] **UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**
+    - **2026-10-04 (workspace-ec): ran 03:53-03:59Z, INCONCLUSIVE.** The log window (bytes 27334737-27542756 of
+      `llama-server-8083.log`, the current 393216 / n-max-7 launch) holds **zero `prompt_save` lines**, even after the
+      runner's four long calls (8k / 24k / 48k / 72k tokens, all HTTP 200). One `cache_ram` eviction of 1532.4 MiB was
+      logged. Output: `artifacts/gpu-block-27b-20261004/results/b4g/` (with `step5-b4g.out`). The prior from the old
+      shape stands (37.155 MiB/1k, fixed 149.6 MiB). Do not re-run until B4g-1 explains the missing lines.
+    - [ ] **UFH14-B4g-1 — find out why no `prompt_save` lines appear on the current shape, before re-running B4g.**
+      (filed 2026-10-04, workspace-ec) The leading hypothesis is log verbosity. The current :8083 launch and the B4i
+      scratch launches print `verbosity = 3`. The KVU-16b root cause notes that the startup memory, KV and
+      checkpoint lines are missing for this pid. The B4i ON arm also logged zero `saving idle slot` lines, even though
+      `/slots` showed 9 idle-slot drops. Check the level of the `prompt_save` / `saving idle slot` log calls in the v10
+      source against the 2026-10-03 note that they log at default verbosity, and diff the old launch's argv/env
+      (`-lv`, `LLAMA_LOG_VERBOSITY`) against today's. The alternative is that the save path does not run on this shape
+      (e.g. no `--cache-ram` save on a non-idle slot). Done when the cause is named and B4g's runner either sets
+      the needed verbosity on a scratch relaunch or reads the entry cost another way, such as `/slots` + `cache_ram`
+      size deltas.
+  - [x] **UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**
+    ✅ 2026-10-04 (workspace-ec) — OFF wins on :8083's shape; the stack change is UFH14-B4j.
     v10 defaults `cache_idle_slots` ON: with `--cache-ram` + `--kv-unified`, every idle slot is saved to RAM and cleared
     from the KV pool as soon as any new task starts (server-context.cpp:2469-2483). So on :8083 a paused agent context
     never stays resident in VRAM, and its next turn pays a RAM restore (or a cold prefill after one of the 929 evictions).
@@ -267,6 +283,33 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     - Runner prepared, dry-run OK: `/mnt/raid0/llm/tmp/gpu-block-27b-20261003/b4i_idle_slots_ab.py` (RUNBOOK step 6). It runs on a scratch :18083 with
       :8083 STOPPED for VRAM: the production argv with `--no-cache-idle-slots` for arm OFF, captured-PID launch and
       kill scripts, and a linkage plus KFD proof at launch. Runs in the coordinated GPU block after ~18:15Z.
+    - **2026-10-04 (workspace-ec): A/B DONE on scratch :18083 (:8083 stopped), production argv ± the flag.** Each arm
+      ran 3 conversations × 6 turns, a ~20k-token base plus ~1.5k per turn, 200 generated tokens, 18 turns, 0 errors.
+      Evidence: `artifacts/gpu-block-27b-20261004/results/b4i/` (ON `ON-r1-20261004T040819Z`, OFF
+      `OFF-r1-20261004T042211Z`, launch scripts and scratch logs).
+
+      | metric | ON (default) | OFF (`--no-cache-idle-slots`) |
+      |---|---|---|
+      | turn-2+ TTFT median | 66.4 s | **16.3 s** |
+      | turn-2+ TTFT p90 | 81.0 s | **19.2 s** |
+      | `hit_tok` | 0.81 | 0.81 |
+      | KFD peak | 51.71 GiB | 51.71 GiB |
+      | decode mean | 18.8 tok/s | 20.8 tok/s |
+      | idle-slot drops seen on `/slots` | 9 (20–29k tokens each) | 0 |
+
+      - The precondition holds: arm ON purged idle slots at the current shape (9 drops on `/slots`). No `saving idle
+        slot` log lines appeared at verbosity 3; see B4g-1.
+      - The cached-token share is the same in both arms; ON pays a RAM restore on every resumed turn, at ~4× the
+        TTFT. VRAM headroom is unchanged at this load.
+      - Caveat: one rep per arm, and only 3 conversations, so the pool never filled with idle cells. The pool-full
+        side of OFF is bounded by KVU-15's admission and by the B4j package's capacity check, not by this A/B.
+  - [ ] **UFH14-B4j — stack change: `--no-cache-idle-slots` on :8083, as a PFX-SEL-1 field.** (filed 2026-10-04,
+    workspace-ec, from B4i) Make `cache_idle_slots: false` a `prefix_cache_selection` field for :8083 (design §3.8),
+    and ship it in ONE package together with KVU-16f's `-b 512 -ub 512` once that A/B is done
+    (`kv-unified-stack-rollout.md`). The package must state the pool-full behaviour with idle contexts resident:
+    which admission path refuses or evicts when 4 idle agents hold the pool. One operator signature. Done when :8083's
+    live argv carries the flag, `check --run-promotion-gate` is green, and the first post-change `missed_prefill_share`
+    window is recorded under B4a.
   - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
     `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
     `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.

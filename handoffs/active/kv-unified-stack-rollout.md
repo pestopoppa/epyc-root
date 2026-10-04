@@ -280,6 +280,9 @@ is olympiad-style reasoning.
       VALID, 68 pins; `validate-main.out`): 39.15 derived → 38.03 measured (50.7822 GiB load peak − 12.75 GiB KV pool;
       evidence copied to `evidence/vram_during_reload_8083_20261003.log`). Argv identity 11/11 live servers, so no
       relaunch. Not ticked until signed, applied and `check` passes.
+    - *(Annotation, workspace-ec, 2026-10-04.)* 38.03 GiB is right as a LOAD-time figure, and OP-72 can be signed
+      as packaged. However, :8083 grows +7.2 GiB while serving (KVU-16h), so the load-time figure understates the
+      runtime peak. The runtime term is KVU-16i; it does not change this item.
   - [ ] **KVU-16b — a corrected concurrent-residency proof for the 393216 pool.** NOTE (2026-10-03, workspace-89 P3 code read): production runs `cache_idle_slots` ON, so idle slots are flushed to RAM at each task launch and the pool can only fill with ACTIVELY GENERATING sequences. The proof must hold 4 long contexts DECODING at once (long `n_predict`), not parked. P3 part A1 uses `--no-cache-idle-slots`: cite it only as a mechanism result, NOT as a production residency proof. (filed 2026-10-03, workspace-ec)
     - **Correction (2026-10-03, workspace-ec, from the P3 report):** the idle-purge claim above is a CODE READ, not a
       measurement. P3 arm A0 ran at the exact production flags and did NOT reproduce the purge: its neighbour slot held
@@ -304,6 +307,65 @@ is olympiad-style reasoning.
     prefill) so all four contexts are resident at once; sample `/slots` cells and KFD during, not after. Done when
     peak resident cells ≥ 300k with zero memory-slot lines and KFD ≤ 62 GiB. Closed instead by KVU-16c if that
     evidence exists. Needs a :8083 window, so it runs after the X0 hand-back (KVU-16e).
+    - **2026-10-04 (workspace-ec): RAN; the runner said PASS, but the PASS is INVALID, so this box stays open.**
+      The run is `results/kvu16b/20261004T032520Z/`, with a durable copy in
+      [`artifacts/gpu-block-27b-20261004/results/kvu16b/`](../../artifacts/gpu-block-27b-20261004/results/kvu16b/).
+      workspace-89's read-only root cause is `artifacts/gpu-block-27b-20261004/analysis/kvu16b-rootcause-REPORT.md`
+      (original at `/mnt/raid0/llm/tmp/kvu16b-rootcause-20261004/REPORT.md`).
+      - **Why the PASS is invalid:** the predicate `proc and n_dec > 0` reads a stale `n_decoded`, which resets only
+        at prompt end. Request i=3 (server slot 0) was still prefilling (60.7k of 79.8k) at the PASS sample, so the
+        true peak was 3 decoding + 1 prefilling.
+      - **What held:** ~310k cells resident, zero "failed to find a memory slot" lines, KFD 58.88 GiB (≤ 62).
+      - **Decode collapsed to 0.52 tok/s summed** (≥ 90% confidence). Prefill shares every server batch with decode:
+        each iteration is the 8-row verify for every decoding slot plus ~2024 prompt tokens (`n_batch` 2048). So each
+        decoding slot advances one verify step per prefill chunk. Without the masked-block skip, a chunk's attention
+        reads every occupied cell, at T ≈ 2.6 s + 0.052 s per 1k cells: **17–19 s per chunk at 240–310k**. Drafting
+        stayed healthy at 2.8–4.2 tokens per step; only the step rate collapsed. TTFT climbs for the same reason
+        (prefill 440 → 232 → 146 → 115 tok/s for i=0..3). Context checkpoints, the drafter, `--cache-ram` and an FA
+        fallback are ruled out.
+      - **VRAM grew while serving:** 51.69 GiB at load, then 58.88, then 59.77 GiB during Q38-T7 #2 and still
+        rising. That is +7.2 GiB, and only ~2.2 GiB of margin to the 62 GiB gate. See KVU-16h.
+      - Fixes, cheapest first: KVU-16f (`-b 512`), KVU-16g (a prefill budget while slots decode), KVU-19a in
+        production (workspace-89's fold, KVU-19; ~3.5× alone, ~10× with KVU-16f), KVU-19b, and KVU-20.
+    - [ ] **KVU-16b-1 — fix the residency runner's decoding predicate, then re-run KVU-16b.** (filed 2026-10-04,
+      workspace-ec) In `kvu16b_residency.py:203,260` (durable copy
+      `artifacts/gpu-block-27b-20261004/runners/`), count a slot as decoding only when `n_proc >= prompt_tokens` or a
+      first token has been observed for its request. Key the report by request index, not by server slot (request
+      i=3 ran on server slot 0). Treat `/slots` poll timeouts as samples missed during an iteration, not as slot
+      errors. Re-run after KVU-16f or KVU-16g lands; otherwise the run measures the interleave again. Done when the
+      runner's PASS requires 4 slots past prompt end at once, and a re-run meets the done-when above.
+  - [ ] **KVU-16f — A/B `-b 512 -ub 512` on :8083, then one stack change.** (filed 2026-10-04, workspace-ec, from the
+    KVU-16b root cause, fix 1) `-ub` alone does nothing: the server packs `n_batch` prompt tokens per iteration. At 512,
+    the root cause predicts an iteration of ~4.7 s at 300k (~4× faster decode while a prefill runs) and a KQ mask
+    1536 → 384 MiB (−1.1 GiB). The registry's mask term must then be re-derived. The cost is a possible 10–20% lower
+    solo prefill at shallow depth. Measure in a coordinated :8083 window: the KVU-16b runner (s per chunk and decode
+    while prefilling, after KVU-16b-1), plus Q38-T7 phase B at 80k (prefill rate, paired correctness). Then ship it as
+    ONE stack change together with UFH14-B4j (`--no-cache-idle-slots`). Done when the A/B is recorded here and the
+    combined package is signed and serving.
+  - [ ] **KVU-16g — decode-aware prefill budget on llama-server (Sarathi-style), experimental tree.** (filed 2026-10-04,
+    workspace-ec; KVU-16b root cause fix 1e, KV-serving survey Rec 1) In `update_slots()`, cap the prompt tokens added
+    per iteration while any slot generates (`--prefill-budget-decoding N`, or sized from a per-step time target), and
+    keep `-ub 2048` for solo prefill. This shields decode without shrinking solo prefill batches, so it is the better
+    form of KVU-16f. **In flight 2026-10-04:** a subagent is building it on `llama.cpp-experimental`
+    (`/mnt/raid0/llm/tmp/prefill-budget-20261004/`). Risks to check: more checkpoint-creation points, and DFlash2
+    verify-row indexing in `post_decode` (cf. KVU-7). Done when the KVU-16b re-run shows decode under a neighbour's
+    prefill ≥ 4× better at ≤ 30% TTFT cost on the prefilling request, with `test-backend-ops` and a paired correctness
+    check green. Ships with the next kernel version (four-step workflow), not as a flag on v10.
+  - [ ] **KVU-16h — URGENT: attribute :8083's +7.2 GiB VRAM growth while serving.** (filed 2026-10-04, workspace-ec)
+    KFD for pid 1703677 was 51.69 GiB right after load, 58.88 after Q38-T7 #1's concurrent prefill+decode traffic, and
+    59.77 after Q38-T7 #2, still rising. That leaves ~2.2 GiB to the 62 GiB gate. The growth follows request shape,
+    not KV occupancy: KVU-16b at 310k cells added nothing. Candidates: the ggml-cuda legacy pool (`NO_VMM=1` →
+    `ggml_cuda_pool_leg`, which never frees), compute-buffer reallocation beyond the `n_seqs = n_seq_max` reserve,
+    and rocBLAS/hipBLASLt workspaces. In a GPU window, relaunch :8083's argv on a scratch port at `-lv 4`, replay the
+    Q38-T7 phases one at a time with phase markers, and sample KFD at 1 Hz. Done when the growth is attributed to a
+    named allocator with a per-phase table, and either bounded by a flag or carried as a runtime term in KVU-16i.
+  - [ ] **KVU-16i — the capacity gate must carry the RUNTIME peak, not only the load-time `vram_non_kv_gib`.** (filed
+    2026-10-04, workspace-ec) The registry's non-KV figure is load-derived: 39.15 GiB derived, and 38.03 GiB measured in
+    KVU-16a / OP-72, from the load peak. The runtime peak runs +7.2 GiB above that (KVU-16h). The capacity gate in
+    `stack_manifest.py:1604-1626` therefore passes lineups whose serving peak is within ~2 GiB of the card limit. Add
+    a measured `vram_runtime_growth_gib` term (or a runtime-peak field with an evidence path) per GPU server, and have
+    `check_lean` / the capacity gate sum it. Done when the master carries the term for :8083 with KVU-16h's evidence,
+    and the gate's arithmetic for :8083 reproduces the measured ~59.8 GiB peak.
   - [x] **KVU-16c — or cite workspace-89's P3 parked-neighbour run as the residency proof.** (filed 2026-10-03)
     ✅ 2026-10-03 — resolved: **NOT citable**, so KVU-16b runs. P3 A1 (`/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`)
     had zero slot-failure lines, but it ran with `--no-cache-idle-slots` (not the production flag), and its ≈355k fill
@@ -458,6 +520,11 @@ is olympiad-style reasoning.
     (02:25-02:47Z), but the batched-bench expectation above already FAILS at small scale: 4×16k `-kvu` S_TG 444 vs
     `-no-kvu` 542/551 t/s (base 437). The skip is per tile, and a batched decode tile spans all sequences. Single-
     sequence decode/verify behind idle neighbours is fixed (P3-mini 82 → 169 steps/s). Per-row skipping is KVU-19b.
+  - *(Annotation, workspace-ec, 2026-10-04 later; this item stays workspace-89's.)* The KVU-16b root cause raises
+    the production stake. On :8083's mixed prefill+decode iterations, the skip is estimated at ~3.5× decode on its
+    own and ~10× with KVU-16f's `-b 512`: the i=3 prefill attends ~40k own cells against ~275k occupied. The fold's
+    P3 v2 can use the KVU-16b replay (after KVU-16b-1) as its full-scale cell. KVU-19b's store build
+    `gpu-20261004-c7f5ac9ad` carries the KVU-19a arm too (`GGML_CUDA_FA_SEQ_ROWS=0`).
   - [x] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec;
     operator instruction 2026-10-03, implements KVU-19) IN PROGRESS: an Opus subagent on a new `llama.cpp-experimental`
     branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`).
@@ -530,6 +597,48 @@ is olympiad-style reasoning.
       inside the tile, on `llama.cpp-experimental` from the current champion, HIP/gfx90a first, keeping the 64-case
       exactness harness and `test-backend-ops` green. Done when batched-bench `-kvu` S_TG at 4×16k is within ~5% of
       `-no-kvu` and single-sequence results do not regress.
+      - **2026-10-04 (workspace-ec): BUILT CPU-side; GPU validation in progress, so not ticked.** Fold record:
+        `/mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/FOLD.md` (design in `DESIGN.md` beside it).
+        - Branch `experimental/fa-maskskip-batched-20261004` on base a0d0ae238 (KVU-19a), pushed to `fork`:
+          - `1bceceb05` routes "every row a different sequence" batches to the vec kernel, one row per block, using a
+            new `ggml_flash_attn_ext_{set,get}_n_seq` hint that `llama-graph.cpp` sets from `ubatch.n_seqs_unq`;
+          - `c7f5ac9ad` cuts WMMA query tiles at sequence boundaries with a device planner.
+        - Knob: `GGML_CUDA_FA_SEQ_ROWS=0` turns both off, which is the same as KVU-19a. So one binary carries the
+          three arms 19b, 19a, and 19a with the skip off.
+        - Store builds `kernels/builds/{gpu,cpu}-20261004-c7f5ac9ad` (build 10312); linkage PASS.
+        - CPU FA harness v2: 141/141 bit-identical to the KVU-19a CPU store build. The llama-side hint checks out on
+          gemma-3-1b (4 in every multi-sequence kvu step graph, 0 for single-sequence and for `kv_unified=false`).
+        - `gpu_slot2.sh` is RUNNING (`slot2-20261004T044448Z/`). The exactness arms finished rc=0; kernel perf is in
+          progress. Tick when the slot shows the done-when above.
+- [ ] **KVU-20 — cross-slot prefix fork anchored on recurrent checkpoints, plus trunk-first dispatch.** (filed
+  2026-10-04, workspace-ec, from the KV-serving survey Rec 2,
+  `artifacts/gpu-block-27b-20261004/analysis/kv-serving-survey-REPORT.md` §4.)
+  - **The gap.** Four subagents sharing a 60k trunk prefill it four times and hold four copies (~6 GB of the pool).
+    Slot selection never looks at busy slots (`get_available_slot`), and `seq_cp` is used only for `n>1` children.
+  - **Server side (experimental tree).** For a new task, compute the LCP against all slots and their checkpoint
+    lists. Fork attention KV zero-copy with `mem_attn->seq_cp(S, dst, 0, p)` at the largest checkpoint ≤ LCP.
+    Restore the recurrent state (and the drafter's) from that checkpoint with `llama_state_seq_set_data_ext(...,
+    PARTIAL_ONLY)`; `llama_memory_hybrid::seq_cp` shares S's *current* tail, so do not rely on it. Add a request field
+    that marks the end of the shared prefix so a checkpoint lands exactly at the parent→subagent junction.
+  - **Orchestrator side.** Issue the trunk first, then the children; order and pin slots by the KVU-15c prefix
+    history; have the KV-pool gate count unique cells.
+  - **Gate.** A logits-equivalence test, fork vs fresh prefill (top-1 on ≥ 24 prompts), with the drafter state
+    included.
+  - **Done when** a 4-child fan-out over a ≥ 30k trunk prefills the trunk once, the child TTFT is the suffix time,
+    and the gate passes.
+- [ ] **KVU-19c — measure the live-block fraction per row on organic traffic before building sequence-affine cell
+  allocation.** (filed 2026-10-04, workspace-ec, survey Rec 3) `find_slot` allocates first-fit, so concurrent decode
+  interleaves the sequences' new tokens in shared 256-cell blocks. A block holding generated tokens is then live for
+  every decoding sequence, and even KVU-19b cannot skip it. Have KVU-19a's scan kernel, or a debug counter, report
+  the per-row live-block fraction on an organic :8083 replay. Build the allocator (~100–200 LOC in
+  `llama-kv-cache.cpp`, per-sequence 256-cell chunks) only if mixed blocks are a material share. Done when the
+  fraction is recorded here, with a build/no-build verdict.
+- [ ] **KVU-21 — at the v11 rebase, carry upstream #29510 (`flash_attn_ext_rows`) as an A/B arm against KVU-19b.**
+  (filed 2026-10-04, workspace-ec, survey Rec 4; trigger: the v11 rebase starts) #29510 is NVIDIA-MMA-only. It cannot
+  slice DFlash2 verify batches or mixed ubatches (unified KV uses `split_simple`), and it falls back to dense when
+  sequences share cells (`n_sum > n_kv`). So it complements KVU-19b rather than replacing it. If it has merged by
+  then, port the `kv_rows` path to the HIP vec kernel and the CDNA MMA path. A/B it on the KVU-18 cells and the 4×80k
+  shape, and drop whichever loses. Done when the A/B verdict is recorded.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean
@@ -673,6 +782,24 @@ is olympiad-style reasoning.
   the operator's STT/TTS plan.
 - A Stage-1 intake sweep of the audit's new primary sources (vLLM / SGLang / TGI / TRT-LLM / LMDeploy / LMCache
   docs): no claim here relies on them. Intake runs only when the operator invokes it.
+- Declined 2026-10-04 (workspace-ec), from the KVU-16b root cause and the KV-serving survey:
+  - `--no-kv-unified` (root cause fix 1c). It caps a slot at 98k and defeats KVU-16. KVU-16d already decided to keep
+    the shared 393k pool, and its reopen trigger stands.
+  - The admission rule "no ≥ 32k prefill while ≥ 2 slots decode" (fix 1d). KVU-16f/16g bound the same interference
+    inside the server without starving long ingest, and KVU-15's one-long-prefill lease is the coarse version.
+    Reopen it if KVU-16g fails its done-when.
+  - `--ctx-checkpoints`, `--cache-ram` and `-cd` as fixes (fix 1b). Ruled out by source and log evidence.
+  - Cascade/Hydragen shared-trunk attention (survey Rec 5). It pays only after KVU-20 forks trunks, and only if a
+    rocprof profile shows shared-prefix attention dominating after KVU-16g, KVU-19b and KVU-20. Not filed until then.
+  - Cherry-picking upstream #28532 `--slot-linger-ms`. The orchestrator's opt-in `id_slot` pinning gives the same
+    binding (UFH14-B4).
+  - A time-boxed vLLM/SGLang reference probe on the MI210 (survey §5). gfx90a is a degraded tier (ROCm ≥ 6.3 needed,
+    no AITER, an open MI210 crash for this family), and it is not a production path. The survey offers it to the
+    operator as an optional reference number; not filed unless the operator asks for it.
+  - More checkpoints per slot for trunk-heavy roles (survey host-tier note). It is only meaningful once KVU-20 makes
+    checkpoints into fork anchors, so it rides KVU-20.
+  - A per-buffer VRAM logging task for KVU-16h. SSU-F10 already owns per-buffer VRAM logging on every GPU role, and
+    KVU-16h uses `-lv 4` for its one-off attribution.
 
 ## Key files
 - Orchestrator: `src/scheduling/kv_pool_admission.py`, `src/backends/context_limits.py`,

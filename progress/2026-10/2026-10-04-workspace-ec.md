@@ -129,3 +129,149 @@ workspace-89's P3 v2 on the mask-skip build.
 | root | `docs/design/ufh14-b1-timeout-stackchange-item-20261003.md` | Durable copy of the B1 STACKCHANGE item. |
 
 Prepared index edits (not applied): `/mnt/raid0/llm/tmp/wrapup-ec-b1slot/INDEX_ROWS.md`.
+
+---
+
+# Wrap-up 2 (since root e4bae1c1): GPU block results, coherence_gate, the KVU-16b root cause, INF-59 rewrite
+
+Per-task wrap-up, run by a subagent in lane `te-book-20260927`. No processes, no inference. Index edits are prepared
+only, in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`. The GPU-block evidence and the analyses were all in
+`/mnt/raid0/llm/tmp`, which is scratch. They are now copied durably to `artifacts/gpu-block-27b-20261004/` (46 files,
+~1 MB): `results/`, `runners/` and `analysis/`.
+
+## Q38-T7: DFlash2 at the production shape PASSES (complete)
+
+- **Problem.** Run #1 (`results/q38_t7/20261004T025247Z`) reported "Correctness FAIL, speed INVALID".
+- **Root cause.** It was a classifier artifact, not a drafting fault.
+  - The v1 `uniq < 0.35` rule is length-biased. Measured on the repo's own corpora with the 27B tokenizer, every
+    coherent 1000–1500-token reasoning trace scores SALAD (`analysis/q38t7-rescore/length_bias.json`).
+  - `lib_gpublock` also read chat "stop" on 1–8-token answers as EARLY-EOS.
+- **Fix.**
+  - An offline paired re-score (`RESCORE.md`) gave PASS. Phase A had 0 regressions out of 24; ground truth was 4/5 in
+    both arms; phase B/C were 12/12 OK under `inf70-degeneracy.v2`.
+  - A paired long-context re-run with full text (`20261004T040110Z`, schema v2) gave PASS.
+  - The caller eyeballed a saved 1500-token output.
+- **Results:**
+  - Production mix: DFlash2 60.02 vs no-draft 31.07 tok/s (1.93×), acceptance 0.53.
+  - DFlash2 ≈ MTP at depth: 0.95–1.06×, a cross-shape comparison.
+  - 4 × 16k concurrent: 20.84 tok/s aggregate.
+  - The 80k needle was an injection-abstain (model behaviour).
+- **Handoff.** Q38-T7 is ticked. The organic-traffic acceptance clause was not met (the window was parked), so it is
+  split out as Q38-T7a. The needle redesign is Q38-T7b.
+
+## INF-70 classifier audit and replacement (complete for the build; adoption tasks filed)
+
+- **Audit** (`analysis/q38t7-rescore/AUDIT.md`):
+  - The classifier was a near no-op in every chat client. They pass fake ids `list(range(n))`, so uniq, top and run
+    were vacuous.
+  - Recomputing 403 rows files gives 0 SALAD. No production decision flips. The MTP divergences were re-read and are
+    fluent alternatives.
+- **Replacement:**
+  - The `coherence_gate` library is on research main 95157ad7: tiers 0–1, `degeneracy.v2`, refuses fake ids, 55 tests.
+  - The judge endpoint `POST /v1/typed/coherence_judge` is on orch main f8c9c0a3, DEPLOYED by an API reload. The
+    window guard was verified live.
+  - The champion-sidecar native backend, plus the prefill optimisations, is on `feat/judge-champion-backend-ec`
+    4359b43c, NOT merged.
+- **Rectification** (`analysis/classifier-rectify/RECTIFY.md`):
+  - 01 and 02 were applied by workspace-89.
+  - 03 is on research main 030daa86.
+  - 04, the harness1 fake-id fix, is CLS-RECT-1a.
+  - 05, the SC75 census, is VB-SC75-CLS.
+  - 06, the wiki correction, waits for the next operator-invoked `/wrap-up` wiki sweep (operator-cadence step).
+  - 07, the era rows OC1 + CLS1, is TD-30e plus OP-75.
+- **Operator-approved scope:**
+  - The judge is orchestrator-hosted.
+  - Cloud `codex-luna-low` / `sonnet-low` are allowed only for cloud-hosted callers.
+  - Local work targets the CHAMPION, with no promotion now.
+- **The memory note** `feedback_coherence_gate_at_production_prompt_length.md` was updated by the caller.
+
+## KVU-16b: the residency runner's PASS is INVALID (not ticked); root cause found
+
+- **The run** (`results/kvu16b/20261004T032520Z`) reported PASS. workspace-89's read-only root cause
+  (`analysis/kvu16b-rootcause-REPORT.md`) shows the predicate read a stale `n_decoded`: one request was still
+  prefilling, so the true peak was 3 decoding + 1 prefilling. The runner fix is KVU-16b-1.
+- **The 0.52 tok/s.** Prefill is interleaved into decode batches: ~2024 prompt tokens per iteration (`n_batch` 2048).
+  Without the masked-block skip, each chunk reads every occupied cell, ~17–19 s per chunk at 240–310k. Drafting stayed
+  healthy at 2.8–4.2 tokens per step.
+- **The fixes:**
+  - `-b 512 -ub 512` (KVU-16f, then one stack change with UFH14-B4j);
+  - a Sarathi prefill budget (KVU-16g, in flight on experimental, `/mnt/raid0/llm/tmp/prefill-budget-20261004/`);
+  - KVU-19a in production (workspace-89's fold);
+  - KVU-19b;
+  - a cross-slot prefix fork (KVU-20, survey Rec 2).
+- **VRAM.** 51.7 GiB at load, then 58.88 → 59.77 GiB while serving: +7.2 GiB, ~2.2 GiB to the 62 GiB gate. The suspect
+  is the legacy HIP pool (`NO_VMM=1`). Attribution is KVU-16h (URGENT); the capacity-gate runtime term is KVU-16i.
+  KVU-16a/OP-72's 38.03 GiB is right as a load-time figure.
+- **The KV-serving survey** (`analysis/kv-serving-survey-REPORT.md`): Recs 1–4 filed (KVU-16g, KVU-20, KVU-19c,
+  KVU-21); Rec 5, slot-linger, the vLLM probe and host-tier sizing are declined with reasons in the handoff.
+
+## UFH14-B4i: `--no-cache-idle-slots` OFF wins (complete); B4g inconclusive
+
+- **B4i**, on scratch :18083 with 3 conversations × 6 turns per arm:
+
+  | metric | ON | OFF |
+  |---|---|---|
+  | turn-2+ TTFT median | 66.4 s | **16.3 s** |
+  | turn-2+ TTFT p90 | 81.0 s | **19.2 s** |
+  | `hit_tok` | 0.81 | 0.81 |
+  | KFD | 51.71 GiB | 51.71 GiB |
+  | decode | 18.8 tok/s | 20.8 tok/s |
+
+  ON purged idle slots (9 drops on `/slots`). n=1 rep per arm. Ticked. The stack change is UFH14-B4j, combined with
+  KVU-16f.
+- **B4g.** Zero `prompt_save` lines on the current shape, even after 4 long calls. The likely cause is launch verbosity
+  3: the B4i ON arm also logged no `saving idle slot` lines. The investigation is UFH14-B4g-1, which must come before
+  any re-run.
+
+## KVU-19b built CPU-side; GPU validation running
+
+- **Branch** `experimental/fa-maskskip-batched-20261004` (1bceceb05, c7f5ac9ad).
+- **Store builds** `kernels/builds/{gpu,cpu}-20261004-c7f5ac9ad`.
+- **CPU harness** 141/141 bit-identical.
+- `gpu_slot2.sh` was RUNNING while this was written: the exactness arms were done (rc=0), and kernel perf was in
+  progress. Annotated as built, not ticked.
+
+## INF-59 RoPE/YaRN: ADAPT (handoff rewritten)
+
+- **Assessment** (`analysis/rope-ctx-ASSESSMENT.md`):
+  - The target is Qwen3.8-27B at YaRN factor 2 (524K) as a dedicated np 1 MI210 mode, ≈ 48.9 GiB.
+  - Two v10 traps:
+    - the unconditional slot clamp, which needs `--override-kv … context_length` plus a mandatory
+      `--yarn-orig-ctx 262144`;
+    - Flash-Next's fused decode, which ignores YaRN.
+  - 1M does not fit one MI210 at q8_0 KV.
+- **The operator approved E0 + E1.** In flight:
+  - the E0 runner and E1 runbook, plus research on hybrid-recurrent behaviour past 262k and the 1M-fit options
+    (`/mnt/raid0/llm/tmp/yarn-e1-20261004/`);
+  - DCA design and implementation, plus the Flash-Next fused-decode YaRN fix
+    (`/mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/`).
+- **Handoff.** `yarn-context-extension-research.md` was rewritten (status, owner, `**Scratch**` field, traps, memory
+  table). Filed: YARN-E0, E1, E2, DCA, FN-FIX, 1M, FN-0 and WIKI. The old QUEUED box is ticked as reactivated.
+
+## Notes only
+
+- **workspace-89's lineage rework.** ONE champion was kept, per the single-champion invariant. No action here.
+- **workspace-89's vLLM/SGLang survey.** Its conclusions feed the KVU filings above (KVU-20, KVU-21 and the
+  declines).
+
+## Declines (explicit)
+
+- **Raising Q38-T7's `max_tokens` so gsm8k/gpqa become gradable.** It departs from the recipe WORKLOAD; RESCORE
+  leaves it to the plan owner. Not filed.
+- **Step 7b scratch cleanup.** Skipped this wrap-up, under the hard rules: writes are limited to the lane worktree
+  and the wrapup dir, and no processes. The GPU-block roots also held the only copies of the evidence until today's
+  archive. KVU-19b's `gpu_slot2.sh` and the E0/DCA/prefill-budget subagents are still writing in their roots.
+- **The KVU and INF-59 declines** are written in their handoffs.
+
+## Files
+
+| Repo | File | Change |
+|---|---|---|
+| root | `artifacts/gpu-block-27b-20261004/` | NEW. Durable copy of the GPU-block results, runners and analyses. |
+| root | `handoffs/active/qwen38-27b-replace-qwen36.md` | Q38-T7 ticked. Q38-T7a and Q38-T7b filed. |
+| root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-16b annotated (PASS invalid). KVU-16b-1 and KVU-16f/g/h/i filed. KVU-16a, KVU-19 and KVU-19b annotated. KVU-20, KVU-19c and KVU-21 filed. 8 declines. |
+| root | `handoffs/active/agentic-serving-harness-fixes.md` | UFH14-B4i ticked. UFH14-B4j and UFH14-B4g-1 filed. B4g annotated. |
+| root | `handoffs/active/typed-decision-plane.md` | New coherence-judge section: TD-30 ticked (deployed). TD-30a–f and TD-31 filed. |
+| root | `handoffs/active/cpu-decode-roofline-program.md` | CLS-RECT-1 annotated. CLS-RECT-1a filed (patch 04, workspace-ec). |
+| root | `handoffs/active/vidya-belief-substrate-program.md` | VB-COHGATE-1, VB-SC75-CLS and VB-YARN-E1 filed. |
+| root | `handoffs/active/yarn-context-extension-research.md` | Rewritten (ADAPT). 8 tasks filed. The QUEUED box is ticked as reactivated. |

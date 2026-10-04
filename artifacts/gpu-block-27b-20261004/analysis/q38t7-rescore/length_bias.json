@@ -1,0 +1,311 @@
+{
+ "tokenizer": "Qwen3.8-27B tokenizer.json",
+ "table": {
+  "handoff": {
+   "100": {
+    "docs": 182,
+    "median": 0.7,
+    "p10": 0.58,
+    "min": 0.4,
+    "v1_salad_share": 0.0
+   },
+   "200": {
+    "docs": 181,
+    "median": 0.595,
+    "p10": 0.495,
+    "min": 0.355,
+    "v1_salad_share": 0.0
+   },
+   "300": {
+    "docs": 181,
+    "median": 0.553,
+    "p10": 0.467,
+    "min": 0.4,
+    "v1_salad_share": 0.0
+   },
+   "500": {
+    "docs": 181,
+    "median": 0.494,
+    "p10": 0.426,
+    "min": 0.32,
+    "v1_salad_share": 0.011
+   },
+   "800": {
+    "docs": 178,
+    "median": 0.441,
+    "p10": 0.384,
+    "min": 0.318,
+    "v1_salad_share": 0.028
+   },
+   "1000": {
+    "docs": 176,
+    "median": 0.414,
+    "p10": 0.364,
+    "min": 0.296,
+    "v1_salad_share": 0.045
+   },
+   "1200": {
+    "docs": 174,
+    "median": 0.395,
+    "p10": 0.347,
+    "min": 0.289,
+    "v1_salad_share": 0.103
+   },
+   "1500": {
+    "docs": 174,
+    "median": 0.374,
+    "p10": 0.322,
+    "min": 0.277,
+    "v1_salad_share": 0.241
+   },
+   "2000": {
+    "docs": 168,
+    "median": 0.347,
+    "p10": 0.302,
+    "min": 0.261,
+    "v1_salad_share": 0.512
+   }
+  },
+  "wiki": {
+   "100": {
+    "docs": 32,
+    "median": 0.69,
+    "p10": 0.59,
+    "min": 0.57,
+    "v1_salad_share": 0.0
+   },
+   "200": {
+    "docs": 32,
+    "median": 0.605,
+    "p10": 0.515,
+    "min": 0.485,
+    "v1_salad_share": 0.0
+   },
+   "300": {
+    "docs": 32,
+    "median": 0.545,
+    "p10": 0.457,
+    "min": 0.43,
+    "v1_salad_share": 0.0
+   },
+   "500": {
+    "docs": 32,
+    "median": 0.496,
+    "p10": 0.432,
+    "min": 0.386,
+    "v1_salad_share": 0.0
+   },
+   "800": {
+    "docs": 32,
+    "median": 0.449,
+    "p10": 0.39,
+    "min": 0.376,
+    "v1_salad_share": 0.0
+   },
+   "1000": {
+    "docs": 32,
+    "median": 0.425,
+    "p10": 0.384,
+    "min": 0.345,
+    "v1_salad_share": 0.031
+   },
+   "1200": {
+    "docs": 32,
+    "median": 0.399,
+    "p10": 0.362,
+    "min": 0.315,
+    "v1_salad_share": 0.031
+   },
+   "1500": {
+    "docs": 32,
+    "median": 0.377,
+    "p10": 0.322,
+    "min": 0.308,
+    "v1_salad_share": 0.125
+   },
+   "2000": {
+    "docs": 32,
+    "median": 0.351,
+    "p10": 0.294,
+    "min": 0.264,
+    "v1_salad_share": 0.469
+   }
+  },
+  "reasoning": {
+   "100": {
+    "docs": 34,
+    "median": 0.68,
+    "p10": 0.61,
+    "min": 0.59,
+    "v1_salad_share": 0.0
+   },
+   "200": {
+    "docs": 34,
+    "median": 0.535,
+    "p10": 0.47,
+    "min": 0.43,
+    "v1_salad_share": 0.0
+   },
+   "300": {
+    "docs": 34,
+    "median": 0.468,
+    "p10": 0.383,
+    "min": 0.35,
+    "v1_salad_share": 0.0
+   },
+   "500": {
+    "docs": 34,
+    "median": 0.364,
+    "p10": 0.298,
+    "min": 0.266,
+    "v1_salad_share": 0.412
+   },
+   "800": {
+    "docs": 34,
+    "median": 0.283,
+    "p10": 0.22,
+    "min": 0.207,
+    "v1_salad_share": 1.0
+   },
+   "1000": {
+    "docs": 33,
+    "median": 0.249,
+    "p10": 0.196,
+    "min": 0.19,
+    "v1_salad_share": 1.0
+   },
+   "1200": {
+    "docs": 33,
+    "median": 0.227,
+    "p10": 0.185,
+    "min": 0.171,
+    "v1_salad_share": 1.0
+   },
+   "1500": {
+    "docs": 29,
+    "median": 0.203,
+    "p10": 0.166,
+    "min": 0.166,
+    "v1_salad_share": 1.0
+   },
+   "2000": {
+    "docs": 25,
+    "median": 0.178,
+    "p10": 0.147,
+    "min": 0.139,
+    "v1_salad_share": 1.0
+   }
+  },
+  "ctx": {
+   "100": {
+    "docs": 7,
+    "median": 0.73,
+    "p10": 0.73,
+    "min": 0.73,
+    "v1_salad_share": 0.0
+   },
+   "200": {
+    "docs": 7,
+    "median": 0.47,
+    "p10": 0.47,
+    "min": 0.47,
+    "v1_salad_share": 0.0
+   },
+   "300": {
+    "docs": 7,
+    "median": 0.317,
+    "p10": 0.317,
+    "min": 0.317,
+    "v1_salad_share": 1.0
+   },
+   "500": {
+    "docs": 7,
+    "median": 0.3,
+    "p10": 0.3,
+    "min": 0.3,
+    "v1_salad_share": 1.0
+   },
+   "800": {
+    "docs": 7,
+    "median": 0.259,
+    "p10": 0.259,
+    "min": 0.259,
+    "v1_salad_share": 1.0
+   },
+   "1000": {
+    "docs": 7,
+    "median": 0.235,
+    "p10": 0.235,
+    "min": 0.235,
+    "v1_salad_share": 1.0
+   },
+   "1200": {
+    "docs": 7,
+    "median": 0.229,
+    "p10": 0.229,
+    "min": 0.229,
+    "v1_salad_share": 1.0
+   },
+   "1500": {
+    "docs": 7,
+    "median": 0.198,
+    "p10": 0.198,
+    "min": 0.198,
+    "v1_salad_share": 1.0
+   },
+   "2000": {
+    "docs": 7,
+    "median": 0.179,
+    "p10": 0.179,
+    "min": 0.179,
+    "v1_salad_share": 1.0
+   }
+  },
+  "phaseA": {
+   "100": {
+    "docs": 1,
+    "median": 0.63,
+    "p10": null,
+    "min": 0.63,
+    "v1_salad_share": 0.0
+   },
+   "200": {
+    "docs": 1,
+    "median": 0.48,
+    "p10": null,
+    "min": 0.48,
+    "v1_salad_share": 0.0
+   },
+   "300": {
+    "docs": 1,
+    "median": 0.48,
+    "p10": null,
+    "min": 0.48,
+    "v1_salad_share": 0.0
+   },
+   "500": {
+    "docs": 1,
+    "median": 0.494,
+    "p10": null,
+    "min": 0.494,
+    "v1_salad_share": 0.0
+   }
+  }
+ },
+ "heaps_all": {
+  "K": 2.338,
+  "beta": 0.7373
+ },
+ "heaps_reasoning": {
+  "K": 6.133,
+  "beta": 0.5362
+ },
+ "words_per_1500_tokens_median": 667,
+ "docs": {
+  "handoff": 182,
+  "wiki": 32,
+  "reasoning": 34,
+  "ctx": 7,
+  "phaseA": 1
+ }
+}

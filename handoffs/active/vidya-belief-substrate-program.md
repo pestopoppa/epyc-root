@@ -2219,3 +2219,33 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   reference arm rides as a verifier fact per arm; arm identity from `build_commit`/binary digest and the env arm. n =
   rounds per arm, no protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Add a write-side
   `belief_measurements.jsonl` to `report.py report` before its next run.
+
+## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec)
+
+- [ ] **VB-COHGATE-1 — write side for `coherence_gate` verdicts.** (CLAUDE.md *Belief Kernel — wiring new sources*;
+  RECTIFY §6c.) The shared library on research main 95157ad7 (`scripts/lib/coherence_gate/`, schema
+  `epyc.coherence_gate.v1`) and the tier-2 judge `POST /v1/typed/coherence_judge` (orch f8c9c0a3, TD-30 in
+  `typed-decision-plane.md`) produce verified findings, but no tuple is written yet.
+  - Fields, per stream: anchor id, tier-0 identity, ground-truth result, `degeneracy.v2` class plus classifier id,
+    judge verdict plus `calibration_id`, and text/ids digests.
+  - Per gate: aggregate PASS / FAIL / INCOMPLETE. INCOMPLETE never projects as a pass.
+  - A strict adapter projects the verdict record and `claim_tuple.grade()` decides; no new ladder.
+  - Era-labelled by `schema` once TD-30e's OC1 row is ratified. Before that, project as a prior only.
+  - The source-table row text is prepared for the owning session in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`.
+  - Done when a `belief_measurements.jsonl` write-side hook exists in `coherence_gate`'s CLI / `evaluate()` and one
+    real gate run ingests.
+- [ ] **VB-SC75-CLS — SC75 sidecars must say which classifier labelled them (patch 05, owner workspace-ec under
+  EVL-47).** Apply `classifier-rectify/05-vidya-inf70-arm-capture.patch` (durable copy
+  `artifacts/gpu-block-27b-20261004/analysis/classifier-rectify/`). It adds an informational
+  `extra.coherence_classifier` census to `scripts/vidya/adapters/inf70_serving_arm_capture.py`. Rows with no
+  `classifier` are named `inf70-classify.v1|synthetic-ids(uniq/top/run vacuous)`. It also adds one test. All 37
+  adapter tests pass on the patched copy, and the grade is unchanged. Done when the patch is on root main with tests
+  green, and the next `inf70-arms` ingest shows the census.
+- [ ] **VB-YARN-E1 — write side for the INF-59 long-context needle runs (E0 runner, E1 window).** (CLAUDE.md *Belief
+  Kernel — wiring new sources*; ASSESSMENT §6 E0.) The runner forked from Q38-T7's needle logic
+  (`yarn-context-extension-research.md` YARN-E0) produces, per (arm, length): needle correctness in `coherence_gate`
+  `needle` grader form, prefill/decode tok/s, KFD peak and the rope proof lines. The locator is model × arm (A0 native,
+  A1 YaRN f2, A2 raw extrapolation) × haystack length × depth × build id × argv digest. The paired short-context set
+  projects through VB-COHGATE-1, not twice. With n=1 per cell and no codified protocol, it grades as
+  `Judged/Located` via `claim_tuple.grade()`. Write a `belief_measurements.jsonl` from the runner before E1 runs.
+  The source-table row text is prepared in the INDEX_ROWS file above. Done when E1's records ingest.

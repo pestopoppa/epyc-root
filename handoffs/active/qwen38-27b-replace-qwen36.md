@@ -120,7 +120,8 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
   log shows `draft-dflash`; `check --run-promotion-gate` green. Of the three gates: np2/4/8 scaling was measured
   (DF2-5, v10 qualification np4 ratio 1.239); greedy parity was attributed away from DFlash2 (DF2-6/DF2-8). The
   production-shape measurement is still owed: Q38-T7.
-- [ ] **Q38-T7 — DFlash2 at the PRODUCTION shape: speed paired with correctness, plus the coherence gate**
+- [x] **Q38-T7 — DFlash2 at the PRODUCTION shape: speed paired with correctness, plus the coherence gate**
+  ✅ 2026-10-04 (workspace-ec; the organic-traffic acceptance clause is split out as Q38-T7a, below)
   (STACKCHG-DFLASH2 PACKAGE §7.4 M-1; filed 2026-10-03). DFlash2 was never measured at np 4 / `-c 196608` / q8_0
   KV / kv-unified (recipe runs were ctx 16384 f16, 65536 f16, DF2-5 4096×np). The operator fast path (PID 3737649)
   gave 91.7 tok/s single-stream decode, acceptance 450/490, vs workspace-76's MTP probe of ~37-41 tok/s at the same
@@ -143,6 +144,40 @@ Full ledger: [`qwen36-27b-cpu-feasibility.md`](../archived/qwen36-27b-cpu-feasib
   - 2026-10-04 (workspace-ec, note only): **RUNNING** since 02:52:47Z in the GPU block (which started 01:59Z, not
     18:15Z), output `results/q38_t7/20261004T025247Z/`; preflight `slots_debug_env: null`, `argv_nmax7: true`, :8083
     parked. Not complete; the queue after it is KVU-16b, B4g, B4i, then workspace-89's P3 v2 on the mask-skip build.
+  - **2026-10-04 (workspace-ec): PASS — speed paired with correctness at the production shape.** Durable copy of all
+    evidence: [`artifacts/gpu-block-27b-20261004/`](../../artifacts/gpu-block-27b-20261004/) (`results/q38_t7/`,
+    `analysis/q38t7-rescore/`).
+    - Run #1 `results/q38_t7/20261004T025247Z/` reported **FAIL**, but the FAIL was a classifier artifact. The v1
+      `uniq < 0.35` rule is length-biased: every coherent 1000–1500-token reasoning trace in the repo's corpus scores
+      SALAD under it. Chat "stop" on 1–8-token answers was also read as EARLY-EOS. The offline paired re-score
+      (`analysis/q38t7-rescore/RESCORE.md`, no inference) gives **PASS**: phase A has 0 drafting regressions out of
+      24 (class-equal 24/24, byte-identical 19/24); ground truth is 4/5 in both arms with the same answers; phase B/C
+      are 12/12 OK under `inf70-degeneracy.v2`.
+    - Run #2 `results/q38_t7/20261004T040110Z/` is a paired long-context re-run (2k and 16k, 1500 tokens, drafted and
+      no-draft, full text stored) under the patched runner (schema `epyc.gpublock.q38_t7.v2`): **PASS**. The caller
+      read a saved 1500-token output: coherent technical reasoning.
+    - **Production mix** (24 prompts, recipe WORKLOAD): DFlash2 **60.02** vs no-draft **31.07** tok/s token-weighted
+      (**1.93×**), acceptance **0.53**, 0 drafting regressions.
+    - **Long context**, DFlash2 vs the 2026-10-01 MTP probe: 1.04 / 0.99 / 0.95 / 1.06× at ~2k / 16k / 50k / 80k
+      (run #1). DFlash2 ≈ MTP at depth. The MTP probe was on the pre-KVU-16 196608 pool, so the ratio crosses shapes.
+    - **4 concurrent ~16k streams:** 20.84 tok/s aggregate. The per-stream TTFT of 40–164 s is the prefill/decode
+      interleave root-caused under KVU-16b in `kv-unified-stack-rollout.md`.
+    - **80k needle:** the model abstained and called the planted vault code "injected instructions" in an AutoKernel
+      haystack. That is model behaviour plus a needle-design confound, not a drafting fault; see Q38-T7b.
+    - n-max 7 vs 8 is settled by KVU-16, which runs n-max 7. The belief-kernel write side is VB-SERVING-DF2, which
+      stays open in `vidya-belief-substrate-program.md`.
+  - [ ] **Q38-T7a — DFlash2 draft acceptance on ORGANIC :8083 traffic.** (filed 2026-10-04, workspace-ec, split out of
+    Q38-T7.) Q38-T7 ran with :8083's roles parked, so its 0.53 acceptance comes from the codified mix, not from
+    organic traffic. Read `draft_n` / `draft_n_accepted` from the KVU-17 serving records (`logs/serving_calls/`) for
+    `architect_general` / `coder_escalation` on :8083 since the 2026-10-04 restore. This is a passive read with no
+    inference. Done when acceptance over ≥ 200 organic drafted calls is recorded here with its window, and is compared
+    against the codified-mix 0.53.
+  - [ ] **Q38-T7b — the needle test must use a neutral haystack and be asked in both arms.** (filed 2026-10-04,
+    workspace-ec.) The 80k miss in run #1 was a refusal to repeat an "injected" fact planted in an AutoKernel
+    planner context. Before the next production-shape correctness gate, use a neutral filler (RULER noise, or essays
+    with sentence ids). Ask every needle in the no-draft arm too, and give phase C a no-draft pair. The INF-59 E0
+    runner (`yarn-context-extension-research.md`) builds this harness, so reuse it rather than writing a second one.
+    Done when `q38_t7.py` (or its `coherence_gate` successor, TD-30d) uses the neutral haystack with paired needles.
 - [x] **Q38-T8 — DFlash2 load-time VRAM peak sampled DURING the load** (PACKAGE M-2). ✅ 2026-10-03 — the sampler
   armed before `reload architect_critic` (`/mnt/raid0/llm/tmp/stack-change-dflash2-20261003/apply/vram_during_reload.log`,
   0.5 s cadence) reads 44.31 GiB card-total on the OLD process (04:44:36Z), 0.01 GiB at unload (04:44:39Z), and a

@@ -1,0 +1,408 @@
+--- a/scripts/inf70/harness1/classify.py
++++ b/scripts/inf70/harness1/classify.py
+@@ -1,6 +1,23 @@
+ #!/usr/bin/env python3
+ """Corrected degeneracy classifier for INF-70 gdn-rowexact runs.
+ 
++DEPRECATED 2026-10-04 -- superseded by the shared deterministic `coherence_gate` library
++(epyc-inference-research, branch feat/coherence-gate-ec): tier 0 paired byte-identity vs an
++anchor, tier 1 ground-truth answer checks + `degeneracy.v2` (real token ids required), tier 2
++an optional orchestrator-hosted judge for residual divergences. New gates MUST use it; this
++file stays only so the INF-70 harness keeps running until the client is switched over.
++Audit: /mnt/raid0/llm/tmp/q38t7-rescore/AUDIT.md, rectification:
++/mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md.
++
++Known defects of the v1 rules below (they are kept byte-for-byte so old labels stay replayable):
++  * `uniq < 0.35` is a fixed threshold on |set(ids)|/n, which falls with n (Heaps' law):
++    known-coherent model reasoning crosses it at ~300-500 tokens. Hence V1_MAX_N below.
++  * the classes read as a semantic verdict; they are not. "COHERENT" means only "no
++    token-stream degeneracy trigger fired". Nothing here checks that the answer is right.
++  * until 2026-10-04 every chat-path client passed `tokens=list(range(npred))`, which made
++    `uniq`, `top` and `run` vacuous (uniq == 1, top == 1/n, run == 1). Those labels carry
++    only the `words` and `ascii` rules. classify() now REFUSES synthetic ids.
++
+ Classes (by REASON, never a bare pass/fail):
+   HTTP-ERROR  the request failed / no JSON
+   EMPTY       zero tokens returned, no eos  (server produced nothing)
+@@ -17,17 +34,69 @@
+ """
+ import collections, json, os, sys
+ 
++CLASSIFIER_ID = "inf70-classify.v1.1"  # v1 rules unchanged + input refusals (2026-10-04)
+ MIN_N = 16          # below this the token statistics are meaningless
+ EOS_MAX_N = 4       # <= this many tokens ending in eos == EARLY-EOS
++V1_MAX_N = 256      # above this the fixed uniq < 0.35 rule false-flags coherent text
++
++
++class ClassifierInputError(ValueError):
++    """The caller handed classify() input on which its verdict would be meaningless."""
++
++
++class SyntheticTokenIds(ClassifierInputError):
++    """`tokens` is a placeholder sequence (e.g. list(range(npred))), not the generated ids."""
++
++
++class MissingTokenIds(ClassifierInputError):
++    """Non-empty content was classified without its token ids."""
++
+ 
+-def classify(d):
++class OutOfCalibratedRange(ClassifierInputError):
++    """n exceeds V1_MAX_N, where the fixed uniq threshold is length-biased."""
++
++
++def _is_synthetic(toks):
++    """True for an arithmetic run of consecutive ids, the shape of every placeholder seen in
++    INF-70 (`list(range(npred))`, or an offset range), or for non-integer ids. A real
++    >= MIN_N-token generation is never a strictly consecutive id run."""
++    if len(toks) < MIN_N:
++        return False
++    if not all(isinstance(t, int) and not isinstance(t, bool) for t in toks):
++        return True
++    return all(b - a == 1 for a, b in zip(toks, toks[1:]))
++
++
++def check_input(d, allow_long=False):
++    """Raise ClassifierInputError unless `d` can yield a meaningful v1 verdict."""
++    toks = d.get("tokens")
++    content = d.get("content", "") or ""
++    if not toks and content.strip():
++        raise MissingTokenIds(
++            "content is non-empty but `tokens` is missing: pass the real generated ids "
++            "(llama-server `return_tokens`, or POST /tokenize on the content)")
++    toks = list(toks or [])
++    if _is_synthetic(toks):
++        raise SyntheticTokenIds(
++            f"`tokens` is a consecutive id run of length {len(toks)} (e.g. list(range(npred))): "
++            "uniq/top/run would be vacuous. Pass real token ids.")
++    if len(toks) > V1_MAX_N and not allow_long:
++        raise OutOfCalibratedRange(
++            f"n={len(toks)} > V1_MAX_N={V1_MAX_N}: the fixed uniq<0.35 rule false-flags coherent "
++            "text at this length. Use coherence_gate degeneracy.v2 (length-aware uniq).")
++
++
++def classify(d, allow_long=False):
+     if not isinstance(d, dict) or "error" in d:
+-        return dict(cls="HTTP-ERROR", n=0, note=str(d.get("error"))[:80] if isinstance(d, dict) else "not-a-dict")
++        return dict(cls="HTTP-ERROR", n=0, classifier=CLASSIFIER_ID,
++                    note=str(d.get("error"))[:80] if isinstance(d, dict) else "not-a-dict")
++    check_input(d, allow_long=allow_long)
+     toks = d.get("tokens") or []
+     n = len(toks)
+     stop = d.get("stop_type")
+     content = d.get("content", "") or ""
+-    st = dict(n=n, stop=stop, npred_req=(d.get("generation_settings") or {}).get("n_predict"))
++    st = dict(n=n, stop=stop, npred_req=(d.get("generation_settings") or {}).get("n_predict"),
++              classifier=CLASSIFIER_ID)
+     if n == 0:
+         return dict(cls=("EARLY-EOS" if stop == "eos" else "EMPTY"), **st)
+     if n <= EOS_MAX_N and stop == "eos":
+@@ -68,7 +137,10 @@
+                 d = json.load(open(os.path.join(ad, f)))
+             except Exception as e:
+                 print(f"  {f[:-5]:<14} UNREADABLE {e}"); continue
+-            r = classify(d)
++            try:
++                r = classify(d)
++            except ClassifierInputError as e:
++                print(f"  {f[:-5]:<14} REFUSED    {type(e).__name__}: {e}"); continue
+             t = d.get("timings", {}) if isinstance(d, dict) else {}
+             pp = t.get("prompt_per_second")
+             tg = t.get("predicted_per_second")
+@@ -80,5 +152,8 @@
+             rows = json.load(open(os.path.join(ad, "probe.json")))
+             print(f"  -- probe: {len(rows)} lengths")
+             for row in rows:
+-                rr = classify({"tokens": row.get("tokens"), "content": row.get("content", ""), "stop_type": row.get("stop_type")})
++                try:
++                    rr = classify({"tokens": row.get("tokens"), "content": row.get("content", ""), "stop_type": row.get("stop_type")})
++                except ClassifierInputError as e:
++                    rr = {"cls": "REFUSED:" + type(e).__name__}
+                 print(f"     k={row['k']:<4} prompt_n={row['prompt_n']:<4} {rr['cls']:<10} {row.get('content','')[:60]!r}")
+--- a/scripts/inf70/harness1/client.py
++++ b/scripts/inf70/harness1/client.py
+@@ -1,60 +1,116 @@
+ #!/usr/bin/env python3
+ """INF-70 CHAMPION-3 (client copied from speed-claim): 24-prompt production mix, chat-completions, enable_thinking=false, greedy,
+ max_tokens 200, cache_prompt false. Coherence classified BY REASON. Token-weighted rates
+-computed in analyze.py (pred_n >= 16 floor)."""
+-import json, os, sys, time, urllib.request
++computed in analyze.py (pred_n >= 16 floor).
++
++2026-10-04 (classifier rectification, /mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md): the
++classifier now receives the REAL generated token ids. Until then this client passed
++`tokens=list(range(npred))`, so `uniq`/`top`/`run` never fired and every pre-fix `verdict` rests
++on the `words`/`ascii` rules alone. Ids come from the response (`return_tokens` + `verbose` put
++them in `__verbose.tokens`), else from POST /tokenize on the content; `token_source` records
++which. With neither, the row is `NO-TOKEN-IDS` -- never a fake-id verdict. All classification
++goes through classify_row(), the single seam to swap for coherence_gate degeneracy.v2 once
++feat/coherence-gate-ec lands in epyc-inference-research."""
++import hashlib, json, os, sys, time, urllib.request
+ HERE = os.path.dirname(os.path.abspath(__file__))
+ sys.path.insert(0, HERE)  # classify.py, promoted from agents/gdn-rowexact on 2026-09-16
+-from classify import classify
++from classify import classify, CLASSIFIER_ID, ClassifierInputError
++
++OUT = os.environ.get("CLIENT_OUT", "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs")
+ 
+-OUT   = os.environ.get("CLIENT_OUT", "/mnt/raid0/llm/tmp/inf70/agents/harness1/runs")
+-label = sys.argv[1]; port = sys.argv[2]
+-prompts = json.load(open(os.path.join(HERE, "prompts.json")))  # from agents/e3-alpha
+-items = [dict(id=p["id"], cls=p["class"], text=p["prompt"]) for p in prompts]
+ 
+-def post(body, timeout=1800):
+-    r = urllib.request.Request(f"http://127.0.0.1:{port}/v1/chat/completions",
++def post(port, path, body, timeout=1800):
++    r = urllib.request.Request(f"http://127.0.0.1:{port}{path}",
+                                data=json.dumps(body).encode(),
+                                headers={"Content-Type": "application/json"})
+     return json.load(urllib.request.urlopen(r, timeout=timeout))
+ 
++
+ def mkbody(text):
++    # return_tokens + verbose only add the generated ids to the response (`__verbose.tokens`);
++    # they do not change sampling or the decode path.
+     return {"messages": [{"role": "user", "content": text}], "max_tokens": 200,
+             "cache_prompt": False, "chat_template_kwargs": {"enable_thinking": False},
+-            "temperature": 0.0}
++            "temperature": 0.0, "return_tokens": True, "verbose": True}
++
++
++def token_ids(j, content, tokenize):
++    """(ids, source) for one chat response. `tokenize(content) -> list[int]` is the fallback.
++    Never fabricates ids: returns (None, "absent") when neither path yields them."""
++    ids = ((j.get("__verbose") or {}).get("tokens")) if isinstance(j, dict) else None
++    if isinstance(ids, list) and (ids or not content):
++        return [int(t) for t in ids], "response"
++    if not content:
++        return [], "empty"
++    try:
++        ids = tokenize(content)
++    except Exception:
++        return None, "absent"
++    return ([int(t) for t in ids], "retokenized") if isinstance(ids, list) and ids else (None, "absent")
++
+ 
+-rows = []
+-t0a = time.time()
+-try:
+-    post(mkbody("hi")); print("warmup ok", flush=True)
+-except Exception as e:
+-    print("warmup failed:", e, flush=True)
++def classify_row(content, ids, finish):
++    """The single classification seam. TODO(coherence_gate): replace the body with the
++    coherence_gate degeneracy.v2 call (real ids required) when feat/coherence-gate-ec lands,
++    and record its classifier id instead of CLASSIFIER_ID."""
++    if ids is None:
++        return dict(cls="NO-TOKEN-IDS", classifier=CLASSIFIER_ID)
++    try:
++        return classify(dict(tokens=ids, stop_type=finish, content=content))
++    except ClassifierInputError as e:
++        return dict(cls="REFUSED", classifier=CLASSIFIER_ID, note=f"{type(e).__name__}: {e}"[:160])
++
++
++def main(label, port):
++    prompts = json.load(open(os.path.join(HERE, "prompts.json")))  # from agents/e3-alpha
++    items = [dict(id=p["id"], cls=p["class"], text=p["prompt"]) for p in prompts]
++
++    def tokenize(text):
++        return post(port, "/tokenize", {"content": text, "add_special": False}, timeout=60).get("tokens")
+ 
+-for k, it in enumerate(items):
+-    t0 = time.time()
++    rows = []
++    t0a = time.time()
+     try:
+-        j = post(mkbody(it["text"]))
++        post(port, "/v1/chat/completions", mkbody("hi")); print("warmup ok", flush=True)
+     except Exception as e:
+-        rows.append(dict(seq=k, id=it["id"], cls=it["cls"], verdict="HTTP-ERROR", note=str(e)[:120]))
+-        print(json.dumps(rows[-1]), flush=True); continue
+-    wall = time.time() - t0
+-    ch = (j.get("choices") or [{}])[0]
+-    content = (ch.get("message") or {}).get("content", "") or ""
+-    u = j.get("usage") or {}; tim = j.get("timings") or {}
+-    npred = u.get("completion_tokens") or tim.get("predicted_n") or 0
+-    c = classify(dict(tokens=list(range(npred)), stop_type=ch.get("finish_reason"), content=content))
+-    tps = tim.get("predicted_per_second") or (npred / wall if wall > 0 and npred else None)
+-    rows.append(dict(seq=k, id=it["id"], cls=it["cls"],
+-                     prompt_n=u.get("prompt_tokens") or tim.get("prompt_n"),
+-                     pred_n=npred, tps=round(tps, 4) if tps else None,
+-                     pp=round(tim.get("prompt_per_second"), 3) if tim.get("prompt_per_second") else None,
+-                     prompt_ms=tim.get("prompt_ms"), pred_ms=tim.get("predicted_ms"),
+-                     wall=round(wall, 3), draft_n=tim.get("draft_n"), draft_acc=tim.get("draft_n_accepted"),
+-                     finish=ch.get("finish_reason"), verdict=c.get("cls"),
+-                     sha=__import__("hashlib").sha256(content.encode()).hexdigest()[:16],
+-                     n_uniq=c.get("uniq"), words=c.get("words"), text=content))
+-    r = rows[-1]
+-    print(json.dumps({kk: vv for kk, vv in r.items() if kk != "text"} | {"head": content[:70].replace("\n", " ")}), flush=True)
+-    with open(f"{OUT}/{label}.rows.jsonl", "w") as fh:
+-        for x in rows: fh.write(json.dumps(x) + "\n")
+-print(f"ARM_DONE {label} wall={time.time()-t0a:.0f}s", flush=True)
++        print("warmup failed:", e, flush=True)
++
++    for k, it in enumerate(items):
++        t0 = time.time()
++        try:
++            j = post(port, "/v1/chat/completions", mkbody(it["text"]))
++        except Exception as e:
++            rows.append(dict(seq=k, id=it["id"], cls=it["cls"], verdict="HTTP-ERROR", note=str(e)[:120]))
++            print(json.dumps(rows[-1]), flush=True); continue
++        wall = time.time() - t0
++        ch = (j.get("choices") or [{}])[0]
++        content = (ch.get("message") or {}).get("content", "") or ""
++        u = j.get("usage") or {}; tim = j.get("timings") or {}
++        npred = u.get("completion_tokens") or tim.get("predicted_n") or 0
++        ids, src = token_ids(j, content, tokenize)  # after `wall`: never inside the timed window
++        c = classify_row(content, ids, ch.get("finish_reason"))
++        tps = tim.get("predicted_per_second") or (npred / wall if wall > 0 and npred else None)
++        rows.append(dict(seq=k, id=it["id"], cls=it["cls"],
++                         prompt_n=u.get("prompt_tokens") or tim.get("prompt_n"),
++                         pred_n=npred, tps=round(tps, 4) if tps else None,
++                         pp=round(tim.get("prompt_per_second"), 3) if tim.get("prompt_per_second") else None,
++                         prompt_ms=tim.get("prompt_ms"), pred_ms=tim.get("predicted_ms"),
++                         wall=round(wall, 3), draft_n=tim.get("draft_n"), draft_acc=tim.get("draft_n_accepted"),
++                         finish=ch.get("finish_reason"), verdict=c.get("cls"),
++                         classifier=c.get("classifier"), token_source=src,
++                         # native stop reason (eos/limit/word) kept for replay. NOT fed to the v1
++                         # classifier: there, 1-4-token eos answers ("E") would become EARLY-EOS
++                         # failures; chat "stop" keeps them SHORT, as every banked row was labelled.
++                         stop_type_native=(j.get("__verbose") or {}).get("stop_type"),
++                         sha=hashlib.sha256(content.encode()).hexdigest()[:16],
++                         n_uniq=c.get("uniq"), words=c.get("words"), text=content, token_ids=ids))
++        r = rows[-1]
++        print(json.dumps({kk: vv for kk, vv in r.items() if kk not in ("text", "token_ids")}
++                         | {"head": content[:70].replace("\n", " ")}), flush=True)
++        with open(f"{OUT}/{label}.rows.jsonl", "w") as fh:
++            for x in rows: fh.write(json.dumps(x) + "\n")
++    print(f"ARM_DONE {label} wall={time.time()-t0a:.0f}s", flush=True)
++
++
++if __name__ == "__main__":
++    main(sys.argv[1], sys.argv[2])
+--- /dev/null
++++ b/tests/inf70/test_harness1_classify_refusal.py
+@@ -0,0 +1,123 @@
++"""INF-70 HARNESS-1 classifier rectification (2026-10-04): fake token ids are refused.
++
++Every INF-70 chat client called ``classify(dict(tokens=list(range(npred)), ...))``. Synthetic,
++all-distinct ids make ``uniq`` == 1, ``top`` == 1/n and ``run`` == 1, so three of the five
++degeneracy rules could never fire and any spaced ASCII text read COHERENT. Pinned here:
++
++* the fake-id pattern (and any consecutive-id run, and non-integer ids) raises
++  ``SyntheticTokenIds``; non-empty content without ids raises ``MissingTokenIds``;
++* the v1 rules are unchanged on real ids (a real stuck-token loop is SALAD, real prose is
++  COHERENT), and ``n > V1_MAX_N`` is refused because the fixed ``uniq < 0.35`` is length-biased;
++* the client never constructs placeholder ids: it takes ``__verbose.tokens``, else /tokenize,
++  else records ``NO-TOKEN-IDS``.
++
++No server, no inference: the client helpers are exercised with in-memory fixtures.
++"""
++
++from __future__ import annotations
++
++import importlib
++import random
++import sys
++from pathlib import Path
++
++import pytest
++
++HARNESS = Path(__file__).resolve().parents[2] / "scripts" / "inf70" / "harness1"
++sys.path.insert(0, str(HARNESS))
++classify_mod = importlib.import_module("classify")
++client = importlib.import_module("client")  # main() is guarded: importing runs nothing
++
++PROSE = ("The cache hierarchy keeps recently used lines close to the core so that most loads "
++         "are served in a few cycles instead of hundreds. ") * 2
++
++
++def _real_ids(n: int, seed: int = 0) -> list[int]:
++    rng = random.Random(seed)
++    return [rng.randrange(1000, 150000) for _ in range(n)]
++
++
++@pytest.mark.parametrize("npred", [16, 24, 200])
++def test_fake_range_ids_are_refused(npred):
++    with pytest.raises(classify_mod.SyntheticTokenIds):
++        classify_mod.classify(dict(tokens=list(range(npred)), stop_type="stop", content=PROSE))
++
++
++def test_offset_consecutive_run_is_refused():
++    with pytest.raises(classify_mod.SyntheticTokenIds):
++        classify_mod.classify(dict(tokens=list(range(5000, 5100)), stop_type="stop", content=PROSE))
++
++
++def test_non_integer_ids_are_refused():
++    with pytest.raises(classify_mod.SyntheticTokenIds):
++        classify_mod.classify(dict(tokens=[str(i) for i in _real_ids(40)], stop_type="stop", content=PROSE))
++
++
++def test_missing_ids_with_content_is_refused():
++    with pytest.raises(classify_mod.MissingTokenIds):
++        classify_mod.classify(dict(stop_type="stop", content=PROSE))
++
++
++def test_the_old_fake_id_call_made_word_soup_coherent():
++    """Documents the defect: before the refusal, a 200-token stuck loop on spaced ASCII passed."""
++    soup = "the the the the " * 50
++    old = dict(tokens=list(range(200)), stop_type="stop", content=soup)
++    with pytest.raises(classify_mod.SyntheticTokenIds):
++        classify_mod.classify(old)
++    real = dict(tokens=[279] * 200, stop_type="stop", content=soup)
++    r = classify_mod.classify(real)
++    assert r["cls"] == "SALAD" and r["top"] == 1.0 and r["run"] == 200
++
++
++def test_real_prose_ids_unchanged_v1_verdict():
++    r = classify_mod.classify(dict(tokens=_real_ids(48), stop_type="stop", content=PROSE))
++    assert r["cls"] == "COHERENT"
++    assert r["classifier"] == classify_mod.CLASSIFIER_ID
++
++
++def test_short_outputs_unchanged():
++    assert classify_mod.classify(dict(tokens=[33], stop_type="eos", content="E"))["cls"] == "EARLY-EOS"
++    assert classify_mod.classify(dict(tokens=[33, 34, 35], stop_type="stop", content="E"))["cls"] == "SHORT"
++    assert classify_mod.classify(dict(tokens=[], stop_type="stop", content=""))["cls"] == "EMPTY"
++
++
++def test_long_generation_out_of_calibrated_range():
++    n = classify_mod.V1_MAX_N + 1
++    with pytest.raises(classify_mod.OutOfCalibratedRange):
++        classify_mod.classify(dict(tokens=_real_ids(n), stop_type="stop", content=PROSE * 10))
++    r = classify_mod.classify(dict(tokens=_real_ids(n), stop_type="stop", content=PROSE * 10),
++                              allow_long=True)
++    assert r["n"] == n
++
++
++def test_client_source_builds_no_placeholder_ids():
++    """Structural: no `range(...)` call anywhere in the client's code (docstrings may name it)."""
++    import ast
++    tree = ast.parse((HARNESS / "client.py").read_text())
++    calls = [n for n in ast.walk(tree)
++             if isinstance(n, ast.Call) and isinstance(n.func, ast.Name) and n.func.id == "range"]
++    assert calls == []
++
++
++def test_client_prefers_response_ids():
++    ids = _real_ids(30)
++    got = client.token_ids({"__verbose": {"tokens": ids}}, PROSE, tokenize=lambda t: pytest.fail("no fallback"))
++    assert got == (ids, "response")
++
++
++def test_client_falls_back_to_tokenize():
++    ids = _real_ids(30, seed=1)
++    assert client.token_ids({}, PROSE, tokenize=lambda t: ids) == (ids, "retokenized")
++
++
++def test_client_never_fabricates_ids():
++    def boom(_):
++        raise OSError("tokenize unreachable")
++    ids, src = client.token_ids({}, PROSE, tokenize=boom)
++    assert (ids, src) == (None, "absent")
++    assert client.classify_row(PROSE, ids, "stop")["cls"] == "NO-TOKEN-IDS"
++
++
++def test_client_row_records_refusal_not_verdict():
++    r = client.classify_row(PROSE, list(range(40)), "stop")
++    assert r["cls"] == "REFUSED" and "SyntheticTokenIds" in r["note"]

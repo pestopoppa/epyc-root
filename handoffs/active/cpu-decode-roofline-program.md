@@ -4906,6 +4906,25 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
       (`classifier-rectify/04-harness1-classify-client.patch`: synthetic ids refused, real ids recorded) is
       applied; (2) the PROD-1 recipe constant is re-worded (`classifier-rectify/03-research-recipe-constant.patch`);
       (3) G2-CONC and E-GATE run on `coherence_gate` as written above.
+      - *(Annotation, workspace-ec, 2026-10-04; this item stays the `inference` lane's.)*
+        - Done-when (2) is met: patch 03 is on research main 030daa86 ("CLS-RECT-03 re-word champion3 coherence
+          headline").
+        - Patches 01 and 02 were applied by workspace-89.
+        - `coherence_gate` exists on research main 95157ad7, and the tier-2 judge is TD-30 in `typed-decision-plane.md`.
+        - Durable copies of the patches and the audit: `artifacts/gpu-block-27b-20261004/analysis/`.
+      - [ ] **CLS-RECT-1a — apply patch 04 to the INF-70 harness1 client (owner: workspace-ec).** (filed 2026-10-04,
+        workspace-ec; RECTIFY §4, operator-approved.)
+        - **The fake-id fix:** `scripts/inf70/harness1/client.py` requests `return_tokens` + `verbose` to get real
+          ids, falls back to `/tokenize`, and never fabricates an id. `classify.py` becomes `inf70-classify.v1.1`; its
+          v1 rules stay byte-identical, and it refuses synthetic ids and n > 256.
+        - **Tests:** `tests/inf70/test_harness1_classify_refusal.py`, 15 tests.
+        - **Before committing:** notify the `inference` session, which runs the arms, and re-run
+          `gitnexus impact classify` with the repo specified.
+        - **Era row:** CLS1's `from:` is this commit's time (TD-30e).
+        - **Afterwards:** switch `classify_row()` to `coherence_gate` (TD-30d item 2).
+
+        Done when the patch is committed on root main with its tests green, and the first live arm records
+        `token_source == "response"`.
 
 - [x] **G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**
       **Even when coherent, 3 of 4 concurrent streams DIFFER from the same prompt served alone**, and

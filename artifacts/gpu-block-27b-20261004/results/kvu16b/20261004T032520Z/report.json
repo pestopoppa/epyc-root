@@ -1,0 +1,334 @@
+{
+ "schema": "epyc.gpublock.kvu16b.v1",
+ "started_at": "2026-10-04T03:25:20Z",
+ "args": {
+  "dry_run": false,
+  "i_own_the_window": true,
+  "base": "http://127.0.0.1:8083",
+  "n": 4,
+  "prompt_tokens": 80000,
+  "pool": 393216,
+  "margin": 8192,
+  "weights": "0.42,0.30,0.19,0.09",
+  "min_budget": 2048,
+  "resident_threshold": 300000,
+  "hold_s": 90,
+  "max_wall_s": 4200,
+  "slots_interval": 2.0,
+  "vram_interval": 0.5,
+  "kfd_budget_gib": 62.0,
+  "erase_idle_slots": false
+ },
+ "server_pid": 1703677,
+ "server_started": "Sun Oct  4 02:48:09 2026",
+ "argv_ok": true,
+ "slots_debug_env": null,
+ "window": {
+  "file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json",
+  "exists": true,
+  "holder": "autokernel",
+  "parked_roles": [
+   "architect_critic",
+   "coder_escalation",
+   "ingest_long_context"
+  ],
+  "parked_ports": [
+   8083
+  ],
+  "preempt_requested_at": null,
+  "parked_8083": true
+ },
+ "kfd_at_start": [
+  {
+   "pid": 1703677,
+   "vram_gib": 58.879,
+   "cmd": "/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 8083 -np 4 -c 39321"
+  }
+ ],
+ "slots_before": [
+  {
+   "id": 0,
+   "proc": false,
+   "n_tok": 17128,
+   "n_proc": 16129,
+   "n_cache": 0,
+   "n_dec": 1000,
+   "n_remain": 0,
+   "id_task": 10178
+  },
+  {
+   "id": 1,
+   "proc": false,
+   "n_tok": 17132,
+   "n_proc": 16133,
+   "n_cache": 0,
+   "n_dec": 1000,
+   "n_remain": 0,
+   "id_task": 10176
+  },
+  {
+   "id": 2,
+   "proc": false,
+   "n_tok": 17127,
+   "n_proc": 16128,
+   "n_cache": 0,
+   "n_dec": 1000,
+   "n_remain": 0,
+   "id_task": 10175
+  },
+  {
+   "id": 3,
+   "proc": false,
+   "n_tok": 17121,
+   "n_proc": 16122,
+   "n_cache": 0,
+   "n_dec": 1000,
+   "n_remain": 0,
+   "id_task": 10177
+  }
+ ],
+ "prompt_tokens": [
+  79877,
+  79487,
+  79443,
+  79836
+ ],
+ "log_offset_start": 27474003,
+ "idle_purge_evidence": {
+  "residual_before": 68508,
+  "per_slot_before": {
+   "0": 17128,
+   "1": 17132,
+   "2": 17127,
+   "3": 17121
+  },
+  "probe_http": 200,
+  "per_slot_after": {
+   "0": 44,
+   "1": 0,
+   "2": 0,
+   "3": 0
+  },
+  "idle_saves_logged": 0,
+  "clear_nonzero_logged": 0,
+  "clear_nonzero_tokens": 0,
+  "purged": false,
+  "residual_used_for_budget": 44
+ },
+ "headroom": 66337,
+ "budgets": [
+  27861,
+  19901,
+  12604,
+  5970
+ ],
+ "finished_at": "2026-10-04T03:53:36Z",
+ "wall_s": 1690.5,
+ "requests": [
+  {
+   "i": 0,
+   "prompt_tokens": 79877,
+   "budget": 27861,
+   "t_send": 1791084325.6585689,
+   "ttfb_s": 0.103,
+   "ttft_s": 181.428,
+   "timings": null,
+   "usage": null,
+   "finish": null,
+   "aborted": true,
+   "http_status": 200,
+   "error": null,
+   "n_events": 404,
+   "wall_s": 1685.467,
+   "prompt_n": null,
+   "cache_n": null,
+   "prompt_ms": null,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "predicted_n": null,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null
+  },
+  {
+   "i": 1,
+   "prompt_tokens": 79487,
+   "budget": 19901,
+   "t_send": 1791084507.0874355,
+   "ttfb_s": 0.137,
+   "ttft_s": 343.629,
+   "timings": null,
+   "usage": null,
+   "finish": null,
+   "aborted": true,
+   "http_status": 200,
+   "error": null,
+   "n_events": 297,
+   "wall_s": 1504.039,
+   "prompt_n": null,
+   "cache_n": null,
+   "prompt_ms": null,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "predicted_n": null,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null
+  },
+  {
+   "i": 2,
+   "prompt_tokens": 79443,
+   "budget": 12604,
+   "t_send": 1791084850.749595,
+   "ttfb_s": 0.164,
+   "ttft_s": 544.63,
+   "timings": null,
+   "usage": null,
+   "finish": null,
+   "aborted": true,
+   "http_status": 200,
+   "error": null,
+   "n_events": 95,
+   "wall_s": 1160.378,
+   "prompt_n": null,
+   "cache_n": null,
+   "prompt_ms": null,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "predicted_n": null,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null
+  },
+  {
+   "i": 3,
+   "prompt_tokens": 79836,
+   "budget": 5970,
+   "t_send": 1791085395.381051,
+   "ttfb_s": 0.348,
+   "ttft_s": null,
+   "timings": null,
+   "usage": null,
+   "finish": null,
+   "aborted": true,
+   "http_status": 200,
+   "error": null,
+   "n_events": 0,
+   "wall_s": 610.802,
+   "prompt_n": null,
+   "cache_n": null,
+   "prompt_ms": null,
+   "prefill_tps": null,
+   "decode_tps": null,
+   "predicted_n": null,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null
+  }
+ ],
+ "first_token_s": [
+  181.4,
+  525.1,
+  1069.7,
+  null
+ ],
+ "max_slots_decoding": 4,
+ "max_resident_tokens": 310461,
+ "max_resident_with_all_decoding": 308416,
+ "pass_sample": {
+  "t": 1791085913.303,
+  "resident": 300273,
+  "slots": [
+   {
+    "id": 0,
+    "proc": true,
+    "n_tok": 60720,
+    "n_proc": 60720,
+    "n_cache": 0,
+    "n_dec": 1,
+    "n_remain": 0,
+    "id_task": 10919
+   },
+   {
+    "id": 1,
+    "proc": true,
+    "n_tok": 80258,
+    "n_proc": 79877,
+    "n_cache": 0,
+    "n_dec": 382,
+    "n_remain": 27479,
+    "id_task": 10518
+   },
+   {
+    "id": 2,
+    "proc": true,
+    "n_tok": 79767,
+    "n_proc": 79487,
+    "n_cache": 0,
+    "n_dec": 281,
+    "n_remain": 19620,
+    "id_task": 10601
+   },
+   {
+    "id": 3,
+    "proc": true,
+    "n_tok": 79528,
+    "n_proc": 79443,
+    "n_cache": 0,
+    "n_dec": 86,
+    "n_remain": 12518,
+    "id_task": 10735
+   }
+  ]
+ },
+ "decode_tps_per_slot_all_decoding": {
+  "0": 0.0,
+  "1": 0.16,
+  "2": 0.22,
+  "3": 0.14
+ },
+ "decode_tps_sum_all_decoding": 0.52,
+ "slots_samples": 122,
+ "slots_errors": 169,
+ "vram": {
+  "n_samples": 3379,
+  "interval_s": 0.5,
+  "pid": 1703677,
+  "kfd_peak_gib": 58.879,
+  "kfd_min_gib": 58.879,
+  "card_peak_gib": 58.932
+ },
+ "bad_line_counts": {
+  "failed to find a memory slot": 0,
+  "Context size has been exceeded": 0
+ },
+ "prompt_cache_events": {
+  "idle_saves": 0,
+  "clear_nonzero": 0,
+  "clear_nonzero_tokens": 0,
+  "restores_better": 0,
+  "restore_failures": 0,
+  "evictions": 0,
+  "evicted_mib": 0.0,
+  "prompt_saves": 0,
+  "last_cache_state": null
+ },
+ "failed_requests": [],
+ "log_offset_end": 27525049,
+ "window_at_end": {
+  "file": "/mnt/raid0/llm/tmp/gpu-window/mi210.json",
+  "exists": true,
+  "holder": "autokernel",
+  "parked_roles": [
+   "architect_critic",
+   "coder_escalation",
+   "ingest_long_context"
+  ],
+  "parked_ports": [
+   8083
+  ],
+  "preempt_requested_at": null,
+  "parked_8083": true
+ },
+ "verdict": "PASS"
+}

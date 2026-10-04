@@ -1,0 +1,555 @@
+{
+ "coherent": {
+  "handoff@200": {
+   "docs": 181,
+   "v1_salad": 6,
+   "v2_fail": 6,
+   "v2_reasons": {
+    "words": 6
+   }
+  },
+  "handoff@500": {
+   "docs": 181,
+   "v1_salad": 2,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "handoff@1000": {
+   "docs": 176,
+   "v1_salad": 9,
+   "v2_fail": 2,
+   "v2_reasons": {
+    "loop": 1,
+    "run": 1
+   }
+  },
+  "handoff@1500": {
+   "docs": 174,
+   "v1_salad": 43,
+   "v2_fail": 3,
+   "v2_reasons": {
+    "run": 2,
+    "loop": 1
+   }
+  },
+  "handoff@2000": {
+   "docs": 168,
+   "v1_salad": 86,
+   "v2_fail": 3,
+   "v2_reasons": {
+    "run": 2,
+    "loop": 1
+   }
+  },
+  "wiki@200": {
+   "docs": 32,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "wiki@500": {
+   "docs": 32,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "wiki@1000": {
+   "docs": 32,
+   "v1_salad": 1,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "wiki@1500": {
+   "docs": 32,
+   "v1_salad": 4,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "wiki@2000": {
+   "docs": 32,
+   "v1_salad": 15,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "reasoning@200": {
+   "docs": 34,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "reasoning@500": {
+   "docs": 34,
+   "v1_salad": 14,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "reasoning@1000": {
+   "docs": 33,
+   "v1_salad": 33,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "reasoning@1500": {
+   "docs": 29,
+   "v1_salad": 29,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "reasoning@2000": {
+   "docs": 25,
+   "v1_salad": 25,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "ctx@200": {
+   "docs": 7,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "ctx@500": {
+   "docs": 7,
+   "v1_salad": 7,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "ctx@1000": {
+   "docs": 7,
+   "v1_salad": 7,
+   "v2_fail": 7,
+   "v2_reasons": {
+    "words": 7
+   }
+  },
+  "ctx@1500": {
+   "docs": 7,
+   "v1_salad": 7,
+   "v2_fail": 7,
+   "v2_reasons": {
+    "words": 7
+   }
+  },
+  "ctx@2000": {
+   "docs": 7,
+   "v1_salad": 7,
+   "v2_fail": 7,
+   "v2_reasons": {
+    "words": 7
+   }
+  },
+  "phaseA@200": {
+   "docs": 1,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  },
+  "phaseA@500": {
+   "docs": 1,
+   "v1_salad": 0,
+   "v2_fail": 0,
+   "v2_reasons": {}
+  }
+ },
+ "fp_examples": [
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/angelslim-techniques-evaluation.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.05,
+   "run": 1
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/dflash2-block-drafter-experimental-build.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.04,
+   "run": 1
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/integration-test-coverage.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.11,
+   "run": 1
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/iqk-iquant-enablement.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.075,
+   "run": 2
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/lightning-attention-port.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.09,
+   "run": 1
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/speculative-decoding-mtp-refresh.md",
+   "n": 200,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.05,
+   "run": 2
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/exl3-cpu-mi210-implementation.md",
+   "n": 1000,
+   "reasons": [
+    "loop"
+   ],
+   "loop": {
+    "period": 11,
+    "window": 48,
+    "match": 0.917,
+    "at_token": 638
+   },
+   "top": 0.056,
+   "run": 3
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+   "n": 1000,
+   "reasons": [
+    "run"
+   ],
+   "loop": null,
+   "top": 0.035,
+   "run": 6
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/conversation-stack.md",
+   "n": 1500,
+   "reasons": [
+    "run"
+   ],
+   "loop": null,
+   "top": 0.037,
+   "run": 8
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/exl3-cpu-mi210-implementation.md",
+   "n": 1500,
+   "reasons": [
+    "loop"
+   ],
+   "loop": {
+    "period": 11,
+    "window": 48,
+    "match": 0.917,
+    "at_token": 638
+   },
+   "top": 0.047,
+   "run": 3
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+   "n": 1500,
+   "reasons": [
+    "run"
+   ],
+   "loop": null,
+   "top": 0.033,
+   "run": 6
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/conversation-stack.md",
+   "n": 2000,
+   "reasons": [
+    "run"
+   ],
+   "loop": null,
+   "top": 0.029,
+   "run": 8
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/exl3-cpu-mi210-implementation.md",
+   "n": 2000,
+   "reasons": [
+    "loop"
+   ],
+   "loop": {
+    "period": 11,
+    "window": 48,
+    "match": 0.917,
+    "at_token": 638
+   },
+   "top": 0.05,
+   "run": 3
+  },
+  {
+   "corpus": "handoff",
+   "doc": "/workspace/handoffs/active/mathsmith-hc-formalizer-eval.md",
+   "n": 2000,
+   "reasons": [
+    "run"
+   ],
+   "loop": null,
+   "top": 0.036,
+   "run": 6
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C1/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C2/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C3/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C4/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C5/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C6/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C7/prompt.inline.txt",
+   "n": 1000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C1/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C2/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C3/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C4/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C5/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C6/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C7/prompt.inline.txt",
+   "n": 1500,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.091,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C1/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C2/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C3/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C4/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C5/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C6/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  },
+  {
+   "corpus": "ctx",
+   "doc": "/mnt/raid0/llm/tmp/ds41-c95/contexts/C7/prompt.inline.txt",
+   "n": 2000,
+   "reasons": [
+    "words"
+   ],
+   "loop": null,
+   "top": 0.085,
+   "run": 2
+  }
+ ]
+}

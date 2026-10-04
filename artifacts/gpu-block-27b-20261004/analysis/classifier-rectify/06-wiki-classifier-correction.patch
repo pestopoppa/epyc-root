@@ -1,0 +1,57 @@
+--- a/wiki/benchmark-methodology.md
++++ b/wiki/benchmark-methodology.md
+@@ -5284,6 +5284,16 @@
+    because unique-ratio and top-token-share are both 1.0 at n=1. Classes must separate COHERENT / SALAD / EARLY-EOS /
+    EMPTY / HTTP-ERROR, and statistics must only be computed above a minimum n (16 here). A fix that changes the
+    failure *mode* — salad becoming early-EOS — is evidence, and a pass/fail metric destroys it.
++   **Correction (2026-10-04).** The classifier this rule produced (`classify.py`) is not a coherence gate, for three
++   reasons. (a) Every INF-70 chat client fed it synthetic token ids (`tokens=list(range(npred))`), so its
++   unique-ratio, top-share and run rules never fired there; any spaced ASCII text read COHERENT. (b) Its fixed
++   `uniq < 0.35` falls with length (Heaps' law), so it false-flags coherent reasoning above ~300–500 tokens. That is
++   what turned Q38-T7's 1500-token outputs into a false "SALAD". (c) A token-stream statistic cannot see fluent
++   wrong answers. The rule stands: classify by reason. The instrument is replaced by the shared deterministic
++   `coherence_gate`. It first takes **paired byte-identity against a named anchor**, then ground-truth answer
++   checks plus a length-aware `degeneracy.v2` that **refuses synthetic token ids**, then a paired judge for
++   residual divergences. Full texts and token ids are stored, so any verdict can be replayed. No INF-70 keep,
++   reject or promotion rested on a uniq-only SALAD: those decisions stand on their paired byte-identity.
+ 
+ ### The corollary about withdrawal
+ 
+@@ -5296,7 +5306,8 @@
+ - `handoffs/active/cpu-decode-roofline-program.md` — LONG-PROMPT-GARBAGE, GDN-ROWEXACT, BATCH-ENVELOPE task lines
+ - `/mnt/raid0/llm/tmp/inf70/longprompt/` — the 42/81/233-token repro (prompts, harness, results, timeline)
+ - `/mnt/raid0/llm/tmp/inf70/agents/gdn-rowexact/REPORT.md` — checkpoints 0–10: node-level localisation, the
+-  `is_dequant_better` mechanism, `classify.py`, the object-level no-op proof of the guard lift
++  `is_dequant_better` mechanism, `classify.py` (superseded 2026-10-04: see the rule 5 correction), the object-level no-op proof of the guard lift
++- `/mnt/raid0/llm/tmp/q38t7-rescore/{AUDIT,RESCORE}.md`, `/mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md` — the 2026-10-04 classifier audit and rectification
+ - `/mnt/raid0/llm/tmp/inf70/agents/e3-alpha/REPORT.md` — independent threshold bracket (16/23 coherent; 39+ garbage)
+ - `progress/2026-09/2026-09-03-inf70-audit.md`
+ 
+--- a/wiki/speculative-decoding.md
++++ b/wiki/speculative-decoding.md
+@@ -2440,8 +2440,10 @@
+ 
+ MTP on this model is **not lossless**: it diverges from the trunk on the same 11 of 24 prompts at every depth,
+ deterministically. The operator's ruling — *"approximate MTP isn't an issue as long as it has a decent acceptance
+-rate and doesn't lead to garbage outputs"* — replaced exactness with two measurable criteria: **no garbage** (120/120
+-coherent across five arms, classified by reason) and **decent acceptance** (α above). That is a better gate pair than
++rate and doesn't lead to garbage outputs"* — replaced exactness with two measurable criteria: **no garbage** (first cited as
++"120/120 coherent across five arms, classified by reason". That label came from synthetic-token-id classification
++and is not evidence. The criterion is held by a paired divergence read on 2026-10-04: plain vs MTP is 12/24
++byte-identical, and every divergent row is a fluent on-task continuation) and **decent acceptance** (α above). That is a better gate pair than
+ bit-exactness for a serving decision, but it carries one permanent consequence: **an MTP run is not token-comparable
+ to a plain run**, so no A/B may have MTP on one arm and off the other, and no greedy-identity gate may run through
+ the MTP path.
+--- a/wiki/hardware-optimization.md
++++ b/wiki/hardware-optimization.md
+@@ -5221,7 +5221,9 @@
+   unsloth B200 note claimed; a dispatch-bound CPU has different dynamics than a saturated GPU. Concurrency
+   itself scales ~1.76× at C=4 when starts are staggered. Caveat: the degenerate simultaneous-start rounds
+   run *faster* per slot while producing garbage, so a concurrency benchmark that does not check output
+-  coherence reports inflated throughput — coherence must be checked every round.
++  coherence reports inflated throughput — coherence must be checked every round. The check is paired, never
++  absolute: concurrent streams are compared against the same prompts served alone, using `coherence_gate` tiers 0–2.
++  A token-statistic label on its own does not count; see benchmark-methodology rule 5's 2026-10-04 correction.
+ - **EXL3 trellis weights measured** (INF-71): exllamav3's own `mul1` AVX-512 CPU kernel on the real 4.05 bpw
+   expert tensors is compute-bound per core (~17 GB/s) and memory-bound from ~10 threads (110–124 GB/s),
+   the same ceiling as everything else; the bytes lever caps at +15–18% end-to-end and is parked behind the

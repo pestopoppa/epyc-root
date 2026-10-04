@@ -1,9 +1,141 @@
 # YaRN Context Extension Research
 
-**Status**: QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05). New quality gate added: Tulving 200ch episodic memory benchmark (P3b in research-evaluation-index). **Gate to reactivate**: context_extension becomes a concrete workload requirement AND the workload tolerates degraded position-discrimination above 32K (per intake-569 Theorem 3+4 trade-off table — raising the RoPE base helps token-distinguishing but provably hurts position-distinguishing; see `research/deep-dives/2026-05-20-rope-long-context-bounds.md`).
-**Created**: 2026-03-09
-**Priority**: LOW
+**Status**: ACTIVE. ADAPTED on 2026-10-04: the scope is now Qwen3.8-27B under YaRN factor 2 (524,288 tokens) as a
+dedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. The 2026-03-09 → 2026-09-07 scope
+below is historical: its model targets are retired, its flag recipe is defeated by the v10 slot clamp, and its memory
+framing (CPU RAM, TurboQuant) is wrong for a GPU-served model.
+**Created**: 2026-03-09 · **Rewritten**: 2026-10-04 (workspace-ec, from the RoPE/YaRN assessment)
+**Owner**: workspace-ec
+**Priority**: MEDIUM (the operator wants long context; organic :8083 demand is still inside native 262K, p99 prompt
+144,846 tokens)
 **Workstream**: Research
+**Scratch**: `/mnt/raid0/llm/tmp/yarn-e1-20261004/` · `/mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/` · `/mnt/raid0/llm/tmp/rope-ctx-assessment/` · worktrees: `/mnt/raid0/llm/worktrees/yarn-e1-*`
+
+## 2026-10-04 rewrite — current scope (start here)
+
+**Assessment:** [`artifacts/gpu-block-27b-20261004/analysis/rope-ctx-ASSESSMENT.md`](../../artifacts/gpu-block-27b-20261004/analysis/rope-ctx-ASSESSMENT.md)
+(a durable copy of `/mnt/raid0/llm/tmp/rope-ctx-assessment/ASSESSMENT.md`). It was read-only: v10 source, GGUF
+headers, vendor cards. Its recommendation was **ADAPT** (§5).
+
+**What holds:**
+- Static YaRN is vendor-documented for every production Qwen LLM: Qwen3.8-27B and Flash-Next carry factor 4.0 and
+  `original_max_position_embeddings` 262144, "extensible up to 1,000,000". For a ~524K typical length the cards
+  recommend factor 2.0.
+- v10 `ffc1bac82` implements YaRN correctly for these interleaved-MRoPE, partial-rotary (64/256) heads.
+- RoPE is the only positional signal in these hybrids, since the GDN layers carry none. So scaling the attention
+  layers scales the whole explicit position mechanism. The unaddressed risk is the GDN recurrent state's capacity and
+  forgetting past 262K, which only a ground-truth test settles.
+
+**Two v10 traps** (the old recipe walks into both):
+1. **The server clamps every slot to `n_ctx_train` unconditionally** (`server-context.cpp:1316-1322`). A YaRN instance
+   must also pass `--override-kv qwen35.context_length=int:<N>`, and then `--yarn-orig-ctx 262144` is MANDATORY.
+   Without it, `n_ctx_orig_yarn` silently follows the overridden length (`llama-model.cpp:1203`).
+2. **Flash-Next's fused decode ignores YaRN.** `qwen4exp-fused.cpp:1709-1717` hardcodes `freq_scale=1, ext_factor=0,
+   n_ctx_orig=0`. Production is safe (`GGML_FUSED_DECODE_OFF=1`, MTP attached), but a YaRN run on that path would
+   prefill with YaRN and decode without it. See YARN-FN-FIX.
+
+**Memory [D]:**
+
+| Shape | 524K | 1M |
+|---|---|---|
+| Production np 4 + DFlash2 | ≈ 64.1 GiB ✗ | ≈ 85 GiB ✗ |
+| Lean np 1, no drafter, q8_0 KV | ≈ 48.9 GiB ✓ | ≈ 69.9 GiB ✗ |
+
+1M fits only with q4_0 KV (≈ 54 GiB, quality unmeasured) or with two MI210s.
+
+**Never put rope flags on production :8083, :8070 or :8074.** Static YaRN applies to every request, the vendor warns
+about short-text degradation, and on a unified pool every co-resident slot would scan the long sequence's cells (the
+KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
+
+### Tasks
+
+- [ ] **YARN-E0 — the zero-compute preparation (operator-approved 2026-10-04; in flight).** Subagents are preparing it
+  in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`. It has three parts:
+  - **The runner.** Fork Q38-T7's cached-prefix needle logic into a long-context runner, and write truth rows in
+    `coherence_gate` form (`{"grader":"needle","expected":[…]}`).
+    - **Neutral haystack only:** RULER noise, or essays with sentence ids. Q38-T7's 80k needle failed because the
+      model refused an "injected" fact planted in an AutoKernel context.
+    - **One prefill per (arm, length):** 5 needles at depths of 10/30/50/70/90%, each asked as a short continuation on
+      the cached prefix.
+  - **The launch lines** on a scratch port (e.g. 18083), with the production env and `LD_LIBRARY_PATH`:
+    - **A0 (native):** `-np 1 -c 262144 -ctk q8_0 -ctv q8_0 -ub 2048 --flash-attn on --no-mmap -ngl all --cache-ram 0`,
+      with no `-md`.
+    - **A1 (YaRN f2):** A0 plus `-c 524288 --rope-scaling yarn --rope-scale 2 --yarn-orig-ctx 262144 --override-kv
+      qwen35.context_length=int:524288`.
+    - **A2 (negative control):** A1 without the rope flags.
+  - **The required bring-up proof lines:** `n_ctx_orig_yarn = 262144`, `freq_scale = 0.5`, `rope scaling = yarn`,
+    and `n_ctx_slot = 524288` with no capping warning. KFD at load must be ≤ ~50 GiB.
+  - **Stale-geometry caches** (intake-1347#record): the instance uses its own empty cache and a scratch slot path,
+    and never restores production slots.
+  - **Belief-kernel write side:** VB-YARN-E1 in `vidya-belief-substrate-program.md`.
+
+  Done when the runner passes a dry run (and a self-test on a small model), and the launch lines and proof greps are
+  in a runbook beside it.
+- [ ] **YARN-E1 — the GPU experiment, ~2.5–3 h of a parked-:8083 window (operator-approved 2026-10-04).** The
+  pre-registered cells (ASSESSMENT §6), all greedy with thinking off and real token ids:
+  1. **Short context:** ~60 `question_pool` items under 4K, A0 vs A1. A `coherence_gate` PASS means 0 REGRESSION.
+  2. **Native range:** 128K and 240K haystacks with 5 needles each, A0 vs A1. A1 must score ≥ A0 − 1 correct out of
+     10, with a clean `degeneracy.v2`. A0 at 240K is also the first ground truth near 262K for this model.
+  3. **Beyond native:** 400K (A1, plus A2) and 500K (A1) haystacks. A1 needs ≥ 4/5 at each length, and A2 must
+     score clearly worse, or the test is not discriminating.
+  4. **Memory:** the KFD peak stays ≤ 55 GiB.
+
+  Coordinate the window with the GPU-block owner, and never run it during another session's measurement window.
+  Done when the four results are recorded here with the runner's output path. Outcome: pass → YARN-E2; fail →
+  archive this handoff with the evidence and keep 262K as the ceiling; pass at 512K → 1M becomes YARN-1M.
+- [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
+  package must:
+  - swap the 27B into the np 1 YaRN f2 profile during long-document work, and say who waits during the swap;
+  - change the orchestrator's per-request cap (`src/backends/context_limits.py`, `min(n_ctx, n_ctx_train)` against
+    `ctx_max: 262144`);
+  - state DFlash2 acceptance under YaRN as its own measurement before keeping the drafter in the mode.
+
+  It goes through the `stack-change` skill with one operator signature. Done when the mode is signed and serving on
+  demand.
+- [ ] **YARN-DCA — Dual Chunk Attention design and implementation, experimental tree (in flight).** A kernel subagent
+  is working in `/mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/`. Its first notes: no upstream llama.cpp issue or PR
+  exists; vLLM's `DualChunkRotaryEmbedding` is still on main, while its attention backend survives only at tag
+  v0.10.0; Qwen2.5-1M uses DCA without YaRN-proper. DCA is training-free and keeps every relative distance inside
+  the trained range, so it is the candidate route past factor-2 YaRN on one card. The work follows the four-step
+  workflow from a fresh champion on `llama.cpp-experimental`: intra/successive/inter chunk positions over a
+  chunk-periodic K cache, plus the mscale logit temperature. Done when the design note and a `test-backend-ops`-green
+  build exist, and an E1-style needle A/B (DCA vs YaRN f2 at 400K/500K) is filed as its own GPU-window task.
+- [ ] **YARN-FN-FIX — Flash-Next fused decode must honour the rope parameters (in flight).** `qwen4exp-fused.cpp:1709-1717`
+  hardcodes `freq_scale=1, ext_factor=0, n_ctx_orig=0`. Pass the model's real `freq_scale`, `ext_factor`,
+  `n_ctx_orig_yarn`, `attn_factor` and `beta_*` through to the fused path. This is latent at native length as well,
+  where `n_ctx_orig=0` is harmless only while `ext_factor` is 0. It is being built on `llama.cpp-experimental` in the
+  same subagent dir. Done when the fused decode matches the graph path bit-for-bit (or within the fused path's
+  existing tolerance) under a YaRN configuration in a CPU test, with no regression at native length.
+- [ ] **YARN-1M — research: what fits 1M, and how the hybrid recurrent layers behave past 262K (in flight).** A
+  research subagent is answering two questions in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`:
+  - which shapes fit 1M: q4_0 KV on the lean shape (≈ 54 GiB; the R10 advice in `kv-cache-quantization.md` says q8_0
+    at 1M), a split across two MI210s once the second card arrives (~October 2026), or CPU;
+  - what is published on gated-DeltaNet / linear-recurrent state retention past the training length.
+
+  Done when a short report recommends one 1M route with its first measurement. A route that needs the second
+  MI210 is filed as trigger-gated on its arrival.
+- [ ] **YARN-FN-0 — (after YARN-FN-FIX) validate Flash-Next's NATIVE 262K before any YaRN arm on it.** Flash-Next has
+  never served beyond 8,192 tokens, and its deepest benchmark is d4096. Its native long context is the more valuable
+  experiment for that model, regardless of YaRN. It needs all four CPU regions, so it runs in an AutoKernel CPU
+  window. Done when needle correctness and decode rate at 64K/128K/240K are recorded with the neutral haystack runner.
+- [ ] **YARN-WIKI — recompile `wiki/context-extension.md` after E1.** That page carries stale facts: a "384GB RAM
+  budget", "Hadamard q4_0 deployed", Qwen3.5/Qwen3-Next targets and TurboQuant. It lands in the operator-invoked
+  `/wrap-up` wiki sweep, not as an ad-hoc edit. Done when the page reflects E1's result and this rewrite.
+- Declined (2026-10-04, ASSESSMENT §6 *Not recommended now*):
+  - **A 1M run on CPU.** The memory fits, but prefill is ~2.8 h per prompt even on the GPU model, and CPU prefill is
+    unmeasured. YARN-1M decides the 1M route.
+  - **Rope flags on any production server.** See above.
+  - **intake-569#record's A1 indexing check as a substitute.** It measures position indexing at 4–32K, not
+    retrieval past 262K.
+  - **The Qwen3.6-35B-A3B front door.** No workload, and static YaRN would tax every short request.
+  - **The embedders.** They have no RoPE.
+  - **LongRoPE.** No production GGUF ships the factor tensors.
+  - **NTK base raising.** θ is already 1e7, and YaRN supersedes it.
+
+## Historical scope (2026-03-09 → 2026-09-07; superseded by the rewrite above)
+
+**Status then**: QUEUED — blocker P3 long-context eval datasets resolved (2026-04-05). New quality gate added: Tulving 200ch episodic memory benchmark (P3b in research-evaluation-index). **Gate to reactivate**: context_extension becomes a concrete workload requirement AND the workload tolerates degraded position-discrimination above 32K (per intake-569 Theorem 3+4 trade-off table — raising the RoPE base helps token-distinguishing but provably hurts position-distinguishing; see `research/deep-dives/2026-05-20-rope-long-context-bounds.md`).
+**Priority then**: LOW
 
 ## What is YaRN?
 
@@ -111,4 +243,4 @@ the **200ch/100K** split and the **fixed tau** (M-12e). "24 models" corrected to
 
 ## Progress checklist
 
-- [ ] QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss
+- [x] QUEUED (LOW): reactivate when context_extension is a concrete workload requirement tolerating >32K position-discrimination loss ✅ 2026-10-04 — reactivated by the ADAPT rewrite. The operator wants long context and approved E0+E1, and the ">32K tolerance" clause is replaced by YARN-E1's pre-registered gate. The live tasks are in *2026-10-04 rewrite → Tasks* at the top of this file.

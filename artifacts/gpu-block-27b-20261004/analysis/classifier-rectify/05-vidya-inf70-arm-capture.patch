@@ -1,0 +1,66 @@
+--- a/scripts/vidya/adapters/inf70_serving_arm_capture.py
++++ b/scripts/vidya/adapters/inf70_serving_arm_capture.py
+@@ -244,6 +244,12 @@
+     }
+ 
+ 
++#: Label for per-prompt verdicts produced by the pre-2026-10-04 HARNESS-1 client (synthetic
++#: token ids; see /mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md). Informational only: the
++#: coherence census rides in `extra` and is never graded.
++LEGACY_CLASSIFIER = "inf70-classify.v1|synthetic-ids(uniq/top/run vacuous)"
++
++
+ def summarize_rows(text: str) -> dict[str, Any]:
+     """Token-weighted decode rate (pred_n >= 16 floor) and coherence counts by reason."""
+     rows = []
+@@ -264,15 +270,23 @@
+     tokens = sum(r["pred_n"] for r in decode)
+     seconds = sum(r["pred_ms"] for r in decode) / 1000.0
+     reasons: dict[str, int] = {}
++    classifiers: dict[str, int] = {}
+     for row in rows:
+         key = str(row.get("verdict") or "UNCLASSIFIED")
+         reasons[key] = reasons.get(key, 0) + 1
++        # Rows written before the 2026-10-04 classifier rectification carry no `classifier`:
++        # their client passed tokens=list(range(npred)), so uniq/top/run were vacuous and the
++        # verdict rests on the words/ascii rules alone. Name that, never let it read as v1.1.
++        ckey = (f"{row['classifier']}|{row.get('token_source') or 'unknown'}"
++                if row.get("classifier") else LEGACY_CLASSIFIER)
++        classifiers[ckey] = classifiers.get(ckey, 0) + 1
+     return {
+         "value": round(tokens / seconds, 4),
+         "n_rows": len(rows),
+         "n_decode_rows": len(decode),
+         "decode_tokens": int(tokens),
+         "coherence_by_reason": dict(sorted(reasons.items())),
++        "coherence_classifier": dict(sorted(classifiers.items())),
+     }
+ 
+ 
+@@ -518,6 +532,7 @@
+         "decode_tokens": measured["decode_tokens"],
+         "pred_n_floor": PRED_N_FLOOR,
+         "coherence_by_reason": measured["coherence_by_reason"],
++        "coherence_classifier": measured["coherence_classifier"],
+         "replicate_group": launch.get("replicate_group"),
+         "replicate_launches": launch.get("replicate_launches"),
+         "between_launch_sd": launch.get("between_launch_sd"),
+--- a/tests/vidya/test_inf70_serving_arm_adapter.py
++++ b/tests/vidya/test_inf70_serving_arm_adapter.py
+@@ -123,6 +123,16 @@
+     assert tup.extra["coherence_by_reason"] == {"COHERENT": 2, "EMPTY": 1, "REPETITION": 1}
+ 
+ 
++def test_pre_rectification_rows_are_named_synthetic_id_verdicts(tmp_path):
++    """Rows with no `classifier` came from the fake-token client (uniq/top/run vacuous):
++    the census must say so instead of letting the verdict read as a full v1 check."""
++    runs = make_arm(tmp_path)
++    tup = reader.project(reader.native_rows(write(runs))[0])
++    assert tup.extra["coherence_classifier"] == {capture.LEGACY_CLASSIFIER: 4}
++    # informational only: the grade is unchanged
++    assert ct.grade(tup)[:2] == ("Witnessed", "Attested")
++
++
+ def test_contended_arm_still_emits_but_carries_the_verdict_separately(tmp_path):
+     runs = make_arm(tmp_path, cores=SMT_CORES)
+     tup = reader.project(reader.native_rows(write(runs))[0])

@@ -1,0 +1,14 @@
+{"size": 8000, "tokens": 8047, "http": 200, "http_newtask": 200, "prompt_n": 8047, "cache_n": 0, "prompt_ms": 11634.096, "prefill_tps": 691.7, "decode_tps": 22.48, "predicted_n": 8, "draft_n": 17, "draft_n_accepted": 2, "draft_acc": 0.1176}
+{"size": 24000, "tokens": 24166, "http": 200, "http_newtask": 200, "prompt_n": 24166, "cache_n": 0, "prompt_ms": 37848.036, "prefill_tps": 638.5, "decode_tps": 29.11, "predicted_n": 8, "draft_n": 15, "draft_n_accepted": 4, "draft_acc": 0.2667}
+{"size": 48000, "tokens": 47830, "http": 200, "http_newtask": 200, "prompt_n": 47830, "cache_n": 0, "prompt_ms": 101887.716, "prefill_tps": 469.4, "decode_tps": 1000000.0, "predicted_n": 1, "draft_n": null, "draft_n_accepted": null, "draft_acc": null}
+{"size": 72000, "tokens": 71548, "http": 200, "http_newtask": 200, "prompt_n": 71548, "cache_n": 0, "prompt_ms": 144619.164, "prefill_tps": 494.7, "decode_tps": 28.28, "predicted_n": 6, "draft_n": 9, "draft_n_accepted": 3, "draft_acc": 0.3333}
+# UFH14-B4g — 27B DFlash2 prompt-cache entry cost, current shape (2026-10-04T03:59:51Z)
+
+- window: llama-server-8083.log bytes 27334737-27542756 (current launch: 0.09.140.739 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true')
+- prompt_save fit (target+draft): **None MiB per 1k tokens**, fixed None MiB, R^2 None, n=0
+- target-only None MiB/1k; draft None MiB/1k
+- entry incl. checkpoints: {'n': 0, 'points': [], 'fit': None}
+- checkpoint size vs n_tokens: {'n': 0, 'points': [], 'fit': None}
+- prior (np4/196608, n_max 4): 37.155 MiB/1k, fixed 149.6 MiB
+- events: {'idle_saves': 0, 'clear_nonzero': 0, 'clear_nonzero_tokens': 0, 'restores_better': 0, 'restore_failures': 0, 'evictions': 1, 'evicted_mib': 1532.4, 'prompt_saves': 0, 'last_cache_state': None}
+- points: []
