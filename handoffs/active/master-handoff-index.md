@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-72 | Sign STACKCHG-HYGIENE-20261003 (KVU-16a measured 38.03 GiB; SCG-PRIORS-WARM seeding scope; DRAFT-SEL-2 drafters form). `--validate-only` VALID, 68 pins; argv 11/11 unchanged, no relaunch. Command: `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-hygiene-20261003/ratify_stackchg_hygiene_20261003.sh --attest RATIFY-STACKCHG-HYGIENE-20261003` (operator terminal) | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) → SCG-PRIORS-WARM, DRAFT-SEL-2; [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) → KVU-16a | 2026-10-04 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -101,8 +102,8 @@ nobody is moving.
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
 | research-evaluation | 43 | 474 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 556 | 17 | 2026-07-29 |
-| user-facing-harness | 12 | 115 | 16 | 2026-07-29 |
+| routing-and-optimization | 50 | 555 | 17 | 2026-07-29 |
+| user-facing-harness | 12 | 122 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting
