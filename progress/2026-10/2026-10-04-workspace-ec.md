@@ -685,3 +685,64 @@ Perplexity on Qwen2.5-0.5B at 32K-64K (lower is better):
 | root | `artifacts/kvu16h-vram-20261004/results/fuc-20261004T110509Z/` | NEW: row-4c result |
 | root | `artifacts/fa-maskskip-batched-20261004/` | NEW: KVU-19b slot3 |
 | root | `artifacts/dca-yarn-kernel-20261004/` | NEW: NOTES, DCA slot, FA-INT64 slot, fused repro log |
+
+## YaRN E1 (INF-59): FAIL on C4 memory only (wrap-up 6)
+
+**Problem.** E1 tested Qwen3.8-27B under static YaRN factor 2 (524,288 tokens) as a separate np 1 mode on the MI210,
+against four pre-registered criteria (`yarn-context-extension-research.md` YARN-E1). Arms: A0 native 262K, A1 YaRN f2.
+
+| Criterion | Result | Verdict |
+|---|---|---|
+| C1 short context (n=84, informational) | 3 REGRESSION: 2 gsm8k items went degenerate (`uniq+stuck`), 1 unanswered; graded A1 58/70 vs A0 59/70 | FAIL (confirms "separate mode only") |
+| C2 native 128K + 240K (10 paired needles) | A1 10/10 = A0 10/10, no degeneracy | PASS |
+| C3 beyond native (A1) | 5/5 at 400K, 5/5 at 500K; needles up to 448K tokens back | PASS as scored; A2 control not run |
+| C4 KFD own-PID peak ≤ 55 GiB | A0 52.7 GiB (est 38.4), A1 63.9 GiB (est 48.9) | **FAIL** |
+
+- **Root cause (open):** about +15 GiB over the estimate in BOTH arms, so it is a cost of the long-prefill launch
+  shape, not of YaRN. Filed as YARN-E1-MEM. Memory, not quality, is now the blocker for 1M.
+- **Process defects found and handled:** `launch_arm.sh` lacked `--verbosity 4`, so the proof lines were absent and
+  the first run refused (fixed). A1 ran with `--force-preflight` because the logger splits an override value onto a
+  timestamped continuation line; every `print_info`/`llama_context` proof line matched. The regex fix is YARN-E1-PROOF.
+- **Evidence:** `artifacts/yarn-e1-20261004/` (gate/, `run_e1.log`, `run_e1_a1.log`, `RUNBOOK.md`, KFD summaries,
+  `SOURCES.sha256`); scratch `/mnt/raid0/llm/tmp/yarn-e1-20261004/results/{A0,A1}`.
+- **Belief kernel:** the runner wrote no `belief_measurements.jsonl`; VB-YARN-E1 stays open with a note, and the
+  source-table row now says E1 ran unwired.
+
+## :8083 restored after E1 (~19:56Z)
+
+- Restored on the v10 store binary, argv digest `b865820d` (DFlash2, np 4, 393216 ctx), via `gpu_window restore`
+  through the G1 executor's serving proof, holder=production.
+- Passthrough completion "56" at 37.7 tok/s; VRAM 52.8 GiB after load.
+- OP-76 (STACKCHG-8083BATCH, `-b 512 -ub 512` + `--no-cache-idle-slots`) is still unsigned, so it was NOT applied at
+  this restore. Its "applies at the restore after YaRN E1" wording is now stale; an OP-76 row refresh is prepared.
+- KVU-16e was already ticked 2026-10-03; no other open restore task exists, so nothing was ticked for the restore.
+
+## GPU block 2026-10-04 summary
+
+- Champion advanced `90c12df42` → `1bceceb05` → `61bdb185c` (Y) → `9a3f1392a` (Yfa).
+- W `b0ba1d427` (arena fix): GPU gate PASS.
+- AutoKernel 6b's first GPU run: 0 candidates measured. The stream-k candidates were refused by the correctness
+  gate, and a `serial_run` bug surfaced (owned by the AK lane).
+
+## Checkbox ledger (wrap-up 6)
+
+- Ticked: YARN-E0 (the runner carried E1 end to end), YARN-E1 (RUN, FAIL by C4).
+- Filed: YARN-E1-MEM, YARN-E1-PROOF, YARN-E1-A2.
+- Notes, not ticked: YARN-DCA-E1 and YARN-1M (memory is the blocker), VB-YARN-E1 (ran unwired).
+
+## Declines (explicit, wrap-up 6)
+
+- **Archiving INF-59 under E1's pre-registered "fail" branch.** The failure is an unattributed memory overshoot,
+  and quality passed to 500K; archiving would discard a working 512K result. YARN-E2 instead waits on YARN-E1-MEM.
+- **A task for the AK 6b `serial_run` bug in this handoff.** It belongs to the AutoKernel lane's own handoff, not
+  INF-59; reported to the owning session.
+- **A restore task tick.** No open restore task exists (KVU-16e closed 2026-10-03).
+
+## Files (wrap-up 6)
+
+| Repo | File | Change |
+|---|---|---|
+| root | `handoffs/active/yarn-context-extension-research.md` | E0, E1 ticked; E1 results; YARN-E1-MEM/-PROOF/-A2 filed; DCA-E1 and 1M notes |
+| root | `handoffs/active/vidya-belief-substrate-program.md` | VB-YARN-E1 note (E1 ran unwired) |
+| root | `scripts/vidya/adapters/README.md` | INF-59 source row status |
+| root | `artifacts/yarn-e1-20261004/` | NEW: gate, run logs, runbook, KFD summaries, SOURCES.sha256 |

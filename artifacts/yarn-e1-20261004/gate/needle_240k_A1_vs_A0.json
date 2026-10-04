@@ -1,0 +1,470 @@
+{
+ "schema": "epyc.coherence_gate.v1",
+ "library": "coherence_gate 1.0.0",
+ "degeneracy_classifier": "degeneracy.v2",
+ "degeneracy_lineage": "inf70-degeneracy.v2 (gpu-block-27b-20261003/degeneracy.py, 2026-10-04)",
+ "graders": "answer-graders.v1",
+ "decoding": "greedy (asserted by the caller; tier 0 identity is only decisive under greedy)",
+ "tokenizer": null,
+ "text_only_declared": false,
+ "judge": null,
+ "anchor": null,
+ "anchor_named": false,
+ "truth_rows_without_id": 0,
+ "items": [
+  {
+   "id": "N05",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "246c678b289611ae2d1c5af1f6c73b541ebc978e76a958d6fec0b34910dba4b4",
+    "cand_sha256": "246c678b289611ae2d1c5af1f6c73b541ebc978e76a958d6fec0b34910dba4b4"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Florian Vasquez-Holm"
+     ],
+     "extracted": [
+      "Florian Vasquez-Holm"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Florian Vasquez-Holm"
+     ],
+     "extracted": [
+      "Florian Vasquez-Holm"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "Florian Vasquez-Holm",
+     "sha256": "246c678b289611ae2d1c5af1f6c73b541ebc978e76a958d6fec0b34910dba4b4",
+     "n_chars": 20
+    },
+    "cand": {
+     "text": "Florian Vasquez-Holm",
+     "sha256": "246c678b289611ae2d1c5af1f6c73b541ebc978e76a958d6fec0b34910dba4b4",
+     "n_chars": 20
+    }
+   }
+  },
+  {
+   "id": "N06",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "41469d6739de23cea05485b49e22584eabc1d920330ff42984481959ef5eea29",
+    "cand_sha256": "41469d6739de23cea05485b49e22584eabc1d920330ff42984481959ef5eea29"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "NN-7230-K"
+     ],
+     "extracted": [
+      "NN-7230-K"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "NN-7230-K"
+     ],
+     "extracted": [
+      "NN-7230-K"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "NN-7230-K",
+     "sha256": "41469d6739de23cea05485b49e22584eabc1d920330ff42984481959ef5eea29",
+     "n_chars": 9
+    },
+    "cand": {
+     "text": "NN-7230-K",
+     "sha256": "41469d6739de23cea05485b49e22584eabc1d920330ff42984481959ef5eea29",
+     "n_chars": 9
+    }
+   }
+  },
+  {
+   "id": "N07",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "81131a4662ae42ec4ab22438c50da16529ef73a4b115b94cad8e764bf55bd704",
+    "cand_sha256": "81131a4662ae42ec4ab22438c50da16529ef73a4b115b94cad8e764bf55bd704"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Casimir Szalai-Pryce"
+     ],
+     "extracted": [
+      "Casimir Szalai-Pryce"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Casimir Szalai-Pryce"
+     ],
+     "extracted": [
+      "Casimir Szalai-Pryce"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "Casimir Szalai-Pryce",
+     "sha256": "81131a4662ae42ec4ab22438c50da16529ef73a4b115b94cad8e764bf55bd704",
+     "n_chars": 20
+    },
+    "cand": {
+     "text": "Casimir Szalai-Pryce",
+     "sha256": "81131a4662ae42ec4ab22438c50da16529ef73a4b115b94cad8e764bf55bd704",
+     "n_chars": 20
+    }
+   }
+  },
+  {
+   "id": "N08",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "61efbcab922deda9919423afa9a2d2d2fec2531e270b562a6091030542bf4101",
+    "cand_sha256": "61efbcab922deda9919423afa9a2d2d2fec2531e270b562a6091030542bf4101"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "JR-2224-S"
+     ],
+     "extracted": [
+      "JR-2224-S"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "JR-2224-S"
+     ],
+     "extracted": [
+      "JR-2224-S"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "JR-2224-S",
+     "sha256": "61efbcab922deda9919423afa9a2d2d2fec2531e270b562a6091030542bf4101",
+     "n_chars": 9
+    },
+    "cand": {
+     "text": "JR-2224-S",
+     "sha256": "61efbcab922deda9919423afa9a2d2d2fec2531e270b562a6091030542bf4101",
+     "n_chars": 9
+    }
+   }
+  },
+  {
+   "id": "N09",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "60154e29148233dc5c082f90ea59f40f341285018279397458852f442cce491a",
+    "cand_sha256": "60154e29148233dc5c082f90ea59f40f341285018279397458852f442cce491a"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Aurelio Halloran-Sato"
+     ],
+     "extracted": [
+      "Aurelio Halloran-Sato"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Aurelio Halloran-Sato"
+     ],
+     "extracted": [
+      "Aurelio Halloran-Sato"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "Aurelio Halloran-Sato",
+     "sha256": "60154e29148233dc5c082f90ea59f40f341285018279397458852f442cce491a",
+     "n_chars": 21
+    },
+    "cand": {
+     "text": "Aurelio Halloran-Sato",
+     "sha256": "60154e29148233dc5c082f90ea59f40f341285018279397458852f442cce491a",
+     "n_chars": 21
+    }
+   }
+  }
+ ],
+ "aggregate": {
+  "n": 5,
+  "identical": 5,
+  "pass": 5,
+  "regressions": 0,
+  "both_bad": 0,
+  "needs_review": 0,
+  "by_tier": {
+   "0": 5
+  },
+  "identical_with_shared_defect": 0,
+  "token_modes": {
+   "base:token_ids": 5,
+   "cand:token_ids": 5
+  },
+  "judge_given": false,
+  "gate": "PASS",
+  "gate_reasons": []
+ }
+}

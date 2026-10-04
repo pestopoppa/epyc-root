@@ -1,7 +1,8 @@
 # YaRN Context Extension Research
 
 **Status**: ACTIVE. ADAPTED on 2026-10-04: the scope is now Qwen3.8-27B under YaRN factor 2 (524,288 tokens) as a
-dedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. The 2026-03-09 → 2026-09-07 scope
+dedicated np 1 MI210 mode. The operator approved running E0 and E1 on 2026-10-04. **E1 ran 2026-10-04: quality PASS to 500K, FAIL by
+C4 memory (A1 63.9 GiB vs ≤ 55); next is YARN-E1-MEM.** The 2026-03-09 → 2026-09-07 scope
 below is historical: its model targets are retired, its flag recipe is defeated by the v10 slot clamp, and its memory
 framing (CPU RAM, TurboQuant) is wrong for a GPU-served model.
 **Created**: 2026-03-09 · **Rewritten**: 2026-10-04 (workspace-ec, from the RoPE/YaRN assessment)
@@ -49,7 +50,8 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 
 ### Tasks
 
-- [ ] **YARN-E0 — the zero-compute preparation (operator-approved 2026-10-04; in flight).** Subagents are preparing it
+- [x] **YARN-E0 — the zero-compute preparation (operator-approved 2026-10-04).** ✅ 2026-10-04 (the runner and
+  runbook carried E1 end to end; see below) Subagents are preparing it
   in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`. It has three parts:
   - **The runner.** Fork Q38-T7's cached-prefix needle logic into a long-context runner, and write truth rows in
     `coherence_gate` form (`{"grader":"needle","expected":[…]}`).
@@ -71,7 +73,8 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 
   Done when the runner passes a dry run (and a self-test on a small model), and the launch lines and proof greps are
   in a runbook beside it.
-- [ ] **YARN-E1 — the GPU experiment, ~2.5–3 h of a parked-:8083 window (operator-approved 2026-10-04).** The
+- [x] **YARN-E1 — the GPU experiment, ~2.5–3 h of a parked-:8083 window (operator-approved 2026-10-04).** ✅ 2026-10-04
+  RUN — **FAIL by C4 (memory) only**; results below. The
   pre-registered cells (ASSESSMENT §6), all greedy with thinking off and real token ids:
   1. **Short context:** ~60 `question_pool` items under 4K, A0 vs A1. A `coherence_gate` PASS means 0 REGRESSION.
   2. **Native range:** 128K and 240K haystacks with 5 needles each, A0 vs A1. A1 must score ≥ A0 − 1 correct out of
@@ -83,6 +86,37 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   Coordinate the window with the GPU-block owner, and never run it during another session's measurement window.
   Done when the four results are recorded here with the runner's output path. Outcome: pass → YARN-E2; fail →
   archive this handoff with the evidence and keep 262K as the ceiling; pass at 512K → 1M becomes YARN-1M.
+  - *(2026-10-04, workspace-ec.)* **E1 result: FAIL on C4 only.** Gate: `artifacts/yarn-e1-20261004/gate/VERDICT.md`
+    and `verdict.json` (durable copy, with `run_e1.log`, `run_e1_a1.log`, the KFD summaries and `SOURCES.sha256`;
+    scratch `/mnt/raid0/llm/tmp/yarn-e1-20261004/results/{A0,A1}`).
+    - **C1 short context (informational):** coherence_gate FAIL, 3 REGRESSION of 84 (two gsm8k items went
+      degenerate `uniq+stuck`, one went unanswered); graded accuracy A1 58/70 vs A0 59/70. It confirms "separate
+      mode only": never put rope flags on a production server.
+    - **C2 native range (128K + 240K):** A1 10/10 = A0 10/10, no degeneracy. **PASS.** A0 at 240K is the first ground
+      truth near 262K for this model.
+    - **C3 beyond native (A1):** 5/5 at 400K and 5/5 at 500K, needles up to 448K tokens back, no abstentions. **PASS**
+      as scored, but A2 (the negative control) did not run, so the test's discrimination is unshown (YARN-E1-A2).
+    - **C4 memory:** KFD own-PID peak A0 **52.7 GiB** (estimate 38.4) and A1 **63.9 GiB** (estimate 48.9), against
+      the ≤ 55 GiB gate on a 64 GiB card. **FAIL.** About +15 GiB is unexplained in BOTH arms, so it is a shared
+      cost of this launch shape (long prefill), not a YaRN cost.
+    - **Process notes:** `launch_arm.sh` lacked `--verbosity 4`, so the proof lines were missing and the first run
+      refused (fixed in the script). A1 ran with `--force-preflight`, because the logger splits an override value
+      onto a timestamped continuation line; every `print_info`/`llama_context` proof line matched by hand.
+    - **Outcome branch:** quality passed at 512K; memory failed. The pre-registered "fail → archive" branch is not
+      taken, because the failure is an unattributed memory overshoot, not a quality result. YARN-E2 waits on
+      YARN-E1-MEM, and memory (not quality) is now the blocker for 1M.
+  - [ ] **YARN-E1-MEM — attribute the +15 GiB KFD overshoot seen in both E1 arms (long prefill).** (filed 2026-10-04,
+    workspace-ec) Reuse the KVU-16h allocator shim and phase-replay runner on the A0 and A1 launch lines, and compare
+    the E1 build (champion `9a3f1392a`) against W `b0ba1d427`, which carries the arena fix. Done when the overshoot is
+    attributed per phase, and A1's peak is either re-measured ≤ 55 GiB or the gap is named with its fix.
+  - [ ] **YARN-E1-PROOF — make the runner's proof-line regex tolerate split continuation lines.** (filed 2026-10-04,
+    workspace-ec) The logger puts an `--override-kv` value on a timestamped continuation line, so A1 needed
+    `--force-preflight`. Done when `yarn_needle.py`'s preflight passes A1's real `A1.server.log` without the force flag
+    and a self-test covers the split form.
+  - [ ] **YARN-E1-A2 — run the A2 negative control at 400K in the next YaRN window.** (filed 2026-10-04, workspace-ec)
+    C3 pre-registered "A2 must score clearly worse, or the test is not discriminating", and E1 ran A0 and A1 only.
+    Ride it on the YARN-E1-MEM re-measure or the YARN-DCA-E1 window. Done when A2's 400K needle score is recorded
+    beside A1's 5/5.
 - [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
   package must:
   - swap the 27B into the np 1 YaRN f2 profile during long-document work, and say who waits during the swap;
@@ -118,6 +152,8 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   - [ ] **YARN-DCA-E1 — needle A/B, DCA vs YaRN f2 at 400K/500K on the 27B, in its own GPU window.** (filed
     2026-10-04, workspace-ec, from YARN-DCA's done-when) The build must carry YARN-FA-INT64: mask offsets wrap past
     n_kv 526,592 at ub 2048. Done when needle correctness per depth is recorded for both arms.
+    *(2026-10-04 note, after E1.)* E1's A1 peaked at 63.9 GiB at 500K, so this window needs YARN-E1-MEM's
+    attribution (or a smaller shape) first, or it will hit the same memory wall.
   - [ ] **YARN-DCA-XDEV — explain the GPU-vs-CPU perplexity offset before quoting numbers across devices.** (filed
     2026-10-04, workspace-ec) Plain 64K is 14.39 on ROCm0 vs 13.63 on CPU, with the same model and text. Compare the
     batch/ubatch sizes, FA on/off and KV type of the two scripts, then re-run one arm with matched settings. Done when
@@ -169,6 +205,9 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
 
   Done when a short report recommends one 1M route with its first measurement. A route that needs the second
   MI210 is filed as trigger-gated on its arrival.
+  - *(2026-10-04 note, after E1.)* **Memory is now the blocker for 1M, not quality:** A1 retrieved 5/5 at 500K, but
+    measured 63.9 GiB against a 48.9 GiB estimate, and A0 overshot by the same ~15 GiB. Every 1M memory estimate
+    above (≈ 54 GiB with q4_0 KV, ≈ 69.9 GiB lean) is optimistic by that amount until YARN-E1-MEM attributes it.
 - [ ] **YARN-FN-0 — (after YARN-FN-FIX) validate Flash-Next's NATIVE 262K before any YaRN arm on it.** Flash-Next has
   never served beyond 8,192 tokens, and its deepest benchmark is d4096. Its native long context is the more valuable
   experiment for that model, regardless of YaRN. It needs all four CPU regions, so it runs in an AutoKernel CPU

@@ -1,0 +1,11 @@
+{
+ "pid": 3355952,
+ "n_samples": 4254,
+ "interval_s": 1.0,
+ "started": 1791139327.3992996,
+ "ended": 1791143583.2751591,
+ "kfd_peak_gib": 63.926,
+ "card_peak_gib": 63.94,
+ "other_kfd_pids_seen": [],
+ "sampler_pid": 3355953
+}

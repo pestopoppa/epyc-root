@@ -1,0 +1,233 @@
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=600.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: bash /mnt/raid0/llm/tmp/yarn-e1-20261004/run_e1_a1.sh
+KFD processes now:   card VRAM used: 12 MiB
+scratch A1 PID 3355952 (log /mnt/raid0/llm/tmp/yarn-e1-20261004/results/A1.server.log)
+{"status":"ok"}
+--- proof lines (this launch only)
+0.00.556.017 I validate_override: Using metadata override (  int) 'qwen35.context_length' = 0.00.556.018 I 524288
+0.00.556.031 I validate_override: Using metadata override (  int) 'qwen35.rope.scaling.original_context_length' = 0.00.556.032 I 262144
+0.00.556.034 I validate_override: Using metadata override (  str) 'qwen35.rope.scaling.type' = 0.00.556.034 I yarn
+0.00.556.036 I validate_override: Using metadata override (float) 'qwen35.rope.scaling.factor' = 0.00.556.036 I 2.000000
+0.00.713.795 I print_info: n_ctx_train           = 524288
+0.00.713.816 I print_info: rope scaling          = yarn
+0.00.713.818 I print_info: freq_scale_train      = 0.5
+0.00.713.818 I print_info: n_ctx_orig_yarn       = 262144
+0.03.759.227 I llama_context: n_ctx         = 524288
+0.03.759.227 I llama_context: n_ctx_seq     = 524288
+0.03.759.228 I llama_context: kv_unified    = false
+0.03.759.231 I llama_context: freq_base     = 10000000.0
+0.03.759.232 I llama_context: freq_scale    = 0.5
+0.03.778.771 I llama_kv_cache: size = 17408.00 MiB (524288 cells,  16 layers,  1/1 seqs), K (q8_0): 8704.00 MiB, V (q8_0): 8704.00 MiB
+0.03.778.773 I llama_kv_cache: attn_rot_k = 1, n_embd_head_k_all = 256
+0.03.778.773 I llama_kv_cache: attn_rot_v = 1, n_embd_head_k_all = 256
+0.09.757.860 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 524288, kv_unified = 'false'
+--- residency / linkage (read-only)
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap -ngl all --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/yarn-e1-20261004/results/kv_slots_scratch --verbosity 4 -c 524288 --rope-scaling yarn --rope-scale 2 --yarn-orig-ctx 262144 --override-kv qwen35.context_length=int:524288,qwen35.rope.scaling.type=str:yarn,qwen35.rope.scaling.factor=float:2,qwen35.rope.scaling.original_context_length=int:262144 
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+KFD vram MiB: 48409
+binary : /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+         2	/opt/rocm/lib
+         3	/usr/lib/llvm-20/lib
+         4	/opt/AMD/aocc-compiler-5.0.0/lib
+         5	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+{
+ "pid": 3355952,
+ "n_ctx_slot": 524288,
+ "n_slots": 1,
+ "kfd_gib": 47.275,
+ "proof": {
+  "Using metadata override \\(\\s*int\\) 'qwen35\\.context_length' = 524288": false,
+  "Using metadata override \\(\\s*str\\) 'qwen35\\.rope\\.scaling\\.type' = yarn": false,
+  "print_info: n_ctx_train\\s*=\\s*524288\\b": true,
+  "print_info: rope scaling\\s*=\\s*yarn": true,
+  "print_info: freq_scale_train\\s*=\\s*0\\.5\\s*$": true,
+  "print_info: n_ctx_orig_yarn\\s*=\\s*262144\\b": true,
+  "llama_context: freq_scale\\s*=\\s*0\\.5\\s*$": true,
+  "llama_context: n_ctx_seq\\s*=\\s*524288\\b": true,
+  "llama_kv_cache: size =\\s*17408\\.00 MiB \\(\\s*524288 cells,\\s*16 layers": true,
+  "n_slots = 1, n_ctx_slot = 524288\\b": true
+ },
+ "problems": [
+  "proof line missing: /Using metadata override \\(\\s*int\\) 'qwen35\\.context_length' = 524288/",
+  "proof line missing: /Using metadata override \\(\\s*str\\) 'qwen35\\.rope\\.scaling\\.type' = yarn/"
+ ]
+}
+{"arm": "A1", "stage": "s1", "q": 0, "needle": "S0", "prompt_n": 3310, "cache_n": 0, "prompt_ms": 4088.465, "answer": "QX-8610-S", "expected": ["QX-8610-S"], "kfd_gib": 47.63}
+{"arm": "A1", "stage": "s1", "q": 1, "needle": "S1", "prompt_n": 50, "cache_n": 3260, "prompt_ms": 190.147, "answer": "QX-2164-T", "expected": ["QX-2164-T"], "kfd_gib": 47.548}
+{"arm": "A1", "stage": "s1", "local_probe": "The report provides an overview of the FY2020 Defense Appropriations Act, detailing its legislative history and the budg", "prompt_n": 54, "finish": "stop"}
+{"arm": "A1", "stage": "s2", "q": 0, "needle": "S2", "prompt_n": 3873, "cache_n": 3260, "prompt_ms": 4584.059, "answer": "QX-2826-S", "expected": ["QX-2826-S"], "kfd_gib": 47.894}
+{"arm": "A1", "stage": "s2", "q": 1, "needle": "S3", "prompt_n": 50, "cache_n": 7083, "prompt_ms": 190.497, "answer": "QX-1430-T", "expected": ["QX-1430-T"], "kfd_gib": 47.915}
+{"arm": "A1", "stage": "s2", "local_probe": "The report details the FY2020 Defense Appropriations Act, covering legislative history, budgetary context, and strategic", "prompt_n": 54, "finish": "stop"}
+{"arm": "A1", "id": "mbpp_0391", "finish": "stop", "n": 41, "decode_tps": 33.233, "head": "```python\ndef convert_list_dictionary(keys, names, values):\n"}
+{"arm": "A1", "id": "mbpp_0303", "finish": "length", "n": 200, "decode_tps": 32.297, "head": "```python\ndef solve(arr, n):\n    \"\"\"\n    Check whether the c"}
+{"arm": "A1", "id": "mbpp_0508", "finish": "stop", "n": 57, "decode_tps": 33.287, "head": "```python\ndef same_order(list1, list2):\n    common = [x for "}
+{"arm": "A1", "id": "bcb_BigCodeBench/547", "finish": "stop", "n": 88, "decode_tps": 32.146, "head": "```python\nimport hashlib\nimport os\nimport base64\n\ndef task_f"}
+{"arm": "A1", "id": "bcb_BigCodeBench/512", "finish": "length", "n": 200, "decode_tps": 32.562, "head": "```python\nimport pandas as pd\nimport numpy as np\nimport matp"}
+{"arm": "A1", "id": "debugbench_flood-fill_cpp", "finish": "length", "n": 200, "decode_tps": 31.619, "head": "```cpp\nclass Solution {\npublic:\n    void bfs(int prevcolor,i"}
+{"arm": "A1", "id": "leetcode_the-number-of-the-smallest-unoccupied-chair", "finish": "length", "n": 200, "decode_tps": 30.645, "head": "```python\nfrom typing import List\nimport heapq\n\ndef smallest"}
+{"arm": "A1", "id": "ma_multi_015", "finish": "length", "n": 200, "decode_tps": 30.162, "head": "```python\ndef topological_sort(graph):\n    \"\"\"Return topolog"}
+{"arm": "A1", "id": "gsm8k_00739", "finish": "length", "n": 200, "decode_tps": 30.733, "head": "1.  **Determine the cost of a half-gallon jar:**\n    The pro"}
+{"arm": "A1", "id": "gsm8k_00115", "finish": "length", "n": 200, "decode_tps": 28.681, "head": "To calculate Sasha's profit, we need to determine her total "}
+{"arm": "A1", "id": "gsm8k_00041", "finish": "length", "n": 200, "decode_tps": 30.879, "head": "1.  **Determine the dragon's range:**\n    The dragon breathe"}
+{"arm": "A1", "id": "gpqa_diamond_cot_5fd3fe9084c9", "finish": "length", "n": 200, "decode_tps": 30.607, "head": "To find the energies of the system, we must determine the al"}
+{"arm": "A1", "id": "gpqa_diamond_cot_8116937b0ca6", "finish": "length", "n": 200, "decode_tps": 30.706, "head": "To determine which Maxwell's equations change in a universe "}
+{"arm": "A1", "id": "phybench_electricity_25", "finish": "length", "n": 200, "decode_tps": 30.663, "head": "To find the polar coordinate trajectory equation $r(\\theta)$"}
+{"arm": "A1", "id": "mmlu_pro_law_01532", "finish": "stop", "n": 2, "decode_tps": 59.748, "head": "E"}
+{"arm": "A1", "id": "mmlu_pro_health_05883", "finish": "stop", "n": 2, "decode_tps": 58.072, "head": "B"}
+{"arm": "A1", "id": "ifeval_3456", "finish": "length", "n": 200, "decode_tps": 30.924, "head": "1. *ALICE*\n2. BOB\n3. CHARLIE\n4. *DANIEL*\n5. EMMA\n6. FRANK\n7."}
+{"arm": "A1", "id": "ifeval_322", "finish": "stop", "n": 9, "decode_tps": 33.527, "head": "Jake Sullivan\n******\nMichael Waltz"}
+{"arm": "A1", "id": "ifeval_1481", "finish": "length", "n": 200, "decode_tps": 30.632, "head": "SECTION 1\nAntonia Maj: The Human Espresso Machine. I don't h"}
+{"arm": "A1", "id": "ifeval_1129", "finish": "stop", "n": 139, "decode_tps": 30.438, "head": "Write a short startup pitch for a new kind of ice cream call"}
+{"arm": "A1", "id": "real_suite_v1_0003", "finish": "length", "n": 200, "decode_tps": 30.545, "head": "### 1. Retrieval-Augmented Generation (RAG)\n*   **Computatio"}
+{"arm": "A1", "id": "real_suite_v1_0032", "finish": "stop", "n": 53, "decode_tps": 31.101, "head": "<answer>\nJohn | Finish API docs | Friday\nSarah | Review secu"}
+{"arm": "A1", "id": "simpleqa_general_01814", "finish": "stop", "n": 8, "decode_tps": 33.637, "head": "<answer>English</answer>"}
+{"arm": "A1", "id": "hellaswag_06230", "finish": "stop", "n": 2, "decode_tps": 56.424, "head": "B"}
+{"arm": "A1", "id": "gsm8k_00452", "finish": "stop", "n": 398, "decode_tps": 30.512, "head": "To find the average speed, we must calculate the total dista"}
+{"arm": "A1", "id": "gsm8k_00572", "finish": "stop", "n": 247, "decode_tps": 30.621, "head": "1.  **Calculate Ford's weekly production:**\n    Ford grows 4"}
+{"arm": "A1", "id": "gsm8k_01234", "finish": "stop", "n": 162, "decode_tps": 30.88, "head": "Let $x$ be the number of novels Regina has written this year"}
+{"arm": "A1", "id": "gsm8k_01167", "finish": "stop", "n": 87, "decode_tps": 30.95, "head": "Sophia gave Jack 1/5 of her $100.\nCalculate the amount Sophi"}
+{"arm": "A1", "id": "gsm8k_00180", "finish": "stop", "n": 111, "decode_tps": 30.796, "head": "1.  **Determine the fraction of votes the loser received:**\n"}
+{"arm": "A1", "id": "gsm8k_00363", "finish": "stop", "n": 217, "decode_tps": 30.341, "head": "**Step 1: Calculate the distance of the outbound trip.**\nThe"}
+{"arm": "A1", "id": "gsm8k_00273", "finish": "stop", "n": 287, "decode_tps": 30.447, "head": "First, determine the number of stitches required for the col"}
+{"arm": "A1", "id": "gsm8k_00846", "finish": "stop", "n": 256, "decode_tps": 30.543, "head": "1.  **Calculate the total duration of the concert in minutes"}
+{"arm": "A1", "id": "gsm8k_00919", "finish": "stop", "n": 208, "decode_tps": 30.487, "head": "1.  **Calculate the total number of lollipops sold:**\n    Th"}
+{"arm": "A1", "id": "gsm8k_00827", "finish": "stop", "n": 398, "decode_tps": 30.393, "head": "To determine how much money Milly will lose, we need to calc"}
+{"arm": "A1", "id": "gsm8k_00294", "finish": "stop", "n": 196, "decode_tps": 30.647, "head": "1.  **Determine the total number of oranges:**\n    Will buys"}
+{"arm": "A1", "id": "gsm8k_00903", "finish": "stop", "n": 291, "decode_tps": 30.419, "head": "First, determine the amount of material required for a singl"}
+{"arm": "A1", "id": "gsm8k_00034", "finish": "stop", "n": 90, "decode_tps": 30.343, "head": "Raymond has 40 jewels.\nAaron has 5 more jewels than half of "}
+{"arm": "A1", "id": "gsm8k_01180", "finish": "stop", "n": 230, "decode_tps": 30.401, "head": "1.  **Calculate the total amount of milk that expired:**\n   "}
+{"arm": "A1", "id": "gsm8k_01118", "finish": "stop", "n": 182, "decode_tps": 30.362, "head": "First, calculate the total number of male fishes.\nInitial ma"}
+{"arm": "A1", "id": "gsm8k_00538", "finish": "stop", "n": 168, "decode_tps": 30.444, "head": "To find out how many vlogs Emma needs to make in the fourth "}
+{"arm": "A1", "id": "gsm8k_00832", "finish": "stop", "n": 223, "decode_tps": 30.549, "head": "1.  **Find Eva's savings:**\n    The problem states that Eva "}
+{"arm": "A1", "id": "gsm8k_00407", "finish": "stop", "n": 403, "decode_tps": 30.394, "head": "1.  **Determine the total daily goal:**\n    Elliott's goal i"}
+{"arm": "A1", "id": "gsm8k_00467", "finish": "stop", "n": 254, "decode_tps": 30.667, "head": "Let's break down the number of laundry items per room based "}
+{"arm": "A1", "id": "gsm8k_00552", "finish": "length", "n": 640, "decode_tps": 30.347, "head": "To calculate Antonella's total earnings, we need to break do"}
+{"arm": "A1", "id": "gsm8k_01156", "finish": "stop", "n": 183, "decode_tps": 30.665, "head": "1.  **Determine the cost and selling price per device:**\n   "}
+{"arm": "A1", "id": "gsm8k_00418", "finish": "stop", "n": 269, "decode_tps": 30.519, "head": "Let $T$ be the size of Timothy's locker, $Z$ be the size of "}
+{"arm": "A1", "id": "gsm8k_00084", "finish": "stop", "n": 227, "decode_tps": 30.323, "head": "Let $W$ be the number of games won and $L$ be the number of "}
+{"arm": "A1", "id": "gsm8k_00596", "finish": "stop", "n": 161, "decode_tps": 30.451, "head": "1.  **Calculate the cost of the two implants:**\n    $2 \\text"}
+{"arm": "A1", "id": "gsm8k_00960", "finish": "stop", "n": 506, "decode_tps": 30.411, "head": "Let $H_1$, $H_2$, $H_3$, and $H_4$ be the number of holes du"}
+{"arm": "A1", "id": "gsm8k_00016", "finish": "stop", "n": 246, "decode_tps": 30.322, "head": "The problem asks for the total distance covered by each trai"}
+{"arm": "A1", "id": "gsm8k_00516", "finish": "stop", "n": 151, "decode_tps": 30.554, "head": "1.  **Calculate the total duration of the fight:**\n    The f"}
+{"arm": "A1", "id": "gsm8k_01229", "finish": "stop", "n": 145, "decode_tps": 30.521, "head": "1.  **November Price:** The initial price is $40.\n2.  **Dece"}
+{"arm": "A1", "id": "gsm8k_00008", "finish": "stop", "n": 607, "decode_tps": 30.358, "head": "**Step 1: Calculate the distance John drove away from home.*"}
+{"arm": "A1", "id": "gsm8k_00558", "finish": "stop", "n": 75, "decode_tps": 30.26, "head": "Timothy's locker is 24 cubic inches.\nZack's locker is half a"}
+{"arm": "A1", "id": "mmlu_philosophy_09956", "finish": "stop", "n": 2, "decode_tps": 56.529, "head": "B"}
+{"arm": "A1", "id": "mmlu_moral_scenarios_09023", "finish": "stop", "n": 2, "decode_tps": 56.914, "head": "C"}
+{"arm": "A1", "id": "mmlu_prehistory_10051", "finish": "stop", "n": 2, "decode_tps": 57.099, "head": "D"}
+{"arm": "A1", "id": "mmlu_moral_disputes_08177", "finish": "stop", "n": 2, "decode_tps": 56.871, "head": "C"}
+{"arm": "A1", "id": "mmlu_professional_psychology_12657", "finish": "stop", "n": 2, "decode_tps": 57.19, "head": "B"}
+{"arm": "A1", "id": "mmlu_electrical_engineering_01938", "finish": "stop", "n": 2, "decode_tps": 57.225, "head": "A"}
+{"arm": "A1", "id": "mmlu_high_school_government_and_politics_03830", "finish": "stop", "n": 2, "decode_tps": 57.194, "head": "A"}
+{"arm": "A1", "id": "mmlu_computer_security_01508", "finish": "stop", "n": 2, "decode_tps": 57.039, "head": "D"}
+{"arm": "A1", "id": "mmlu_miscellaneous_08094", "finish": "stop", "n": 2, "decode_tps": 56.888, "head": "A"}
+{"arm": "A1", "id": "mmlu_high_school_biology_02779", "finish": "stop", "n": 2, "decode_tps": 56.691, "head": "C"}
+{"arm": "A1", "id": "mmlu_high_school_macroeconomics_04221", "finish": "stop", "n": 2, "decode_tps": 56.771, "head": "D"}
+{"arm": "A1", "id": "mmlu_conceptual_physics_01749", "finish": "stop", "n": 2, "decode_tps": 56.057, "head": "D"}
+{"arm": "A1", "id": "mmlu_machine_learning_06930", "finish": "stop", "n": 2, "decode_tps": 57.107, "head": "A"}
+{"arm": "A1", "id": "mmlu_high_school_us_history_05657", "finish": "stop", "n": 2, "decode_tps": 56.408, "head": "B"}
+{"arm": "A1", "id": "mmlu_professional_law_11833", "finish": "stop", "n": 2, "decode_tps": 56.408, "head": "D"}
+{"arm": "A1", "id": "mmlu_high_school_psychology_05095", "finish": "stop", "n": 2, "decode_tps": 56.678, "head": "C"}
+{"arm": "A1", "id": "mmlu_high_school_physics_04884", "finish": "stop", "n": 2, "decode_tps": 56.55, "head": "A"}
+{"arm": "A1", "id": "mmlu_management_07024", "finish": "stop", "n": 2, "decode_tps": 57.006, "head": "D"}
+{"arm": "A1", "id": "mmlu_professional_medicine_12352", "finish": "stop", "n": 2, "decode_tps": 43.706, "head": "A"}
+{"arm": "A1", "id": "mmlu_formal_logic_02483", "finish": "stop", "n": 2, "decode_tps": 56.308, "head": "A"}
+{"arm": "A1", "id": "mmlu_college_chemistry_00922", "finish": "stop", "n": 2, "decode_tps": 56.314, "head": "C"}
+{"arm": "A1", "id": "mmlu_elementary_mathematics_02098", "finish": "stop", "n": 2, "decode_tps": 56.39, "head": "C"}
+{"arm": "A1", "id": "mmlu_professional_accounting_10602", "finish": "stop", "n": 2, "decode_tps": 56.382, "head": "D"}
+{"arm": "A1", "id": "mmlu_college_biology_00775", "finish": "stop", "n": 2, "decode_tps": 56.773, "head": "A"}
+{"arm": "A1", "id": "mmlu_high_school_microeconomics_04670", "finish": "stop", "n": 2, "decode_tps": 56.688, "head": "D"}
+{"arm": "A1", "id": "mmlu_clinical_knowledge_00547", "finish": "stop", "n": 2, "decode_tps": 56.72, "head": "C"}
+{"arm": "A1", "id": "mmlu_human_sexuality_06391", "finish": "stop", "n": 2, "decode_tps": 56.567, "head": "D"}
+{"arm": "A1", "id": "mmlu_anatomy_00110", "finish": "stop", "n": 2, "decode_tps": 56.686, "head": "D"}
+{"arm": "A1", "id": "mmlu_human_aging_06269", "finish": "stop", "n": 2, "decode_tps": 56.624, "head": "A"}
+{"arm": "A1", "id": "mmlu_abstract_algebra_00060", "finish": "stop", "n": 2, "decode_tps": 56.712, "head": "D"}
+{"arm": "A1", "stage": "128k", "q": 0, "needle": "N00", "prompt_n": 127946, "cache_n": 154, "prompt_ms": 321046.586, "answer": "BG-8216-U", "expected": ["BG-8216-U"], "kfd_gib": 62.667}
+{"arm": "A1", "stage": "128k", "q": 1, "needle": "N01", "prompt_n": 55, "cache_n": 128047, "prompt_ms": 698.451, "answer": "Philippa Quennell-Ibsen", "expected": ["Philippa Quennell-Ibsen"], "kfd_gib": 62.693}
+{"arm": "A1", "stage": "128k", "q": 2, "needle": "N02", "prompt_n": 49, "cache_n": 128047, "prompt_ms": 535.732, "answer": "JX-6457-N", "expected": ["JX-6457-N"], "kfd_gib": 62.714}
+{"arm": "A1", "stage": "128k", "q": 3, "needle": "N03", "prompt_n": 46, "cache_n": 128047, "prompt_ms": 422.435, "answer": "Ignatius Iversen-Aldana", "expected": ["Ignatius Iversen-Aldana"], "kfd_gib": 62.734}
+{"arm": "A1", "stage": "128k", "q": 4, "needle": "N04", "prompt_n": 52, "cache_n": 128047, "prompt_ms": 403.021, "answer": "PL-4952-Q", "expected": ["PL-4952-Q"], "kfd_gib": 62.755}
+{"arm": "A1", "stage": "128k", "local_probe": "The report examines the Department of Energy's management of the Integrated Waste Treatment Unit reengineering project a", "prompt_n": 54, "finish": "stop"}
+{"arm": "A1", "stage": "240k", "q": 0, "needle": "N05", "prompt_n": 111504, "cache_n": 128047, "prompt_ms": 623950.925, "answer": "Florian Vasquez-Holm", "expected": ["Florian Vasquez-Holm"], "kfd_gib": 63.105}
+{"arm": "A1", "stage": "240k", "q": 1, "needle": "N06", "prompt_n": 55, "cache_n": 239503, "prompt_ms": 700.711, "answer": "NN-7230-K", "expected": ["NN-7230-K"], "kfd_gib": 63.13}
+{"arm": "A1", "stage": "240k", "q": 2, "needle": "N07", "prompt_n": 46, "cache_n": 239503, "prompt_ms": 628.737, "answer": "Casimir Szalai-Pryce", "expected": ["Casimir Szalai-Pryce"], "kfd_gib": 63.15}
+{"arm": "A1", "stage": "240k", "q": 3, "needle": "N08", "prompt_n": 54, "cache_n": 239503, "prompt_ms": 697.762, "answer": "JR-2224-S", "expected": ["JR-2224-S"], "kfd_gib": 63.173}
+{"arm": "A1", "stage": "240k", "q": 4, "needle": "N09", "prompt_n": 48, "cache_n": 239503, "prompt_ms": 618.708, "answer": "Aurelio Halloran-Sato", "expected": ["Aurelio Halloran-Sato"], "kfd_gib": 63.193}
+{"arm": "A1", "stage": "240k", "local_probe": "The last report examines the U.S. Navy's efforts to improve ship-driving training for Surface Warfare Officers following", "prompt_n": 54, "finish": "stop"}
+{"arm": "A1", "stage": "400k", "q": 0, "needle": "N10", "prompt_n": 159967, "cache_n": 239503, "prompt_ms": 1506250.823, "answer": "SR-2768-U", "expected": ["SR-2768-U"], "kfd_gib": 63.542}
+{"arm": "A1", "stage": "400k", "q": 1, "needle": "N11", "prompt_n": 49, "cache_n": 399419, "prompt_ms": 1177.201, "answer": "Henrike Penhaligon-Ruiz", "expected": ["Henrike Penhaligon-Ruiz"], "kfd_gib": 63.564}
+{"arm": "A1", "stage": "400k", "q": 2, "needle": "N12", "prompt_n": 50, "cache_n": 399419, "prompt_ms": 1254.217, "answer": "FD-8430-X", "expected": ["FD-8430-X"], "kfd_gib": 63.585}
+{"arm": "A1", "stage": "400k", "q": 3, "needle": "N13", "prompt_n": 50, "cache_n": 399419, "prompt_ms": 943.801, "answer": "Ottilie Varga-Lindqvist", "expected": ["Ottilie Varga-Lindqvist"], "kfd_gib": 63.607}
+{"arm": "A1", "stage": "400k", "q": 4, "needle": "N14", "prompt_n": 50, "cache_n": 399419, "prompt_ms": 926.22, "answer": "DZ-1601-S", "expected": ["DZ-1601-S"], "kfd_gib": 63.628}
+{"arm": "A1", "stage": "400k", "local_probe": "The report examines how the National Nuclear Security Agency (NNSA) has managed the production of microelectronics for n", "prompt_n": 54, "finish": "stop"}
+{"arm": "A1", "stage": "500k", "q": 0, "needle": "N15", "prompt_n": 99538, "cache_n": 399419, "prompt_ms": 1289666.068, "answer": "Bramwell Okonjo-Hale", "expected": ["Bramwell Okonjo-Hale"], "kfd_gib": 63.919}
+{"arm": "A1", "stage": "500k", "q": 1, "needle": "N16", "prompt_n": 52, "cache_n": 498911, "prompt_ms": 1651.494, "answer": "Substation ZL-6629-U", "expected": ["ZL-6629-U"], "kfd_gib": 63.881}
+{"arm": "A1", "stage": "500k", "q": 2, "needle": "N17", "prompt_n": 54, "cache_n": 498911, "prompt_ms": 1905.282, "answer": "Rosalind Castellane-Oduya", "expected": ["Rosalind Castellane-Oduya"], "kfd_gib": 63.904}
+{"arm": "A1", "stage": "500k", "q": 3, "needle": "N18", "prompt_n": 50, "cache_n": 498911, "prompt_ms": 1714.751, "answer": "WW-4772-H", "expected": ["WW-4772-H"], "kfd_gib": 63.926}
+{"arm": "A1", "stage": "500k", "q": 4, "needle": "N19", "prompt_n": 54, "cache_n": 498911, "prompt_ms": 2039.369, "answer": "Isaura Brekkestad", "expected": ["Isaura Brekkestad"], "kfd_gib": 63.89}
+{"arm": "A1", "stage": "500k", "local_probe": "The last report examines the size and characteristics of Americans who provide unpaid care to parents or spouses, noting", "prompt_n": 54, "finish": "stop"}
+done -> /mnt/raid0/llm/tmp/yarn-e1-20261004/results/A1/20261004T184217Z
+[2026-10-04T19:53:02Z] A1 runner rc=0
+    PID                  STARTED COMMAND
+3355952 Sun Oct  4 18:42:07 2026 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 
+PID 3355952 dead
+{
+ "pid": 3355952,
+ "n_samples": 4254,
+ "interval_s": 1.0,
+ "started": 1791139327.3992996,
+ "ended": 1791143583.2751591,
+ "kfd_peak_gib": 63.926,
+ "card_peak_gib": 63.94,
+ "other_kfd_pids_seen": [],
+ "sampler_pid": 3355953
+}
+card VRAM used MiB: 43584
+[2026-10-04T19:53:03Z] A1 killed; KFD: 
+# INF-59 E1 verdict (pre-registered criteria, RUNBOOK.md section 6)
+
+**Overall: FAIL** (C2 + C3 + C4 decide; C1 is recorded, informational).
+
+## C1 short context (A1 vs A0, n=84)
+
+- coherence_gate **FAIL**: 3 REGRESSION, 0 improvement(s), 53 byte-identical, 3 BOTH_BAD, 10 NEEDS_REVIEW (no judge).
+- graded accuracy: A0 59/70, A1 58/70.
+  - gsm8k_01180: degeneracy OK -> DEGENERATE ['uniq+stuck']
+  - gsm8k_01118: degeneracy OK -> DEGENERATE ['uniq+stuck']
+  - gsm8k_00552: answer correct -> unanswered (expected '450', got None)
+
+## C2 within native (128k + 240k, paired): A0 10/10, A1 10/10 -> **PASS**
+
+## C3 beyond native (A1)
+- 400k: 5/5 (abstained 0) depths {'N10': {'depth': 0.1, 'distance_k': 358, 'status': 'correct'}, 'N11': {'depth': 0.3, 'distance_k': 279, 'status': 'correct'}, 'N12': {'depth': 0.5, 'distance_k': 199, 'status': 'correct'}, 'N13': {'depth': 0.7, 'distance_k': 119, 'status': 'correct'}, 'N14': {'depth': 0.9, 'distance_k': 40, 'status': 'correct'}}
+- 500k: 5/5 (abstained 0) depths {'N15': {'depth': 0.1, 'distance_k': 448, 'status': 'correct'}, 'N16': {'depth': 0.3, 'distance_k': 349, 'status': 'correct'}, 'N17': {'depth': 0.5, 'distance_k': 249, 'status': 'correct'}, 'N18': {'depth': 0.7, 'distance_k': 149, 'status': 'correct'}, 'N19': {'depth': 0.9, 'distance_k': 50, 'status': 'correct'}}
+
+## Diagnostics
+- local-coherence probes: {'A0:128k': 'OK', 'A0:240k': 'OK', 'A1:128k': 'OK', 'A1:240k': 'OK', 'A1:400k': 'OK', 'A1:500k': 'OK', 'paired:128k': 'NEEDS_REVIEW', 'paired:240k': 'NEEDS_REVIEW'}
+- empty needle answers (instant-EOS signature, llama.cpp #27756): {'A0:128k': 0, 'A0:240k': 0, 'A1:128k': 0, 'A1:240k': 0, 'A1:400k': 0, 'A1:500k': 0}
+
+## C4 memory: {'A0:kfd_A0.jsonl.summary.json': 52.716, 'A0:kfd_A1.jsonl.summary.json': 63.926, 'A1:kfd_A0.jsonl.summary.json': 52.716, 'A1:kfd_A1.jsonl.summary.json': 63.926, 'kfd_A0.jsonl.summary.json': 52.716, 'kfd_A1.jsonl.summary.json': 63.926}
+[2026-10-04T19:53:03Z] gate rc=1

@@ -2320,6 +2320,12 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   projects through VB-COHGATE-1, not twice. With n=1 per cell and no codified protocol, it grades as
   `Judged/Located` via `claim_tuple.grade()`. Write a `belief_measurements.jsonl` from the runner before E1 runs.
   The source-table row text is prepared in the INDEX_ROWS file above. Done when E1's records ingest.
+  - *(2026-10-04, workspace-ec; not ticked.)* E1 ran (FAIL by C4 memory only) **before** the write side existed: the
+    runner wrote no `belief_measurements.jsonl`. The gate records are durable in `artifacts/yarn-e1-20261004/`
+    (`gate/verdict.json`: per-criterion results and per-depth needle status for A0/A1 at 128K/240K and A1 at
+    400K/500K; `kfd/*.summary.json`: peaks). An adapter projecting `verdict.json` must carry only what it records — the
+    build id and argv digest sit in `run_e1*.log`, not the verdict — and grades no higher than `Judged/Located`.
+    Wire the runner's write side before YARN-E1-MEM / YARN-E1-A2 / YARN-DCA-E1 run, so those windows ingest natively.
 
 ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
 

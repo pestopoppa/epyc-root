@@ -1,0 +1,470 @@
+{
+ "schema": "epyc.coherence_gate.v1",
+ "library": "coherence_gate 1.0.0",
+ "degeneracy_classifier": "degeneracy.v2",
+ "degeneracy_lineage": "inf70-degeneracy.v2 (gpu-block-27b-20261003/degeneracy.py, 2026-10-04)",
+ "graders": "answer-graders.v1",
+ "decoding": "greedy (asserted by the caller; tier 0 identity is only decisive under greedy)",
+ "tokenizer": null,
+ "text_only_declared": false,
+ "judge": null,
+ "anchor": null,
+ "anchor_named": false,
+ "truth_rows_without_id": 0,
+ "items": [
+  {
+   "id": "N00",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "298a1034c28706dbabfcd1d590d36f7a76dded1a1cf955b0e9a8682f8eaab43f",
+    "cand_sha256": "298a1034c28706dbabfcd1d590d36f7a76dded1a1cf955b0e9a8682f8eaab43f"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "BG-8216-U"
+     ],
+     "extracted": [
+      "BG-8216-U"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "BG-8216-U"
+     ],
+     "extracted": [
+      "BG-8216-U"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "BG-8216-U",
+     "sha256": "298a1034c28706dbabfcd1d590d36f7a76dded1a1cf955b0e9a8682f8eaab43f",
+     "n_chars": 9
+    },
+    "cand": {
+     "text": "BG-8216-U",
+     "sha256": "298a1034c28706dbabfcd1d590d36f7a76dded1a1cf955b0e9a8682f8eaab43f",
+     "n_chars": 9
+    }
+   }
+  },
+  {
+   "id": "N01",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "dfdf912523603f3b84dc91659bd6c9ba8c5680e8db28fa933c3689c3871db313",
+    "cand_sha256": "dfdf912523603f3b84dc91659bd6c9ba8c5680e8db28fa933c3689c3871db313"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 9,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 9,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Philippa Quennell-Ibsen"
+     ],
+     "extracted": [
+      "Philippa Quennell-Ibsen"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Philippa Quennell-Ibsen"
+     ],
+     "extracted": [
+      "Philippa Quennell-Ibsen"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "Philippa Quennell-Ibsen",
+     "sha256": "dfdf912523603f3b84dc91659bd6c9ba8c5680e8db28fa933c3689c3871db313",
+     "n_chars": 23
+    },
+    "cand": {
+     "text": "Philippa Quennell-Ibsen",
+     "sha256": "dfdf912523603f3b84dc91659bd6c9ba8c5680e8db28fa933c3689c3871db313",
+     "n_chars": 23
+    }
+   }
+  },
+  {
+   "id": "N02",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "cd940a8d3288baee498a9bd11286acacd4244f998c381965ff5a2acee5a1303c",
+    "cand_sha256": "cd940a8d3288baee498a9bd11286acacd4244f998c381965ff5a2acee5a1303c"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 8,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 8,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "JX-6457-N"
+     ],
+     "extracted": [
+      "JX-6457-N"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "JX-6457-N"
+     ],
+     "extracted": [
+      "JX-6457-N"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "JX-6457-N",
+     "sha256": "cd940a8d3288baee498a9bd11286acacd4244f998c381965ff5a2acee5a1303c",
+     "n_chars": 9
+    },
+    "cand": {
+     "text": "JX-6457-N",
+     "sha256": "cd940a8d3288baee498a9bd11286acacd4244f998c381965ff5a2acee5a1303c",
+     "n_chars": 9
+    }
+   }
+  },
+  {
+   "id": "N03",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "8886ee2327cbe231769041735ebaba3ea2d52085dce127df01d53ba95a1396b9",
+    "cand_sha256": "8886ee2327cbe231769041735ebaba3ea2d52085dce127df01d53ba95a1396b9"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 9,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 9,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Ignatius Iversen-Aldana"
+     ],
+     "extracted": [
+      "Ignatius Iversen-Aldana"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "Ignatius Iversen-Aldana"
+     ],
+     "extracted": [
+      "Ignatius Iversen-Aldana"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "Ignatius Iversen-Aldana",
+     "sha256": "8886ee2327cbe231769041735ebaba3ea2d52085dce127df01d53ba95a1396b9",
+     "n_chars": 23
+    },
+    "cand": {
+     "text": "Ignatius Iversen-Aldana",
+     "sha256": "8886ee2327cbe231769041735ebaba3ea2d52085dce127df01d53ba95a1396b9",
+     "n_chars": 23
+    }
+   }
+  },
+  {
+   "id": "N04",
+   "tier": 0,
+   "verdict": "PASS",
+   "reasons": [
+    "byte-identical (sha256(text)+token_ids)"
+   ],
+   "identity": {
+    "identical": true,
+    "basis": "sha256(text)+token_ids",
+    "base_sha256": "dfdf7cd750ad0ce00f483582995c7f676c7b99e1bcf160525e7b4d283e0d928d",
+    "cand_sha256": "dfdf7cd750ad0ce00f483582995c7f676c7b99e1bcf160525e7b4d283e0d928d"
+   },
+   "degeneracy": {
+    "base": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "cand": {
+     "classifier": "degeneracy.v2",
+     "semantic": "unchecked",
+     "cls": "SHORT",
+     "n": 7,
+     "finish": "stop",
+     "eos_short": false,
+     "v1_cls": "EARLY-EOS"
+    },
+    "severity": {
+     "base": 0,
+     "cand": 0
+    },
+    "token_provenance": {
+     "base": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     },
+     "cand": {
+      "mode": "token_ids",
+      "source": "row.token_ids",
+      "calibrated": true
+     }
+    }
+   },
+   "answer_check": {
+    "base": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "PL-4952-Q"
+     ],
+     "extracted": [
+      "PL-4952-Q"
+     ],
+     "status": "correct"
+    },
+    "cand": {
+     "grader": "needle",
+     "version": "answer-graders.v1",
+     "expected": [
+      "PL-4952-Q"
+     ],
+     "extracted": [
+      "PL-4952-Q"
+     ],
+     "status": "correct"
+    }
+   },
+   "judge": null,
+   "texts": {
+    "base": {
+     "text": "PL-4952-Q",
+     "sha256": "dfdf7cd750ad0ce00f483582995c7f676c7b99e1bcf160525e7b4d283e0d928d",
+     "n_chars": 9
+    },
+    "cand": {
+     "text": "PL-4952-Q",
+     "sha256": "dfdf7cd750ad0ce00f483582995c7f676c7b99e1bcf160525e7b4d283e0d928d",
+     "n_chars": 9
+    }
+   }
+  }
+ ],
+ "aggregate": {
+  "n": 5,
+  "identical": 5,
+  "pass": 5,
+  "regressions": 0,
+  "both_bad": 0,
+  "needs_review": 0,
+  "by_tier": {
+   "0": 5
+  },
+  "identical_with_shared_defect": 0,
+  "token_modes": {
+   "base:token_ids": 5,
+   "cand:token_ids": 5
+  },
+  "judge_given": false,
+  "gate": "PASS",
+  "gate_reasons": []
+ }
+}

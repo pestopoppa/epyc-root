@@ -1,0 +1,296 @@
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=600.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: bash /mnt/raid0/llm/tmp/yarn-e1-20261004/run_e1.sh
+[2026-10-04T18:18:29Z] launch A0
+KFD processes now:   card VRAM used: 12 MiB
+scratch A0 PID 3285294 (log /mnt/raid0/llm/tmp/yarn-e1-20261004/results/A0.server.log)
+{"status":"ok"}
+--- proof lines (this launch only)
+0.00.690.700 I print_info: n_ctx_train           = 262144
+0.00.690.721 I print_info: rope scaling          = linear
+0.00.690.722 I print_info: freq_scale_train      = 1
+0.00.690.722 I print_info: n_ctx_orig_yarn       = 262144
+0.02.966.923 I llama_context: n_ctx         = 262144
+0.02.966.923 I llama_context: n_ctx_seq     = 262144
+0.02.966.924 I llama_context: kv_unified    = false
+0.02.966.927 I llama_context: freq_base     = 10000000.0
+0.02.966.927 I llama_context: freq_scale    = 1
+0.02.976.850 I llama_kv_cache: size = 8704.00 MiB (262144 cells,  16 layers,  1/1 seqs), K (q8_0): 4352.00 MiB, V (q8_0): 4352.00 MiB
+0.02.976.851 I llama_kv_cache: attn_rot_k = 1, n_embd_head_k_all = 256
+0.02.976.852 I llama_kv_cache: attn_rot_v = 1, n_embd_head_k_all = 256
+0.03.200.319 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 262144, kv_unified = 'false'
+--- residency / linkage (read-only)
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap -ngl all --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/yarn-e1-20261004/results/kv_slots_scratch --verbosity 4 -c 262144 
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+KFD vram MiB: 37657
+binary : /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+         2	/opt/rocm/lib
+         3	/usr/lib/llvm-20/lib
+         4	/opt/AMD/aocc-compiler-5.0.0/lib
+         5	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+[2026-10-04T18:18:33Z] run A0
+{
+ "pid": 3285294,
+ "n_ctx_slot": 262144,
+ "n_slots": 1,
+ "kfd_gib": 36.775,
+ "proof": {
+  "print_info: n_ctx_train\\s*=\\s*262144\\b": true,
+  "print_info: freq_scale_train\\s*=\\s*1\\s*$": true,
+  "llama_context: freq_scale\\s*=\\s*1\\s*$": true,
+  "llama_context: n_ctx_seq\\s*=\\s*262144\\b": true,
+  "llama_kv_cache: size =\\s*8704\\.00 MiB \\(\\s*262144 cells,\\s*16 layers": true,
+  "n_slots = 1, n_ctx_slot = 262144\\b": true
+ },
+ "problems": []
+}
+{"arm": "A0", "stage": "s1", "q": 0, "needle": "S0", "prompt_n": 3310, "cache_n": 0, "prompt_ms": 3962.939, "answer": "QX-8610-S", "expected": ["QX-8610-S"], "kfd_gib": 37.13}
+{"arm": "A0", "stage": "s1", "q": 1, "needle": "S1", "prompt_n": 50, "cache_n": 3260, "prompt_ms": 194.252, "answer": "QX-2164-T", "expected": ["QX-2164-T"], "kfd_gib": 37.048}
+{"arm": "A0", "stage": "s1", "local_probe": "The report provides an overview of the FY2020 Defense Appropriations Act, detailing its legislative history and the budg", "prompt_n": 54, "finish": "stop"}
+{"arm": "A0", "stage": "s2", "q": 0, "needle": "S2", "prompt_n": 3873, "cache_n": 3260, "prompt_ms": 4560.667, "answer": "QX-2826-S", "expected": ["QX-2826-S"], "kfd_gib": 37.394}
+{"arm": "A0", "stage": "s2", "q": 1, "needle": "S3", "prompt_n": 50, "cache_n": 7083, "prompt_ms": 190.346, "answer": "QX-1430-T", "expected": ["QX-1430-T"], "kfd_gib": 37.415}
+{"arm": "A0", "stage": "s2", "local_probe": "The report details the FY2020 Defense Appropriations Act, summarizing its legislative history and the strategic shift to", "prompt_n": 54, "finish": "stop"}
+{"arm": "A0", "id": "mbpp_0391", "finish": "stop", "n": 41, "decode_tps": 33.341, "head": "```python\ndef convert_list_dictionary(keys, names, values):\n"}
+{"arm": "A0", "id": "mbpp_0303", "finish": "length", "n": 200, "decode_tps": 33.226, "head": "```python\ndef solve(arr, n):\n    \"\"\"\n    Check whether the c"}
+{"arm": "A0", "id": "mbpp_0508", "finish": "stop", "n": 57, "decode_tps": 32.972, "head": "```python\ndef same_order(list1, list2):\n    common = [x for "}
+{"arm": "A0", "id": "bcb_BigCodeBench/547", "finish": "stop", "n": 88, "decode_tps": 33.236, "head": "```python\nimport hashlib\nimport os\nimport base64\n\ndef task_f"}
+{"arm": "A0", "id": "bcb_BigCodeBench/512", "finish": "length", "n": 200, "decode_tps": 32.928, "head": "```python\nimport pandas as pd\nimport numpy as np\nimport matp"}
+{"arm": "A0", "id": "debugbench_flood-fill_cpp", "finish": "length", "n": 200, "decode_tps": 32.714, "head": "```cpp\nclass Solution {\npublic:\n    void bfs(int prevcolor,i"}
+{"arm": "A0", "id": "leetcode_the-number-of-the-smallest-unoccupied-chair", "finish": "length", "n": 200, "decode_tps": 32.744, "head": "```python\nfrom typing import List\nimport heapq\n\ndef smallest"}
+{"arm": "A0", "id": "ma_multi_015", "finish": "length", "n": 200, "decode_tps": 33.135, "head": "```python\ndef topological_sort(graph):\n    \"\"\"Return topolog"}
+{"arm": "A0", "id": "gsm8k_00739", "finish": "length", "n": 200, "decode_tps": 33.143, "head": "1.  **Determine the cost of a gallon jar:**\n    The problem "}
+{"arm": "A0", "id": "gsm8k_00115", "finish": "length", "n": 200, "decode_tps": 33.197, "head": "To determine Sasha's profit, we need to calculate her total "}
+{"arm": "A0", "id": "gsm8k_00041", "finish": "length", "n": 200, "decode_tps": 31.958, "head": "1.  **Determine the dragon's range:**\n    The dragon breathe"}
+{"arm": "A0", "id": "gpqa_diamond_cot_5fd3fe9084c9", "finish": "length", "n": 200, "decode_tps": 31.316, "head": "To find the energies of the system, we must determine the al"}
+{"arm": "A0", "id": "gpqa_diamond_cot_8116937b0ca6", "finish": "length", "n": 200, "decode_tps": 31.109, "head": "To determine which Maxwell's equations change in a universe "}
+{"arm": "A0", "id": "phybench_electricity_25", "finish": "length", "n": 200, "decode_tps": 31.189, "head": "To find the polar coordinate trajectory equation $r(\\theta)$"}
+{"arm": "A0", "id": "mmlu_pro_law_01532", "finish": "stop", "n": 2, "decode_tps": 59.85, "head": "E"}
+{"arm": "A0", "id": "mmlu_pro_health_05883", "finish": "stop", "n": 2, "decode_tps": 59.787, "head": "B"}
+{"arm": "A0", "id": "ifeval_3456", "finish": "length", "n": 200, "decode_tps": 30.844, "head": "1. *ALICE*\n2. BOB\n3. CHARLIE\n4. *DANIEL*\n5. ELEANOR\n6. FRANK"}
+{"arm": "A0", "id": "ifeval_322", "finish": "stop", "n": 9, "decode_tps": 34.128, "head": "Jake Sullivan\n******\nMichael Waltz"}
+{"arm": "A0", "id": "ifeval_1481", "finish": "length", "n": 200, "decode_tps": 31.098, "head": "SECTION 1\nAntonia Maj: The Human Espresso Machine. I don't h"}
+{"arm": "A0", "id": "ifeval_1129", "finish": "stop", "n": 139, "decode_tps": 31.038, "head": "Write a short startup pitch for a new kind of ice cream call"}
+{"arm": "A0", "id": "real_suite_v1_0003", "finish": "length", "n": 200, "decode_tps": 31.058, "head": "### 1. Retrieval-Augmented Generation (RAG)\n*   **Computatio"}
+{"arm": "A0", "id": "real_suite_v1_0032", "finish": "stop", "n": 53, "decode_tps": 31.409, "head": "<answer>\nJohn | Finish API docs | Friday\nSarah | Review secu"}
+{"arm": "A0", "id": "simpleqa_general_01814", "finish": "stop", "n": 8, "decode_tps": 34.25, "head": "<answer>English</answer>"}
+{"arm": "A0", "id": "hellaswag_06230", "finish": "stop", "n": 2, "decode_tps": 60.172, "head": "B"}
+{"arm": "A0", "id": "gsm8k_00452", "finish": "stop", "n": 398, "decode_tps": 30.679, "head": "To find the average speed, we must calculate the total dista"}
+{"arm": "A0", "id": "gsm8k_00572", "finish": "stop", "n": 247, "decode_tps": 30.899, "head": "1.  **Calculate Ford's weekly production:**\n    Ford grows 4"}
+{"arm": "A0", "id": "gsm8k_01234", "finish": "stop", "n": 162, "decode_tps": 31.098, "head": "Let $x$ be the number of novels Regina has written this year"}
+{"arm": "A0", "id": "gsm8k_01167", "finish": "stop", "n": 87, "decode_tps": 31.039, "head": "Sophia gave Jack 1/5 of her $100.\nCalculate the amount Sophi"}
+{"arm": "A0", "id": "gsm8k_00180", "finish": "stop", "n": 138, "decode_tps": 31.182, "head": "The winner received 3/4 of the total votes.\nTotal votes = 80"}
+{"arm": "A0", "id": "gsm8k_00363", "finish": "stop", "n": 258, "decode_tps": 31.1, "head": "To find the total time of the trip, we need to calculate the"}
+{"arm": "A0", "id": "gsm8k_00273", "finish": "stop", "n": 274, "decode_tps": 30.91, "head": "First, determine the number of stitches required for the col"}
+{"arm": "A0", "id": "gsm8k_00846", "finish": "stop", "n": 255, "decode_tps": 30.935, "head": "1.  **Calculate the total duration of the concert in minutes"}
+{"arm": "A0", "id": "gsm8k_00919", "finish": "stop", "n": 208, "decode_tps": 31.116, "head": "1.  **Calculate the total number of lollipops sold:**\n    Th"}
+{"arm": "A0", "id": "gsm8k_00827", "finish": "stop", "n": 409, "decode_tps": 30.958, "head": "To determine how much money Milly will lose, we need to calc"}
+{"arm": "A0", "id": "gsm8k_00294", "finish": "stop", "n": 202, "decode_tps": 31.171, "head": "1.  **Determine the total number of oranges:**\n    Will buys"}
+{"arm": "A0", "id": "gsm8k_00903", "finish": "stop", "n": 291, "decode_tps": 31.028, "head": "First, determine the amount of material required for a singl"}
+{"arm": "A0", "id": "gsm8k_00034", "finish": "stop", "n": 90, "decode_tps": 30.704, "head": "Raymond has 40 jewels.\nAaron has 5 more jewels than half of "}
+{"arm": "A0", "id": "gsm8k_01180", "finish": "stop", "n": 337, "decode_tps": 30.859, "head": "1.  **Calculate the total cost of the milk purchased:**\n    "}
+{"arm": "A0", "id": "gsm8k_01118", "finish": "stop", "n": 331, "decode_tps": 30.887, "head": "First, let's calculate the total number of male and female f"}
+{"arm": "A0", "id": "gsm8k_00538", "finish": "stop", "n": 167, "decode_tps": 31.014, "head": "To determine how many vlogs Emma needs to make in the fourth"}
+{"arm": "A0", "id": "gsm8k_00832", "finish": "stop", "n": 223, "decode_tps": 30.966, "head": "1.  **Find Eva's savings:**\n    The problem states that Eva "}
+{"arm": "A0", "id": "gsm8k_00407", "finish": "stop", "n": 335, "decode_tps": 30.792, "head": "1.  **Determine the total daily goal:**\n    Elliott's goal i"}
+{"arm": "A0", "id": "gsm8k_00467", "finish": "stop", "n": 263, "decode_tps": 31.131, "head": "Let's break down the number of laundry items per room based "}
+{"arm": "A0", "id": "gsm8k_00552", "finish": "stop", "n": 282, "decode_tps": 30.974, "head": "To calculate Antonella's total earnings, we need to break do"}
+{"arm": "A0", "id": "gsm8k_01156", "finish": "stop", "n": 183, "decode_tps": 31.046, "head": "1.  **Determine the cost and selling price per device:**\n   "}
+{"arm": "A0", "id": "gsm8k_00418", "finish": "stop", "n": 266, "decode_tps": 31.214, "head": "Let $T$ be the size of Timothy's locker, $Z$ be the size of "}
+{"arm": "A0", "id": "gsm8k_00084", "finish": "stop", "n": 227, "decode_tps": 31.016, "head": "Let $W$ be the number of games won and $L$ be the number of "}
+{"arm": "A0", "id": "gsm8k_00596", "finish": "stop", "n": 219, "decode_tps": 30.981, "head": "1.  **Calculate the base cost of the implants:**\n    George "}
+{"arm": "A0", "id": "gsm8k_00960", "finish": "stop", "n": 550, "decode_tps": 30.827, "head": "Let $H_1$, $H_2$, $H_3$, and $H_4$ be the number of holes du"}
+{"arm": "A0", "id": "gsm8k_00016", "finish": "stop", "n": 246, "decode_tps": 30.964, "head": "The problem asks for the total distance covered by each trai"}
+{"arm": "A0", "id": "gsm8k_00516", "finish": "stop", "n": 164, "decode_tps": 31.164, "head": "1.  **Calculate the total duration of the fight:**\n    The f"}
+{"arm": "A0", "id": "gsm8k_01229", "finish": "stop", "n": 142, "decode_tps": 30.97, "head": "1.  **Initial Price (November):** $40\n2.  **December Price:*"}
+{"arm": "A0", "id": "gsm8k_00008", "finish": "stop", "n": 625, "decode_tps": 30.718, "head": "**Step 1: Calculate the distance John drove away from home.*"}
+{"arm": "A0", "id": "gsm8k_00558", "finish": "stop", "n": 75, "decode_tps": 30.467, "head": "Timothy's locker is 24 cubic inches.\nZack's locker is half a"}
+{"arm": "A0", "id": "mmlu_philosophy_09956", "finish": "stop", "n": 2, "decode_tps": 57.395, "head": "B"}
+{"arm": "A0", "id": "mmlu_moral_scenarios_09023", "finish": "stop", "n": 2, "decode_tps": 56.905, "head": "C"}
+{"arm": "A0", "id": "mmlu_prehistory_10051", "finish": "stop", "n": 2, "decode_tps": 57.325, "head": "D"}
+{"arm": "A0", "id": "mmlu_moral_disputes_08177", "finish": "stop", "n": 2, "decode_tps": 57.066, "head": "B"}
+{"arm": "A0", "id": "mmlu_professional_psychology_12657", "finish": "stop", "n": 2, "decode_tps": 57.364, "head": "B"}
+{"arm": "A0", "id": "mmlu_electrical_engineering_01938", "finish": "stop", "n": 2, "decode_tps": 57.039, "head": "A"}
+{"arm": "A0", "id": "mmlu_high_school_government_and_politics_03830", "finish": "stop", "n": 2, "decode_tps": 57.417, "head": "A"}
+{"arm": "A0", "id": "mmlu_computer_security_01508", "finish": "stop", "n": 2, "decode_tps": 57.312, "head": "D"}
+{"arm": "A0", "id": "mmlu_miscellaneous_08094", "finish": "stop", "n": 2, "decode_tps": 57.386, "head": "A"}
+{"arm": "A0", "id": "mmlu_high_school_biology_02779", "finish": "stop", "n": 2, "decode_tps": 56.559, "head": "C"}
+{"arm": "A0", "id": "mmlu_high_school_macroeconomics_04221", "finish": "stop", "n": 2, "decode_tps": 57.048, "head": "D"}
+{"arm": "A0", "id": "mmlu_conceptual_physics_01749", "finish": "stop", "n": 2, "decode_tps": 57.409, "head": "D"}
+{"arm": "A0", "id": "mmlu_machine_learning_06930", "finish": "stop", "n": 2, "decode_tps": 56.98, "head": "A"}
+{"arm": "A0", "id": "mmlu_high_school_us_history_05657", "finish": "stop", "n": 2, "decode_tps": 56.445, "head": "B"}
+{"arm": "A0", "id": "mmlu_professional_law_11833", "finish": "stop", "n": 2, "decode_tps": 56.319, "head": "D"}
+{"arm": "A0", "id": "mmlu_high_school_psychology_05095", "finish": "stop", "n": 2, "decode_tps": 57.303, "head": "C"}
+{"arm": "A0", "id": "mmlu_high_school_physics_04884", "finish": "stop", "n": 2, "decode_tps": 56.603, "head": "A"}
+{"arm": "A0", "id": "mmlu_management_07024", "finish": "stop", "n": 2, "decode_tps": 57.362, "head": "D"}
+{"arm": "A0", "id": "mmlu_professional_medicine_12352", "finish": "stop", "n": 2, "decode_tps": 56.705, "head": "A"}
+{"arm": "A0", "id": "mmlu_formal_logic_02483", "finish": "stop", "n": 2, "decode_tps": 56.524, "head": "A"}
+{"arm": "A0", "id": "mmlu_college_chemistry_00922", "finish": "stop", "n": 2, "decode_tps": 56.81, "head": "C"}
+{"arm": "A0", "id": "mmlu_elementary_mathematics_02098", "finish": "stop", "n": 2, "decode_tps": 56.612, "head": "C"}
+{"arm": "A0", "id": "mmlu_professional_accounting_10602", "finish": "stop", "n": 2, "decode_tps": 56.662, "head": "C"}
+{"arm": "A0", "id": "mmlu_college_biology_00775", "finish": "stop", "n": 2, "decode_tps": 57.279, "head": "A"}
+{"arm": "A0", "id": "mmlu_high_school_microeconomics_04670", "finish": "stop", "n": 2, "decode_tps": 57.326, "head": "D"}
+{"arm": "A0", "id": "mmlu_clinical_knowledge_00547", "finish": "stop", "n": 2, "decode_tps": 57.282, "head": "C"}
+{"arm": "A0", "id": "mmlu_human_sexuality_06391", "finish": "stop", "n": 2, "decode_tps": 57.2, "head": "D"}
+{"arm": "A0", "id": "mmlu_anatomy_00110", "finish": "stop", "n": 2, "decode_tps": 56.622, "head": "D"}
+{"arm": "A0", "id": "mmlu_human_aging_06269", "finish": "stop", "n": 2, "decode_tps": 57.361, "head": "A"}
+{"arm": "A0", "id": "mmlu_abstract_algebra_00060", "finish": "stop", "n": 2, "decode_tps": 57.032, "head": "D"}
+{"arm": "A0", "stage": "128k", "q": 0, "needle": "N00", "prompt_n": 127946, "cache_n": 154, "prompt_ms": 320729.566, "answer": "BG-8216-U", "expected": ["BG-8216-U"], "kfd_gib": 52.167}
+{"arm": "A0", "stage": "128k", "q": 1, "needle": "N01", "prompt_n": 55, "cache_n": 128047, "prompt_ms": 472.815, "answer": "Philippa Quennell-Ibsen", "expected": ["Philippa Quennell-Ibsen"], "kfd_gib": 52.193}
+{"arm": "A0", "stage": "128k", "q": 2, "needle": "N02", "prompt_n": 49, "cache_n": 128047, "prompt_ms": 402.336, "answer": "JX-6457-N", "expected": ["JX-6457-N"], "kfd_gib": 52.214}
+{"arm": "A0", "stage": "128k", "q": 3, "needle": "N03", "prompt_n": 46, "cache_n": 128047, "prompt_ms": 406.872, "answer": "Ignatius Iversen-Aldana", "expected": ["Ignatius Iversen-Aldana"], "kfd_gib": 52.234}
+{"arm": "A0", "stage": "128k", "q": 4, "needle": "N04", "prompt_n": 52, "cache_n": 128047, "prompt_ms": 447.637, "answer": "PL-4952-Q", "expected": ["PL-4952-Q"], "kfd_gib": 52.255}
+{"arm": "A0", "stage": "128k", "local_probe": "The report examines the Department of Energy's management of the reengineering project for the Integrated Waste Treatmen", "prompt_n": 54, "finish": "stop"}
+{"arm": "A0", "stage": "240k", "q": 0, "needle": "N05", "prompt_n": 111504, "cache_n": 128047, "prompt_ms": 623882.107, "answer": "Florian Vasquez-Holm", "expected": ["Florian Vasquez-Holm"], "kfd_gib": 52.605}
+{"arm": "A0", "stage": "240k", "q": 1, "needle": "N06", "prompt_n": 55, "cache_n": 239503, "prompt_ms": 703.803, "answer": "NN-7230-K", "expected": ["NN-7230-K"], "kfd_gib": 52.63}
+{"arm": "A0", "stage": "240k", "q": 2, "needle": "N07", "prompt_n": 46, "cache_n": 239503, "prompt_ms": 623.113, "answer": "Casimir Szalai-Pryce", "expected": ["Casimir Szalai-Pryce"], "kfd_gib": 52.65}
+{"arm": "A0", "stage": "240k", "q": 3, "needle": "N08", "prompt_n": 54, "cache_n": 239503, "prompt_ms": 698.561, "answer": "JR-2224-S", "expected": ["JR-2224-S"], "kfd_gib": 52.673}
+{"arm": "A0", "stage": "240k", "q": 4, "needle": "N09", "prompt_n": 48, "cache_n": 239503, "prompt_ms": 618.389, "answer": "Aurelio Halloran-Sato", "expected": ["Aurelio Halloran-Sato"], "kfd_gib": 52.693}
+{"arm": "A0", "stage": "240k", "local_probe": "The last report examines the U.S. Navy's efforts to improve ship-driving training for Surface Warfare Officers following", "prompt_n": 54, "finish": "stop"}
+done -> /mnt/raid0/llm/tmp/yarn-e1-20261004/results/A0/20261004T181833Z
+[2026-10-04T18:41:36Z] A0 runner rc=0
+    PID                  STARTED COMMAND
+3285294 Sun Oct  4 18:18:29 2026 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 
+PID 3285294 dead
+{
+ "pid": 3285294,
+ "n_samples": 1387,
+ "interval_s": 1.0,
+ "started": 1791137909.7742293,
+ "ended": 1791139297.264544,
+ "kfd_peak_gib": 52.716,
+ "card_peak_gib": 52.73,
+ "other_kfd_pids_seen": [],
+ "sampler_pid": 3285295
+}
+card VRAM used MiB: 26176
+[2026-10-04T18:41:38Z] A0 killed; KFD: 
+[2026-10-04T18:41:38Z] launch A1
+KFD processes now:   card VRAM used: 26176 MiB
+scratch A1 PID 3354669 (log /mnt/raid0/llm/tmp/yarn-e1-20261004/results/A1.server.log)
+{"status":"ok"}
+--- proof lines (this launch only)
+0.00.597.032 I validate_override: Using metadata override (  int) 'qwen35.context_length' = 0.00.597.033 I 524288
+0.00.597.045 I validate_override: Using metadata override (  int) 'qwen35.rope.scaling.original_context_length' = 0.00.597.046 I 262144
+0.00.597.048 I validate_override: Using metadata override (  str) 'qwen35.rope.scaling.type' = 0.00.597.049 I yarn
+0.00.597.051 I validate_override: Using metadata override (float) 'qwen35.rope.scaling.factor' = 0.00.597.051 I 2.000000
+0.00.729.229 I print_info: n_ctx_train           = 524288
+0.00.729.249 I print_info: rope scaling          = yarn
+0.00.729.250 I print_info: freq_scale_train      = 0.5
+0.00.729.251 I print_info: n_ctx_orig_yarn       = 262144
+0.03.125.756 I llama_context: n_ctx         = 524288
+0.03.125.756 I llama_context: n_ctx_seq     = 524288
+0.03.125.758 I llama_context: kv_unified    = false
+0.03.125.761 I llama_context: freq_base     = 10000000.0
+0.03.125.762 I llama_context: freq_scale    = 0.5
+0.03.145.257 I llama_kv_cache: size = 17408.00 MiB (524288 cells,  16 layers,  1/1 seqs), K (q8_0): 8704.00 MiB, V (q8_0): 8704.00 MiB
+0.03.145.259 I llama_kv_cache: attn_rot_k = 1, n_embd_head_k_all = 256
+0.03.145.260 I llama_kv_cache: attn_rot_v = 1, n_embd_head_k_all = 256
+0.04.884.833 I srv    load_model: initializing, n_slots = 1, n_ctx_slot = 524288, kv_unified = 'false'
+--- residency / linkage (read-only)
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --no-mmap -ngl all --cache-ram 0 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/yarn-e1-20261004/results/kv_slots_scratch --verbosity 4 -c 524288 --rope-scaling yarn --rope-scale 2 --yarn-orig-ctx 262144 --override-kv qwen35.context_length=int:524288,qwen35.rope.scaling.type=str:yarn,qwen35.rope.scaling.factor=float:2,qwen35.rope.scaling.original_context_length=int:262144 
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+KFD vram MiB: 48409
+binary : /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+expect : libraries under /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+
+  OK   libllama-server-impl.so      -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+  OK   libllama-common.so.0         -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0
+  OK   libmtmd.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0
+  OK   libllama.so.0                -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0
+  OK   libggml.so.0                 -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0
+  OK   libggml-base.so.0            -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0
+  OK   libggml-cpu.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0
+  OK   libggml-hip.so.0             -> /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0
+
+LD_LIBRARY_PATH order as the loader sees it:
+         1	/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+         2	/opt/rocm/lib
+         3	/usr/lib/llvm-20/lib
+         4	/opt/AMD/aocc-compiler-5.0.0/lib
+         5	/opt/rocm/lib
+
+PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82
+NOTE: ggml backends (ggml-hip, ggml-cpu-<arch>) are dlopened at RUNTIME and
+      are not covered by ldd. Confirm the intended device appears in the
+      program's own startup log (e.g. 'Device 0: AMD Instinct MI210') and
+      do not trust a 'use gpu = 1' flag alone — that flag reports what was
+      REQUESTED, not what was loaded.
+[2026-10-04T18:41:45Z] run A1
+REFUSING: preflight problems (see preflight.json); --force-preflight overrides
+{
+ "pid": 3354669,
+ "n_ctx_slot": 524288,
+ "n_slots": 1,
+ "kfd_gib": 47.275,
+ "proof": {
+  "Using metadata override \\(\\s*int\\) 'qwen35\\.context_length' = 524288": false,
+  "Using metadata override \\(\\s*str\\) 'qwen35\\.rope\\.scaling\\.type' = yarn": false,
+  "print_info: n_ctx_train\\s*=\\s*524288\\b": true,
+  "print_info: rope scaling\\s*=\\s*yarn": true,
+  "print_info: freq_scale_train\\s*=\\s*0\\.5\\s*$": true,
+  "print_info: n_ctx_orig_yarn\\s*=\\s*262144\\b": true,
+  "llama_context: freq_scale\\s*=\\s*0\\.5\\s*$": true,
+  "llama_context: n_ctx_seq\\s*=\\s*524288\\b": true,
+  "llama_kv_cache: size =\\s*17408\\.00 MiB \\(\\s*524288 cells,\\s*16 layers": true,
+  "n_slots = 1, n_ctx_slot = 524288\\b": true
+ },
+ "problems": [
+  "proof line missing: /Using metadata override \\(\\s*int\\) 'qwen35\\.context_length' = 524288/",
+  "proof line missing: /Using metadata override \\(\\s*str\\) 'qwen35\\.rope\\.scaling\\.type' = yarn/"
+ ]
+}
+[2026-10-04T18:41:45Z] A1 runner rc=3
+    PID                  STARTED COMMAND
+3354669 Sun Oct  4 18:41:38 2026 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 1 -t 8 -ub 2048 
+PID 3354669 dead
+{
+ "pid": 3354669,
+ "n_samples": 8,
+ "interval_s": 1.0,
+ "started": 1791139298.3857138,
+ "ended": 1791139306.4117134,
+ "kfd_peak_gib": 47.275,
+ "card_peak_gib": 47.287,
+ "other_kfd_pids_seen": [],
+ "sampler_pid": 3354670
+}
+card VRAM used MiB: 26142
+[2026-10-04T18:41:46Z] A1 killed; KFD: 
+[2026-10-04T18:41:46Z] gate a0=/mnt/raid0/llm/tmp/yarn-e1-20261004/results/A0/20261004T181833Z a1=/mnt/raid0/llm/tmp/yarn-e1-20261004/results/A1/20261004T184145Z
+# INF-59 E1 verdict (pre-registered criteria, RUNBOOK.md section 6)
+
+**Overall: INCOMPLETE** (C2 + C3 + C4 decide; C1 is recorded, informational).
+
+
+## Diagnostics
+- local-coherence probes: {'A0:128k': 'OK', 'A0:240k': 'OK'}
+- empty needle answers (instant-EOS signature, llama.cpp #27756): {'A0:128k': 0, 'A0:240k': 0}
+
+## C4 memory: {'A0:kfd_A0.jsonl.summary.json': 52.716, 'A0:kfd_A1.jsonl.summary.json': 47.275, 'A1:kfd_A0.jsonl.summary.json': 52.716, 'A1:kfd_A1.jsonl.summary.json': 47.275, 'kfd_A0.jsonl.summary.json': 52.716, 'kfd_A1.jsonl.summary.json': 47.275}
+[2026-10-04T18:41:46Z] gate rc=1
+[2026-10-04T18:41:46Z] E1 core done

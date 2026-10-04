@@ -1,0 +1,187 @@
+{
+ "schema": "inf59.yarn_e1.gate.v1",
+ "at": "2026-10-04T19:53:03Z",
+ "dirs": {
+  "A0": "/mnt/raid0/llm/tmp/yarn-e1-20261004/results/A0/20261004T181833Z",
+  "A1": "/mnt/raid0/llm/tmp/yarn-e1-20261004/results/A1/20261004T184217Z",
+  "A2": "None",
+  "A0Q4": "None"
+ },
+ "coherence_gate": "coherence_gate 1.0.0",
+ "criteria": {
+  "C1_short": {
+   "coherence_gate": "FAIL",
+   "regressions": 3,
+   "improvements": 0,
+   "graded_correct": {
+    "A0": 59,
+    "A1": 58
+   },
+   "graded_n": 70,
+   "identical": 53,
+   "n": 84,
+   "needs_review": 10,
+   "pass": false,
+   "rule": "PASS iff 0 REGRESSION (tier 0/1). Informational: YaRN is a separate mode either way."
+  },
+  "C2_native": {
+   "128k": {
+    "coherence_gate": "PASS",
+    "regressions": 0,
+    "A1_degenerate": []
+   },
+   "240k": {
+    "coherence_gate": "PASS",
+    "regressions": 0,
+    "A1_degenerate": []
+   },
+   "correct": {
+    "A0": 10,
+    "A1": 10
+   },
+   "pass": true,
+   "rule": "A1 correct >= A0 correct - 1 over the 10 paired needles, and no A1 degeneracy"
+  },
+  "C3_beyond": {
+   "400k": {
+    "A1_correct": 5,
+    "n": 5,
+    "abstained": 0,
+    "A1_degenerate": [],
+    "depth_pattern": {
+     "N10": {
+      "depth": 0.1,
+      "distance_k": 358,
+      "status": "correct"
+     },
+     "N11": {
+      "depth": 0.3,
+      "distance_k": 279,
+      "status": "correct"
+     },
+     "N12": {
+      "depth": 0.5,
+      "distance_k": 199,
+      "status": "correct"
+     },
+     "N13": {
+      "depth": 0.7,
+      "distance_k": 119,
+      "status": "correct"
+     },
+     "N14": {
+      "depth": 0.9,
+      "distance_k": 40,
+      "status": "correct"
+     }
+    },
+    "pass": true
+   },
+   "500k": {
+    "A1_correct": 5,
+    "n": 5,
+    "abstained": 0,
+    "A1_degenerate": [],
+    "depth_pattern": {
+     "N15": {
+      "depth": 0.1,
+      "distance_k": 448,
+      "status": "correct"
+     },
+     "N16": {
+      "depth": 0.3,
+      "distance_k": 349,
+      "status": "correct"
+     },
+     "N17": {
+      "depth": 0.5,
+      "distance_k": 249,
+      "status": "correct"
+     },
+     "N18": {
+      "depth": 0.7,
+      "distance_k": 149,
+      "status": "correct"
+     },
+     "N19": {
+      "depth": 0.9,
+      "distance_k": 50,
+      "status": "correct"
+     }
+    },
+    "pass": true
+   },
+   "pass": true,
+   "rule": "A1 >= 4/5 at 400k AND at 500k, no degeneracy; if A2 ran, A2 <= A1 - 2 at 400k (else not discriminating)"
+  },
+  "C4_memory": {
+   "peaks_gib": {
+    "A0:kfd_A0.jsonl.summary.json": 52.716,
+    "A0:kfd_A1.jsonl.summary.json": 63.926,
+    "A1:kfd_A0.jsonl.summary.json": 52.716,
+    "A1:kfd_A1.jsonl.summary.json": 63.926,
+    "kfd_A0.jsonl.summary.json": 52.716,
+    "kfd_A1.jsonl.summary.json": 63.926
+   },
+   "pass": false,
+   "rule": "KFD own-PID peak <= 55 GiB for every arm"
+  }
+ },
+ "diagnostics": {
+  "local_probe": {
+   "A0:128k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The report examines the Department of Energy's management of the reengineering project for the Integrated Waste Treatment Unit at the Idaho National Laboratory, which is designed to treat mixed high-level waste. It finds that the project has experienced significant cost overruns and schedule delays, and that the agency has not fully followed best practices for developing reliable cost and schedule"
+   },
+   "A0:240k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The last report examines the U.S. Navy's efforts to improve ship-driving training for Surface Warfare Officers following a series of deadly collisions in 2017. It details the Navy's plans to triple initial training hours and invest in new simulator facilities, while also identifying gaps in how the Navy evaluates the effectiveness of these changes, such as the lack of fleet-wide feedback mechanism"
+   },
+   "A1:128k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The report examines the Department of Energy's management of the Integrated Waste Treatment Unit reengineering project at the Idaho National Laboratory. It finds that the project has experienced significant cost overruns and schedule delays because the agency failed to follow best practices for developing comprehensive and reliable cost and schedule estimates."
+   },
+   "A1:240k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The last report examines the U.S. Navy's efforts to improve ship-driving training for Surface Warfare Officers following a series of collisions in 2017. It details the expansion of simulator-based courses and the construction of new training facilities, while noting that the Navy has not yet established sufficient methods to evaluate the effectiveness of these changes or standardize officer qualif"
+   },
+   "A1:400k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The report examines how the National Nuclear Security Agency (NNSA) has managed the production of microelectronics for nuclear weapons at Sandia National Laboratories. It details NNSA's efforts to sustain the aging SiFab facility through 2025 and its subsequent decision to abandon plans for a new production facility in favor of extending the current facility's operational life to 2040."
+   },
+   "A1:500k": {
+    "cls": "OK",
+    "reasons": [],
+    "text": "The last report examines the size and characteristics of Americans who provide unpaid care to parents or spouses, noting that women and minorities are more likely to provide frequent care. It analyzes how caregiving affects retirement security, finding that spousal caregivers near retirement age have lower retirement assets and income than non-caregivers, while parental caregivers do not show the "
+   },
+   "paired:128k": {
+    "verdict": "NEEDS_REVIEW",
+    "reasons": [
+     "diverged at tier 0; no ground truth for this item",
+     "unjudged: no judge_fn injected"
+    ]
+   },
+   "paired:240k": {
+    "verdict": "NEEDS_REVIEW",
+    "reasons": [
+     "diverged at tier 0; no ground truth for this item",
+     "unjudged: no judge_fn injected"
+    ]
+   }
+  },
+  "empty_answers": {
+   "A0:128k": 0,
+   "A0:240k": 0,
+   "A1:128k": 0,
+   "A1:240k": 0,
+   "A1:400k": 0,
+   "A1:500k": 0
+  }
+ },
+ "overall": "FAIL"
+}
