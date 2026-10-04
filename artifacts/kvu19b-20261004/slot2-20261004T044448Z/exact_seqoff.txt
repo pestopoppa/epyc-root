@@ -1,0 +1,142 @@
+case  0 hs=128/128 nh=4 nr2=4 kv=8192 nb=1 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=b6d7bf78de3ed3bb nan=0
+case  1 hs=128/128 nh=4 nr2=4 kv=8192 nb=2 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=636ec97ef150858f nan=0
+case  2 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=c19a2525bfa3a774 nan=0
+case  3 hs=128/128 nh=4 nr2=4 kv=8192 nb=8 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=f7dcbe16f46cecb7 nan=0
+case  4 hs=128/128 nh=4 nr2=4 kv=8192 nb=32 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=edf586d31e55f668 nan=0
+case  5 hs=128/128 nh=4 nr2=4 kv=8192 nb=75 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=0bed6cbd22e106c4 nan=0
+case  6 hs=128/128 nh=4 nr2=4 kv=8192 nb=512 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=9b6625dcc849f264 nan=0
+case  7 hs=128/128 nh=4 nr2=4 kv=8192 nb=1 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=1a2a4a7dfbbd21ed nan=0
+case  8 hs=128/128 nh=4 nr2=4 kv=8192 nb=2 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=53e10f043ac9bd18 nan=0
+case  9 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=623780ecab1bc006 nan=0
+case 10 hs=128/128 nh=4 nr2=4 kv=8192 nb=8 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=adf5bcd0b7dc3776 nan=0
+case 11 hs=128/128 nh=4 nr2=4 kv=8192 nb=32 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=deb1f41d64380d53 nan=0
+case 12 hs=128/128 nh=4 nr2=4 kv=8192 nb=75 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=9817afbcdba419df nan=0
+case 13 hs=128/128 nh=4 nr2=4 kv=8192 nb=512 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=8172eccc022af691 nan=0
+case 14 hs=128/128 nh=4 nr2=4 kv=8192 nb=1 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=f0e22e78600a3c4a nan=0
+case 15 hs=128/128 nh=4 nr2=4 kv=8192 nb=2 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=dec22c584400325f nan=0
+case 16 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=42f3b8c63da57adb nan=0
+case 17 hs=128/128 nh=4 nr2=4 kv=8192 nb=8 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=17285c7431118256 nan=0
+case 18 hs=128/128 nh=4 nr2=4 kv=8192 nb=32 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=e53e3866cd87b897 nan=0
+case 19 hs=128/128 nh=4 nr2=4 kv=8192 nb=75 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=7da29ab01424adc6 nan=0
+case 20 hs=128/128 nh=4 nr2=4 kv=8192 nb=512 nseq=4 run=1024 free=1024 type=q4_0 bias=0 cap=0 hint=0 first=0 hash=619f569425f83434 nan=0
+case 21 unsupported
+case 22 unsupported
+case 23 unsupported
+case 24 unsupported
+case 25 unsupported
+case 26 unsupported
+case 27 unsupported
+case 28 unsupported
+case 29 unsupported
+case 30 unsupported
+case 31 unsupported
+case 32 unsupported
+case 33 unsupported
+case 34 unsupported
+case 35 unsupported
+case 36 unsupported
+case 37 unsupported
+case 38 unsupported
+case 39 unsupported
+case 40 unsupported
+case 41 unsupported
+case 42 hs=128/128 nh=4 nr2=4 kv=8192 nb=1 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=3569d7e770e13a62 nan=0
+case 43 hs=128/128 nh=4 nr2=4 kv=8192 nb=2 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=f60512a4dcde1544 nan=0
+case 44 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=1e3539f71f11f20a nan=0
+case 45 hs=128/128 nh=4 nr2=4 kv=8192 nb=8 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=5e32715926366314 nan=0
+case 46 hs=128/128 nh=4 nr2=4 kv=8192 nb=32 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=d524a6312785e07c nan=0
+case 47 hs=128/128 nh=4 nr2=4 kv=8192 nb=75 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=dc346f49d568c6de nan=0
+case 48 hs=128/128 nh=4 nr2=4 kv=8192 nb=512 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=0 first=0 hash=6c21412470c78702 nan=0
+case 49 hs=64/64 nh=4 nr2=6 kv=12288 nb=1 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=a0221616c62a449d nan=0
+case 50 hs=64/64 nh=4 nr2=6 kv=12288 nb=1 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=573a1fb54afff53d nan=0
+case 51 hs=64/64 nh=4 nr2=6 kv=12288 nb=2 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=59587502be2e1d0f nan=0
+case 52 hs=64/64 nh=4 nr2=6 kv=12288 nb=2 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=d6111bf237d6e8bf nan=0
+case 53 hs=64/64 nh=4 nr2=6 kv=12288 nb=8 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=3cb2086b2c650c76 nan=0
+case 54 hs=64/64 nh=4 nr2=6 kv=12288 nb=8 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=8bc21d6579d7f7a8 nan=0
+case 55 hs=64/64 nh=4 nr2=6 kv=12288 nb=64 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=edbd545477b4d766 nan=0
+case 56 hs=64/64 nh=4 nr2=6 kv=12288 nb=64 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=d104129a00644917 nan=0
+case 57 hs=64/64 nh=4 nr2=6 kv=12288 nb=512 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=a605a1f290fd5b7e nan=0
+case 58 hs=64/64 nh=4 nr2=6 kv=12288 nb=512 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=77094bf5740be890 nan=0
+case 59 hs=256/256 nh=4 nr2=6 kv=12288 nb=1 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=fd3014b9304272a1 nan=0
+case 60 hs=256/256 nh=4 nr2=6 kv=12288 nb=1 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=b6f07e162b7f45cb nan=0
+case 61 hs=256/256 nh=4 nr2=6 kv=12288 nb=2 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=35ecc3952ccf83e1 nan=0
+case 62 hs=256/256 nh=4 nr2=6 kv=12288 nb=2 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=1f5c2c31f8d85a23 nan=0
+case 63 hs=256/256 nh=4 nr2=6 kv=12288 nb=8 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=bcb10e1ffdf34702 nan=0
+case 64 hs=256/256 nh=4 nr2=6 kv=12288 nb=8 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=a6a7694fe635ff5f nan=0
+case 65 hs=256/256 nh=4 nr2=6 kv=12288 nb=64 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=18935dc2863a650a nan=0
+case 66 hs=256/256 nh=4 nr2=6 kv=12288 nb=64 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=45390583e5f3eeb8 nan=0
+case 67 hs=256/256 nh=4 nr2=6 kv=12288 nb=512 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=0 first=0 hash=56f79b6c02be2c27 nan=0
+case 68 hs=256/256 nh=4 nr2=6 kv=12288 nb=512 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=2c36fa45cc8348f7 nan=0
+case 69 hs=128/128 nh=1 nr2=8 kv=8192 nb=1 nseq=8 run=300 free=1792 type=f16 bias=0 cap=0 hint=0 first=0 hash=61bcda386e190963 nan=0
+case 70 hs=128/128 nh=1 nr2=8 kv=8192 nb=16 nseq=8 run=300 free=1792 type=f16 bias=0 cap=0 hint=0 first=0 hash=f1a1034d1bfa3d42 nan=0
+case 71 hs=128/128 nh=2 nr2=4 kv=8192 nb=64 nseq=16 run=64 free=512 type=f16 bias=0 cap=0 hint=0 first=0 hash=dfb7bd64ff92d782 nan=0
+case 72 hs=128/128 nh=4 nr2=1 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=8 cap=0 hint=0 first=0 hash=734869cd8b32078f nan=0
+case 73 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=10 hint=0 first=0 hash=11a73b7d64b19ac5 nan=0
+case 74 hs=80/80 nh=4 nr2=4 kv=8192 nb=8 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=0a00147ec9bf0474 nan=0
+case 75 hs=40/40 nh=4 nr2=4 kv=8192 nb=3 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=682079ae30d43ddd nan=0
+case 76 hs=192/128 nh=2 nr2=8 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=23c771fbb5d9e8d9 nan=0
+case 77 unsupported
+case 78 hs=576/512 nh=1 nr2=16 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=2d79f7ad85007afe nan=0
+case 79 hs=576/512 nh=1 nr2=16 kv=8192 nb=256 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=10cb310e27b82fd6 nan=0
+case 80 hs=512/512 nh=1 nr2=8 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=b071108d302d5fa8 nan=0
+case 81 hs=320/256 nh=1 nr2=32 kv=8192 nb=1 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=d8a04011d2cdb142 nan=0
+case 82 hs=320/256 nh=1 nr2=32 kv=8192 nb=3 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=0 first=0 hash=2a562de87e610fd7 nan=0
+case 83 hs=256/256 nh=4 nr2=6 kv=65536 nb=1 nseq=4 run=16384 free=0 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=951ac3b72c588a42 nan=0
+case 84 hs=256/256 nh=4 nr2=6 kv=65536 nb=8 nseq=4 run=16384 free=0 type=q8_0 bias=0 cap=0 hint=0 first=0 hash=588bfbb977d07089 nan=0
+case 85 hs=128/128 nh=4 nr2=4 kv=65536 nb=1 nseq=4 run=16384 free=0 type=f16 bias=0 cap=0 hint=0 first=0 hash=db3969635a22d7d4 nan=0
+case 86 hs=128/128 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=f16 bias=0 cap=0 hint=2 first=0 hash=465057a6f374d8f8 nan=0
+case 87 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=f16 bias=0 cap=0 hint=4 first=0 hash=9f14a7534c421ca9 nan=0
+case 88 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=f16 bias=0 cap=0 hint=8 first=0 hash=16735ccf56c24ec1 nan=0
+case 89 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=f16 bias=0 cap=0 hint=2 first=0 hash=fd9c68f5b49c0982 nan=0
+case 90 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=f16 bias=0 cap=0 hint=4 first=0 hash=8f21d2f78d6e5c48 nan=0
+case 91 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=f16 bias=0 cap=0 hint=8 first=0 hash=d6792b9fb787d71e nan=0
+case 92 hs=128/128 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=2 first=0 hash=f79371d35ac85270 nan=0
+case 93 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=3a27b735fcb13c93 nan=0
+case 94 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0 hash=465fd36c2ab9b3ce nan=0
+case 95 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=2 first=0 hash=470008727b1963ca nan=0
+case 96 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=6b6e0d08d0a2cd96 nan=0
+case 97 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0 hash=57bab0f1f8f64f05 nan=0
+case 98 hs=128/128 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=2 first=0 hash=86888bfe669e08c4 nan=0
+case 99 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=4 first=0 hash=820c55d2609b0036 nan=0
+case 100 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=8 first=0 hash=a5dacba74ed44084 nan=0
+case 101 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=2 first=0 hash=257a7a700c844d1f nan=0
+case 102 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=4 first=0 hash=e1d486ecb039d70d nan=0
+case 103 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=8 first=0 hash=47634f565f461a2c nan=0
+case 104 hs=128/128 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=bf16 bias=0 cap=0 hint=2 first=0 hash=cd0d709181ed6c01 nan=0
+case 105 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=bf16 bias=0 cap=0 hint=4 first=0 hash=9ef8f409138cd691 nan=0
+case 106 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=bf16 bias=0 cap=0 hint=8 first=0 hash=111f61facd05fbc6 nan=0
+case 107 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=bf16 bias=0 cap=0 hint=2 first=0 hash=fdd902d362117953 nan=0
+case 108 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=bf16 bias=0 cap=0 hint=4 first=0 hash=a26dba9523bec68b nan=0
+case 109 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=bf16 bias=0 cap=0 hint=8 first=0 hash=d9b64d3a0a3db3d6 nan=0
+case 110 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=f16 bias=0 cap=0 hint=4 first=0 hash=af488e52eec26f52 nan=0
+case 111 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=4 first=1 hash=edcbe52130edf42b nan=0
+case 112 hs=128/128 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=f16 bias=0 cap=0 hint=4 first=8 hash=a1bf40b3e412d15b nan=0
+case 113 hs=128/128 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=3 first=2 hash=fd1c274fa9fccbe0 nan=0
+case 114 hs=256/256 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=f16 bias=0 cap=0 hint=4 first=0 hash=9a3f394cff67d7f4 nan=0
+case 115 hs=256/256 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=4 first=1 hash=06a21c4ac5d1f544 nan=0
+case 116 hs=256/256 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=f16 bias=0 cap=0 hint=4 first=8 hash=2baf078bc178c8c2 nan=0
+case 117 hs=256/256 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=f16 bias=0 cap=0 hint=3 first=2 hash=c000c78ad35ac8c8 nan=0
+case 118 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=f8cd62702ca2202a nan=0
+case 119 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=1 hash=e8d55516d2074acb nan=0
+case 120 hs=128/128 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=q8_0 bias=0 cap=0 hint=4 first=8 hash=04f6452ece6f0ba1 nan=0
+case 121 hs=128/128 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=3 first=2 hash=7ec92f4636604067 nan=0
+case 122 hs=256/256 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=0cdf54d6766e008b nan=0
+case 123 hs=256/256 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=1 hash=956bb2fd172642f9 nan=0
+case 124 hs=256/256 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=q8_0 bias=0 cap=0 hint=4 first=8 hash=ca838ca831c76bd3 nan=0
+case 125 hs=256/256 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=3 first=2 hash=41e5712b4b2663bf nan=0
+case 126 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=bf16 bias=0 cap=0 hint=4 first=0 hash=f377d4c9ce0a5d1e nan=0
+case 127 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=4 first=1 hash=bf1dd98c985e037e nan=0
+case 128 hs=128/128 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=bf16 bias=0 cap=0 hint=4 first=8 hash=762cc34ea3c31a2d nan=0
+case 129 hs=128/128 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=bf16 bias=0 cap=0 hint=3 first=2 hash=ed35d5c0982ef6d9 nan=0
+case 130 hs=256/256 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=bf16 bias=0 cap=0 hint=4 first=0 hash=e1feb5b3ecd69969 nan=0
+case 131 hs=256/256 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=4 first=1 hash=766d12c50b871d95 nan=0
+case 132 hs=256/256 nh=4 nr2=6 kv=8192 nb=11 nseq=4 run=300 free=1792 type=bf16 bias=0 cap=0 hint=4 first=8 hash=efc6e8a2f938c49c nan=0
+case 133 hs=256/256 nh=4 nr2=6 kv=12288 nb=75 nseq=3 run=2048 free=2560 type=bf16 bias=0 cap=0 hint=3 first=2 hash=9d7117e51990e5dd nan=0
+case 134 hs=256/256 nh=4 nr2=6 kv=12288 nb=512 nseq=3 run=2048 free=2560 type=q8_0 bias=0 cap=0 hint=3 first=3 hash=d2f9651676bb90ed nan=0
+case 135 hs=80/80 nh=4 nr2=4 kv=8192 nb=24 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=4 first=0 hash=eddb26b5547c28e3 nan=0
+case 136 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=10 hint=4 first=0 hash=11a73b7d64b19ac5 nan=0
+case 137 hs=128/128 nh=4 nr2=1 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=8 cap=0 hint=4 first=0 hash=734869cd8b32078f nan=0
+case 138 hs=256/256 nh=4 nr2=6 kv=65536 nb=4 nseq=4 run=16384 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=def541a376dbed7e nan=0
+case 139 hs=256/256 nh=4 nr2=6 kv=65536 nb=32 nseq=4 run=16384 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0 hash=c148e607efc5fe9e nan=0
+case 140 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=2 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0 hash=4cdcca30c5aa0ebe nan=0
+ALL 1ea5fe2b85a73b18

@@ -275,3 +275,109 @@ only, in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`. The GPU-block e
 | root | `handoffs/active/cpu-decode-roofline-program.md` | CLS-RECT-1 annotated. CLS-RECT-1a filed (patch 04, workspace-ec). |
 | root | `handoffs/active/vidya-belief-substrate-program.md` | VB-COHGATE-1, VB-SC75-CLS and VB-YARN-E1 filed. |
 | root | `handoffs/active/yarn-context-extension-research.md` | Rewritten (ADAPT). 8 tasks filed. The QUEUED box is ticked as reactivated. |
+
+# Wrap-up 3: KVU-19b GPU validation scored
+
+## KVU-19b-1: store-build GPU validation scored (complete); fold commit 1 only
+
+- **Run.** `gpu_slot2.sh` on store build `gpu-20261004-c7f5ac9ad` ran 04:44:49Z-05:05:18Z. Linkage PASS, and VRAM was
+  the same before and after. A durable copy is in `artifacts/kvu19b-20261004/`; the source dir under
+  `/mnt/raid0/llm/tmp` is not durable.
+- **Correctness.** `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` passed 2978/2978, plus 110/110 on the unified cases
+  with `MIN_KV=0` and 110/110 with `SEQ_ROWS=0`. All arms were within the CPU reference on 119 cases (worst nmse 9e-5,
+  tolerance 5e-4). seqoff == alloff == k19a bit-identical.
+- **Commit 1 (`1bceceb05`, vec routing for one row per sequence) is a WIN.** At 4 seqs × 81920 own (n_kv 327680) it
+  takes 5.53 ms, against 9.23 ms for 19a, 8.77 ms for base and 5.26 ms for the per-sequence streams reference.
+  Batched-bench `-kvu` S_TG is 522.4, against 434.6 for 19a and 529.3 for base `-no-kvu`. p3batch at draft=1
+  (round 3) gives 449 tok/s, against 396 for 19a and 518 for no-kvu, so a gap remains.
+- **Commit 2 (`c7f5ac9ad`, WMMA sequence tiles) is MIXED.**
+  - Aligned 4×8: 11.86 vs 10.36 ms, 14% slower.
+  - Uneven [1,8,8,8]: 11.90 vs 13.64 ms, 13% faster.
+  - It breaks the design's bit-identity claim: skip on vs off differs on 6 cases (110/111/118/119/126/127; ndiff 384,
+    nmse ≤ 8.3e-10).
+  - Its p3batch draft=8 rows are within noise.
+- **Actions.**
+  - Recommendation sent to workspace-89: fold commit 1 only.
+  - Rework of commit 2 dispatched: root-cause the exactness break, plan tiles only where they straddle sequences, add
+    a separate `GGML_CUDA_FA_SEQ_TILES` knob, and write `gpu_slot3.sh`.
+- **Handoff.**
+  - KVU-19b-1 ticked.
+  - Filed KVU-19b-fold-c1 (workspace-89), KVU-19b-rework-c2 and KVU-19b-gap.
+  - KVU-19 annotated.
+  - The parent KVU-19b stays open until the commit-2 rework is folded or dropped.
+
+## Process lesson: unlocked CPU work inside a peer's held window (incident)
+
+- **What happened.** workspace-89 held `cpu-window2-20261004` (q0-q3, 04:40-05:00Z). Inside it, three workspace-ec
+  workloads ran without a region claim:
+  - a dev llama-server pinned to 160-183, the SMT siblings of 64-87;
+  - a `cmake -j24`;
+  - the KVU-19b slot's own host side, on `taskset -c 160-183`.
+- **Impact.** The window's preflight measured about 2,400% CPU and refused steps 2-4, so the MXFP4/EXL3/Q38FN
+  measurements were lost.
+- **Remedy.** Every subagent brief requires
+  `region-lock run --cpu-list 0-95 --role build --tag <t> -- <cmd>` for builds, servers and tests.
+- **The rule was only partly written.**
+  - `OPERATING_CONSTRAINTS.md:124` covers self-launched inference only.
+  - The fan-out section's brief requirements say nothing about a CPU lock.
+  - The SMT-sibling point is stated nowhere.
+  - PREPARED, not applied:
+    - `/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/oc-region-lock.patch`, 6 lines in § Parallel Subagent Fan-Out
+      (`git apply --check` rc=0);
+    - `/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/incident-draft.md`, INC-20261004-subagent-unlocked-cpu-in-held-window, to
+      append at the end of `docs/reference/agent-config/INCIDENT_LOG.md`.
+- **A lock-layer gap was found and filed.** `instance_topology.parse_cpu_list` drops CPUs 96-191. So
+  `region-lock --cpu-list 160-183` maps to no region and could not have conflicted with the window anyway. Filed as
+  REGION-SIBLING-1 in `shape-keyed-contention-gating.md`.
+- **Caveat on the slot2 numbers.** They were taken on that contended host, so this caveat now rides KVU-19b-1 and
+  KVU-19b-gap.
+
+## v11 FA-path audit actionables filed (coordinator addendum)
+
+- **Source.** workspace-89's read-only audit, `/mnt/raid0/llm/tmp/v11-fa-path-audit-20261004/REPORT.md`. The durable
+  copy is in `artifacts/v11-fa-path-audit-20261004/`, together with the register-audit scripts and the v10 FA register
+  table (1704 kernels), which existed only in a session `/tmp` scratchpad.
+- **The core finding.** Upstream #26046 removes rocWMMA FA. On gfx90a at D=256 / GQA 6:
+  - 3-32 rows go to TILE, which uses no matrix cores. That covers 4×1 batched decode and 1-3-slot DFlash2 verify.
+  - Above 32 rows, work goes to MMA `<256,256,32,2>`, which spills 314 VGPRs under ROCm 6.2.
+  - The DF2-9 all-NaN record is the ROCWMMA=OFF path.
+  - It agrees with KVU-19b-1: fold 19a plus 19b commit 1 now, and hold commit 2.
+- **Filed in `kv-unified-stack-rollout.md` section C, after KVU-21 (owner workspace-ec):**
+  - V11-FA-1: ROCWMMA OFF/ON A/B plus an arm with #27870 and #28576, gated on DF2-9;
+  - V11-FA-2: the DF2-9 root cause, a standalone reproducer, and a large-magnitude FA case;
+  - V11-FA-3: an ncols cap for D=256 prefill;
+  - V11-FA-4: carry rocWMMA as an in-binary arm, keeping the `99f3fffd6` guard.
+- **Folded in rather than filed separately.** The audit's other actionables went into those four tasks:
+  - the large-|V| test case and TILE `ncols2=2` run-to-run exactness;
+  - the gfx90a TILE/MMA crossover retune;
+  - the `99f3fffd6` guard;
+  - the `GGML_CUDA_FA_PREFER_WMMA` knob shape.
+- **Cross-references.** The prefix-fork handoff (RTG-58, `kv-prefix-fork-and-paged-attention.md`, landed on main as
+  `4aab28c8` during this wrap-up) gates its P4 `kv_rows` phase on this audit. KPF-40 is annotated with the durable
+  path, and the V11-FA block cites KPF-40..42 and KVU-21.
+
+## Declines (explicit, wrap-up 3)
+
+- **The higher no-kvu S_TG on the 19b binary (552.7 vs 529.3/529.6 for base and 19a).** It is a single sample. With
+  `kv_unified=false` the hint is 0, so the code path is the 19a path: this is noise, not a finding. Not filed.
+- **The S_PP jump at kvu (base 13216 → about 20600 on every patched arm).** This is KVU-19a's skip on prompt-chunk
+  tiles, which KVU-19a and its fold already cover. Not filed again.
+- **The vec routing excludes bf16 KV and head dims other than 128/256.** Production GPU KV is q8_0, and gemma-3-1b /
+  the 27B are D=256. Not filed until a GPU-served unified-KV model falls outside the routed set.
+- **Updating `CURRENT-CAMPAIGN.md`'s stale KVU-19a lines.** That is the coordinator's posture file, not a wrap-up
+  surface. The suggested text is in the prepared INDEX_ROWS.md.
+
+## Files (wrap-up 3)
+
+| Repo | File | Change |
+|---|---|---|
+| root | `artifacts/kvu19b-20261004/` | NEW. Durable copy of FOLD/DESIGN, `gpu_slot2.sh` and the slot2 results, plus a README. |
+| root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-19b-1 ticked; KVU-19b-fold-c1, -rework-c2 and -gap filed; KVU-19b and KVU-19 annotated; V11-FA-1..4 filed in section C. |
+| root | `handoffs/active/vidya-belief-substrate-program.md` | VB-FA-MASKSKIP-b filed (write side for the slot2 records). |
+| root | `handoffs/active/shape-keyed-contention-gating.md` | REGION-SIBLING-1 filed. |
+| root | `artifacts/v11-fa-path-audit-20261004/` | NEW. Durable copy of the v11 FA-path audit, register-audit scripts and the v10 table, plus a README. |
+| root | `handoffs/active/kv-prefix-fork-and-paged-attention.md` | KPF-40 annotated (audit complete; durable path; V11-FA ids). |
+| root | `progress/2026-10/2026-10-04-workspace-ec.md` | This entry. |
+
+Prepared, not applied (`/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/`): `INDEX_ROWS.md` (RTG-57 cell, adapter source-table
+row), `oc-region-lock.patch` and `incident-draft.md`.

@@ -589,3 +589,17 @@ verdict is the current production shape.
       increments outside the precedence test, so the operator-facing label overstates what the counter
       measures — `mainC`, same day). Both are *the value asserts more than the measurement supports*,
       in the same subsystem, found by different agents hours apart; one review, not two local fixes.
+- [ ] **REGION-SIBLING-1 — `region-lock` must map SMT-sibling CPUs to their physical core's region, not drop
+      them.** (filed 2026-10-04, workspace-ec, from INC-20261004-subagent-unlocked-cpu-in-held-window)
+      `src/runtime/instance_topology.py` `parse_cpu_list` keeps only CPUs 0-95 and silently discards
+      96-191. So `region-lock run --cpu-list 160-183` maps to no region and cannot conflict with a held
+      `0-95` window, although `thread_siblings_list` pairs cpu160 with 64 and cpu183 with 87 (they share
+      physical cores 64-87). On 2026-10-04 three unlocked workloads pinned to 160-183 (a dev llama-server,
+      a `cmake -j24`, and the KVU-19b `gpu_slot2.sh`) ran inside workspace-89's held `cpu-window2-20261004`
+      and cost its MXFP4/EXL3/Q38FN measurements. Fix: map `c >= 96` to `c - 96` (or read the kernel
+      sibling map) in the lock path, so a sibling-only claim conflicts with its physical cores. Check every
+      caller that relies on the drop: `src/backends/concurrency_aware.py:547/557` (topology counting) and
+      `scripts/server/gpu_shadow_lane_preflight.py:115` (overlap test), plus the AK stage-footprint
+      requirement already stated in `autokernel-concurrent-target-coordination.md` §3 ("fold logical SMT
+      siblings into the same physical region"). Done when `region-lock run --cpu-list 160-183` blocks
+      behind a held `0-95` claim in a unit test, and the callers' existing tests still pass.

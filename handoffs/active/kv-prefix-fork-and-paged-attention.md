@@ -359,6 +359,11 @@ at drafting). v11 moves verify and prefill from rocWMMA onto MMA/MFMA (upstream 
   `get_n_kv_slices()` accepts on the **hybrid** split (`llama-memory-hybrid.cpp:89`, `split_equal`), which may
   overturn the survey's "verify falls back" finding (see the survey correction above). Re-check #29510's state:
   merged, reshaped by the Metal objection, or still a draft. Write the port plan into this handoff.
+  - *(Annotation, workspace-ec, 2026-10-04.)* The v11 FA-path audit is COMPLETE. Durable copy:
+    [`artifacts/v11-fa-path-audit-20261004/REPORT.md`](../../artifacts/v11-fa-path-audit-20261004/REPORT.md) (the
+    `/mnt/raid0/llm/tmp` path is not durable). Its actionables are filed as V11-FA-1..4 in
+    [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md) section C (owner workspace-ec). P4 relevance: on
+    gfx90a, v11 MMA serves only >32-row shapes; the 3-32-row band goes to TILE, which `kv_rows` does not touch.
 - [ ] **KPF-41: port.** If #29510 has merged upstream by v11, it arrives with the rebase. Otherwise port it onto the
   v11 experimental line:
   - Enable the MMA `kv_rows` path on CDNA. Upstream gates it `GGML_CUDA_CC_IS_NVIDIA && turing_mma_available`; add

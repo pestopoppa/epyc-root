@@ -2152,6 +2152,20 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   `claim_tuple.grade()`; no new ladder. Source-table row text PREPARED in
   `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`. Done when the row is applied and a strict adapter projects the
   store-build `gpu_slot.sh` records (copied durably first) into `ClaimTuple`s.
+  - [ ] **VB-FA-MASKSKIP-b — write side for the KVU-19b `gpu_slot2.sh` records** (filed 2026-10-04, workspace-ec, from
+    KVU-19b-1). A new producer generation of the same harness, already copied durably to
+    `artifacts/kvu19b-20261004/slot2-20261004T044448Z/`. Its records are harness-v2 exactness (119 GPU cases ×
+    arms on / skipoff / seqoff / alloff / k19a, plus the CPU reference), µs per FA op for multi-sequence shapes
+    (kvu / kvu-uneven / streams × rows per sequence), p3batch tok/s (draft 1 / 8 / [1,8,8,8], arms k19a / on /
+    seqoff / no-kvu), `llama-batched-bench` S_TG/S_PP JSONL and `test-backend-ops` counts. Bind the store build
+    `gpu-20261004-c7f5ac9ad`, commits `1bceceb05` / `c7f5ac9ad` on base `a0d0ae238`, and the knob tuple
+    (`GGML_CUDA_FA_SEQ_ROWS`, `GGML_CUDA_FA_MASK_SKIP`, `GGML_CUDA_FA_MASK_SKIP_MIN_KV`; later
+    `GGML_CUDA_FA_SEQ_TILES` from KVU-19b-rework-c2). Cautions that must ride every projection: (1) commit 2's
+    "skip on/off bit-identical" claim is REFUTED on 6 cases, so project it as a refuted exactness claim, not a pass;
+    (2) a kernel µs figure is not a serving tok/s claim; (3) p3batch is gemma-3-1b, not the 27B. n = 3 rounds, no
+    protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Source-table row PREPARED in
+    `/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/INDEX_ROWS.md`. Done when the row is applied and the strict adapter that
+    VB-FA-MASKSKIP builds also projects these records.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;

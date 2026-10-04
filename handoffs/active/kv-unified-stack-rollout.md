@@ -525,6 +525,10 @@ is olympiad-style reasoning.
     own and ~10× with KVU-16f's `-b 512`: the i=3 prefill attends ~40k own cells against ~275k occupied. The fold's
     P3 v2 can use the KVU-16b replay (after KVU-16b-1) as its full-scale cell. KVU-19b's store build
     `gpu-20261004-c7f5ac9ad` carries the KVU-19a arm too (`GGML_CUDA_FA_SEQ_ROWS=0`).
+  - *(Annotation, workspace-ec, 2026-10-04 05:05Z; this item stays workspace-89's.)* KVU-19b-1 scored the KVU-19b store
+    build: fold **commit 1 only** (`1bceceb05`, batched-decode vec routing: 5.5 vs 9.2 ms at 4×80k; batched-bench
+    `-kvu` 522 vs `-no-kvu` 529 t/s). Commit 2 (`c7f5ac9ad`) is out until KVU-19b-rework-c2 lands. Filed as
+    KVU-19b-fold-c1.
   - [x] **KVU-19a — implement masked-block skip directly; fold via workspace-89.** ✅ 2026-10-04 (filed 2026-10-03, workspace-ec;
     operator instruction 2026-10-03, implements KVU-19) IN PROGRESS: an Opus subagent on a new `llama.cpp-experimental`
     branch from the global champion 90c12df42 (`ak/champion/llama-cpp-ffc1bac82eec`).
@@ -608,8 +612,60 @@ is olympiad-style reasoning.
         - Store builds `kernels/builds/{gpu,cpu}-20261004-c7f5ac9ad` (build 10312); linkage PASS.
         - CPU FA harness v2: 141/141 bit-identical to the KVU-19a CPU store build. The llama-side hint checks out on
           gemma-3-1b (4 in every multi-sequence kvu step graph, 0 for single-sequence and for `kv_unified=false`).
-        - `gpu_slot2.sh` is RUNNING (`slot2-20261004T044448Z/`). The exactness arms finished rc=0; kernel perf is in
-          progress. Tick when the slot shows the done-when above.
+        - `gpu_slot2.sh` ran 04:44-05:05Z (`slot2-20261004T044448Z/`); scored in KVU-19b-1 below.
+      - **2026-10-04 05:05Z (workspace-ec): GPU validation SCORED; parent stays open.** Durable evidence:
+        [`artifacts/kvu19b-20261004/`](../../artifacts/kvu19b-20261004/) (`slot2-20261004T044448Z/summary.txt`,
+        `FOLD.md`, `DESIGN.md`, runner `gpu_slot2.sh`). The batched-bench done-when holds for commit 1 (`-kvu` S_TG
+        522.4 vs 529.3 base `-no-kvu`, -1.3%; -5.5% vs the same binary `-no-kvu`, 552.7; 19a was 434.6) and single-
+        sequence rows are unchanged vs 19a. KVU-19b is NOT ticked because commit 2 broke the design's bit-identity
+        claim and is being reworked (KVU-19b-rework-c2), and p3batch draft=1 still trails no-kvu (KVU-19b-gap). Tick
+        it when the rework is folded or dropped.
+      - [x] **KVU-19b-1 — validate the KVU-19b STORE build on the GPU (`gpu_slot2.sh`).** ✅ 2026-10-04 (workspace-ec;
+        store build `gpu-20261004-c7f5ac9ad`, linkage PASS, VRAM before/after equal)
+        - Correctness: `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` 2978/2978, plus the unified cases 110/110 with
+          `MIN_KV=0` and 110/110 with `SEQ_ROWS=0`. Every arm (on / seqoff / k19a) is within the CPU reference on all
+          119 harness cases (worst nmse 8.97e-05 at a 5e-4 tolerance). seqoff == alloff == k19a bit-identical (119/119).
+        - **Commit 1 (`1bceceb05`, vec routing, one row per sequence) WINS.** Kernel at 4 seqs × 81920 own, n_kv 327680:
+          5.53 ms vs 9.23 ms (19a) vs 8.77 ms (base); per-sequence streams reference 5.26 ms. At 4 × 16384: 1.08 vs
+          1.78 ms. p3batch gemma-3-1b 4×16k draft=1: 440 / 430 / 449 tok/s (on) vs 377 / 373 / 396 (19a) vs 491 / 523 /
+          518 (no-kvu), three rounds.
+        - **Commit 2 (`c7f5ac9ad`, WMMA sequence tiles) is MIXED and breaks exactness.** Aligned 4×8 verify: 11.86 vs
+          10.36 ms (seqoff), 14% slower. Uneven [1,8,8,8]: 11.90 vs 13.64 ms, 13% faster. Skip on vs off is NOT
+          bit-identical on 6 cases (110/111/118/119/126/127, all hint=4 nb≥25 multi-row tiles, f16/q8_0/bf16):
+          ndiff 384, nmse ≤ 8.3e-10. DESIGN.md claimed bit-identity for the tile layout under skip on/off. p3batch
+          draft=8 rows are within run-to-run noise (±10%), so the end-to-end effect is unresolved.
+        - Recommendation sent to workspace-89 (fold owner): fold commit 1 only.
+        - **Contention caveat.** The slot ran its host side unlocked on `taskset -c 160-183` (the SMT siblings of
+          64-87) while workspace-89 held `cpu-window2-20261004` and two dev servers and a build were also running
+          (INC-20261004-subagent-unlocked-cpu-in-held-window). Arms alternate within each round, so the comparisons
+          stand, but host-bound absolute numbers (p3batch on a 1B model, ~100 steps/s) are noisier than a quiet
+          host would give. `gpu_slot3.sh` takes `region-lock` for its host side.
+      - [ ] **KVU-19b-fold-c1 — fold KVU-19b commit 1 (`1bceceb05`) into the champion; leave commit 2 out.** (filed
+        2026-10-04, workspace-ec, owner **workspace-89**, from KVU-19b-1) Cherry-pick order: `ac97e305a a0d0ae238`
+        (KVU-19a, if not folded yet), then `1bceceb05` only. Commit 1 also touches `ggml.h/ggml.c` (the
+        `ggml_flash_attn_ext_{set,get}_n_seq` hint) and `src/llama-graph.cpp`. Gates on the folded candidate, from
+        `artifacts/kvu19b-20261004/FOLD.md`: house recipes; `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` (also with
+        `GGML_CUDA_FA_MASK_SKIP_MIN_KV=0`); harness exactness; P3 B on the 27B. Done when the champion carries commit 1
+        and its P3 B shows `-kvu` batched decode within ~5% of `-no-kvu`.
+      - [ ] **KVU-19b-rework-c2 — make WMMA sequence tiles exact, straddle-only, and separately switchable; then
+        `gpu_slot3.sh`.** (filed 2026-10-04, workspace-ec, owner workspace-ec, from KVU-19b-1; rework dispatched)
+        (1) Root-cause the skip on/off difference on cases 110/111/118/119/126/127 (384 elements differ in each). The
+        design says the planner and tiles never depend on `GGML_CUDA_FA_MASK_SKIP`, so something does. (2) Plan
+        sequence tiles only when a default tile straddles sequences, so the aligned 4×8 verify keeps the 19a layout
+        (it is 14% slower today). (3) Split the knob: `GGML_CUDA_FA_SEQ_TILES` for the tiles, `GGML_CUDA_FA_SEQ_ROWS`
+        for the vec routing only. (4) Write and run `gpu_slot3.sh` with more p3batch rounds for draft 8 and [1,8,8,8].
+        Done when skip on/off is bit-identical on all cases, aligned 4×8 is within noise of seqoff, uneven keeps its
+        gain, and the result is handed to workspace-89 as a separate fold item (or commit 2 is dropped with the
+        reason recorded here).
+      - [ ] **KVU-19b-gap — commit 1 still trails no-kvu at draft=1 in p3batch; find out why.** (filed 2026-10-04,
+        workspace-ec, from KVU-19b-1) p3batch gemma-3-1b 4×16k draft=1: 449 vs 518 tok/s (round 3; medians 440 vs
+        518, about 15% short), while the kernel micro-bench is at the streams reference (5.53 vs 5.26 ms) and
+        batched-bench is within 1.3%. So the remainder is likely outside the FA op: mask construction over
+        n_kv = 4 × own, the KVU-19a scan, KV copy/view ops on a single stream, or graph shape. Profile one
+        p3batch step `-kvu` vs `-no-kvu` (rocprof per-kernel, GPU slot) and attribute the gap per op. Done when the gap
+        is attributed with a fix filed, or shown to be inherent to a single KV stream. Re-measure the gap
+        under `region-lock` first: slot2 ran on a contended host (KVU-19b-1 caveat), and host overhead hits the
+        1B model hardest.
 - [ ] **KVU-20 — cross-slot prefix fork anchored on recurrent checkpoints, plus trunk-first dispatch.** (filed
   2026-10-04, workspace-ec, from the KV-serving survey Rec 2,
   `artifacts/gpu-block-27b-20261004/analysis/kv-serving-survey-REPORT.md` §4.)
@@ -639,6 +695,54 @@ is olympiad-style reasoning.
   sequences share cells (`n_sum > n_kv`). So it complements KVU-19b rather than replacing it. If it has merged by
   then, port the `kv_rows` path to the HIP vec kernel and the CDNA MMA path. A/B it on the KVU-18 cells and the 4×80k
   shape, and drop whichever loses. Done when the A/B verdict is recorded.
+- **v11 FA-path audit (2026-10-04, workspace-89; durable copy
+  [`artifacts/v11-fa-path-audit-20261004/REPORT.md`](../../artifacts/v11-fa-path-audit-20261004/REPORT.md)).** Upstream
+  #26046 deletes rocWMMA FA. On gfx90a, for our D=256 GQA-6 q8_0 shape, v11 then routes 3-32 query rows (4×1 batched
+  decode, 1-3-slot DFlash2 verify) to the generic TILE kernel (no matrix cores; the RDNA4 analog #26220 lost ~2×) and
+  >32 rows (4-slot verify, prefill) to MMA `<256,256,32,2>`, which spills 314 VGPRs under ROCm 6.2. The DF2-9 all-NaN
+  path is the ROCWMMA=OFF route. These tasks gate the v11 rebase and RTG-58's P4 `kv_rows` phase
+  ([`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-40..42), and inform KVU-21.
+  Owner of V11-FA-1..4: **workspace-ec** (filed 2026-10-04 at the coordinator's direction). Every build and run below
+  takes `region-lock` for its host side.
+- [ ] **V11-FA-1 — A/B the champion with ROCWMMA=OFF (exact v11 FA routing) against ROCWMMA=ON, plus a third arm with
+  #27870 and #28576 cherry-picked.** (filed 2026-10-04, workspace-ec, from the v11 FA-path audit §5) ROCWMMA=OFF
+  reproduces upstream's D=256 routing: TILE at ≤32 rows, MMA above. The third arm approximates v11's MMA kernel
+  (`b74f590ea` divergent-barrier fix, `bfdc32183` fp32 VKQ). Build in an experimental worktree, never the frozen tree.
+  Bands: 4×1 decode, 1-3-slot DFlash2 verify (9-27 rows), 4-slot verify (36 rows), prefill (512 and mixed 512+3×9),
+  own cells {4k, 16k, 57k} × foreign {0, 3×~100k}. Instruments: the 19b `perf2` micro-bench, `test-backend-ops` perf
+  mode (TFLOPS, comparable to #28576/#28907), batched-bench `-kvu` vs `-no-kvu`, and the P3 harness L0 (v10: drafted
+  36.3, no-draft 20.4 tok/s). Gate every arm on the DF2-9 reproducer (V11-FA-2) and on TILE D=256 `ncols2=2`
+  run-to-run bit-exactness (those kernels have never been compiled into any of our builds). Done when the per-band
+  delta is recorded here and decides one of: carry WMMA (V11-FA-4), retune the TILE/MMA crossover for gfx90a, cap
+  ncols (V11-FA-3), or nothing.
+- [ ] **V11-FA-2 — root-cause DF2-9: all-NaN target features at ~2k-token prompts with ROCWMMA OFF.** (filed
+  2026-10-04, workspace-ec, from the audit §0.4 and §4b) Build a standalone reproducer first: `test-backend-ops` cannot
+  catch it, because its random [-1,1] inputs never overflow. Add a new FA case with large magnitudes and long KV
+  (|V|~30, kv ≥ 4k) checked against the CPU reference. The length discriminator fits the >32-row MMA route: a short
+  prompt's prefill goes to TILE, while ~2k prompts split into 512-row ubatches that go to MMA. Candidates in the
+  audit's order: the D=256 MFMA-MMA route (consistent with the `99f3fffd6` unpadded-KV guard); the fp16 VKQ downcast
+  (fp32 after #28576); the #27870 barrier. Record: `dflash2-block-drafter-experimental-build.md` DF2-9 and wiki CH-8.
+  Done when the reproducer is 12/12 finite on the fixed path, or the faulting kernel and cause are recorded with an
+  upstream issue.
+- [ ] **V11-FA-3 — MMA `<256,256,32,2>` spills 314 VGPRs on gfx90a under ROCm 6.2; evaluate an ncols cap for D=256
+  prefill.** (filed 2026-10-04, workspace-ec, from the audit §0.3 and §3.1) `<256,256,16,2>` has 0 spills (499
+  registers including 243 AGPR). The spill is structural: 512 threads means 2 waves per SIMD on gfx90a's unified
+  register file. Candidates: cap D=256 at `ncols1=16` on CDNA2, or give `(256,256,64)` 256 threads. Leave the choice to
+  AutoKernel. Re-check v11's own code object (these numbers predate #28576) with the register-audit scripts in
+  `artifacts/v11-fa-path-audit-20261004/register-audit/`. Done when the prefill A/B (ON vs capped) is recorded, and
+  the cap is either carried into the v11 candidate or declined with the numbers.
+- [ ] **V11-FA-4 — in v11, carry rocWMMA FA as an in-binary arm until TILE/MMA is at least as fast on every band.**
+  (filed 2026-10-04, workspace-ec, from the audit §4 "Can rocWMMA FA be carried in v11? Yes" and §5.3)
+  - Restore `fattn-wmma-f16.{cu,cuh}`, the dispatch branch and the CMake/`hip.h` flags.
+  - Keep the tile skip-list out, so the same binary carries TILE for the A/B.
+  - Adapt to v11's `fattn_kernel_t`/`launch_fattn` signatures.
+  - Re-apply `db18f3937` and KVU-19a's WMMA hunk.
+  - Keep the `99f3fffd6` D=256 unpadded-KV → TILE guard until v11 `test-backend-ops` on ROCm0 proves MMA D=256
+    unpadded is correct.
+  - Expose it as a runtime knob (e.g. `GGML_CUDA_FA_PREFER_WMMA`), so the ONE candidate carries its own control.
+  - Cost: ~1-2 days plus a recurring conflict tax. It pins rocWMMA 1.x; ROCm 7 brings back #16221/#19461.
+  - Drop-when: TILE/MMA ≥ WMMA on every V11-FA-1 band, and DF2-9 is clean without WMMA.
+  - Done when the v11 candidate carries the arm, or V11-FA-1 shows it is not needed.
 - [ ] **KVU-7 — the MTP pool-full exception is a v11 experimental-kernel candidate.** v10 `ffc1bac82` with
   `-np 2 -c 4096 --kv-unified` and two 2048-token generations fails exactly one request with
   `speculative batch index 8 is not inside the current sub-batch [0, 8)`, instead of the clean
