@@ -1,10 +1,10 @@
 {
   "by_type": {
-    "docs": 118,
+    "docs": 119,
     "handoff-active": 177,
     "handoff-blocked": 2,
     "handoff-completed": 206,
-    "progress": 519,
+    "progress": 521,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
@@ -12,21 +12,21 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 2,
+      "changed": 1,
       "removed": 0
     },
-    "at": "2026-10-04T10:14:41Z",
+    "at": "2026-10-04T12:30:35Z",
     "scope_paths": [
-      "docs/reviews/research-intake-practical-applications-20261004.md",
-      "progress/2026-10/2026-10-04-codex-intake-wrap.md",
-      "progress/2026-10/2026-10-04-intake-decision-tools-stage4.md"
+      "docs/reviews/research-intake-earlier-applications-20261004.md",
+      "progress/2026-10/2026-10-04-intake-coverage-delta.md",
+      "progress/2026-10/2026-10-04-intake-earlier-wrap.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-04T10:14:41Z",
+  "scan_time": "2026-10-04T12:30:35Z",
   "schema_version": 1,
-  "source_set_hash": "6ba8c7cc4f980ba4a331c99f388be490e0105e4522b6958fa4c8a2bf9534270f",
+  "source_set_hash": "d8e32fd4600acd925666e7ec24a74ae40ec4ab34c78bd192bf2eb6c165fc1708",
   "sources": [
     {
       "content_hash": "a19d299e64b40a58a665e701e5b8588bf2cb5452991f775be380dd6dc6a59a11",
@@ -8373,11 +8373,27 @@
       "type": "progress"
     },
     {
+      "content_hash": "cd53d83b3446a82c13deeb93047c7718084f6629bc6813be0aaac70895481fbd",
+      "modified": "2026-10-04T11:35:43Z",
+      "path": "progress/2026-10/2026-10-04-intake-coverage-delta.md",
+      "size": 6380,
+      "title": "Research-intake coverage delta \u2014 implementation",
+      "type": "progress"
+    },
+    {
       "content_hash": "f5e3c21264cae641a284928b2fa4fead83d17e22d2d50ab59da79b1fd378ac15",
       "modified": "2026-10-04T09:34:58Z",
       "path": "progress/2026-10/2026-10-04-intake-decision-tools-stage4.md",
       "size": 9798,
       "title": "Decision-tools intake \u2014 approved Stage 4",
+      "type": "progress"
+    },
+    {
+      "content_hash": "32492f3aea0038beb4a9ee27dd533f4c45b3f5440d05f6f19bf36d9b867fc177",
+      "modified": "2026-10-04T12:27:52Z",
+      "path": "progress/2026-10/2026-10-04-intake-earlier-wrap.md",
+      "size": 6451,
+      "title": "Research-intake wrap-up and earlier-session retrospective",
       "type": "progress"
     },
     {
@@ -9269,6 +9285,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "142eb80c9b7bbbde7f2c8a2361af4b80c4f1b348f32971cf2f2e76bfb91a5977",
+      "modified": "2026-10-04T12:06:29Z",
+      "path": "docs/reviews/research-intake-earlier-applications-20261004.md",
+      "size": 16504,
+      "title": "Earlier research intakes: operational-outcome retrospective",
+      "type": "docs"
+    },
+    {
       "content_hash": "da980d3f861b13b42c9e0406d5e396d82b1273b1dc75bc79b128264184d80427",
       "modified": "2026-10-04T10:06:11Z",
       "path": "docs/reviews/research-intake-practical-applications-20261004.md",
@@ -9325,7 +9349,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1162,
+  "total_new": 1165,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
