@@ -8,10 +8,25 @@ fixed production anchor.
 
 ## Start here — open work (2026-09-29)
 
-**The champion is `9a3f1392a` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 three times:
-KVU-19 fold `90c12df42` → `1bceceb05`, all-keeps fold `1bceceb05` → `61bdb185c`, CPU FA overflow fold `61bdb185c` →
-`9a3f1392a`; see the fold ledger entries below). This is the GLOBAL champion branch. Builds:
-`kernels/builds/cpu-20261004-9a3f1392a` and `kernels/builds/gpu-20261004-9a3f1392a` (10325).
+**The champion is `b0ba1d427` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 four times:
+KVU-19 `90c12df42` → `1bceceb05`; all-keeps `1bceceb05` → `61bdb185c`; CPU FA overflow `61bdb185c` → `9a3f1392a`; W
+`9a3f1392a` → `b0ba1d427`; see the fold ledger entries below). This is the GLOBAL champion branch. Builds:
+`kernels/builds/cpu-20261004-b0ba1d427` and `kernels/builds/gpu-20261004-b0ba1d427` (10332).
+
+**Fold ledger — 2026-10-04, candidate W** (stack owner's fixes, folded by ak-ds41-main), 7 clean cherry-picks (map
+`/mnt/raid0/llm/tmp/fold-W-20261004/shamap.tsv`):
+- **Prefill budget** (from `98c0ce12a`): `--prefill-budget-decoding` / `--prefill-budget-target-ms`, default OFF and
+  byte-identical when off. KVU-16g (3 decoders at 20k + an 80k neighbour prefill): pb512 decode-under-prefill ×2.92 with
+  solo prefill −4% vs `-b 512`'s ×3.22 / −14%. The :8083 switch lands with v11.
+- **FA-INT64-OFFSET** (`6152cdf7a`, `4f21c3477`, `0c4801127`): WMMA int64 offsets past ~524k cells at ub 2048, plus int32
+  product fixes in tile/MMA/vec and mask_ne0 test cases. Offsets identical wherever int32 didn't overflow.
+- **FN-FIX** (`5bfdcd18c`, `6c126e975`, `45d8f2937`): the fused decode takes rope params from the context; the path is off
+  in production (`GGML_FUSED_DECODE_OFF=1`).
+- **Gates:** G0 0 losses (source, CPU, GPU). CPU test-backend-ops `GGML_IQK=1` all pass (FA 5182/5182, mask_ne0 4/4),
+  `test-qwen4exp-fused-rope` 3/3. GPU: FA 2953/2953, mask_ne0 4/4, MUL_MAT 1139/1139; 27B greedy W ≡ champion
+  byte-identical 3/3. CPU serving (`runs/20261004T195408Z`, :8083 serving): DS41 W vs C −0.89% (floor 4.533%, not
+  decisive), Q38FN −0.04%, greedy identical 3/3.
+- **Moved:** CAS `9a3f1392a` → `b0ba1d427` (fast-forward), `ak-loop-tree` refreshed, pushed to fork.
 
 **Fold ledger — 2026-10-04, CPU FA fp16-VKQ overflow fix ("Yfa")** (stack owner's fix, folded by ak-ds41-main): `057270556` +
 `a99e5330a` from `experimental/cpu-fa-fp32-vkq-20261004`, ported onto Y without the opt-in arms `2ad8bff36`/`5bde1b83d`
