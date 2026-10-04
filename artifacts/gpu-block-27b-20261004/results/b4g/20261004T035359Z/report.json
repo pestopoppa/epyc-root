@@ -1,0 +1,124 @@
+{
+ "schema": "epyc.gpublock.b4g.v1",
+ "at": "2026-10-04T03:59:51Z",
+ "log": "/mnt/raid0/llm/epyc-orchestrator/logs/llama-server-8083.log",
+ "offset": 27334737,
+ "why": "current launch: 0.09.140.739 I srv    load_model: initializing, n_slots = 4, n_ctx_slot = 262144, kv_unified = 'true'",
+ "log_offset_end": 27542756,
+ "triggered": [
+  {
+   "size": 8000,
+   "tokens": 8047,
+   "http": 200,
+   "http_newtask": 200,
+   "prompt_n": 8047,
+   "cache_n": 0,
+   "prompt_ms": 11634.096,
+   "prefill_tps": 691.7,
+   "decode_tps": 22.48,
+   "predicted_n": 8,
+   "draft_n": 17,
+   "draft_n_accepted": 2,
+   "draft_acc": 0.1176
+  },
+  {
+   "size": 24000,
+   "tokens": 24166,
+   "http": 200,
+   "http_newtask": 200,
+   "prompt_n": 24166,
+   "cache_n": 0,
+   "prompt_ms": 37848.036,
+   "prefill_tps": 638.5,
+   "decode_tps": 29.11,
+   "predicted_n": 8,
+   "draft_n": 15,
+   "draft_n_accepted": 4,
+   "draft_acc": 0.2667
+  },
+  {
+   "size": 48000,
+   "tokens": 47830,
+   "http": 200,
+   "http_newtask": 200,
+   "prompt_n": 47830,
+   "cache_n": 0,
+   "prompt_ms": 101887.716,
+   "prefill_tps": 469.4,
+   "decode_tps": 1000000.0,
+   "predicted_n": 1,
+   "draft_n": null,
+   "draft_n_accepted": null,
+   "draft_acc": null
+  },
+  {
+   "size": 72000,
+   "tokens": 71548,
+   "http": 200,
+   "http_newtask": 200,
+   "prompt_n": 71548,
+   "cache_n": 0,
+   "prompt_ms": 144619.164,
+   "prefill_tps": 494.7,
+   "decode_tps": 28.28,
+   "predicted_n": 6,
+   "draft_n": 9,
+   "draft_n_accepted": 3,
+   "draft_acc": 0.3333
+  }
+ ],
+ "save_total": {
+  "n": 0,
+  "points": [],
+  "fit": null
+ },
+ "save_target_only": {
+  "n": 0,
+  "points": [],
+  "fit": null
+ },
+ "save_draft": {
+  "n": 0,
+  "points": [],
+  "fit": null
+ },
+ "entry_with_checkpoints": {
+  "n": 0,
+  "points": [],
+  "fit": null
+ },
+ "checkpoint_size": {
+  "n": 0,
+  "points": [],
+  "fit": null
+ },
+ "checkpoints_per_entry": [],
+ "events": {
+  "idle_saves": 0,
+  "clear_nonzero": 0,
+  "clear_nonzero_tokens": 0,
+  "restores_better": 0,
+  "restore_failures": 0,
+  "evictions": 1,
+  "evicted_mib": 1532.4,
+  "prompt_saves": 0,
+  "last_cache_state": null
+ },
+ "prior_total": {
+  "n": 2,
+  "mib_per_1k_tokens": 37.155,
+  "kib_per_token": 38.05,
+  "fixed_mib": 149.6,
+  "r2": 1.0,
+  "points": [
+   [
+    39875,
+    1631.2
+   ],
+   [
+    84951,
+    3306.0
+   ]
+  ]
+ }
+}

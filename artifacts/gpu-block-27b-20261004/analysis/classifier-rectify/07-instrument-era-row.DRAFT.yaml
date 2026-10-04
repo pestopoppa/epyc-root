@@ -1,0 +1,19 @@
+# DRAFT for operator ratification ONLY. Target: epyc-orchestrator/orchestration/instrument_eras.yaml
+# (append-only, human-only trust boundary). Not applied by any agent. Append under `eras:`.
+# Set `from:` to the commit time at which 04-harness1-classify-client.patch lands in root.
+
+  - id: CLS1
+    from: "<root commit time of the harness1 rectification, UTC>"
+    scope: inf70_chat_coherence_label
+    note: >
+      INF-70 HARNESS-1 per-prompt `verdict` (scripts/inf70/harness1/client.py -> classify.py). Before this
+      boundary every chat-path client passed tokens=list(range(npred)): uniq == 1, top == 1/n, run == 1, so
+      the SALAD rules uniq/top/run were vacuous and only words<0.25n / ascii<0.85 could fire; EARLY-EOS could
+      not fire (chat finish_reason is never "eos"). Pre-boundary labels (rows with no `classifier` field;
+      SC75 sidecars with extra.coherence_classifier absent or "inf70-classify.v1|synthetic-ids...") are
+      retire-view as output evidence: cite the arm's paired sha256 identity instead. Recomputed 2026-10-04
+      over 403 rows files: 8,046 COHERENT / 1,608 SHORT / 0 SALAD, so no decision rested on a uniq-only
+      SALAD. Post-boundary rows carry classifier "inf70-classify.v1.1" with real ids (token_source
+      response|retokenized), v1 rules otherwise unchanged and refused above n=256; superseded by the shared
+      coherence_gate library (degeneracy.v2) when the client is switched. Audit:
+      /mnt/raid0/llm/tmp/q38t7-rescore/AUDIT.md; rectification: /mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md.

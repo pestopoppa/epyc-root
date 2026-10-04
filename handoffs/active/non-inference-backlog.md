@@ -13,10 +13,11 @@
 ## Start here
 
 - **Next:** OBS-12a.
-- **Then:** NIB2-85, NIB2-84, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
+- **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
   (dormant), NIB2-80a, NIB2-82, NIB2-87 (filed as NIB2-81), NIB2-88, NIB2-89, NIB2-90, OBS-9, OBS-10.
+- **Leak robustness (2026-10-04 supplement):** LR-6a and LR-9a are operator-held. LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
 ## Purpose
@@ -254,7 +255,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
 
 ## 2026-09-27 supplement — disk-leak audit and window-script defects (ak-ds41-main)
 
-- [ ] **NIB2-84** (MED): **`~/.codex` has no retention and no reaper.** Disk-leak audit 2026-09-27
+- [x] **NIB2-84** (MED): **`~/.codex` has no retention and no reaper.** Disk-leak audit 2026-09-27
   (`/mnt/raid0/llm/tmp/disk-leak-audit-20260927.md` §1 rank 2, §2.3): `/home/node/.codex` is ~23 GiB, and
   `state_5.sqlite` (2.5G), `logs_2.sqlite` (2.1G) and `thread_history_1.sqlite` (2.9G) grew ~4.8 GiB in one ~8 h
   window while Codex served as a delegation actor. Unlike `opencode.db` (the `opencode_event_reaper.sh` pattern,
@@ -262,6 +263,12 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
   process holds, three-state `observer_guard.sh` probe, an observer-registry row), plus a retention window that
   follows Codex's own session-resume horizon. Any deletion of existing history needs operator confirmation first.
   Acceptance: the reaper holds `~/.codex` flat across a day of actor use.
+  - ✅ 2026-10-04 — **closed report-only, by operator ruling.** `scripts/system/codex_retention_reaper.py` landed
+    (root `4dd68363`, dry-run by default). On 2026-10-04 the operator made a hard rule: Claude and Codex backup logs and
+    session transcripts are never touched, because a more senior project outside this repo uses them as
+    historical transcripts. Its `apply` path is therefore **permanently disabled** (`722b7196`; exit 4,
+    report-only). The acceptance line above (hold `~/.codex` flat) is withdrawn: growth is reported, never reaped. The
+    report-only run and `host_hygiene_tick.py`'s grower ranking are the only remaining surface.
 - [ ] **NIB2-85** (MED): **`verify_ggml_linkage.sh` FAILs falsely on a symlinked kernel store.** Found 2026-09-27 by
   the MMQ J-cap GPU window (research `6b8feb9e` worked around it in the window script): the tool compares unresolved
   paths, so a binary under `kernels/production/{cpu,gpu}` (a symlink into the store) reads its own ggml libraries
@@ -304,6 +311,57 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
         13.2 s (stop 2.3, rewrite 0.6, start 10.3; from `rewrite-run-20260930.log` there, not the JSON). The same
         restart deployed orch `78847544` (RI-16, `routing-intelligence.md`) to the API: new master PID 1930724.
 
+## 2026-10-04 supplement — leak robustness and the harness-state hard rule (ak-ds41-main)
+
+The 2026-10-03 disk audit (`/mnt/raid0/llm/tmp/disk-audit-20261003/`) and INC-20261004-cleanup-removed-load-bearing-worktree
+led to an operator-directed leak-robustness pass. It ran on root lane `lane/leak-robustness-20261004` (merged
+`2dbf1e57`), research lane `lane/leak-tests-20261004` (merged `01a19f24`), and the orchestrator branch
+`lane/leak-tests-20261004`, which workspace-ec carries. The doctrine half is ratified as
+RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-20261004 (`a2d209d2`).
+
+- [x] **LR-1** — `scripts/system/worktree_gate.py`, the only removal path for a worktree. It refuses a tree named by
+      any process cwd, argv or environment, by a live launcher or campaign input, or one that is KEEP-marked, git-locked
+      or a lane/pool tree. ✅ 2026-10-04 (root `837ebf6f`; `tests/test_worktree_gate.py`)
+- [x] **LR-2** — `scripts/system/scratch_cleanup.py` over each handoff's declared **Scratch** roots, run as wrap-up
+      Step 7b and from `/log`. Never a cron job, by operator direction. ✅ 2026-10-04 (root `837ebf6f`, `5c86047b`)
+- [x] **LR-3** — the handoff `**Scratch**:` header field and its contract (`handoff-index-authoring.md` § Scratch
+      roots), plus an `index_state.py` warning for a handoff that lacks it. ✅ 2026-10-04 (root `837ebf6f`)
+- [x] **LR-4** — `scripts/utils/safe_download.py`: downloads cannot leave `.part`/`.incomplete` stubs, and `/tmp`
+      destinations are refused. ✅ 2026-10-04 (root `38c3a2e3`)
+- [x] **LR-5** — test-suite disk leaks fixed: the 55,897 `autokernel-planner-anchor-*` dirs from `runtime_anchor()`
+      and the other bare-`mkdtemp` sites. ✅ 2026-10-04 (research `440b5b5c`, merged `01a19f24`)
+- [x] **LR-6** — `scripts/system/host_hygiene_tick.py`, launched by `hub_supervisor.sh once`: a free-space alarm
+      (`host-disk-free-low`, two-sample), a daemon keeper (`relaunch_if_down`), claude-backups freshness and the daily
+      grower ranking. ✅ 2026-10-04 (root `913585ff`). It is **inactive until LR-6a**.
+  - [ ] **LR-6a** (operator, host-only) — **re-pin the host supervision cron.** The host crontab runs a pinned copy of
+        `hub_supervisor.sh` (OP-9 option B), so the tick goes live only after
+        `bash scripts/operator/install_supervision_cron_20260916.sh --all` runs **on the host**. It cannot run from the
+        container: attempted 2026-10-04 and failed. Operator queue row prepared. Close it with a `host_hygiene_tick`
+        heartbeat line in its log after the re-pin.
+- [x] **LR-7** — the DS41 load-bearing worktrees are declared with git locks: `root-main-epyc-root-repo` and
+      `research-ds41-run10`. ✅ 2026-10-04 (INF-77 DS41-C113a)
+- [ ] **LR-8** — **merge the periodic cleanups into one tick, after LR-6a.** The standalone
+      `opencode_event_reaper.sh` daemon and the report-only `codex_retention_reaper.py` run each become a
+      `host_hygiene_tick.py` duty, so there is one scheduler, one heartbeat and one alarm channel. The keeper already
+      relaunches the reaper (NIB2-88). Keep the reaper's scope exactly as approved: opencode's `event` table in idle
+      sessions only. Deferred until LR-6a, because until then the tick does not run at all.
+- [x] **LR-9** — **harness state and session transcripts are never cleanup targets** (operator hard rule 2026-10-04:
+      Claude/Codex backup logs and transcripts *"should NOT BE TOUCHED UNDER ANY CIRCUMSTANCES. They are historical
+      transcripts used by a root filesystem project far more senior to anything performed in this project repo"*,
+      extended to every third-party harness: opencode, hermes, claude share, harness codex homes). Enforced in code:
+      `codex_retention_reaper.py` apply permanently disabled (`722b7196`), and `scratch_cleanup.py` `NEVER_TOUCH`
+      refuses those trees whatever a handoff declares (`722b7196`, `b639dc8e`). Written into
+      `docs/guides/agent-workflows/cleanup-reference-check.md` and `docs/design/autokernel-disk-hygiene-20260915.md`.
+      ✅ 2026-10-04
+  - [ ] **LR-9a** (operator) — **ratify the hard rule into `agents/shared/OPERATING_CONSTRAINTS.md` → *Destructive
+        operations*.** That file is human-only. Prepared as
+        `scripts/operator/ratify_harness_state_never_touch_20261004.sh`, with the patch
+        `artifacts/operator/harness-state-never-touch-20261004.patch`. Review it with no args, then sign with `--apply --attest
+        RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004`.
+- [ ] **LR-10** (workspace-ec) — land the orchestrator half (`lane/leak-tests-20261004`, which includes `9a2a35bf`:
+      age-based eviction for the unbounded fence-kernel spec-file cache) on orch main. As of 2026-10-04 04:00Z the branch
+      exists only locally and is not pushed. Close with the orch main sha.
+
 ## 2026-09-27 compaction — orphaned residuals boxed
 
 Both residuals below sat inside closed items and had no box of their own, so the compaction gave them one before
@@ -317,6 +375,11 @@ moving their parents to the completed ledger.
       Add the relaunch step (detached, from the tracked path `/workspace/scripts/system/opencode_event_reaper.sh`, as
       NI-OC-a.1 did) to the cold-start checklist. `agents/shared/` is human-only, so the agent-editable home is the
       `coordinator-agent` skill's cold start. Zero inference.
+      - 2026-10-04: the reaper is operator-approved to keep running. It prunes only opencode's `event` streaming table
+        in idle sessions, never sessions, messages or parts. It was relaunched at about 03:50Z, pid in
+        `/mnt/raid0/llm/tmp/opencode-reaper.pid`. `host_hygiene_tick.py`'s keeper (root `913585ff`) relaunches every
+        registry row marked `relaunch_if_down`, which today is this reaper. Once the host cron re-pin (LR-6a) is done,
+        that keeper does this item's job: close it then, with a census showing the reaper relaunched after a restart.
 - [ ] **NIB2-89** (LOW): **generalise the bus supervisor's H-4 self-restart to every registered daemon.** From NIB2-81
       (✅ 2026-09-23): remedy (a) (`daemon_provenance.sh`) and remedy (b) (the registry `runtime` field, the
       `observer_census.py --live` census and the `restart_on_stale` path) landed. Its own "Remaining" line also

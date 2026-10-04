@@ -176,7 +176,9 @@ probes=(0); rc=0; hub_down_confirmed || rc=$?; chk "first probe healthy -> not d
 
 # 7. once/loop parity: both run sync then stale-source on the healthy path
 for fn in cmd_once cmd_loop; do
-  body="$(sed -n "/^${fn}()/,/^}/p" "$SUP")"
+  # code lines only: a comment that NAMES a function is not a call (cmd_loop's dp_stale
+  # comment mentions check_hub_stale_source, which made this count 2 and the check red)
+  body="$(sed -n "/^${fn}()/,/^}/p" "$SUP" | grep -v '^[[:space:]]*#')"
   chk "$fn syncs" "$(grep -c sync_dashboard_from_origin <<<"$body")" 1
   chk "$fn checks stale source" "$(grep -c check_hub_stale_source <<<"$body")" 1
   chk "$fn uses the home guard" "$(grep -c refuse_noncanonical_home <<<"$body")" 1

@@ -69,5 +69,13 @@ partial pre-reboot checkpoint, use `--outcome partial --boundary-reason pre-rebo
   text, failed push, or unreachable pushed ref. Do not bypass the refusal.
 - Do not run the full wrap-up. Index pruning, generated state, promotion, and wiki
   compilation belong to the Auditor transaction.
+- After a successful checkpoint, clean this task's scratch: it lives under the owning
+  handoff's declared `**Scratch**:` roots. Run
+  `python3 scripts/system/scratch_cleanup.py apply --handoff <owning-handoff.md>`
+  (`plan` first to read the listing). Plain scratch goes to the trash; worktrees go only
+  through `worktree_gate.py` — a worktree whose branch has not landed on `origin/main`
+  yet (yours awaits Auditor promotion) is KEPT and listed, and the next boundary after
+  promotion removes it. Report every KEEP line. Never `rm -rf`, `--force` or
+  `git worktree prune`; your own pool/lane worktree is protected.
 - `--bus-root` and `--no-publish` exist for isolated tests. Do not use
   `--no-publish` for a real worker boundary; the default targets the canonical bus.

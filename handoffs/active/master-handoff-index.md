@@ -36,6 +36,10 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-75 | Ratify the coherence instrument eras as ONE package: OC1-coherence-gate-v1 + CLS1 (INF-70 harness1 synthetic-id labels) into orchestrator instrument_eras.yaml. The ratify script is being prepared (TD-30e); CLS1 `from:` = patch-04 commit time. Annex B B-COH-1 only if the paired gate is made mandatory for promotion | [typed-decision-plane.md](typed-decision-plane.md) TD-30e | 2026-10-04 |
+| OP-74 | Sign RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004: RATIFY_OPERATOR='<name>' bash scripts/operator/ratify_harness_state_never_touch_20261004.sh --apply --attest RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004 | [non-inference-backlog.md](non-inference-backlog.md) LR-9a | 2026-10-04 |
+| OP-73 | Run on the HOST (not the container): bash scripts/operator/install_supervision_cron_20260916.sh --all, which re-pins hub_supervisor and activates host_hygiene_tick | [non-inference-backlog.md](non-inference-backlog.md) LR-6a | 2026-10-04 |
+| OP-72 | Sign STACKCHG-HYGIENE-20261003 (KVU-16a measured 38.03 GiB; SCG-PRIORS-WARM seeding scope; DRAFT-SEL-2 drafters form). `--validate-only` VALID, 68 pins; argv 11/11 unchanged, no relaunch. Command: `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-hygiene-20261003/ratify_stackchg_hygiene_20261003.sh --attest RATIFY-STACKCHG-HYGIENE-20261003` (operator terminal) Note: 38.03 GiB is the LOAD-time non-KV; :8083 grows +7.2 GiB while serving (KVU-16h/16i), which this package does not change. | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) → SCG-PRIORS-WARM, DRAFT-SEL-2; [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) → KVU-16a | 2026-10-04 |
 | OP-58 | Ratify the forward-port rule into CLAUDE.md § Experimental Kernel Workflow (INC-20260925): one feature per forward-port commit; split a bundled commit before reverting it; a feature's test travels with it | [autokernel-champion-aggregate.md](autokernel-champion-aggregate.md) → V6R-4b | 2026-09-25 |
 | OP-59 | opencode store: (a) global snapshot:false (per-call configs already carry it; global would disable TUI undo; recommend per-call only), (b) retention policy for opencode.db (10.8 GB live + 10.9 GB WAL; VACUUM cannot shrink it; recommend ageing out headless actor sessions) | [autokernel-orchestrator-actor-backend.md](autokernel-orchestrator-actor-backend.md) → OAB-15 | 2026-09-25 |
 | OP-57 | Choose an AMD AI Lab contact destination (dedicated email recommended, or booking/contact URL) and confirm the reviewed site is ready for public GitHub Pages launch | [amd-ai-lab-website-publication.md](amd-ai-lab-website-publication.md) WEB-1 | 2026-09-25 |
@@ -97,12 +101,12 @@ nobody is moving.
 <!-- BEGIN GENERATED index_state -->
 | Domain | Handoffs | Open | Blocked | Oldest advance |
 |--------|----------|------|---------|----------------|
-| inference-research | 60 | 911 | 33 | 2026-07-29 |
+| inference-research | 60 | 960 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 472 | 15 | 2026-07-29 |
+| research-evaluation | 43 | 479 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 50 | 556 | 17 | 2026-07-29 |
-| user-facing-harness | 12 | 112 | 16 | 2026-07-29 |
+| routing-and-optimization | 51 | 612 | 17 | 2026-07-29 |
+| user-facing-harness | 12 | 123 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

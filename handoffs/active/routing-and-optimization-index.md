@@ -30,7 +30,7 @@
 | RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | SSU-F9c — derive promote_lane.py --lock-dir from the git common dir (D9 ack); SSU-F17 waits on UFH-13's verdict | — |
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-2 — add a verify-before-FINAL step to the edit rider, then re-run the BEP sandbox and re-measure | — |
-| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | OBS-12a — system-python3 PyYAML check in health_check.sh and the venv in CLAUDE.md bus commands | — |
+| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | OBS-12a PyYAML check; after operator LR-6a (host cron re-pin) do LR-8, merging periodic cleanups into host_hygiene_tick | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e — merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |
@@ -41,7 +41,7 @@
 | RTG-33 | searxng search backend | [searxng-search-backend.md](searxng-search-backend.md) | SX-5/SX-6 wait on AR-3; meanwhile relabel intake-365 (Firecrawl) superseded by intake-372, matching intake-364 | — |
 | RTG-34 | session bus thin dispatcher | [session-bus-thin-dispatcher.md](session-bus-thin-dispatcher.md) | AIR-6 — deploy exact guarded source and require ordinary-work refusal; then resume live canaries | — |
 | RTG-35 | shape keyed contention gating | [shape-keyed-contention-gating.md](shape-keyed-contention-gating.md) | Retire the stale q* nomenclature on half-sized instances, reviewed together with the contention_nway_restricted_count label | — |
-| RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | SCG-ENVOVR-EXPIRED; SCG-FASTPATH + SCG-RULING-TO-FIELD; SCG-SPEECH-OMP-PASSIVE; SCG-PRIORS-WARM; SCG-TEST-ORDER; DRAFT-SEL-2 | — |
+| RTG-36 | stack change governance pipeline | [stack-change-governance-pipeline.md](stack-change-governance-pipeline.md) | OP-72 sign STACKCHG-HYGIENE, then SCG-PRIORS-WARM-b + DRAFT-SEL-2b; SCG-ENVOVR-EXPIRED; SCG-FASTPATH; SCG-TEST-ORDER | — |
 | RTG-38 | standardized stack update pipeline finalizat | [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) | W4 swap-CI — prove representative stack changes move generated descriptors, priors and gate execution together | — |
 | RTG-39 | swarm dataset distillation | [../blocked/swarm-dataset-distillation.md](../blocked/swarm-dataset-distillation.md) | BLOCKED on strand Phase B — correct the premise first: distillation objective is ~2pp, the teacher-prompting change is ~38pp | EVL-45 |
 | RTG-40 | tri role coordinator architecture | [tri-role-coordinator-architecture.md](tri-role-coordinator-architecture.md) | TR-4.1 — Compose role with model selection in routing.py; frozen until the DAR-regret and per-question-vector gates reopen routing | — |
@@ -59,7 +59,8 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 shadow-mode code (zero-inference); TD-29.M0a prefill tokens on the /completion lane, then TD-29.M4 prefix-cache reuse | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-19a-1 gpu_slot.sh store-build check, then fold via workspace-89 (KVU-19); KVU-15c live credit; KVU-16b; KVU-15d; KVU-16a | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | URGENT KVU-16h VRAM growth; KVU-16f -b 512 A/B; KVU-16b-1 re-run; KVU-19b-fold-c1 (ws-ec) + rework-c2; V11-FA-1/2 pre-rebase A/B; KVU-16g | RTG-19, RTG-36, INF-41 |
+| RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-01 index a P1 worktree from the champion tip (gitnexus-analyze.sh), KPF-02 impact pass, KPF-03 VB-KVU-PF; then KPF-11 fork source | RTG-57, RTG-27, INF-65 |
 
 ## Cross-domain
 

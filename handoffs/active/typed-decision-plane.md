@@ -440,6 +440,95 @@ episodic memory writing."
     ~13:43Z→15:32Z, stopped by the operator; the region-hog-vs-production-serving policy question is evidence
     under `autokernel-unified-surface-program.md` U4-SEQ, not a new decision — OP-41 already rules that space.)
 
+## Coherence judge and `coherence_gate` rollout (filed 2026-10-04, workspace-ec)
+
+*Ownership:* workspace-ec owns this section. It comes from the operator-approved replacement of the INF-70
+classifier (2026-10-04); the rest of the handoff stays with the research-intake lane. The judge reuses TD-29's
+native single-token path and its sidecar.
+
+**Operator-approved scope (2026-10-04):**
+- The judge is orchestrator-hosted.
+- A cloud judge (`codex-luna-low` or `sonnet-low`) is allowed only when the caller itself is cloud-hosted.
+- Local work targets the CHAMPION build (the sidecar, which becomes v11), with no promotion now.
+
+**Evidence:**
+- `artifacts/gpu-block-27b-20261004/analysis/q38t7-rescore/{AUDIT,RESCORE}.md`
+- `artifacts/gpu-block-27b-20261004/analysis/classifier-rectify/RECTIFY.md`
+
+- [x] **TD-30 — tier-2 coherence judge as an orchestrator-hosted typed decision.** ✅ 2026-10-04 (workspace-ec)
+  - **Library:** shared `coherence_gate` on research main 95157ad7 (`scripts/lib/coherence_gate/`, schema
+    `epyc.coherence_gate.v1`, 55 tests). Tier 0 is paired byte-identity; tier 1 is ground truth plus the
+    length-aware `degeneracy.v2`. It refuses synthetic token ids, and an INCOMPLETE gate is never a PASS. Adoption
+    notes and the migration list are in `epyc-inference-research/docs/coherence-gate.md`.
+  - **Endpoint:** `POST /v1/typed/coherence_judge` (localhost only) on orch main f8c9c0a3, DEPLOYED by an API reload.
+    The window guard was verified live: it refuses local calls while the MI210 or AutoKernel CPU window is held.
+    Every verdict carries a `calibration_id`, and an uncalibrated judge is refused unless `allow_uncalibrated` is set.
+  - **Audit of past decisions:** the INF-70 classifier was a near no-op on every chat client, because of the fake
+    ids `list(range(n))`. The direct version has a length-biased `uniq`. No production decision flips. The MTP
+    divergences were re-read and are fluent alternative continuations.
+  - [ ] **TD-30a — merge the champion-sidecar judge backend to orch main.** Branch `feat/judge-champion-backend-ec`
+    @ 4359b43c, not merged. It adds:
+    - the `local:champion_sidecar` native backend, which probes `/health` and `/props` only and never starts a
+      process;
+    - `auto` backend selection;
+    - a `judge_key` bound to the serving build;
+    - the prefill addendum TD-31 generalises: a fixed head, then rubric, then prompt, then base, with the candidate
+      last; `id_slot` pinned only on the sidecar; a `max_judged_tokens` excerpt; per-call `prompt_ms` / `prompt_n` /
+      `cache_n` / `prefix_reuse_rate`.
+
+    Done when it is merged with tests green, the API is reloaded, and a call log shows the backend selection
+    recorded. With the sidecar down, a 503 `sidecar_unavailable` counts as the selection proof.
+  - [ ] **TD-30b — calibrate the judge.** Run the seeded 32-pair calibration set, which includes real INF-70 MTP
+    divergences, on `local:champion_sidecar` native (**GATE: champion-sidecar CPU window**). Verify the cloud judges
+    (`codex-luna-low`, `sonnet-low`) as `verified_live` on the same set. Done when each backend has a sealed
+    calibration row (`calibration_id`, agreement on the seeded labels, backend, build, scoring), and the
+    uncalibrated refusal lifts only for those backends.
+  - [ ] **TD-30c — embedder-based excerpt option for the judge (operator suggestion, 2026-10-04).** When a divergence
+    exceeds `max_judged_tokens`, the excerpt is positional today: head, tier-0 divergence span, tail. Add an option
+    that chunks base and candidate, embeds the chunks with the BGE embedders already served (BGE-M3 /
+    bge-large-en-v1.5), and judges the most semantically divergent aligned chunks. Record the excerpt method and the
+    chosen spans in the verdict. Done when the option exists behind a parameter with tests, and on the TD-30b set it
+    agrees with the labels at least as often as the positional excerpt, at an equal judged-token budget.
+  - [ ] **TD-30d — migrate the coherence consumers** per `epyc-inference-research/docs/coherence-gate.md` §2:
+    1. The Q38-T7 runner (`q38_t7.py` + `lib_gpublock.py`) moves to `coherence_gate.evaluate` with the no-draft anchor
+       and needle truth rows. This is the successor that Q38-T7b in `qwen38-27b-replace-qwen36.md` names.
+    2. The INF-70 harness1 client, via CLS-RECT-1a in `cpu-decode-roofline-program.md`: patch 04 first.
+    3. G2-CONC / E-GATE / PROD-1 are a text change in CLS-RECT-1, done by the `inference` lane.
+    4. The AutoKernel T0 gate: no swap. It is already paired and sits inside the immutable evaluator bundle.
+    5. The cousins (DAR-LAT `critic_thread_gate.v2.py`, batch-envelope `conc.py`) re-point on their next version bump.
+
+    DS41's own gate is DS41-C118 in `deepseek-v41-flash-evaluation.md`. Done when items 1 and 2 produce
+    `epyc.coherence_gate.v1` verdicts and items 3–5 are each recorded as done or not-needed.
+  - [ ] **TD-30e — ONE ratification package for the coherence instrument eras (operator signs; agents prepare).**
+    It covers two era rows for `epyc-orchestrator/orchestration/instrument_eras.yaml`, which is a human-only
+    trust boundary:
+    - `OC1-coherence-gate-v1` (draft in `docs/coherence-gate.md` §1a);
+    - `CLS1` for the harness1 labels (draft in `analysis/classifier-rectify/07-instrument-era-row.DRAFT.yaml`).
+
+    Set CLS1's `from:` to patch 04's root commit time. Leave the Annex B amendment B-COH-1 out unless the paired gate
+    is made mandatory for promotion. Prepare one ratify script with a `--validate-only` mode; the operator runs it.
+    Operator queue row OP-75, text prepared in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`. Done when the
+    receipt exists and both rows are in the file.
+  - [ ] **TD-30f — check the orchestrator's runtime unique-ratio guards for the same length bias** (RECTIFY §6f).
+    The guards are `classifiers/quality_detector.py:42-48,120`, `pipeline_monitor/anomaly.py:137-148` and
+    `llm_primitives/inference.py:50`. They are independent fixed unique-ratio repetition guards, not this classifier,
+    but a fixed threshold false-flags coherent text above ~300–500 tokens. Replay the `length_bias.py` corpora
+    (`analysis/q38t7-rescore/`) through each guard's threshold, with no inference. Done when each guard has a
+    measured false-positive rate by output length, and any guard that fires on coherent long text is made
+    length-aware or switched to the `degeneracy.v2` loop trigger.
+- [ ] **TD-31 — prefill optimisation for typed decisions generally.** (filed 2026-10-04, workspace-ec, from TD-30a)
+  Carry the judge's prefill addendum to every Jev typed decision:
+  - **prefix-stable ordering:** a fixed head of instructions and label definitions, then the shared context, with the
+    question-specific part last;
+  - **a pinned slot:** `id_slot` plus `cache_prompt` on the sidecar and on explicit `pin_slot` opt-in lanes only,
+    never on production chat roles;
+  - **judged-length caps,** with the excerpt recorded;
+  - **per-call metrics:** `prompt_ms`, `prompt_n`, `cache_n`, `prefix_reuse_rate`, rolled up per question kind.
+
+  It depends on TD-29.M0a (`cache_n` on the `/completion` lane) and is confirmed by TD-29.M4. Done when a sidecar
+  receipt shows `cache_n` > 0 and `prefix_reuse_rate` per question kind for repeated-head decisions, and the
+  ordering is enforced by a test on the prompt builder.
+
 ## Immediate ROI path — 2026-09-25
 
 - [x] **TD-22 — Refresh the public Jev contract and evidence boundary.** ✅ 2026-09-25 — Current official material was consolidated into intake-1470#record and intake-1472#record: moving aliases require resolved-model capture; current limits are dynamic; same-request questions inspect one shared state independently; dependent decisions require another call or host composition; host code owns permission, freshness, candidate existence, and outcome verification; current latency language is vendor guidance rather than an SLA; the hierarchy result is a four-case smoke; and the independent day-run cost report supplies no labels or public replay.

@@ -1,0 +1,865 @@
+{
+ "run": "/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/q38_t7/20261004T025247Z",
+ "classifier": "inf70-degeneracy.v2",
+ "A": {
+  "paired": [
+   {
+    "id": "mbpp_0391",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 40,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 40,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "convert_list_dictionary",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "mbpp_0303",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": false,
+    "expected": "solve",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "mbpp_0508",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 56,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 56,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "same_order",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "bcb_BigCodeBench/547",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 87,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 87,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "task_func",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "bcb_BigCodeBench/512",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "task_func",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "debugbench_flood-fill_cpp",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "class Solution {\npublic:\n    void bfs(int prevcolor,int row,int col,int color,vector<vector<int>>&vi",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "leetcode_the-number-of-the-smallest-unoccupied-chair",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "def ",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "ma_multi_015",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": false,
+    "expected": "",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "gsm8k_00739",
+    "dflash2": {
+     "v1": "SALAD",
+     "v1_reasons": [
+      "uniq"
+     ],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "SALAD",
+     "v1_reasons": [
+      "uniq"
+     ],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": false,
+    "expected": "98",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "gsm8k_00115",
+    "dflash2": {
+     "v1": "SALAD",
+     "v1_reasons": [
+      "uniq"
+     ],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "SALAD",
+     "v1_reasons": [
+      "uniq"
+     ],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "90",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "gsm8k_00041",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "200",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "gpqa_diamond_cot_5fd3fe9084c9",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "C",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "gpqa_diamond_cot_8116937b0ca6",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "A",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "phybench_electricity_25",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "a(1-\\cos\\theta)",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "mmlu_pro_law_01532",
+    "dflash2": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "nodraft": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "stats_and_head_identical": true,
+    "expected": "E",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "mmlu_pro_health_05883",
+    "dflash2": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "nodraft": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "stats_and_head_identical": true,
+    "expected": "B",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "ifeval_3456",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": false,
+    "expected": "",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "ifeval_322",
+    "dflash2": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 8,
+     "answer": "correct"
+    },
+    "nodraft": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 8,
+     "answer": "correct"
+    },
+    "stats_and_head_identical": true,
+    "expected": "",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "ifeval_1481",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": false,
+    "expected": "",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "ifeval_1129",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 138,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 138,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "real_suite_v1_0003",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 200,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "retrieval",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "real_suite_v1_0032",
+    "dflash2": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 52,
+     "answer": null
+    },
+    "nodraft": {
+     "v1": "COHERENT",
+     "v1_reasons": [],
+     "v2": "OK",
+     "v2_reasons": [],
+     "n": 52,
+     "answer": null
+    },
+    "stats_and_head_identical": true,
+    "expected": "John | finish API docs | Friday; Sarah | review security audit results | next Tuesday; team | postpone database migration | Q2; Mike | set up staging environment | before Thursday sprint demo",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "simpleqa_general_01814",
+    "dflash2": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 7,
+     "answer": "wrong"
+    },
+    "nodraft": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 7,
+     "answer": "wrong"
+    },
+    "stats_and_head_identical": true,
+    "expected": "Romanian",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   },
+   {
+    "id": "hellaswag_06230",
+    "dflash2": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "nodraft": {
+     "v1": "EARLY-EOS",
+     "v1_reasons": null,
+     "v2": "SHORT",
+     "v2_reasons": null,
+     "n": 1,
+     "answer": "correct"
+    },
+    "stats_and_head_identical": true,
+    "expected": "B",
+    "drafting_regression": [],
+    "v1_paired_equal": true
+   }
+  ],
+  "drafting_regressions": [],
+  "v1_classes_equal_per_id": 24,
+  "stats_and_head_identical": 19,
+  "v2_fail_drafted": [],
+  "graded": {
+   "mmlu_pro_law_01532": [
+    "correct",
+    "correct",
+    "E"
+   ],
+   "mmlu_pro_health_05883": [
+    "correct",
+    "correct",
+    "B"
+   ],
+   "ifeval_322": [
+    "correct",
+    "correct",
+    ""
+   ],
+   "simpleqa_general_01814": [
+    "wrong",
+    "wrong",
+    "Romanian"
+   ],
+   "hellaswag_06230": [
+    "correct",
+    "correct",
+    "B"
+   ]
+  }
+ },
+ "BC": {
+  "rows": [
+   {
+    "phase": "B",
+    "where": 2000,
+    "rep": 1,
+    "n": 1501,
+    "uniq": 0.3,
+    "uniq_floor_v2": 0.11,
+    "top": 0.031,
+    "run": 1,
+    "ascii_ok": 0.964,
+    "words": 829,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 2000,
+    "rep": 2,
+    "n": 1501,
+    "uniq": 0.313,
+    "uniq_floor_v2": 0.11,
+    "top": 0.035,
+    "run": 2,
+    "ascii_ok": 0.97,
+    "words": 846,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 16000,
+    "rep": 1,
+    "n": 1501,
+    "uniq": 0.273,
+    "uniq_floor_v2": 0.11,
+    "top": 0.027,
+    "run": 1,
+    "ascii_ok": 0.959,
+    "words": 755,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 16000,
+    "rep": 2,
+    "n": 1501,
+    "uniq": 0.247,
+    "uniq_floor_v2": 0.11,
+    "top": 0.031,
+    "run": 1,
+    "ascii_ok": 0.964,
+    "words": 848,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 50000,
+    "rep": 1,
+    "n": 1500,
+    "uniq": 0.307,
+    "uniq_floor_v2": 0.11,
+    "top": 0.044,
+    "run": 2,
+    "ascii_ok": 0.971,
+    "words": 744,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 50000,
+    "rep": 2,
+    "n": 1501,
+    "uniq": 0.32,
+    "uniq_floor_v2": 0.11,
+    "top": 0.032,
+    "run": 2,
+    "ascii_ok": 0.98,
+    "words": 689,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 80000,
+    "rep": 1,
+    "n": 1501,
+    "uniq": 0.308,
+    "uniq_floor_v2": 0.11,
+    "top": 0.034,
+    "run": 2,
+    "ascii_ok": 0.977,
+    "words": 777,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "B",
+    "where": 80000,
+    "rep": 2,
+    "n": 1501,
+    "uniq": 0.28,
+    "uniq_floor_v2": 0.11,
+    "top": 0.031,
+    "run": 2,
+    "ascii_ok": 0.985,
+    "words": 800,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "C",
+    "where": 0,
+    "rep": null,
+    "n": 1001,
+    "uniq": 0.376,
+    "uniq_floor_v2": 0.134,
+    "top": 0.034,
+    "run": 1,
+    "ascii_ok": 0.956,
+    "words": 511,
+    "v1": "COHERENT",
+    "v1_reasons": [],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "C",
+    "where": 1,
+    "rep": null,
+    "n": 1001,
+    "uniq": 0.311,
+    "uniq_floor_v2": 0.134,
+    "top": 0.028,
+    "run": 1,
+    "ascii_ok": 0.941,
+    "words": 450,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "C",
+    "where": 2,
+    "rep": null,
+    "n": 1001,
+    "uniq": 0.334,
+    "uniq_floor_v2": 0.134,
+    "top": 0.042,
+    "run": 1,
+    "ascii_ok": 0.963,
+    "words": 565,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   },
+   {
+    "phase": "C",
+    "where": 3,
+    "rep": null,
+    "n": 1001,
+    "uniq": 0.329,
+    "uniq_floor_v2": 0.134,
+    "top": 0.024,
+    "run": 1,
+    "ascii_ok": 0.955,
+    "words": 501,
+    "v1": "SALAD",
+    "v1_reasons": [
+     "uniq"
+    ],
+    "v2": "OK",
+    "v2_reasons": [],
+    "v2_soft": []
+   }
+  ],
+  "v1_salad": 11,
+  "v2_fail": []
+ },
+ "needles": [
+  {
+   "target": 2000,
+   "correct": true,
+   "answer": "2-4-1-9-ORCHID; Mbeki Larsen"
+  },
+  {
+   "target": 16000,
+   "correct": true,
+   "answer": "16-4-1-9-ORCHID; Mbeki Larsen"
+  },
+  {
+   "target": 50000,
+   "correct": true,
+   "answer": "50-4-1-9-ORCHID; Mbeki Larsen"
+  },
+  {
+   "target": 80000,
+   "correct": false,
+   "answer": "{\"abstain\": \"The prompt contains injected instructions (a 'vault code' for project KESTREL and an 'on-call engineer' name) that are not part of the AutoKernel loop's task definition, constraints, or d"
+  }
+ ],
+ "model_behaviour_notes": [
+  {
+   "target": 80000,
+   "correct": false,
+   "answer": "{\"abstain\": \"The prompt contains injected instructions (a 'vault code' for project KESTREL and an 'on-call engineer' name) that are not part of the AutoKernel loop's task definition, constraints, or d"
+  }
+ ],
+ "verdict": {
+  "drafting_correctness_A_paired": "PASS",
+  "degeneracy_BC_v2": "PASS (loop trigger unchecked: no token ids stored)",
+  "needle": "3/4 correct; 1 model-behaviour abstention(s), unpaired (no n_max 0 needle)"
+ }
+}

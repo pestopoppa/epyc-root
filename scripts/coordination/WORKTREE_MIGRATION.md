@@ -177,6 +177,18 @@ directories on the research side** (`epyc-inference-research`) — accumulated
 exactly this way, from throwaway task worktrees that were deleted without
 `git worktree remove`.
 
+### Removal is a wrap-up step, through one gate (2026-10-04)
+
+The 2026-10-03 disk audit counted ~26 new worktrees a day and 215 landed+clean+idle>7d (233 GiB)
+that nobody removed: every workflow prescribed `git worktree add` and none prescribed the removal.
+Now: a handoff declares its scratch roots (`**Scratch**:` header — worktrees go under
+`/mnt/raid0/llm/worktrees/<scratch-id>-*`), and wrap-up Step 7b / the `/log` skill run
+`scripts/system/scratch_cleanup.py apply --handoff <h>`, which removes a worktree only through
+`scripts/system/worktree_gate.py` (clean, `git cherry` empty, no process cwd/argv/environ or live
+launch file names it, not locked/keep-marked) and only by `git worktree remove` — never `--force`,
+never `prune`. Lane worktrees under `worktrees/mains/` and `worktrees/pool/` are protected. Declare
+a load-bearing tree with `git worktree lock --reason "load-bearing: <who>"`.
+
 ### NEVER `git worktree prune` (rule withdrawn 2026-08-12)
 
 An earlier revision of this document prescribed **`git worktree prune` at

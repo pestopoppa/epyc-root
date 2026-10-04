@@ -12,6 +12,19 @@ The model registry and onboarding scripts live in **epyc-inference-research**:
 - Registry: `repos/epyc-inference-research/orchestration/model_registry.yaml`
 - Scripts: `repos/epyc-inference-research/scripts/lib/`
 
+### Step 0: Download (only if the weights are not on disk yet)
+
+Download through the wrapper, never a bare `hf download`/`curl`/`wget` — it refuses a `/tmp`
+destination, sets `HF_HOME`/`TMPDIR` to the project locations, and removes the `.part`/`.incomplete`
+stubs an aborted or finished run would otherwise leave behind (logged to
+`logs/hygiene/partial_downloads.jsonl`). One download at a time on this host.
+
+```bash
+python3 scripts/utils/safe_download.py --dest /mnt/raid0/llm/models/<org>/<repo> -- \
+    hf download <org>/<repo> --include '<pattern>' --local-dir /mnt/raid0/llm/models/<org>/<repo>
+# --keep-partial keeps a FAILED run's stubs for a resume; --check <dir> lists leftovers
+```
+
 ### Step 1: Run Onboarding
 
 ```bash

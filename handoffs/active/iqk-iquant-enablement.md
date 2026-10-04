@@ -85,6 +85,30 @@ Verified 2026-07-21: host load average ~48, seven llama-servers resident, and a 
   - 2026-07-25 audit note: **this exact risk class already materialized** — `b8ad9d292` incidentally reclassified Q2_K/Q3_K activations Q8_2_X4→Q8_K, engaging never-validated iqk kquant kernels and corrupting Hy3 output (caught on live output at 20:47Z, NOT by tests; fixed same day by `1977a5d78` + static_asserts). The measured non-IQ check is therefore NOT a formality for v8 — it is mandatory, and default CI still cannot catch a re-introduction (see NEW-4 below).
 - [x] **B5 — Promote.** ✅ 2026-07-26 — promoted and frozen as `production-consolidated-v8` at `67a433bf45a8a091d83b4ea0b32ff0735fd51800` (version `10107`). Terminal both-mode lineup passed `24/24` smoke and `6/6` API; final-freeze attestation `artifacts/operator/ratify_v8_final_freeze_20260725.json` SHA `e7fce2c5cd720940fc84b669f57b78a61589fd8baef9b4e03030ed0dc4a3175b`. Do not hand-patch the frozen production kernel.
 
+- [ ] **NEW-8 — Q38FN IQ\*_K/KS self-quant, measured in ik_llama.cpp before any port.** (filed 2026-10-04) Operator ruling
+  2026-10-03/04: self-quant allowed "exceptionally if justifiable" (lifts the no-requant constraint for this
+  option only). Evidence: [`docs/reviews/cpu-quant-research-20261003.md`](../../docs/reviews/cpu-quant-research-20261003.md) §3.3 #3 / §4.
+  - Step 0: `/mnt/raid0/llm/ik_llama.cpp` @ `c04881fc0` has **no `qwen4exp` arch**. Fetch newer ik upstream
+    into a scratch worktree and build it there. Measurement instrument only: ik is deprecated as a serving
+    path, and its binaries never serve. Prove build currency (binary mtime vs commit date) before reading any number.
+  - Step 1, source and base: no high-precision Q38FN GGUF is on disk. Pull unsloth `Q8_0/` (188.2 GB, about 5.8 h
+    at ~9 MB/s, one download at a time) as both quantize source (`--allow-requantize`) and KLD base. BF16 (354 GB)
+    is cleaner but leaves under 50 GB free once an output arm exists (500 GB free on 2026-10-04). Caveat: a Q8_0
+    reference has a KLD floor of about 0.022–0.027.
+  - Step 2: imatrix, then quantize 1–2 arms: IQ4_KS or IQ3_K gate/up, IQ5_KS/IQ4_KS dense, IQ4_NL down (640-wide).
+    About 85–100 GB per arm.
+  - Step 3: in the same ik binary, measure UD-IQ4_XS, IQ4_XS-uniform and the new arm(s): `--kl-divergence` (mean KLD,
+    same-top-1), PPL, `llama-bench -p 5,256 -n 128` r3, and the serving shape (MTP d4, verify N=5). Compare ratios
+    within ik only, never absolute numbers across trees.
+  - Budget: about 3–5 CPU-window hours excluding the download (imatrix ≤ 30 min, quantize ~0.5–1.5 h per arm, KLD
+    ~7 min per file plus base, bench ~25 min), in a DS41 pause window with DS41 unloaded. Peak disk ≈ 188 + 2×95 +
+    25 (logits) ≈ 400 GB; delete Q8_0 after the base logits are saved.
+  - **Justifiable means all of:** the IQ\*_K arm is ≥ +8% decode vs UD at the serving shape; ≥ +3.4–4.5% (the admission
+    floor) over IQ4_XS-uniform, otherwise the zero-port file swap dominates (INF-70 XFER-3); mean KLD ≤ UD's and
+    same-top-1 within 1 pp; a paired per-item task eval no worse than UD. If any fails, the port is closed. If all
+    pass, port in `llama.cpp-experimental`: register about 15 types (decide the ID policy first), compile the vendored
+    iqk kernels and quantizer, respect the `715383cde` OOB class — 2–4 sessions.
+
 ## Decision gates
 
 - **B2 fails on any model** → do not promote; isolate kernel vs convert path, and consider a narrower whitelist (e.g. IQ2_XXS + IQ3_XXS only).

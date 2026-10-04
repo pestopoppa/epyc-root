@@ -1,0 +1,46 @@
+== on vs skipoff (skip on vs off, seq layouts on): must be all bit-identical
+case 110 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=f16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=4.26e-10
+case 111 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=8.33e-10
+case 118 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=6e-10
+case 119 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=6.8e-10
+case 126 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=bf16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=5.31e-10
+case 127 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=7.7e-10
+119 cases, 113 bit-identical, worst nmse 8.33e-10
+== seqoff vs alloff (skip on vs off, seq layouts off): must be all bit-identical
+119 cases, 119 bit-identical, worst nmse 0
+== seqoff vs k19a (new build with layouts off == KVU-19a): must be all bit-identical
+119 cases, 119 bit-identical, worst nmse 0
+== on vs seqoff (layouts on vs off): bit-identical except vec-routed cases (hint >= nb, hs 128/256, not bf16)
+case  86 hs=128/128 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=f16 bias=0 cap=0 hint=2 first=0: bit-identical=NO ndiff=6143/6144 nmse=3.67e-07
+case  87 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=f16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=12287/12288 nmse=8.05e-07
+case  88 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=f16 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=24576/24576 nmse=6.97e-07
+case  89 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=f16 bias=0 cap=0 hint=2 first=0: bit-identical=NO ndiff=12288/12288 nmse=4.58e-07
+case  90 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=f16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=24575/24576 nmse=8.41e-07
+case  91 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=f16 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=49150/49152 nmse=7.65e-07
+case  93 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=12288/12288 nmse=2.81e-06
+case  94 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=24576/24576 nmse=2.79e-06
+case  95 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=2 first=0: bit-identical=NO ndiff=12287/12288 nmse=2.28e-06
+case  96 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=24576/24576 nmse=3.1e-06
+case  97 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=49151/49152 nmse=2.79e-06
+case  99 hs=128/128 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=12288/12288 nmse=6.47e-06
+case 100 hs=128/128 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=24576/24576 nmse=6.84e-06
+case 101 hs=256/256 nh=4 nr2=6 kv=8192 nb=2 nseq=2 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=2 first=0: bit-identical=NO ndiff=12288/12288 nmse=2.16e-06
+case 102 hs=256/256 nh=4 nr2=6 kv=8192 nb=4 nseq=4 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=24576/24576 nmse=7.39e-06
+case 103 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=8 run=256 free=1024 type=q4_0 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=49152/49152 nmse=6.76e-06
+case 110 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=f16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=4.26e-10
+case 111 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=8.33e-10
+case 118 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=6e-10
+case 119 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=6.8e-10
+case 126 hs=128/128 nh=4 nr2=6 kv=16384 nb=32 nseq=4 run=4096 free=0 type=bf16 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=384/98304 nmse=5.31e-10
+case 127 hs=128/128 nh=4 nr2=6 kv=8192 nb=25 nseq=4 run=1024 free=1024 type=bf16 bias=0 cap=0 hint=4 first=1: bit-identical=NO ndiff=384/76800 nmse=7.7e-10
+case 136 hs=128/128 nh=4 nr2=4 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=0 cap=10 hint=4 first=0: bit-identical=NO ndiff=8192/8192 nmse=7.83e-07
+case 137 hs=128/128 nh=4 nr2=1 kv=8192 nb=4 nseq=4 run=1024 free=1024 type=f16 bias=8 cap=0 hint=4 first=0: bit-identical=NO ndiff=2048/2048 nmse=7.19e-07
+case 138 hs=256/256 nh=4 nr2=6 kv=65536 nb=4 nseq=4 run=16384 free=0 type=q8_0 bias=0 cap=0 hint=4 first=0: bit-identical=NO ndiff=24576/24576 nmse=9.13e-06
+case 140 hs=256/256 nh=4 nr2=6 kv=8192 nb=8 nseq=2 run=1024 free=1024 type=q8_0 bias=0 cap=0 hint=8 first=0: bit-identical=NO ndiff=49152/49152 nmse=3.71e-06
+119 cases, 93 bit-identical, worst nmse 9.13e-06
+== on vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4
+== seqoff vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4
+== k19a vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4

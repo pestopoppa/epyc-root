@@ -275,6 +275,8 @@
         "expected_path": "scripts/system/opencode_event_reaper.sh",
         "provenance": "/mnt/raid0/llm/tmp/opencode-reaper.pid.provenance.json",
         "restart_on_stale": true,
+        "relaunch_if_down": true,
+        "_relaunch_note": "2026-10-04: host_hygiene_tick.py's keeper relaunches this row from start_argv when the census verdict is not_running (the reaper died with the 2026-09-21 and 2026-10-03 reboots and nothing brought it back). Never a kill: stale/off-canon copies only raise daemon-stale-<id>.",
         "start_argv": ["/bin/bash", "{canonical_root}/scripts/system/opencode_event_reaper.sh", "run"],
         "log": "/mnt/raid0/llm/tmp/opencode-reaper.log"
       }
@@ -284,6 +286,30 @@
       "script": "scripts/inf70/harness1/tools/cores_sampler.sh",
       "contract": "exempt",
       "reason": "Not a liveness observer. It is the INF-70 HARNESS-1 per-arm CO-RESIDENCY SAMPLER (promoted from /mnt/raid0/llm/tmp on 2026-09-16, VB-WIRE-2): every 20 s it lists the top CPU consumers with `ps -eo pid,pcpu,comm` and classifies each FOREIGN process's Cpus_allowed_list against the bench region. It identifies its own subject by the PID the arm script passes in, never by name or argv, decides nothing about whether anything is alive, and takes no corrective action; its output is the per-arm contention verdict that the SC75 writer consumes. A process that vanishes mid-sample is recorded as GONE, which the writer counts separately."
+    },
+    {
+      "id": "host_hygiene_tick",
+      "script": "scripts/system/host_hygiene_tick.py",
+      "contract": "exempt",
+      "reason": "Not a liveness observer of another process's identity in the battery's sense: a scheduled maintenance tick launched by hub_supervisor.sh (host cron) every 10 min. Its one liveness decision — relaunching a registry row with runtime.relaunch_if_down when observer_census.live_check_row says not_running — DELEGATES to the census (three-valued: cannot_tell never launches), additionally refuses when an unregistered copy of the script runs (argv element match, never a substring), is rate-limited to one attempt per 30 min, and never kills. Disk-free, stray-file and backup checks are measurements (no worktree or scratch sweep: that is the wrap-up step, scripts/system/scratch_cleanup.py) alarmed through alarm_channel.py with two-sample persistence. Tests: tests/test_host_hygiene_tick.py.",
+      "runtime": {
+        "mode": "scheduled",
+        "log": "/mnt/raid0/llm/epyc-root/logs/hygiene/host_hygiene.log",
+        "max_age_s": 1800,
+        "_mode_note": "Launched detached by hub_supervisor.sh run_hygiene_tick every HYGIENE_TICK_INTERVAL_S (600 s); each tick appends to this log. Live only after the operator moves the hub-supervisor cron pin (install_supervision_cron_20260916.sh --all) past the commit that adds run_hygiene_tick."
+      }
+    },
+    {
+      "id": "codex_retention_reaper",
+      "script": "scripts/system/codex_retention_reaper.py",
+      "contract": "exempt",
+      "reason": "Enrolled BY HAND for its runtime row (NIB2-84, 2026-10-04); neither discovery rule finds it (it runs no pgrep/pidof/ps, and as a python tool it cannot source observer_guard.sh, whose battery drives `/bin/bash <script> observe`). Its codex observation is an in-file three-state fold with observer_guard.sh semantics over two read-only /proc channels: proc_scan (exe/argv0 under ~/.codex/packages, or argv0 basename `codex`) and db_fd (a process holds ~/.codex/*.sqlite open); any blind channel or disagreement is `unobservable`. In v1 NO consumer acts on that verdict: the sqlite DBs are report-only in every state. The decisions that DO delete fail closed independently and are pinned by tests/test_codex_retention_reaper.py: a rollout is `open` (never eligible) when any process holds it OR the /proc walk is blind (no /proc, nothing inspectable, or an uninspectable codex-like process); a package release is kept when any process's exe/cwd/argv/maps/fd points into it or the walk is blind; and `apply` refuses outright when the walk is blind at its start. It never launches, signals or kills anything.",
+      "runtime": {
+        "mode": "scheduled",
+        "log": "/mnt/raid0/llm/tmp/codex-reaper/last_report.json",
+        "max_age_s": 172800,
+        "_mode_note": "No persistent process: the periodic hygiene tick invokes `codex_retention_reaper.py report --json`, and every `report` atomically rewrites <state-dir>/last_report.json (the full JSON report), so this file's mtime is the tick's freshness. max_age_s = 48 h, a 2x margin over a daily tick; tighten it once the tick cadence is wired. Report/alarm only: restart_on_stale is not allowed in scheduled mode and there is nothing to restart."
+      }
     }
   ]
 }

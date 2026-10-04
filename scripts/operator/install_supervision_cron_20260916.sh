@@ -23,8 +23,8 @@
 #      and resolves origin/main to a full sha, unless --pin-sha is given.
 #   2. It `git archive`s the supervisor's whole closure at that sha into
 #        /mnt/raid0/llm/ops/hub-supervisor/<sha>/scripts/dashboard/
-#      {hub_supervisor.sh, hub_launch_spec.py, refresh_hub_view.sh}. The supervisor
-#      finds the other two as its siblings. The copy is written to a temp dir, checked
+#      {hub_supervisor.sh, hub_launch_spec.py, refresh_hub_view.sh} plus
+#      scripts/coordination/daemon_provenance.sh. The supervisor finds them relative to itself. The copy is written to a temp dir, checked
 #      byte-for-byte against the commit, stamped (PINNED.txt, SHA256SUMS), made
 #      read-only and renamed into place. An existing pin is reused only if its
 #      SHA256SUMS still verify.
@@ -50,7 +50,10 @@ LOG="${ROOT}/logs/cron_supervision.log"
 BACKUP_DIR="${SUPERVISION_CRON_BACKUP_DIR:-${ROOT}/logs}"
 MARK_HUB="# epyc-op9-hub-supervisor"
 MARK_FW="# epyc-fw3-fleet-watch"
-PIN_FILES=(scripts/dashboard/hub_supervisor.sh scripts/dashboard/hub_launch_spec.py scripts/dashboard/refresh_hub_view.sh)
+# daemon_provenance.sh joined the closure 2026-10-04: hub_supervisor.sh sources it from
+# ../coordination/ at load time (NIB2-81), so a pin without it dies under `set -e` on the first
+# cron pass and the hub is left unwatched. The 2026-09-17 pin predates that source line.
+PIN_FILES=(scripts/dashboard/hub_supervisor.sh scripts/dashboard/hub_launch_spec.py scripts/dashboard/refresh_hub_view.sh scripts/coordination/daemon_provenance.sh)
 
 LINE_FW="*/5 * * * * docker exec -d -u node -e PATH=/opt/rocm/bin:/usr/local/bin:/usr/bin:/bin ${CONTAINER} setsid -f ${ROOT}/scripts/coordination/fleet_watch.sh ${MARK_FW}"
 

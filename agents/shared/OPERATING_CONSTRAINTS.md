@@ -10,6 +10,21 @@ read past three paragraphs to find is a rule that does not fire at the moment of
 - Use `/mnt/raid0/` for project writes and caches.
 - Do not create large artifacts in `/tmp`, `/var`, `~/.cache`, or home paths.
 - Verify cache and temp paths before long runs.
+- **Scratch lives under the owning handoff's declared roots, and is cleaned at the boundary.**
+  Every handoff carries `**Scratch**: /mnt/raid0/llm/tmp/<id>/ · worktrees:
+  /mnt/raid0/llm/worktrees/<id>-*` (or `none`); every scratch dir, build dir, comparison checkout
+  and subagent worktree for that work goes under it. Wrap-up Step 7b and `/log` run
+  `scripts/system/scratch_cleanup.py apply --handoff <h>`: worktrees leave only through
+  `scripts/system/worktree_gate.py` (`git worktree remove`, never `--force`/`prune`), plain scratch
+  goes to the trash. A path that must outlive the task is DECLARED — `git worktree lock --reason
+  "load-bearing: <who>"`, or a `KEEP` file stating why — never remembered. Contract:
+  `docs/guides/agent-workflows/handoff-index-authoring.md` § Scratch roots. (Origin: 2026-10-03
+  disk audit — 265 worktrees in 10 days, 215 landed+clean+idle>7d, 233 GiB; and 2026-10-04, a
+  landed, clean worktree that a DS41 launcher exported as `EPYC_ROOT_REPO` was removed by a sweep
+  and the campaign crashed. The gate now checks process environments and live launch files.)
+- **Download through `scripts/utils/safe_download.py`**, never a bare `hf download`/`curl`/`wget`:
+  it refuses `/tmp` destinations and removes the `.part`/`.incomplete` stubs an aborted run leaves
+  (9.2 GB of them, plus a 35.9 GB joined-but-kept `.part2`, in the 2026-10-03 audit).
 
 Recommended environment variables:
 
@@ -133,6 +148,14 @@ investigation; Appendix)
   live-only checks, such as startup-log regexes, thread placement, directories that must exist, or `set -e`
   interactions. Run each check read-only against real logs or the live production process first, and have it
   print what it saw. (origin: INC-20260929-dry-run-missed-live-checks)
+- **Your own subagents are load; light foreign load is metadata.** Before any measurement,
+  including an AutoKernel loop's own floor calibration and A/B phases, pause your subagents' tests
+  and builds, wait for their PIDs to exit and confirm quiet with a live `top -bn2`; a pause message
+  lands only at the agent's next tool round. A preflight refuses only on heavy local compute (builds,
+  benchmarks, local inference, `test-backend-ops`, test suites) and records lighter load, such as
+  agent-harness traffic, as run metadata. Procedure: `docs/guides/agent-workflows/benchmark-analyst.md`
+  → *Your own load, and what counts as noise*. (origin: 2026-09-30 — subagent pytest during a DS41
+  floor calibration verified the floor at 4.533% instead of ~1.9%; operator ruling 2026-10-04)
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
@@ -258,6 +281,12 @@ treated as two copies when both were aliases of one physical tree.)
      identical. For processes: only kill PIDs you captured yourself (see Process Management).
    - Cross-check with `du -sb <parent tree>`: a real second copy adds its size to the parent;
      a symlink/bind alias adds nothing.
+   - **Reference check — idle is not unused.** Before removing a worktree, checkout, store or
+     model, also search live process environments and argv (`/proc/*/environ`, `cmdline`), recent
+     launch and watchdog scripts, crontab and campaign state for its path, honour KEEP markers, and
+     hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.
+     (origin: INC-20261004-cleanup-removed-load-bearing-worktree — an approved cleanup removed a landed, clean, 7-day-idle worktree that
+     DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)
 2. **Trash-first, always:** recursive deletes of data go through
    `scripts/safety/guarded_rm.sh`, which moves the target to `/mnt/raid0/llm/.trash/` and logs
    a manifest (recoverable until `scripts/safety/trash-sweep.sh --older-than DAYS` ages it
@@ -343,6 +372,16 @@ including the dispatches whose nudge says nothing about subagents.
   with extra steps; put the independent calls in one block.
 - **Match subagent model and effort to the task** (`agents/README.md` → Model Routing (Task-Based);
   Codex-side sizing in the section below).
+- **Every subagent brief names its scratch root** — the owning handoff's declared `**Scratch**:`
+  root, with worktrees named `/mnt/raid0/llm/worktrees/<id>-<purpose>` — and the subagent writes
+  nowhere else. That is what lets the wrap-up's scratch step (§ *Filesystem and Storage*) clean up
+  after the whole fan-out by listing one directory.
+- **Every subagent brief requires a CPU-region claim for local compute.** Builds, self-launched servers and
+  test suites run as `/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build
+  --tag <tag> -- <cmd>`, so they queue behind a held window instead of running inside it. `taskset`, `nice` or
+  `ionice` onto "spare" cores is not isolation: CPUs 96-191 are the SMT siblings of 0-95, so 160-183 *is*
+  physical cores 64-87, and `region-lock` drops sibling CPUs from a `--cpu-list`, so claim the physical cores.
+  (origin: INC-20261004-subagent-unlocked-cpu-in-held-window)
 - **Every subagent result is PROPOSED work.** Review its evidence and diffs, and run validation,
   before accepting it.
 - **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.

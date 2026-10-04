@@ -31,6 +31,7 @@ for f in hub_supervisor.sh hub_launch_spec.py refresh_hub_view.sh; do
   cp "$REPO_DIR/scripts/dashboard/$f" "$SEED/scripts/dashboard/$f"
 done
 chmod +x "$SEED/scripts/dashboard/hub_supervisor.sh" "$SEED/scripts/dashboard/refresh_hub_view.sh"
+cp "$REPO_DIR/scripts/coordination/daemon_provenance.sh" "$SEED/scripts/coordination/daemon_provenance.sh"
 printf '#!/bin/bash\nexit 0\n' > "$SEED/scripts/coordination/fleet_watch.sh"
 chmod +x "$SEED/scripts/coordination/fleet_watch.sh"
 gitc() { git -C "$SEED" -c user.email=t@t -c user.name=t "$@"; }

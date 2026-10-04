@@ -1,0 +1,88 @@
+KVU-19b GPU slot summary (/mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot2-20261004T044448Z)
+
+## exactness
+== on vs skipoff (skip on vs off, seq layouts on): must be all bit-identical
+119 cases, 113 bit-identical, worst nmse 8.33e-10
+== seqoff vs alloff (skip on vs off, seq layouts off): must be all bit-identical
+119 cases, 119 bit-identical, worst nmse 0
+== seqoff vs k19a (new build with layouts off == KVU-19a): must be all bit-identical
+119 cases, 119 bit-identical, worst nmse 0
+== on vs seqoff (layouts on vs off): bit-identical except vec-routed cases (hint >= nb, hs 128/256, not bf16)
+119 cases, 93 bit-identical, worst nmse 9.13e-06
+== on vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4
+== seqoff vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4
+== k19a vs CPU reference (out_cpu, made CPU-side)
+119 cases vs reference: worst nmse 8.97e-05 (case 110), PASS at 5e-4
+
+## kernel perf (median us/op over 3 rounds)
+shape | base | k19a | on | seqoff
+multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 | 1732.5 | 1784.5 | 1083.2 | 1783.0
+multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 | 8773.7 | 9226.0 | 5531.3 | 9133.4
+multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 | 3226.5 | 2101.7 | 2631.1 | 2096.4
+multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 | 15988.8 | 10483.9 | 11861.3 | 10358.6
+multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 | 3181.1 | 2690.6 | 2544.7 | 2692.5
+multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 | 16399.3 | 13656.8 | 11899.7 | 13643.3
+multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 | 1016.2 | 1025.7 | 1026.5 | 1025.9
+multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 | 5173.7 | 5283.6 | 5263.3 | 5279.3
+multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 | 2198.9 | 2200.3 | 2192.5 | 2191.7
+multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 | 11506.3 | 11615.8 | 11536.3 | 11493.3
+single nb=1 own=16384 foreign=0 n_kv=16384 | 271.1 | 276.4 | 276.0 | 276.6
+single nb=1 own=16384 foreign=114688 n_kv=131072 | 1992.0 | 283.7 | 283.4 | 284.0
+single nb=1 own=16384 foreign=49152 n_kv=65536 | 1011.4 | 279.7 | 278.7 | 279.6
+single nb=8 own=16384 foreign=0 n_kv=16384 | 483.8 | 499.0 | 496.8 | 514.4
+single nb=8 own=16384 foreign=114688 n_kv=131072 | 3526.5 | 539.8 | 540.7 | 541.9
+single nb=8 own=16384 foreign=49152 n_kv=65536 | 1758.4 | 512.2 | 509.0 | 511.1
+
+## p3batch (tok/s, all rounds)
+round=1 arm=k19a own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 10.618 ms/step  94.2 steps/s  376.7 tok/s
+round=1 arm=on own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 9.092 ms/step  110.0 steps/s  440.0 tok/s
+round=1 arm=seqoff own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 10.600 ms/step  94.3 steps/s  377.4 tok/s
+round=1 arm=nokvu own=16384 n_act=4 draft=1 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 8.140 ms/step  122.9 steps/s  491.4 tok/s
+round=1 arm=k19a own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 17.903 ms/step  55.9 steps/s  223.4 tok/s
+round=1 arm=on own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 18.766 ms/step  53.3 steps/s  213.1 tok/s
+round=1 arm=seqoff own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 18.673 ms/step  53.6 steps/s  214.2 tok/s
+round=1 arm=nokvu own=16384 n_act=4 draft=8 first_draft=8 kvu=0 ctk=q8_0 n_ctx=68608 : 20.626 ms/step  48.5 steps/s  193.9 tok/s
+round=1 arm=k19a own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 18.356 ms/step  54.5 steps/s  217.9 tok/s
+round=1 arm=on own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 17.844 ms/step  56.0 steps/s  224.2 tok/s
+round=1 arm=seqoff own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 20.721 ms/step  48.3 steps/s  193.0 tok/s
+round=1 arm=nokvu own=16384 n_act=4 draft=8 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 25.440 ms/step  39.3 steps/s  157.2 tok/s
+round=2 arm=k19a own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 10.731 ms/step  93.2 steps/s  372.7 tok/s
+round=2 arm=on own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 9.309 ms/step  107.4 steps/s  429.7 tok/s
+round=2 arm=seqoff own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 10.712 ms/step  93.4 steps/s  373.4 tok/s
+round=2 arm=nokvu own=16384 n_act=4 draft=1 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 7.650 ms/step  130.7 steps/s  522.9 tok/s
+round=2 arm=k19a own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 19.849 ms/step  50.4 steps/s  201.5 tok/s
+round=2 arm=on own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 19.103 ms/step  52.3 steps/s  209.4 tok/s
+round=2 arm=seqoff own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 19.818 ms/step  50.5 steps/s  201.8 tok/s
+round=2 arm=nokvu own=16384 n_act=4 draft=8 first_draft=8 kvu=0 ctk=q8_0 n_ctx=68608 : 19.556 ms/step  51.1 steps/s  204.5 tok/s
+round=2 arm=k19a own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 17.441 ms/step  57.3 steps/s  229.3 tok/s
+round=2 arm=on own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 16.827 ms/step  59.4 steps/s  237.7 tok/s
+round=2 arm=seqoff own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 19.580 ms/step  51.1 steps/s  204.3 tok/s
+round=2 arm=nokvu own=16384 n_act=4 draft=8 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 26.320 ms/step  38.0 steps/s  152.0 tok/s
+round=3 arm=k19a own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 10.099 ms/step  99.0 steps/s  396.1 tok/s
+round=3 arm=on own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 8.909 ms/step  112.2 steps/s  449.0 tok/s
+round=3 arm=seqoff own=16384 n_act=4 draft=1 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 9.755 ms/step  102.5 steps/s  410.1 tok/s
+round=3 arm=nokvu own=16384 n_act=4 draft=1 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 7.717 ms/step  129.6 steps/s  518.4 tok/s
+round=3 arm=k19a own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 20.277 ms/step  49.3 steps/s  197.3 tok/s
+round=3 arm=on own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 20.700 ms/step  48.3 steps/s  193.2 tok/s
+round=3 arm=seqoff own=16384 n_act=4 draft=8 first_draft=8 kvu=1 ctk=q8_0 n_ctx=68096 : 18.690 ms/step  53.5 steps/s  214.0 tok/s
+round=3 arm=nokvu own=16384 n_act=4 draft=8 first_draft=8 kvu=0 ctk=q8_0 n_ctx=68608 : 18.824 ms/step  53.1 steps/s  212.5 tok/s
+round=3 arm=k19a own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 18.398 ms/step  54.4 steps/s  217.4 tok/s
+round=3 arm=on own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 21.880 ms/step  45.7 steps/s  182.8 tok/s
+round=3 arm=seqoff own=16384 n_act=4 draft=8 first_draft=1 kvu=1 ctk=q8_0 n_ctx=68096 : 16.745 ms/step  59.7 steps/s  238.9 tok/s
+round=3 arm=nokvu own=16384 n_act=4 draft=8 first_draft=1 kvu=0 ctk=q8_0 n_ctx=68608 : 25.951 ms/step  38.5 steps/s  154.1 tok/s
+
+## batched-bench S_TG / S_PP
+bb_base-kvu.jsonl S_TG 424.0 S_PP 13215.7
+bb_base-no-kvu.jsonl S_TG 529.3 S_PP 19851.9
+bb_k19a-kvu.jsonl S_TG 434.6 S_PP 20635.4
+bb_k19a-no-kvu.jsonl S_TG 529.6 S_PP 19916.8
+bb_on-kvu.jsonl S_TG 522.4 S_PP 20869.4
+bb_on-no-kvu.jsonl S_TG 552.7 S_PP 19853.1
+bb_seqoff-kvu.jsonl S_TG 437.6 S_PP 20676.8
+
+## test-backend-ops
+  2978/2978 tests passed
+  110/110 tests passed
+  110/110 tests passed

@@ -655,6 +655,11 @@ argument, and it costs about a second.
       and (c) the reproducibility policy chosen under OP-39 — the recipe is where "which routes are row-exact"
       becomes importable constants rather than a remembered convention. A recipe that pins flags but not the
       concurrency gate reproduces the failure PROD-1 exists to prevent.
+      **Coherence instrument (CLS-RECT, 2026-10-04, operator-approved):** G2-CONC verdicts come from the
+      shared `coherence_gate` library (tiers 0–2, procedure under G2-CONC), never from INF-70 `classify.py`.
+      The recipe's `coherence` constant (`epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py:786`,
+      "20 COHERENT + 4 SHORT in all 48 arms") was produced with synthetic token ids and certifies only the
+      words/ascii rules; re-word it to cite the arms' paired sha256 identity, which is what actually holds.
       **✅ COMPLETE 2026-09-07 — the recipe is now DATA, validated against the real binary and the real host.**
       Drafts in `/mnt/raid0/llm/tmp/inf70/agents/prod1/draft/`: `lib/qwen38_flash_next_recipe.py` (657 lines,
       `preflight` passes here), `lib/test_qwen38_flash_next_recipe.py` (**38 tests, all pass**),
@@ -737,6 +742,8 @@ argument, and it costs about a second.
       **★ G2-CONC gates this too.** A champion *artifact* promotion ships the same serving path as a kernel
       promotion; the coherence evidence must be on the candidate pair (kernel + artifact) actually being
       promoted. Do not close it by citing champion-3's own G2-CONC run if the artifact changes.
+      Run it with the `coherence_gate` procedure (tier 0 paired byte-identity vs the anchor first), not
+      `classify.py` (CLS-RECT, 2026-10-04).
 
 **★ SEQUENCING SETTLED BY THE OPERATOR 2026-09-05: "I'm not promoting to production any time soon —
 certainly not before we finish this optimization study thoroughly."** So there is **no promotion window to
@@ -918,7 +925,7 @@ a GPU paying no per-node barrier at all. Tuning does not close it; a coarser gra
       Gates that stand as claims: bit-identity 16/16 stream digests (plain + MTP, full 256-token
       streams at 41/109/240 prompt tokens), 24/24 production rows, α = 0.8209 identical across all MTP
       arms, `test-backend-ops -b CPU` failure sets unchanged. Coherence {COHERENT 20, SHORT 4} in all
-      14 arms; the 4 SHORT rows are the same four every time and are **exactly** the `pred_n < 16` set,
+      14 arms *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)*; the 4 SHORT rows are the same four every time and are **exactly** the `pred_n < 16` set,
       so the pre-registered floor excludes them consistently — prompt set behaving as designed.
       **Caveat the agent flagged rather than buried:** it named a profiler-overhead hypothesis for the
       null but did NOT prove it → SYNC-21.
@@ -1753,7 +1760,7 @@ Committed, not pushed. Frozen tree untouched at `0db32c06e`.
 | referred to the 35.407 anchor | ≈36.9 t/s · ≈27.1 ms — **A PROJECTION, NOT A MEASUREMENT. Quote the RATIOS (1.4993 / 1.5149) or the in-window `33.370 t/s`; never this absolute.** (WRAP-1) |
 
 Plain: **20.589 t/s · 48.569 ms**, 1.0568 over champion-1, **1.7151** over pristine. **α = 0.8209 and
-drafted/token 0.8961 in EVERY MTP arm of every binary**; coherence 20 COHERENT + 4 SHORT in **all 48 arms**.
+drafted/token 0.8961 in EVERY MTP arm of every binary**; coherence 20 COHERENT + 4 SHORT in **all 48 arms** *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)*.
 **No round and no arm excluded anywhere.**
 
 **★ CHAMP-2 WAS NOT SHIPPED, AND THE EVIDENCE IS STRONGER THAN THE HYPOTHESIS.** Two independent same-window
@@ -2636,7 +2643,7 @@ behaviour. Two `__attribute__((used))` markers make the defaults auditable with 
 byte-identical**: 5 production prompts (59–329 prompt tokens) plus 3 engineered full-256-token streams at
 41/109/240, sha256-compared across pristine / champion / champion-all-hatches-engaged, in **plain and MTP**.
 Corroborated without hashes: **α = 0.8209 and drafted/token = 0.8961 in all 15 MTP arms of BOTH binaries**.
-Coherence 20 COHERENT + 4 SHORT in all 28 arms.
+Coherence 20 COHERENT + 4 SHORT in all 28 arms *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)*.
 **`test-backend-ops -b CPU`**: champion **16704/16762**, pristine **16704/16762**, same classes (the HYG-3 set).
 `LIGHTNING_INDEXER` membership churns, so a **third pristine sweep was run as a seeded control**:
 pristine-vs-pristine differs by **13 lines** (count moving 47→48) while pristine-vs-champion differs by
@@ -3797,6 +3804,20 @@ it. Any relaunch of `:8074` goes through the inference owner or the operator (OP
   `/proc/<pid>/smaps` at the start and end of each INF-70 arm. Arms since 2026-09-22 14:50 UTC without that receipt cannot be
   cleared of the swapped-baseline hazard; list them and decide re-runs.
 
+## Tasks filed 2026-10-04 — DS41 keep transfer, iqk IQ4_NL/MXFP4 allowlist (CPU window 2026-10-03 17:20–17:57Z)
+
+_Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-20260926/pause_measure.log`). Instrument: `q38fn-transfer` `report.py` — one llama-bench launch per arm per round, serpentine order, `-t 48 -fa on`, interleave-all, codified OMP stack, per-launch validity sidecar (foreign CPU ≤ 600%, THP, NUMA placement), greedy coherence by token ids vs the reference arm. Non-claims: n = launches per arm (small); a FASTER verdict is a sign claim bounded by the per-round range, not a promotion gate. MTP not exercised (pp5 is the verify-shape proxy)._
+
+- [x] **XFER-1 — DS41 AutoKernel keeps on Q38FN.** ✅ 2026-10-03 — `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`, run dir `runs/20261003T172030Z/`. Arms: A = champion `90c12df42` (cpu-20260925, reference), B = DS41 champion-of-record `053c3bd82` (anchor-gen-007), C = DS41 held-keep tip `b3e0b0902` (anchor-gen-017). Host was loaded (load avg 36–49); 6 of 18 launches excluded on foreign CPU, which leaves UD at n = 1.
+  - *Uniform IQ4_XS (n = 3 B, n = 2 C):* B vs A pp5 **−7.2%** [−9.5, −3.0] (slower 3/3), pp256 −4.4% (inconclusive), tg128 +1.7% (inconclusive); C vs A pp5 −5.8% (slower 2/2), **pp256 −29.4% [−38.6, −20.2]** (slower 2/2), tg128 +3.6% (inconclusive).
+  - *UD-IQ4_XS (n = 1):* B tg128 +10.1%, C +9.4%, C pp256 −40.6% — inconclusive by rule, same signs as uniform.
+  - *Coherence:* B and C token-identical to A on both prompts, both files.
+  - *Read:* DS41 COR decode transfer to Q38FN is +2–10% and unresolved; pp5 regresses uniformly ~6–7%; the held keeps after COR cut Q38FN prefill by 30–40%. The pp256 regression is owned by INF-77 DS41-C112 (bisect before any champion fold).
+- [x] **XFER-2 — uniform IQ4_XS vs UD-IQ4_XS on one build.** ✅ 2026-10-03 — same run, arm A: uniform tg128 36.04 vs UD 28.76 t/s (**+25%**), pp5 88.65 vs 70.98 (**+25%**). The 2026-09-02 gap (row "decode, UD-IQ4_XS (the served file)" in *The gap*) was ~+10%; it has widened on the current champion.
+- [ ] **XFER-3 — re-decide the served Q38FN file with the +25% gap.** (filed 2026-10-04) UD stays the served file today (the ledger above). Pair a quality comparison (PPL/KLD of both files against the same base, or the eval suite) with a clean-window speed A/B on the champion; if quality is within tolerance, take the uniform file to the operator as a stack change. Also explain the widening (+10% → +25%): which champion keeps favour the uniform tensor mix.
+- Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md); its justification bar is measured against XFER-3's uniform file.
+- [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
+
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
 **Facts (2026-09-02).** unsloth published the MTP heads on 2026-09-01 (repo revision `5d16c055`,
@@ -4189,7 +4210,8 @@ named. MTP is not a serving option until that gate passes.
       whose `ne11` is a MULTIPLE of `n_tokens`.** I proposed 8 from the n+1 verify shape; the gate caught it.
 - [x] **BE-1 Phase 2 — THE FASTEST DEPLOYABLE CONFIGURATION.** ✅ 2026-09-04, 24-prompt production mix,
       token-weighted, `pred_n >= 16` floor, coherence by REASON. **All 8 arms: 20 COHERENT + 4 SHORT, zero SALAD,
-      zero EARLY-EOS.**
+      zero EARLY-EOS.** *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)* ("zero EARLY-EOS" is vacuous: the chat client passed `finish_reason`,
+      never `eos`.)
       | arm | tw t/s | × plain | note |
       |---|---|---|---|
       | P0 plain | 12.484 | 1.000 | baseline |
@@ -4233,7 +4255,7 @@ named. MTP is not a serving option until that gate passes.
       `GGML_FA_SPLIT_KV=0`** (the last is free under MTP per BE-2). **23.623 t/s token-weighted, 1.892× plain;
       paired median 1.979× (min 1.227, max 2.152); bootstrap CI [21.79, 25.10]. NON-CLAIM — single session, no ABA;
       432 requests across the arm matrix with ZERO garbage outputs. By class: coding 25.36, reasoning
-      24.86, general 19.86 t/s.** Coherence 20 COHERENT + 4 SHORT on every arm.
+      24.86, general 19.86 t/s.** Coherence 20 COHERENT + 4 SHORT on every arm *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)*.
       **Depth beyond 4 without p_min is a dead end** (n-max 6: 22.281, n-max 8: 21.120, α collapsing to 0.620 /
       0.537). Whether depth pays *with* p_min truncation is the one open arm (n-max 5/6/8 at p_min 0.5, then a p_min
       bracket at the winner).
@@ -4557,7 +4579,7 @@ delivered *before* the decline, not to outstanding work.
       live kernel defect.** Had C9 been real, B7 could only have been measured at `GGML_IQK=0`, i.e. in a
       configuration nobody serves, and the result would not have transferred.
       **★ B7 SPEED GUARD-RAIL COMPLETE 2026-09-04** — 24 production prompts per arm: `b7-anchor` **12.4086 t/s**
-      vs `b7-pleq8` **12.3606 t/s** token-weighted, both 20 COHERENT + 4 SHORT. The −0.39% comes from two
+      vs `b7-pleq8` **12.3606 t/s** token-weighted, both 20 COHERENT + 4 SHORT *(CLS-RECT 2026-10-04: synthetic-token-id label — words/ascii rules only; the claim rests on the paired evidence beside it, see G2-CONC → CLS-RECT-1)*. The −0.39% comes from two
       SEQUENTIAL lock acquisitions and is therefore **not evidence** under the same-window rule; predicted
       bandwidth cost was +3.1e-5%. B7 closes on both axes: no quality gain, no measurable speed change.
 
@@ -4739,10 +4761,21 @@ delivered *before* the decline, not to outstanding work.
       as long as it has a decent acceptance rate and doesn't lead to garbage outputs."* This settles the
       (a)/(b)/(c) fork left open in E2a: **ship (c), approximate MTP**, provided the two criteria below hold. The
       consequence is a re-prioritisation, not just a note — **the exactness hunt no longer blocks MTP serving**:
-      - **Criterion 1 — no garbage. ALREADY MET on the evidence to hand**: all 12 production-length chat
-        generations on the MTP arm classified COHERENT (`mtp-tip2`), and the divergences are one greedy argmax
-        flip per prompt followed by ordinary drift, not corruption. Keep it as a standing gate on every MTP arm
-        (classify by REASON, production-length prompts), not a one-off.
+      - **Criterion 1 — no garbage. MET, but not on the evidence first cited** (CLS-RECT, 2026-10-04,
+        operator-approved). `mtp-tip2`'s "12/12 COHERENT" and every later INF-70 chat label came from
+        `classify.py` called with synthetic token ids (`tokens=list(range(npred))`), so its uniq/top/run rules
+        never fired and only words/ascii could; that label does not establish "no garbage". The criterion is
+        held by the 2026-10-04 read-only paired check (`/mnt/raid0/llm/tmp/q38t7-rescore/AUDIT.md` §1 row 2):
+        speed-claim plain vs MTP is 12/24 byte-identical, all 12 divergent rows are fluent on-task continuations
+        from the first differing character (6-gram dup ≤ 0.03), and e3-run / be1-ship show the same divergence
+        set. **Standing gate on every MTP arm, via `coherence_gate` (production-length prompts):** tier 0 —
+        paired byte-identity against the same binary's MTP-off arm on the same prompts; identical rows are
+        cleared, and divergence alone is NOT a failure (exactness is not a gate, per the ruling above). Tier 1 —
+        every divergent row: ground-truth grade where the item has an expected answer (FAIL if MTP is wrong
+        where MTP-off is right) and `degeneracy.v2` with REAL token ids (FAIL if MTP's severity exceeds
+        MTP-off's on the same prompt). Tier 2 — residual divergent rows with no ground truth go to the paired
+        judge (MTP vs MTP-off, same prompt); without a judge they are eyeballed and listed, and the arm reads
+        INCOMPLETE, never PASS. Full texts and token ids are stored per row.
       - **Criterion 2 — decent acceptance. NOT YET MEASURED on real prompts; this is now the critical path.**
         `e3-run` is measuring α per draft position on the 24-prompt production mix at n-max 1–4 against build
         10217. Until it lands there is no basis to call MTP deployable, and no basis to quote a multiplier at
@@ -4811,20 +4844,87 @@ the shared tree stale, which is exactly why the stronger claim must not be assum
 - [ ] **G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an ancestor.**
       **This gate is NOT satisfiable by inheritance: citing `10acba0ab`'s COHERENT 4/4 does not close it**,
       and neither does the ancestry check above — the ancestry proves the fix is present, not that the
-      stacked champion still clears the trigger. Arms:
-      (a) **`-np 4` simultaneous admission**, coherence classified **by REASON** — `COHERENT` / `SALAD` /
-      `EARLY-EOS` / `SHORT` / `EMPTY` / `HTTP-ERROR` — never a pass/fail count, because the degenerate
-      rounds ran *faster* per slot while producing garbage and a t/s number without an output check is
-      inflated.
+      stacked champion still clears the trigger.
+      **INSTRUMENT (CLS-RECT, rectified 2026-10-04, operator-approved): the shared deterministic
+      `coherence_gate` library (`epyc-inference-research`, branch `feat/coherence-gate-ec`), NOT INF-70
+      `classify.py`.** classify.py's chat clients passed synthetic token ids, so its uniq/top/run rules never
+      ran, and its fixed `uniq < 0.35` false-flags coherent text above ~300–500 tokens. Its labels may be
+      quoted as history, never as this gate's verdict. The earlier repro client
+      (`/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/client.py`) scores a distinct-WORD ratio ≥ 0.35 and is not
+      reusable as the instrument; `agents/batch-envelope/conc.py` (real ids, byte-identity) is the repro shape.
+      **Arms** (on the promotion candidate binary, greedy, `cache_prompt` false):
+      (a) **`-np 4` simultaneous admission** on the production prompt mix.
       (b) **A direct probe of the `>= 32`-row trigger**: the 48-row ubatch shape that originally broke it
       (4 simultaneous ~12-token prompts) **and** a long-prompt arm — both cross the same threshold by
       different routes, and the champion's row-count-changing levers could move either one independently.
       Record the ubatch row counts actually observed, not the ones predicted from prompt length.
-      Prove the binary with `strings` before believing any pass (HYG-1b). Repro and prior evidence:
-      `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`.
+      **Anchor**: every prompt is also served ALONE (one request in flight, same binary, same launch
+      recipe). That solo output is the per-prompt anchor. Also record solo-anchor identity against the
+      incumbent production binary (informational: candidate-vs-production drift).
+      **Prompt set**: at least half the items gradable (MC / exact-match / numeric with an `expected`
+      answer from `question_pool.jsonl`), and `max_tokens` large enough that gradable items reach their
+      answer; the rest open-ended at production length (≥ 40, ~90 and ≥ 200 prompt tokens).
+      **Procedure, per concurrent stream, in order:**
+      0. **Tier 0 — paired byte-identity vs the anchor** (sha256 of full text and of token ids). On a
+         **row-exact route** (OP-39 policy C) identity is REQUIRED: any mismatch FAILS the gate, because that
+         route promises reproducibility. On a full-throughput route an identical stream is CLEARED and a
+         divergent one goes to tier 1; divergence alone is expected there (G2-CONC-POLICY) and is not a failure.
+      1. **Tier 1 — ground truth, then `degeneracy.v2`.** A divergent gradable stream FAILS if its answer is
+         wrong where the anchor's is right. Every divergent stream, and every stream of the long-prompt arm,
+         runs `degeneracy.v2` on its REAL token ids (`return_tokens`; the library refuses synthetic ids) and
+         FAILS if its severity exceeds the anchor's on the same prompt. Non-OK outputs shared by stream and
+         anchor are listed as model behaviour, not failed.
+      2. **Tier 2 — judge for residual divergences.** A divergent stream with no ground truth and v2 OK goes
+         to the orchestrator-hosted judge, PAIRED (stream vs anchor, same prompt, "is either degraded,
+         off-task or corrupted relative to the other"), on a server that is not under test. FAIL if the
+         stream is judged worse. With no judge available these rows are eyeballed and listed with full
+         texts, and the gate reads INCOMPLETE, never PASS.
+      **Report by REASON, never a pass/fail count**: IDENTICAL / DIVERGENT-CLEARED(ground-truth) /
+      DIVERGENT-CLEARED(judge) / WRONG / DEGENERATE / SHORT / EMPTY / HTTP-ERROR per arm, because the
+      degenerate rounds ran *faster* per slot while producing garbage and a t/s number without an output
+      check is inflated; throughput is reported only beside this verdict. **Store** full text, token ids,
+      native `stop_type`, the anchor pairing and the classifier ids per stream, written before the verdict.
+      **PASS** = zero FAIL in every arm, 100% identity on row-exact routes, and every residual divergence
+      adjudicated.
+      Prove the binary with `strings` before believing any pass (HYG-1b). Prior evidence:
+      `/mnt/raid0/llm/tmp/inf70/agents/mtp-conc/`, `/mnt/raid0/llm/tmp/inf70/agents/batch-envelope/`.
       **Cross-links: PROD-1 (the canonical recipe must carry this gate) and PROD-3 / any champion-artifact
       promotion. Both cross-references are drafted and handed to the coordinator — do not add them here
       while the PROD-1 agent is running.**
+
+- [ ] **CLS-RECT-1 — INF-70 classifier labels are synthetic-id labels; nothing flips, re-cite the paired
+      evidence.** (operator-approved 2026-10-04; audit `/mnt/raid0/llm/tmp/q38t7-rescore/AUDIT.md`,
+      rectification `/mnt/raid0/llm/tmp/classifier-rectify/RECTIFY.md`.) Every chat-path "COHERENT / SALAD"
+      label in this file (the "20 COHERENT + 4 SHORT" figures, BE-1's "432 requests … ZERO garbage", B7,
+      mtp-tip2's 12/12) was produced with `tokens=list(range(npred))`: uniq/top/run never fired, only
+      words/ascii could, and EARLY-EOS could not fire on chat `finish_reason`. Recomputing all 403 rows files
+      gives 0 SALAD, so no keep, reject or promotion rested on a uniq-only SALAD. Each affected result stands
+      on its paired evidence instead: CHAMPION-1/-3, CHAMP-2, SYNC-14…20, be2-fa and harness1 on sha256
+      byte-identity; MTP / Axis E / BE-1 on the 2026-10-04 divergence read (E-GATE Criterion 1); B4-r2 on
+      paired PPL/KLD; re-anchor #2 on 27/27 identity; GDN-ROWEXACT on byte-identity plus multi-reason pre-fix
+      SALADs (real ids, `/completion`). Done when: (1) the harness patch
+      (`classifier-rectify/04-harness1-classify-client.patch`: synthetic ids refused, real ids recorded) is
+      applied; (2) the PROD-1 recipe constant is re-worded (`classifier-rectify/03-research-recipe-constant.patch`);
+      (3) G2-CONC and E-GATE run on `coherence_gate` as written above.
+      - *(Annotation, workspace-ec, 2026-10-04; this item stays the `inference` lane's.)*
+        - Done-when (2) is met: patch 03 is on research main 030daa86 ("CLS-RECT-03 re-word champion3 coherence
+          headline").
+        - Patches 01 and 02 were applied by workspace-89.
+        - `coherence_gate` exists on research main 95157ad7, and the tier-2 judge is TD-30 in `typed-decision-plane.md`.
+        - Durable copies of the patches and the audit: `artifacts/gpu-block-27b-20261004/analysis/`.
+      - [ ] **CLS-RECT-1a — apply patch 04 to the INF-70 harness1 client (owner: workspace-ec).** (filed 2026-10-04,
+        workspace-ec; RECTIFY §4, operator-approved.)
+        - **The fake-id fix:** `scripts/inf70/harness1/client.py` requests `return_tokens` + `verbose` to get real
+          ids, falls back to `/tokenize`, and never fabricates an id. `classify.py` becomes `inf70-classify.v1.1`; its
+          v1 rules stay byte-identical, and it refuses synthetic ids and n > 256.
+        - **Tests:** `tests/inf70/test_harness1_classify_refusal.py`, 15 tests.
+        - **Before committing:** notify the `inference` session, which runs the arms, and re-run
+          `gitnexus impact classify` with the repo specified.
+        - **Era row:** CLS1's `from:` is this commit's time (TD-30e).
+        - **Afterwards:** switch `classify_row()` to `coherence_gate` (TD-30d item 2).
+
+        Done when the patch is committed on root main with its tests green, and the first live arm records
+        `token_source == "response"`.
 
 - [x] **G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**
       **Even when coherent, 3 of 4 concurrent streams DIFFER from the same prompt served alone**, and

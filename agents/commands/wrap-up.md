@@ -26,6 +26,7 @@ Update all documentation artifacts to reflect work completed in this session, co
 | 5. Wiki **compilation sweep** | | ✅ |
 | 6. Agent log | ✅ | |
 | 7. Commit (pathspec) → push → lane promotion | ✅ | |
+| 7b. Session scratch cleanup over the handoff's declared `**Scratch**` roots | ✅ | |
 
 A per-task wrap-up still takes the wrap-up lease for the shared surfaces it does touch (Step 3's
 regen, Step 7's promotion merge). The two operator-cadence rows are *deferred, not skipped*: leave
@@ -517,6 +518,53 @@ If agent logging was active, ensure `agent_task_end` was called for all open tas
 
   - **On conflict, STOP** — leave `main` untouched, never auto-resolve or force, and report the repo under the `## Promotion blocked` heading (see Output Format) so the operator reconciles. A divergent `main` usually means an independent PR/commit landed on it directly; use the superset-verification pattern before resolving anything by hand (worked example — appendix).
 - **Return every commit hash, push status, and promotion result** (new `main` SHA, or "blocked") so the operator can confirm each repo reached the contribution graph
+
+### 7b. Session scratch cleanup — per handoff, through the gate
+
+Operator, 2026-10-04: *"each wrap-up (sub)agent should be aware of session scratch work written and
+clean up as part of the finalization process"* — this is a step of the routine, never a cron job.
+Every handoff declares its scratch roots in its `**Scratch**:` header
+(`docs/guides/agent-workflows/handoff-index-authoring.md` § Scratch roots), and everything the task
+and its subagents created lives under them, so the step is a listing of those roots:
+
+```bash
+python3 scripts/system/scratch_cleanup.py plan  --handoff handoffs/active/<h>.md   # read-only
+python3 scripts/system/scratch_cleanup.py apply --handoff handoffs/active/<h>.md
+# scratch outside any handoff (a brief that named an ad hoc root):
+python3 scripts/system/scratch_cleanup.py apply --root /mnt/raid0/llm/tmp/<id> \
+    --worktree-glob '/mnt/raid0/llm/worktrees/<id>-*'
+# a single throwaway tree you created outside the roots:
+python3 scripts/system/worktree_gate.py remove <worktree-path>
+bash scripts/safety/trash-sweep.sh --older-than 7          # trash older than 7 days only
+```
+
+Run it **after** Step 7's promotion, so the landed check sees your merge. What it removes and what
+it keeps:
+
+- **Worktrees** — only through `worktree_gate.py`: clean, `git cherry origin/main HEAD` empty, no
+  process cwd/argv/**environment** names it, no live launch script / campaign input / launch
+  manifest names its path, no ignored evidence file, not locked or keep-marked. Removal is
+  `git worktree remove` (the branch ref is kept). Never `--force`, `rm -rf` or
+  `git worktree prune`.
+- **Plain scratch** — moved to `/mnt/raid0/llm/.trash` by `scripts/safety/guarded_rm.sh`
+  (trash-first rule), unless KEEP-marked, in use by a process, named by a live launcher outside the
+  roots or by a kept entry, or holding an evidence file (archive that first).
+- **Anything kept is printed with its reason** — report it in your output; never work around a
+  refusal. A tree that must outlive the task is *declared*, not remembered:
+  `git -C <repo> worktree lock --reason "load-bearing: <who uses it>" <path>`, or a `KEEP` file
+  with the reason inside a plain dir. (2026-10-04: an approved cleanup removed a landed, clean,
+  idle worktree that a DS41 launcher exported as `EPYC_ROOT_REPO`; the campaign crashed until it
+  was restored. The gate now refuses that shape.)
+- A handoff with no `**Scratch**:` field is refused (exit 2): add the field — it is the record of
+  what this work may create.
+
+Your own lane worktree (`worktrees/mains/<agent>`, `worktrees/pool/*`) is protected and never a
+target. A tree whose branch has not landed (a worker lane awaiting Auditor promotion) is kept and
+listed; the next wrap-up after promotion removes it. Finally print the read-only fleet-wide view,
+so stale trees created before this convention stay visible:
+`python3 scripts/system/worktree_gate.py report` (verdict counts; add `--sizes` for GiB) — removal
+of other sessions' trees stays with their owners or the operator
+(`worktree_gate.py remove --from-report <report> --confirm <token>`).
 
 ## Output Format
 

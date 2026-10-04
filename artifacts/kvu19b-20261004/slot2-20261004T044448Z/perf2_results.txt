@@ -1,0 +1,192 @@
+round=1 arm=base perf single nb=1 own=16384 foreign=0 n_kv=16384 : 271.1 us/op
+round=1 arm=base perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 1012.7 us/op
+round=1 arm=base perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 1992.0 us/op
+round=1 arm=base perf single nb=8 own=16384 foreign=0 n_kv=16384 : 483.8 us/op
+round=1 arm=base perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 1757.4 us/op
+round=1 arm=base perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 3519.6 us/op
+round=1 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1734.6 us/op
+round=1 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1016.2 us/op
+round=1 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 3226.5 us/op
+round=1 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 3181.1 us/op
+round=1 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2288.4 us/op
+round=1 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 8773.7 us/op
+round=1 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5173.7 us/op
+round=1 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 15988.8 us/op
+round=1 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 16399.3 us/op
+round=1 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11506.3 us/op
+round=1 arm=k19a perf single nb=1 own=16384 foreign=0 n_kv=16384 : 276.4 us/op
+round=1 arm=k19a perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 279.7 us/op
+round=1 arm=k19a perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 283.7 us/op
+round=1 arm=k19a perf single nb=8 own=16384 foreign=0 n_kv=16384 : 497.9 us/op
+round=1 arm=k19a perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 509.7 us/op
+round=1 arm=k19a perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 538.6 us/op
+round=1 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1864.9 us/op
+round=1 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1029.7 us/op
+round=1 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2099.7 us/op
+round=1 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2687.2 us/op
+round=1 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2197.0 us/op
+round=1 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9138.1 us/op
+round=1 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5283.6 us/op
+round=1 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 10483.9 us/op
+round=1 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 13656.8 us/op
+round=1 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11617.9 us/op
+round=1 arm=on perf single nb=1 own=16384 foreign=0 n_kv=16384 : 276.6 us/op
+round=1 arm=on perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 279.6 us/op
+round=1 arm=on perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 283.8 us/op
+round=1 arm=on perf single nb=8 own=16384 foreign=0 n_kv=16384 : 498.0 us/op
+round=1 arm=on perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 601.2 us/op
+round=1 arm=on perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 540.7 us/op
+round=1 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1080.2 us/op
+round=1 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1117.0 us/op
+round=1 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2535.2 us/op
+round=1 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2540.0 us/op
+round=1 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2192.5 us/op
+round=1 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 5488.8 us/op
+round=1 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5263.3 us/op
+round=1 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 11857.6 us/op
+round=1 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 11899.7 us/op
+round=1 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11536.3 us/op
+round=1 arm=seqoff perf single nb=1 own=16384 foreign=0 n_kv=16384 : 275.8 us/op
+round=1 arm=seqoff perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 279.6 us/op
+round=1 arm=seqoff perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 281.3 us/op
+round=1 arm=seqoff perf single nb=8 own=16384 foreign=0 n_kv=16384 : 514.4 us/op
+round=1 arm=seqoff perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 509.5 us/op
+round=1 arm=seqoff perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 539.3 us/op
+round=1 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1781.1 us/op
+round=1 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1025.7 us/op
+round=1 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2174.9 us/op
+round=1 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2778.6 us/op
+round=1 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2286.3 us/op
+round=1 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9120.9 us/op
+round=1 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5282.7 us/op
+round=1 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 10358.6 us/op
+round=1 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 13643.3 us/op
+round=1 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11493.3 us/op
+round=2 arm=base perf single nb=1 own=16384 foreign=0 n_kv=16384 : 271.2 us/op
+round=2 arm=base perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 1011.4 us/op
+round=2 arm=base perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 2019.0 us/op
+round=2 arm=base perf single nb=8 own=16384 foreign=0 n_kv=16384 : 509.5 us/op
+round=2 arm=base perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 1771.5 us/op
+round=2 arm=base perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 4241.1 us/op
+round=2 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1732.5 us/op
+round=2 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1014.9 us/op
+round=2 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 3170.5 us/op
+round=2 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 3113.0 us/op
+round=2 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2193.7 us/op
+round=2 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 8737.3 us/op
+round=2 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5090.8 us/op
+round=2 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 16012.6 us/op
+round=2 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 16457.7 us/op
+round=2 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11903.7 us/op
+round=2 arm=k19a perf single nb=1 own=16384 foreign=0 n_kv=16384 : 276.4 us/op
+round=2 arm=k19a perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 279.0 us/op
+round=2 arm=k19a perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 282.7 us/op
+round=2 arm=k19a perf single nb=8 own=16384 foreign=0 n_kv=16384 : 499.0 us/op
+round=2 arm=k19a perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 512.4 us/op
+round=2 arm=k19a perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 541.2 us/op
+round=2 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1783.0 us/op
+round=2 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1023.1 us/op
+round=2 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2110.9 us/op
+round=2 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2692.4 us/op
+round=2 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2202.0 us/op
+round=2 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9226.0 us/op
+round=2 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5306.2 us/op
+round=2 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 10463.5 us/op
+round=2 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 13642.2 us/op
+round=2 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11615.8 us/op
+round=2 arm=on perf single nb=1 own=16384 foreign=0 n_kv=16384 : 276.0 us/op
+round=2 arm=on perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 278.7 us/op
+round=2 arm=on perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 283.4 us/op
+round=2 arm=on perf single nb=8 own=16384 foreign=0 n_kv=16384 : 496.8 us/op
+round=2 arm=on perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 509.0 us/op
+round=2 arm=on perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 541.7 us/op
+round=2 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1088.1 us/op
+round=2 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1026.5 us/op
+round=2 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2631.1 us/op
+round=2 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2548.2 us/op
+round=2 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2197.5 us/op
+round=2 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 6217.6 us/op
+round=2 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5236.1 us/op
+round=2 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 11963.1 us/op
+round=2 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 12610.5 us/op
+round=2 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11458.3 us/op
+round=2 arm=seqoff perf single nb=1 own=16384 foreign=0 n_kv=16384 : 306.3 us/op
+round=2 arm=seqoff perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 371.6 us/op
+round=2 arm=seqoff perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 284.1 us/op
+round=2 arm=seqoff perf single nb=8 own=16384 foreign=0 n_kv=16384 : 525.3 us/op
+round=2 arm=seqoff perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 538.5 us/op
+round=2 arm=seqoff perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 596.0 us/op
+round=2 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1783.0 us/op
+round=2 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1027.4 us/op
+round=2 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2096.4 us/op
+round=2 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2679.8 us/op
+round=2 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2190.0 us/op
+round=2 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9133.4 us/op
+round=2 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5178.6 us/op
+round=2 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 10391.4 us/op
+round=2 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 13636.7 us/op
+round=2 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11516.8 us/op
+round=3 arm=base perf single nb=1 own=16384 foreign=0 n_kv=16384 : 270.4 us/op
+round=3 arm=base perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 1011.0 us/op
+round=3 arm=base perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 1991.9 us/op
+round=3 arm=base perf single nb=8 own=16384 foreign=0 n_kv=16384 : 482.7 us/op
+round=3 arm=base perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 1758.4 us/op
+round=3 arm=base perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 3526.5 us/op
+round=3 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1728.7 us/op
+round=3 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1017.2 us/op
+round=3 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 3250.9 us/op
+round=3 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 3203.8 us/op
+round=3 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2198.9 us/op
+round=3 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 8787.5 us/op
+round=3 arm=base perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5174.7 us/op
+round=3 arm=base perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 15958.4 us/op
+round=3 arm=base perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 16291.2 us/op
+round=3 arm=base perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11504.9 us/op
+round=3 arm=k19a perf single nb=1 own=16384 foreign=0 n_kv=16384 : 277.2 us/op
+round=3 arm=k19a perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 280.6 us/op
+round=3 arm=k19a perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 285.3 us/op
+round=3 arm=k19a perf single nb=8 own=16384 foreign=0 n_kv=16384 : 499.8 us/op
+round=3 arm=k19a perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 512.2 us/op
+round=3 arm=k19a perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 539.8 us/op
+round=3 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1784.5 us/op
+round=3 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1025.7 us/op
+round=3 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2101.7 us/op
+round=3 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2690.6 us/op
+round=3 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2200.3 us/op
+round=3 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9228.0 us/op
+round=3 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5209.6 us/op
+round=3 arm=k19a perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 11066.4 us/op
+round=3 arm=k19a perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 14263.2 us/op
+round=3 arm=k19a perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11600.1 us/op
+round=3 arm=on perf single nb=1 own=16384 foreign=0 n_kv=16384 : 275.1 us/op
+round=3 arm=on perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 278.6 us/op
+round=3 arm=on perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 283.1 us/op
+round=3 arm=on perf single nb=8 own=16384 foreign=0 n_kv=16384 : 496.3 us/op
+round=3 arm=on perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 509.0 us/op
+round=3 arm=on perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 539.2 us/op
+round=3 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1083.2 us/op
+round=3 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1025.4 us/op
+round=3 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2633.2 us/op
+round=3 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2544.7 us/op
+round=3 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2191.3 us/op
+round=3 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 5531.3 us/op
+round=3 arm=on perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5275.8 us/op
+round=3 arm=on perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 11861.3 us/op
+round=3 arm=on perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 11890.1 us/op
+round=3 arm=on perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11542.0 us/op
+round=3 arm=seqoff perf single nb=1 own=16384 foreign=0 n_kv=16384 : 276.6 us/op
+round=3 arm=seqoff perf single nb=1 own=16384 foreign=49152 n_kv=65536 : 279.6 us/op
+round=3 arm=seqoff perf single nb=1 own=16384 foreign=114688 n_kv=131072 : 284.0 us/op
+round=3 arm=seqoff perf single nb=8 own=16384 foreign=0 n_kv=16384 : 498.4 us/op
+round=3 arm=seqoff perf single nb=8 own=16384 foreign=49152 n_kv=65536 : 511.1 us/op
+round=3 arm=seqoff perf single nb=8 own=16384 foreign=114688 n_kv=131072 : 541.9 us/op
+round=3 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=16384 n_kv=65536 nb=4 : 1785.5 us/op
+round=3 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=16384 n_kv=16384 nb=1 : 1025.9 us/op
+round=3 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=32 : 2094.4 us/op
+round=3 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=16384 n_kv=65536 nb=25 : 2692.5 us/op
+round=3 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=16384 n_kv=16384 nb=8 : 2191.7 us/op
+round=3 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=1 own=81920 n_kv=327680 nb=4 : 9174.6 us/op
+round=3 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=1 own=81920 n_kv=81920 nb=1 : 5279.3 us/op
+round=3 arm=seqoff perf multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 : 10350.7 us/op
+round=3 arm=seqoff perf multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 : 13650.0 us/op
+round=3 arm=seqoff perf multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 : 11483.0 us/op

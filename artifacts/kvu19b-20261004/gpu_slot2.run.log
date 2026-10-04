@@ -1,0 +1,17 @@
+[2026-10-04T04:44:49Z] VRAM before: 13094912  NEW=/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin
+[2026-10-04T04:44:49Z] linkage PASS
+[2026-10-04T04:44:49Z] 1 exact
+k19a rc=0 ALL 1ea5fe2b85a73b18
+on rc=0 ALL 9c493fbfa71443fa
+skipoff rc=0 ALL 4a6b5f8b4f11b009
+seqoff rc=0 ALL 1ea5fe2b85a73b18
+alloff rc=0 ALL 1ea5fe2b85a73b18
+[2026-10-04T04:45:46Z] 2 kernel perf
+[2026-10-04T04:52:47Z] 3 p3batch
+[2026-10-04T04:56:26Z] 4 batched-bench
+[2026-10-04T04:57:04Z] 5 test-backend-ops
+  2978/2978 tests passed
+  110/110 tests passed
+  110/110 tests passed
+[2026-10-04T05:05:18Z] VRAM after: 13094912
+[2026-10-04T05:05:18Z] done -> /mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot2-20261004T044448Z (summary.txt)

@@ -2025,6 +2025,13 @@ VB-NPD-1) are activation records in the durable-triggers list above.
     partial; cxf1 0.50, 2 partial). Project them with the existing locator. One call (C2/cxf1/r2) is graded `contaminated=True`:
     carry that flag into the tuple and exclude it from any pooled arm verdict. Later runs (`run3.py`, Landlock sandbox) must emit the
     write-side `belief_measurements.jsonl` row at call end — see UFH14-A5.
+  - 2026-10-04 extension (UFH-14 run-3 A3/A4, `run3.py`): four more arms, same source class and ladder (UFH14-A5: extend,
+    no new ladder). Per-call `results/C2/cxa+a3{cold,warm}/r<k>/result.json` and `results/C4/cxa+a4{base,fix}/r<k>/result.json`
+    add three fields the earlier projection does not cover: `first_request` (prompt_n, cache_n, cache_hit, prompt_s,
+    decode_tps, held_s, ttft_after_release_s), `compactions` (n, rewritten, reprefill tokens/s sums, unfinished) and
+    `sandbox_denials` (denied_hits). Project each as an OBSERVATION metric on the existing context × arm × repeat locator,
+    with its own unit and direction; `sandbox_denials.denied_hits` is a run-validity fact carried on the tuple, not graded.
+    A `compactions.unfinished > 0` call is censored. These arms are pre-hook too: copy `results/C{2,4}/cxa+a*` durably first.
 - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` "(G) #25592" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with prompt_n, cache_n, forced-re-prefill cause (a/b/c/unattributed), N, gap lengths and the HSF-3 receipt digest, plus binary/store digests and argv. Locator = run × N. Project; do not grade.
 
 ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan)
@@ -2145,6 +2152,20 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   `claim_tuple.grade()`; no new ladder. Source-table row text PREPARED in
   `/mnt/raid0/llm/tmp/wrapup-ec-maskskip/INDEX_ROWS.md`. Done when the row is applied and a strict adapter projects the
   store-build `gpu_slot.sh` records (copied durably first) into `ClaimTuple`s.
+  - [ ] **VB-FA-MASKSKIP-b — write side for the KVU-19b `gpu_slot2.sh` records** (filed 2026-10-04, workspace-ec, from
+    KVU-19b-1). A new producer generation of the same harness, already copied durably to
+    `artifacts/kvu19b-20261004/slot2-20261004T044448Z/`. Its records are harness-v2 exactness (119 GPU cases ×
+    arms on / skipoff / seqoff / alloff / k19a, plus the CPU reference), µs per FA op for multi-sequence shapes
+    (kvu / kvu-uneven / streams × rows per sequence), p3batch tok/s (draft 1 / 8 / [1,8,8,8], arms k19a / on /
+    seqoff / no-kvu), `llama-batched-bench` S_TG/S_PP JSONL and `test-backend-ops` counts. Bind the store build
+    `gpu-20261004-c7f5ac9ad`, commits `1bceceb05` / `c7f5ac9ad` on base `a0d0ae238`, and the knob tuple
+    (`GGML_CUDA_FA_SEQ_ROWS`, `GGML_CUDA_FA_MASK_SKIP`, `GGML_CUDA_FA_MASK_SKIP_MIN_KV`; later
+    `GGML_CUDA_FA_SEQ_TILES` from KVU-19b-rework-c2). Cautions that must ride every projection: (1) commit 2's
+    "skip on/off bit-identical" claim is REFUTED on 6 cases, so project it as a refuted exactness claim, not a pass;
+    (2) a kernel µs figure is not a serving tok/s claim; (3) p3batch is gemma-3-1b, not the 27B. n = 3 rounds, no
+    protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Source-table row PREPARED in
+    `/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/INDEX_ROWS.md`. Done when the row is applied and the strict adapter that
+    VB-FA-MASKSKIP builds also projects these records.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
@@ -2181,3 +2202,74 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   - First step: copy the four result trees to a durable research results path and record their digests (tmp is
     scratch). Then one strict adapter per producer; all grade `Judged/Located` through `claim_tuple.grade()` (n ≤ 3,
     no codified protocol). No new ladder.
+  - 2026-10-04 extension: the kernel-route A/B (VB-KQROUTE-1) ran `x0_shape_b.py` as its serving leg,
+    `/mnt/raid0/llm/tmp/kqroute-build-20261003/results/20261004T021143Z/x0b/{A,B}/shape_b.q4.rep1.json`
+    (`x0.shape_b.launch.v1`). Same producer class as INF-80 EXL3-X0 above, so it projects through this task's
+    shape_b adapter with the arm's kernel-store build id added to the locator; it is not a second source.
+
+## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KQROUTE-1 — write side + projection for the GPU kernel-route A/B harness** (CLAUDE.md *Belief Kernel —
+  wiring new sources*; source row in `scripts/vidya/adapters/README.md`). Producer
+  `/mnt/raid0/llm/tmp/kqroute-build-20261003/ab_kqroute.sh`; first run `results/20261004T021143Z/` (EXL3-LB1 seed #1,
+  gfx90a MMVQ→MMQ route, commit `289cbafa3`). Inputs: per-launch `bench.<model>.<round><arm>.json` llama-bench JSON with
+  `.stderr.log` and `.vram.txt`, `route.*.log`, `tbo.{A,B}.log` (`test-backend-ops` correctness), `report.txt`.
+  First step: copy the raw evidence (the whole `results/<ts>/` tree, plus `patched_commit.txt` and the linkage logs) to a
+  durable location and record digests — `/mnt/raid0/llm/tmp` is scratch. Then a strict adapter: locator = run × model ×
+  test (pp<n>/tg128) × arm × launch; arm = kernel-store build id from the launch (A `gpu-20260929-90c12df42`, B
+  `gpu-20261003-289cbafa3-kqroute`); carry binary digest, ggml linkage proof and own-PID VRAM; a `tbo` FAIL voids that
+  arm's speed rows; report the A-spread as the floor. The `x0b/` serving leg projects under VB-KVU-P3, not here. n = 2 A /
+  1 B per test, no protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Add a write-side
+  `belief_measurements.jsonl` to `ab_kqroute.sh` before its next run.
+- [ ] **VB-CPU-XFER-1 — write side + projection for the CPU transfer A/B harness (`q38fn-transfer` `report.py`)**
+  (CLAUDE.md *Belief Kernel — wiring new sources*; source row in `scripts/vidya/adapters/README.md`). One source class,
+  two runs: `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/runs/20261003T172030Z/` and the iqk allowlist A/B
+  `/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/` (same `report.py`). Inputs per run: per-launch
+  `bench-*.jsonl` llama-bench JSON, `.sidecar.json` (load time, THP state, foreign CPU %, NUMA placement), greedy coherence
+  token ids, `REPORT.txt`. First step: copy the raw evidence (both run dirs plus `report.py`/`run_transfer.sh` and their
+  digests) to a durable location — `/mnt/raid0/llm/tmp` is scratch. Then a strict adapter: unit = one launch, value =
+  `avg_ts` (t/s, higher = better), locator = run × model × round × arm; sidecar-excluded launches (foreign CPU over
+  `FOREIGN_MAX_PCT`, THP shim off) are declined with the reason, never projected; the coherence comparison against the
+  reference arm rides as a verifier fact per arm; arm identity from `build_commit`/binary digest and the env arm. n =
+  rounds per arm, no protocol → `Judged/Located` via `claim_tuple.grade()`; no new ladder. Add a write-side
+  `belief_measurements.jsonl` to `report.py report` before its next run.
+
+## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec)
+
+- [ ] **VB-COHGATE-1 — write side for `coherence_gate` verdicts.** (CLAUDE.md *Belief Kernel — wiring new sources*;
+  RECTIFY §6c.) The shared library on research main 95157ad7 (`scripts/lib/coherence_gate/`, schema
+  `epyc.coherence_gate.v1`) and the tier-2 judge `POST /v1/typed/coherence_judge` (orch f8c9c0a3, TD-30 in
+  `typed-decision-plane.md`) produce verified findings, but no tuple is written yet.
+  - Fields, per stream: anchor id, tier-0 identity, ground-truth result, `degeneracy.v2` class plus classifier id,
+    judge verdict plus `calibration_id`, and text/ids digests.
+  - Per gate: aggregate PASS / FAIL / INCOMPLETE. INCOMPLETE never projects as a pass.
+  - A strict adapter projects the verdict record and `claim_tuple.grade()` decides; no new ladder.
+  - Era-labelled by `schema` once TD-30e's OC1 row is ratified. Before that, project as a prior only.
+  - The source-table row text is prepared for the owning session in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`.
+  - Done when a `belief_measurements.jsonl` write-side hook exists in `coherence_gate`'s CLI / `evaluate()` and one
+    real gate run ingests.
+- [ ] **VB-SC75-CLS — SC75 sidecars must say which classifier labelled them (patch 05, owner workspace-ec under
+  EVL-47).** Apply `classifier-rectify/05-vidya-inf70-arm-capture.patch` (durable copy
+  `artifacts/gpu-block-27b-20261004/analysis/classifier-rectify/`). It adds an informational
+  `extra.coherence_classifier` census to `scripts/vidya/adapters/inf70_serving_arm_capture.py`. Rows with no
+  `classifier` are named `inf70-classify.v1|synthetic-ids(uniq/top/run vacuous)`. It also adds one test. All 37
+  adapter tests pass on the patched copy, and the grade is unchanged. Done when the patch is on root main with tests
+  green, and the next `inf70-arms` ingest shows the census.
+- [ ] **VB-YARN-E1 — write side for the INF-59 long-context needle runs (E0 runner, E1 window).** (CLAUDE.md *Belief
+  Kernel — wiring new sources*; ASSESSMENT §6 E0.) The runner forked from Q38-T7's needle logic
+  (`yarn-context-extension-research.md` YARN-E0) produces, per (arm, length): needle correctness in `coherence_gate`
+  `needle` grader form, prefill/decode tok/s, KFD peak and the rope proof lines. The locator is model × arm (A0 native,
+  A1 YaRN f2, A2 raw extrapolation) × haystack length × depth × build id × argv digest. The paired short-context set
+  projects through VB-COHGATE-1, not twice. With n=1 per cell and no codified protocol, it grades as
+  `Judged/Located` via `claim_tuple.grade()`. Write a `belief_measurements.jsonl` from the runner before E1 runs.
+  The source-table row text is prepared in the INDEX_ROWS file above. Done when E1's records ingest.
+
+## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:
+  [`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-18 (fork-vs-fresh equivalence + TTFT),
+  KPF-26 (trunk-first dispatch), KPF-33 (sequence-affine allocation), KPF-42 (`kv_rows` A/B vs KVU-19b), KPF-53 (cascade).
+  Record shape: per-run JSON with binary sha, argv, arm, prompt-set hash, equivalence verdict, TTFT, prefill tokens,
+  unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
+  `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
+  adapter projects it.
