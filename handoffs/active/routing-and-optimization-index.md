@@ -59,7 +59,7 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Finish TD-29 shadow/prefill counts; bind TD-1d.3 question isolation to TD-23 and checkpoint-safe sharing | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16h-confirm row 4c, then -fold; fold-c1 receipt + P3 B; gpu_slot3 (rework-c2); V11-FA slot; KVU-16g-1 row 5c; CPU-FA-VKQ-1 | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B on 98c0ce12a; KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | Land P2 branch B v2 (KPF-27b acked 2026-10-04), then KPF-27d shadow windows with FORK=auto; re-cut KPF-17a for 1bceceb05 | RTG-57, RTG-27, INF-65 |
 
 ## Cross-domain
