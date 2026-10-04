@@ -1,0 +1,7 @@
+9f0034423e5dd610ef0bed34a09d2d4c728d99251b9fa7ecc0318904c62591a9  /mnt/raid0/llm/tmp/gpu-block-27b-20261003/kvu16b_residency.py
+626ce6fc8ce0796a87def594f4719e76b8e45a4dc1d4bca7af7dd036d27f1067  /mnt/raid0/llm/tmp/gpu-block-27b-20261003/lib_gpublock.py
+71f72cf2497b17437e968484c749fb6355046b0657c9a07a9b01161369701c7c  /mnt/raid0/llm/tmp/x0-27b-quants/p3_kvu_probe_v2.py
+1268a28acfc190dc54254544f24633de4a82329d3b1304987df716c17ebccaba  /mnt/raid0/llm/tmp/x0-27b-quants/p3_kvu_probe_v2.sh
+92a7f2c1496499256fd257cc5236aa890eb3e9e4b18c21a1a9083223b84ec970  /mnt/raid0/llm/tmp/x0-27b-quants/x0_common_v2.py
+da9f6413a094308b798f2ba3bba32826eabba71c02f576763a4d9c859f6791c4  /mnt/raid0/llm/tmp/x0-27b-quants/x0_shape_b_v2.py
+d1fd4096977b5bff0875734df6827a3316dd11bdfc806cab767711b2655430a9  /mnt/raid0/llm/tmp/x0-27b-quants/p3_claim_v2.py

@@ -69,3 +69,25 @@
   as metadata on the run and proceeds. ABA ordering plus repetition already absorbs light noise. Refusing on
   it cost whole measurement windows. The hazard that sinks windows is local compute, usually our own
   subagents' (above, and the GPU rule under *Scarce windows*).
+
+## Running more than one AutoKernel lane
+
+- **A second lane starts at once, in parallel; it is never gated on a CPU window** (operator, 2026-10-04). An
+  AutoKernel lane spends most of its wall time in hosted planning and authoring, which uses no local compute, so
+  that phase overlaps the other lane's measurements freely. Only the local steps (builds, ak-check compiles and
+  op-tests, calibration, A/B) contend, and those already queue on region claims. Waiting for "a free CPU window"
+  before launching the lane idles the planner for nothing.
+- **In a multi-loop deployment, check that every local step of an actor phase waits on the OTHER loop's region
+  claim.** A loop releases its own claim during the actor phase, so its compile, op-test and build steps must treat
+  any live claim as a peer, including one held under the same role name by a different loop. Pinning those steps to
+  "spare" cores is not isolation: the affinity tail 184-191 is the SMT sibling set of 88-95, inside q0-q3. (origin:
+  research `aef2da6c`, 2026-10-04 — ak-check skipped role `autokernel-cpu` as "its own claim", so with two loops one
+  loop's author would compile inside the other loop's measurement; DS41-C122 in
+  `handoffs/active/deepseek-v41-flash-evaluation.md`)
+- **A pinned research worktree runs only with `PYTHONPATH` starting at the worktree root.** The shared research venv
+  (`/mnt/raid0/llm/epyc-inference-research/.venv`) has an editable install of the main clone, so `import
+  scripts.lib...` resolves to the main clone's code, not the pinned worktree's, unless the worktree root comes first:
+  run from inside the worktree with `PYTHONPATH=.:scripts/kernel_rnd:...`. Prove it before launch:
+  `python -c 'import scripts.lib.canonical_recipe as m; print(m.__file__)'` must print a path inside the worktree.
+  (origin: 2026-10-04 Q38FN lane launch, DS41-C111 — the editable install shadowed the pinned
+  `scripts.lib.canonical_recipe`)

@@ -1,0 +1,97 @@
+# 2026-10-04T04:40:46Z loadavg: 7.02 37.52 53.08 2/7840 2392467 THP=[always] madvise never
+node 0 free: 132792 MB
+node 1 free: 124212 MB
+node 2 free: 123972 MB
+node 3 free: 118396 MB
+=== run 1 placement=interleave pages=4k ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       421.1   bytes read only, 1 array
+read-dot       478.3   bytes read only, 2 arrays
+gemv-2560      409.6   bytes read only, 2560-wide rows
+copy           279.2   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        421.3   read+write counted; non-temporal stores, no RFO
+triad          316.8   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 2 placement=local pages=4k ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       423.7   bytes read only, 1 array
+read-dot       497.4   bytes read only, 2 arrays
+gemv-2560      415.2   bytes read only, 2560-wide rows
+copy           289.2   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        425.7   read+write counted; non-temporal stores, no RFO
+triad          328.8   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 3 placement=interleave pages=thp ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=1 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       412.1   bytes read only, 1 array
+read-dot       457.2   bytes read only, 2 arrays
+gemv-2560      405.7   bytes read only, 2560-wide rows
+copy           272.4   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        388.9   read+write counted; non-temporal stores, no RFO
+triad          301.9   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 4 placement=local pages=thp ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=1 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       427.0   bytes read only, 1 array
+read-dot       501.4   bytes read only, 2 arrays
+gemv-2560      413.2   bytes read only, 2560-wide rows
+copy           292.7   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        429.6   read+write counted; non-temporal stores, no RFO
+triad          334.2   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 5 placement=local pages=thp ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=1 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       426.8   bytes read only, 1 array
+read-dot       507.0   bytes read only, 2 arrays
+gemv-2560      415.6   bytes read only, 2560-wide rows
+copy           293.1   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        428.4   read+write counted; non-temporal stores, no RFO
+triad          335.2   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 6 placement=interleave pages=thp ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=1 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       415.3   bytes read only, 1 array
+read-dot       457.1   bytes read only, 2 arrays
+gemv-2560      405.8   bytes read only, 2560-wide rows
+copy           268.9   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        398.6   read+write counted; non-temporal stores, no RFO
+triad          303.1   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 7 placement=local pages=4k ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       415.0   bytes read only, 1 array
+read-dot       458.3   bytes read only, 2 arrays
+gemv-2560      399.9   bytes read only, 2560-wide rows
+copy           290.4   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        424.4   read+write counted; non-temporal stores, no RFO
+triad          329.2   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+=== run 8 placement=interleave pages=4k ===
+threads=48 array=2.00 GiB x3 reps=10 hugepage=0 OMP_PROC_BIND=spread OMP_PLACES=cores OMP_WAIT_POLICY=active
+threads per NUMA node: n0=12 n1=12 n2=12 n3=12
+kernel          GB/s   counting convention
+read-sum       417.7   bytes read only, 1 array
+read-dot       411.1   bytes read only, 2 arrays
+gemv-2560      403.2   bytes read only, 2560-wide rows
+copy           276.9   read+write counted (STREAM copy); DRAM traffic ~1.5x with RFO
+copy-NT        419.2   read+write counted; non-temporal stores, no RFO
+triad          317.3   2 reads + 1 write counted (STREAM triad)
+witness AnonHugePages_kB/Rss_kB at 4 s: 
+node 0 free: 132362 MB
+node 1 free: 123755 MB
+node 2 free: 123617 MB
+node 3 free: 118054 MB

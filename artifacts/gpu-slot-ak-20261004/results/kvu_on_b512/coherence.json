@@ -1,0 +1,36 @@
+{
+ "label": "kvu_on_b512",
+ "at": "2026-10-04T06:04:34Z",
+ "prompt": "In three short sentences, explain why the sky looks blue during the day and red at sunset.",
+ "request": {
+  "messages": [
+   {
+    "role": "user",
+    "content": "In three short sentences, explain why the sky looks blue during the day and red at sunset."
+   }
+  ],
+  "max_tokens": 160,
+  "temperature": 0.0,
+  "top_k": 1,
+  "top_p": 1.0,
+  "chat_template_kwargs": {
+   "enable_thinking": false
+  }
+ },
+ "prompt_n": 185,
+ "cache_n": 0,
+ "prefill_tps": 346.4,
+ "decode_tps": 40.429,
+ "predicted_n": 79,
+ "draft_n": 175,
+ "draft_n_accepted": 54,
+ "draft_acc": 0.3086,
+ "ttft_s": 0.56,
+ "wall_s": 2.51,
+ "finish": "stop",
+ "reasoning_chars": 0,
+ "content_chars": 434,
+ "text_sha": "821d2f3d3a563435",
+ "content_text": "Sunlight contains all colors, but shorter blue wavelengths scatter more effectively in the atmosphere than longer red wavelengths, making the sky appear blue during the day. At sunset, sunlight travels through a much thicker layer of air, scattering away most of the blue light before it reaches your eyes. This leaves the longer red and orange wavelengths to dominate the view, creating the characteristic warm colors of the horizon.",
+ "reasoning_text": ""
+}

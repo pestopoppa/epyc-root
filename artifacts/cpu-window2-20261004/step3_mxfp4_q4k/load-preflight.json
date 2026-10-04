@@ -1,0 +1,119 @@
+{
+ "t": "2026-10-04T04:59:47Z",
+ "host_busy_pct_of_one_cpu": 2385.8,
+ "loadavg": [
+  "93.91",
+  "83.92",
+  "67.40"
+ ],
+ "build_pct": 759.7,
+ "ds41_loop_pct": 0,
+ "gpu_procs": [
+  {
+   "pid": 2539565,
+   "comm": "test-backend-op",
+   "pct": 46.3,
+   "gpu": true,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin/test-backend-ops",
+   "args": "/mnt/raid0/llm/kernels/builds/gpu-20261004-c7f5ac9ad/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 "
+  }
+ ],
+ "top": [
+  {
+   "pid": 3548208,
+   "comm": "llama-server",
+   "pct": 937.3,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server",
+   "args": "/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server -m /mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf --port 18731 --hos"
+  },
+  {
+   "pid": 256688,
+   "comm": "llama-server",
+   "pct": 336.0,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server",
+   "args": "/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server -m /mnt/raid0/llm/models/gemma-3-1b-it-Q8_0.gguf --host 127.0.0.1 -"
+  },
+  {
+   "pid": 747241,
+   "comm": "cc1plus",
+   "pct": 50.7,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/tools/server -I /mnt/raid0/llm/kernels/builds/cpu-20"
+  },
+  {
+   "pid": 723290,
+   "comm": "cc1plus",
+   "pct": 47.0,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/tools/server -I /mnt/raid0/llm/kernels/builds/cpu-20"
+  },
+  {
+   "pid": 723299,
+   "comm": "cc1plus",
+   "pct": 46.7,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/tools/server -I /mnt/raid0/llm/kernels/builds/cpu-20"
+  },
+  {
+   "pid": 724087,
+   "comm": "cc1plus",
+   "pct": 46.7,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/common/. -I /mnt/raid0/llm/tmp/prefill-budget-202610"
+  },
+  {
+   "pid": 734337,
+   "comm": "cc1plus",
+   "pct": 46.7,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/common/. -I /mnt/raid0/llm/tmp/prefill-budget-202610"
+  },
+  {
+   "pid": 739055,
+   "comm": "cc1plus",
+   "pct": 46.3,
+   "gpu": false,
+   "ds41": false,
+   "ds41_measuring": false,
+   "nice": 19,
+   "exe": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus",
+   "args": "/usr/libexec/gcc/x86_64-linux-gnu/15/cc1plus -quiet -I /mnt/raid0/llm/tmp/prefill-budget-20261004/src-store/tools/server -I /mnt/raid0/llm/kernels/builds/cpu-20"
+  }
+ ],
+ "heavy": [
+  "CPU inference/bench pid 3548208 llama-server at 937% (> 200%) exe=/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server",
+  "CPU inference/bench pid 256688 llama-server at 336% (> 200%) exe=/mnt/raid0/llm/llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev/bin/llama-server"
+ ],
+ "verdict": "REFUSE"
+}

@@ -2273,3 +2273,17 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   unique cells, decode tok/s. Wire the write side before KPF-18's first run; project into `ClaimTuple` and let
   `claim_tuple.grade()` decide — one ladder, no new grading rule. Done when KPF-18's runner emits the record and the
   adapter projects it.
+
+## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
+
+- [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief
+  Kernel*; source row in `scripts/vidya/adapters/README.md`). Producers: `kvu16b_residency.py` (workspace-ec, run
+  `artifacts/gpu-block-27b-20261004/results/kvu16b/`, the invalid-PASS predicate) and its fixed-predicate slot copy
+  `kvu16b_residency_slot.py` + `slot_report.py` (ak-ds41-main, `artifacts/gpu-slot-ak-20261004/`, arms skip OFF/ON ×
+  `-b 2048`/`-b 512`). Records: per-request TTFT, max requests decoding at once, max resident cells, decode tok/s per
+  request while all decode and while each prefill runs, s/iteration by occupied-cell bucket, KFD peak, coherence sha.
+  Bind build id, argv sha, live knob env (`GGML_CUDA_FA_MASK_SKIP`, `GGML_CUDA_FA_SEQ_ROWS`), `-b/-ub`, and the
+  predicate version. Cautions that ride every projection: the original runner's PASS is INVALID (stale `n_decoded`);
+  skip-ON arms are the 19a+19b build INCLUDING commit 2, never the fold. One replay per arm, no protocol →
+  `Judged/Located` via `claim_tuple.grade()`; no new ladder. Done when the runner (after KVU-16b-1) emits the record and
+  the adapter projects the two durable runs above.

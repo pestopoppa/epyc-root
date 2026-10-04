@@ -1,0 +1,68 @@
+{
+ "reference": "U",
+ "summary": {
+  "q38": {
+   "pp5": {
+    "E": {
+     "effect_pct_median": -30.923,
+     "effect_pct_range": [
+      -31.298,
+      -29.367
+     ],
+     "n_rounds": 3,
+     "verdict": "SLOWER in 3/3 rounds, each < -6.3%"
+    },
+    "I": {
+     "effect_pct_median": 24.106,
+     "effect_pct_range": [
+      17.303,
+      28.724
+     ],
+     "n_rounds": 3,
+     "verdict": "FASTER in 3/3 rounds, each > 6.3%"
+    }
+   },
+   "pp256": {
+    "E": {
+     "effect_pct_median": -16.67,
+     "effect_pct_range": [
+      -24.06,
+      -8.021
+     ],
+     "n_rounds": 3,
+     "verdict": "inconclusive (mixed signs / inside noise)"
+    },
+    "I": {
+     "effect_pct_median": 33.973,
+     "effect_pct_range": [
+      26.776,
+      36.139
+     ],
+     "n_rounds": 3,
+     "verdict": "FASTER in 3/3 rounds, each > 16.0%"
+    }
+   },
+   "tg128": {
+    "E": {
+     "effect_pct_median": -6.843,
+     "effect_pct_range": [
+      -29.308,
+      -6.332
+     ],
+     "n_rounds": 3,
+     "verdict": "inconclusive (mixed signs / inside noise)"
+    },
+    "I": {
+     "effect_pct_median": 11.414,
+     "effect_pct_range": [
+      2.587,
+      24.353
+     ],
+     "n_rounds": 3,
+     "verdict": "inconclusive (mixed signs / inside noise)"
+    }
+   }
+  }
+ },
+ "excluded": []
+}

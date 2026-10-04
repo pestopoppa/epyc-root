@@ -334,6 +334,10 @@ is olympiad-style reasoning.
       i=3 ran on server slot 0). Treat `/slots` poll timeouts as samples missed during an iteration, not as slot
       errors. Re-run after KVU-16f or KVU-16g lands; otherwise the run measures the interleave again. Done when the
       runner's PASS requires 4 slots past prompt end at once, and a re-run meets the done-when above.
+      - *(Evidence pointer, ak-ds41-main, 2026-10-04; not a tick.)* The 05:08-06:20Z GPU slot re-ran the KVU-16b
+        replay with a fixed predicate (decoding = past prompt end; report keyed by request index) in its own copy,
+        `artifacts/gpu-slot-ak-20261004/runners/kvu16b_residency_slot.py`. The durable runner is unchanged. Results under
+        KVU-16f below.
   - [ ] **KVU-16f — A/B `-b 512 -ub 512` on :8083, then one stack change.** (filed 2026-10-04, workspace-ec, from the
     KVU-16b root cause, fix 1) `-ub` alone does nothing: the server packs `n_batch` prompt tokens per iteration. At 512,
     the root cause predicts an iteration of ~4.7 s at 300k (~4× faster decode while a prefill runs) and a KQ mask
@@ -342,6 +346,19 @@ is olympiad-style reasoning.
     while prefilling, after KVU-16b-1), plus Q38-T7 phase B at 80k (prefill rate, paired correctness). Then ship it as
     ONE stack change together with UFH14-B4j (`--no-cache-idle-slots`). Done when the A/B is recorded here and the
     combined package is signed and serving.
+    - *(Evidence pointer, ak-ds41-main, 2026-10-04; not a tick — the owner decides what it closes.)* GPU slot
+      `gpu-slot-ak-20261004`, 05:08-06:20Z, :8083's argv on scratch :18183, build `gpu-20261004-c7f5ac9ad`, KVU-16b replay
+      (4 × ~80k staggered) with the fixed predicate. Durable copy:
+      [`artifacts/gpu-slot-ak-20261004/`](../../artifacts/gpu-slot-ak-20261004/).
+      - **skip OFF (the v10-equivalent path), `-b 512` vs `-b 2048`:** 3.5–4.2× decode while a neighbour prefills; KFD
+        peak 48.57 vs 51.69 GiB (−3.1 GiB); solo shallow prefill TTFT 208.3 vs 154.2 s (−26%, outside the 10–20% the
+        root cause predicted). Both arms hit the 20-min cap with at most 3 decoding.
+      - **skip ON + `-b 512`:** 7.91 vs 0.56 tok/s summed decode while the last request prefills (14×); all 4 requests
+        decode at once at 7.7–10.7 tok/s each; PASS in 926 s. skip ON + `-b 2048`: 2.30 tok/s summed, PASS in 781 s.
+      - **Attribution:** every skip-ON arm is the combined 19a+19b build INCLUDING commit 2 (WMMA seq tiles), which is not
+        in the KVU-19 fold. Do not attribute skip-ON numbers to the fold (cf. KVU-19b-fold-c1 / rework-c2).
+      - Not covered: Q38-T7 phase B at 80k (paired correctness) and P3 v2 (skipped for budget). Greedy spot-check text
+        was identical across all four arms (no classifier).
   - [ ] **KVU-16g — decode-aware prefill budget on llama-server (Sarathi-style), experimental tree.** (filed 2026-10-04,
     workspace-ec; KVU-16b root cause fix 1e, KV-serving survey Rec 1) In `update_slots()`, cap the prompt tokens added
     per iteration while any slot generates (`--prefill-budget-decoding N`, or sized from a per-step time target), and

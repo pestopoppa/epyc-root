@@ -1,0 +1,22 @@
+STEP 0 -- structural-seed falsifiers
+(b) bench_readbw 2x2, 48 threads, taskset 0-95, 2 GiB x3 arrays, 10 reps, ABBA (GB/s, higher = better)
+  interleave 4k   read-sum   419.4  read-dot   444.7  gemv-2560   406.4  x1.000 vs interleave/4K   n=2  AnonHuge/Rss kB ?/?, ?/?
+  local      4k   read-sum   419.4  read-dot   477.9  gemv-2560   407.5  x1.000 vs interleave/4K   n=2  AnonHuge/Rss kB ?/?, ?/?
+  interleave thp  read-sum   413.7  read-dot   457.1  gemv-2560   405.8  x0.986 vs interleave/4K   n=2  AnonHuge/Rss kB ?/?, ?/?
+  local      thp  read-sum   426.9  read-dot   504.2  gemv-2560   414.4  x1.018 vs interleave/4K   n=2  AnonHuge/Rss kB ?/?, ?/?
+  seed 4 rule: local/4K x1.000, local/THP x1.018 vs interleave/4K -> KILL 4(A) + the NUMA lever (both <= 1.05x)
+(a) Q38FN GGML_CPU_PROF node census (instrumented build => SHARES, not speed; per accumulated eval)
+  evals seen 433 accumulated 72; shapes n_nodes=7479 seen=2 acc=0, n_nodes=144 seen=356 acc=0, n_nodes=7477 seen=75 acc=72
+  eval wall 77706.389 us (node sum 77692 us), thread-0 compute 53714.583 us, barriers 5717.458 us, nodes/eval 4480
+  ops (top by wall): MUL_MAT 29.4%; MUL_MAT_ID 26.9%; CPY 9.4%; GATED_DELTA_NET 8.3%; MUL 4.2%; UNARY 3.8%; ADD 2.9%; RMS_NORM 2.0%; GET_ROWS 1.7%; CONT 1.7%
+  path dense_mul_mat: wall 21290 us, 195 GB/s on wall, 223 on compute
+  path expert_mul_mat_id: wall 20903 us, 267 GB/s on wall, 355 on compute
+  path lm_head: wall 1555 us, 335 GB/s on wall, 335 on compute
+  seed kill-threshold sums:
+    seed 1 hc fused ops           Σwall(hc_norm/gate/mixed/inject/combine) 4169 us = 5.4% (338 nodes; any hc_* 5.4%, 339 nodes)  -> DROP (< 12%)
+    seed 2 solo rows at N<=5      770 nodes (1<nrows<=5, nel<=4096, solo ops) x 7.7 us = 5929 us = 7.6% (their measured wall 2095 us)  -> KEEP (>= 3%)
+    seed 3 routed||shared groups  Σ_layers[Σwall(siblings) - max(compute_i*48/12)] over 48 layers = 0 us = 0.0%  -> DROP (< 3%)
+    seed 5 norm->matmul fuse      Σwall(RMS_NORM, MUL-after-norm) + Σ(wall-compute) of their MUL_MAT consumers = 3883 us = 5.0%  -> KEEP (>= 3%)
+    seed 6 sibling gemv pack      Σwall(MUL_MAT with src0 ne01 < 192) 2707 us = 3.5% (240 nodes)  -> KEEP (>= 2%)
+  request A: predicted 64 at 49.22 t/s (instrumented), draft 54 accepted 49
+  request B: predicted 256 at 47.80 t/s (instrumented), draft 221 accepted 197
