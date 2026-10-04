@@ -1,0 +1,146 @@
+{
+  "constitution_clause": "MEASUREMENT.md \u00a75 \u2014 Consolidated apply-time ratification: the human signs ONCE over protocol + evidence hashes + validation results + exact state diff; and \u00a75 (2026-08-02) \u2014 evidence must be DURABLE, not merely hashed.",
+  "emitted_at_utc": "2026-10-04T18:23:34Z",
+  "evidence": [],
+  "evidence_durability_checker": {
+    "path": "/mnt/raid0/llm/epyc-inference-research/scripts/validate/check_evidence_durability.py",
+    "sha256": "70d0c1724b21086dac29fd29150cd1a42236f8ee8ec35da64aab80a630c332eb"
+  },
+  "git_head_at_emit": "5586f099f5864179b42a3424d2ddd45b6008eeb8",
+  "git_head_before": "5586f099f5864179b42a3424d2ddd45b6008eeb8",
+  "operator": "pestopoppa",
+  "protocol_id": "OPERATING-CONSTRAINTS-HARNESS-STATE-NEVER-TOUCH",
+  "ratification_id": "RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004",
+  "ratify_script": {
+    "exists": true,
+    "path": "scripts/operator/ratify_harness_state_never_touch_20261004.sh",
+    "sha256": "41a8b9820d655e07b99609b4ae89f1494574ed254c62a2a443987a0e78e767ac"
+  },
+  "receipt_version": "1.0",
+  "repo_root": "/mnt/raid0/llm/worktrees/ak-ds41-index-20261004",
+  "sections": {
+    "coherence": {
+      "data": {
+        "agents/shared/OPERATING_CONSTRAINTS.md": {
+          "declared_restructure": [],
+          "replaced": [],
+          "torn": []
+        }
+      },
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "evidence": {
+      "data": null,
+      "detail": [
+        "no evidence cited, declared reason: operator hard rule stated in chat 2026-10-04, not a measured claim; the code enforcement is root 722b7196 and b639dc8e"
+      ],
+      "verdict": "PASS"
+    },
+    "operator": {
+      "data": null,
+      "detail": [
+        "typed operator name: pestopoppa"
+      ],
+      "verdict": "PASS"
+    },
+    "protocol": {
+      "data": null,
+      "detail": [
+        "protocol id OPERATING-CONSTRAINTS-HARNESS-STATE-NEVER-TOUCH is a clause reference, not a registered protocol name; verified via 1 anchor(s) instead",
+        "anchor present in agents/shared/OPERATING_CONSTRAINTS.md:    - **Harness state and session transcripts are never a candidate.** "
+      ],
+      "verdict": "PASS"
+    },
+    "state_diff": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    },
+    "validation": {
+      "data": null,
+      "detail": [],
+      "verdict": "PASS"
+    }
+  },
+  "state_diff": [
+    {
+      "lines_added": 10,
+      "lines_after": 584,
+      "lines_before": 574,
+      "lines_removed": 0,
+      "path": "agents/shared/OPERATING_CONSTRAINTS.md",
+      "sha256_after": "16c4a2375ec5105dc0597d4d9da584079a38053d5c63aae6cec70ca863eabeb3",
+      "sha256_before": "a0e02263325fa45ac60b72955f11ce6c11e3e127a256fdf90bb4f70030816c70",
+      "unchanged": false,
+      "unified_diff": [
+        "--- a/agents/shared/OPERATING_CONSTRAINTS.md",
+        "+++ b/agents/shared/OPERATING_CONSTRAINTS.md",
+        "@@ -287,6 +287,16 @@",
+        "      hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.",
+        "      (origin: INC-20261004-cleanup-removed-load-bearing-worktree \u2014 an approved cleanup removed a landed, clean, 7-day-idle worktree that",
+        "      DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)",
+        "+   - **Harness state and session transcripts are never a candidate.** Claude and Codex backup logs and",
+        "+     session transcripts, and every third-party agent harness's own state (opencode, hermes, Claude",
+        "+     share, harness codex homes), are never deleted, moved, truncated, vacuumed or reaped: not under",
+        "+     disk pressure, not inside an approved cleanup, not by a retention script. They are historical",
+        "+     transcripts used by a more senior project outside this repo. Report their growth; never reclaim",
+        "+     it. Code enforces the list (`scripts/system/scratch_cleanup.py` `NEVER_TOUCH`;",
+        "+     `codex_retention_reaper.py` apply permanently disabled); the tree list and the one approved",
+        "+     exception (the opencode `event`-table reaper) are in",
+        "+     `docs/guides/agent-workflows/cleanup-reference-check.md` \u2192 *Never a candidate*. (operator hard",
+        "+     rule, 2026-10-04)",
+        " 2. **Trash-first, always:** recursive deletes of data go through",
+        "    `scripts/safety/guarded_rm.sh`, which moves the target to `/mnt/raid0/llm/.trash/` and logs",
+        "    a manifest (recoverable until `scripts/safety/trash-sweep.sh --older-than DAYS` ages it"
+      ]
+    }
+  ],
+  "supersedes": null,
+  "validation": [
+    {
+      "command": "python3 scripts/validate/check_ratification_receipts.py --repo-root .",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        "  [           EXEMPT] scripts/operator/ratify_trust_boundary_and_etr1_20260923.sh  -> MEASUREMENT.md  (via patch+text)  [historical: applied in c6657ab0]",
+        "  [             PASS] scripts/operator/ratify_trust_boundary_receipts_fix_20260926.sh  -> coordination/session-bus/human_only_paths.sha256, coordination/session-bus/human_only_paths.yaml, scripts/validate/ratification_receipt_exemptions.json  (via patch+text)",
+        "  [           EXEMPT] scripts/operator/ratify_v10_final_freeze_20260922.sh  -> CLAUDE.md  (via text)  [historical: applied in 5a977761]",
+        "  [             PASS] scripts/operator/run_p_serve_sel_1_ratify_20260926.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_p_serve_sel_1_20260926.sh]",
+        "  [             PASS] scripts/operator/run_pcal_ratify_20260916.sh  -> MEASUREMENT.md, measurement/protocols/*.md  (via text)  [delegates to scripts/operator/ratify_pcal_specdec_contamination_20260916.sh]",
+        "  receipt RATIFIED   ak-ds41-lessons-20261004 (AK-DS41-LESSONS-20261004)",
+        "  receipt RATIFIED   RATIFY-AK-SEARCH-1-A4-RUNTIME-RECIPE-20260927 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-CKPT-PROMPT-LEAK-20260916 (P-QUAL-T1)",
+        "  receipt RATIFIED   RATIFY-OP60-MEASUREMENT-EPOCH-20260926 (P-AK-SEARCH-1)",
+        "  receipt RATIFIED   RATIFY-OP63-REGION-LOCK-SCOPE-20260926 (OPERATING-CONSTRAINTS-REGION-LOCK-SCOPE)",
+        "  receipt RATIFIED   RATIFY-P-SERVE-SEL-1-20260926 (P-SERVE-SEL-1)",
+        "  receipt RATIFIED   RATIFY-P-CAL-SPECDEC-20260916 (P-CAL)",
+        "  receipt RATIFIED   RATIFY-SCRATCH-LIFECYCLE-20261004 (OPERATING-CONSTRAINTS-SCRATCH-LIFECYCLE)",
+        "  receipt RATIFIED   RATIFY-TRUST-BOUNDARY-RECEIPTS-FIX-20260926 (TRUST-BOUNDARY-RECEIPT-EXEMPTIONS)",
+        "  receipt RATIFIED   RATIFY-V10-EPISODIC-REPIN-20260917 (P-QUAL-T1)",
+        "  receipt RATIFIED   autokernel-discovery-first-20260813 (P-AK-SEARCH-1)",
+        "  receipt REFUSED    autokernel-discovery-first-20260813 (P-AK-SEARCH-1)  [preserved refusal: superseded by a later RATIFIED receipt]",
+        "",
+        "49 boundary-amending script(s): 20 receipted, 29 exempt, 0 failing.",
+        "OK"
+      ]
+    },
+    {
+      "command": "test \"$(sha256sum agents/shared/OPERATING_CONSTRAINTS.md | cut -d' ' -f1)\" = 16c4a2375ec5105dc0597d4d9da584079a38053d5c63aae6cec70ca863eabeb3",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    },
+    {
+      "command": "test \"$(grep -c '^### Destructive operations' agents/shared/OPERATING_CONSTRAINTS.md)\" = 1",
+      "exit_code": 0,
+      "outcome": "PASS",
+      "output_tail": [
+        ""
+      ]
+    }
+  ],
+  "verdict": "RATIFIED"
+}

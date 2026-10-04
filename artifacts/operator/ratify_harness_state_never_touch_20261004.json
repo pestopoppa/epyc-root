@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "HARNESS-STATE-AND-TRANSCRIPTS-NEVER-A-CLEANUP-CANDIDATE",
+  "gate_id": "RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004",
+  "operator_decision": "operator hard rule 2026-10-04: Claude/codex backup logs and session transcripts are never touched; extended to every third-party harness state",
+  "ratified_at": "2026-10-04T18:23:33Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "target": "agents/shared/OPERATING_CONSTRAINTS.md",
+  "section": "Dangerous Operations / Destructive operations, step 1",
+  "rule": "Claude/Codex backup logs and session transcripts and every third-party agent harness state (opencode, hermes, Claude share, harness codex homes) are never deleted, moved, truncated, vacuumed or reaped; growth is reported, never reclaimed; the only exception is the operator-approved opencode event-table reaper",
+  "origin": "2026-10-04 leak-robustness pass: a codex retention reaper (NIB2-84) would have deleted Codex history; the operator ruled the transcripts serve a senior project outside this repo",
+  "evidence": "root 722b7196, b639dc8e (code enforcement)",
+  "not_changed": "adds one sub-bullet only; no line rewritten; section heading unchanged",
+  "patch": {
+    "path": "artifacts/operator/harness-state-never-touch-20261004.patch",
+    "sha256": "eedb61a000aea875a2a1e25a9b11dc66ab294966302628e6a9d6906545605ff0"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "a0e02263325fa45ac60b72955f11ce6c11e3e127a256fdf90bb4f70030816c70",
+      "sha256_after": "16c4a2375ec5105dc0597d4d9da584079a38053d5c63aae6cec70ca863eabeb3"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_harness_state_never_touch_20261004.receipt.json",
+  "applied_by": "scripts/operator/ratify_harness_state_never_touch_20261004.sh"
+}

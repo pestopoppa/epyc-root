@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_harness_state_never_touch_20261004.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
