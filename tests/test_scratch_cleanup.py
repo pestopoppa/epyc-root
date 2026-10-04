@@ -208,3 +208,24 @@ def test_apply_without_trash_script_refuses_plain_scratch(env, tmp_path):
                             guarded_rm=tmp_path / "missing.sh", fetch=False)
     assert (env["scratch"] / "build").exists()
     assert entries[0].verdict == "KEEP-NO-TRASH"
+
+
+def test_declared_dir_that_is_a_worktree_is_one_entry_never_enumerated(env):
+    p = add_wt(env, "hx-42-whole", landed=False)
+    d = sc.Decl(dirs=[str(p)])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert [(Path(e.path).name, e.kind, e.verdict) for e in entries] == [("hx-42-whole", "worktree", "KEEP-UNLANDED")]
+
+
+def test_standalone_clone_with_unpushed_commits_is_kept(env):
+    clone = env["scratch"] / "clone"
+    git(env["tmp"], "clone", "-q", str(env["tmp"] / "origin.git"), str(clone))
+    (clone / "x").write_text("x")
+    git(clone, "add", "x")
+    git(clone, "commit", "-m", "local only")
+    v = verdicts(sc.build_plan(decl(env), repos=[str(env["repo"])], probe=wg.Probe()))
+    assert v["clone"] == "KEEP-UNLANDED-CLONE"
+    git(clone, "push", "-q", "origin", "HEAD:main")
+    git(clone, "fetch", "-q", "origin")
+    v = verdicts(sc.build_plan(decl(env), repos=[str(env["repo"])], probe=wg.Probe()))
+    assert v["clone"] == "REMOVE"

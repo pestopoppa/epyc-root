@@ -183,7 +183,11 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
     for g in decl.worktree_globs:
         cands += sorted(glob.glob(g))
     for d in decl.dirs:
-        if os.path.isdir(d):
+        if not os.path.isdir(d):
+            continue
+        if os.path.realpath(d) in wts or os.path.exists(os.path.join(d, ".git")):
+            cands.append(d)          # a checkout is ONE entry — never enumerate (trash) its files
+        else:
             cands += sorted(os.path.join(d, c) for c in os.listdir(d))
     entries: list[Entry] = []
     seen: set[str] = set()
@@ -202,6 +206,19 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
             entries.append(e)
             continue
         e = Entry(p, "dir" if os.path.isdir(p) and not os.path.islink(p) else "file")
+        gitp = os.path.join(p, ".git")
+        if os.path.isfile(gitp):
+            e.verdict, e.reason = "KEEP-UNVERIFIABLE", "a worktree of a repo outside the known set"
+            entries.append(e)
+            continue
+        if os.path.isdir(gitp):                      # a standalone clone: keep unless nothing unpushed
+            st = subprocess.run(["git", "-C", p, "status", "--porcelain"], capture_output=True, text=True)
+            lo = subprocess.run(["git", "-C", p, "log", "--branches", "--not", "--remotes", "--oneline"],
+                                capture_output=True, text=True)
+            if st.returncode or lo.returncode or st.stdout.strip() or lo.stdout.strip():
+                e.verdict, e.reason = "KEEP-UNLANDED-CLONE", "standalone clone with local changes or unpushed commits"
+                entries.append(e)
+                continue
         nested = [w for w in wts if w.startswith(real + "/")]
         marker = _keep_marker(p)
         busy = outside_probe.busy(p)
