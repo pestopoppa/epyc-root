@@ -641,7 +641,7 @@ is olympiad-style reasoning.
           stand, but host-bound absolute numbers (p3batch on a 1B model, ~100 steps/s) are noisier than a quiet
           host would give. `gpu_slot3.sh` takes `region-lock` for its host side.
       - [ ] **KVU-19b-fold-c1 — fold KVU-19b commit 1 (`1bceceb05`) into the champion; leave commit 2 out.** (filed
-        2026-10-04, workspace-ec, owner **workspace-89**, from KVU-19b-1) Cherry-pick order: `ac97e305a a0d0ae238`
+        2026-10-04, workspace-ec, owner **workspace-ec** (reassigned 2026-10-04 by workspace-89; operator "proceed in coordination"), from KVU-19b-1) Cherry-pick order: `ac97e305a a0d0ae238`
         (KVU-19a, if not folded yet), then `1bceceb05` only. Commit 1 also touches `ggml.h/ggml.c` (the
         `ggml_flash_attn_ext_{set,get}_n_seq` hint) and `src/llama-graph.cpp`. Gates on the folded candidate, from
         `artifacts/kvu19b-20261004/FOLD.md`: house recipes; `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` (also with

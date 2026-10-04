@@ -493,3 +493,25 @@ env-var reference in a launcher is invisible to that check until the next launch
   budget and push it onto fallback args (same guide);
 - launchers must not point a production loop at a scratch worktree path: DS41-C113 in
   `handoffs/active/deepseek-v41-flash-evaluation.md`.
+
+## INC-20261004-subagent-unlocked-cpu-in-held-window
+On 2026-10-04 workspace-89 held CPU window 2 (`region-lock run --cpu-list 0-95 --role bench --tag cpu-window2-20261004`,
+q0-q3 held 04:40:39Z-05:00:11Z; evidence `/mnt/raid0/llm/tmp/cpu-window2-20261004/window.log`). Two workspace-ec subagents
+working on the prefill-budget change ran local CPU work inside that window without taking any lock: a dev
+`llama-server` (`llama.cpp-experimental-prefill-budget-20261004/build-cpu-dev`, gemma-3-1b) pinned to CPUs 160-183, and a
+`cmake -j24` build. Both ran at `nice 19`. A third unlocked consumer was workspace-ec's own KVU-19b GPU validation slot (`gpu_slot2.sh`, 04:44:49Z-05:05:18Z): it pinned all of its host-side work (the CPU-reference exactness harness, p3batch, `llama-batched-bench`, and `test-backend-ops`, which computes a CPU reference) to `taskset -c 160-183` at `nice 19` with no region claim. The `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` process (pid 2539565, store build `gpu-20261004-c7f5ac9ad`) that the window's preflight recorded is that slot's step 5. The slot's host-bound numbers (p3batch on gemma-3-1b) were in turn taken on a contended host, so they carry a contention caveat (`handoffs/active/kv-unified-stack-rollout.md` KVU-19b-1). At 04:59:40-51Z the window's load preflight measured the host at about 2,400% of
+one CPU (load 94), with llama-servers at 937% and 336% and the build at 760%, and refused steps 2-4 (EXL3 microbench,
+MXFP4/Q4_K, Q38FN anchor; `step{2,3,4}_*/load-preflight.json`). Those measurements were lost, and the window was spent. The
+root cause was the briefs: none required `region-lock` for builds, servers or tests, so nothing made the work queue behind
+the held claim. Pinning to 160-183 looked like isolation, but CPUs 96-191 are the SMT siblings of 0-95 (cpu160 pairs with
+64, cpu183 with 87), so the server shared physical cores 64-87 with the window, and `nice` does not stop a sibling thread
+from taking a core's execution resources. The lock layer agrees: `parse_cpu_list` keeps physical cores only, so a
+sibling-only `--cpu-list 160-183` maps to no region and cannot be claimed. Rules fed:
+- every subagent brief requires `region-lock run --cpu-list 0-95 --role build --tag <tag> -- <cmd>` for builds, servers and
+  tests, and `taskset`/`nice`/`ionice` onto SMT siblings is not isolation: proposed for operator ratification into
+  `agents/shared/OPERATING_CONSTRAINTS.md` § Parallel Subagent Fan-Out (`oc-region-lock.patch`);
+- the owner-side duty to pause one's own subagents before a measurement is already canonical
+  (`agents/shared/OPERATING_CONSTRAINTS.md` § Inference and Benchmarks, *Your own subagents are load*); this incident is
+  its guest-side complement.
+- the lock layer must fold SMT siblings into their physical core's region instead of dropping them: filed as
+  REGION-SIBLING-1 in `handoffs/active/shape-keyed-contention-gating.md`.
