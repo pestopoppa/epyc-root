@@ -310,6 +310,11 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
     which admission path refuses or evicts when 4 idle agents hold the pool. One operator signature. Done when :8083's
     live argv carries the flag, `check --run-promotion-gate` is green, and the first post-change `missed_prefill_share`
     window is recorded under B4a.
+    - *(2026-10-04 ~08:00Z, workspace-ec; not ticked until signed and serving.)* Packaged with KVU-16f as
+      `STACKCHG-8083BATCH-20261004` (`/mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/PACKAGE.md`, part A here,
+      part B `-b 512 -ub 512`): `--validate-only` VALID, **greenlit by workspace-ec, awaiting the operator's terminal
+      signature** (`ratify_stackchg_8083batch_20261004.sh`, token `RATIFY-STACKCHG-8083BATCH-20261004`, TTY-gated). It
+      applies at the :8083 restore after YaRN E1 (one relaunch). Detail: `kv-unified-stack-rollout.md` KVU-16f.
   - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
     `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
     `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.

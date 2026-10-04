@@ -278,6 +278,12 @@ prefills only the suffix.
   `fork/experimental/fa-maskskip-batched-20261004`. Apply it with the fold, then run `-o FLASH_ATTN_EXT` on ROCm0 and
   CPU and the 64-case harness. KPF-17 stays open until it is applied (P1 branch: `test-kv-seq-share` + `test_slot_fork.py`
   are done).
+  - *(2026-10-04 ~08:00Z, workspace-ec wrap-up.)* **The 19a/19b fold landed WITHOUT this patch**: the champion is now
+    `1bceceb05` (KVU-19a + KVU-19b commit 1; `kv-unified-stack-rollout.md` KVU-19b-fold-c1). The patch does **not**
+    apply there: `git apply --check` in the clean `1bceceb05` worktree fails at `tests/test-backend-ops.cpp:8584`,
+    because it was cut against the commit-2 branch. Re-cut it on `1bceceb05` (or on the KVU-19b-rework-c2 v2 branch
+    `54df2c030` if commit 2 folds next), apply it as a test-only commit on the next champion fold (KVU-16h-fold or
+    CPU-FA-VKQ-1), and run `-o FLASH_ATTN_EXT` on ROCm0 and CPU plus the harness there.
 - [ ] **KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched
   instrument is the same binary with `--slot-fork-min-tokens 0` vs on, in alternating windows. Done when ALL hold:
   1. **Equivalence vs fresh.** Prompt set ≥ 32 trunk/suffix pairs (trunk 8k-80k, suffix 0.5-8k), greedy, DFlash2
@@ -365,6 +371,9 @@ KPF-22..24 and KPF-26 need P1 live.
     (`2833e3a2` + `99348f54`); the branch B half waits on KPF-27b-ack.
   - [ ] KPF-27b-ack: workspace-ec acknowledges the HIGH blast radius of branch B (acquire/_admissible/release)
     before it lands, as for KPF-12/13.
+    - *(2026-10-04 ~08:00Z, workspace-ec.)* P1's handoff edit is on main (`b22ff171`). Branch B's Fable review returned
+      **ACK-with-fixes (D1-D6)**; the fixes were made and the **v2 re-review is in progress**. The ack is given, and this
+      box ticked, when the v2 review clears D1-D6.
   - [x] KPF-27c: flag-off proof (`tests/unit/test_prefix_index_flag_off.py`) and wiring tests through the
     passthrough route and `llm_call` → `/completion`. ✅ 2026-10-04 — branch A 237 passed, branch B 350 passed; the
     one wider failure (`test_canonicalization_throughput`) fails identically on untouched main (DESIGN.md §6).

@@ -1,0 +1,95 @@
+# fa_v11 api=champion backend=CPU mode=exact
+env FA_NAN_NKV=2048,300
+env LD_LIBRARY_PATH=/mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin
+env FA_REF_DIR=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+env GGML_FA_VKQ_F16=1
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-cpu.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-base.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml.so.0.16.0
+# backend_name=CPU threads=24
+# exact cases=84 ref_dir=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+det rows=300 n_kv=300 identical=1 v=unit attn=diffuse kv=f16 grp=prefill hash=a4229f99043050d8
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=a3433f98f1584620
+det rows=27 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=63b38b1e9fe45a8a
+det rows=36 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=4fd78226ea34f277
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=3a1e9bf98f95ed11
+det rows=512 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=68235e5a5bfca5ae
+det rows=300 n_kv=300 identical=1 v=unit attn=peaked kv=f16 grp=prefill hash=2f3847082773fa6f
+det rows=9 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=a5de359d4c5e9f16
+det rows=27 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=a41900ec7a3e0645
+det rows=36 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=40714defc03a90d6
+det rows=64 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=f6486a6b63ef6f81
+det rows=512 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=d100a838ed3b7787
+det rows=300 n_kv=300 identical=1 v=bias32 attn=diffuse kv=f16 grp=prefill hash=2ba3f955ee4158de
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=8a866c5dd8b64a9b
+det rows=27 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=a865abd085203401
+det rows=36 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=8c6f93bc752095b5
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=716e004f70be69f9
+det rows=512 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=7dfb4cd04f2047ad
+det rows=300 n_kv=300 identical=1 v=bias128 attn=diffuse kv=f16 grp=prefill hash=399687203a72c3e5
+det rows=9 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=bbf871f722e6b5ab
+det rows=27 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=9ba55c7db96475ca
+det rows=36 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=f164b717aaed3196
+det rows=64 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=741c962351118d9a
+det rows=512 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=86924fc463f7933f
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=7287f4fc4b59bc20
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=b2b6161c847a7e3f
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=8dc85c6a279da452
+det rows=36 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=c365e16c93ef7954
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=dd36d156f3b315cf
+det rows=512 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=6ae8312c8300effb
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=peaked kv=f16 grp=prefill hash=9263f858789bede0
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=1302c5607505e8a4
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=2c22b56be1b495ea
+det rows=36 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=85c0130b60bdb103
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=1a4f407cd7439950
+det rows=512 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=1eba82083c84f98e
+det rows=300 n_kv=300 identical=1 v=unit attn=diffuse kv=q8_0 grp=prefill hash=10cfa617efe7e9e4
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=550485f61668105b
+det rows=27 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=27d2e5332153c2e5
+det rows=36 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=cf6e2392f6ace320
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=33be3d4ee1715f26
+det rows=512 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=c56561ded8476013
+det rows=300 n_kv=300 identical=1 v=unit attn=peaked kv=q8_0 grp=prefill hash=5fe64d49089ea56a
+det rows=9 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=f0143a8d6b886140
+det rows=27 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=97c8771852c4cc33
+det rows=36 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=6d38d5a004da4bf9
+det rows=64 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=b3d7127423a4a2f8
+det rows=512 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=36a286979b6a7254
+det rows=300 n_kv=300 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=df7aec4ea7257404
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=0d0cdc8695c8eeb7
+det rows=27 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=5084eb2ae0ba1795
+det rows=36 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=d98007744afab8d0
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=93db21b4aff8f0d5
+det rows=512 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=6465d0f12f1159b1
+det rows=300 n_kv=300 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=c756847f1244a3f3
+det rows=9 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=f5edeca1c91a3e82
+det rows=27 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=95417ead75510ef5
+det rows=36 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=2872eebcbda6a1fa
+det rows=64 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=75f7ee840cf1d362
+det rows=512 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=530dedef52ca6926
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=ac11b5da83d383a9
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=3ab6a099cab41c07
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=a6c1661ed819a22e
+det rows=36 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=4eb68baac8e3704e
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=98aea31021d4f7b5
+det rows=512 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=97f1ddfe007e4cb4
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=62eeab133f2ab858
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=ccf9151f0a66f4ba
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=9a536838645a19df
+det rows=36 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=3904991af084cd4d
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=8c4337d2bf277bfe
+det rows=512 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=e292491b301c9527
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=drafter hash=a39035e7d442cfef
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=drafter hash=4f3105cac406f9c4
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=drafter hash=98e74c3a6f791a4f
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=drafter hash=67db89dea1498631
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=54b4d3d7e76d3eb7
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=91b5e3c693d448be
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=drafter hash=71497b44d6f2ee59
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=drafter hash=74355394623042b6
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=drafter hash=9224beddb58fa9ef
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=drafter hash=11968694f0d005dd
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=30cf21d41db71143
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=07bb69fc87b94e98
+summary mode=exact cases=84 identical=84 differ=0 unsupported=0 wall_s=9.0

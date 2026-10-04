@@ -381,3 +381,149 @@ only, in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`. The GPU-block e
 
 Prepared, not applied (`/mnt/raid0/llm/tmp/wrapup-ec-kvu19b/`): `INDEX_ROWS.md` (RTG-57 cell, adapter source-table
 row), `oc-region-lock.patch` and `incident-draft.md`.
+
+# Wrap-up 4 (07:00-08:05Z): champion fold LIVE, KVU-16h attributed, CPU FA fp16 VKQ fixed, V11-FA prep
+
+## Champion fold: KVU-19a + KVU-19b commit 1 are in the ONE champion (complete; receipt pending)
+
+- **Ref move.** `ak/champion/llama-cpp-ffc1bac82eec` advanced `90c12df42` → `1bceceb05`, locally and on `fork`, by the
+  guarded compare-and-swap in `advance_ref.sh`. It is a fast-forward (`ac97e305a`, `a0d0ae238`, `1bceceb05`, with the
+  original shas kept, so the builds are the commits the evidence was made on). `ak-loop-tree` was refreshed clean, and
+  the frozen tree stayed on `production-consolidated-v10`. Commit 2 (`c7f5ac9ad`) is out: `plan_seq_tiles` is absent
+  from strings and `nm`. Builds: `kernels/builds/{gpu,cpu}-20261004-1bceceb05` (build 10311, champion recipes, linkage
+  PASS).
+- **Gates.** G0 feature preservation passed on source, GPU and CPU with 0 losses; G0 is vacuous for HIP kernels.
+  - CPU: harness v1 86/86 and v2 141/141 bit-identical; `test-backend-ops -b CPU` 5178/5178.
+  - **GPU slot `slot-20261004T073429Z`: VERDICT PASS.**
+    - Exactness E1-E8 all pass; the worst nmse against the CPU reference is 8.97e-05.
+    - 27B DFlash2 smoke: champion, candidate skip-off and candidate skip-on outputs are byte-identical. All three
+      decoded 74 tokens at 36.054% acceptance.
+    - `test-backend-ops` ROCm0: 2949/2949, plus 81/81 × 3.
+    - perf2: 4×1 kvu took 1084 vs 1733 µs at 16k own and 5514 vs 9168 µs at 80k own. Single-sequence decode with
+      +114,688 foreign cells took 284 vs 2335 µs. The 0-foreign rows are within noise.
+- **Standing receipt: PENDING.** `standing_receipt.sh` runs a single arm, per the operator ruling. The baseline is the
+  FOLD-2 G5 `ef81196d5` samples from 2026-09-08 (median 31.301 tok/s), unpaired, with the BIOS-change caveat. It started
+  ~07:59Z and was still waiting on the q0-q3 region lock at 08:07Z. Nothing is published yet. Tracked as
+  KVU-19b-fold-c1-receipt.
+- **Durable copy:** `artifacts/champion-fold-kvu19-20261004/` holds `FOLD-CANDIDATE.md`, the slot summary and
+  per-check files, the G0 JSONs, CPU exactness, linkage/strings, all scripts and `SOURCES.sha256`. The two ~1 MB
+  `test-backend-ops` logs are kept as verdict tails plus hashes.
+- **Ledger:** ak-ds41-main (workspace-89's lane) ledgered the fold and updated the champion header in
+  `autokernel-champion-aggregate.md` (root `3cef9579`, landed during this wrap-up). The P3 B 27B re-measurement is
+  split out as KVU-19b-fold-c1-p3.
+- **Found at wrap-up:** KPF-17a's shared-trunk FA test patch was not applied at the fold, and it does not apply to
+  `1bceceb05` (`test-backend-ops.cpp:8584`; it was cut against the commit-2 branch). KPF-17a is annotated to re-cut
+  the patch and apply it at the next fold.
+
+## KVU-16h: :8083 VRAM growth attributed (attribution complete; fix built, GPU confirm pending)
+
+- **Replay** (`kvu16h-vram-20261004/results/20261004T063830Z`): +1.42 GiB, then a plateau. The largest share is the
+  legacy pool (0.58 target + 0.50 draft GiB, cuBLAS F16 dequant buffers). `-ub 512` grew +0.79 GiB.
+- **Mechanism.** The HIP-graph `mmvq_q8_1_graph_cache` is a LOCAL AutoKernel keep (`dd161d519`, `c0d42d81c`,
+  `8a3049beb`). It holds legacy-pool buffers across graph captures. Per-request `speculative.n_max: 0` traffic
+  alternates graph shapes, so every event allocates a fresh set of dequant buffers. 0.29 GiB per event fits all four
+  datasets.
+- **Latent hazard:** a use-after-free across graph captures (the pool can free a buffer a captured graph still
+  references).
+- **Fix:** `experimental/mmvq-graph-cache-pool-20261004` @ `656c9a66b`, a private per-context arena on the folded
+  champion. Store build `gpu-20261004-656c9a66b`.
+- **Filed:** KVU-16h-a (attribution, ticked), KVU-16h-confirm (row 4c), KVU-16h-fold, and KVU-16h-runner (no-draft
+  arms get their own server launch; workspace-89's suggestion). The +8.08 GiB KVU-16i term stays until row 4c
+  confirms.
+- **Durable copy:** `artifacts/kvu16h-vram-20261004/`.
+
+## CPU FA fp16 VKQ overflow (fix built; fold and A/B filed)
+
+- **Defect.** `ggml-cpu/ops.cpp` `..._one_chunk` accumulates VKQ in FP16 for F16 V. Diffuse attention over 2048 cells
+  with a same-sign channel of 32 overflows FP16.
+- **Production is not at risk today:** architect :8074 `acc_peak` ≤ 238, bounded by the 2048-cell indexer. The dense
+  F16 MTP draft head could lose acceptance at very long context.
+- **Fix:** `experimental/cpu-fa-fp32-vkq-20261004` @ `2ad8bff36` uses a fused FP32 accumulation.
+  - Harness: 84/84 with the fix vs 71/84 at base (10 non-finite, 3 mismatch).
+  - FA-op cost is at parity.
+  - The branch was only local; it was **pushed to `fork` at this wrap-up**. A trial merge onto `1bceceb05` is clean.
+- **Upstream** is unfixed for ggml-cpu (#28576 fixed only the MFMA analog).
+- **Filed** in the V11-FA section: CPU-FA-VKQ-0 (ticked), -1 (fold into champion/v11), -2 (decode A/B), -3 (optional
+  MTP acceptance at >64k on the architect) and -4 (upstream report).
+- **Durable copy:** `artifacts/cpu-fa-fp32-vkq-20261004/`.
+
+## V11-FA prep (complete; slot not yet run)
+
+- **Arms built.** Five arms are built in `/mnt/raid0/llm/tmp/v11-fa-ab-20261004/`: A (ON), B (OFF), C (+#27870
+  +#28576), D (CDNA D=256 tuning) and M (upstream master). `gpu_slot_v11fa.sh` is ready.
+- **Findings.**
+  - The picks are neutral on the ROCWMMA-ON route: the ON champion launches no MMA kernel for production shapes.
+  - DF2-9 sits on MMA `<256,256,8,8>` at 60-340 tokens; the audit's `<256,256,32,2>` is corrected in V11-FA-3.
+  - ggml CPU reproduces the fp16-overflow mechanism.
+  - The drafter's 9-row D=128 block moves from WMMA to MMA in v11.
+- **Handoff updates.** V11-FA-1..4 are annotated.
+- **Durable copy:** `artifacts/v11-fa-ab-20261004/`.
+
+## Other advances
+
+- **KVU-19b-rework-c2 v2** (`experimental/fa-maskskip-batched-v2-20261004` @ `54df2c030`): steps 1-3 are done and
+  step 4 is pending.
+  - The exactness root cause is a compiler rounding difference between WMMA tile columns (`v_mul_f32` +
+    `v_cvt_f16_f32` vs `v_fma_mixlo_f16`). Fixed by keeping rows in their plain tile column.
+  - Aligned-verify gate: added.
+  - Knob split: `GGML_CUDA_FA_SEQ_VEC` / `GGML_CUDA_FA_SEQ_TILES`.
+  - CPU v2 harness: 141/141.
+  - `gpu_slot3.sh` is ready.
+- **KVU-16g prefill budget.** Rebased onto the fold as `65d48a7a0` (`experimental/prefill-budget-on-fold-20261004`),
+  with store builds `{gpu,cpu}-20261004-65d48a7a0`. `gpu_slot.sh` is ready for row 5c; KVU-16g-1 is filed.
+- **:8083 batch package `STACKCHG-8083BATCH-20261004`** (`-b 512 -ub 512` + `--no-cache-idle-slots`): VALID and
+  greenlit by workspace-ec. It awaits the operator's terminal signature and applies at the :8083 restore after YaRN
+  E1. KVU-16f and UFH14-B4j are annotated.
+- **RTG-58.** P1's handoff edit is on main (`b22ff171`). P2 branch B got Fable ACK-with-fixes (D1-D6); the v2
+  re-review is in progress. KPF-27b-ack is annotated.
+- **REGION-SIBLING-1.** The fix is on epyc-orchestrator `fix/region-lock-smt-siblings-ec` @ `4ae008a8` (CLI folds SMT
+  siblings, library default unchanged, 816 tests). Merge and deploy AWAIT OPERATOR APPROVAL, because the classifier
+  blocked the merge.
+  - The task was already filed on origin/main (`shape-keyed-contention-gating.md`). The "missing" reading came from
+    the stale shared clone. It is annotated, not re-filed.
+- **Promotion process gap.** kernel-promotion SKILL step 9 now carries the champion's standing forward as the
+  production baseline (`8c0fe68e`, on main). workspace-89 is implementing `production-baseline.<sha>.json` in
+  `production.py`.
+
+## Process lessons (incident recurrence)
+
+INC-20261004-subagent-unlocked-cpu-in-held-window gained a "Recurrence, same day" paragraph. workspace-ec subagents
+preempted CPU windows three more times: a KPF smoke run, a DCA perplexity run and a `gitnexus` re-index. Lessons:
+- Quadrant claims must be pinned and no wider than the quadrant's threads.
+- Inference takes `--role bench`.
+- The region lock is non-FIFO, so waiters can starve.
+- Lock-free tooling is load too.
+
+## Declines (explicit, wrap-up 4)
+
+- **A handoff task for `production-baseline.<sha>.json`.** workspace-89 is implementing it now in its own lane (the
+  production writer is research `production.py`), and the skill text is already on main. Filing it would create a
+  second owner. Not filed.
+- **Editing the fold-table ledger in `autokernel-champion-aggregate.md`.** That file is workspace-89's surface, and
+  ak-ds41-main ledgered the fold there itself (`3cef9579`) while this wrap-up ran. Nothing is left to hand over.
+- **Folding #27870/#28576 into the champion now.** `PICKS_ON_ROUTE.md` shows the change is behaviour-neutral on the
+  ON route. Doing it would only pre-stage v11 code, and V11-FA-1's C arm already measures the picks where they
+  matter. Not filed separately.
+- **A separate task to merge REGION-SIBLING-1.** The only unblock is the operator's approval. That goes in the
+  operator decision queue (prepared row), and the handoff task already carries the done-when.
+
+## Files (wrap-up 4)
+
+| Repo | File | Change |
+|---|---|---|
+| root | `artifacts/champion-fold-kvu19-20261004/` | NEW. Fold record, GPU slot results, G0, CPU exactness, scripts, hashes. |
+| root | `artifacts/kvu16h-vram-20261004/` | NEW. Replay summary, runner and analysis scripts, fix commit text. |
+| root | `artifacts/cpu-fa-fp32-vkq-20261004/` | NEW. CPU FA harness outputs, model probe, fix commit text. |
+| root | `artifacts/v11-fa-ab-20261004/` | NEW. `PICKS_ON_ROUTE.md`, `NCOLS_CAP.md`, upstream draft, slot runner, DF2-9 recipe. |
+| root | `handoffs/active/kv-unified-stack-rollout.md` | Ticked KVU-19b-fold-c1, KVU-16h-a and CPU-FA-VKQ-0. Filed fold-c1-p3, fold-c1-receipt, KVU-16h-confirm/-fold/-runner, KVU-16g-1 and CPU-FA-VKQ-1..4. Annotated KVU-19, KVU-16f/g/h/i, rework-c2 and V11-FA-1..4. |
+| root | `handoffs/active/kv-prefix-fork-and-paged-attention.md` | KPF-17a (patch does not apply to the folded champion) and KPF-27b-ack annotated. |
+| root | `handoffs/active/agentic-serving-harness-fixes.md` | UFH14-B4j annotated (package awaiting signature). |
+| root | `handoffs/active/shape-keyed-contention-gating.md` | REGION-SIBLING-1 annotated (fix branch, awaits operator). |
+| root | `handoffs/active/vidya-belief-substrate-program.md` | VB-FA-MASKSKIP-c, VB-KVU16H and VB-CPU-FA-VKQ filed. |
+| root | `docs/reference/agent-config/INCIDENT_LOG.md` | Recurrence paragraph. |
+| llama.cpp fork | `experimental/cpu-fa-fp32-vkq-20261004` | Pushed (`2ad8bff36`); it was local-only. |
+
+Prepared, not applied (`/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`):
+- the RTG-57 and RTG-58 Next-action cells;
+- two operator-queue rows (STACKCHG-8083BATCH signature, REGION-SIBLING-1 merge);
+- three adapter source-table rows.

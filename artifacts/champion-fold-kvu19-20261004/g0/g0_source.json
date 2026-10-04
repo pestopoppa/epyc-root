@@ -1,0 +1,33 @@
+{
+ "all_targets": [
+  "fold"
+ ],
+ "context": {
+  "base": "90c12df4247e417053ffc59e2188294826d04ca2",
+  "candidate": "1bceceb0514d423ad220888313eafcddc30e485e",
+  "mode": "fold"
+ },
+ "declarations": [],
+ "failures": [],
+ "gained": {
+  "source": [
+   "env_knob:GGML_CUDA_FA_MASK_SKIP",
+   "env_knob:GGML_CUDA_FA_MASK_SKIP_MIN_KV",
+   "env_knob:GGML_CUDA_FA_SEQ_ROWS"
+  ]
+ },
+ "layers": {
+  "runtime": [],
+  "source": true,
+  "static": false
+ },
+ "losses": [],
+ "measured_targets": [
+  "fold"
+ ],
+ "notes": [],
+ "passed": true,
+ "reason": "no kernel path lost",
+ "schema": "epyc.autokernel.kernel_preservation.v1",
+ "unstable": {}
+}

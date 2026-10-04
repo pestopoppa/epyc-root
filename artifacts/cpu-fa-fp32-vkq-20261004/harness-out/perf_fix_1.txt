@@ -1,0 +1,22 @@
+# fa_v11 api=champion backend=CPU mode=perf
+env FA_PERF_KV=f16
+env FA_PERF_ROWS=1,4,9
+env FA_PERF_REPS=30
+env FA_PERF_BUDGET_MS=600
+env FA_PERF_NKV=16384,131072
+env FA_PERF_MIN_REPS=5
+env LD_LIBRARY_PATH=/mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin
+env FA_REF_DIR=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-cpu.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-base.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml.so.0.16.0
+# backend_name=CPU threads=24
+perf rows=1 layout=single n_kv=16384 us=1590.33 tflops=0.253 kv=f16 reps=30 vis=16384 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=4x1 n_kv=16384 us=2775.82 tflops=0.145 kv=f16 reps=30 vis=16384 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=single n_kv=16384 us=5302.43 tflops=0.304 kv=f16 reps=30 vis=65530 nonfinite=0 d=256 heads=24/4
+perf rows=9 layout=single n_kv=16384 us=12893.50 tflops=0.281 kv=f16 reps=30 vis=147420 nonfinite=0 d=256 heads=24/4
+perf rows=1 layout=single n_kv=131072 us=26090.93 tflops=0.123 kv=f16 reps=22 vis=131072 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=4x1 n_kv=131072 us=23169.09 tflops=0.139 kv=f16 reps=26 vis=131072 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=single n_kv=131072 us=58257.00 tflops=0.221 kv=f16 reps=10 vis=524282 nonfinite=0 d=256 heads=24/4
+perf rows=9 layout=single n_kv=131072 us=134143.26 tflops=0.216 kv=f16 reps=5 vis=1179612 nonfinite=0 d=256 heads=24/4
+perf_done cases=8 wall_s=5.8

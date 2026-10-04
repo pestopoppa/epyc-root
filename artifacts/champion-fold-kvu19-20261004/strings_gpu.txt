@@ -1,0 +1,11 @@
+GGML_CUDA_FA_MASK_SKIP           1
+GGML_CUDA_FA_MASK_SKIP_MIN_KV    1
+GGML_CUDA_FA_SEQ_ROWS            1
+plan_seq_tiles(any)              0
+plan_seq_tiles(nm -D)            0
+plan_seq_tiles(nm)               0
+ggml_flash_attn_ext_set_n_seq    1
+version: 10311 (1bceceb05)
+built with GNU 15.2.0 for Linux x86_64
+version: 10311 (1bceceb05)
+built with GNU 15.2.0 for Linux x86_64

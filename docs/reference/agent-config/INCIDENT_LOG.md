@@ -515,3 +515,18 @@ sibling-only `--cpu-list 160-183` maps to no region and cannot be claimed. Rules
   its guest-side complement.
 - the lock layer must fold SMT siblings into their physical core's region instead of dropping them: filed as
   REGION-SIBLING-1 in `handoffs/active/shape-keyed-contention-gating.md`.
+
+**Recurrence, same day (2026-10-04, later).** The briefs now required `region-lock`, and the mechanism still let
+workspace-ec's own subagents into held CPU windows: **three more preemptions**, by a KPF smoke run, a DCA perplexity run
+and a `gitnexus` re-index. Three lessons, all recorded in agent memory the same day:
+- **A quadrant claim must be pinned and sized to its quadrant.** A claim on one quadrant only protects the peer if the
+  work is `taskset` to that quadrant's CPUs and runs no more threads than the quadrant has; an unpinned or oversized
+  run under a one-quadrant claim spills onto cores the claim never named. Inference and benchmark runs take
+  `--role bench`; `--role build` is for builds and tests.
+- **The region lock is not FIFO.** A waiter can be overtaken by later claimants, so a long-held or repeatedly re-claimed
+  region starves an earlier waiter. Waiting on the lock is not a reservation; a window that must start on time is
+  arranged by the coordinator, not by queueing.
+- **Unlocked tools are load too.** `gitnexus` analyze and other repo tooling are CPU-heavy and take no lock on their own;
+  they need the same `region-lock run` wrapper, or must wait for the window to close.
+The lock-layer gap that made sibling pinning invisible is fixed on epyc-orchestrator `fix/region-lock-smt-siblings-ec`
+(`4ae008a8`, REGION-SIBLING-1); its merge awaits operator approval.

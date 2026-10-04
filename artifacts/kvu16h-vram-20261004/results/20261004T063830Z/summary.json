@@ -1,0 +1,1570 @@
+[
+ {
+  "arm": "armA",
+  "pid": 416066,
+  "vram_aborts": [],
+  "rows": [
+   {
+    "phase": "load",
+    "t0": 1791095919.246,
+    "t2": 1791095985.263,
+    "dur_s": 66.0,
+    "own_end_b": 54513426432,
+    "delta_b": 54513426432,
+    "peak_b": 54513426432,
+    "card_end_b": 54526840832,
+    "smi_end_b": 54526840832,
+    "shim_net": {
+     "kv|target": 18710790144,
+     "model|target": 27233914880,
+     "compute|target": 3557114112,
+     "pool_leg/mmv|target": 80384,
+     "model|draft": 2045466368,
+     "kv|draft": 209715200,
+     "compute|draft": 2247811072,
+     "pool_leg/fattn|target": 68864
+    },
+    "shim_net_b": 54004961024,
+    "shim_allocs": 13,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "reserve": 4,
+      "compute_buffer": 4,
+      "breakdown": 3,
+      "checkpoint": 1
+     },
+     "samples": {
+      "reserve": [
+       "0.03.260.601 I sched_reserve: reserving ...",
+       "0.03.362.530 I sched_reserve: reserve took 101.93 ms, sched copies = 1",
+       "0.03.820.968 I sched_reserve: reserving ...",
+       "0.03.941.887 I sched_reserve: reserve took 120.92 ms, sched copies = 1"
+      ],
+      "compute_buffer": [
+       "0.03.362.523 I sched_reserve:      ROCm0 compute buffer size =  3392.33 MiB",
+       "0.03.362.528 I sched_reserve:  ROCm_Host compute buffer size =  1616.34 MiB",
+       "0.03.941.879 I sched_reserve:      ROCm0 compute buffer size =  2143.68 MiB",
+       "0.03.941.885 I sched_reserve:  ROCm_Host compute buffer size =  1980.17 MiB"
+      ],
+      "breakdown": [
+       "0.00.704.014 I common_memory_breakdown_print: | memory breakdown [MiB] | total    free     self   model   context   compute    unaccounted |",
+       "0.00.704.018 I common_memory_breakdown_print: |   - ROCm0 (MI210)      | 65520 = 60480 + (47208 = 25972 +   17844 +    3392) +      -42168 |",
+       "0.00.704.018 I common_memory_breakdown_print: |   - Host               |                   2904 =  1288 +       0 +    1616                |"
+      ],
+      "checkpoint": [
+       "0.04.060.048 I srv    load_model: context checkpoints enabled, max = 32, min spacing = 8192"
+      ]
+     },
+     "compute_buffers": [
+      [
+       1791095922.6,
+       "ROCm0",
+       3392.33
+      ],
+      [
+       1791095922.6,
+       "ROCm_Host",
+       1616.34
+      ],
+      [
+       1791095923.2,
+       "ROCm0",
+       2143.68
+      ],
+      [
+       1791095923.2,
+       "ROCm_Host",
+       1980.17
+      ]
+     ]
+    },
+    "marks": {
+     "pre_launch": {
+      "server_log_off": null,
+      "shim_log_off": null,
+      "card_used_b": 13094912
+     },
+     "launched": {
+      "server_log_off": 0,
+      "shim_log_off": null,
+      "pid": 416066
+     },
+     "healthy": {
+      "server_log_off": 43491,
+      "shim_log_off": 14665,
+      "load_s": 6.0,
+      "build": "b10303-ffc1bac82",
+      "hip_ok": true,
+      "shim_mapped": true,
+      "own_vram_b": 54513426432
+     },
+     "idle_end": {
+      "server_log_off": 43491,
+      "shim_log_off": 14665,
+      "own_vram_b": 54513426432
+     }
+    }
+   },
+   {
+    "phase": "short",
+    "t0": 1791095985.265,
+    "t2": 1791096047.566,
+    "dur_s": 62.3,
+    "own_end_b": 54834733056,
+    "delta_b": 321306624,
+    "peak_b": 54834733056,
+    "card_end_b": 54848335872,
+    "smi_end_b": 54848335872,
+    "shim_net": {
+     "compute|target": 209715200,
+     "pool_leg/other|target": 327936,
+     "pool_leg/mmq|target": 7156736,
+     "pool_leg/other|draft": 1609984,
+     "pool_leg/mmq|draft": 3578368,
+     "rocblas|draft": 33554432
+    },
+    "shim_net_b": 255942656,
+    "shim_allocs": 7,
+    "residual_b": 65363968,
+    "log": {
+     "counts": {
+      "reserve": 2,
+      "compute_buffer": 2,
+      "idle_save": 3,
+      "checkpoint": 1
+     },
+     "samples": {
+      "reserve": [
+       "1.05.991.861 I sched_reserve: reserving ...",
+       "1.06.100.258 I sched_reserve: reserve took 108.39 ms, sched copies = 1"
+      ],
+      "compute_buffer": [
+       "1.06.100.249 I sched_reserve:      ROCm0 compute buffer size =  3592.33 MiB",
+       "1.06.100.256 I sched_reserve:  ROCm_Host compute buffer size =  1616.34 MiB"
+      ],
+      "idle_save": [
+       "1.05.989.951 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "1.05.990.403 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "1.05.990.844 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache"
+      ],
+      "checkpoint": [
+       "1.06.270.233 I slot create_check: id  3 | task 0 | created context checkpoint 1 of 32 (pos_min = 52, pos_max = 52, n_tokens = 53, size = 150.662 MiB)"
+      ]
+     },
+     "compute_buffers": [
+      [
+       1791095985.4,
+       "ROCm0",
+       3592.33
+      ],
+      [
+       1791095985.4,
+       "ROCm_Host",
+       1616.34
+      ]
+     ]
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 43491,
+      "shim_log_off": 14665,
+      "own_vram_b": 54513426432
+     },
+     "traffic_end": {
+      "server_log_off": 47956,
+      "shim_log_off": 23173,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 54834733056
+     },
+     "idle_end": {
+      "server_log_off": 47956,
+      "shim_log_off": 23173,
+      "own_vram_b": 54834733056,
+      "delta_gib": 0.299
+     }
+    }
+   },
+   {
+    "phase": "sweep",
+    "t0": 1791096047.689,
+    "t2": 1791096178.184,
+    "dur_s": 130.5,
+    "own_end_b": 55736918016,
+    "delta_b": 902184960,
+    "peak_b": 55736918016,
+    "card_end_b": 55754006528,
+    "smi_end_b": 55754006528,
+    "shim_net": {
+     "rocblas|target": 33554432,
+     "pool_leg/cublas_f16|target": 306733056,
+     "pool_leg/cublas_f16|draft": 532976640
+    },
+    "shim_net_b": 873264128,
+    "shim_allocs": 10,
+    "residual_b": 28920832,
+    "log": {
+     "counts": {
+      "idle_save": 36,
+      "clear_prompt": 12,
+      "checkpoint": 18
+     },
+     "samples": {
+      "idle_save": [
+       "2.08.414.571 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "2.08.414.872 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "2.08.415.169 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "2.10.034.645 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "2.08.447.878 I slot prompt_clear: id  3 | task -1 | clearing prompt with 128 tokens",
+       "2.10.071.292 I slot prompt_clear: id  2 | task -1 | clearing prompt with 435 tokens",
+       "2.11.167.144 I slot prompt_clear: id  1 | task -1 | clearing prompt with 765 tokens",
+       "2.14.100.179 I slot prompt_clear: id  0 | task -1 | clearing prompt with 1624 tokens"
+      ],
+      "checkpoint": [
+       "2.09.050.856 I slot create_check: id  2 | task 28 | created context checkpoint 1 of 32 (pos_min = 399, pos_max = 399, n_tokens = 400, size = 157.443 MiB)",
+       "2.11.074.441 I slot create_check: id  1 | task 43 | created context checkpoint 1 of 32 (pos_min = 760, pos_max = 760, n_tokens = 761, size = 164.498 MiB)",
+       "2.13.061.172 I slot create_check: id  0 | task 46 | created context checkpoint 1 of 32 (pos_min = 1588, pos_max = 1588, n_tokens = 1589, size = 180.680 MiB)",
+       "2.15.490.692 I slot create_check: id  3 | task 61 | created context checkpoint 1 of 32 (pos_min = 1155, pos_max = 1155, n_tokens = 1156, size = 172.218 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 47956,
+      "shim_log_off": 23173,
+      "own_vram_b": 54834733056
+     },
+     "traffic_end": {
+      "server_log_off": 123886,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55736918016
+     },
+     "idle_end": {
+      "server_log_off": 123886,
+      "shim_log_off": 34503,
+      "own_vram_b": 55736918016,
+      "delta_gib": 0.84
+     }
+    }
+   },
+   {
+    "phase": "prefill80k",
+    "t0": 1791096178.314,
+    "t2": 1791096393.82,
+    "dur_s": 215.5,
+    "own_end_b": 55728529408,
+    "delta_b": -8388608,
+    "peak_b": 55736918016,
+    "card_end_b": 55745949696,
+    "smi_end_b": 55745949696,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 3,
+      "clear_prompt": 1,
+      "checkpoint": 2
+     },
+     "samples": {
+      "idle_save": [
+       "4.19.092.702 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "4.19.093.042 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "4.19.093.383 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "4.19.190.292 I slot prompt_clear: id  3 | task -1 | clearing prompt with 12793 tokens"
+      ],
+      "checkpoint": [
+       "6.45.536.974 I slot create_check: id  2 | task 202 | created context checkpoint 1 of 32 (pos_min = 77796, pos_max = 77796, n_tokens = 77797, size = 189.650 MiB)",
+       "6.51.487.975 I slot create_check: id  2 | task 202 | created context checkpoint 2 of 32 (pos_min = 79840, pos_max = 79840, n_tokens = 79841, size = 189.650 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 123886,
+      "shim_log_off": 34503,
+      "own_vram_b": 55736918016
+     },
+     "traffic_end": {
+      "server_log_off": 142268,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55728529408
+     },
+     "idle_end": {
+      "server_log_off": 142268,
+      "shim_log_off": 34503,
+      "own_vram_b": 55728529408,
+      "delta_gib": -0.008
+     }
+    }
+   },
+   {
+    "phase": "dec4",
+    "t0": 1791096393.831,
+    "t2": 1791096507.237,
+    "dur_s": 113.4,
+    "own_end_b": 55759011840,
+    "delta_b": 30482432,
+    "peak_b": 55759011840,
+    "card_end_b": 55777411072,
+    "smi_end_b": 55777411072,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 1,
+      "checkpoint": 5
+     },
+     "samples": {
+      "idle_save": [
+       "7.54.557.417 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "7.54.557.827 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "7.54.868.299 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "7.54.871.246 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "7.54.854.205 I slot prompt_clear: id  2 | task -1 | clearing prompt with 79908 tokens"
+      ],
+      "checkpoint": [
+       "7.57.477.268 I slot create_check: id  0 | task 271 | created context checkpoint 1 of 32 (pos_min = 990, pos_max = 990, n_tokens = 991, size = 168.993 MiB)",
+       "7.57.495.240 I slot create_check: id  1 | task 270 | created context checkpoint 1 of 32 (pos_min = 989, pos_max = 989, n_tokens = 990, size = 168.974 MiB)",
+       "7.57.512.153 I slot create_check: id  2 | task 273 | created context checkpoint 1 of 32 (pos_min = 66, pos_max = 66, n_tokens = 67, size = 150.936 MiB)",
+       "7.59.931.741 I slot create_check: id  2 | task 273 | created context checkpoint 2 of 32 (pos_min = 991, pos_max = 991, n_tokens = 992, size = 169.013 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 142268,
+      "shim_log_off": 34503,
+      "own_vram_b": 55728529408
+     },
+     "traffic_end": {
+      "server_log_off": 173044,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55759011840
+     },
+     "idle_end": {
+      "server_log_off": 173044,
+      "shim_log_off": 34503,
+      "own_vram_b": 55759011840,
+      "delta_gib": 0.028
+     }
+    }
+   },
+   {
+    "phase": "mix1",
+    "t0": 1791096507.344,
+    "t2": 1791096701.963,
+    "dur_s": 194.6,
+    "own_end_b": 55738040320,
+    "delta_b": -20971520,
+    "peak_b": 55759011840,
+    "card_end_b": 55759024128,
+    "smi_end_b": 55759024128,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 3,
+      "checkpoint": 9
+     },
+     "samples": {
+      "idle_save": [
+       "9.48.373.112 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "9.48.814.790 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "9.49.285.822 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "9.49.674.805 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "9.48.812.051 I slot prompt_clear: id  0 | task -1 | clearing prompt with 1994 tokens",
+       "9.49.283.314 I slot prompt_clear: id  1 | task -1 | clearing prompt with 1993 tokens",
+       "9.49.670.378 I slot prompt_clear: id  2 | task -1 | clearing prompt with 1995 tokens"
+      ],
+      "checkpoint": [
+       "9.49.675.748 I slot   operator(): id  3 | task 633 | erased invalidated context checkpoint (pos_min = 991, pos_max = 991, n_tokens = 992, n_swa = 0, pos_next = 0, size = 169.013 MiB)",
+       "9.52.176.336 I slot create_check: id  2 | task 634 | created context checkpoint 1 of 32 (pos_min = 990, pos_max = 990, n_tokens = 991, size = 168.993 MiB)",
+       "9.52.195.061 I slot create_check: id  3 | task 633 | created context checkpoint 1 of 32 (pos_min = 991, pos_max = 991, n_tokens = 992, size = 169.013 MiB)",
+       "10.37.829.776 I slot create_check: id  0 | task 642 | created context checkpoint 1 of 32 (pos_min = 29982, pos_max = 29982, n_tokens = 29983, size = 189.650 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 173044,
+      "shim_log_off": 34503,
+      "own_vram_b": 55759011840
+     },
+     "decoders_streaming": {
+      "server_log_off": 190267,
+      "shim_log_off": 34503
+     },
+     "prefills_done": {
+      "server_log_off": 213602,
+      "shim_log_off": 34503
+     },
+     "traffic_end": {
+      "server_log_off": 214546,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55735943168
+     },
+     "idle_end": {
+      "server_log_off": 214809,
+      "shim_log_off": 34503,
+      "own_vram_b": 55738040320,
+      "delta_gib": -0.02
+     }
+    }
+   },
+   {
+    "phase": "mix2",
+    "t0": 1791096702.094,
+    "t2": 1791096895.276,
+    "dur_s": 193.2,
+    "own_end_b": 55735943168,
+    "delta_b": -2097152,
+    "peak_b": 55738040320,
+    "card_end_b": 55763124224,
+    "smi_end_b": 55763124224,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 3,
+      "checkpoint": 11
+     },
+     "samples": {
+      "idle_save": [
+       "13.03.021.846 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "13.03.238.285 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "13.03.399.405 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "13.03.558.558 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "13.03.226.899 I slot prompt_clear: id  1 | task -1 | clearing prompt with 31919 tokens",
+       "13.03.396.815 I slot prompt_clear: id  2 | task -1 | clearing prompt with 1487 tokens",
+       "13.03.555.396 I slot prompt_clear: id  3 | task -1 | clearing prompt with 1439 tokens"
+      ],
+      "checkpoint": [
+       "13.03.559.364 I slot   operator(): id  0 | task 765 | erased invalidated context checkpoint (pos_min = 29982, pos_max = 29982, n_tokens = 29983, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "13.03.560.845 I slot   operator(): id  0 | task 765 | erased invalidated context checkpoint (pos_min = 32014, pos_max = 32014, n_tokens = 32015, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "13.03.562.328 I slot   operator(): id  0 | task 765 | erased invalidated context checkpoint (pos_min = 32026, pos_max = 32026, n_tokens = 32027, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "13.05.827.511 I slot create_check: id  0 | task 765 | created context checkpoint 1 of 32 (pos_min = 991, pos_max = 991, n_tokens = 992, size = 169.013 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 214809,
+      "shim_log_off": 34503,
+      "own_vram_b": 55738040320
+     },
+     "decoders_streaming": {
+      "server_log_off": 235333,
+      "shim_log_off": 34503
+     },
+     "prefills_done": {
+      "server_log_off": 258729,
+      "shim_log_off": 34503
+     },
+     "traffic_end": {
+      "server_log_off": 259673,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55735943168
+     },
+     "idle_end": {
+      "server_log_off": 259936,
+      "shim_log_off": 34503,
+      "own_vram_b": 55735943168,
+      "delta_gib": -0.002
+     }
+    }
+   },
+   {
+    "phase": "t7c",
+    "t0": 1791096895.419,
+    "t2": 1791097074.144,
+    "dur_s": 178.7,
+    "own_end_b": 55735943168,
+    "delta_b": 0,
+    "peak_b": 55735943168,
+    "card_end_b": 55768678400,
+    "smi_end_b": 55768678400,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 3,
+      "checkpoint": 11
+     },
+     "samples": {
+      "idle_save": [
+       "16.16.346.249 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "16.16.504.326 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "16.16.676.315 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "16.16.883.867 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "16.16.501.906 I slot prompt_clear: id  0 | task -1 | clearing prompt with 1362 tokens",
+       "16.16.673.849 I slot prompt_clear: id  1 | task -1 | clearing prompt with 1395 tokens",
+       "16.16.872.088 I slot prompt_clear: id  3 | task -1 | clearing prompt with 31760 tokens"
+      ],
+      "checkpoint": [
+       "16.42.464.729 I slot create_check: id  0 | task 901 | created context checkpoint 1 of 32 (pos_min = 13903, pos_max = 13903, n_tokens = 13904, size = 189.650 MiB)",
+       "16.46.800.648 I slot create_check: id  0 | task 901 | created context checkpoint 2 of 32 (pos_min = 15947, pos_max = 15947, n_tokens = 15948, size = 189.650 MiB)",
+       "17.14.033.775 I slot   operator(): id  2 | task 899 | erased invalidated context checkpoint (pos_min = 29747, pos_max = 29747, n_tokens = 29748, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "17.14.035.428 I slot   operator(): id  2 | task 899 | erased invalidated context checkpoint (pos_min = 31779, pos_max = 31779, n_tokens = 31780, n_swa = 0, pos_next = 0, size = 189.650 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 259936,
+      "shim_log_off": 34503,
+      "own_vram_b": 55735943168
+     },
+     "traffic_end": {
+      "server_log_off": 308890,
+      "shim_log_off": 34503,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55735943168
+     },
+     "idle_end": {
+      "server_log_off": 308890,
+      "shim_log_off": 34503,
+      "own_vram_b": 55735943168,
+      "delta_gib": 0.0
+     }
+    }
+   },
+   {
+    "phase": "nodraft",
+    "t0": 1791097074.187,
+    "t2": 1791097163.323,
+    "dur_s": 89.1,
+    "own_end_b": 55727554560,
+    "delta_b": -8388608,
+    "peak_b": 55735943168,
+    "card_end_b": 55764434944,
+    "smi_end_b": 55764434944,
+    "shim_net": {
+     "pool_leg/mmv|target": 2374656,
+     "pool_leg/fattn|target": 3539712,
+     "pool_leg/mmq|target": -7156736,
+     "pool_leg/other|target": -327936
+    },
+    "shim_net_b": -1570304,
+    "shim_allocs": 254,
+    "residual_b": -6818304,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 4,
+      "checkpoint": 5
+     },
+     "samples": {
+      "idle_save": [
+       "19.15.046.313 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "19.15.178.958 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "19.15.306.327 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "19.35.191.606 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "19.15.171.516 I slot prompt_clear: id  1 | task -1 | clearing prompt with 15951 tokens",
+       "19.15.299.101 I slot prompt_clear: id  2 | task -1 | clearing prompt with 15959 tokens",
+       "19.15.428.127 I slot prompt_clear: id  3 | task -1 | clearing prompt with 15953 tokens",
+       "19.35.307.332 I slot prompt_clear: id  0 | task -1 | clearing prompt with 15953 tokens"
+      ],
+      "checkpoint": [
+       "19.15.436.421 I slot   operator(): id  0 | task 936 | erased invalidated context checkpoint (pos_min = 13903, pos_max = 13903, n_tokens = 13904, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "19.15.437.873 I slot   operator(): id  0 | task 936 | erased invalidated context checkpoint (pos_min = 15947, pos_max = 15947, n_tokens = 15948, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "19.32.318.125 I slot create_check: id  0 | task 936 | created context checkpoint 1 of 32 (pos_min = 13904, pos_max = 13904, n_tokens = 13905, size = 189.650 MiB)",
+       "19.35.129.237 I slot create_check: id  0 | task 936 | created context checkpoint 2 of 32 (pos_min = 15948, pos_max = 15948, n_tokens = 15949, size = 189.650 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 308890,
+      "shim_log_off": 34503,
+      "own_vram_b": 55735943168
+     },
+     "traffic_end": {
+      "server_log_off": 342998,
+      "shim_log_off": 327295,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 55727554560
+     },
+     "idle_end": {
+      "server_log_off": 342998,
+      "shim_log_off": 327295,
+      "own_vram_b": 55727554560,
+      "delta_gib": -0.008
+     }
+    }
+   },
+   {
+    "phase": "idlecache",
+    "t0": 1791097163.329,
+    "t2": 1791097230.88,
+    "dur_s": 67.6,
+    "own_end_b": 56037933056,
+    "delta_b": 310378496,
+    "peak_b": 56037933056,
+    "card_end_b": 56075681792,
+    "smi_end_b": 56075681792,
+    "shim_net": {
+     "pool_leg/cublas_f16|target": 305810688
+    },
+    "shim_net_b": 305810688,
+    "shim_allocs": 4,
+    "residual_b": 4567808,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 2,
+      "cache_restore": 2,
+      "checkpoint": 5
+     },
+     "samples": {
+      "idle_save": [
+       "20.44.054.319 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "20.44.054.629 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "20.44.104.384 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "20.49.857.419 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "20.44.101.922 I slot prompt_clear: id  1 | task -1 | clearing prompt with 2219 tokens",
+       "20.49.892.841 I slot prompt_clear: id  2 | task -1 | clearing prompt with 365 tokens"
+      ],
+      "cache_restore": [
+       "20.49.718.399 I srv          load:  - found better prompt with f_keep = 0.999, sim = 1.000",
+       "20.49.905.354 I slot   operator(): id  3 | task 1151 | restored context checkpoint (pos_min = 79840, pos_max = 79840, n_tokens = 79841, n_past = 79841, size = 189.650 MiB)"
+      ],
+      "checkpoint": [
+       "20.44.608.602 I slot create_check: id  2 | task 1148 | created context checkpoint 1 of 32 (pos_min = 360, pos_max = 360, n_tokens = 361, size = 156.681 MiB)",
+       "20.49.905.354 I slot   operator(): id  3 | task 1151 | restored context checkpoint (pos_min = 79840, pos_max = 79840, n_tokens = 79841, n_past = 79841, size = 189.650 MiB)",
+       "20.49.905.694 I slot create_check: id  3 | task 1151 | erasing context checkpoint too close to an earlier one (pos_min = 79840, pos_max = 79840, n_tokens = 79841, size = 189.650 MiB)",
+       "20.49.927.095 I slot create_check: id  3 | task 1151 | created context checkpoint 2 of 32 (pos_min = 79840, pos_max = 79840, n_tokens = 79841, size = 189.650 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 342998,
+      "shim_log_off": 327295,
+      "own_vram_b": 55727554560
+     },
+     "traffic_end": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 56037933056
+     },
+     "idle_end": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "own_vram_b": 56037933056,
+      "delta_gib": 0.289
+     }
+    }
+   },
+   {
+    "phase": "longidle",
+    "t0": 1791097230.88,
+    "t2": 1791097410.881,
+    "dur_s": 180.0,
+    "own_end_b": 56037933056,
+    "delta_b": 0,
+    "peak_b": 56037933056,
+    "card_end_b": 56075681792,
+    "smi_end_b": 56075681792,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {},
+     "samples": {},
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "own_vram_b": 56037933056
+     },
+     "traffic_end": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 56037933056
+     },
+     "idle_end": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "own_vram_b": 56037933056,
+      "delta_gib": 0.0
+     }
+    }
+   },
+   {
+    "phase": "teardown",
+    "t0": 1791097410.881,
+    "t2": 1791097411.336,
+    "dur_s": 0.5,
+    "own_end_b": 574554112,
+    "delta_b": -55463378944,
+    "peak_b": 574554112,
+    "card_end_b": 53250772992,
+    "smi_end_b": 56075681792,
+    "shim_net": {
+     "rocblas|draft": -33554432,
+     "pool_leg/cublas_f16|draft": -532976640,
+     "pool_leg/mmq|draft": -3578368,
+     "pool_leg/other|draft": -1609984,
+     "pool_leg/fattn|target": -3608576,
+     "pool_leg/mmv|target": -2455040,
+     "compute|draft": -2247811072,
+     "kv|draft": -209715200,
+     "model|draft": -2045466368,
+     "rocblas|target": -33554432,
+     "pool_leg/cublas_f16|target": -612543744,
+     "compute|target": -3766829312,
+     "kv|target": -18710790144,
+     "model|target": -27233914880
+    },
+    "shim_net_b": -55438408192,
+    "shim_allocs": 0,
+    "residual_b": -24970752,
+    "log": {
+     "counts": {
+      "breakdown": 3
+     },
+     "samples": {
+      "breakdown": [
+       "24.51.608.754 I common_memory_breakdown_print: | memory breakdown [MiB] | total    free     self   model   context   compute    unaccounted |",
+       "24.51.608.755 I common_memory_breakdown_print: |   - ROCm0 (MI210)      | 65520 = 12242 + (47408 = 25972 +   17844 +    3592) +        5869 |",
+       "24.51.608.755 I common_memory_breakdown_print: |   - Host               |                   2904 =  1288 +       0 +    1616                |"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 368054,
+      "shim_log_off": 331419,
+      "own_vram_b": 56037933056
+     },
+     "end": {
+      "server_log_off": 368614,
+      "shim_log_off": 346539,
+      "pid": 416066,
+      "already_exited": false,
+      "sent": [
+       "TERM"
+      ],
+      "verified_dead": true,
+      "returncode": 0
+     }
+    }
+   }
+  ],
+  "skipped": [],
+  "growth_b": 1524506624,
+  "peak_serving_b": 56037933056,
+  "own_after_load_b": 54513426432,
+  "shim_present": true,
+  "shim_events": 576,
+  "by_class_b": {
+   "compute|target": 209715200,
+   "pool_leg/other|draft": 1609984,
+   "pool_leg/mmq|draft": 3578368,
+   "rocblas|draft": 33554432,
+   "rocblas|target": 33554432,
+   "pool_leg/cublas_f16|target": 612543744,
+   "pool_leg/cublas_f16|draft": 532976640,
+   "pool_leg/mmv|target": 2374656,
+   "pool_leg/fattn|target": 3539712
+  },
+  "shim_growth_b": 1433447168,
+  "residual_b": 91059456,
+  "top_chains": [
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_model_base::load_tensors < llama_model_load < llama_model_load_from_file_impl < llama_model_load_from_file",
+    "class": "model|draft",
+    "alloc_b": 29279381248
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_kv_cache::llama_kv_cache < llama_memory_hybrid::llama_memory_hybrid < llama_model::create_memory < llama_context::llama_context",
+    "class": "kv|target",
+    "alloc_b": 13690208256
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_memory_recurrent::llama_memory_recurrent < llama_memory_hybrid::llama_memory_hybrid < llama_model::create_memory < llama_context::llama_context",
+    "class": "kv|target",
+    "alloc_b": 10041163776
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::decode < llama_decode < server_context_impl::decode",
+    "class": "compute|target",
+    "alloc_b": 3766829312
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::llama_context < llama_init_from_model < common_init_result::common_init_result",
+    "class": "compute|target",
+    "alloc_b": 3557114112
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::llama_context < llama_init_from_model < common_speculative_init_result::common_speculative_init_result",
+    "class": "compute|draft",
+    "alloc_b": 2247811072
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::decode",
+    "class": "pool_leg/cublas_f16|target",
+    "alloc_b": 612543744
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::encode",
+    "class": "pool_leg/cublas_f16|draft",
+    "alloc_b": 532976640
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_kv_cache::llama_kv_cache < llama_kv_cache_iswa::llama_kv_cache_iswa < llama_kv_cache_iswa::llama_kv_cache_iswa < llama_model::create_memory",
+    "class": "kv|draft",
+    "alloc_b": 209715200
+   },
+   {
+    "chain": "_rocblas_handle::_rocblas_handle < rocblas_create_handle < hipblasCreate < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute",
+    "class": "rocblas|target",
+    "alloc_b": 67108864
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < void mul_mat_q_switch_J< < ggml_cuda_mul_mat_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch",
+    "class": "pool_leg/mmq|draft",
+    "alloc_b": 10735104
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < void launch_fattn<256, 1, 1> < void ggml_cuda_flash_attn_ext_vec_case<256,  < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch",
+    "class": "pool_leg/fattn|target",
+    "alloc_b": 3539712
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_vec_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::decode",
+    "class": "pool_leg/mmv|target",
+    "alloc_b": 2523136
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::encode",
+    "class": "pool_leg/other|draft",
+    "alloc_b": 1609984
+   }
+  ],
+  "breakdown_load": [
+   {
+    "t": 1791095919.98,
+    "device": "ROCm0 (MI210)",
+    "total": 65520,
+    "free": 60480,
+    "self": 47208,
+    "model": 25972,
+    "context": 17844,
+    "compute": 3392,
+    "unaccounted": -42168
+   }
+  ],
+  "breakdown_exit": [
+   {
+    "t": 1791097410.884,
+    "device": "ROCm0 (MI210)",
+    "total": 65520,
+    "free": 12242,
+    "self": 47408,
+    "model": 25972,
+    "context": 17844,
+    "compute": 3592,
+    "unaccounted": 5869
+   }
+  ],
+  "compute_mismatch": [],
+  "compute_reserves_at_load": [
+   [
+    1791095922.6,
+    "ROCm0",
+    3392.33
+   ],
+   [
+    1791095922.6,
+    "ROCm_Host",
+    1616.34
+   ],
+   [
+    1791095923.2,
+    "ROCm0",
+    2143.68
+   ],
+   [
+    1791095923.2,
+    "ROCm_Host",
+    1980.17
+   ]
+  ],
+  "arm_result": {
+   "label": "armA",
+   "pid": 416066,
+   "phases": [
+    {
+     "phase": "short",
+     "capped": false,
+     "own_before_b": 54513426432,
+     "own_after_b": 54834733056
+    },
+    {
+     "phase": "sweep",
+     "capped": false,
+     "own_before_b": 54834733056,
+     "own_after_b": 55736918016
+    },
+    {
+     "phase": "prefill80k",
+     "capped": false,
+     "own_before_b": 55736918016,
+     "own_after_b": 55728529408
+    },
+    {
+     "phase": "dec4",
+     "capped": false,
+     "own_before_b": 55728529408,
+     "own_after_b": 55759011840
+    },
+    {
+     "phase": "mix1",
+     "capped": false,
+     "own_before_b": 55759011840,
+     "own_after_b": 55738040320
+    },
+    {
+     "phase": "mix2",
+     "capped": false,
+     "own_before_b": 55738040320,
+     "own_after_b": 55735943168
+    },
+    {
+     "phase": "t7c",
+     "capped": false,
+     "own_before_b": 55735943168,
+     "own_after_b": 55735943168
+    },
+    {
+     "phase": "nodraft",
+     "capped": false,
+     "own_before_b": 55735943168,
+     "own_after_b": 55727554560
+    },
+    {
+     "phase": "idlecache",
+     "capped": false,
+     "own_before_b": 55727554560,
+     "own_after_b": 56037933056
+    },
+    {
+     "phase": "longidle",
+     "capped": false,
+     "own_before_b": 56037933056,
+     "own_after_b": 56037933056
+    }
+   ],
+   "skipped": [],
+   "aborted": null,
+   "load_s": 6.0,
+   "healthy": true,
+   "teardown": {
+    "pid": 416066,
+    "already_exited": false,
+    "sent": [
+     "TERM"
+    ],
+    "at": "2026-10-04T07:03:30Z",
+    "verified_dead": true,
+    "returncode": 0
+   },
+   "peak_own_gib": 52.189
+  },
+  "verdict": {
+   "growth_gib": 1.42,
+   "groups_gib": {
+    "legacy pool (target)": 0.576,
+    "legacy pool (draft)": 0.501,
+    "compute-buffer realloc (target)": 0.195,
+    "HIP runtime internal (residual: graphs, code objects, kernarg)": 0.085,
+    "rocBLAS/hipBLAS(Lt) (draft)": 0.031,
+    "rocBLAS/hipBLAS(Lt) (target)": 0.031
+   },
+   "named": "legacy pool (target)",
+   "share": 0.406,
+   "text": "MIXED (largest share): legacy pool (target) = 0.58 of 1.42 GiB (41%)",
+   "plateau": "PLATEAU (mix1 -0.02, mix2 -0.00 GiB)",
+   "idle_release": "long idle delta +0.000 GiB"
+  }
+ },
+ {
+  "arm": "armB_ub512",
+  "pid": 3905741,
+  "vram_aborts": [],
+  "rows": [
+   {
+    "phase": "load",
+    "t0": 1791097417.431,
+    "t2": 1791097481.434,
+    "dur_s": 64.0,
+    "own_end_b": 51338338304,
+    "delta_b": 51338338304,
+    "peak_b": 51338338304,
+    "card_end_b": 51351744512,
+    "smi_end_b": 51351744512,
+    "shim_net": {
+     "kv|target": 18710790144,
+     "model|target": 27233914880,
+     "compute|target": 2097447168,
+     "pool_leg/mmv|target": 80384,
+     "model|draft": 2045466368,
+     "kv|draft": 178257920,
+     "compute|draft": 563232768,
+     "pool_leg/fattn|target": 68864
+    },
+    "shim_net_b": 50829258496,
+    "shim_allocs": 13,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "reserve": 4,
+      "compute_buffer": 4,
+      "breakdown": 3,
+      "checkpoint": 1
+     },
+     "samples": {
+      "reserve": [
+       "0.03.255.626 I sched_reserve: reserving ...",
+       "0.03.286.866 I sched_reserve: reserve took 31.24 ms, sched copies = 1",
+       "0.03.754.063 I sched_reserve: reserving ...",
+       "0.03.782.788 I sched_reserve: reserve took 28.72 ms, sched copies = 1"
+      ],
+      "compute_buffer": [
+       "0.03.286.860 I sched_reserve:      ROCm0 compute buffer size =  2000.28 MiB",
+       "0.03.286.864 I sched_reserve:  ROCm_Host compute buffer size =   404.28 MiB",
+       "0.03.782.783 I sched_reserve:      ROCm0 compute buffer size =   537.14 MiB",
+       "0.03.782.786 I sched_reserve:  ROCm_Host compute buffer size =   493.54 MiB"
+      ],
+      "breakdown": [
+       "0.00.701.399 I common_memory_breakdown_print: | memory breakdown [MiB] | total    free     self   model   context   compute    unaccounted |",
+       "0.00.701.402 I common_memory_breakdown_print: |   - ROCm0 (MI210)      | 65520 = 60480 + (45816 = 25972 +   17844 +    2000) +      -40776 |",
+       "0.00.701.403 I common_memory_breakdown_print: |   - Host               |                   1692 =  1288 +       0 +     404                |"
+      ],
+      "checkpoint": [
+       "0.03.897.581 I srv    load_model: context checkpoints enabled, max = 32, min spacing = 8192"
+      ]
+     },
+     "compute_buffers": [
+      [
+       1791097420.7,
+       "ROCm0",
+       2000.28
+      ],
+      [
+       1791097420.7,
+       "ROCm_Host",
+       404.28
+      ],
+      [
+       1791097421.2,
+       "ROCm0",
+       537.14
+      ],
+      [
+       1791097421.2,
+       "ROCm_Host",
+       493.54
+      ]
+     ]
+    },
+    "marks": {
+     "pre_launch": {
+      "server_log_off": null,
+      "shim_log_off": null,
+      "card_used_b": 13094912
+     },
+     "launched": {
+      "server_log_off": 0,
+      "shim_log_off": 0,
+      "pid": 3905741
+     },
+     "healthy": {
+      "server_log_off": 43481,
+      "shim_log_off": 14681,
+      "load_s": 4.0,
+      "build": "b10303-ffc1bac82",
+      "hip_ok": true,
+      "shim_mapped": true,
+      "own_vram_b": 51338338304
+     },
+     "idle_end": {
+      "server_log_off": 43481,
+      "shim_log_off": 14681,
+      "own_vram_b": 51338338304
+     }
+    }
+   },
+   {
+    "phase": "mix1",
+    "t0": 1791097481.541,
+    "t2": 1791097700.178,
+    "dur_s": 218.6,
+    "own_end_b": 52183826432,
+    "delta_b": 845488128,
+    "peak_b": 52183826432,
+    "card_end_b": 52199047168,
+    "smi_end_b": 52199047168,
+    "shim_net": {
+     "compute|target": 52428800,
+     "pool_leg/other|target": 358144,
+     "pool_leg/mmq|target": 5367552,
+     "rocblas|target": 33554432,
+     "pool_leg/cublas_f16|target": 308010496,
+     "rocblas|draft": 33554432,
+     "pool_leg/cublas_f16|draft": 328527360
+    },
+    "shim_net_b": 761801216,
+    "shim_allocs": 13,
+    "residual_b": 83686912,
+    "log": {
+     "counts": {
+      "reserve": 2,
+      "compute_buffer": 2,
+      "idle_save": 6,
+      "checkpoint": 11
+     },
+     "samples": {
+      "reserve": [
+       "1.04.086.951 I sched_reserve: reserving ...",
+       "1.04.118.055 I sched_reserve: reserve took 31.09 ms, sched copies = 1"
+      ],
+      "compute_buffer": [
+       "1.04.118.050 I sched_reserve:      ROCm0 compute buffer size =  2050.28 MiB",
+       "1.04.118.053 I sched_reserve:  ROCm_Host compute buffer size =   404.28 MiB"
+      ],
+      "idle_save": [
+       "1.04.084.651 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache",
+       "1.04.084.949 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "1.04.085.239 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "1.04.085.548 I slot process_sing: id  0 | task -1 | saving idle slot to prompt cache"
+      ],
+      "checkpoint": [
+       "1.04.958.355 I slot create_check: id  2 | task 1 | created context checkpoint 1 of 32 (pos_min = 482, pos_max = 482, n_tokens = 483, size = 159.065 MiB)",
+       "1.05.720.208 I slot create_check: id  2 | task 1 | created context checkpoint 2 of 32 (pos_min = 990, pos_max = 990, n_tokens = 991, size = 168.993 MiB)",
+       "1.06.418.445 I slot create_check: id  3 | task 0 | created context checkpoint 1 of 32 (pos_min = 482, pos_max = 482, n_tokens = 483, size = 159.065 MiB)",
+       "1.07.167.756 I slot create_check: id  3 | task 0 | created context checkpoint 2 of 32 (pos_min = 986, pos_max = 986, n_tokens = 987, size = 168.915 MiB)"
+      ]
+     },
+     "compute_buffers": [
+      [
+       1791097481.6,
+       "ROCm0",
+       2050.28
+      ],
+      [
+       1791097481.6,
+       "ROCm_Host",
+       404.28
+      ]
+     ]
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 43481,
+      "shim_log_off": 14681,
+      "own_vram_b": 51338338304
+     },
+     "decoders_streaming": {
+      "server_log_off": 50547,
+      "shim_log_off": 29353
+     },
+     "prefills_done": {
+      "server_log_off": 102329,
+      "shim_log_off": 29353
+     },
+     "traffic_end": {
+      "server_log_off": 103371,
+      "shim_log_off": 29353,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 52183826432
+     },
+     "idle_end": {
+      "server_log_off": 103627,
+      "shim_log_off": 29353,
+      "own_vram_b": 52183826432,
+      "delta_gib": 0.787
+     }
+    }
+   },
+   {
+    "phase": "mix2",
+    "t0": 1791097700.284,
+    "t2": 1791097921.366,
+    "dur_s": 221.1,
+    "own_end_b": 52191240192,
+    "delta_b": 7413760,
+    "peak_b": 52191240192,
+    "card_end_b": 52208017408,
+    "smi_end_b": 52208017408,
+    "shim_net": {},
+    "shim_net_b": null,
+    "shim_allocs": 0,
+    "residual_b": null,
+    "log": {
+     "counts": {
+      "idle_save": 6,
+      "clear_prompt": 3,
+      "checkpoint": 14
+     },
+     "samples": {
+      "idle_save": [
+       "4.43.112.111 I slot process_sing: id  1 | task -1 | saving idle slot to prompt cache",
+       "4.43.411.188 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache",
+       "4.43.699.993 I slot process_sing: id  3 | task -1 | saving idle slot to prompt cache",
+       "4.44.005.672 I slot process_sing: id  2 | task -1 | saving idle slot to prompt cache"
+      ],
+      "clear_prompt": [
+       "4.43.401.562 I slot prompt_clear: id  1 | task -1 | clearing prompt with 31796 tokens",
+       "4.43.696.224 I slot prompt_clear: id  2 | task -1 | clearing prompt with 1721 tokens",
+       "4.44.000.558 I slot prompt_clear: id  3 | task -1 | clearing prompt with 1767 tokens"
+      ],
+      "checkpoint": [
+       "4.44.006.337 I slot   operator(): id  0 | task 230 | erased invalidated context checkpoint (pos_min = 31244, pos_max = 31244, n_tokens = 31245, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "4.44.007.359 I slot   operator(): id  0 | task 230 | erased invalidated context checkpoint (pos_min = 31740, pos_max = 31740, n_tokens = 31741, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "4.44.008.558 I slot   operator(): id  0 | task 230 | erased invalidated context checkpoint (pos_min = 31752, pos_max = 31752, n_tokens = 31753, n_swa = 0, pos_next = 0, size = 189.650 MiB)",
+       "4.44.757.744 I slot create_check: id  0 | task 230 | created context checkpoint 1 of 32 (pos_min = 482, pos_max = 482, n_tokens = 483, size = 159.065 MiB)"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 103627,
+      "shim_log_off": 29353,
+      "own_vram_b": 52183826432
+     },
+     "decoders_streaming": {
+      "server_log_off": 114081,
+      "shim_log_off": 29353
+     },
+     "prefills_done": {
+      "server_log_off": 167056,
+      "shim_log_off": 29353
+     },
+     "traffic_end": {
+      "server_log_off": 167992,
+      "shim_log_off": 29353,
+      "capped": false,
+      "aborted": false,
+      "own_vram_b": 52191240192
+     },
+     "idle_end": {
+      "server_log_off": 168252,
+      "shim_log_off": 29353,
+      "own_vram_b": 52191240192,
+      "delta_gib": 0.007
+     }
+    }
+   },
+   {
+    "phase": "teardown",
+    "t0": 1791097921.367,
+    "t2": 1791097921.717,
+    "dur_s": 0.3,
+    "own_end_b": 52191240192,
+    "delta_b": 0,
+    "peak_b": null,
+    "card_end_b": 52208017408,
+    "smi_end_b": 52208017408,
+    "shim_net": {
+     "rocblas|draft": -33554432,
+     "pool_leg/mmv|target": -80384,
+     "pool_leg/cublas_f16|draft": -328527360,
+     "pool_leg/fattn|target": -68864,
+     "compute|draft": -563232768,
+     "kv|draft": -178257920,
+     "model|draft": -2045466368,
+     "rocblas|target": -33554432,
+     "pool_leg/cublas_f16|target": -308010496,
+     "pool_leg/mmq|target": -5367552,
+     "pool_leg/other|target": -358144,
+     "compute|target": -2149875968,
+     "kv|target": -18710790144,
+     "model|target": -27233914880
+    },
+    "shim_net_b": -51591059712,
+    "shim_allocs": 0,
+    "residual_b": 51591059712,
+    "log": {
+     "counts": {
+      "breakdown": 3
+     },
+     "samples": {
+      "breakdown": [
+       "8.23.910.248 I common_memory_breakdown_print: | memory breakdown [MiB] | total    free     self   model   context   compute    unaccounted |",
+       "8.23.910.249 I common_memory_breakdown_print: |   - ROCm0 (MI210)      | 65520 = 15912 + (45866 = 25972 +   17844 +    2050) +        3741 |",
+       "8.23.910.249 I common_memory_breakdown_print: |   - Host               |                   1692 =  1288 +       0 +     404                |"
+      ]
+     },
+     "compute_buffers": []
+    },
+    "marks": {
+     "begin": {
+      "server_log_off": 168252,
+      "shim_log_off": 29353,
+      "own_vram_b": 52191240192
+     },
+     "end": {
+      "server_log_off": 168808,
+      "shim_log_off": 30673,
+      "pid": 3905741,
+      "already_exited": false,
+      "sent": [
+       "TERM"
+      ],
+      "verified_dead": true,
+      "returncode": 0
+     }
+    }
+   }
+  ],
+  "skipped": [],
+  "growth_b": 852901888,
+  "peak_serving_b": 52191240192,
+  "own_after_load_b": 51338338304,
+  "shim_present": true,
+  "shim_events": 52,
+  "by_class_b": {
+   "compute|target": 52428800,
+   "pool_leg/other|target": 358144,
+   "pool_leg/mmq|target": 5367552,
+   "rocblas|target": 33554432,
+   "pool_leg/cublas_f16|target": 308010496,
+   "rocblas|draft": 33554432,
+   "pool_leg/cublas_f16|draft": 328527360
+  },
+  "shim_growth_b": 761801216,
+  "residual_b": 91100672,
+  "top_chains": [
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_model_base::load_tensors < llama_model_load < llama_model_load_from_file_impl < llama_model_load_from_file",
+    "class": "model|draft",
+    "alloc_b": 29279381248
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_kv_cache::llama_kv_cache < llama_memory_hybrid::llama_memory_hybrid < llama_model::create_memory < llama_context::llama_context",
+    "class": "kv|target",
+    "alloc_b": 13690208256
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_memory_recurrent::llama_memory_recurrent < llama_memory_hybrid::llama_memory_hybrid < llama_model::create_memory < llama_context::llama_context",
+    "class": "kv|target",
+    "alloc_b": 10041163776
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::decode < llama_decode < server_context_impl::decode",
+    "class": "compute|target",
+    "alloc_b": 2149875968
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::llama_context < llama_init_from_model < common_init_result::common_init_result",
+    "class": "compute|target",
+    "alloc_b": 2097447168
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < ggml_gallocr_reserve_n_impl < ggml_backend_sched_reserve < llama_context::graph_reserve < llama_context::sched_reserve < llama_context::llama_context < llama_init_from_model < common_speculative_init_result::common_speculative_init_result",
+    "class": "compute|draft",
+    "alloc_b": 563232768
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::encode",
+    "class": "pool_leg/cublas_f16|draft",
+    "alloc_b": 328527360
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::decode",
+    "class": "pool_leg/cublas_f16|target",
+    "alloc_b": 308010496
+   },
+   {
+    "chain": "ggml_backend_cuda_buffer_type_alloc_buffer < alloc_tensor_range < ggml_backend_alloc_ctx_tensors_from_buft_impl.constprop.0 < ggml_backend_alloc_ctx_tensors_from_buft < llama_kv_cache::llama_kv_cache < llama_kv_cache_iswa::llama_kv_cache_iswa < llama_kv_cache_iswa::llama_kv_cache_iswa < llama_model::create_memory",
+    "class": "kv|draft",
+    "alloc_b": 178257920
+   },
+   {
+    "chain": "_rocblas_handle::_rocblas_handle < rocblas_create_handle < hipblasCreate < ggml_cuda_mul_mat_cublas < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute",
+    "class": "rocblas|draft",
+    "alloc_b": 67108864
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < void mul_mat_q_switch_J< < ggml_cuda_mul_mat_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch",
+    "class": "pool_leg/mmq|target",
+    "alloc_b": 5367552
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::decode",
+    "class": "pool_leg/other|target",
+    "alloc_b": 358144
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < ggml_cuda_mul_mat_vec_q < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch < llama_context::decode",
+    "class": "pool_leg/mmv|target",
+    "alloc_b": 80384
+   },
+   {
+    "chain": "ggml_cuda_pool_leg::alloc < void launch_fattn<128, 2, 1> < void ggml_cuda_flash_attn_ext_vec_case<128,  < ggml_cuda_graph_evaluate_and_capture < ggml_backend_cuda_graph_compute < ggml_backend_sched_graph_compute_async < llama_context::graph_compute < llama_context::process_ubatch",
+    "class": "pool_leg/fattn|target",
+    "alloc_b": 68864
+   }
+  ],
+  "breakdown_load": [
+   {
+    "t": 1791097418.16,
+    "device": "ROCm0 (MI210)",
+    "total": 65520,
+    "free": 60480,
+    "self": 45816,
+    "model": 25972,
+    "context": 17844,
+    "compute": 2000,
+    "unaccounted": -40776
+   }
+  ],
+  "breakdown_exit": [
+   {
+    "t": 1791097921.369,
+    "device": "ROCm0 (MI210)",
+    "total": 65520,
+    "free": 15912,
+    "self": 45866,
+    "model": 25972,
+    "context": 17844,
+    "compute": 2050,
+    "unaccounted": 3741
+   }
+  ],
+  "compute_mismatch": [],
+  "compute_reserves_at_load": [
+   [
+    1791097420.7,
+    "ROCm0",
+    2000.28
+   ],
+   [
+    1791097420.7,
+    "ROCm_Host",
+    404.28
+   ],
+   [
+    1791097421.2,
+    "ROCm0",
+    537.14
+   ],
+   [
+    1791097421.2,
+    "ROCm_Host",
+    493.54
+   ]
+  ],
+  "arm_result": {
+   "label": "armB_ub512",
+   "pid": 3905741,
+   "phases": [
+    {
+     "phase": "mix1",
+     "capped": false,
+     "own_before_b": 51338338304,
+     "own_after_b": 52183826432
+    },
+    {
+     "phase": "mix2",
+     "capped": false,
+     "own_before_b": 52183826432,
+     "own_after_b": 52191240192
+    }
+   ],
+   "skipped": [],
+   "aborted": null,
+   "load_s": 4.0,
+   "healthy": true,
+   "teardown": {
+    "pid": 3905741,
+    "already_exited": false,
+    "sent": [
+     "TERM"
+    ],
+    "at": "2026-10-04T07:12:01Z",
+    "verified_dead": true,
+    "returncode": 0
+   },
+   "peak_own_gib": 48.607
+  },
+  "verdict": {
+   "growth_gib": 0.794,
+   "groups_gib": {
+    "legacy pool (draft)": 0.306,
+    "legacy pool (target)": 0.292,
+    "HIP runtime internal (residual: graphs, code objects, kernarg)": 0.085,
+    "compute-buffer realloc (target)": 0.049,
+    "rocBLAS/hipBLAS(Lt) (target)": 0.031,
+    "rocBLAS/hipBLAS(Lt) (draft)": 0.031
+   },
+   "named": "legacy pool (draft)",
+   "share": 0.385,
+   "text": "MIXED (largest share): legacy pool (draft) = 0.31 of 0.79 GiB (39%)",
+   "plateau": "PLATEAU (mix1 +0.79, mix2 +0.01 GiB)"
+  }
+ }
+]

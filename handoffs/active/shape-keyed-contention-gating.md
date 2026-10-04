@@ -603,3 +603,12 @@ verdict is the current production shape.
       requirement already stated in `autokernel-concurrent-target-coordination.md` §3 ("fold logical SMT
       siblings into the same physical region"). Done when `region-lock run --cpu-list 160-183` blocks
       behind a held `0-95` claim in a unit test, and the callers' existing tests still pass.
+      - *(2026-10-04 ~08:00Z, workspace-ec; built, not merged, so not ticked.)* **Fix on epyc-orchestrator branch
+        `fix/region-lock-smt-siblings-ec` @ `4ae008a8`** (pushed to origin, not on main). `parse_cpu_list` /
+        `cpu_list_to_regions` gain an `smt_siblings` mode: `drop` stays the library default, so in-process placement
+        and the AutoKernel claim path keep their exact meaning; `fold` maps each CPU to the lowest id in its sysfs
+        `thread_siblings_list` and fails closed if topology is unresolvable. The `region-lock run` CLI folds by default
+        (`--no-fold-siblings` restores the gap). 816 tests pass, including 22 new ones; the end-to-end test holds q3 and
+        gets rc 75 for `--cpu-list 160-183`, with the child never run. **Merge and deploy AWAIT OPERATOR APPROVAL**: the
+        auto-mode classifier blocked the merge to main. After approval, merge, then decide in a follow-up whether the
+        placement layer should fold too.

@@ -1,0 +1,94 @@
+# fa_v11 api=champion backend=CPU mode=nan
+env FA_NAN_NKV=2048,300
+env LD_LIBRARY_PATH=/mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin
+env FA_REF_DIR=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-cpu.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml-base.so.0.16.0
+lib /mnt/raid0/llm/tmp/cpu-fa-f16-20261004/build-cpu/bin/libggml.so.0.16.0
+# backend_name=CPU threads=24
+# nan cases=84 ref_dir=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+nan rows=300 n_kv=300 v=unit attn=diffuse nonfinite=0 maxabs=3.23438 nmse=1.862e-14 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=3.23438
+nan rows=9 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0707623 nmse=1.314e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0707623
+nan rows=27 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0707662 nmse=1.299e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0707663
+nan rows=36 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0708712 nmse=1.260e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0708712
+nan rows=64 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0744237 nmse=6.551e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0744236
+nan rows=512 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0952838 nmse=5.785e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0952838
+nan rows=300 n_kv=300 v=unit attn=peaked nonfinite=0 maxabs=4.53125 nmse=1.022e-12 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=4.53125
+nan rows=9 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.65093 nmse=1.725e-07 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.65091
+nan rows=27 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=2.77755 nmse=1.856e-07 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=2.77735
+nan rows=36 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.51348 nmse=1.953e-07 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.51352
+nan rows=64 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.45729 nmse=3.649e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.45729
+nan rows=512 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.49942 nmse=3.530e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.49942
+nan rows=300 n_kv=300 v=bias32 attn=diffuse nonfinite=0 maxabs=33.8763 nmse=3.426e-14 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=33.8763
+nan rows=9 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0316 nmse=7.627e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0315
+nan rows=27 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0316 nmse=6.552e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0315
+nan rows=36 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0316 nmse=6.790e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0315
+nan rows=64 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0338 nmse=3.695e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0338
+nan rows=512 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0343 nmse=3.643e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0343
+nan rows=300 n_kv=300 v=bias128 attn=diffuse nonfinite=0 maxabs=130 nmse=3.473e-14 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=130
+nan rows=9 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.03 nmse=7.286e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.03
+nan rows=27 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.03 nmse=6.872e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.03
+nan rows=36 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.03 nmse=6.598e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.03
+nan rows=64 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.03 nmse=3.572e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.03
+nan rows=512 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.042 nmse=3.620e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.042
+nan rows=300 n_kv=300 v=bias1024 attn=diffuse nonfinite=0 maxabs=1026 nmse=3.468e-14 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=1026
+nan rows=9 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=2.151e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=27 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=2.185e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=36 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=2.241e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=3.570e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.04 nmse=3.639e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.04
+nan rows=300 n_kv=300 v=bias1024 attn=peaked nonfinite=0 maxabs=1026.91 nmse=4.346e-14 verdict=OK kv=f16 grp=prefill n_nan=0 n_inf=0 ref_maxabs=1026.91
+nan rows=9 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1025.64 nmse=1.487e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1025.64
+nan rows=27 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1026.64 nmse=1.498e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1026.64
+nan rows=36 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1025.61 nmse=1.609e-12 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1025.61
+nan rows=64 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1026.38 nmse=6.931e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1026.38
+nan rows=512 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1027.36 nmse=6.044e-13 verdict=OK kv=f16 grp=tail n_nan=0 n_inf=0 ref_maxabs=1027.36
+nan rows=300 n_kv=300 v=unit attn=diffuse nonfinite=0 maxabs=4.02301 nmse=1.356e-10 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=4.02301
+nan rows=9 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0825716 nmse=1.712e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0825726
+nan rows=27 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0850324 nmse=1.735e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0850317
+nan rows=36 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0850209 nmse=1.741e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0850212
+nan rows=64 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0850626 nmse=1.741e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0850626
+nan rows=512 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0967468 nmse=1.741e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=0.0967472
+nan rows=300 n_kv=300 v=unit attn=peaked nonfinite=0 maxabs=4.26635 nmse=8.208e-05 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=4.26586
+nan rows=9 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.7846 nmse=1.227e-04 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.78715
+nan rows=27 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.23656 nmse=1.267e-04 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.242
+nan rows=36 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.44938 nmse=1.201e-04 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.45174
+nan rows=64 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.36658 nmse=1.209e-04 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.34844
+nan rows=512 n_kv=2048 v=unit attn=peaked nonfinite=0 maxabs=3.95367 nmse=1.214e-04 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=3.95325
+nan rows=300 n_kv=300 v=bias32 attn=diffuse nonfinite=0 maxabs=33.9204 nmse=2.323e-13 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=33.9204
+nan rows=9 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0384 nmse=7.080e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0385
+nan rows=27 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0392 nmse=6.779e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0392
+nan rows=36 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0391 nmse=6.880e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0391
+nan rows=64 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0396 nmse=7.000e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0396
+nan rows=512 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0399 nmse=7.204e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=32.0399
+nan rows=300 n_kv=300 v=bias128 attn=diffuse nonfinite=0 maxabs=129.604 nmse=7.444e-14 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=129.604
+nan rows=9 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.042 nmse=7.068e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.042
+nan rows=27 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.043 nmse=7.200e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.043
+nan rows=36 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.043 nmse=7.285e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.043
+nan rows=64 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.047 nmse=7.245e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.046
+nan rows=512 n_kv=2048 v=bias128 attn=diffuse nonfinite=0 maxabs=128.065 nmse=7.080e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=128.064
+nan rows=300 n_kv=300 v=bias1024 attn=diffuse nonfinite=0 maxabs=1025.92 nmse=4.534e-14 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=1025.92
+nan rows=9 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=8.527e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.57
+nan rows=27 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=9.700e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.57
+nan rows=36 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=9.379e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.57
+nan rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=9.310e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.57
+nan rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=9.085e-13 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1024.58
+nan rows=300 n_kv=300 v=bias1024 attn=peaked nonfinite=0 maxabs=1027.7 nmse=9.348e-10 verdict=OK kv=q8_0 grp=prefill n_nan=0 n_inf=0 ref_maxabs=1027.7
+nan rows=9 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1025.74 nmse=5.251e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1025.74
+nan rows=27 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1025.88 nmse=4.722e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1025.87
+nan rows=36 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1025.81 nmse=5.015e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1025.81
+nan rows=64 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1026.71 nmse=5.053e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1026.71
+nan rows=512 n_kv=2048 v=bias1024 attn=peaked nonfinite=0 maxabs=1027.38 nmse=5.331e-10 verdict=OK kv=q8_0 grp=tail n_nan=0 n_inf=0 ref_maxabs=1027.38
+nan rows=9 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0706476 nmse=1.361e-12 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=0.0706476
+nan rows=64 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0733682 nmse=6.800e-13 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=0.0733683
+nan rows=9 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0245 nmse=6.837e-13 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=32.0245
+nan rows=64 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0257 nmse=3.591e-13 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=32.0257
+nan rows=9 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=2.310e-13 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.03 nmse=3.545e-13 verdict=OK kv=f16 grp=drafter n_nan=0 n_inf=0 ref_maxabs=1024.03
+nan rows=9 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0699131 nmse=1.898e-10 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=0.0699124
+nan rows=64 n_kv=2048 v=unit attn=diffuse nonfinite=0 maxabs=0.0715797 nmse=1.923e-10 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=0.0715793
+nan rows=9 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.0346 nmse=6.413e-13 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=32.0346
+nan rows=64 n_kv=2048 v=bias32 attn=diffuse nonfinite=0 maxabs=32.035 nmse=7.315e-13 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=32.035
+nan rows=9 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.58 nmse=9.053e-13 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=1024.57
+nan rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=0 maxabs=1024.57 nmse=9.533e-13 verdict=OK kv=q8_0 grp=drafter n_nan=0 n_inf=0 ref_maxabs=1024.57
+summary mode=nan cases=84 ok=84 nonfinite=0 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=7.2
