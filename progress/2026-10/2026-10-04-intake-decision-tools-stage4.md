@@ -48,3 +48,13 @@ The initial CPU admission timed out without running tests; the first relative-pa
 No inference, training, deployment or performance gain is claimed. The completed workflow establishes conformance only. The prior four-campaign audit found three historical misses already recovered, no new unresolved operational omission in that named sample, and no whole-index prevalence estimate.
 
 Latest-main reconciliation included `82b7483c` and `489f7fdc`. The append conflict in the belief owner retained both VB-RI-OPS-WIRE and the independent VB-KVU-16B task; the master rollup was regenerated, not hand-counted. Their source-table additions and next-action changes are preserved. The post-merge opt-in validator and handoff/citation gate passed again (zero problems). No upstream application work was reimplemented.
+
+## Publication and recoverable lane cleanup
+
+Stage-4 implementation commit `94bf2328` and reconciled merge `59ef0cf3` were published to origin/main through the serialized push guard; remote containment was verified. The scoped diff against origin/main passed whitespace checks. The whole merge's cached comparison also displayed whitespace already present in upstream raw benchmark logs; those evidence bytes were intentionally preserved, not reformatted.
+
+Own stale shared/early-lane checkpoints and indices were copied to `/mnt/raid0/llm/tmp/intake-decision-tools/retained-20261004/` and byte-compared before restoring only those two paths in each checkout. The native rebuilt validation ledger is retained there as `validation-ledger/ledger.jsonl`; the archive carries KEEP. The completed authoritative checkpoint remains committed on main.
+
+The shared /workspace fast-forward refused because five unrelated untracked paths would be overwritten: the DFLASH2 and KVPOOL ratification receipts under artifacts/operator/receipts, and scripts/safety/guarded_rm.sh, path_identity.sh and trash-sweep.sh. They were not moved, staged, deleted or overwritten; unrelated tracked changes remain untouched. The remote filing is complete, but the shared checkout remains at its older HEAD. Updating that entire shared checkout is not smuggled into this research filing.
+
+Both campaign worktrees passed worktree_gate as clean, landed and REMOVABLE after publication. Cleanup uses that gate, not force removal or pruning. Historical drafts and native validation evidence remain recoverable from the named archive and git.
