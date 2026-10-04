@@ -462,7 +462,12 @@ C22). The code is research main `21ca61b0`.
   Until the dry run checks COR against the anchor (DS41-C27), compare them by hand before an off-hours launch.
 - **`EPYC_ROOT_REPO`: point it at a detached checkout of root `origin/main`, not a lane**
   (run 9b: `/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`). Refresh that checkout between runs, never
-  during one.
+  during one. **It is load-bearing for as long as any launcher or watchdog exports it**, even when it looks
+  idle, clean and landed: the DS41 watchdogs (`/mnt/raid0/llm/tmp/ds41-scope-20260926/ds41_watchdog*.sh`) and
+  swap scripts bake it into every relaunch. A 2026-10-04 disk cleanup removed it at about 02:25Z, and DS41's
+  next batch claim and two watchdog relaunches died (restored 02:30, relaunched 02:36; INC-20261004-cleanup-removed-load-bearing-worktree in
+  `docs/reference/agent-config/INCIDENT_LOG.md`). Never remove or move it while a DS41 run or watchdog is live.
+  Before any cleanup, follow `cleanup-reference-check.md` (this folder).
 - **The DS41-C22 stop path works on a live actor call.** Run 9 was stopped 61 min into a planner call. TERM on
   `run.py` and `serial_run` ended everything, including opencode, and freed the CPU locks with no KILL. The first
   `actor-calls.jsonl` line was an `actor_call.v1` with rc −15. A stop *during calibration* still needs DS41-C26.
@@ -507,6 +512,31 @@ From DS41 runs 9b-10 (`handoffs/active/deepseek-v41-flash-evaluation.md` DS41-C2
 - **Thinking is on even when `tokens.reasoning` reads 0.** That field is an accounting artifact: the exports carry
   `reasoning` parts. `--planner-effort high` (opencode `--variant high`) is inert on this server. The planner's
   cost is decode (87%), dominated by long reasoning turns (INF-78 OAB-20 to OAB-23).
+
+### Campaign scope, hypothesis seeds and per-model kernels (operator, 2026-10-03 and 2026-10-04)
+
+- **Low-bit kernel work is AutoKernel's job.** The MI210 low-bit decode gap is software: llama.cpp HIP Q4_K
+  reaches about 35% of roofline against Q8_0's 50%. The AMD equivalents of NVIDIA's lop3/Marlin tricks
+  (`v_perm_b32`/`v_bfi`, magic-number fp16 dequant, `v_dot4`, int8 MFMA) are campaign inputs: an inbox note
+  or hypothesis seeds. Do not hand-build them outside the loop (INF-80 EXL3-LB1, 2026-10-03).
+- **Scope a low-quant campaign across models.** When several low-quant model graphs share the kernels, the loop
+  may optimize across all of them. Do not bind the campaign to one model's graph. The success criterion is a
+  champion advance, not one model's number.
+- **Fable seeds hypotheses; the loop decides.** After a per-kernel profile (for example rocprof), a Fable
+  subagent at high effort reviews the results and outlines 10-15 high-impact hypotheses. AutoKernel's planner
+  and critic then develop, gate and measure them. Fable is not the official planner, and its seeds carry no
+  keep authority. EXL3-LB1's seeds (`/mnt/raid0/llm/tmp/lb1-profile-20261003/hypotheses-fable.md`, INF-80)
+  produced seed #1, which put UD-Q4_K_M ahead of Q8_0 at production shapes, pending confirmation.
+- **A keep that regresses another target is not vetoed by that regression** (operator, 2026-10-04: "at the
+  worst case here we could also always consider having model-specific kernels"). When a shared kernel change
+  speeds one model and slows another, as DS41 keeps did to Qwen3.8-Flash-Next prefill, prefer model-specific
+  dispatch keyed on shape, type or architecture. Keep both fast rather than drop the gain. The objective is the
+  fastest serving for every production model in our operating environment, not one kernel for all models.
+- **Keep it pragmatic.** "Don't over engineer it. Keeping work focused and pragmatic is of utmost importance"
+  (2026-10-03). Coordinate GPU windows with the session that owns the stack.
+- **Hold a live run's watchdog before any risky infrastructure change** (a cleanup, a checkout refresh, a stack
+  change). With the hold set, a broken dependency fails once and visibly. Without it, two quick relaunch deaths
+  push the run onto fallback arguments (INC-20261004-cleanup-removed-load-bearing-worktree; `cleanup-reference-check.md`, this folder).
 
 ## Context as files, per-call metrics, tool-output caching (seat-side, 2026-09-24)
 

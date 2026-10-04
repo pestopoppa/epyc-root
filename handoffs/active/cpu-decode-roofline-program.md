@@ -3797,6 +3797,20 @@ it. Any relaunch of `:8074` goes through the inference owner or the operator (OP
   `/proc/<pid>/smaps` at the start and end of each INF-70 arm. Arms since 2026-09-22 14:50 UTC without that receipt cannot be
   cleared of the swapped-baseline hazard; list them and decide re-runs.
 
+## Tasks filed 2026-10-04 — DS41 keep transfer, iqk IQ4_NL/MXFP4 allowlist (CPU window 2026-10-03 17:20–17:57Z)
+
+_Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-20260926/pause_measure.log`). Instrument: `q38fn-transfer` `report.py` — one llama-bench launch per arm per round, serpentine order, `-t 48 -fa on`, interleave-all, codified OMP stack, per-launch validity sidecar (foreign CPU ≤ 600%, THP, NUMA placement), greedy coherence by token ids vs the reference arm. Non-claims: n = launches per arm (small); a FASTER verdict is a sign claim bounded by the per-round range, not a promotion gate. MTP not exercised (pp5 is the verify-shape proxy)._
+
+- [x] **XFER-1 — DS41 AutoKernel keeps on Q38FN.** ✅ 2026-10-03 — `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`, run dir `runs/20261003T172030Z/`. Arms: A = champion `90c12df42` (cpu-20260925, reference), B = DS41 champion-of-record `053c3bd82` (anchor-gen-007), C = DS41 held-keep tip `b3e0b0902` (anchor-gen-017). Host was loaded (load avg 36–49); 6 of 18 launches excluded on foreign CPU, which leaves UD at n = 1.
+  - *Uniform IQ4_XS (n = 3 B, n = 2 C):* B vs A pp5 **−7.2%** [−9.5, −3.0] (slower 3/3), pp256 −4.4% (inconclusive), tg128 +1.7% (inconclusive); C vs A pp5 −5.8% (slower 2/2), **pp256 −29.4% [−38.6, −20.2]** (slower 2/2), tg128 +3.6% (inconclusive).
+  - *UD-IQ4_XS (n = 1):* B tg128 +10.1%, C +9.4%, C pp256 −40.6% — inconclusive by rule, same signs as uniform.
+  - *Coherence:* B and C token-identical to A on both prompts, both files.
+  - *Read:* DS41 COR decode transfer to Q38FN is +2–10% and unresolved; pp5 regresses uniformly ~6–7%; the held keeps after COR cut Q38FN prefill by 30–40%. The pp256 regression is owned by INF-77 DS41-C112 (bisect before any champion fold).
+- [x] **XFER-2 — uniform IQ4_XS vs UD-IQ4_XS on one build.** ✅ 2026-10-03 — same run, arm A: uniform tg128 36.04 vs UD 28.76 t/s (**+25%**), pp5 88.65 vs 70.98 (**+25%**). The 2026-09-02 gap (row "decode, UD-IQ4_XS (the served file)" in *The gap*) was ~+10%; it has widened on the current champion.
+- [ ] **XFER-3 — re-decide the served Q38FN file with the +25% gap.** (filed 2026-10-04) UD stays the served file today (the ledger above). Pair a quality comparison (PPL/KLD of both files against the same base, or the eval suite) with a clean-window speed A/B on the champion; if quality is within tolerance, take the uniform file to the operator as a stack change. Also explain the widening (+10% → +25%): which champion keeps favour the uniform tensor mix.
+- Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md); its justification bar is measured against XFER-3's uniform file.
+- [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
+
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
 **Facts (2026-09-02).** unsloth published the MTP heads on 2026-09-01 (repo revision `5d16c055`,
