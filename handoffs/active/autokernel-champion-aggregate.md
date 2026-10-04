@@ -8,10 +8,19 @@ fixed production anchor.
 
 ## Start here — open work (2026-09-29)
 
-**The champion is `61bdb185c` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 twice:
-KVU-19 fold `90c12df42` → `1bceceb05`, then the all-keeps fold `1bceceb05` → `61bdb185c`; see the fold ledger entries
-below). This is the GLOBAL champion branch. Builds: `kernels/builds/cpu-20261004-61bdb185c` and
-`kernels/builds/gpu-20261004-61bdb185c` (10324).
+**The champion is `9a3f1392a` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 three times:
+KVU-19 fold `90c12df42` → `1bceceb05`, all-keeps fold `1bceceb05` → `61bdb185c`, CPU FA overflow fold `61bdb185c` →
+`9a3f1392a`; see the fold ledger entries below). This is the GLOBAL champion branch. Builds:
+`kernels/builds/cpu-20261004-9a3f1392a` and `kernels/builds/gpu-20261004-9a3f1392a` (10325).
+
+**Fold ledger — 2026-10-04, CPU FA fp16-VKQ overflow fix ("Yfa")** (stack owner's fix, folded by ak-ds41-main): `057270556` +
+`a99e5330a` from `experimental/cpu-fa-fp32-vkq-20261004`, ported onto Y without the opt-in arms `2ad8bff36`/`5bde1b83d`
+(one commit; conflict with KVU-19's −INF mask-run skip resolved keeping the skip). ggml-cpu `ops.cpp` `_one_chunk` only.
+Evidence: bit-identical to the champion on the KVU-19 FA harness (86 + 141 cases, aggregate hashes equal); stack owner's
+harness: 74 non-overflow cases bit-identical, 10 NaN cases finite. CPU gates (`runs/20261004T150904Z`, `--gpu-quiet
+shared`): DS41 Yfa vs Y −1.18% (floor 4.533%, not decisive); Q38FN −0.04%; greedy identical 3/3. CPU test-backend-ops green;
+GPU image linkage PASS (GPU FA path untouched, no GPU slot by agreement). CAS `61bdb185c` → `9a3f1392a` (fast-forward),
+`ak-loop-tree` refreshed, pushed to fork.
 
 **Fold ledger — 2026-10-04, all-keeps fold (candidate "Y")** (prepared and CAS'd by ak-ds41-main; operator chose scope):
 - **Folded onto `1bceceb05`:** the DS41 port (4 commits) + `ebb68dc55` profiling (compiled out unless `GGML_CPU_PROF`), the
