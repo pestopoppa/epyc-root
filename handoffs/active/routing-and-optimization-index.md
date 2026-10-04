@@ -59,7 +59,7 @@
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
 | RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-29 shadow-mode code (zero-inference); TD-29.M0a prefill tokens on the /completion lane, then TD-29.M4 prefix-cache reuse | — |
-| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16b residency proof in the GPU block; KVU-19b per-row FA skip for batched decode; KVU-16a lands via OP-72; KVU-15d; KVU-15b count | RTG-19, RTG-36, INF-41 |
+| RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | URGENT KVU-16h VRAM growth attribution; KVU-16f -b 512 A/B; KVU-16b-1 runner fix + re-run; KVU-19b GPU slot; KVU-16g budget | RTG-19, RTG-36, INF-41 |
 
 ## Cross-domain
 
