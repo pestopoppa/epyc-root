@@ -365,15 +365,22 @@ KPF-22..24 and KPF-26 need P1 live.
   - [x] KPF-27a: audit of the January `radix_cache.py` (keep LPM semantics; fix stale-slot bug and missing
     path compression; drop client slot allocation and client tokenizer). Regression test for the stale-slot bug.
     ✅ 2026-10-04 — landed with branch A (`2833e3a2`, `test_stale_slot_regression_from_the_january_radix_cache`).
-  - [ ] KPF-27b: wiring — serving-record observation (`recorded_call`, `passthrough.write_serving_record`),
+  - [x] KPF-27b: wiring — serving-record observation (`recorded_call`, `passthrough.write_serving_record`),
     `CachingBackend` pin policy `idle` (branch A); KV pool gate (`prefix_key` on primitives, passthrough,
     scouts; credit, LPM, trunk hold, fork credit, fork plan) on branch B. 2026-10-04: the branch A half is on main
     (`2833e3a2` + `99348f54`); the branch B half waits on KPF-27b-ack.
-  - [ ] KPF-27b-ack: workspace-ec acknowledges the HIGH blast radius of branch B (acquire/_admissible/release)
+    ✅ 2026-10-04 — branch B landed on epyc-orchestrator main: `f9b1553b` (KV pool gate driven by the prefix index,
+    flag OFF), `084921bb` (review D1–D6 + KPF-26 queue cap), `d39491e3` (the stack owner's six P2-B defect tests as
+    regressions), `46c2d833` (Fable re-review notes: `ORCHESTRATOR_PREFIX_INDEX_FORK=auto` turns fork features on only
+    when the server reports `/props.slot_fork`; busy-source credit re-inflation; per-owner prefill; prompt_progress).
+    Flag-off path byte-identical (`test_prefix_index_flag_off.py`). API not reloaded; the shadow window is KPF-27d.
+  - [x] KPF-27b-ack: workspace-ec acknowledges the HIGH blast radius of branch B (acquire/_admissible/release)
     before it lands, as for KPF-12/13.
     - *(2026-10-04 ~08:00Z, workspace-ec.)* P1's handoff edit is on main (`b22ff171`). Branch B's Fable review returned
       **ACK-with-fixes (D1-D6)**; the fixes were made and the **v2 re-review is in progress**. The ack is given, and this
       box ticked, when the v2 review clears D1-D6.
+    - ✅ 2026-10-04 — the v2 re-review's notes were fixed in `46c2d833` and its six defect tests landed as regressions
+      (`d39491e3`); branch B then landed on main (KPF-27b).
   - [x] KPF-27c: flag-off proof (`tests/unit/test_prefix_index_flag_off.py`) and wiring tests through the
     passthrough route and `llm_call` → `/completion`. ✅ 2026-10-04 — branch A 237 passed, branch B 350 passed; the
     one wider failure (`test_canonicalization_throughput`) fails identically on untouched main (DESIGN.md §6).
@@ -384,6 +391,11 @@ KPF-22..24 and KPF-26 need P1 live.
   - [ ] KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI
     timings, checkpoint positions, `/props` fork capability, unique cells) into `reconcile`/`lookup`, and send
     `checkpoint_at` from the trunk-first path (KPF-21).
+    - 2026-10-04: the mapping half is on main (`084921bb`: `/slots` `content_epoch` binding, `prefix_hash` with a
+      server-identical `fnv1a64_tokens`, checkpoint-mode fork from a busy slot; `46c2d833`: `/props.slot_fork` gates
+      FORK=auto). Each field is used when present and falls back to v10 inference when absent. Still open: sending
+      `checkpoint_at` from the trunk-first path, which needs the prefill-only trunk request (KPF-21 → KPF-15). P1's
+      server fork is built (workspace-ec); its live INTERFACE fields are proven in the KPF-27d shadow window.
 - KPF-21 note: trunk-first is implemented centrally in the gate (`ORCHESTRATOR_PREFIX_INDEX_FORK=1`, branch B), not
   per fan-out site; KPF-21 stays open for the prefill-only trunk request with `checkpoint_at` (needs KPF-15).
 - KPF-22 note: the bounded LPM bypass is implemented in KPF-27 branch B (`_prefix_index_admissible`, at most

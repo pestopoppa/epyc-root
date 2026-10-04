@@ -17,7 +17,7 @@
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
   (dormant), NIB2-80a, NIB2-82, NIB2-87 (filed as NIB2-81), NIB2-88, NIB2-89, NIB2-90, OBS-9, OBS-10.
-- **Leak robustness (2026-10-04 supplement):** LR-6a and LR-9a are operator-held. LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
+- **Leak robustness (2026-10-04 supplement):** LR-6a is operator-held (LR-9a ratified 2026-10-04, `ae06680f`). LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
 ## Purpose
@@ -353,11 +353,13 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       refuses those trees whatever a handoff declares (`722b7196`, `b639dc8e`). Written into
       `docs/guides/agent-workflows/cleanup-reference-check.md` and `docs/design/autokernel-disk-hygiene-20260915.md`.
       ✅ 2026-10-04
-  - [ ] **LR-9a** (operator) — **ratify the hard rule into `agents/shared/OPERATING_CONSTRAINTS.md` → *Destructive
+  - [x] **LR-9a** (operator) — **ratify the hard rule into `agents/shared/OPERATING_CONSTRAINTS.md` → *Destructive
         operations*.** That file is human-only. Prepared as
         `scripts/operator/ratify_harness_state_never_touch_20261004.sh`, with the patch
         `artifacts/operator/harness-state-never-touch-20261004.patch`. Review it with no args, then sign with `--apply --attest
         RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004`.
+        ✅ 2026-10-04 — signed by the operator: root `ae06680f` (OPERATING_CONSTRAINTS +10 lines, receipt
+        `artifacts/operator/receipts/RATIFY-HARNESS-STATE-NEVER-TOUCH-20261004.json`). Closes OP-74.
 - [ ] **LR-10** (workspace-ec) — land the orchestrator half (`lane/leak-tests-20261004`, which includes `9a2a35bf`:
       age-based eviction for the unbounded fence-kernel spec-file cache) on orch main. As of 2026-10-04 04:00Z the branch
       exists only locally and is not pushed. Close with the orch main sha.

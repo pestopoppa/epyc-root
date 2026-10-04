@@ -36,6 +36,12 @@
   calibrating), DS41 parked 06:03:08Z with `WATCHDOG3_HOLD` set. Shared schedule
   `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`; :8083 stays parked until the backlog is exhausted (operator's
   final word). Restart plan: DS41-C121.
+- **2026-10-04 all-keeps fold** (fold ledger: [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) →
+  *all-keeps fold (candidate "Y")*): the DS41 port and the 7 serving-gated keeps (bundles `a1faab471` +7.113% and COR
+  `053c3bd82` +11.18%) are in the global champion, now `b0ba1d427` after three more folds the same day. The 14 held
+  keeps failed two bundle gates and stay off it (rebased as Z' `70e7133a1`, DS41-C125). C112 resolved (culprit
+  `9b148baab`, shape-gated). DS41 relaunch on `b0ba1d427` with folding enabled is pending (~03:00Z 10-05, after
+  workspace-ec's YaRN CPU leg; DS41-C121).
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
@@ -394,6 +400,10 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     DS41-C59 below). The A/A excursion re-read is unblocked but not yet done — it must run under the newly
     adopted runtime recipe's recalibrated floor (a new measurement epoch per the adoption receipt's floors rule).
     Item stays open until that re-read runs and the bundle is folded toward the champion.
+  - **2026-10-04: the fold half is done.** The confirmed bundle (and the COR bundle) folded into the global champion
+    with the 2026-10-04 all-keeps fold (`1bceceb05` → `61bdb185c`; ledger in `autokernel-champion-aggregate.md`;
+    DS41 X vs COR −1.56%, floor 4.533%, not decisive, i.e. the gated keeps reproduce on the new base). The
+    gemm4xN production-Q8_0-role A/B before v11 and the A/A excursion re-read remain; the item stays open on those.
 - [ ] DS41-C48 — **A freshness gate on seeded numeric evidence in the campaign inbox.**
   - A stale "~220 GB/s" read ceiling, which predated the 2026-09-21 BIOS/config change, drove 13 batches of
     planner abstention (DS41-C36). The real figure was 399.6-449.4 GB/s full-screen.
@@ -572,7 +582,8 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - Keeps 3-4 were unblocked by DS41-C66 (research `1f7979d4`) and DS41-C67 (research `0a117b03`).
   - Progress: `progress/2026-09/2026-09-28-ak-ds41-main.md`.
   - Follow-on: fold the confirmed bundle toward the champion as a full experimental candidate (fresh v10 + the
-    confirmed keeps, validated as a whole) per DS41-C47's acceptance clause; not yet done.
+    confirmed keeps, validated as a whole) per DS41-C47's acceptance clause. **Done 2026-10-04**: all-keeps fold
+    `1bceceb05` → `61bdb185c` (ledger in `autokernel-champion-aggregate.md`).
   - DS41-C59 (`--load-threads 48` runtime-arm swap, keep-grade A/B per P-AK-SEARCH-1-A4) is now **ADOPTED**
     (2026-09-28 ~04:44Z, +8.606%, `decisive: true`); detail in DS41-C59.
 - [x] DS41-C69 — **Floor carry-forward + serving-gate cadence 8.** ✅ 2026-09-28 (~06:30-08:40Z), `ak-ds41-main`.
@@ -873,6 +884,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C91 — planner "formed but never measured — consider FIRST" list should drop superseded ideas already re-proposed/queued on the new champion (contradicts "do NOT re-propose"; invited both lanes to re-propose at once).
 - [ ] DS41-C92 — floor selection prefers the COR exact floor (4.533%, contaminated) over the cleaner carried lineage floor after each anchor advance; quarantine the 4.533 record or re-order selection (operator decision pending).
 - [ ] DS41-C93 — reconstruct the fold receipt for bscale-cvtph 6f8e232aa41f (lost when run10s stopped mid-batch) before the C47/C68 fold.
+  2026-10-04: `6f8e232aa` is one of the 14 held keeps (fold inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv`, now `853a1a00e` on Z'); it was not folded, so the receipt matters only if Z' is re-gated (DS41-C125).
 - [ ] DS41-C94 — C84 remaining gap: per-call cgroup v2 scopes so a SIGKILLed run.py's cookie-less children (llama-server, builds) are killed, not just flagged.
 - [x] DS41-C95 — C83 replay experiment (27B arms vs deepseek/gpt-6.1-sol, blinded Opus critic; ~8 GPU-h minimal) — operator go 2026-09-30. ✅ 2026-10-01
   - Results (arm table in `progress/2026-10/2026-10-01-ak-ds41-main.md` §DS41-C95): P(keep) DS 0.75 (3 exact, 0 errors);
@@ -1003,11 +1015,18 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   - (b) `heldout_frozen_prompts` in owned-targets makes `run.py` refuse ("run explicit --cpu-calibrate-heldout first"),
     and `serial_run` cannot schedule that step. They were dropped to match DS41; the held-out floor is DS41-C119.
   Parked 05:50Z on operator direction, before calibrating (verified dead). Restart: DS41-C121.
-- [ ] DS41-C112 — **the held keeps after COR cut Qwen3.8-Flash-Next prefill 30–40%: bisect before any champion fold.** (filed 2026-10-04) CPU window 2026-10-03 (INF-70 XFER-1,
+- [x] DS41-C112 — **the held keeps after COR cut Qwen3.8-Flash-Next prefill 30–40%: bisect before any champion fold.** ✅ 2026-10-04 (filed 2026-10-04) CPU window 2026-10-03 (INF-70 XFER-1,
   2026-10-04: the bisect is backlog item c4 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c4/run.sh`, ~50 min, worst 75), row 6 of `/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`.
   `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`): vs champion `90c12df42`, COR `053c3bd82` gives Q38FN uniform pp256 −4.4% (inconclusive) and pp5 −7.2% (slower 3/3), but the
   held-keep tip `b3e0b0902` (anchor-gen-017) gives pp256 **−29.4% [−38.6, −20.2]** (UD n=1: −40.6%); decode +2–10% unresolved, token-identical greedy output. Bisect the keeps between
   COR and `b3e0b0902` on Q38FN pp256 (and pp5), name the culprit, and make cross-model prefill part of the gate-4 / champion-fold check (DS41-C111's cross-target veto is the mechanism).
+  ✅ **Resolved by c4** (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c4/runs/20261004T104009Z/report.md`): first bad =
+  `9b148baab` `akm-ds41-mmid-verify-flat-slabs` (its multi-token slab path), Q38FN pp256 about −25%;
+  `GGML_MMID_SLAB=0` recovers it. Fix: an in-code shape gate (slab only when per-expert rows ≤ 8; DS41's N=3 verify
+  shapes take the identical slab path), the last commit of the held-keep series (`2c4a1f2d2` → Z `9c60b2867` → Z'
+  `70e7133a1`). It travels with the held keeps, which were not folded (DS41-C125), so the champion carries neither.
+  Cross-model prefill is now part of the fold check: every 2026-10-04 fold ran a Q38FN arm (5g/Yfa/W gates, ledger in
+  `autokernel-champion-aggregate.md`). Z vs X on Q38FN read −1.40% overall (5 pairs, no calibrated floor).
 - [ ] DS41-C113 — **the DS41 launchers depend on a scratch worktree path.** (filed 2026-10-04; INC-20261004-cleanup-removed-load-bearing-worktree) `ds41_watchdog.sh`, `swap_*.sh` in
   `/mnt/raid0/llm/tmp/ds41-scope-20260926/` export `EPYC_ROOT_REPO=/mnt/raid0/llm/worktrees/root-main-epyc-root-repo`; its removal on 2026-10-04 crashed DS41 (02:25Z, relaunched 02:36Z).
   Point it at a pinned, marked-LOAD-BEARING path (or the canonical root clone), make the launcher fail fast with a named error when the path is missing, and stop the
@@ -1017,6 +1036,12 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
 - [ ] DS41-C114 — **Plan: lossless MXFP4 routed experts** (filed 2026-10-04; operator 2026-10-03/04: "plan it"). Cross-ref DS41-T8.
   2026-10-04: gate (i), the MXFP4-vs-Q4_K microbench, is a step in CPU window 2 (armed, waiting).
   2026-10-04 05:00Z: window 2 refused it on host load (unlocked subagent CPU work; INC-20261004-subagent-unlocked-cpu-in-held-window). Re-scheduled as backlog item c2 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/`).
+  - [x] DS41-C114a — **gate (i) measured: no speed case, quality only.** ✅ 2026-10-04 — c2
+    (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c2/runs/`, MUL_MAT_ID microbench at DS41 expert shapes, t48): MXFP4
+    (CPU_REPACK) vs Q4_K (iqk) **×1.00 at N=1, ×1.04 at N=3**. The −2.0%/−3.5% byte saving does not show up as speed;
+    MXFP4 is not slower either, so the "speed regression" branch of gate (i) did not trigger. The case for C114 is
+    quality alone (KLD 0.0290 → 0.0102 public evidence). Gate (ii) (disk) and the splice are unchanged. c2's side
+    finding (anchor-gen-022 slower than the iqk-allow build on Q4_K gate/up N=1) was not real: DS41-C124.
   - "Lossless": the native checkpoint's routed experts are already FP4 (`config.json` `expert_dtype: fp4`, MXFP4-class
     E2M1 + E8M0 per 32 = 4.25 bpw, `.weight` + `.scale` per expert). Repacking those blocks bit-for-bit into GGUF MXFP4
     is lossless; antirez's Q4_K experts (4.5 bpw) are a lossy requant (unsloth: ~5.2% RMSE). DS4-Flash public
@@ -1069,6 +1094,13 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   (ledger, fold through G0, or drop), so folding does not carry unmeasured commits into the champion. Fold in C113b,
   C108a and C119 at the same boundary. Done when both lanes run with folding enabled and the first fold or deferral is
   ledgered.
+  - [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
+    inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv` (`orig → new` sha, keep id, gate evidence,
+    disposition): 4 port + 1 profiling (`ebb68dc55`, compiled out unless `GGML_CPU_PROF`) + 7 serving-gated keeps
+    FOLDED; 14 held keeps NOT folded (DS41-C125); `74ee5c502` excluded (un-ledgered, `measurement_invalid`); 3 empty
+    merges dropped. Ledger: `autokernel-champion-aggregate.md` → *all-keeps fold*.
+  - 2026-10-04 ~21:20Z: the champion is `b0ba1d427` (four folds today). DS41 relaunches on it with folding enabled at
+    ~03:00Z 10-05, after workspace-ec's YaRN CPU leg (backlog row 9). Still to do at that boundary: C113b, C108a, C119.
 - [x] DS41-C122 — **ak-check must treat another loop's `autokernel-cpu` claim as a peer.** ✅ 2026-10-04 — research
   `aef2da6c` (on origin/main). With two loops, both claim under the shared role `autokernel-cpu`, and
   `default_peer_status` / `wait_for_peer_region` excluded that role as "the loop's own claim". One loop's author would
@@ -1092,6 +1124,20 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   route, which needs the AKX-ALL-4 long surface and the AKX-ALL-5 restore-identity gate). Done when AKX-ALL-12
   measures one candidate on this path at depth, or a measured profile at depth shows the concat/mask/indexer share
   is immaterial.
+- [x] DS41-C124 — **The c2 "Q4_K regression" on anchor-gen-022 was not real.** ✅ 2026-10-04 (filed and closed the
+  same day) c2 read anchor-gen-022 slower than the iqk-allow build on Q4_K MUL_MAT_ID gate/up at N=1, from one launch
+  per arm in a fixed order. c5 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c5/runs/20261004T103459Z/report.md`, 6
+  interleaved rounds, 4 arms incl. v10) found every Q4_K delta inside the between-round noise (D vs V −5.10%
+  [−19.44, +1.46], CV 9.5% → NOT REAL); the bisect phase was skipped. Lesson: `docs/guides/agent-workflows/benchmark-analyst.md`
+  → *Gating and folding AutoKernel keeps*.
+- [ ] DS41-C125 — **The 14 held keeps after COR: re-gate or drop.** (filed 2026-10-04) Each kept on a 5-pair
+  keep-grade A/B, but two bundle gates were null: `dca32b0e3` (8 keeps) DIVERGED, +0.10% vs the 4.533% floor; and Z
+  (X + 14 keeps + the C112 shape gate) vs X on 2026-10-04: DS41 **−2.51%** (floor 4.533%), Q38FN −1.40%, greedy
+  identical (`/mnt/raid0/llm/tmp/fold-allkeeps-20261004/runs/20261004T125648Z/`). Not folded. Rebased onto Y as Z'
+  `70e7133a1` (`fold/champion-Zp-20261004`, CPU image `cpu-20261004-70e7133a1`, full CPU suite PASS). Options: (a)
+  drop them and let the relaunched loop re-find what is real on the new champion; (b) re-gate Z' on the
+  `b0ba1d427` champion once the DS41 floor is cleaner (DS41-C92). Recommendation (a): two nulls at bundle level, and
+  the loop re-proposes on the new base anyway. Done when Z' is dropped or re-gated with a ledgered verdict.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,

@@ -3823,6 +3823,18 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
   proposal. Same window: EXL3 3.05 bpw is −3.4% PPL but −31% pp5 (INF-80 EXL3-6c5).
 - Pointer: the operator-allowed IQ\*_K/KS self-quant for this model ("exceptionally if justifiable", 2026-10-03/04) is INF-26 NEW-8 in [`iqk-iquant-enablement.md`](iqk-iquant-enablement.md); its justification bar is measured against XFER-3's uniform file.
 - [x] **XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.
+- [ ] **XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**
+  (filed 2026-10-04, ak-ds41-main) Held out of the 2026-10-04 all-keeps fold by operator decision (ledger:
+  [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md) → *all-keeps fold*, "Held out").
+  - For: c5 (`/mnt/raid0/llm/tmp/cpu-backlog-20261004/c5/runs/20261004T103459Z/report.md`, 6 interleaved rounds)
+    measured **−40.6%** time [−41.7, −40.4] on the Q38FN IQ4_NL expert-down proxy at **N=256** (a microbench, not
+    serving); N=1 and gate/up are flat.
+  - Against: serving X (with it) vs Y (without), Q38FN 5 pairs: **−1.26%**, no decode gain; greedy output diverges at
+    token 17 on 1 of 3 prompts (Y ≡ champion 3/3) — `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/runs/20261004T125648Z/`.
+    XFER-4's 10-03 serving A/B was also slower.
+  - Next: a Q38FN prefill A/B at the shapes where the microbench gain lives (pp256 and larger ubatches, interleaved
+    rounds), then a paired per-item task-quality eval for the output change. Fold only if prefill gains and quality is
+    within tolerance. Done when that verdict is ledgered.
 
 ## Axis E — restore the MTP head (speculative decoding), LAST
 

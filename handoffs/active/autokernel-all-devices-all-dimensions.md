@@ -64,6 +64,13 @@ saying so.
 
 ## Start here
 
+**2026-10-04 ~21:20Z state (ak-ds41-main wrap-up 4).** The first wave is on research main: integration merge
+`4e2471bd` (`eff6c41f` integrates `dc1828a0` long-context surface + `91a09158` `cpu_fa_schedule` + `9313ad32` GPU surface:
+G2 profile, G5 `keep_dimensions`, G6 recipe, GPU-POOL-1 static rule, per-launch HIP proof), then gpu-quiet `f1d1d9eb`
+(on orchestrator `c5dc4ae5`), production `serving_probe` `46256fa3`, unpaired-verdict gate `9b57f555`, KeyError fix
+`1b307ddf`. First AK GPU run done (AKX-ALL-15c-1: 0 measured); its two fixes wait for review (AKX-ALL-15c-2). Code
+landing alone closes no box below whose done-test needs a live run; those carry a note instead.
+
 1. **The three in-flight branches** (subagents started at filing, all forked from research `be23ac25`):
    - `feat/ak-longctx-surface` → AKX-ALL-4 (C1) and AKX-ALL-7 (C4).
    - `feat/ak-cpu-fa-route` → AKX-ALL-9 (`cpu_fa_schedule`) and AKX-ALL-10 (C3).
@@ -110,16 +117,26 @@ saying so.
   `scripts/vidya/adapters/README.md` covering the production context-bucket analysis and the C1/G4 long-context
   surfaces; (b) the task section VB-AK-LONGCTX for `vidya-belief-substrate-program.md`. The owning session applies
   both. Done when both are on main and AKX-ALL-4's runner writes `belief_measurements.jsonl` rows.
-- [ ] **AKX-ALL-2: flip the CPU/GPU quiet-window default to on (`--cpu-measurement-gpu-quiet q3`).** Branch
+- [x] **AKX-ALL-2: flip the CPU/GPU quiet-window default to on (`--cpu-measurement-gpu-quiet q3`).** ✅ 2026-10-04 Branch
   `feat/ak-gpu-surface`. Change the CLI default in `loop/run.py` (`_q3_cpu_gpu_quiet_window`), invert
   `loop/test_q3_measurement_window.py::test_cli_declares_gpu_quiet_policy_default_off` to assert `(default: q3)`,
   keep `off` as an explicit, logged opt-out. Find where the 2026-09-25 "run GPU work concurrently" policy is written
   (the code comment and any doc it cites) and supersede it there, citing the 2026-10-04 ruling. Done when the merged
   loop's `--help` shows `default: q3` and a CPU measurement under a held GPU claim waits instead of measuring.
+  ✅ Done in a different shape: `9313ad32` flipped the default to q3, then research `f1d1d9eb` (design agreed with
+  workspace-ec) moved both sides onto the orchestrator's host-wide gpu-quiet flock (`c5dc4ae5`,
+  `src/runtime/gpu_quiet_lock.py`). `--cpu-measurement-gpu-quiet {off,lock}` defaults to `lock` (`q3` is a
+  deprecated spelling of it); CPU measurements hold it SHARED, GPU measurements EXCLUSIVE, so a CPU measurement waits
+  behind a GPU bench. Proven by `loop/test_gpu_quiet_measurement_window.py`; not yet observed live.
 - [ ] **AKX-ALL-3: GPU measurements take the q3 CPU-region claim.** The GPU host threads 184-191 are the SMT
   siblings of q3 (cores 88-95). Every GPU measurement (serving A/B, profile, microbench) acquires the q3 region claim
   in addition to `mi210_0`, through the existing claim API, and releases both in a `finally`. Done when a GPU batch's
   resource receipt lists both claims and a concurrent CPU measurement in another loop is shown waiting on it.
+  - 2026-10-04: **mechanism superseded** by `f1d1d9eb`: a GPU measurement takes gpu-quiet EXCLUSIVE and NO q3 region
+    claim (the region claim 503'd every serving role placed on q3). Read "both claims" as `mi210_0` + gpu-quiet.
+    Run 1 of `ak-27b-gpu-verify-20261004` refused at batch 1 because a GPU-only bundle had no CPU component; fix
+    `4375b5aa` (research `ak/gpu-run1-20261004`, unpushed, pending review) makes the receipt carry the device flock
+    plus the observed gpu-quiet EXCLUSIVE hold. Still open: that fix merged and a live receipt listing both.
 
 ### P1: CPU — long context and attention
 
@@ -137,6 +154,8 @@ saying so.
     floor). Write the VB-AK-LONGCTX record from the first run.
   - Done when the surface runs end to end on Q38FN against the current anchor, both metrics recorded, refusals
     tested.
+  - 2026-10-04: code on research main (`dc1828a0`, integrated in `eff6c41f`; opt-in `--longctx-surface <spec>`),
+    refusals unit-tested. Not yet run end to end on Q38FN, so open.
 - [ ] **AKX-ALL-5 (C1): DS41 restore-identity gate.** `state_write/read` exist for the dsv4 caches and engram, but
   DS41-B14 warns those caches mutate destructively. One-time gate: a restored slot and a fresh prefill give
   identical greedy continuations at depth. If it fails, DS41's long surface falls back to fresh prefill (~27 min) and
@@ -149,6 +168,7 @@ saying so.
   the production context histogram (regenerated from `llama-server-*.log`, by context bucket, decode wall share and
   rate) to the planner as the workload weighting. Done when the planner prompt for a Q38FN round shows the at-depth
   family table and the histogram, and `FLASH_ATTN_EXT`'s at-depth share is visible.
+  - 2026-10-04: code on research main (`dc1828a0`); no Q38FN round has run with it yet.
 - [ ] **AKX-ALL-8: a production-shaped attention recipe for the Q38FN target.** The AK target pins
   `GGML_FA_SPLIT_KV=0`, `GGML_FUSED_DECODE_OFF=1`, 48 threads, `-ub 512`; production `:8074` runs 96 threads,
   `-ub 8192` and neither env. The long surface runs at the production shape, or the target card states which pin is
@@ -164,6 +184,8 @@ saying so.
     plus model identity on the short and long manifests.
   - Done when the route is admitted (no fallback refusal at `gates.py:1494`) and one planner-authored candidate
     passes or fails it with a typed verdict.
+  - 2026-10-04: route admitted on research main (`91a09158`, hardened in `eff6c41f`: no added `_Pragma`/omp/macro
+    lines, const-only file-scope helpers). No planner-authored candidate yet.
 - [ ] **AKX-ALL-10 (C3): flash-attention microbench case set.** Branch `feat/ak-cpu-fa-route`. A
   `test-backend-ops` case set behind the existing selector (precedent
   `AUTOKERNEL_CORRECTNESS_CASE_SET=odd_gqa7_d64_q1_v1`). Q38FN: head dim 256, 2 KV heads, 12 query heads per KV head,
@@ -171,6 +193,8 @@ saying so.
   and 3. Perf mode on the CPU backend, anchor and candidate paired, as the screen before serving A/B; the same cases
   are the correctness corpus. The stock mask does not model DS41's top-k mask, so DS41 relies on C1. Done when the
   set runs in both modes from the loop and its timings land in the candidate record.
+  - 2026-10-04: `cpu_fa_longctx_v1` is defined (`91a09158`), but the case set and perf screen record SKIP until the
+    llama tree carries `tmp/ak-cpu-fa-route-20261004/test-backend-ops-cpu-fa-longctx-v1.patch` (a champion fold).
 - [ ] **AKX-ALL-11 (C2): `cpu_fa_numerics` route (tolerance).** After AKX-ALL-9/10 merge. Scope: the same bodies plus
   `_tiled`; arithmetic may change. Gate: a new float64 FA reference probe (pattern of `cpu_norm_reference`), 2^-10
   relative; repetitions bit-identical; row-exactness across N (row i at N=k equals the same row at N=1, which
@@ -194,6 +218,8 @@ saying so.
   (`artifacts/v11-fa-path-audit-20261004/`). Every GPU launch proves residency: `verify_ggml_linkage.sh`, KFD process
   count, non-zero VRAM during the run. Done when a loop-built GPU candidate carries the build recipe digest and a
   residency proof in its receipt.
+  - 2026-10-04: recipe `GFX90A_ROCM62_V10_RECIPE` and `hip_launch_proof.py` on research main (`9313ad32`). Run 1
+    built candidates, but none reached a measured launch (AKX-ALL-15c-1), so no receipt carries a residency proof yet.
 - [ ] **AKX-ALL-15 (G1): MI210 window and handover with the stack owner.** Needs workspace-ec. `:8083` holds
   51–59 GiB of 64, so AutoKernel needs an exclusive window:
   1. AutoKernel sends a bus window request to workspace-ec (duration, batches, reason).
@@ -212,6 +238,11 @@ saying so.
       `6ce26fc9` is not; updating the checkout needs operator approval.
     - The gpu-quiet lock is live (orch `c5dc4ae5`).
     - Operator, 2026-10-04: the AK GPU lane's first job is multi-row dequant-GEMV (AKX-ALL-15c).
+  - *(2026-10-04 ~21:20Z, ak-ds41-main.)* G1 executor state: orchestrator `4b871cc5` (F1/F3) and `6ce26fc9`
+    (device-busy refusal: KFD processes, gpu-quiet EXCLUSIVE, AK flock) are both on orchestrator origin/main; the
+    shared checkout moves to `6ce26fc9` only on OP-78. The host cron (AKX-ALL-15a) waits on OP-78's fast-forward and
+    the host install (OP-79). AK-requested windows are still **NACK**: the AK half of round 2 (F4/F5/F6) is research
+    `d6b1a5ac` (not on research main), pending re-review (AKX-ALL-15b).
   - [ ] **AKX-ALL-15a — arm the GPU-window watchdog (review F2) after today's :8083 restore.** (filed 2026-10-04,
     workspace-ec) Install `scripts/server/gpu_window_watchdog.cron` in the host crontab (`* * * * *` +
     `@reboot sleep 90`). Done when a tick is seen writing `mi210.json.executor-status.json` after the restore and
@@ -226,18 +257,41 @@ saying so.
   - [ ] **AKX-ALL-15c — the first AK GPU-lane job is multi-row dequant-GEMV.** (filed 2026-10-04, operator decision)
     It runs in the first window granted after AKX-ALL-15's manual cycle completes. Done when its batch receipts are
     recorded here.
+    - [x] **AKX-ALL-15c-1 — run 1, campaign `ak-27b-gpu-verify-20261004`.** ✅ 2026-10-04 (17:46–18:21Z; backlog row
+      6b interim terms: scheduled slot, `mi210_0` + gpu-quiet EXCLUSIVE, no region claims, 62 GiB abort). Anchor
+      `9a3f1392a`; GPU serving floor calibrated **0.807%** (verified, unit process). 6 iterations, **0 measured**: the
+      two stream-k Q8_0 MMQ hypotheses (`akm-gfx90a-q8-tiny-streamk-cap`, `akm-q8-j16-single-tile-streamk-five-cta`)
+      were refused 5× with "MUL_MAT failed on ROCm0" on q4_K cases their Q8_0-guarded patches cannot reach, then
+      retired at 3/3 attempts. Likely cause: the anchor itself fails the SEEDED gate (`--suite-seed 71
+      --autokernel-properties`, fp64-ratio property); the earlier 1139/1139 pass was the plain invocation. The run
+      then stopped on `SerialSchedulingRefused: held intervals lack one original CPU context` (GPU-only bundle).
+      Store: `/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/store/experiments.md`.
+    - [ ] **AKX-ALL-15c-2 — review and merge the run-1 fixes, then resume.** Research branch `ak/gpu-run1-20261004`
+      (unpushed): `4375b5aa` (GPU-only held intervals settle on the device claim + observed gpu-quiet EXCLUSIVE) and
+      `e747d45e` (anchor-relative GPU correctness: a seeded-gate refusal counts against a patch only if the anchor
+      passes, else `oracle_unavailable`; the detail keeps the stderr FAIL lines). Both change
+      `gate_rules_fingerprint`, so run 1's `gate_refused` candidates resume and re-gate. The campaign brief now makes
+      H1 (`akg-ri-multirow-q8-gemv`, row-invariant multi-row Q8_0 GEMV) mandatory, drops H11, and sets planner effort
+      high. Fable seeds: `/mnt/raid0/llm/tmp/ak-gpu-seeds-20261004/inbox-gpu-multirow-gemv.md` (in the store inbox as
+      `10-fable-gpu-multirow-gemv-20261004.md`). Done when both fixes are on research main and run 2 records at least
+      one measured candidate, or a typed refusal that is not an anchor-gate failure.
 - [ ] **AKX-ALL-16 (G2): GPU serving profile as a planner input.** Branch `feat/ak-gpu-surface`. Fold the
   `rocprof_longctx.py` pattern (server under rocprofv3 for its whole life; windows cut by timestamp markers; holds
   `mi210_0`; 184-191 lane, `membind=3`) into `hotspots`. One anchor profile per anchor change, cached by anchor and
   request digest. Windows: short decode, long decode, concurrent decode, prefill. Per-kernel tables with registers,
   spills and occupancy (lb1 columns). Replaces "selected GPU serving profile unavailable". Done when a GPU serving
   target's planner prompt shows the per-window kernel table.
+  - 2026-10-04: run 1 captured an anchor profile
+    (`/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/store/gpu-serving-profiles/4bca25e9…/profile.json`).
+    That the planner prompt rendered the table is not yet verified; check it in run 2's planner export, then tick.
 - [ ] **AKX-ALL-17 (G5): keep gate across all tracked dimensions, both devices.** Branch `feat/ak-gpu-surface`.
   Extend INF-75's cross-workload keep gate (do not build a second one): a keep must not regress short decode, long
   decode, prefill at depth, concurrent aggregate, or capacity — peak VRAM (GPU) or RSS (CPU) must still fit at the
   recipe's context and slot count, measured by the residency sampler. A dimension that was not measured is reported
   as `not_measured`, never as a pass. Done when a keep record carries one verdict per dimension and a synthetic
   capacity regression is refused in a test.
+  - 2026-10-04: `keep_dimensions` on research main (`9313ad32` + `eff6c41f`); the synthetic capacity refusal is
+    tested. No keep has been recorded under it yet, so open.
 - [ ] **AKX-ALL-18 (G4): GPU long-context and concurrent surfaces.** After AKX-ALL-4 and AKX-ALL-15. The C1
   instrument at np=4: four distinct restored slots at ~80k each (the operator's 36.8 tok/s regime, also RTG-58's and
   KVU-16b's). Controls: 1 slot at 80k, 4 slots at 4k. Floor calibration as AKX-ALL-6. Done when all three arms run
@@ -251,7 +305,7 @@ saying so.
 
 ### P3: the DS41 dense-mask finding
 
-- [ ] **AKX-ALL-20: file the DS41 dense-mask finding in INF-77 and cross-reference INF-31.** Audit §5, code
+- [x] **AKX-ALL-20: file the DS41 dense-mask finding in INF-77 and cross-reference INF-31.** ✅ 2026-10-04 Audit §5, code
   reading at `dd6c9cdbd` (`deepseek41.cpp:1095-1100`): final attention is a dense −inf mask over all compressed rows
   (`build_top_k_mask`), not a sparse gather, and `ggml_concat(raw_k, comp_k)` copies the full compressed plane every
   layer every step (~29 KiB per context token per step: ~0.9 GiB at 32k, ~3.6 GiB at 128k, vs ~8.7 GB/token of
@@ -260,6 +314,8 @@ saying so.
   index-source layers, and the host mask rebuild (DS41-C9). Arithmetic, not measured. The DS41-C123 text and the
   finding-1 / DS41-T2 notes are prepared in `PREPARED_ROWS.md` §D for the owning session. Done when DS41-C123 is in
   the DS41 handoff and AKX-ALL-12's route targets this path.
+  ✅ DS41-C123 is in `deepseek-v41-flash-evaluation.md` (with the finding-1 / DS41-T2 notes), and AKX-ALL-12's scope
+  names `build_attention_v41`, `build_top_k_mask` and the host mask rebuild (DS41-C9) as its targets.
 
 ### P4: end-to-end proofs
 

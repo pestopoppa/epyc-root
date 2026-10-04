@@ -29,6 +29,13 @@
 - **D1 (pull draft #21149 / build / smoke) — SUPERSEDED.** The code is in production v6; the smoke-test now lives in the model-eval handoff [`glm51-reap-cpu-evaluation.md`](glm51-reap-cpu-evaluation.md) → **GLM-5.2** (the active DSA target; V3.2 not planned — GLM-5.2 covers this niche), not as a "pull the draft" task.
 - **Monitoring PR #21149 weekly — MOOT.** DSA landed; stop tracking that PR to merge.
 - **D2 (sparse-compute reality check) + D3 (CPU AVX-512 indexer) — RE-ANCHORED to landed #23346 code, not the fairydreaming draft.** Static audit (2026-07-17) found generic DSA `top_k` selection is built for both prompt processing and decode, but final attention still appears dense/mask-based. The GLM cache/runtime prerequisite is now closed by `3dee86a5a`; runtime GLM-5.2 scaling confirmed **DSA-DENSE-MASK** (`23.81 -> 21.04 -> 17.28 t/s` as prompt tokens grew `2900 -> 5906 -> 11921` under fixed `indexer_top_k=32`). D2 now needs sparse final-attention implementation/profiling, not more activation proof. D3 still needs a landed-code profile to decide compute-bound vs bandwidth-bound.
+- **Cross-reference (2026-10-04, ak-ds41-main): DeepSeek-V4.1-Flash shows the same dense-mask shape.** Code reading at
+  `dd6c9cdbd` (`src/models/deepseek41.cpp:1095-1100`): the top-k becomes a −inf mask over all compressed rows
+  (`build_top_k_mask`), and `ggml_concat(raw_k, comp_k)` copies the full compressed plane every layer, every step
+  (~29 KiB per context token per step; arithmetic, not measured). Recorded as INF-77 DS41-C123 in
+  [`deepseek-v41-flash-evaluation.md`](deepseek-v41-flash-evaluation.md); AutoKernel's route onto that graph path is
+  INF-81 AKX-ALL-12 in [`autokernel-all-devices-all-dimensions.md`](autokernel-all-devices-all-dimensions.md). The
+  generic sparse-gather kernel stays here (D2.4/D2.5).
   - **2026-07-19 note — D2 is also the LONG-CONTEXT GLM-quality enabler.** GLM-5.2 emits malformed output past ~12K prompt tokens (32K needle FAILS) because the `indexer_top_k` cap doesn't scale with context; only hand-tuned next-power-of-two caps stay coherent (`2048`≤2K, `4096`≤3K, `16384`≤12K). Finishing D2 (a real sparse/indexed final-attention path with a correct, length-scaling top-k) is the **durable fix** for >12K GLM coherence. **But it is ORTHOGONAL to GLM's reviewer/judge quality** — those prompts fit ≤12K and are being tested NOW on external ground-truth benchmarks (see [`glm52-reviewer-capability-gates.md`](glm52-reviewer-capability-gates.md) 2026-07-19 directive). Do not gate the reviewer-quality verdict on D2.
 
 ## Objective (revised 2026-07-16)

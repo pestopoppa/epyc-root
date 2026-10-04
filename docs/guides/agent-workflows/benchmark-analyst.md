@@ -72,6 +72,9 @@
 
 ## Running more than one AutoKernel lane
 
+Ratified 2026-10-04 into `agents/shared/OPERATING_CONSTRAINTS.md` (root `35fe43d2`, RATIFY-AK-LANES-20261004); the
+bullets below are the working detail.
+
 - **A second lane starts at once, in parallel; it is never gated on a CPU window** (operator, 2026-10-04). An
   AutoKernel lane spends most of its wall time in hosted planning and authoring, which uses no local compute, so
   that phase overlaps the other lane's measurements freely. Only the local steps (builds, ak-check compiles and
@@ -91,3 +94,31 @@
   `python -c 'import scripts.lib.canonical_recipe as m; print(m.__file__)'` must print a path inside the worktree.
   (origin: 2026-10-04 Q38FN lane launch, DS41-C111 — the editable install shadowed the pinned
   `scripts.lib.canonical_recipe`)
+
+## Gating and folding AutoKernel keeps
+
+- **One launch per arm in a fixed order is not a comparison.** Before acting on a microbench delta (filing a
+  regression, starting a bisect), re-run it in interleaved rounds (ABAB…, at least 5–6 rounds) and judge the median
+  effect against the between-round spread. (origin: 2026-10-04 — c2 read anchor-gen-022 slower on Q4_K MUL_MAT_ID from
+  one fixed-order launch per arm; c5's 6 interleaved rounds put every delta inside the noise, D vs v10 −5.10%
+  [−19.44, +1.46], so the planned bisect was skipped. DS41-C124 in `handoffs/active/deepseek-v41-flash-evaluation.md`)
+- **Per-keep wins need a bundle gate before they fold.** A chain of keeps that each won a 5-pair keep-grade A/B is not
+  evidence that the chain wins: run the serving gate on the whole bundle against its base, and fold only on a
+  decisive bundle result. (origin: the 14 DS41 keeps after COR failed two bundle gates — `dca32b0e3` +0.10% vs a
+  4.533% floor, then Z vs X −2.51% on 2026-10-04 — and were held off the champion; DS41-C125)
+- **Run a correctness gate on the anchor first.** A gate refusal counts against a patch only if the anchor passes the
+  identical gate (same flags, seed and suite). Otherwise it is "oracle unavailable", not a patch failure. (origin:
+  2026-10-04 AK GPU run 1 — Q8_0-guarded patches refused 5× on q4_K MUL_MAT cases they cannot reach; the anchor had
+  only passed the plain invocation, never the seeded `--autokernel-properties` gate. Fix research `e747d45e`;
+  INF-81 AKX-ALL-15c)
+- **An unpaired single-arm effect beyond the metric's paired noise floor is unverified, not a gain.** Quote it as
+  unverified and confirm with a paired run before it reaches a headline. (origin: 2026-10-04 champion-only receipt
+  read pp +18.2% unpaired against the stored v10 baseline, beyond the 9.91% paired floor, while the same code's paired
+  run 3 h earlier gave −0.12%; host drift. Research `9b57f555` labels such effects `unpaired_unverified`)
+- **`region-lock run` changes directory before it runs your command.** The orchestrator shim
+  (`epyc-orchestrator/scripts/region-lock`) does `cd "$REPO_ROOT"` so its Python module resolves, so the child runs
+  with the orchestrator repo as cwd. Give runner scripts, output dirs and model paths as absolute paths, or `cd` inside
+  the child. (origin: 2026-10-04 backlog runners)
+- **Dry-run cleanup removes only the exact paths it created, never a glob.** See INC-20261004-glob-rm-deleted-receipt-evidence
+  in `docs/reference/agent-config/INCIDENT_LOG.md` (a `rm -rf receipt-ab/paired-*` deleted a real, ingested run dir).
+  Copy any ledger-cited run dir under root `artifacts/` before cleanup runs in its scratch tree.
