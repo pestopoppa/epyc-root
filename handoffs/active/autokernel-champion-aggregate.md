@@ -32,8 +32,13 @@ live before quoting it.
   L3 ≈355k occupied cells with 3 parked neighbours, drafted 34.98 vs 15.74 tok/s (2.22×; loss vs L0 −0.19% vs −55.4%),
   no-draft 21.53 vs 8.45 (2.55×; −1.4% vs −60.3%); no-draft text sha identical ON = OFF; VRAM own peak 51.7 GiB. Meets
   KVU-19b's "L3 loss < 10%" for single-sequence decode with neighbours. `/mnt/raid0/llm/tmp/gpu-slot-ak-20261004/results/20261004T091103Z/`.
-- **Standing receipt:** champion-only, measured against the recorded v10 baseline (FOLD-2 G5 `ef81196d5`, 20 launches,
-  median 31.30 tok/s, unpaired by operator rule); result pending at filing.
+- **Standing receipt (PAIRED, n=14, operator decision (B): v10 measured once on the current protocol):** P = v10 `ffc1bac82`,
+  C = champion `1bceceb05`, current :8083 DFlash2 argv, `ab_probe` serving (probe sha256 `bd195fa6…`). tg **+0.61%**
+  [95% CI −0.20, +1.41] (P 40.13 / C 40.37 tok/s); pp −0.21% (floor 9.91%); output identity all-equal C = P; SW-9: C carries
+  all probs, P has the gap. Run `/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-20261004T094057Z/`;
+  ingested via research `production.py ingest-serving` into `loop-memory/production-baseline.ffc1bac82eec.serving_probe-{pp,tg}.json`
+  (the v10 serving baseline future champions run single-arm against) and `champion-vs-production.serving_probe.json`.
+  Short-context single-stream is neutral, as expected: the fold's gains are at high occupancy (P3 v2 above, KVU-16b replay).
 - **Loop anchors:** DS41 and Q38FN anchors still have `90c12df42` as an ancestor but are not the champion; both reseed on
   `1bceceb05` at relaunch (INF-77 DS41-C121).
 - **Production:** carried by v11 via kernel-promotion (full candidate validated as a whole; no interim v10.x). Before any sweep folds "an unfolded
