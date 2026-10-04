@@ -376,6 +376,12 @@ including the dispatches whose nudge says nothing about subagents.
   root, with worktrees named `/mnt/raid0/llm/worktrees/<id>-<purpose>` — and the subagent writes
   nowhere else. That is what lets the wrap-up's scratch step (§ *Filesystem and Storage*) clean up
   after the whole fan-out by listing one directory.
+- **Every subagent brief requires a CPU-region claim for local compute.** Builds, self-launched servers and
+  test suites run as `/workspace/repos/epyc-orchestrator/scripts/region-lock run --cpu-list 0-95 --role build
+  --tag <tag> -- <cmd>`, so they queue behind a held window instead of running inside it. `taskset`, `nice` or
+  `ionice` onto "spare" cores is not isolation: CPUs 96-191 are the SMT siblings of 0-95, so 160-183 *is*
+  physical cores 64-87, and `region-lock` drops sibling CPUs from a `--cpu-list`, so claim the physical cores.
+  (origin: INC-20261004-subagent-unlocked-cpu-in-held-window)
 - **Every subagent result is PROPOSED work.** Review its evidence and diffs, and run validation,
   before accepting it.
 - **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.
