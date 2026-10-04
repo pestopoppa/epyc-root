@@ -3267,9 +3267,10 @@ HipKittens' relevant techniques were already filed in the inspected sample, with
 to bind a future timing runner to the exact passing ISA audit. Its historical experiment had that
 audit; the absence of runner enforcement does not retroactively invalidate it.
 
-One additional bounded workflow proposal addresses opportunities absent before ID creation,
-exact task-outcome preservation, and plan-only actionable/steering reconciliation.
-These four proposals are filed, not implemented. The earlier four-campaign audit's recovered
+One additional bounded workflow proposal addressed opportunities absent before ID creation,
+exact task-outcome preservation, and plan-only actionable/steering reconciliation. It was
+subsequently implemented as `ID-RI-COVERAGE-DELTA`; see the implementation update below.
+The three application proposals remain filed, not implemented. The earlier four-campaign audit's recovered
 GEPA/ParEval/PAW misses are a different sample. Neither audit establishes whole-index completeness
 or omission prevalence; missing original transcripts and selected-source coverage remain explicit.
 
@@ -3281,6 +3282,73 @@ or omission prevalence; missing original transcripts and selected-source coverag
 - [Wrap-up progress](../progress/2026-10/2026-10-04-codex-intake-wrap.md) — separate review and derived-actionables accounting.
 - [Intake-derived owner](../handoffs/active/intake-derived-work-2026-07-25.md) — completed review and proposed refinement.
 - [Adapter source table](../scripts/vidya/adapters/README.md) — prospective capture versus already-live EXL3 source.
+
+## Compiled Update — 2026-10-04: practical-outcome checks are implemented, not semantic proof
+
+**Confidence:** verified for implementation and regression results; no research-ROI improvement is claimed.
+
+New Stage-3 plans now carry a v2 source-first opportunity scan, full verbatim steering reconciliation,
+plan-only actionable additions and per-recommendation outcome reviews. Exact owner, extracted task
+identity, checkbox text and acceptance bind each immediate outcome. Same-ID refinements also bind
+the incumbent task text. Stage 4 checks the reconciled checkpoint and actually applied task,
+stub and index-row text. Historical completed filings and default index validation retain their
+legacy behavior. The installed Codex mirror has the same practical-outcome emphasis.
+
+These checks make declared omissions and substitution easier to inspect, but cannot discover an
+application omitted from the source scan itself or prove that an enabling task supplies the
+required operational behavior. Main must independently read the selected verified mechanism and
+current consumer. Production-activation gates and graph risk do not, by themselves, close a
+useful implementation or permitted deciding probe. The workflow keeps that semantic judgment
+separate from structural validation and adds no classifier or grading ladder.
+
+The implementation suite passed 73 tests and 218 subtests, and the full wrap-up rerun returned
+the same counts. Bounded semantic fixtures are qualitative review cases, not blind behavioral
+validation or a corpus-wide omission estimate. The native conformance source remains prospective
+under the existing `VB-RI-OPS-WIRE` registration; ordinary test results are not retroactively
+converted into measurement warrant. The preceding audit's routing-concurrency, valid EXL3 graph
+replay and ISA-runner binding proposals remain unexecuted.
+
+### Source References
+
+- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — published changes, checks and limits.
+- [Current distillation instructions](../.claude/skills/research-intake/references/stage3-action-distillation.md) — source-first discovery and independent outcome review.
+- [Persistence contract](../.claude/skills/research-intake/references/session-persistence.md) — plan-only v2 additions and approved Stage-4 reconciliation.
+- [Wrap-up and earlier-session review](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — rerun, isolation and retrospective scope.
+
+## Compiled Update — 2026-10-04: older intake mappings weakened distinct operational outcomes
+
+**Confidence:** verified for selected source/plan/owner/code inspection; application benefits remain hypotheses.
+
+The older Jev/EXL3, Dream-RSI and MI210 compiler reviews recovered four bounded outcomes. A shared
+prefix is not question isolation: TD-1d.3 now requires question-only branches, checkpoint-safe state
+and singleton/sibling/whole-cost comparisons using existing TD-23/TD-31/KPF machinery. The existing
+target-precision control now keeps backend and verification shape fixed; CPU BF16 versus HIP Q4
+cannot attribute a precision cause. No second cache or speculative-decoding framework is needed.
+
+Dream-RSI's checkpoint-pruned allocation had been mapped to a collaboration spec. AC-CHECKPOINT-ALLOC
+instead uses independent existing batch continuations and prefix-visible score/cost records over
+at most three eligible configurations. It must not rerun OAB-9b's unchanged parked comparison or
+misread a shared advancing champion as independent trajectories. Missing counterfactual support
+returns unavailable, not fabricated replay gain.
+
+The multi-token MoE GLU opportunity was filed only under IQ residency, although static inspection
+found a Q8 MoE MTP recipe with separate gate/up tensors and a source fusion-width restriction.
+INF37-MOE-Q8-FUSION is a single experimental compatibility/correctness slice, not a broad campaign:
+resolve AMD correctness, preserve v10's CPU-only top-k guard, prove the actual route and compare
+matched controls before any speed claim. Metadata eligibility is not runtime residency or benefit.
+
+Two proposed tasks and two existing-task refinements were filed. Four prospective native evidence
+profiles extend VB-RI-OPS-WIRE before measured runs; no new grader or historical tuple backfill.
+Compiler falsifiers, routing-feature/label repair, selectors and operator-loop mechanisms remain
+with existing owners. Historical freeze/no-weight-update arguments were not accepted as proof
+of irrelevance, but do not justify duplicating covered work. This selected review supplies neither
+corpus-wide completeness nor an omission rate. Skill conformance does not replace semantic review.
+
+### Source References
+
+- [Earlier-campaign retrospective](../docs/reviews/research-intake-earlier-applications-20261004.md) — inspected bytes, actual consumers, counter-coverage and bounded proposals.
+- [Wrap-up progress](../progress/2026-10/2026-10-04-intake-earlier-wrap.md) — test rerun, custody and validation.
+- [Coverage-delta implementation](../progress/2026-10/2026-10-04-intake-coverage-delta.md) — structural checks versus semantic limits.
 
 ## Compiled Update — 2026-09-25: A Reader Does Not Complete the Write Side
 

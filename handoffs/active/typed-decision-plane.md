@@ -200,7 +200,26 @@ episodic memory writing."
     just this one; independently matches the 09-17 note's `heavy_model` lock observation.
     *(Filed 2026-09-18 as "TD-1d.2"; renamed TD-1d.2b 2026-09-26 because the 2026-09-24 native re-bench row above
     reused that id. Code comments and the 2026-09-24 progress logs that say "TD-1d.2" mean the re-bench row.)*
-  - [ ] **TD-1d.3 — `qwen35moe` is hybrid-recurrent (SSM layers), so prefix reuse is checkpoint-quantized.**
+  - [ ] **TD-1d.3 — Build and compare checkpoint-safe isolated question branches over one shared state prefix.**
+    **PROPOSED outcome refinement, 2026-10-04 retrospective; not implementation or activation approval.**
+    Restrict the comparison to independent same-state questions. Reuse TD-31's prefix-stable layout,
+    TD-29.M0a's actual cache/prefill counts and KPF-11–16's checkpoint-safe sequence sharing; do not
+    build a second cache system or depend on TD-19 selecting Kev. A question branch must contain
+    only that question/options after the common instructions/state, not the sibling catalogue or
+    another answer. Keep dependent decisions staged by the host.
+    Compare cold sequential singletons, current serial native scoring and the isolated-prefix path
+    on one pinned experimental champion sidecar. Freeze model/binary/tokenizer, prompts/catalogues,
+    readout/candidate bindings and cache policy; retain probabilities, raw replies, failures,
+    abstentions, actual prefill/cache counts and whole-call wall time for every case. Use held-out
+    catalogues/state families and interleaved paired repeats. Require singleton equivalence within
+    a separately measured same-backend numerical floor, sibling-mutation invariance, no correctness
+    regression under the existing typed screen's predeclared gate, and a cost-improvement interval
+    clearing zero before any follow-on. Unsupported hybrid/checkpoint paths remain unavailable,
+    not successful zero-cost rows. The existing champion-sidecar/resource gates apply; production
+    activation is separate and remains gated. Write-side capture is registered under
+    VB-RI-OPS-WIRE before a new decision-bearing run. [Review](../../docs/reviews/research-intake-earlier-applications-20261004.md).
+    **Historical mechanism context:** `qwen35moe` is hybrid-recurrent (SSM layers); cross-request
+    prefix reuse in the inspected run was checkpoint-quantized, not a model-class impossibility.
     Back-to-back per-question reads on one slot reuse **0** tokens (~450 ms each) unless a prefix-only request
     first leaves a checkpoint at the prefix end (then `cache_n` 1105, ~128 ms/read); under 3-way concurrency they
     stretch to 585–900 ms. This is the mechanism behind fan-out losing, and it belongs in any prefix-cache

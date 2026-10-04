@@ -2336,6 +2336,21 @@ does not establish semantic equivalence, research completeness or project ROI. N
 ladder or historical tuple reconstruction is introduced; ordinary regression results remain ordinary
 test evidence until their native capture and projection are implemented.
 
+**Additional PROPOSED follow-up — 2026-10-04 earlier-intake retrospective:** VB-RI-OPS-WIRE
+also owns the four prospective profiles registered in the source table for `AC-CHECKPOINT-ALLOC`,
+TD-1d.3's isolated question branches, mtp-refresh's same-backend target-precision control and
+`INF37-MOE-Q8-FUSION`'s bounded GLU correctness/performance screen.
+Reuse the shared research-screen receipt, typed decision receipts/VB-TDP-1 and native DFlash
+carriers and native kernel evidence where their actual contracts suffice; add only missing producer-authored fields and
+thin strict profile projections. Bind source/read-set/input/raw-output identities, exact
+checkpoint or branch support, all outcomes and the task's deciding controls before the first
+new decision-bearing run. Missing native fields remain absent; do not backfill old run pools,
+double-project an existing metric or invent a grade/protocol. Allocation replay is not live
+allocation performance; prefix cache reuse is not isolated-readout correctness; a CPU–HIP bridge
+cannot establish a precision cause; static MoE tensor eligibility is not a runtime-path or performance claim. The [selected-source review](../../docs/reviews/research-intake-earlier-applications-20261004.md)
+is qualitative and emits no omission rate or promotion warrant. These are new proposed owner
+extensions, not amendments to the completed decision-tools checkpoint or application approval.
+
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief
