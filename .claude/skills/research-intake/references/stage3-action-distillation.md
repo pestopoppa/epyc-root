@@ -5,9 +5,29 @@ coverage and approval rules in `SKILL.md`; it does not change the four-stage wri
 
 ## Goal
 
-Convert the complete verified-actionable ledger into the smallest execution program that can change
-an EPYC decision or produce a reusable project capability. Preserve every source row by mapping it to
-an immediate packet, a trigger record, `knowledge-only`, or `decline`.
+Independently review selected verified mechanisms against current consumers, then convert retained
+and newly discovered actionables into the smallest execution program that can change an EPYC decision
+or produce a reusable project capability. Preserve every source row by mapping it to an immediate
+packet, a trigger record, `knowledge-only`, or `decline`.
+
+## Source-first opportunity scan
+
+Before generating new actionable IDs, read the selected verified passages and pin the current
+consumer implementation. List mechanisms and their concrete applications independently of the
+retained ledger and recommendation table. Comparing those two ID inventories alone cannot discover
+an application omitted from both. Record the selected read scope; do not imply corpus completeness.
+
+Each `opportunity_scan` row records `scan_id`, `source_ref`, `implementation_ref`, `mechanism`,
+`consumer`, `application`, `disposition`, `ledger_ids` and `basis`. Choose `actionable`, `covered`,
+`context-only` or `declined` by reviewing the source and current behavior, never by text classification.
+After listing the mechanisms, compare with existing actionables: add a full plan-only ledger row
+for each uncovered useful action and bind actionable scan rows to nonempty resolved IDs. Other
+dispositions require explicit bases and may refer to existing actions. Cover every recommendation
+with a scan row; a scan reference absent from both inventories must fail structural coverage.
+
+Use `actionable_additions` and full `steering_reconciliation` in the v2 filing payload; Stage 3
+forms the retained-plus-added union only in memory. The schema, template and approved Stage-4
+reconciliation rules are in [session-persistence.md](session-persistence.md).
 
 ## Execution postures
 
@@ -22,14 +42,29 @@ Choose an enabling primitive after this review. Reuse existing receipts, contrac
 adapters; additional wiring needs a concrete missing capability and a consumer. Preserve distinct
 operational and enabling recommendations when the source ledger distinguishes them.
 
-For a `monitor` or `knowledge-only` closure, record which useful immediate step was considered and
+Record an `outcome_reviews` entry for every recommendation, naming the required operational outcome
+and whether the exact owner-bound task and its recorded acceptance preserve it. Bind to the full
+checkbox line and extracted task ID, using current owner text or an exact proposed task package.
+An ID mentioned in another owner, plan prose, a table or JSON is insufficient. Existing machinery
+may fulfill the outcome, enable only one component, or serve another objective; review what it
+actually does. Acceptance records that review, without automatic keyword or semantic grading.
+
+For a `monitor`, `knowledge-only` or `decline` closure, record which useful immediate step was considered and
 why none remains. Name an observable trigger for `monitor`, or the retained contextual use for
 `knowledge-only`. Nondeployment, missing full reproduction, or HIGH/CRITICAL risk alone does not
 settle the opportunity. Specify safeguards and genuine execution/approval conditions, including
 whether an isolated probe is permitted before production activation.
 
-The main reviews those premises and mappings. Payload validation checks structure and evidence-field
-presence; it cannot determine truth, ROI or whether wiring preserves an operational opportunity.
+Record implementation, isolated-probe and production-activation conditions separately. A freeze on
+activation does not by itself close useful implementation or a permitted probe; a genuine earlier
+gate applies to that step. Review gate scope rather than weakening it or treating all steps as frozen.
+
+Immediate outcome reviews require `preserved` with nonempty task references. Closures may have no
+task targets but require `closed-with-basis` and a grounded review; referenced K/M packets need the
+same opportunity-review fields as P packets. A decline without a packet still needs an outcome
+review. The main independently checks each task's operational purpose and closure premises.
+Read-only validation checks structure, declared references and evidence presence; a structural record
+can lie. It cannot prove truth, ROI, outcome equivalence or permission, and creates no grading rule.
 
 | Posture | Use when | Stage-3 result |
 |---|---|---|
@@ -109,8 +144,14 @@ condition and materializes a task.
 - **Pinned implementation gap:** {revision, files and current behavior; existing fulfilled work}
 - **Operational opportunity:** {smallest useful change/probe and changed consumer behavior}
 - **Expected benefit direction:** {what should improve and what must remain correct; no invented gain}
-- **Execution conditions:** {implementation/probe/activation conditions, safeguards and actual gates}
+- **Implementation conditions:** {scope, safeguards and actual gates for making the change}
+- **Isolated-probe conditions:** {permitted evaluation surface, prerequisites and resource gates}
+- **Production-activation conditions:** {separate admission, freeze/cutover and approval conditions}
 - **Sources and ledger rows:** {complete source-to-action mapping}
+- **Opportunity scan refs:** {source-first scan rows, including any plan-only actionable additions}
+- **Required outcome:** {operational consumer behavior this recommendation must preserve}
+- **Outcome review:** {preserved with exact owner/task ID/checkbox text/acceptance, or grounded
+  closed-with-basis; map every recommendation in outcome_reviews}
 - **Primary owner:** `{handoff}`
 - **Execution posture:** `{primitive-now | cheap-screen-now | full-reproduction-now}`
 - **Enabling primitive:** {specific missing capability, or existing artifact reused/no new primitive}
@@ -130,9 +171,14 @@ condition and materializes a task.
 - **Dependencies and concurrency:** {critical predecessors and independent lanes}
 - **Broader-reproduction trigger:** {observable condition}
 - **Broader follow-on if unfired:** {owned trigger prose with no checkbox for that broader step}
-- **Closure opportunity review:** {for monitor/knowledge-only, considered immediate step and grounded
+- **Closure opportunity review:** {for monitor/knowledge-only/decline, considered immediate step and grounded
   reason none remains; reference the proposed filing payload}
 ```
+
+Package new plans with `format_version: 2` using the complete recommendation table and JSON fence
+template in [session-persistence.md](session-persistence.md). Keep new checkbox lines paste-ready
+in `proposed_tasks`; a same-ID refinement also carries the exact incumbent `previous_task_text`.
+Stage 4 verifies the new lines against applied owner text.
 
 Target three to five immediate work packets when that many independent units survive compression. If
 fewer remain, present fewer and state why; never split a primitive merely to reach the target. Put shared
@@ -181,3 +227,14 @@ handoffs for visibility.
 **Prefer:** give the receipt one implementation owner, list routing and evaluation as interface
 consumers, list the evidence substrate as a receipt consumer, and create separate tasks only where a
 consumer needs an adapter or acceptance test.
+
+## Bounded semantic forward-test cases
+
+The independent discovery reader reads all required workflow references and raw artifacts with
+minimum task instructions, without test fixtures, a regression rubric, the retrospective or prior
+conclusions/intended answers. **After initial discovery**, main consults `OPERATIONAL_CASES` in
+[test_validate_intake_plan.py](../scripts/tests/test_validate_intake_plan.py), which retains the
+seven concrete bad/preserved cases, and reviews the result against current source/consumer reads.
+Fixture judgments are bounded regression examples, not classifier inputs or a new campaign.
+Synthetic results exposed to prior normative examples are qualitative illustrations, not blind
+behavioral validation or statistical/causal proof. Structural success cannot establish preservation.

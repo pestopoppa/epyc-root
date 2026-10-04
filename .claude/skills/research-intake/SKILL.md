@@ -1,6 +1,6 @@
 ---
 name: research-intake
-description: Process research URLs (papers, blogs, repos) through a four-stage intake pipeline. Stage 1 (auto) sweeps, dedups, expands literature, persists entries as stage1-unverified, and recommends which intakes to deep dive. Stage 2 (auto) deep-dives the operator-selected intakes, verifies their claims against primary source, and closes out by presenting dive-surfaced new sources for an operator-selected Stage-2b ingest-and-dive round. Stage 3 (plan mode) audits every insight and distills verified actionables into high-ROI primitives, minimum-rigor probes, trigger-gated follow-ons, handoff edits, index rows, and explicit declines, iterating until the operator approves. Stage 4 (auto) implements the approved plan. Use when ingesting new research material into the EPYC compendium.
+description: Process research URLs (papers, blogs, repos) through EPYC's four-stage intake pipeline. Fetch and deduplicate, deep-dive selected sources, then ground Stage-3 recommendations in current project objectives and implementation. Preserve practical operational outcomes through concrete changes, bounded deciding probes and justified enabling work. Reconcile source coverage, exact owner/task bindings and operator steering; apply handoff changes only after plan approval. Use when ingesting research into the EPYC compendium.
 ---
 
 # Research Intake
@@ -47,11 +47,14 @@ reconciliation in the plan only. Apply that reconciliation at the approved Stage
 
 ```json
 {"seq": 3, "stage": 2, "verbatim": "<exact operator words>",
- "disposition": "planned | declined | context-only", "plan_ref": "<plan item id or null>"}
+ "disposition": "planned | declined | context-only", "plan_ref": "<declared P/K/M id or null>",
+ "reason": "<grounded disposition reason>"}
 ```
 
-**Stage 3 may not present a plan until every ledger row is either a named item in the plan or an
-explicit written decline.** This makes "folded into the plan" auditable instead of a promise.
+**Stage 3 may not present a plan until every row has a disposition:** `planned` resolves to a
+declared P/K/M item; `context-only` or `declined` has a null reference and a nonempty grounded reason.
+Preserve retained sequence, stage, verbatim text and any timestamp in the full plan-carried
+`steering_reconciliation`; its v2 contract is in `references/session-persistence.md`.
 
 ### External Content Quarantine
 
@@ -470,6 +473,15 @@ ledger.
 
 ## Stage 3 actionable distillation — required before handoff drafting
 
+**Independently scan selected verified source passages against current consumer behavior before
+generating new actionable IDs or declaring coverage complete.** List the selected mechanisms and
+concrete applications in `opportunity_scan` first, with pinned source and implementation references;
+then compare them with retained actionables and assign IDs to uncovered useful work. Do not derive
+the scan by copying either ID inventory: an application missing from both would remain invisible.
+Record covered/context-only/declined judgments with grounded bases too. This is selected-source and
+current-consumer coverage, not a claim of corpus completeness. Carry new full actionable rows only
+in the plan's `actionable_additions`; Stage 3 reconciles them in memory without checkpoint writes.
+
 Before compressing the actionable ledger, review each packet's operational opportunity in current
 EPYC context:
 
@@ -483,10 +495,13 @@ EPYC context:
    distinct adoption work; reuse existing machinery where sufficient.
 4. Preserve distinct operational follow-through when the source ledger separates it from enabling
    wiring. A capture/projection task does not discharge the evaluation that produces its findings.
+   Record each recommendation's required operational outcome and review whether its exact
+   owner-bound checkbox task and acceptance cover that outcome. Existing machinery may supply a
+   component or a different objective; its presence alone does not preserve the required behavior.
 5. Apply the six-control minimum-rigor floor to immediate empirical experiments or replays. For
    deterministic infrastructure, explain inapplicable controls and name replacement conformance
    and provenance checks.
-6. Choose the execution posture after this review. For `monitor` and `knowledge-only`, explicitly
+6. Choose the execution posture after this review. For `monitor`, `knowledge-only` and `decline`, explicitly
    explain why no useful immediate operational step remains, citing current implementation and
    execution conditions. Nondeployment, absence of full reproduction, or a HIGH/CRITICAL graph
    flag alone is insufficient. Risk determines safeguards and any genuine approval boundary.
@@ -531,17 +546,25 @@ After distillation, build ONE plan covering:
      (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
      entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never
      silence.
-7. **Proposed filing payload** — carry exact affected-entry updates and opportunity reviews in the
-   plan using the contract in `references/session-persistence.md`. Stage 3 writes only the plan;
-   it does not checkpoint the proposed payload or edit entries before approval.
+7. **Proposed filing payload** — new Stage-3 JSON fences require integer `format_version: 2`, retaining
+   affected-entry updates and opportunity reviews and adding `actionable_additions`,
+   `steering_reconciliation`, `opportunity_scan`, `outcome_reviews` and `proposed_tasks` under the
+   contract/template in `references/session-persistence.md`. Stage 3 writes only the plan; it does
+   not checkpoint the proposed payload or edit entries before approval. Persisted unversioned
+   or v1 Stage-4 complete payloads remain readable through the legacy structural path; no corpus migration.
 
 **Plan-completeness gates — the plan may not be presented until all pass:**
 
 - Every **Stage-1 preliminary actionable** maps to an immediate packet, durable trigger record,
   knowledge-only disposition, or explicit decline.
-  Non-dived intakes' actionables are just as real as dived ones.
+  Non-dived actionables remain retained hypotheses, not verified operational justification or
+  citable findings, until primary-source verification.
 - Every **dive-ledger row** has one of those four terminal mappings.
-- Every **steering-ledger row** has one of those four terminal mappings.
+- The independent source-first scan precedes new actionable IDs. Every recommendation is covered
+  by a scan row, and every actionable scan reference resolves to retained-plus-added ledger rows;
+  a retained scan reference missing from both inventories fails coverage.
+- Every **steering-ledger row**, including plan-only additions, is retained verbatim in the full
+  reconciliation with a valid declared reference or grounded context-only/declined reason.
 - **No plan text quotes a number, metric, or mechanism that is still `stage1-unverified`.**
 - Every **dive-surfaced source** is either ingested-and-dived via Stage 2b, or explicitly declined by
   the operator and recorded in the bearing entry's `dive_corrections`.
@@ -549,7 +572,15 @@ After distillation, build ONE plan covering:
   owner — some handoffs are compatibility pointers that explicitly forbid new task checkboxes.
 - Every immediate action names the project decision it can change.
 - Every packet has the context/opportunity review above before its enabling primitive is chosen.
-- Every `monitor` or `knowledge-only` closure has an explicit opportunity review. Main review must
+- Every recommendation has an `outcome_reviews` record; immediate mappings preserve the outcome
+  with nonempty exact owner/task/acceptance references. Unresolved outcome reviews fail the gate.
+- Task references match exact current owner checkbox lines or exact `proposed_tasks` packages for
+  proposed Stage-3 edits, with extracted IDs matching `task_id`; Stage 4 applies the approved plan.
+  A mention in plan prose, a table or JSON, or a checkbox in another owner does not establish binding.
+  Refining an existing task at the same ID requires its exact incumbent line in
+  `previous_task_text`; Stage 4 checks the applied new line.
+- Every `monitor`, `knowledge-only` or `decline` closure has an explicit outcome review with a
+  grounded basis; referenced K/M packets also require opportunity reviews. Main review must
   verify its premises, including fulfilled existing work and the scope of actual execution gates.
 - Operational follow-through and enabling wiring retain their distinct recommendation mappings.
 - Every immediate empirical experiment or replay names all six minimum-rigor controls, or gives a
@@ -569,9 +600,11 @@ After distillation, build ONE plan covering:
 - The opt-in proposed-payload check passes:
   `bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH`.
   Validate the proposed payload, not merely the unchanged persisted index.
-- The main separately reviews current context, opportunity preservation, benefit direction, gate scope
-  and terminal dispositions. Structural success or nonempty evidence fields do not establish these
-  semantics. Resolve disagreements before presenting the plan.
+- The main independently reviews the selected passages/current consumers and whether each accepted
+  task's operational purpose covers its required outcome, plus benefit direction, gate scope and
+  closure premises. Structural success, acceptance text or nonempty evidence fields cannot establish
+  truth, ROI, outcome equivalence or permission. Do not auto-grade these with keywords or a new rule.
+  Resolve disagreements before presenting the plan.
 
 Iterate with the operator until they approve via **ExitPlanMode**. **No handoff, stub, or
 domain/master-index write happens before approval.**
@@ -613,7 +646,9 @@ silently into the diff. Then:
   (enum and rules: references/intake-schema.md; enforced by validate_intake.py) on every affected
   entry. An entry whose every ledger row is a decline gets knowledge_only or declined, never silence.
 - At the approved boundary, reconcile plan-carried steering/actionable updates into the session and
-  persist `stage3_filing` with the approved plan's exact-byte SHA-256. Then run
+  persist `stage3_filing` with the approved plan's exact-byte SHA-256. For v2, additions must already
+  match the reconciled ledger identically (no second union), the checkpoint must match the full
+  steering reconciliation, and proposed tasks must match the applied owner checkbox text. Then run
   `bash scripts/validate/validate_intake.sh --plan-file PATH --session-file PATH` → exit **0**,
   alongside existing index validation. The main confirms the applied filing matches the reviewed
   mappings and semantics; validator success is not approval or deployment evidence.

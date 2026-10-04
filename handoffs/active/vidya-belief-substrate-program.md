@@ -2327,6 +2327,15 @@ The qualitative [retrospective](../../docs/reviews/research-intake-practical-app
 itself is not a measurement-rate producer. These are proposed extensions, not amendments to the
 already-completed decision-tools Stage-4 payload or authorization to run new probes.
 
+**ID-RI-COVERAGE-DELTA implementation scope — 2026-10-04:** the existing intake conformance
+source also covers version-2 source-scan coverage, owner/task-text outcome bindings and read-only
+actionable/steering reconciliation fixtures. VB-RI-OPS-WIRE retains the prospective native capture
+and projection task: bind the producer revision, fixture/read-set hashes, complete case results
+and exact structural proposition at the test/check finalize boundary. A passing structural fixture
+does not establish semantic equivalence, research completeness or project ROI. No new source class,
+ladder or historical tuple reconstruction is introduced; ordinary regression results remain ordinary
+test evidence until their native capture and projection are implemented.
+
 ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief

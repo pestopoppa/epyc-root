@@ -688,14 +688,329 @@ def session_cleanup_eligible(session: object) -> bool:
     )
 
 
+_V2_FILING_FIELDS = {
+    "format_version", "entry_updates", "opportunity_reviews", "actionable_additions",
+    "steering_reconciliation", "opportunity_scan", "outcome_reviews", "proposed_tasks",
+}
+_TASK_ID_PATTERN = r"[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+(?:\.[A-Za-z0-9]+)*"
+_CHECKBOX_TASK = re.compile(
+    rf"^[ \t]*-[ \t]+\[[ xX]\][ \t]+(?:\*\*)?({_TASK_ID_PATTERN})"
+    r"(?=[ \t]*(?:—|:|\*\*)|[ \t]+)"
+)
+
+
+def _checkbox_task_id(line: object) -> str | None:
+    """Extract an ID from one actual checkbox line, not a prose/JSON mention."""
+    if (not isinstance(line, str) or not line or "\n" in line or "\r" in line
+            or len(line.splitlines()) != 1):
+        return None
+    match = _CHECKBOX_TASK.match(line)
+    return match.group(1) if match else None
+
+
+def _owner_checkboxes(text: str) -> dict[str, list[str]]:
+    """Keep exact lines, excluding fenced examples, for owner-bound evidence."""
+    tasks: dict[str, list[str]] = {}
+    fence = None
+    for line in text.splitlines():
+        marker = re.match(r"^[ \t]*(`{3,}|~{3,})(.*)$", line)
+        if fence is not None:
+            if (marker and marker[1][0] == fence[0]
+                    and len(marker[1]) >= len(fence) and not marker[2].strip()):
+                fence = None
+            continue
+        if marker:
+            fence = marker[1]
+            continue
+        task_id = _checkbox_task_id(line)
+        if task_id is not None:
+            tasks.setdefault(task_id, []).append(line)
+    return tasks
+
+
+def _v2_actionable_union(session: dict, filing: dict, preapproval: bool,
+                         recommendations: dict[str, str], errors: list[str]) -> dict[str, dict]:
+    """Stage 3 unions in memory; Stage 4 requires already reconciled additions."""
+    ledger = session.get("actionable_ledger")
+    additions = filing.get("actionable_additions")
+    if not isinstance(ledger, list) or not isinstance(additions, list):
+        raise ValueError("actionable_ledger and actionable_additions must be lists")
+    retained = {}
+    fields = {"ledger_id", "source", "action", "terminal_mapping"}
+    for row in ledger:
+        if not isinstance(row, dict) or not all(
+                _nonempty_text(row.get(f)) for f in ("ledger_id", "source", "action")):
+            raise ValueError("retained actionable row requires nonempty ledger_id/source/action")
+        rid = row["ledger_id"]
+        if rid in retained:
+            errors.append(f"session: duplicate recommendation ID {rid}")
+        retained[rid] = row
+        if preapproval:
+            if ("terminal_mapping" in row and row["terminal_mapping"] is not None
+                    and not _nonempty_text(row["terminal_mapping"])):
+                raise ValueError(f"{rid}: retained terminal_mapping must be text or null")
+        elif (not _nonempty_text(row.get("terminal_mapping"))
+              or row["terminal_mapping"] != recommendations.get(rid)):
+            errors.append(f"{rid}: terminal_mapping must exactly match the approved table")
+    union = dict(retained)
+    seen_additions = set()
+    for row in additions:
+        if not isinstance(row, dict) or set(row) != fields or not all(
+                _nonempty_text(row[f]) for f in fields):
+            raise ValueError("actionable addition requires exactly nonempty ledger_id/source/action/terminal_mapping")
+        rid = row["ledger_id"]
+        if rid in seen_additions:
+            errors.append(f"actionable_additions: duplicate recommendation ID {rid}")
+        seen_additions.add(rid)
+        if row["terminal_mapping"] != recommendations.get(rid):
+            errors.append(f"{rid}: addition terminal_mapping must exactly match the plan table")
+        if preapproval:
+            if rid in retained:
+                errors.append(f"{rid}: actionable addition shadows retained ledger ID")
+            else:
+                union[rid] = row
+        elif retained.get(rid) != row:
+            errors.append(f"{rid}: Stage-4 addition must already occur identically in reconciled actionable_ledger (including source/action)")
+    if set(union) != set(recommendations):
+        errors.append(f"recommendation coverage mismatch: missing={sorted(set(recommendations) - set(union))}, extra={sorted(set(union) - set(recommendations))}")
+    return union
+
+
+def _v2_steering_rows(rows: object, label: str, final: bool,
+                      definitions: set[str], errors: list[str]) -> dict[int, dict]:
+    if not isinstance(rows, list):
+        raise ValueError(f"{label} must be a list")
+    result = {}
+    previous = 0
+    fields = {"seq", "stage", "verbatim", "disposition", "plan_ref"}
+    for row in rows:
+        if not isinstance(row, dict) or not fields <= set(row):
+            raise ValueError(f"{label} row requires seq/stage/verbatim/disposition/plan_ref")
+        seq = row["seq"]
+        if type(seq) is not int or seq <= 0:
+            raise ValueError(f"{label}.seq must be a positive integer")
+        if seq <= previous:
+            errors.append(f"{label}: seq must be unique and increasing ({seq})")
+        previous = seq
+        if (type(row["stage"]) is not int or row["stage"] not in (1, 2, 3)
+                or not _nonempty_text(row["verbatim"])):
+            raise ValueError(f"{label}[{seq}] requires stage 1/2/3 and nonempty verbatim")
+        if "ts" in row and not _nonempty_text(row["ts"]):
+            raise ValueError(f"{label}[{seq}].ts must be nonempty text when present")
+        disposition = row["disposition"]
+        ref = row["plan_ref"]
+        if not isinstance(disposition, str) or disposition not in {"planned", "context-only", "declined"}:
+            raise ValueError(f"{label}[{seq}]: unsupported steering disposition")
+        if ref is not None and not _nonempty_text(ref):
+            raise ValueError(f"{label}[{seq}].plan_ref must be text or null")
+        if "reason" in row and not isinstance(row["reason"], str):
+            raise ValueError(f"{label}[{seq}].reason must be text")
+        if final:
+            if "reason" not in row:
+                raise ValueError(f"{label}[{seq}] requires reason")
+            if disposition == "planned":
+                if ref not in definitions:
+                    errors.append(f"{label}[{seq}]: planned steering requires a declared P/K/M reference")
+            elif ref is not None or not _nonempty_text(row["reason"]):
+                errors.append(f"{label}[{seq}]: {disposition} requires null plan_ref and a nonempty grounded reason")
+        result[seq] = row
+    return result
+
+
+def _validate_v2_coverage(session: dict, filing: dict, recommendations: dict[str, str],
+                          definitions: set[str], preapproval: bool, root: Path,
+                          proposed_owners: set[Path],
+                          recommendation_cells: dict[str, tuple[str, str]]) -> list[str]:
+    """Check declarations and evidence presence, never operational equivalence.
+
+    A source-first scan can expose an action absent from both inventories through
+    its explicit ledger_ids. It does not establish corpus completeness. Acceptance,
+    closure premises, owner suitability and truth remain independent main review.
+    Inputs and checkpoint files are never changed.
+    """
+    errors: list[str] = []
+    union = _v2_actionable_union(session, filing, preapproval, recommendations, errors)
+    for rid, row in union.items():
+        cells = recommendation_cells.get(rid)
+        if cells is None:
+            continue  # Coverage mismatch is already reported by the union check.
+        source, action = cells
+        # Preserve the source spelling; citation suffixes identify a record or
+        # one claim, not a license to replace the retained source identity.
+        source_refs = [row["source"]]
+        if _nonempty_text(row.get("source_ref")):
+            source_refs.append(row["source_ref"])
+        source_matches = any(
+            source == original or ("#" not in original and re.fullmatch(
+                re.escape(original) + r"#(?:record|[0-9]{2})", source))
+            for original in source_refs)
+        if not source_matches:
+            errors.append(f"{rid}: table Source or review must match the immutable ledger source/source_ref (optional #record/#NN suffix)")
+        if action != row["action"]:
+            errors.append(f"{rid}: table Retained recommendation must exactly match immutable ledger action")
+    retained = _v2_steering_rows(
+        session.get("steering_ledger"), "session.steering_ledger", False, definitions, errors)
+    reconciled_rows = filing.get("steering_reconciliation")
+    reconciled = _v2_steering_rows(
+        reconciled_rows, "steering_reconciliation", True, definitions, errors)
+    for seq, row in retained.items():
+        final_row = reconciled.get(seq)
+        immutable = ("seq", "stage", "verbatim") + (("ts",) if "ts" in row else ())
+        if final_row is None or any(final_row.get(f) != row[f] for f in immutable):
+            errors.append(f"steering_reconciliation[{seq}]: retained steering lost or reworded (including timestamp)")
+    for seq in set(reconciled) - set(retained):
+        if retained and seq <= max(retained):
+            errors.append(f"steering_reconciliation[{seq}]: new seq collides with retained sequence range")
+    if not preapproval and session["steering_ledger"] != reconciled_rows:
+        errors.append("Stage-4 steering_ledger must exactly match full steering_reconciliation")
+
+    scan = filing.get("opportunity_scan")
+    if not isinstance(scan, list) or not scan:
+        raise ValueError("opportunity_scan must be a nonempty list")
+    scan_fields = {"scan_id", "source_ref", "implementation_ref", "mechanism", "consumer",
+                   "application", "disposition", "ledger_ids", "basis"}
+    scan_ids = set()
+    covered = set()
+    for row in scan:
+        if not isinstance(row, dict) or set(row) != scan_fields:
+            raise ValueError("opportunity_scan row requires exactly " + ", ".join(sorted(scan_fields)))
+        if not all(_nonempty_text(row[f]) for f in scan_fields - {"ledger_ids", "basis"}):
+            raise ValueError("opportunity_scan source/implementation/mechanism/consumer/application/disposition/scan_id must be nonempty text")
+        scan_id = row["scan_id"]
+        if scan_id in scan_ids:
+            errors.append(f"opportunity_scan: duplicate scan_id {scan_id}")
+        scan_ids.add(scan_id)
+        disposition = row["disposition"]
+        if disposition not in {"actionable", "covered", "context-only", "declined"}:
+            raise ValueError(f"{scan_id}: unsupported opportunity_scan disposition")
+        ids = row["ledger_ids"]
+        if not isinstance(ids, list) or not all(map(_nonempty_text, ids)):
+            raise ValueError(f"{scan_id}: ledger_ids must be a list of nonempty strings")
+        if len(ids) != len(set(ids)):
+            errors.append(f"{scan_id}: duplicate ledger_ids")
+        if disposition == "actionable" and not ids:
+            errors.append(f"{scan_id}: actionable scan requires nonempty ledger_ids")
+        if not isinstance(row["basis"], str) or (disposition != "actionable" and not _nonempty_text(row["basis"])):
+            raise ValueError(f"{scan_id}: non-actionable scan requires explicit basis (basis must be text)")
+        missing = set(ids) - set(union)
+        if missing:
+            errors.append(f"{scan_id}: unresolved opportunity_scan ledger_ids {sorted(missing)}")
+        covered.update(ids)
+    if set(recommendations) - covered:
+        errors.append(f"opportunity_scan missing recommendations: {sorted(set(recommendations) - covered)}")
+
+    proposed_tasks = filing.get("proposed_tasks")
+    if not isinstance(proposed_tasks, list):
+        raise ValueError("proposed_tasks must be a list")
+    owner_tasks: dict[Path, dict[str, list[str]]] = {}
+
+    def current_tasks(owner: str) -> tuple[Path, dict[str, list[str]]]:
+        path = _handoff_path(owner, root)
+        if path is None or not (path.is_file() or (preapproval and path in proposed_owners)):
+            raise ValueError(f"task owner {owner!r} does not resolve to an existing owner or packaged stub")
+        if path not in owner_tasks:
+            owner_tasks[path] = (_owner_checkboxes(path.read_text(encoding="utf-8"))
+                                 if path.is_file() else {})
+        return path, owner_tasks[path]
+
+    packaged_tasks = {}
+    proposed_keys = set()
+    for task in proposed_tasks:
+        if (not isinstance(task, dict) or not {"owner", "task_text"} <= set(task)
+                or set(task) - {"owner", "task_text", "previous_task_text"}
+                or not _nonempty_text(task["owner"])):
+            raise ValueError("proposed task requires owner/task_text and permits optional previous_task_text")
+        task_id = _checkbox_task_id(task["task_text"])
+        if task_id is None:
+            raise ValueError("proposed task_text must be one paste-ready checkbox line with a task ID")
+        has_previous = "previous_task_text" in task
+        if has_previous and _checkbox_task_id(task["previous_task_text"]) != task_id:
+            raise ValueError(f"{task_id}: previous_task_text must be an exact incumbent checkbox line with the same ID")
+        path, existing = current_tasks(task["owner"])
+        key = (path, task_id)
+        if key in proposed_keys:
+            errors.append(f"proposed_tasks: duplicate owner/task ID {task['owner']} / {task_id}")
+        proposed_keys.add(key)
+        packaged_tasks[key] = task["task_text"]
+        if len(existing.get(task_id, [])) > 1:
+            errors.append(f"{task_id}: current owner has ambiguous duplicate checkbox IDs")
+        if preapproval:
+            incumbent = existing.get(task_id, [])
+            if has_previous and incumbent != [task["previous_task_text"]]:
+                errors.append(f"{task_id}: previous_task_text must match the exact current owner checkbox")
+            if incumbent and incumbent != [task["task_text"]] and not has_previous:
+                errors.append(f"{task_id}: changing an existing checkbox requires exact previous_task_text; silent task ID collision")
+        if not preapproval and existing.get(task_id) != [task["task_text"]]:
+            errors.append(f"{task_id}: Stage-4 proposed task must match exact applied owner checkbox")
+
+    outcomes = filing.get("outcome_reviews")
+    if not isinstance(outcomes, dict):
+        raise ValueError("outcome_reviews must be an object keyed by recommendation ID")
+    if set(outcomes) != set(recommendations):
+        errors.append(f"outcome review coverage mismatch: missing={sorted(set(recommendations) - set(outcomes))}, extra={sorted(set(outcomes) - set(recommendations))}")
+    outcome_fields = {"required_outcome", "review_status", "review_basis", "task_refs"}
+    ref_fields = {"owner", "task_id", "task_text", "acceptance"}
+    referenced_keys = set()
+    for rid, review in outcomes.items():
+        if not isinstance(review, dict) or set(review) != outcome_fields or not all(
+                _nonempty_text(review[f]) for f in outcome_fields - {"task_refs"}):
+            raise ValueError(f"{rid}: outcome review requires required_outcome/review_status/review_basis/task_refs")
+        status = review["review_status"]
+        if status not in {"preserved", "closed-with-basis"}:
+            errors.append(f"{rid}: unresolved or unsupported outcome review_status {status!r}")
+        task_refs = review["task_refs"]
+        if not isinstance(task_refs, list):
+            raise ValueError(f"{rid}: outcome task_refs must be a list")
+        terminal = recommendations.get(rid, "")
+        packets = set(re.findall(r"\b[PKM]\d+\b", terminal))
+        if any(p.startswith("P") for p in packets) and (status != "preserved" or not task_refs):
+            errors.append(f"{rid}: immediate mapping requires preserved outcome and nonempty task_refs")
+        if not any(p.startswith("P") for p in packets) and status != "closed-with-basis":
+            errors.append(f"{rid}: closure/decline requires closed-with-basis outcome review")
+        if not packets and task_refs:
+            errors.append(f"{rid}: explicit decline must not carry task_refs")
+        if status == "preserved" and not task_refs:
+            errors.append(f"{rid}: preserved outcome requires nonempty task_refs")
+        ref_keys = set()
+        ids = set()
+        for ref in task_refs:
+            if not isinstance(ref, dict) or set(ref) != ref_fields or not all(
+                    _nonempty_text(ref[f]) for f in ref_fields):
+                raise ValueError(f"{rid}: task_ref requires exactly nonempty owner/task_id/task_text/acceptance")
+            task_id = _checkbox_task_id(ref["task_text"])
+            if task_id != ref["task_id"]:
+                errors.append(f"{rid}: task_id must match ID extracted from exact checkbox task_text")
+            path, existing = current_tasks(ref["owner"])
+            key = (path, ref["task_id"])
+            if key in ref_keys:
+                errors.append(f"{rid}: duplicate task_ref owner/task ID")
+            ref_keys.add(key)
+            referenced_keys.add(key)
+            ids.add(ref["task_id"])
+            in_owner = existing.get(ref["task_id"]) == [ref["task_text"]]
+            in_package = packaged_tasks.get(key) == ref["task_text"]
+            # A proposed edit supersedes the current line only for this owner.
+            proposed_key = (path, ref["task_id"])
+            matches = (in_package if preapproval and proposed_key in proposed_keys else in_owner)
+            if not matches:
+                errors.append(f"{rid}: task_ref {ref['owner']} / {ref['task_id']} does not match exact owner checkbox or Stage-3 proposed_tasks package")
+        terminal_ids = set(re.findall(
+            rf"(?<![A-Za-z0-9-]){_TASK_ID_PATTERN}(?![A-Za-z0-9-])", terminal))
+        if terminal_ids - ids:
+            errors.append(f"{rid}: terminal task references missing owner-bound task_refs {sorted(terminal_ids - ids)}")
+    for path, task_id in sorted(proposed_keys - referenced_keys):
+        errors.append(f"proposed_tasks: {path.relative_to(root)} / {task_id} has no outcome_review.task_ref mapping")
+    return errors
+
+
 def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
                           categories: set[str], root: Path) -> list[str]:
     """Read-only structural checks, without approval inference or semantic grading.
 
-    Stage 3 may supply entry_updates/opportunity_reviews and optional proposed_stubs in one JSON fence
-    under '## Stage-3 filing payload' when checkpoint stage3_filing is absent.
-    That fence cannot contain its own hash. Persisted payloads must carry the
-    exact plan digest; Stage 4 never falls back to the fence.
+    Stage 3 requires a format_version=2 JSON fence under '## Stage-3 filing payload'
+    when checkpoint stage3_filing is absent. That fence cannot contain its own hash.
+    Persisted payloads must carry the exact plan digest; Stage 4 never falls back
+    to the fence. Unversioned and explicit v1 Stage-4 payloads retain legacy checks.
     """
     errors = []
     try:
@@ -718,16 +1033,33 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
             if fence is None:
                 raise ValueError("filing payload section must contain exactly one JSON fence")
             filing = json.loads(fence.group(1), object_pairs_hook=_unique_json_object)
-            if (not isinstance(filing, dict)
-                    or not {"entry_updates", "opportunity_reviews"} <= set(filing)
-                    or set(filing) - {"entry_updates", "opportunity_reviews", "proposed_stubs"}):
-                raise ValueError("Stage-3 fence requires entry_updates/opportunity_reviews and permits optional proposed_stubs only")
+            if not isinstance(filing, dict):
+                raise ValueError("Stage-3 filing payload must be an object")
         else:
             filing = session["stage3_filing"]
             if not isinstance(filing, dict):
                 raise ValueError("session.stage3_filing must be an object")
             if filing.get("plan_sha256") != digest:
                 errors.append("stage3_filing.plan_sha256 does not match exact plan bytes")
+
+        version = filing.get("format_version")
+        if "format_version" in filing and (type(version) is not int or version not in (1, 2)):
+            raise ValueError("format_version must be integer 1 or 2; unsupported explicit version")
+        stage = session.get("stage")
+        stage3 = stage in (3, "stage3")
+        stage4 = stage in (4, "stage4", "stage4-in-progress", "stage4-complete")
+        if version == 1 and (preapproval or not stage4):
+            raise ValueError("format_version: 1 is supported only for persisted Stage-4 payloads")
+        v2 = version == 2
+        if (preapproval or stage3) and not v2:
+            raise ValueError("new Stage-3 filing fence requires format_version: 2")
+        if v2:
+            allowed = _V2_FILING_FIELDS | {"proposed_stubs"}
+            if not preapproval:
+                allowed.add("plan_sha256")
+            if not _V2_FILING_FIELDS <= set(filing) or set(filing) - allowed:
+                raise ValueError("v2 filing requires " + ", ".join(sorted(_V2_FILING_FIELDS))
+                                 + "; permits only optional proposed_stubs and persisted plan_sha256")
 
         marker = "## Complete recommendation mapping\n"
         if text.count(marker) != 1:
@@ -741,15 +1073,17 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
                 or not all(re.fullmatch(r":?-+:?", cell) for cell in rows[1])):
             raise ValueError("unsupported recommendation table: expected approved four-column format")
         recommendations = {}
+        recommendation_cells = {}
         definitions = set(re.findall(
             r"(?m)^\|[ \t]*([PKM]\d+)(?:[ \t]+[^\n|]*)?[ \t]*\|", text))
         for cells in rows[2:]:
             if len(cells) != 4 or not all(cells):
                 raise ValueError("recommendation rows require four nonempty cells")
-            rid, _, _, terminal = cells
+            rid, source, action, terminal = cells
             if rid in recommendations:
                 errors.append(f"plan: duplicate recommendation ID {rid}")
             recommendations[rid] = terminal
+            recommendation_cells[rid] = (source, action)
             refs = set(re.findall(r"\b[PKM]\d+\b", terminal))
             if refs - definitions:
                 errors.append(f"{rid}: undefined terminal references {sorted(refs - definitions)}")
@@ -767,10 +1101,17 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
                 raise ValueError("stub package requires path/content/index_file/index_row")
             path = _handoff_path(stub["path"], root)
             if (path is None or path.parent != root / "handoffs/active"
-                    or path.exists() or path in proposed_owners):
+                    or path in proposed_owners):
+                raise ValueError("stub path must name a unique active handoff")
+            if v2 and not preapproval:
+                if not path.is_file():
+                    raise ValueError("Stage-4 packaged stub must resolve to an applied active handoff")
+            elif path.exists():
                 raise ValueError("stub path must name a unique new active handoff")
             if not _nonempty_text(stub["content"]):
                 raise ValueError("stub content must be nonempty text")
+            if v2 and not preapproval and path.read_bytes() != stub["content"].encode("utf-8"):
+                errors.append(f"Stage-4 packaged stub {stub['path']!r} content does not match the approved stub")
             domain = r"(?:inference-research|routing-and-optimization|research-evaluation|user-facing-harness|pipeline-integration|reviewer-control-plane)"
             if (not isinstance(stub["index_file"], str)
                     or not re.fullmatch(rf"handoffs/active/{domain}-index\.md", stub["index_file"])
@@ -786,6 +1127,10 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
             link = re.fullmatch(r"\[[^\]]+\]\(([^)]+)\)", cells[2])
             if link is None or _handoff_path(link.group(1), root) != path:
                 raise ValueError("stub index_row must link to its packaged handoff")
+            if v2 and not preapproval:
+                index_text = (root / stub["index_file"]).read_text(encoding="utf-8")
+                if index_text.splitlines().count(row) != 1:
+                    errors.append(f"Stage-4 packaged stub {stub['path']!r} requires its exact approved index_row once in the applied index")
             proposed_owners.add(path)
 
         updates = filing.get("entry_updates")
@@ -817,34 +1162,40 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
             by_id[eid].update(copy.deepcopy(patch))
         errors.extend(validate_index(proposed, categories))
 
-        ledger = session.get("actionable_ledger")
-        if not isinstance(ledger, list) or not ledger:
-            raise ValueError("session.actionable_ledger must be a nonempty list")
-        seen = set()
-        for row in ledger:
-            if not isinstance(row, dict) or not _nonempty_text(row.get("ledger_id")):
-                raise ValueError("actionable ledger row requires a nonempty ledger_id")
-            rid = row["ledger_id"]
-            if rid in seen:
-                errors.append(f"session: duplicate recommendation ID {rid}")
-            seen.add(rid)
-            if not preapproval and (
-                    not _nonempty_text(row.get("terminal_mapping"))
-                    or row["terminal_mapping"] != recommendations.get(rid)):
-                errors.append(f"{rid}: terminal_mapping must exactly match the approved table")
-        if seen != set(recommendations):
-            errors.append(f"recommendation coverage mismatch: missing={sorted(set(recommendations) - seen)}, extra={sorted(seen - set(recommendations))}")
+        if v2:
+            errors.extend(_validate_v2_coverage(
+                session, filing, recommendations, definitions, preapproval, root,
+                proposed_owners, recommendation_cells))
+        else:
+            ledger = session.get("actionable_ledger")
+            if not isinstance(ledger, list) or not ledger:
+                raise ValueError("session.actionable_ledger must be a nonempty list")
+            seen = set()
+            for row in ledger:
+                if not isinstance(row, dict) or not _nonempty_text(row.get("ledger_id")):
+                    raise ValueError("actionable ledger row requires a nonempty ledger_id")
+                rid = row["ledger_id"]
+                if rid in seen:
+                    errors.append(f"session: duplicate recommendation ID {rid}")
+                seen.add(rid)
+                if not preapproval and (
+                        not _nonempty_text(row.get("terminal_mapping"))
+                        or row["terminal_mapping"] != recommendations.get(rid)):
+                    errors.append(f"{rid}: terminal_mapping must exactly match the approved table")
+            if seen != set(recommendations):
+                errors.append(f"recommendation coverage mismatch: missing={sorted(set(recommendations) - seen)}, extra={sorted(seen - set(recommendations))}")
 
         reviews = filing.get("opportunity_reviews")
         if not isinstance(reviews, dict):
             raise ValueError("stage3_filing.opportunity_reviews must be an object")
-        immediate = {packet for packet in definitions if packet.startswith("P")}
-        if immediate - set(reviews):
-            errors.append(f"missing immediate opportunity reviews: {sorted(immediate - set(reviews))}")
+        required_reviews = definitions if v2 else {packet for packet in definitions if packet.startswith("P")}
+        if required_reviews - set(reviews):
+            label = "P/K/M" if v2 else "immediate"
+            errors.append(f"missing {label} opportunity reviews: {sorted(required_reviews - set(reviews))}")
         fields = ("project_objective", "implementation_ref", "gap", "operational_change",
                   "benefit_direction", "owner", "execution_conditions", "closure_basis")
         for packet, review in reviews.items():
-            if packet not in definitions and f"**{packet} —" not in text:
+            if packet not in definitions and (v2 or f"**{packet} —" not in text):
                 errors.append(f"opportunity review {packet!r} is not declared in the plan")
             if not isinstance(review, dict) or not all(_nonempty_text(review.get(f)) for f in fields):
                 errors.append(f"{packet}: opportunity review requires nonempty text in {fields}")
@@ -852,6 +1203,9 @@ def validate_plan_payload(session: dict, plan_path: Path, entries: list[dict],
             path = _handoff_path(review["owner"], root)
             if path is None or not (path.is_file() or path in proposed_owners):
                 errors.append(f"{packet}: opportunity review owner does not resolve")
+
+        if v2:
+            return errors
 
         # Resolve task references from definitions, never from their own mentions
         # in the terminal table. Only declared owners are read; no corpus sweep.
