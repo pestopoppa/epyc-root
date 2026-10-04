@@ -76,7 +76,14 @@
 #   MAX_BACKOFF HEALTH_TIMEOUT STARTUP_TIMEOUT HUB_PYTHON EPYC_ROOT
 #   HUB_CANONICAL_ROOT HUB_LAUNCH_MANIFEST HUB_SERVICE_NAME
 #   HUB_VIEW_REFRESH_ENABLED HUB_VIEW_REFRESH_INTERVAL_S HUB_VIEW_MARKER
-#   HUB_VIEW_REFRESHER.
+#   HUB_VIEW_REFRESHER HYGIENE_TICK_ENABLED HYGIENE_TICK_INTERVAL_S.
+#
+# HOST HYGIENE TICK (2026-10-04). This supervisor is the one in-container entry
+# point that a HOST cron re-runs every ~2 min, so it is what survives a reboot.
+# It therefore also launches scripts/system/host_hygiene_tick.py (disk-free
+# alarm, reaper keeper, daily worktree/stray-file/codex reports) — detached,
+# nice 19 / ionice idle, rate-limited, never awaited. The tick never touches
+# :8100 and a tick failure never affects the hub watchdog.
 # =============================================================================
 set -euo pipefail
 
@@ -113,6 +120,10 @@ HUB_VIEW_MARKER="${HUB_VIEW_MARKER:-.epyc-view-readonly}"
 # The supervisor's OWN sibling copy, never the view's: the refresher rewrites the
 # view's files, and bash reads a running script incrementally.
 HUB_VIEW_REFRESHER="${HUB_VIEW_REFRESHER:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/refresh_hub_view.sh}"
+# Host hygiene tick (see header). The tick takes its own flock, so an overlap is
+# a no-op; the interval only bounds how often a process is spawned.
+HYGIENE_TICK_ENABLED="${HYGIENE_TICK_ENABLED:-1}"
+HYGIENE_TICK_INTERVAL_S="${HYGIENE_TICK_INTERVAL_S:-600}"
 
 LOG_DIR="${EPYC_ROOT}/logs"
 SUP_LOG="${LOG_DIR}/hub_supervisor.log"       # this supervisor's own log
@@ -667,6 +678,39 @@ refresh_hub_view() {
   return 0
 }
 
+# --------------------------------------------------------------------------- #
+# Host hygiene tick — launched detached, never awaited (see header)
+# --------------------------------------------------------------------------- #
+HYGIENE_TICK_STATE="${LOG_DIR}/hub_supervisor.hygiene_tick"
+
+# Returns 0 always: hygiene must never take the hub watchdog down. Runs the
+# view's copy (else the CANONICAL root's — refuse_noncanonical_home has already
+# checked it), never a lane's; its HOME is always EPYC_ROOT.
+run_hygiene_tick() {
+  [[ "${HYGIENE_TICK_ENABLED}" == "1" ]] || return 0
+  local tick="${EPYC_ROOT}/scripts/system/host_hygiene_tick.py" last now
+  # Prefer the read-only VIEW's copy (origin/main exactly — never a session's
+  # uncommitted edit in the shared clone); fall back to the canonical root.
+  resolve_hub_spec
+  if is_hub_view "${HUB_SRC}" && [[ -f "${HUB_SRC}/scripts/system/host_hygiene_tick.py" ]]; then
+    tick="${HUB_SRC}/scripts/system/host_hygiene_tick.py"
+  fi
+  [[ -f "${tick}" ]] || return 0
+  last="$(cat "${HYGIENE_TICK_STATE}" 2>/dev/null || echo)"
+  now="$(date +%s)"
+  if [[ "${last}" =~ ^[0-9]+$ ]] && (( now - last < HYGIENE_TICK_INTERVAL_S )); then
+    return 0
+  fi
+  echo "${now}" > "${HYGIENE_TICK_STATE}" 2>/dev/null || true
+  mkdir -p "${LOG_DIR}/hygiene" 2>/dev/null || true
+  # 9>&-: the child must not inherit this supervisor's flock fd, or it would
+  # lock out every later supervisor run for as long as the tick lives.
+  HYGIENE_ROOT="${EPYC_ROOT}" setsid -f nice -n 19 ionice -c3 python3 "${tick}" tick \
+    </dev/null >>"${LOG_DIR}/hygiene/tick.out" 2>&1 9>&- || \
+    log "hygiene-tick: launch failed (rc=$?)"
+  return 0
+}
+
 check_hub_stale_source() {
   local src rc=0
   # Resolve in THIS shell: the mtime probe runs in command substitutions, and a
@@ -700,6 +744,7 @@ check_hub_stale_source() {
 cmd_once() {
   refuse_noncanonical_home
   acquire_lock
+  run_hygiene_tick
   if ! hub_down_confirmed; then
     reconcile_hub_pid
     # Same healthy-path sequence as cmd_loop (view refresh, sync, then stale-source
@@ -735,6 +780,7 @@ cmd_loop() {
     if [[ "${dp_rc}" -eq 0 ]]; then
       log "running stale code; restart from ${BASH_SOURCE[0]}"
     fi
+    run_hygiene_tick
     if health_ok; then
       reconcile_hub_pid
       # DEPLOYMENT (2026-08-28). These were missing here while `loop` is the mode

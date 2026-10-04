@@ -214,6 +214,11 @@ def check_runtime_well_formed(reg: dict) -> list[str]:
                     f"{rid}: runtime.restart_on_stale may not be true in mode=scheduled — "
                     "there is no pid to signal between ticks"
                 )
+            if rt.get("relaunch_if_down"):
+                bad.append(
+                    f"{rid}: runtime.relaunch_if_down may not be true in mode=scheduled — "
+                    "its own scheduler relaunches it"
+                )
             continue
 
         # mode == "daemon" (default) — unchanged from before `mode` existed.
@@ -233,6 +238,16 @@ def check_runtime_well_formed(reg: dict) -> list[str]:
                 f"{rid}: runtime.expected_path ({expected!r}) must match the row's own "
                 f"'script' ({row.get('script')!r}) — two names for one daemon is how they drift"
             )
+        relaunch = rt.get("relaunch_if_down")
+        if relaunch is not None and not isinstance(relaunch, bool):
+            bad.append(f"{rid}: runtime.relaunch_if_down must be a bool if present")
+        if relaunch:
+            argv = rt.get("start_argv")
+            if not isinstance(argv, list) or not argv or not all(isinstance(x, str) for x in argv):
+                bad.append(
+                    f"{rid}: runtime.relaunch_if_down=true requires a non-empty "
+                    "runtime.start_argv list of strings (host_hygiene_tick.py's keeper launches it)"
+                )
         restart = rt.get("restart_on_stale")
         if restart is not None and not isinstance(restart, bool):
             bad.append(f"{rid}: runtime.restart_on_stale must be a bool if present")
