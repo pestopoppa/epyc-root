@@ -8,9 +8,31 @@ fixed production anchor.
 
 ## Start here — open work (2026-09-29)
 
-**The champion is `90c12df42` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; V6R-4 advanced it on
-2026-09-25). This is the GLOBAL champion branch. Builds: `kernels/builds/cpu-20260925-90c12df42` and
-`kernels/builds/gpu-20260929-90c12df42`. Resolve the tip live before quoting it. Before any sweep folds "an unfolded
+**The champion is `1bceceb05` on `ak/champion/llama-cpp-ffc1bac82eec`** (v10 lineage; advanced 2026-10-04 by the
+KVU-19 fold, `90c12df42` → `1bceceb05`, fast-forward; see the fold ledger entry below). This is the GLOBAL champion
+branch. Builds: `kernels/builds/cpu-20261004-1bceceb05` and `kernels/builds/gpu-20261004-1bceceb05`. Resolve the tip
+live before quoting it.
+
+**Fold ledger — 2026-10-04, KVU-19 fold** (executed by workspace-ec, ledgered by ak-ds41-main):
+- **Folded:** `ac97e305a` (KVU-19a FA masked-block skip, GPU), `a0d0ae238` (its CPU half), `1bceceb05` (KVU-19b commit 1:
+  `n_seq` hint routes rows-are-sequences batches to the vec kernel). Fast-forward of `90c12df42`, no conflicts, moved with a
+  guarded CAS `update-ref`, so the champion shas are exactly the shas the store images were built from. `ak-loop-tree`
+  refreshed with `read-tree -m -u` (clean). Pushed to fork.
+- **Held out:** KVU-19b commit 2 `c7f5ac9ad` (WMMA sequence tiles): ~14% slower on aligned 4×8 verify and it breaks its own
+  skip-on ≡ skip-off exactness (6/119 cases); its planner is confirmed absent from the folded binary. Rework is with
+  workspace-ec.
+- **Gates (fold slot VERDICT PASS):** G0 kernel-coverage fold-check PASS, 0 losses (no GPU coverage; the slot is the GPU
+  gate). Exactness E1–E8 PASS (skip on ≡ off, bit-identical). CPU harness 86 + 141 cases bit-identical, CPU
+  test-backend-ops 5178/5178; GPU test-backend-ops 2949/2949 + 81/81 ×3. 27B DFlash2 paired smoke: champion ≡ skip-off ≡
+  skip-on, byte-identical (36% accept).
+- **Perf:** 4×1 decode at 327k occupied cells 9.17 → 5.51 ms; single-row FA with 114k foreign cells 2335 → 284 µs. At
+  serving scale (KVU-16b replay on the combined 19a+19b build, `artifacts/gpu-slot-ak-20261004/`), the skip made each
+  prefill chunk 4.5× cheaper at 240–280k occupied cells.
+- **Standing receipt:** champion-only, measured against the recorded v10 baseline (FOLD-2 G5 `ef81196d5`, 20 launches,
+  median 31.30 tok/s, unpaired by operator rule); result pending at filing.
+- **Loop anchors:** DS41 and Q38FN anchors still have `90c12df42` as an ancestor but are not the champion; both reseed on
+  `1bceceb05` at relaunch (INF-77 DS41-C121).
+- **Production:** carried by v11 via kernel-promotion (full candidate validated as a whole; no interim v10.x). Before any sweep folds "an unfolded
 CPU branch", read the **DO-NOT-FOLD ledger** below.
 
 DS41's champion of record on its own campaign lineage is `a1faab471e83`, with 4 serving-gated keeps (DS41-C68,
