@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-SCRATCH-LIFECYCLE-20261004",
+  "indexed_by": "ratify",
+  "receipt": "/workspace/artifacts/operator/ratify_scratch_lifecycle_20261004.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}

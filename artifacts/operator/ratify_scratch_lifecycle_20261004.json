@@ -1,0 +1,27 @@
+{
+  "schema": "epyc.operating_constraints_amendment.v1",
+  "decision": "SCRATCH-UNDER-DECLARED-HANDOFF-ROOTS-CLEANED-AT-WRAP-UP",
+  "gate_id": "RATIFY-SCRATCH-LIFECYCLE-20261004",
+  "operator_decision": "operator directives 2026-10-04 (leakage robustness; cleanup is a wrap-up step, not a cron job; strict per-handoff scratch roots)",
+  "ratified_at": "2026-10-04T03:17:32Z",
+  "operator": "pestopoppa",
+  "status": "ratified",
+  "target": "agents/shared/OPERATING_CONSTRAINTS.md",
+  "section": "Filesystem and Storage; Parallel Subagent Fan-Out",
+  "rule": "scratch lives under the owning handoff's declared **Scratch** roots and is removed at wrap-up Step 7b / /log by scripts/system/scratch_cleanup.py (worktrees only via worktree_gate.py, plain scratch to the trash, load-bearing paths declared); downloads go through scripts/utils/safe_download.py; every subagent brief names its scratch root",
+  "origin": "2026-10-03 disk audit (265 worktrees in 10 days, 215 landed+clean+idle>7d = 233 GiB; 9.2 GB .incomplete stubs) and the 2026-10-04 DS41 crash after a sweep removed a worktree a launcher exported as EPYC_ROOT_REPO",
+  "evidence": "/mnt/raid0/llm/tmp/disk-audit-20261003/ (outside the repo)",
+  "not_changed": "adds three bullets only; no line rewritten; section headings unchanged",
+  "patch": {
+    "path": "artifacts/operator/scratch-lifecycle-20261004.patch",
+    "sha256": "164711786bc93f19dfb30e7bd8d8e0329c6407e79544406b5ddf317573b148c7"
+  },
+  "state": {
+    "agents/shared/OPERATING_CONSTRAINTS.md": {
+      "sha256_before": "66230199c51fc5666bf4e064d9d3f25ee79a8c4617ac33c64181f40a41ecdd74",
+      "sha256_after": "f3199dfb1458771a57d49751e52e59f1030639c586d06b9bfb893950ec137bad"
+    }
+  },
+  "consolidated_receipt": "artifacts/operator/ratify_scratch_lifecycle_20261004.receipt.json",
+  "applied_by": "scripts/operator/ratify_scratch_lifecycle_20261004.sh"
+}
