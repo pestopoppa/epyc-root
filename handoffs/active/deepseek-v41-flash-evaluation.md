@@ -95,6 +95,8 @@ tensors" reading was wrong (DS41-B0).
    over full KV with a mask. Establish whether `deepseek4`'s `build_lid_top_k` path gathers
    sparsely or masks, then whether the V4.1 candidate-block level changes that. Never claim
    long-context sparse-compute value without the answer.
+   **2026-10-04 (code reading, DS41-C123):** V4.1's final attention masks densely (−inf over all compressed rows)
+   and concatenates the full compressed plane every step; it does not gather sparsely.
 2. **Top-k cap corruption.** On GLM-5.2 an under-sized final-attention cap corrupted output past
    the cap. Re-derive this for `index_topk=512` plus the 2048-block candidate stage; do not
    transfer thresholds.
@@ -1075,6 +1077,21 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   1800 → 3600, so a peer wait ends as a refusal, never as a timeout scored as a failure. Deployed into DS41's pinned
   worktree `research-ds41-run10` as local commit `5d947693` (ak_check.py only); the Q38FN worktree runs `aef2da6c`.
   Residual: DS41-C120.
+- [ ] DS41-C123 — **Final attention is a dense −inf mask plus a full compressed-plane concat; the long-context lever
+  is the graph/mask/host path, not the FA kernel.** (filed 2026-10-04, from the AutoKernel long-context audit
+  `/mnt/raid0/llm/tmp/ak-longctx-audit-20261004/REPORT.md` §5; code reading at `dd6c9cdbd`, arithmetic not measured.)
+  `deepseek41.cpp:1095-1100`: the top-k becomes a −inf mask over all compressed rows (`build_top_k_mask`), and
+  `ggml_concat(raw_k, comp_k)` copies the full compressed plane in every layer at every step (~29 KiB per context
+  token per step: ~0.9 GiB at 32k, ~3.6 GiB at 128k, against ~8.7 GB/token of weights). The CPU FA kernel skips −inf
+  cells one by one (`ops.cpp:9367`), so FA dot products stay at ~640 rows per head; what grows with context is the
+  concat, the mask fill / set_rows / add, the lightning indexer and `top_k` over the whole compressed set on 8
+  index-source layers, and the host-side mask rebuild (DS41-C9). Attention design from GGUF metadata: sliding window
+  128; compression ratio 2 on layers 2–19 and 1 on 20–39; `index_topk 512`; 64 heads over a 512-dim shared latent
+  (K = V). This partly answers finding 1 and DS41-T2's disposition question (dense mask, at the final-attention
+  stage); the cap-semantics half of T2 stays open. AutoKernel work on it is INF-81 AKX-ALL-12 (DS41 attention-graph
+  route, which needs the AKX-ALL-4 long surface and the AKX-ALL-5 restore-identity gate). Done when AKX-ALL-12
+  measures one candidate on this path at depth, or a measured profile at depth shows the concat/mask/indexer share
+  is immaterial.
 - [ ] DS41-C26 — **A stop during floor calibration must stop launching.** DS41-C22 covers actor calls only.
   Measured when run 8 stopped (2026-09-24 ~15:32Z): TERM to `serial_run` and `run.py` drained, calibration started
   its next `matched_process_v2` launch (llama-server 3961920), and ending the run needed KILL on `run.py`,
