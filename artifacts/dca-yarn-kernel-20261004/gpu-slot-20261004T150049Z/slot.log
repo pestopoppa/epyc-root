@@ -1,0 +1,7 @@
+[2026-10-04T15:00:50Z] commit 9264f8095e4272f84e3b375e73b57ec380ecb328  VRAM before: 13094912
+[2026-10-04T15:00:50Z] linkage PASS
+[2026-10-04T15:00:50Z] 1 test-dca on ROCm0
+[2026-10-04T15:00:51Z] test-dca ROCm0 PASS
+[2026-10-04T15:00:51Z] test-dca CPU (HIP build) PASS
+[2026-10-04T15:00:52Z] 2 Qwen2.5-0.5B ppl 64K on ROCm0
+[2026-10-04T15:05:28Z] done: /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/gpu-slot-20261004T150049Z/summary.txt

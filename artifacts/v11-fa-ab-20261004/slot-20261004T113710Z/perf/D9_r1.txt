@@ -1,0 +1,36 @@
+# run_perf arm=/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D bin=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/fa_v11 date=2026-10-04T11:38:36Z host_cpus=160-183
+# expect_hip=/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin/libggml-hip.so.0.16.0
+# fa_v11 api=champion backend=ROCm0 mode=perf
+env FA_TIMEOUT=120
+env GGML_CUDA_FA_CDNA_D256_MMA_MIN_ROWS=9
+env LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin/libggml-hip.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin/libggml-cpu.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin/libggml-base.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D/bin/libggml.so.0.16.0
+# backend_name=ROCm0 threads=0
+perf rows=1 layout=drafter n_kv=2048 us=40.49 tflops=0.829 kv=q8_0 reps=100 vis=2048 nonfinite=0 d=128 heads=32/8
+perf rows=9 layout=drafter n_kv=2048 us=131.92 tflops=2.285 kv=q8_0 reps=100 vis=18396 nonfinite=0 d=128 heads=32/8
+perf rows=64 layout=drafter n_kv=2048 us=185.36 tflops=11.407 kv=q8_0 reps=100 vis=129056 nonfinite=0 d=128 heads=32/8
+perf rows=1 layout=drafter n_kv=2304 us=42.06 tflops=0.798 kv=q8_0 reps=100 vis=2048 nonfinite=0 d=128 heads=32/8
+perf rows=9 layout=drafter n_kv=2304 us=131.16 tflops=2.302 kv=q8_0 reps=100 vis=18432 nonfinite=0 d=128 heads=32/8
+perf rows=64 layout=drafter n_kv=2304 us=298.44 tflops=7.196 kv=q8_0 reps=100 vis=131072 nonfinite=0 d=128 heads=32/8
+perf rows=1 layout=single n_kv=16384 us=264.06 tflops=1.525 kv=q8_0 reps=100 vis=16384 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=4x1 n_kv=16384 us=277.93 tflops=1.449 kv=q8_0 reps=100 vis=16384 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=single n_kv=16384 us=278.34 tflops=5.786 kv=q8_0 reps=100 vis=65530 nonfinite=0 d=256 heads=24/4
+perf rows=9 layout=single n_kv=16384 us=650.21 tflops=5.572 kv=q8_0 reps=100 vis=147420 nonfinite=0 d=256 heads=24/4
+perf rows=18 layout=single n_kv=16384 us=906.93 tflops=7.987 kv=q8_0 reps=100 vis=294759 nonfinite=0 d=256 heads=24/4
+perf rows=27 layout=single n_kv=16384 us=1133.19 tflops=9.586 kv=q8_0 reps=100 vis=442017 nonfinite=0 d=256 heads=24/4
+perf rows=36 layout=single n_kv=16384 us=1392.04 tflops=10.402 kv=q8_0 reps=100 vis=589194 nonfinite=0 d=256 heads=24/4
+perf rows=512 layout=single n_kv=16384 us=12238.46 tflops=16.582 kv=q8_0 reps=48 vis=8257792 nonfinite=0 d=256 heads=24/4
+perf rows=1 layout=single n_kv=131072 us=1996.82 tflops=1.613 kv=q8_0 reps=100 vis=131072 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=4x1 n_kv=131072 us=2065.69 tflops=1.559 kv=q8_0 reps=100 vis=131072 nonfinite=0 d=256 heads=24/4
+perf rows=4 layout=single n_kv=131072 us=2068.80 tflops=6.228 kv=q8_0 reps=100 vis=524282 nonfinite=0 d=256 heads=24/4
+perf rows=9 layout=single n_kv=131072 us=4888.83 tflops=5.930 kv=q8_0 reps=100 vis=1179612 nonfinite=0 d=256 heads=24/4
+perf rows=18 layout=single n_kv=131072 us=7384.90 tflops=7.851 kv=q8_0 reps=81 vis=2359143 nonfinite=0 d=256 heads=24/4
+perf rows=27 layout=single n_kv=131072 us=9031.09 tflops=9.629 kv=q8_0 reps=66 vis=3538593 nonfinite=0 d=256 heads=24/4
+perf rows=36 layout=single n_kv=131072 us=11652.07 tflops=9.951 kv=q8_0 reps=51 vis=4717962 nonfinite=0 d=256 heads=24/4
+perf rows=512 layout=single n_kv=131072 us=96500.74 tflops=17.057 kv=q8_0 reps=6 vis=66978048 nonfinite=0 d=256 heads=24/4
+perf_done cases=22 wall_s=6.1
+arm_check=OK
+rc=0

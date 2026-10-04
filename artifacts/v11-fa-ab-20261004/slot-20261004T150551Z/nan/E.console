@@ -1,0 +1,1 @@
+run_nan nan gpu-20261004-e9b3b04df-E rc=0 summary mode=nan cases=228 ok=222 nonfinite=6 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=9.7

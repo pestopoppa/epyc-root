@@ -527,3 +527,161 @@ Prepared, not applied (`/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`):
 - the RTG-57 and RTG-58 Next-action cells;
 - two operator-queue rows (STACKCHG-8083BATCH signature, REGION-SIBLING-1 merge);
 - three adapter source-table rows.
+
+# Wrap-up 5 (~10:30-16:00Z): KVU-16h confirmed and folded, champion Y, DF2-9 root-caused, v11 FA decided
+
+Per-task wrap-up, run by a subagent for workspace-ec. No index pruning and no wiki sweep (operator cadence). Index
+rows and operator-queue rows are PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-pm/INDEX_ROWS.md`; none were applied.
+
+## KVU-16h: confirmed and fixed (complete)
+
+- Run `fuc-20261004T110509Z`, durable copy `artifacts/kvu16h-vram-20261004/results/fuc-20261004T110509Z/`.
+- Arm A (v10): +5.83 GiB over 21 `n_max: 0` → prefill events (0.28 GiB per event); control +0.06.
+- Arm B (HIP graphs off): +0.05 GiB, but no-draft decode −5.6%.
+- Arm C (arena fix `656c9a66b`): +0.057 GiB; decode +1.0% no-draft, +4.9% drafted.
+- The fix is in champion Y (`61bdb185c`).
+- Ticked: KVU-16h, KVU-16h-confirm, KVU-16h-fold.
+- KVU-16i: the term drops to the bounded ~1.42 GiB once a v11 carrying `656c9a66b` is promoted (KVU-16i-v11 filed).
+  Until then v10 production keeps +8.08 GiB, under the rule "no per-request `n_max: 0` against :8083".
+
+## Champion standing
+
+- Paired v10 vs `1bceceb05` receipt: 14 launches, tg +0.61% [−0.20, +1.41], pp −0.21%, identity equal. Ingested as
+  the v10 `serving_probe` baseline; KVU-19b-fold-c1-receipt ticked.
+- The raw run dir was lost to a subagent's glob `rm` (INC-20261004-glob-rm-deleted-receipt-evidence, recorded).
+  Surviving evidence: `artifacts/champion-fold-kvu19-20261004/paired-receipt-20261004T094057Z/`.
+- Candidate X `cf23279ae`, paired: tg −0.23% [−0.57, +0.23]; FA `test-backend-ops` 2949/2949.
+- Operator chose Y `61bdb185c`: DS41 serving-gated keeps + `656c9a66b`, no IQ4_NL allowlist.
+  - Y champion-only receipt: tg +0.35%; pp +18.2% is flagged as unpaired drift.
+- workspace-89 advanced the champion `1bceceb05` → `61bdb185c`.
+- Next fold: Yfa `9a3f1392a` (+ CPU FA hybrid v2), gates passed.
+- X and Y run dirs copied durably to `artifacts/champion-fold-kvu19-20261004/receipt-ab/`, with `SOURCES.sha256`.
+
+## v11 FA A/B (V11-FA-1/2 complete; -3 and -4 updated)
+
+Slots: `slot-20261004T113710Z` (merged) and `slot-20261004T150551Z`. Durable copies are in
+`artifacts/v11-fa-ab-20261004/slot-*/` (`summary.txt`, `perf_table.tsv`, `det/`, `tbo/`, probe summaries; the 5.7 MB
+`*.nodes.tsv` dumps were left in scratch).
+
+**DF2-9 is root-caused: the pre-#27870 MMA divergent-barrier race.**
+
+| arm | model probe | `test-backend-ops` FA |
+|---|---|---|
+| B (ROCWMMA OFF) | FAIL, 6/10 runs (first bad `FLASH_ATTN_EXT` at layer 3) | 598/640 |
+| E (B + #27870) | PASS | 640/640 |
+| C | PASS | 640/640 |
+| A | PASS | — |
+
+- #27870 is a mandatory v11 carry (V11-FA-6 filed). #28576 is not needed for DF2-9.
+- Perf on the v11 route, against rocWMMA:
+
+  | band | ratio vs rocWMMA |
+  |---|---|
+  | 4×1 decode | ×0.60 |
+  | 9-27 rows | ×1.14-1.24 (TILE slower) |
+  | 36 rows | ×0.5-0.9 |
+  | prefill-512, master | ×0.84-0.90 |
+  | prefill-512, C | ×1.09-1.16 |
+  | drafter 9-row D=128 | ×1.7-1.9 slower |
+
+- Patches D and D9 do not help, and the ncols cap gives no gain (V11-FA-3 updated, left open for the register
+  re-check on master's code object).
+- V11-FA-4 (carry rocWMMA for 9-32 rows) is justified.
+- The upstream issue is perf-only and WARRANTED by rule, as a draft only (V11-FA-5 filed). The NaN is not an
+  upstream issue, since #27870 already fixes it.
+
+## KVU-19b rework v2 (`54df2c030`), slot3-20261004T115000Z
+
+- All five bit-identity criteria PASS.
+- Perf: 4×9 ×0.708; uneven ×0.88-0.90; aligned ×0.98.
+- `test-backend-ops` 118/118 ×2.
+- Two calibration FAILs are under triage: the hs=128 bound (22 cases at nmse 7.79e-08), and case 152 vs the CPU
+  reference, which fails on every arm, k19a included. Filed as KVU-19b-rework-c2-cal; the parent stays open.
+- Durable copy: `artifacts/fa-maskskip-batched-20261004/slot3-20261004T115000Z/`.
+
+## FA-INT64-OFFSET GPU slot (`gpu-slot-20261004T145625Z`): PASS
+
+- Fixed build: 4/4 `mask_ne0` cases. Champion: 1/4 (3 FAIL, ERR 0.03-0.59).
+- Full `FLASH_ATTN_EXT` suite on the fixed build: 2872/2872. 119/119 bit-identical to the champion on existing cases.
+- YARN-FA-INT64 added as done; the fold and an upstream draft are filed.
+
+## DCA
+
+Perplexity on Qwen2.5-0.5B at 32K-64K (lower is better):
+
+| arm | GPU | CPU |
+|---|---|---|
+| plain 64K | 14.39 | 13.63 |
+| YaRN | — | 12.63 |
+| DCA | 13.07 | 12.46 |
+| DCA + T | 12.96 | — |
+
+- DCA beats raw extrapolation on both devices; DCA vs YaRN is within the one-window spread.
+- The GPU-vs-CPU offset is unexplained (YARN-DCA-XDEV filed). YARN-DCA-E1 (the needle A/B on the 27B) is filed.
+
+## Other advances
+
+- **CPU FA fp16-VKQ:** hybrid v2 `a99e5330a` is folded into Yfa. The end-to-end bench is running, so it is marked
+  PENDING (CPU-FA-VKQ-1 and -2 annotated).
+- **YARN-FN-FIX ticked:** `5bfdcd18c` plus `6c126e975`, with the fused-rope test green. YARN-FN-FIX-fold filed.
+- **Flash-Next fused decode:** the divergence and double-free repro is committed (`45d8f2937`). Filed as FD-DIV-1 in
+  `cpu-fused-decoder-blocks.md`, owner TBD (the Flash-Next owner). Keep `GGML_FUSED_DECODE_OFF=1`.
+- **G1 round-2 review:**
+  - Manual windows: ACK-with-fixes. AK-requested windows: NACK (F4/F5/F6).
+  - orch `4b871cc5` is in the shared checkout (operator-approved). Device-busy `6ce26fc9` is not (operator approval
+    needed; OP row prepared).
+  - The watchdog is not armed yet: it needs host cron after today's restore (AKX-ALL-15a, OP row prepared).
+  - AKX-ALL-15b and -15c filed.
+- **gpu-quiet lock live** (orch `c5dc4ae5`). Three lessons went to the incident log as a same-day recurrence, and to a
+  PREPARED OPERATING_CONSTRAINTS patch: `artifacts/operator/oc-gpu-quiet-lessons-20261004.patch`
+  (`git apply --check` clean).
+- **Prefill budget (KVU-16g):** rebased on Y as `98c0ce12a`. The slot refusal was a `pipefail` false alarm, now fixed.
+  The GPU A/B is next in the queue.
+- **Operator decisions today:**
+  - (a) restore :8083 only after YaRN E1;
+  - (b) champion = Y;
+  - (c) measure v10 once on DFlash2 (done, paired);
+  - (d) keep the shared checkout at `c5dc4ae5` and approve `4b871cc5`;
+  - (e) the AK GPU lane's first job is multi-row dequant-GEMV (AKX-ALL-15c).
+- **Belief kernel:** the KVU-16h adapter row status was refreshed. New source rows: the v11 FA A/B slot, the DF2-9
+  model probe, and the DCA / FA-INT64 slots. Tasks VB-V11FA and VB-LONGCTX-KERNEL filed.
+
+## Checkbox ledger (wrap-up 5)
+
+- **Flipped or added as done (8):** KVU-16h, KVU-16h-confirm, KVU-16h-fold, KVU-19b-fold-c1-receipt, V11-FA-1,
+  V11-FA-2, YARN-FN-FIX, YARN-FA-INT64.
+- **Filed (16):** KVU-16i-v11, KVU-19b-rework-c2-cal, V11-FA-2b, V11-FA-5, V11-FA-6, YARN-DCA-E1, YARN-DCA-XDEV,
+  YARN-FA-INT64-fold, YARN-FA-INT64-up, YARN-FN-FIX-fold, FD-DIV-1, AKX-ALL-15a, AKX-ALL-15b, AKX-ALL-15c, VB-V11FA,
+  VB-LONGCTX-KERNEL.
+
+## Declines (explicit, wrap-up 5)
+
+- **Re-running the lost paired receipt.** The verdict stands on the ingested loop-memory records. The champion has
+  since moved to Y, with its own receipts, so a re-run would spend a GPU window without informing any decision.
+- **An upstream issue for the DF2-9 NaN.** #27870 already fixes it upstream.
+- **A separate #28576 carry task.** DF2-9 does not need it, and a master-based v11 contains it anyway.
+- **A separate ncols-cap decline task.** It stays inside V11-FA-3, which closes on the register re-check.
+- **Re-running the CPU `dca_t` arm.** The GPU slot measured DCA+T, and cross-device comparison waits on YARN-DCA-XDEV.
+- **A new task for the "no `n_max: 0` against :8083" rule.** The existing KVU-16h-runner enforces it for runners,
+  and KVU-16i records it.
+- **A handoff task for the `6ce26fc9` checkout update.** It is an operator decision, so it goes to the operator queue
+  (prepared row).
+
+## Files (wrap-up 5)
+
+| Repo | File | Change |
+|---|---|---|
+| root | `handoffs/active/kv-unified-stack-rollout.md` | KVU-16h ×3, fold-c1-receipt, V11-FA-1/2 ticked; -3/-4, KVU-16g/16i, rework-c2, CPU-FA-VKQ-1/2 annotated; 6 tasks filed |
+| root | `handoffs/active/yarn-context-extension-research.md` | YARN-FN-FIX ticked; YARN-FA-INT64 added as done; DCA results; 5 tasks filed |
+| root | `handoffs/active/cpu-fused-decoder-blocks.md` | FD-DIV-1 filed |
+| root | `handoffs/active/autokernel-all-devices-all-dimensions.md` | AKX-ALL-15 G1 review state; -15a/b/c filed |
+| root | `handoffs/active/dflash2-block-drafter-experimental-build.md` | DF2-9 root cause noted |
+| root | `handoffs/active/vidya-belief-substrate-program.md` | VB-V11FA, VB-LONGCTX-KERNEL filed; VB-KVU16H note |
+| root | `scripts/vidya/adapters/README.md` | 3 source rows added; KVU-16h row status |
+| root | `docs/reference/agent-config/INCIDENT_LOG.md` | INC-20261004-glob-rm-deleted-receipt-evidence; second same-day recurrence (gpu-quiet) |
+| root | `artifacts/operator/oc-gpu-quiet-lessons-20261004.patch` | NEW, PREPARED OPERATING_CONSTRAINTS patch (not applied) |
+| root | `artifacts/champion-fold-kvu19-20261004/receipt-ab/` | NEW: X and Y run dirs + `SOURCES.sha256` |
+| root | `artifacts/v11-fa-ab-20261004/slot-20261004T{113710,150551}Z/` | NEW: slot summaries, perf tables, probes |
+| root | `artifacts/kvu16h-vram-20261004/results/fuc-20261004T110509Z/` | NEW: row-4c result |
+| root | `artifacts/fa-maskskip-batched-20261004/` | NEW: KVU-19b slot3 |
+| root | `artifacts/dca-yarn-kernel-20261004/` | NEW: NOTES, DCA slot, FA-INT64 slot, fused repro log |

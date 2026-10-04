@@ -2193,6 +2193,8 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   decomposition row. Grade via `claim_tuple.grade()`; no new ladder. Row PREPARED in
   `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and an adapter projects the
   20261004T063830Z summary and the row-4c result.
+  - *(2026-10-04 PM.)* The row is applied, and row 4c ran (`results/fuc-20261004T110509Z/`, durable copy under
+    `artifacts/kvu16h-vram-20261004/`); the adapter itself is still to be written.
 - [ ] **VB-CPU-FA-VKQ — write side for the CPU FlashAttention FP16-VKQ harness and probe** (filed 2026-10-04,
   workspace-ec). Producers: the CPU FA harness (`harness-out/{nan,det,perf}_*.txt`: per-case finite/mismatch verdict
   and nmse vs a CPU-exact reference, determinism hashes, µs per FA op) and the model probe `fa_vkq_probe`
@@ -2202,6 +2204,25 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
   (2) the probe's `acc_peak` ≤ 238 is for the named prompts on the architect only. Grade via `claim_tuple.grade()`;
   no new ladder. Row PREPARED in `/mnt/raid0/llm/tmp/wrapup-ec-fold/INDEX_ROWS.md`. Done when the row is applied and
   an adapter projects the harness summaries.
+- [ ] **VB-V11FA — write side for the v11 FA routing A/B slot and the DF2-9 model probe** (filed 2026-10-04,
+  workspace-ec, CLAUDE.md *Belief Kernel*).
+  - Producers: `gpu_slot_v11fa.sh` → `slot-<ts>/summary.txt` and `perf_table.tsv` (µs per FA op × layout × rows ×
+    n_kv × arm), `det/` exactness, `tbo/` counts; `fa_nan_probe` per arm (verdict, runs_nonfinite, first bad node).
+  - Durable copy: `artifacts/v11-fa-ab-20261004/`.
+  - Bind the arm build and commit, the ROCWMMA flag, the cherry-picks and the knobs.
+  - Cautions: (1) kernel µs is not serving tok/s; (2) the server DF2-9 arm has no verdict (port busy); (3) a probe
+    PASS is 0/10 on the named prompts only.
+  - Grade via `claim_tuple.grade()`; no new ladder. The source-table rows are applied in `scripts/vidya/adapters/README.md`.
+  - Done when an adapter projects both slots' perf tables and the per-arm probe verdicts.
+- [ ] **VB-LONGCTX-KERNEL — write side for the DCA perplexity and FA-INT64-OFFSET slots** (filed 2026-10-04,
+  workspace-ec).
+  - Producers: `gpu_slot_dca.sh` and `real_model_ppl_cpu.sh` (PPL ± per arm), and `gpu_slot_fa_int64.sh`
+    (`test-backend-ops` counts, bit-identity).
+  - Durable copy: `artifacts/dca-yarn-kernel-20261004/`.
+  - Bind the build commit, model, scored window and device.
+  - Cautions: one window per arm, and the GPU-vs-CPU offset is unexplained (YARN-DCA-XDEV).
+  - Grade via `claim_tuple.grade()`; no new ladder. The row is applied.
+  - Done when an adapter projects both slots' summaries.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;

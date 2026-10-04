@@ -518,6 +518,9 @@ Artifacts: `artifacts/architect-bench-gpu-20260814/mtp_ab_20260819/` and `mtp_nm
       inherited by luck. Related: **CH-8** in
       [`autokernel-champion-aggregate.md`](autokernel-champion-aggregate.md), where AutoKernel's own
       GPU builder omits it.
+      - **Root cause, 2026-10-04** (V11-FA-2 in [`kv-unified-stack-rollout.md`](kv-unified-stack-rollout.md)): the
+        pre-#27870 MMA divergent-barrier race on the ROCWMMA-OFF route. The 27B probe fails 6/10 with OFF and
+        passes with OFF + #27870 alone. v11 must carry #27870 (V11-FA-6); the pin stays until then.
 
 ## 2026-08-28 RESULTS — DF2-5 PASS, DF2-6 non-parity but not DFlash2's fault
 

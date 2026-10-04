@@ -1,0 +1,37 @@
+{
+ "label": "armC_fix",
+ "pid": 1084687,
+ "extra_env": {},
+ "phases": [
+  {
+   "phase": "warm",
+   "capped": false,
+   "own_before_b": 54517784576,
+   "own_after_b": 55506509824,
+   "delta_gib": 0.921
+  },
+  {
+   "phase": "t7a",
+   "capped": false,
+   "own_before_b": 55506509824,
+   "own_after_b": 55567327232,
+   "delta_gib": 0.057
+  }
+ ],
+ "skipped": [],
+ "aborted": null,
+ "load_s": 6.0,
+ "healthy": true,
+ "soft_ceiling_hit": false,
+ "teardown": {
+  "pid": 1084687,
+  "already_exited": false,
+  "sent": [
+   "TERM"
+  ],
+  "at": "2026-10-04T11:25:17Z",
+  "verified_dead": true,
+  "returncode": 0
+ },
+ "peak_own_gib": 51.751
+}

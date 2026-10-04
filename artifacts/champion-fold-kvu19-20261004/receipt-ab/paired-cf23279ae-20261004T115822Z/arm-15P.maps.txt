@@ -1,0 +1,8 @@
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml-hip.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libggml.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-common.so.0.0.10303
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama-server-impl.so
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libllama.so.0.0.10303
+/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/libmtmd.so.0.0.10303

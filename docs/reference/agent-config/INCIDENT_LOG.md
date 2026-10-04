@@ -530,3 +530,41 @@ and a `gitnexus` re-index. Three lessons, all recorded in agent memory the same 
   they need the same `region-lock run` wrapper, or must wait for the window to close.
 The lock-layer gap that made sibling pinning invisible is fixed on epyc-orchestrator `fix/region-lock-smt-siblings-ec`
 (`4ae008a8`, REGION-SIBLING-1); its merge awaits operator approval.
+
+**Second recurrence, same day (2026-10-04, afternoon), on the new gpu-quiet lock** (orchestrator `c5dc4ae5`, live
+2026-10-04). Three more lessons:
+- **Self-deadlock under nested holds.** An inner bench helper requested gpu-quiet `shared` while its own caller already
+  held it `exclusive`, so the run waited on itself. A helper must not take the lock again under an outer hold. It
+  either inherits the hold or takes the lock only when it is called unwrapped.
+- **`region-lock run` changes directory into the epyc-orchestrator repo before it execs the command**, so a relative
+  path in the wrapped command resolves against the orchestrator checkout. Every path in a wrapped command must be
+  absolute.
+- **Non-FIFO locks let subagent CPU benches starve a GPU headline run.** Free-running subagent CPU benches kept
+  re-taking claims that the headline measurement was waiting on. Subagent benches are scheduled around headline runs,
+  not left free-running.
+Rules fed: all three are a PREPARED patch for operator ratification into `agents/shared/OPERATING_CONSTRAINTS.md`
+§ Inference and Benchmarks (`artifacts/operator/oc-gpu-quiet-lessons-20261004.patch`).
+
+## INC-20261004-glob-rm-deleted-receipt-evidence
+On 2026-10-04 at ~11:37Z, a workspace-ec subagent cleaning up after a dry run ran `rm -rf receipt-ab/paired-*` in
+`/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/`. The glob also matched `paired-20261004T094057Z/`, the raw run
+directory of the paired v10-vs-champion `1bceceb05` serving receipt. That directory held 14 launches' per-launch probe
+JSONs, server logs, `result.json`, `standing-ab.json` and `writer-samples.json`, and it had been ingested at 10:34Z as
+the v10 `serving_probe` baseline.
+
+The delete was a direct `rm -rf`, not trash-first, so nothing could be recovered. Two things survive: the full run
+log, and the four loop-memory records that `production ingest-serving` wrote (per-launch tg/pp samples, protocol and
+host facts). Both are now in `artifacts/champion-fold-kvu19-20261004/paired-receipt-20261004T094057Z/`, and the
+records' `source.path` dangles.
+
+The receipt's verdict (tg +0.61% [−0.20, +1.41], pp −0.21%, identity equal) stands on the ingested records, but it can
+no longer be re-analysed from the raw data. The cleanup named its targets by pattern, not by identity, and the pattern
+matched evidence that the subagent had not created.
+
+Rules fed:
+- Trash-first deletion through `scripts/safety/guarded_rm.sh` is already canonical (`agents/shared/OPERATING_CONSTRAINTS.md`
+  § Destructive operations), so this was a violation of the rule, not a gap in it. The missing rule, "remove only the
+  exact paths you created, never a glob", is in the same prepared patch
+  (`artifacts/operator/oc-gpu-quiet-lessons-20261004.patch`).
+- Any evidence that a ledger cites gets a durable copy under root `artifacts/` before cleanup runs in its scratch tree.
+  The X and Y run dirs were copied the same day (`artifacts/champion-fold-kvu19-20261004/receipt-ab/`).

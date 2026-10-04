@@ -1,0 +1,136 @@
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+Testing 2 devices
+
+Backend 1/2: ROCm0
+  Device description: AMD Instinct MI210
+  Device memory: 65520 MB (65416 MB free)
+
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=1,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=2,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=8,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=32,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=75,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=1,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=2,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=8,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=32,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=75,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=1,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=2,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=8,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=32,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=75,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=1,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=2,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=8,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=32,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=75,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=1,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=1,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=2,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=2,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=8,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=8,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=512,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=4,nr2=6,kv=12288,nb=512,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=1,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=1,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=2,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=2,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=8,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=8,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=512,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=512,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=1,nr2=8,kv=8192,nb=1,n_seq=8,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=1,nr2=8,kv=8192,nb=16,n_seq=8,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=2,nr2=4,kv=8192,nb=64,n_seq=16,run=64,n_free=512,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=16384,nb=1,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=16384,nb=8,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=1,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=8.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=10.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=80,hsv=80,nh=4,nr2=4,kv=8192,nb=8,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=40,hsv=40,nh=4,nr2=4,kv=8192,nb=3,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=192,hsv=128,nh=2,nr2=8,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=576,hsv=512,nh=1,nr2=16,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=512,hsv=512,nh=1,nr2=8,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=0,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q4_0,type_V=q4_0,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=2,first_group=0): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=0): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=2,n_seq=2,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=2,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=4,n_seq=4,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=8,n_seq=8,run=256,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=8,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=16384,nb=4,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=10.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=1,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=8.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=64,hsv=64,nh=2,nr2=4,kv=8192,nb=16,n_seq=16,run=64,n_free=512,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=16,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=16384,nb=32,n_seq=4,run=4096,n_free=0,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=25,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=1): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=11,n_seq=4,run=300,n_free=1792,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=4,first_group=8): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=75,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=bf16,type_V=bf16,hint=3,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=64,n_seq=16,run=64,n_free=512,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=16,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=12288,nb=512,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=3,first_group=3): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=600,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=2): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=80,hsv=80,nh=4,nr2=4,kv=8192,nb=24,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=576,hsv=512,nh=1,nr2=16,kv=8192,nb=4,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=1,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=8.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=4,kv=8192,nb=36,n_seq=4,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=10.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=12288,nb=45,n_seq=3,run=2048,n_free=2560,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=3,first_group=5): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr2=6,kv=8192,nb=36,n_seq=4,run=64,n_free=512,max_bias=0.000000,logit_softcap=0.000000,type_K=f16,type_V=f16,hint=4,first_group=0): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr2=6,kv=8192,nb=8,n_seq=2,run=1024,n_free=1024,max_bias=0.000000,logit_softcap=0.000000,type_K=q8_0,type_V=q8_0,hint=8,first_group=0): [1;32mOK[0m
+  118/118 tests passed
+  Backend ROCm0: [1;32mOK[0m
+Backend 2/2: CPU
+  Skipping
+2/2 backends passed
+[1;32mOK[0m

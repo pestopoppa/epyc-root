@@ -1,0 +1,32 @@
+# PREPARED, NOT APPLIED. Operator ratification required (OPERATING_CONSTRAINTS is operator-amended).
+# Origin: INC-20261004-subagent-unlocked-cpu-in-held-window (second recurrence), INC-20261004-glob-rm-deleted-receipt-evidence.
+# Apply from the repo root: git apply artifacts/operator/oc-gpu-quiet-lessons-20261004.patch
+--- a/agents/shared/OPERATING_CONSTRAINTS.md	2026-10-04 16:18:41.042411668 +0000
++++ b/agents/shared/OPERATING_CONSTRAINTS.md	2026-10-04 16:18:41.042662401 +0000
+@@ -156,6 +156,16 @@
+   agent-harness traffic, as run metadata. Procedure: `docs/guides/agent-workflows/benchmark-analyst.md`
+   → *Your own load, and what counts as noise*. (origin: 2026-09-30 — subagent pytest during a DS41
+   floor calibration verified the floor at 4.533% instead of ~1.9%; operator ruling 2026-10-04)
++- **gpu-quiet and region locks: hold once, use absolute paths, and schedule subagent benches.**
++  - An outer hold covers everything inside it. A bench helper must not request gpu-quiet `shared` while its caller
++    holds it `exclusive`, because the run then deadlocks on itself. The helper either inherits the hold or takes the
++    lock only when called unwrapped.
++  - `region-lock run` changes directory into the epyc-orchestrator repo before it execs, so every path in the wrapped
++    command must be absolute.
++  - Neither lock is FIFO, so free-running subagent CPU benches can starve a GPU headline run that waits on the same
++    claims. Schedule subagent benches around headline runs; never leave them free-running against a lock that a
++    headline run needs.
++  - (origin: INC-20261004-subagent-unlocked-cpu-in-held-window, second recurrence)
+ - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
+ - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
+ - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
+@@ -296,6 +306,9 @@
+ 3. **Audit:** every guarded deletion and every identity check that found aliases appends to
+    `/workspace/logs/safety_audit.log`; a deletion that was justified by a wrong identity
+    conclusion must be reported as an incident, not folded into the task summary.
++4. **Delete exact paths only.** A cleanup removes only the exact paths it created, never a glob or pattern such as
++   `rm -rf dir/prefix-*`. A pattern names whatever matches today, including evidence that another run wrote. (origin:
++   INC-20261004-glob-rm-deleted-receipt-evidence: a dry-run cleanup glob deleted a ledgered receipt's raw run dir)
+ 
+ ## Act, Don't Defer — the admission test for escalating at all
+ 

@@ -1,0 +1,20 @@
+== QFR_UNSET=1
+[region-lock] acquiring gpu-quiet shared + regions ['q2'] as role='bench' (timeout_s=0.0) …
+[region-lock] held gpu-quiet shared + regions ['q2'] after 1592.3s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /mnt/raid0/llm/llama.cpp-experimental-fused-yarn-20261004/build-cpu taskset -c 48-71 nice -n 19 env QFR_UNSET=1 ./bin/test-qwen4exp-fused-rope 1234
+native          fused=56/56 K_nmse=7.88e-09 idx_nmse=8.70e-10 logits_nmse=1.70e-11 graphK_vs_native=-1.00e+00  OK
+yarn-f4-orig32  fused=56/56 K_nmse=6.08e-09 idx_nmse=8.70e-10 logits_nmse=1.70e-11 graphK_vs_native=6.91e-01  OK
+freq-base-1e4   fused=56/56 K_nmse=7.88e-09 idx_nmse=8.70e-10 logits_nmse=1.70e-11 graphK_vs_native=1.09e+00  OK
+rc=0
+== QFR_NORM_MEAN=1 QFR_NORM_STD=0.1 QFR_W_STD=0.05
+[region-lock] acquiring gpu-quiet shared + regions ['q2'] as role='bench' (timeout_s=0.0) …
+[region-lock] held gpu-quiet shared + regions ['q2'] after 0.0s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /mnt/raid0/llm/llama.cpp-experimental-fused-yarn-20261004/build-cpu taskset -c 48-71 nice -n 19 env QFR_NORM_MEAN=1 QFR_NORM_STD=0.1 QFR_W_STD=0.05 ./bin/test-qwen4exp-fused-rope 1234
+native          fused=56/56 K_nmse=1.08e+00 idx_nmse=1.06e+00 logits_nmse=1.84e+00 graphK_vs_native=-1.00e+00  FAIL
+yarn-f4-orig32  fused=56/56 K_nmse=1.08e+00 idx_nmse=1.06e+00 logits_nmse=1.84e+00 graphK_vs_native=6.13e-01  FAIL
+freq-base-1e4   fused=56/56 K_nmse=1.08e+00 idx_nmse=1.06e+00 logits_nmse=1.84e+00 graphK_vs_native=1.01e+00  FAIL
+rc=1
+== QFR_NORM_MEAN=1 QFR_NORM_STD=0.1 QFR_W_STD=1.0
+[region-lock] acquiring gpu-quiet shared + regions ['q2'] as role='bench' (timeout_s=0.0) …
+[region-lock] held gpu-quiet shared + regions ['q2'] after 0.0s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /mnt/raid0/llm/llama.cpp-experimental-fused-yarn-20261004/build-cpu taskset -c 48-71 nice -n 19 env QFR_NORM_MEAN=1 QFR_NORM_STD=0.1 QFR_W_STD=1.0 ./bin/test-qwen4exp-fused-rope 1234
+double free or corruption (out)
+rc=134
+ALLDONE

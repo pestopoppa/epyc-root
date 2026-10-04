@@ -203,6 +203,29 @@ saying so.
   The router schedules GPU batches only inside a granted window and runs CPU batches otherwise. Done when the bus
   message schema is agreed with workspace-ec, the router honours it, and one real window completes the full cycle
   with receipts.
+  - *(2026-10-04, workspace-ec.)* **G1 round-2 review** (Fable, `/mnt/raid0/llm/tmp/g1-review-20261004/REVIEW-ROUND2.md`):
+    - (a) Windows the stack owner invokes manually: **ACK-with-fixes**.
+    - (b) AK-requested windows: **NACK**. F4: the AK flock is per `run.py` child, so it drops between serial batches,
+      and there is a TOCTOU. F5: the handshake is still a refusing stub, with no compute-request sender and
+      `--gpu-window` defaulting off. F6: expiry cannot be enforced against a live holder.
+    - Manual-window fixes landed: orch `4b871cc5` is in the shared checkout (operator-approved). Device-busy
+      `6ce26fc9` is not; updating the checkout needs operator approval.
+    - The gpu-quiet lock is live (orch `c5dc4ae5`).
+    - Operator, 2026-10-04: the AK GPU lane's first job is multi-row dequant-GEMV (AKX-ALL-15c).
+  - [ ] **AKX-ALL-15a — arm the GPU-window watchdog (review F2) after today's :8083 restore.** (filed 2026-10-04,
+    workspace-ec) Install `scripts/server/gpu_window_watchdog.cron` in the host crontab (`* * * * *` +
+    `@reboot sleep 90`). Done when a tick is seen writing `mi210.json.executor-status.json` after the restore and
+    the hub probe is green.
+  - [ ] **AKX-ALL-15b — close review F3/F4/F5/F6 so that AK-requested windows can be ACKed.** (filed 2026-10-04,
+    workspace-ec; needs a coordinator grant path)
+    - F4: a window-scoped flock held in `serial_run`'s parent across batches.
+    - F5: a real compute-request sender and handshake.
+    - F6: the AK honours `expected_end` mid-measurement.
+    - F3: `--compute-grant` verified against the coordinator-daemon grant file.
+    - Done when a third review ACKs (b).
+  - [ ] **AKX-ALL-15c — the first AK GPU-lane job is multi-row dequant-GEMV.** (filed 2026-10-04, operator decision)
+    It runs in the first window granted after AKX-ALL-15's manual cycle completes. Done when its batch receipts are
+    recorded here.
 - [ ] **AKX-ALL-16 (G2): GPU serving profile as a planner input.** Branch `feat/ak-gpu-surface`. Fold the
   `rocprof_longctx.py` pattern (server under rocprofv3 for its whole life; windows cut by timestamp markers; holds
   `mi210_0`; 184-191 lane, `membind=3`) into `hotspots`. One anchor profile per anchor change, cached by anchor and

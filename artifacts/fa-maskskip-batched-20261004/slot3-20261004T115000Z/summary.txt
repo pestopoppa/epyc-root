@@ -1,0 +1,46 @@
+KVU-19b rework GPU slot 3 summary (/mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot3-20261004T115000Z)  NEW=/mnt/raid0/llm/kernels/builds/gpu-20261004-54df2c030/bin
+
+## exactness
+== on vs skipoff (mask skip on vs off, all layouts on): must be all bit-identical
+132 cases, 132 bit-identical, worst nmse 0
+== on vs tilesoff (WMMA sequence tiles on vs off, gated): must be all bit-identical
+132 cases, 132 bit-identical, worst nmse 0
+== force vs seqoff (sequence tiles FORCED on every multi-sequence batch, vec off, vs KVU-19a layout): must be all bit-identical
+132 cases, 132 bit-identical, worst nmse 0
+== tilesonly vs seqoff (gated sequence tiles, vec off, vs KVU-19a layout): must be all bit-identical
+132 cases, 132 bit-identical, worst nmse 0
+== seqoff vs alloff (mask skip on vs off, layouts off): must be all bit-identical
+132 cases, 132 bit-identical, worst nmse 0
+== seqoff vs k19a (v2 build with layouts off vs KVU-19a build): hs != 128 bit-identical, hs 128 nmse < 1e-8 (Q*scale rounding pinned)
+132 cases, 110 bit-identical, 22 hs=128 cases within the Q-rounding bound, worst nmse 7.79e-08: FAIL
+== on vs seqoff (info): differs only in the vec-routed cases (hint >= nb, hs 128/256, not bf16)
+132 cases, 112 bit-identical, worst nmse 9.13e-06
+== on vs CPU reference (out3_cpu)
+132 cases vs reference: worst nmse 0.00176 (case 152), FAIL at 5e-4
+== force vs CPU reference (out3_cpu)
+132 cases vs reference: worst nmse 0.00176 (case 152), FAIL at 5e-4
+== tilesoff vs CPU reference (out3_cpu)
+132 cases vs reference: worst nmse 0.00176 (case 152), FAIL at 5e-4
+== seqoff vs CPU reference (out3_cpu)
+132 cases vs reference: worst nmse 0.00176 (case 152), FAIL at 5e-4
+== k19a vs CPU reference (out3_cpu)
+132 cases vs reference: worst nmse 0.00176 (case 152), FAIL at 5e-4
+
+## kernel perf (mean us/op over rounds), 4 seqs x 80k cells, hs 256 q8_0
+shape | k19a | c2 | on | tilesoff | on/k19a
+multi layout=kvu n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=32 | 11151.8 | 12961.8 | 10939.3 | 11335.8 | 0.981
+multi layout=kvu n_seq=4 rows_per_seq=9 own=81920 n_kv=327680 nb=36 | 18269.2 | 13122.4 | 12927.8 | 18243.1 | 0.708
+multi layout=kvu-uneven n_seq=4 rows_per_seq=8 own=81920 n_kv=327680 nb=25 | 14341.2 | 12828.1 | 12867.0 | 14318.0 | 0.897
+multi layout=kvu-uneven n_seq=4 rows_per_seq=9 own=81920 n_kv=327680 nb=28 | 14696.2 | 13241.7 | 12915.0 | 14308.6 | 0.879
+multi layout=streams n_seq=4 rows_per_seq=8 own=81920 n_kv=81920 nb=8 | 11866.4 | 11876.1 | 11782.3 | 11902.7 | 0.993
+multi layout=streams n_seq=4 rows_per_seq=9 own=81920 n_kv=81920 nb=9 | 12083.2 | 11969.2 | 12215.5 | 11898.2 | 1.011
+
+## p3batch (ms/step, mean over rounds)
+draft/first | k19a | on | tilesoff | nokvu
+1/1 | 9.686 | 8.143 | 8.282 | 7.399
+8/1 | 16.561 | 16.787 | 16.437 | 24.774
+8/8 | 16.846 | 16.816 | 16.645 | 18.479
+
+## test-backend-ops
+  118/118 tests passed
+  118/118 tests passed

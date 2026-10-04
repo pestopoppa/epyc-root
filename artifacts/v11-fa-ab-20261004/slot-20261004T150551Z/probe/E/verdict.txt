@@ -1,0 +1,1 @@
+PROBE arm=E verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.12 vram_base_gib=25.59 wall=79s

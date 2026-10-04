@@ -1,0 +1,18 @@
+{
+  "schema": "epyc.autokernel.device_claim_receipt.v1",
+  "claim_id": "akd-09ce7c5a6ce14891",
+  "device_id": "mi210_0",
+  "lock_path": "/mnt/raid0/llm/tmp/gpu_device.mi210_0.lock",
+  "state": "held",
+  "holder_pid": 2107657,
+  "holder_start_ticks": 11431773,
+  "holder_boot_id": "8c33419d-a74f-4fea-8aed-d4003f930103",
+  "host": "Beelzebub",
+  "holder_label": "kvu16h",
+  "purpose": "KVU-16h follow-up + arm C: mmvq graph-cache pool pinning and its arena fix (T7 #1 phase A replay) on scratch :18083",
+  "campaign_id": "KVU-16H-20261004",
+  "acquired_at": "2026-10-04T11:05:10.041009+00:00",
+  "expires_at": "2026-10-04T11:55:10.041023+00:00",
+  "released_at": null,
+  "reclaimed_from": null
+}

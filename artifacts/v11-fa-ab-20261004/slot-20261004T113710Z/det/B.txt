@@ -1,0 +1,387 @@
+# run_nan mode=exact arm=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B bin=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/fa_v11 ref=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu date=2026-10-04T11:40:04Z host_cpus=160-183
+# expect_hip=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-hip.so.0.16.0
+# fa_v11 api=champion backend=ROCm0 mode=exact
+env FA_TIMEOUT=120
+env LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin
+env FA_REF_DIR=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-hip.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-cpu.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-base.so.0.16.0
+lib /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml.so.0.16.0
+# backend_name=ROCm0 threads=0
+# exact cases=228 ref_dir=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/harness/ref_cpu
+det rows=64 n_kv=256 identical=0 v=unit attn=diffuse kv=f16 grp=prefill hash=3301537b81fe1de7
+det rows=128 n_kv=256 identical=0 v=unit attn=diffuse kv=f16 grp=prefill hash=477cf884c04019e9
+det rows=256 n_kv=256 identical=0 v=unit attn=diffuse kv=f16 grp=prefill hash=8c9b5a5b802835a3
+det rows=300 n_kv=300 identical=1 v=unit attn=diffuse kv=f16 grp=prefill hash=5c07089e77b5bad8
+det rows=9 n_kv=512 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=65869dc97e4d722b
+det rows=27 n_kv=512 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=c6bebf06bcb9eff2
+det rows=36 n_kv=512 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=7b4becf4bfee18c1
+det rows=64 n_kv=512 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=dd7672ec193474b1
+det rows=512 n_kv=512 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=ec48e2c8a925afa9
+det rows=300 n_kv=512 identical=0 v=unit attn=diffuse kv=f16 grp=prefill hash=4f68d6b6a15d75e5
+det rows=512 n_kv=512 identical=0 v=unit attn=diffuse kv=f16 grp=prefill hash=47c3bc097128184b
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=9c8560d15a6d30cc
+det rows=27 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=3b9e711e3d463140
+det rows=36 n_kv=2048 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=9e64cb54b15d4d61
+det rows=64 n_kv=2048 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=a5403e89a71a63b3
+det rows=512 n_kv=2048 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=3754a06a35c16eea
+det rows=9 n_kv=4096 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=4a28dfcc7bcc2e06
+det rows=27 n_kv=4096 identical=1 v=unit attn=diffuse kv=f16 grp=tail hash=fd593779eb8f6488
+det rows=36 n_kv=4096 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=af8a49f2c2ee3923
+det rows=64 n_kv=4096 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=61387c69d90beb7d
+det rows=512 n_kv=4096 identical=0 v=unit attn=diffuse kv=f16 grp=tail hash=a04c69f1246ff887
+det rows=64 n_kv=256 identical=0 v=unit attn=peaked kv=f16 grp=prefill hash=77549059f8bc1022
+det rows=128 n_kv=256 identical=0 v=unit attn=peaked kv=f16 grp=prefill hash=44a62579e3dc0435
+det rows=256 n_kv=256 identical=0 v=unit attn=peaked kv=f16 grp=prefill hash=b00410bc46256f1d
+det rows=300 n_kv=300 identical=1 v=unit attn=peaked kv=f16 grp=prefill hash=99a9d7e10c652d79
+det rows=300 n_kv=512 identical=0 v=unit attn=peaked kv=f16 grp=prefill hash=ea68409921793789
+det rows=512 n_kv=512 identical=0 v=unit attn=peaked kv=f16 grp=prefill hash=257319da6d235dcb
+det rows=9 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=7fdc0aa412fedc37
+det rows=27 n_kv=2048 identical=1 v=unit attn=peaked kv=f16 grp=tail hash=1fa09e95ea69c804
+det rows=36 n_kv=2048 identical=0 v=unit attn=peaked kv=f16 grp=tail hash=5e85e570b7a08341
+det rows=64 n_kv=2048 identical=0 v=unit attn=peaked kv=f16 grp=tail hash=5004235e99858891
+det rows=512 n_kv=2048 identical=0 v=unit attn=peaked kv=f16 grp=tail hash=7ae910ed3f67560e
+det rows=64 n_kv=256 identical=0 v=bias32 attn=diffuse kv=f16 grp=prefill hash=3e84dd4cf1a34e30
+det rows=128 n_kv=256 identical=0 v=bias32 attn=diffuse kv=f16 grp=prefill hash=98c8907394c2d987
+det rows=256 n_kv=256 identical=0 v=bias32 attn=diffuse kv=f16 grp=prefill hash=ed0965df74aa8b38
+det rows=300 n_kv=300 identical=1 v=bias32 attn=diffuse kv=f16 grp=prefill hash=7a9994cd7e782440
+det rows=9 n_kv=512 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=6920ca0d3e827c75
+det rows=27 n_kv=512 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=6f13250966871394
+det rows=36 n_kv=512 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=5dda3d7e6dfa6abe
+det rows=64 n_kv=512 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=692a672c62308436
+det rows=512 n_kv=512 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=cfa955892a326cf8
+det rows=300 n_kv=512 identical=0 v=bias32 attn=diffuse kv=f16 grp=prefill hash=44f2d679df3cc3a0
+det rows=512 n_kv=512 identical=0 v=bias32 attn=diffuse kv=f16 grp=prefill hash=efb2d0f29ccdfec9
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=f42c400a27ad4c4d
+det rows=27 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=9c9baa8283252178
+det rows=36 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=be8215eb654c7e98
+det rows=64 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=b71dcbfe0856f6e5
+det rows=512 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=517874c7ea9e7721
+det rows=9 n_kv=4096 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=69ca98629fedda60
+det rows=27 n_kv=4096 identical=1 v=bias32 attn=diffuse kv=f16 grp=tail hash=a981dbdd403b7209
+det rows=36 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=c5a938893e16c786
+det rows=64 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=ef043aac198b2587
+det rows=512 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=f16 grp=tail hash=e2282cfca9ff6951
+det rows=64 n_kv=256 identical=0 v=bias128 attn=diffuse kv=f16 grp=prefill hash=12d2a92873b2bea5
+det rows=128 n_kv=256 identical=0 v=bias128 attn=diffuse kv=f16 grp=prefill hash=bc0e2e98198355ec
+det rows=256 n_kv=256 identical=0 v=bias128 attn=diffuse kv=f16 grp=prefill hash=4f44bf590063e016
+det rows=300 n_kv=300 identical=1 v=bias128 attn=diffuse kv=f16 grp=prefill hash=5b1434930d5d4b58
+det rows=9 n_kv=512 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=e921dc20a44f725b
+det rows=27 n_kv=512 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=8a08bcf824216785
+det rows=36 n_kv=512 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=631f8a90b26d64f7
+det rows=64 n_kv=512 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=d9ab12bc6da33766
+det rows=512 n_kv=512 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=5ff21ddf98dc011f
+det rows=300 n_kv=512 identical=0 v=bias128 attn=diffuse kv=f16 grp=prefill hash=8401d8a7f15f46ca
+det rows=512 n_kv=512 identical=0 v=bias128 attn=diffuse kv=f16 grp=prefill hash=885c5d04a9968fb5
+det rows=9 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=9c54e6d72e7979d5
+det rows=27 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=867cb00750101f03
+det rows=36 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=3fb4db3ce7872ec5
+det rows=64 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=3e65c7dd7c5af8ff
+det rows=512 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=bdf2c1abc1693f98
+det rows=9 n_kv=4096 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=5677c7f5c7afa333
+det rows=27 n_kv=4096 identical=1 v=bias128 attn=diffuse kv=f16 grp=tail hash=b2659b8074a46322
+det rows=36 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=18c36ee8f69d24fc
+det rows=64 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=b9b41b4f5c907514
+det rows=512 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=f16 grp=tail hash=c82c46b248b8b848
+det rows=64 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=7db56111654cd7b6
+det rows=128 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=99764a5a26e77a7a
+det rows=256 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=71d250de3bc41067
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=ffbacf97bffe67b5
+det rows=9 n_kv=512 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=eaa72ef8fc090395
+det rows=27 n_kv=512 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=6afee68ac0f4391e
+det rows=36 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=a36a7dc324c7eb5c
+det rows=64 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=89e5a66846457cd8
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=4dc97078d32a81bf
+det rows=300 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=00cf663a809733f9
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=f16 grp=prefill hash=4c487c714754cd5b
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=06bb68ff91ae5396
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=c08f707f644b1f00
+det rows=36 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=017664a775970d35
+det rows=64 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=da20271f07cd21f2
+det rows=512 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=cd01e679c869db3d
+det rows=9 n_kv=4096 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=a603eb315e9cf36e
+det rows=27 n_kv=4096 identical=1 v=bias1024 attn=diffuse kv=f16 grp=tail hash=8f2dea8583812e7f
+det rows=36 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=b07fd998dce0628d
+det rows=64 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=08e187c687346a03
+det rows=512 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=f16 grp=tail hash=e307a765a9e10dbb
+det rows=64 n_kv=256 identical=0 v=bias1024 attn=peaked kv=f16 grp=prefill hash=c08ea65824df1b38
+det rows=128 n_kv=256 identical=0 v=bias1024 attn=peaked kv=f16 grp=prefill hash=74eca1eddf3e92e2
+det rows=256 n_kv=256 identical=0 v=bias1024 attn=peaked kv=f16 grp=prefill hash=70442ea9049bad8a
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=peaked kv=f16 grp=prefill hash=63ed8ebbca93255a
+det rows=300 n_kv=512 identical=0 v=bias1024 attn=peaked kv=f16 grp=prefill hash=41b6eee8948c5508
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=peaked kv=f16 grp=prefill hash=4d080b301d6204d9
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=80e05666d1be6bea
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=f16 grp=tail hash=ea381bce2868a267
+det rows=36 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=f16 grp=tail hash=4744bb861e11cede
+det rows=64 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=f16 grp=tail hash=e7f62df560a0a837
+det rows=512 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=f16 grp=tail hash=d05c630b6e3ccd76
+det rows=64 n_kv=256 identical=0 v=unit attn=diffuse kv=q8_0 grp=prefill hash=5460feed4fcf3d25
+det rows=128 n_kv=256 identical=0 v=unit attn=diffuse kv=q8_0 grp=prefill hash=f8664ca1c0623a45
+det rows=256 n_kv=256 identical=0 v=unit attn=diffuse kv=q8_0 grp=prefill hash=58eec6e0361716fc
+det rows=300 n_kv=300 identical=1 v=unit attn=diffuse kv=q8_0 grp=prefill hash=d4181f0a96bc1970
+det rows=9 n_kv=512 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=8b6a1233699422ac
+det rows=27 n_kv=512 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=8b9683f5124229a0
+det rows=36 n_kv=512 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=23d685f58a6b64af
+det rows=64 n_kv=512 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=672ad02994ff30b1
+det rows=512 n_kv=512 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=208d05558fc48fca
+det rows=300 n_kv=512 identical=0 v=unit attn=diffuse kv=q8_0 grp=prefill hash=a7b407f57d4d6af7
+det rows=512 n_kv=512 identical=0 v=unit attn=diffuse kv=q8_0 grp=prefill hash=8082988633647095
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=04d276fbfe57dfa2
+det rows=27 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=1733f01d19474f8e
+det rows=36 n_kv=2048 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=15166e3d57f8660c
+det rows=64 n_kv=2048 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=5139176f200c0887
+det rows=512 n_kv=2048 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=669cff62d32add82
+det rows=9 n_kv=4096 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=27f7b69daf1b6106
+det rows=27 n_kv=4096 identical=1 v=unit attn=diffuse kv=q8_0 grp=tail hash=edc52a40e2dbb0ef
+det rows=36 n_kv=4096 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=85e4915731cb9afa
+det rows=64 n_kv=4096 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=5203c96e91a8368b
+det rows=512 n_kv=4096 identical=0 v=unit attn=diffuse kv=q8_0 grp=tail hash=7f1c31ed6e48d7ee
+det rows=64 n_kv=256 identical=0 v=unit attn=peaked kv=q8_0 grp=prefill hash=fdd4f39e763070fc
+det rows=128 n_kv=256 identical=0 v=unit attn=peaked kv=q8_0 grp=prefill hash=a8f2d971b1b630a9
+det rows=256 n_kv=256 identical=0 v=unit attn=peaked kv=q8_0 grp=prefill hash=22500fe636e8a001
+det rows=300 n_kv=300 identical=1 v=unit attn=peaked kv=q8_0 grp=prefill hash=283e2c6c696d633f
+det rows=300 n_kv=512 identical=0 v=unit attn=peaked kv=q8_0 grp=prefill hash=3d81747b0e38609d
+det rows=512 n_kv=512 identical=0 v=unit attn=peaked kv=q8_0 grp=prefill hash=6e8106522bf64c8d
+det rows=9 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=d376135e6312a68e
+det rows=27 n_kv=2048 identical=1 v=unit attn=peaked kv=q8_0 grp=tail hash=1596545b694c72bc
+det rows=36 n_kv=2048 identical=0 v=unit attn=peaked kv=q8_0 grp=tail hash=cbf3ca429ca4d04b
+det rows=64 n_kv=2048 identical=0 v=unit attn=peaked kv=q8_0 grp=tail hash=4c4b9493b5ffb2da
+det rows=512 n_kv=2048 identical=0 v=unit attn=peaked kv=q8_0 grp=tail hash=ec91ad1d9a64d24e
+det rows=64 n_kv=256 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=c6cf53812ad203c5
+det rows=128 n_kv=256 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=4ad8fa9524ace87d
+det rows=256 n_kv=256 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=635b997920a92678
+det rows=300 n_kv=300 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=62bcd8db7e08cfbd
+det rows=9 n_kv=512 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=db6b9f7cf5c7e215
+det rows=27 n_kv=512 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=3c3469a6b1347231
+det rows=36 n_kv=512 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=354d0b0409f0c5b9
+det rows=64 n_kv=512 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=af5cd668daa4057e
+det rows=512 n_kv=512 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=a5c19886fb5db84b
+det rows=300 n_kv=512 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=a6499eea6d5acf74
+det rows=512 n_kv=512 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=prefill hash=b2fe2f83d80417b0
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=b9018b429f7f08a6
+det rows=27 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=a4ff7a24385e057f
+det rows=36 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=d9aab18111a94004
+det rows=64 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=14b452aac5570143
+det rows=512 n_kv=2048 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=ee0caea6cbcc9056
+det rows=9 n_kv=4096 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=a6da8c3dfa1e97c2
+det rows=27 n_kv=4096 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=a5c57d726cac2618
+det rows=36 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=807ca29e5b16954e
+det rows=64 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=4d6036dcf51b6df0
+det rows=512 n_kv=4096 identical=0 v=bias32 attn=diffuse kv=q8_0 grp=tail hash=03a1dba8145174d7
+det rows=64 n_kv=256 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=402b49e6845cac92
+det rows=128 n_kv=256 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=80e0bc303e0913c3
+det rows=256 n_kv=256 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=683da32b042eb122
+det rows=300 n_kv=300 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=2e0335c60e60dae2
+det rows=9 n_kv=512 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=535ee4f5756bf99f
+det rows=27 n_kv=512 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=b72596f76e31511b
+det rows=36 n_kv=512 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=3e83e8e2052ea4e3
+det rows=64 n_kv=512 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=d3fe569d4dd0345a
+det rows=512 n_kv=512 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=0ae0b56252cc31f2
+det rows=300 n_kv=512 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=a89c5f66e152f739
+det rows=512 n_kv=512 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=prefill hash=9d869f27edfc5cc0
+det rows=9 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=3260be7a992c0787
+det rows=27 n_kv=2048 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=d92bc05be5a7aa58
+det rows=36 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=791222a40c0304ca
+det rows=64 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=0d076f5dcf90662b
+det rows=512 n_kv=2048 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=db6e8bce5c81d9cf
+det rows=9 n_kv=4096 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=f66b8bcecd782fad
+det rows=27 n_kv=4096 identical=1 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=4f893b6f3b706f39
+det rows=36 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=281abddf7842ed45
+det rows=64 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=a39fff65bcfad123
+det rows=512 n_kv=4096 identical=0 v=bias128 attn=diffuse kv=q8_0 grp=tail hash=272c366419a1d663
+det rows=64 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=cb777f7dc35b7822
+det rows=128 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=c2a127d69a84a540
+det rows=256 n_kv=256 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=67a1607522deb1d8
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=08aa3c2c7edfacfb
+det rows=9 n_kv=512 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=9ca75e11707aeb5b
+det rows=27 n_kv=512 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=56c5185d98bb273b
+det rows=36 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=cc5ffb2f34e06b1e
+det rows=64 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=42299e8fceea6b36
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=4c402bdbe953d78e
+det rows=300 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=d2f9c3d1fdfd162c
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=prefill hash=a89a15c6c448118a
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=e8431c8eab7f6608
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=620cd3be5ddad7c3
+det rows=36 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=583f15dcd371ad96
+det rows=64 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=0c63b9006558fef2
+det rows=512 n_kv=2048 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=69805dd885975129
+det rows=9 n_kv=4096 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=7898554570e999c1
+det rows=27 n_kv=4096 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=42b2297b9aa7d96a
+det rows=36 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=6fb615de4bcf2730
+det rows=64 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=274f49916b62ea79
+det rows=512 n_kv=4096 identical=0 v=bias1024 attn=diffuse kv=q8_0 grp=tail hash=59d8e5688258202d
+det rows=64 n_kv=256 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=533ab26d77a75410
+det rows=128 n_kv=256 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=d55c8bdee4be9dd4
+det rows=256 n_kv=256 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=dcab1bbb89c48bc8
+det rows=300 n_kv=300 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=7ddaa7f61d36fcc6
+det rows=300 n_kv=512 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=25dd097a7c867327
+det rows=512 n_kv=512 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=prefill hash=188bb39eaa7eda57
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=d89cb5e6ecebfea3
+det rows=27 n_kv=2048 identical=1 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=aa267ff881ddcba3
+det rows=36 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=36df0dfb5478fee8
+det rows=64 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=00d25ff74a72955f
+det rows=512 n_kv=2048 identical=0 v=bias1024 attn=peaked kv=q8_0 grp=tail hash=4b96b60636d11ef4
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=drafter hash=18fb98fd6da4055d
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=f16 grp=drafter hash=2932ba1d027886c9
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=drafter hash=39e593f62d408ce2
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=f16 grp=drafter hash=c7b9c1e2db045edf
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=8009296b61d07743
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=23757c72ff77afb2
+det rows=9 n_kv=2304 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=57e730a8f2c09251
+det rows=64 n_kv=2304 identical=1 v=bias1024 attn=diffuse kv=f16 grp=drafter hash=76eb43bd36659622
+det rows=9 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=drafter hash=792beb1c8e17ffba
+det rows=64 n_kv=2048 identical=1 v=unit attn=diffuse kv=q8_0 grp=drafter hash=30f29f96a715b335
+det rows=9 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=drafter hash=39f64c384a7cbbfc
+det rows=64 n_kv=2048 identical=1 v=bias32 attn=diffuse kv=q8_0 grp=drafter hash=93f024fb382c835b
+det rows=9 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=a2f3f7da8b64c319
+det rows=64 n_kv=2048 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=1f2a411906aed7ab
+det rows=9 n_kv=2304 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=722c47f900b506b9
+det rows=64 n_kv=2304 identical=1 v=bias1024 attn=diffuse kv=q8_0 grp=drafter hash=054dc3ace18d3e3c
+summary mode=exact cases=228 identical=84 differ=144 unsupported=0 wall_s=9.6
+summary_flagged prefill_f16_r64_kv256_unit_diffuse
+summary_flagged prefill_f16_r128_kv256_unit_diffuse
+summary_flagged prefill_f16_r256_kv256_unit_diffuse
+summary_flagged tail_f16_r36_kv512_unit_diffuse
+summary_flagged tail_f16_r64_kv512_unit_diffuse
+summary_flagged tail_f16_r512_kv512_unit_diffuse
+summary_flagged prefill_f16_r300_kv512_unit_diffuse
+summary_flagged prefill_f16_r512_kv512_unit_diffuse
+summary_flagged tail_f16_r36_kv2048_unit_diffuse
+summary_flagged tail_f16_r64_kv2048_unit_diffuse
+summary_flagged tail_f16_r512_kv2048_unit_diffuse
+summary_flagged tail_f16_r36_kv4096_unit_diffuse
+summary_flagged tail_f16_r64_kv4096_unit_diffuse
+summary_flagged tail_f16_r512_kv4096_unit_diffuse
+summary_flagged prefill_f16_r64_kv256_unit_peaked
+summary_flagged prefill_f16_r128_kv256_unit_peaked
+summary_flagged prefill_f16_r256_kv256_unit_peaked
+summary_flagged prefill_f16_r300_kv512_unit_peaked
+summary_flagged prefill_f16_r512_kv512_unit_peaked
+summary_flagged tail_f16_r36_kv2048_unit_peaked
+summary_flagged tail_f16_r64_kv2048_unit_peaked
+summary_flagged tail_f16_r512_kv2048_unit_peaked
+summary_flagged prefill_f16_r64_kv256_bias32_diffuse
+summary_flagged prefill_f16_r128_kv256_bias32_diffuse
+summary_flagged prefill_f16_r256_kv256_bias32_diffuse
+summary_flagged tail_f16_r36_kv512_bias32_diffuse
+summary_flagged tail_f16_r64_kv512_bias32_diffuse
+summary_flagged tail_f16_r512_kv512_bias32_diffuse
+summary_flagged prefill_f16_r300_kv512_bias32_diffuse
+summary_flagged prefill_f16_r512_kv512_bias32_diffuse
+summary_flagged tail_f16_r36_kv2048_bias32_diffuse
+summary_flagged tail_f16_r64_kv2048_bias32_diffuse
+summary_flagged tail_f16_r512_kv2048_bias32_diffuse
+summary_flagged tail_f16_r36_kv4096_bias32_diffuse
+summary_flagged tail_f16_r64_kv4096_bias32_diffuse
+summary_flagged tail_f16_r512_kv4096_bias32_diffuse
+summary_flagged prefill_f16_r64_kv256_bias128_diffuse
+summary_flagged prefill_f16_r128_kv256_bias128_diffuse
+summary_flagged prefill_f16_r256_kv256_bias128_diffuse
+summary_flagged tail_f16_r36_kv512_bias128_diffuse
+summary_flagged tail_f16_r64_kv512_bias128_diffuse
+summary_flagged tail_f16_r512_kv512_bias128_diffuse
+summary_flagged prefill_f16_r300_kv512_bias128_diffuse
+summary_flagged prefill_f16_r512_kv512_bias128_diffuse
+summary_flagged tail_f16_r36_kv2048_bias128_diffuse
+summary_flagged tail_f16_r64_kv2048_bias128_diffuse
+summary_flagged tail_f16_r512_kv2048_bias128_diffuse
+summary_flagged tail_f16_r36_kv4096_bias128_diffuse
+summary_flagged tail_f16_r64_kv4096_bias128_diffuse
+summary_flagged tail_f16_r512_kv4096_bias128_diffuse
+summary_flagged prefill_f16_r64_kv256_bias1024_diffuse
+summary_flagged prefill_f16_r128_kv256_bias1024_diffuse
+summary_flagged prefill_f16_r256_kv256_bias1024_diffuse
+summary_flagged tail_f16_r36_kv512_bias1024_diffuse
+summary_flagged tail_f16_r64_kv512_bias1024_diffuse
+summary_flagged tail_f16_r512_kv512_bias1024_diffuse
+summary_flagged prefill_f16_r300_kv512_bias1024_diffuse
+summary_flagged prefill_f16_r512_kv512_bias1024_diffuse
+summary_flagged tail_f16_r36_kv2048_bias1024_diffuse
+summary_flagged tail_f16_r64_kv2048_bias1024_diffuse
+summary_flagged tail_f16_r512_kv2048_bias1024_diffuse
+summary_flagged tail_f16_r36_kv4096_bias1024_diffuse
+summary_flagged tail_f16_r64_kv4096_bias1024_diffuse
+summary_flagged tail_f16_r512_kv4096_bias1024_diffuse
+summary_flagged prefill_f16_r64_kv256_bias1024_peaked
+summary_flagged prefill_f16_r128_kv256_bias1024_peaked
+summary_flagged prefill_f16_r256_kv256_bias1024_peaked
+summary_flagged prefill_f16_r300_kv512_bias1024_peaked
+summary_flagged prefill_f16_r512_kv512_bias1024_peaked
+summary_flagged tail_f16_r36_kv2048_bias1024_peaked
+summary_flagged tail_f16_r64_kv2048_bias1024_peaked
+summary_flagged tail_f16_r512_kv2048_bias1024_peaked
+summary_flagged prefill_q8_0_r64_kv256_unit_diffuse
+summary_flagged prefill_q8_0_r128_kv256_unit_diffuse
+summary_flagged prefill_q8_0_r256_kv256_unit_diffuse
+summary_flagged tail_q8_0_r36_kv512_unit_diffuse
+summary_flagged tail_q8_0_r64_kv512_unit_diffuse
+summary_flagged tail_q8_0_r512_kv512_unit_diffuse
+summary_flagged prefill_q8_0_r300_kv512_unit_diffuse
+summary_flagged prefill_q8_0_r512_kv512_unit_diffuse
+summary_flagged tail_q8_0_r36_kv2048_unit_diffuse
+summary_flagged tail_q8_0_r64_kv2048_unit_diffuse
+summary_flagged tail_q8_0_r512_kv2048_unit_diffuse
+summary_flagged tail_q8_0_r36_kv4096_unit_diffuse
+summary_flagged tail_q8_0_r64_kv4096_unit_diffuse
+summary_flagged tail_q8_0_r512_kv4096_unit_diffuse
+summary_flagged prefill_q8_0_r64_kv256_unit_peaked
+summary_flagged prefill_q8_0_r128_kv256_unit_peaked
+summary_flagged prefill_q8_0_r256_kv256_unit_peaked
+summary_flagged prefill_q8_0_r300_kv512_unit_peaked
+summary_flagged prefill_q8_0_r512_kv512_unit_peaked
+summary_flagged tail_q8_0_r36_kv2048_unit_peaked
+summary_flagged tail_q8_0_r64_kv2048_unit_peaked
+summary_flagged tail_q8_0_r512_kv2048_unit_peaked
+summary_flagged prefill_q8_0_r64_kv256_bias32_diffuse
+summary_flagged prefill_q8_0_r128_kv256_bias32_diffuse
+summary_flagged prefill_q8_0_r256_kv256_bias32_diffuse
+summary_flagged tail_q8_0_r36_kv512_bias32_diffuse
+summary_flagged tail_q8_0_r64_kv512_bias32_diffuse
+summary_flagged tail_q8_0_r512_kv512_bias32_diffuse
+summary_flagged prefill_q8_0_r300_kv512_bias32_diffuse
+summary_flagged prefill_q8_0_r512_kv512_bias32_diffuse
+summary_flagged tail_q8_0_r36_kv2048_bias32_diffuse
+summary_flagged tail_q8_0_r64_kv2048_bias32_diffuse
+summary_flagged tail_q8_0_r512_kv2048_bias32_diffuse
+summary_flagged tail_q8_0_r36_kv4096_bias32_diffuse
+summary_flagged tail_q8_0_r64_kv4096_bias32_diffuse
+summary_flagged tail_q8_0_r512_kv4096_bias32_diffuse
+summary_flagged prefill_q8_0_r64_kv256_bias128_diffuse
+summary_flagged prefill_q8_0_r128_kv256_bias128_diffuse
+summary_flagged prefill_q8_0_r256_kv256_bias128_diffuse
+summary_flagged tail_q8_0_r36_kv512_bias128_diffuse
+summary_flagged tail_q8_0_r64_kv512_bias128_diffuse
+summary_flagged tail_q8_0_r512_kv512_bias128_diffuse
+summary_flagged prefill_q8_0_r300_kv512_bias128_diffuse
+summary_flagged prefill_q8_0_r512_kv512_bias128_diffuse
+summary_flagged tail_q8_0_r36_kv2048_bias128_diffuse
+summary_flagged tail_q8_0_r64_kv2048_bias128_diffuse
+summary_flagged tail_q8_0_r512_kv2048_bias128_diffuse
+summary_flagged tail_q8_0_r36_kv4096_bias128_diffuse
+summary_flagged tail_q8_0_r64_kv4096_bias128_diffuse
+summary_flagged tail_q8_0_r512_kv4096_bias128_diffuse
+summary_flagged prefill_q8_0_r64_kv256_bias1024_diffuse
+summary_flagged prefill_q8_0_r128_kv256_bias1024_diffuse
+summary_flagged prefill_q8_0_r256_kv256_bias1024_diffuse
+summary_flagged tail_q8_0_r36_kv512_bias1024_diffuse
+summary_flagged tail_q8_0_r64_kv512_bias1024_diffuse
+summary_flagged tail_q8_0_r512_kv512_bias1024_diffuse
+summary_flagged prefill_q8_0_r300_kv512_bias1024_diffuse
+summary_flagged prefill_q8_0_r512_kv512_bias1024_diffuse
+summary_flagged tail_q8_0_r36_kv2048_bias1024_diffuse
+summary_flagged tail_q8_0_r64_kv2048_bias1024_diffuse
+summary_flagged tail_q8_0_r512_kv2048_bias1024_diffuse
+summary_flagged tail_q8_0_r36_kv4096_bias1024_diffuse
+summary_flagged tail_q8_0_r64_kv4096_bias1024_diffuse
+summary_flagged tail_q8_0_r512_kv4096_bias1024_diffuse
+summary_flagged prefill_q8_0_r64_kv256_bias1024_peaked
+summary_flagged prefill_q8_0_r128_kv256_bias1024_peaked
+summary_flagged prefill_q8_0_r256_kv256_bias1024_peaked
+summary_flagged prefill_q8_0_r300_kv512_bias1024_peaked
+summary_flagged prefill_q8_0_r512_kv512_bias1024_peaked
+summary_flagged tail_q8_0_r36_kv2048_bias1024_peaked
+summary_flagged tail_q8_0_r64_kv2048_bias1024_peaked
+summary_flagged tail_q8_0_r512_kv2048_bias1024_peaked
+arm_check=OK
+rc=0

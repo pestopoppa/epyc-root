@@ -1,0 +1,8 @@
+[2026-10-04T14:56:26Z] commit 0c480112766f59eeb9f4587b952c1d5e29b0df81  VRAM before: 13094912
+[2026-10-04T14:56:26Z] linkage PASS
+[2026-10-04T14:56:26Z] 1 wide-mask cases, fixed libs
+[2026-10-04T14:56:37Z] 2 wide-mask cases, champion libs (expect nb=2048 FAIL/fault)
+[2026-10-04T14:56:48Z] champion rc=1 (expected non-zero)
+[2026-10-04T14:56:48Z] 3 full FLASH_ATTN_EXT suite, fixed libs
+[2026-10-04T15:00:26Z] 4 bit-identity below the threshold (fa_harness2 exact, champion vs fixed libs)
+[2026-10-04T15:00:45Z] done: /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/fa-int64/gpu-slot-20261004T145625Z/summary.txt

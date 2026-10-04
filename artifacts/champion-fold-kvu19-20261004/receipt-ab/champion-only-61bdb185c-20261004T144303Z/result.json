@@ -1,0 +1,4717 @@
+{
+ "arms": [
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4106793
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4106793,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4106793
+      },
+      {
+       "cpu": 73,
+       "tid": 4107070
+      },
+      {
+       "cpu": 74,
+       "tid": 4107071
+      },
+      {
+       "cpu": 75,
+       "tid": 4107072
+      },
+      {
+       "cpu": 76,
+       "tid": 4107073
+      },
+      {
+       "cpu": 77,
+       "tid": 4107074
+      },
+      {
+       "cpu": 78,
+       "tid": 4107075
+      },
+      {
+       "cpu": 79,
+       "tid": 4107076
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4106821,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4106821 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4106793
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4106793,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4106793
+      },
+      {
+       "cpu": 73,
+       "tid": 4107070
+      },
+      {
+       "cpu": 74,
+       "tid": 4107071
+      },
+      {
+       "cpu": 75,
+       "tid": 4107072
+      },
+      {
+       "cpu": 76,
+       "tid": 4107073
+      },
+      {
+       "cpu": 77,
+       "tid": 4107074
+      },
+      {
+       "cpu": 78,
+       "tid": 4107075
+      },
+      {
+       "cpu": 79,
+       "tid": 4107076
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4106821,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4106821 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-10C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4106793,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4106793 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-10C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4106793,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125464,
+    "startup_log_device_lines": [],
+    "tag": "10C"
+   },
+   "probe_file": "arm-10C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565393920
+   },
+   "tag": "10C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4108165
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4108165,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4108165
+      },
+      {
+       "cpu": 73,
+       "tid": 4108439
+      },
+      {
+       "cpu": 74,
+       "tid": 4108440
+      },
+      {
+       "cpu": 75,
+       "tid": 4108441
+      },
+      {
+       "cpu": 76,
+       "tid": 4108442
+      },
+      {
+       "cpu": 77,
+       "tid": 4108443
+      },
+      {
+       "cpu": 78,
+       "tid": 4108444
+      },
+      {
+       "cpu": 79,
+       "tid": 4108445
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4108193,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4108193 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4108165
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4108165,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4108165
+      },
+      {
+       "cpu": 73,
+       "tid": 4108439
+      },
+      {
+       "cpu": 74,
+       "tid": 4108440
+      },
+      {
+       "cpu": 75,
+       "tid": 4108441
+      },
+      {
+       "cpu": 76,
+       "tid": 4108442
+      },
+      {
+       "cpu": 77,
+       "tid": 4108443
+      },
+      {
+       "cpu": 78,
+       "tid": 4108444
+      },
+      {
+       "cpu": 79,
+       "tid": 4108445
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4108193,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4108193 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-11C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4108165,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4108165 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 7,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-11C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4108165,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125517,
+    "startup_log_device_lines": [],
+    "tag": "11C"
+   },
+   "probe_file": "arm-11C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565389824
+   },
+   "tag": "11C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4109742
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4109742,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4109742
+      },
+      {
+       "cpu": 73,
+       "tid": 4109993
+      },
+      {
+       "cpu": 74,
+       "tid": 4109994
+      },
+      {
+       "cpu": 75,
+       "tid": 4109995
+      },
+      {
+       "cpu": 76,
+       "tid": 4109996
+      },
+      {
+       "cpu": 77,
+       "tid": 4109997
+      },
+      {
+       "cpu": 78,
+       "tid": 4109998
+      },
+      {
+       "cpu": 79,
+       "tid": 4109999
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4109770,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4109770 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4109742
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4109742,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4109742
+      },
+      {
+       "cpu": 73,
+       "tid": 4109993
+      },
+      {
+       "cpu": 74,
+       "tid": 4109994
+      },
+      {
+       "cpu": 75,
+       "tid": 4109995
+      },
+      {
+       "cpu": 76,
+       "tid": 4109996
+      },
+      {
+       "cpu": 77,
+       "tid": 4109997
+      },
+      {
+       "cpu": 78,
+       "tid": 4109998
+      },
+      {
+       "cpu": 79,
+       "tid": 4109999
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4109770,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4109770 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-12C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4109742,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4109742 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-12C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4109742,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125571,
+    "startup_log_device_lines": [],
+    "tag": "12C"
+   },
+   "probe_file": "arm-12C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565303808
+   },
+   "tag": "12C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4111085
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4111085,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4111085
+      },
+      {
+       "cpu": 73,
+       "tid": 4111361
+      },
+      {
+       "cpu": 74,
+       "tid": 4111362
+      },
+      {
+       "cpu": 75,
+       "tid": 4111363
+      },
+      {
+       "cpu": 76,
+       "tid": 4111364
+      },
+      {
+       "cpu": 77,
+       "tid": 4111365
+      },
+      {
+       "cpu": 78,
+       "tid": 4111366
+      },
+      {
+       "cpu": 79,
+       "tid": 4111367
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4111113,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4111113 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4111085
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4111085,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4111085
+      },
+      {
+       "cpu": 73,
+       "tid": 4111361
+      },
+      {
+       "cpu": 74,
+       "tid": 4111362
+      },
+      {
+       "cpu": 75,
+       "tid": 4111363
+      },
+      {
+       "cpu": 76,
+       "tid": 4111364
+      },
+      {
+       "cpu": 77,
+       "tid": 4111365
+      },
+      {
+       "cpu": 78,
+       "tid": 4111366
+      },
+      {
+       "cpu": 79,
+       "tid": 4111367
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4111113,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4111113 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-13C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4111085,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4111085 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 4,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-13C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4111085,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125625,
+    "startup_log_device_lines": [],
+    "tag": "13C"
+   },
+   "probe_file": "arm-13C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 26,
+    "n_samples_pid_in_kfd": 25,
+    "n_samples_pid_vram_nonzero": 25,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565271040
+   },
+   "tag": "13C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4112461
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4112461,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4112461
+      },
+      {
+       "cpu": 73,
+       "tid": 4112710
+      },
+      {
+       "cpu": 74,
+       "tid": 4112711
+      },
+      {
+       "cpu": 75,
+       "tid": 4112712
+      },
+      {
+       "cpu": 76,
+       "tid": 4112713
+      },
+      {
+       "cpu": 77,
+       "tid": 4112714
+      },
+      {
+       "cpu": 78,
+       "tid": 4112715
+      },
+      {
+       "cpu": 79,
+       "tid": 4112716
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4112489,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4112489 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4112461
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4112461,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4112461
+      },
+      {
+       "cpu": 73,
+       "tid": 4112710
+      },
+      {
+       "cpu": 74,
+       "tid": 4112711
+      },
+      {
+       "cpu": 75,
+       "tid": 4112712
+      },
+      {
+       "cpu": 76,
+       "tid": 4112713
+      },
+      {
+       "cpu": 77,
+       "tid": 4112714
+      },
+      {
+       "cpu": 78,
+       "tid": 4112715
+      },
+      {
+       "cpu": 79,
+       "tid": 4112716
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4112489,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4112489 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-14C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4112461,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4112461 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-14C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4112461,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125677,
+    "startup_log_device_lines": [],
+    "tag": "14C"
+   },
+   "probe_file": "arm-14C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565324288
+   },
+   "tag": "14C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4114026
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4114026,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4114026
+      },
+      {
+       "cpu": 73,
+       "tid": 4114295
+      },
+      {
+       "cpu": 74,
+       "tid": 4114296
+      },
+      {
+       "cpu": 75,
+       "tid": 4114297
+      },
+      {
+       "cpu": 76,
+       "tid": 4114298
+      },
+      {
+       "cpu": 77,
+       "tid": 4114299
+      },
+      {
+       "cpu": 78,
+       "tid": 4114300
+      },
+      {
+       "cpu": 79,
+       "tid": 4114301
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4114054,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4114054 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4114026
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4114026,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4114026
+      },
+      {
+       "cpu": 73,
+       "tid": 4114295
+      },
+      {
+       "cpu": 74,
+       "tid": 4114296
+      },
+      {
+       "cpu": 75,
+       "tid": 4114297
+      },
+      {
+       "cpu": 76,
+       "tid": 4114298
+      },
+      {
+       "cpu": 77,
+       "tid": 4114299
+      },
+      {
+       "cpu": 78,
+       "tid": 4114300
+      },
+      {
+       "cpu": 79,
+       "tid": 4114301
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4114054,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4114054 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-15C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4114026,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4114026 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 4,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-15C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4114026,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125730,
+    "startup_log_device_lines": [],
+    "tag": "15C"
+   },
+   "probe_file": "arm-15C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 26,
+    "n_samples_pid_in_kfd": 25,
+    "n_samples_pid_vram_nonzero": 25,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565299712
+   },
+   "tag": "15C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4088244
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4088244,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4088244
+      },
+      {
+       "cpu": 73,
+       "tid": 4088535
+      },
+      {
+       "cpu": 74,
+       "tid": 4088536
+      },
+      {
+       "cpu": 75,
+       "tid": 4088537
+      },
+      {
+       "cpu": 76,
+       "tid": 4088538
+      },
+      {
+       "cpu": 77,
+       "tid": 4088539
+      },
+      {
+       "cpu": 78,
+       "tid": 4088540
+      },
+      {
+       "cpu": 79,
+       "tid": 4088541
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4088291,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4088291 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4088244
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4088244,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4088244
+      },
+      {
+       "cpu": 73,
+       "tid": 4088535
+      },
+      {
+       "cpu": 74,
+       "tid": 4088536
+      },
+      {
+       "cpu": 75,
+       "tid": 4088537
+      },
+      {
+       "cpu": 76,
+       "tid": 4088538
+      },
+      {
+       "cpu": 77,
+       "tid": 4088539
+      },
+      {
+       "cpu": 78,
+       "tid": 4088540
+      },
+      {
+       "cpu": 79,
+       "tid": 4088541
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4088291,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4088291 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-1C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4088244,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4088244 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 4,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-1C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4088244,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791124984,
+    "startup_log_device_lines": [],
+    "tag": "1C"
+   },
+   "probe_file": "arm-1C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 26,
+    "n_samples_pid_in_kfd": 25,
+    "n_samples_pid_vram_nonzero": 24,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565287424
+   },
+   "tag": "1C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4089562
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4089562,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4089562
+      },
+      {
+       "cpu": 73,
+       "tid": 4089834
+      },
+      {
+       "cpu": 74,
+       "tid": 4089835
+      },
+      {
+       "cpu": 75,
+       "tid": 4089836
+      },
+      {
+       "cpu": 76,
+       "tid": 4089837
+      },
+      {
+       "cpu": 77,
+       "tid": 4089838
+      },
+      {
+       "cpu": 78,
+       "tid": 4089839
+      },
+      {
+       "cpu": 79,
+       "tid": 4089840
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4089590,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4089590 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4089562
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4089562,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4089562
+      },
+      {
+       "cpu": 73,
+       "tid": 4089834
+      },
+      {
+       "cpu": 74,
+       "tid": 4089835
+      },
+      {
+       "cpu": 75,
+       "tid": 4089836
+      },
+      {
+       "cpu": 76,
+       "tid": 4089837
+      },
+      {
+       "cpu": 77,
+       "tid": 4089838
+      },
+      {
+       "cpu": 78,
+       "tid": 4089839
+      },
+      {
+       "cpu": 79,
+       "tid": 4089840
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4089590,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4089590 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-2C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4089562,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4089562 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-2C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4089562,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125035,
+    "startup_log_device_lines": [],
+    "tag": "2C"
+   },
+   "probe_file": "arm-2C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565291520
+   },
+   "tag": "2C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4091076
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4091076,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4091076
+      },
+      {
+       "cpu": 73,
+       "tid": 4091367
+      },
+      {
+       "cpu": 74,
+       "tid": 4091368
+      },
+      {
+       "cpu": 75,
+       "tid": 4091369
+      },
+      {
+       "cpu": 76,
+       "tid": 4091370
+      },
+      {
+       "cpu": 77,
+       "tid": 4091371
+      },
+      {
+       "cpu": 78,
+       "tid": 4091372
+      },
+      {
+       "cpu": 79,
+       "tid": 4091373
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4091104,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4091104 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4091076
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4091076,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4091076
+      },
+      {
+       "cpu": 73,
+       "tid": 4091367
+      },
+      {
+       "cpu": 74,
+       "tid": 4091368
+      },
+      {
+       "cpu": 75,
+       "tid": 4091369
+      },
+      {
+       "cpu": 76,
+       "tid": 4091370
+      },
+      {
+       "cpu": 77,
+       "tid": 4091371
+      },
+      {
+       "cpu": 78,
+       "tid": 4091372
+      },
+      {
+       "cpu": 79,
+       "tid": 4091373
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4091104,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4091104 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-3C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4091076,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4091076 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-3C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4091076,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125089,
+    "startup_log_device_lines": [],
+    "tag": "3C"
+   },
+   "probe_file": "arm-3C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565295616
+   },
+   "tag": "3C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4092546
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4092546,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4092546
+      },
+      {
+       "cpu": 73,
+       "tid": 4092797
+      },
+      {
+       "cpu": 74,
+       "tid": 4092798
+      },
+      {
+       "cpu": 75,
+       "tid": 4092799
+      },
+      {
+       "cpu": 76,
+       "tid": 4092800
+      },
+      {
+       "cpu": 77,
+       "tid": 4092801
+      },
+      {
+       "cpu": 78,
+       "tid": 4092802
+      },
+      {
+       "cpu": 79,
+       "tid": 4092803
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4092574,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4092574 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4092546
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4092546,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4092546
+      },
+      {
+       "cpu": 73,
+       "tid": 4092797
+      },
+      {
+       "cpu": 74,
+       "tid": 4092798
+      },
+      {
+       "cpu": 75,
+       "tid": 4092799
+      },
+      {
+       "cpu": 76,
+       "tid": 4092800
+      },
+      {
+       "cpu": 77,
+       "tid": 4092801
+      },
+      {
+       "cpu": 78,
+       "tid": 4092802
+      },
+      {
+       "cpu": 79,
+       "tid": 4092803
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4092574,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4092574 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-4C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4092546,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4092546 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 7,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-4C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4092546,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125142,
+    "startup_log_device_lines": [],
+    "tag": "4C"
+   },
+   "probe_file": "arm-4C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565385728
+   },
+   "tag": "4C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4094362
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4094362,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4094362
+      },
+      {
+       "cpu": 73,
+       "tid": 4094613
+      },
+      {
+       "cpu": 74,
+       "tid": 4094614
+      },
+      {
+       "cpu": 75,
+       "tid": 4094615
+      },
+      {
+       "cpu": 76,
+       "tid": 4094616
+      },
+      {
+       "cpu": 77,
+       "tid": 4094617
+      },
+      {
+       "cpu": 78,
+       "tid": 4094618
+      },
+      {
+       "cpu": 79,
+       "tid": 4094619
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4094390,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4094390 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4094362
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4094362,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4094362
+      },
+      {
+       "cpu": 73,
+       "tid": 4094613
+      },
+      {
+       "cpu": 74,
+       "tid": 4094614
+      },
+      {
+       "cpu": 75,
+       "tid": 4094615
+      },
+      {
+       "cpu": 76,
+       "tid": 4094616
+      },
+      {
+       "cpu": 77,
+       "tid": 4094617
+      },
+      {
+       "cpu": 78,
+       "tid": 4094618
+      },
+      {
+       "cpu": 79,
+       "tid": 4094619
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4094390,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4094390 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-5C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4094362,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4094362 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-5C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4094362,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125196,
+    "startup_log_device_lines": [],
+    "tag": "5C"
+   },
+   "probe_file": "arm-5C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565209600
+   },
+   "tag": "5C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4095725
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4095725,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4095725
+      },
+      {
+       "cpu": 73,
+       "tid": 4095995
+      },
+      {
+       "cpu": 74,
+       "tid": 4095996
+      },
+      {
+       "cpu": 75,
+       "tid": 4095997
+      },
+      {
+       "cpu": 76,
+       "tid": 4095998
+      },
+      {
+       "cpu": 77,
+       "tid": 4095999
+      },
+      {
+       "cpu": 78,
+       "tid": 4096000
+      },
+      {
+       "cpu": 79,
+       "tid": 4096001
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4095756,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4095756 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4095725
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4095725,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4095725
+      },
+      {
+       "cpu": 73,
+       "tid": 4095995
+      },
+      {
+       "cpu": 74,
+       "tid": 4095996
+      },
+      {
+       "cpu": 75,
+       "tid": 4095997
+      },
+      {
+       "cpu": 76,
+       "tid": 4095998
+      },
+      {
+       "cpu": 77,
+       "tid": 4095999
+      },
+      {
+       "cpu": 78,
+       "tid": 4096000
+      },
+      {
+       "cpu": 79,
+       "tid": 4096001
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4095756,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4095756 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-6C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4095725,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4095725 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-6C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4095725,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125250,
+    "startup_log_device_lines": [],
+    "tag": "6C"
+   },
+   "probe_file": "arm-6C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565402112
+   },
+   "tag": "6C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4097084
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4097084,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4097084
+      },
+      {
+       "cpu": 73,
+       "tid": 4097353
+      },
+      {
+       "cpu": 74,
+       "tid": 4097354
+      },
+      {
+       "cpu": 75,
+       "tid": 4097355
+      },
+      {
+       "cpu": 76,
+       "tid": 4097356
+      },
+      {
+       "cpu": 77,
+       "tid": 4097357
+      },
+      {
+       "cpu": 78,
+       "tid": 4097358
+      },
+      {
+       "cpu": 79,
+       "tid": 4097359
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4097112,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4097112 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4097084
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4097084,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4097084
+      },
+      {
+       "cpu": 73,
+       "tid": 4097353
+      },
+      {
+       "cpu": 74,
+       "tid": 4097354
+      },
+      {
+       "cpu": 75,
+       "tid": 4097355
+      },
+      {
+       "cpu": 76,
+       "tid": 4097356
+      },
+      {
+       "cpu": 77,
+       "tid": 4097357
+      },
+      {
+       "cpu": 78,
+       "tid": 4097358
+      },
+      {
+       "cpu": 79,
+       "tid": 4097359
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4097112,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4097112 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-7C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4097084,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4097084 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-7C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4097084,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125303,
+    "startup_log_device_lines": [],
+    "tag": "7C"
+   },
+   "probe_file": "arm-7C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565344768
+   },
+   "tag": "7C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4098422
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4098422,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4098422
+      },
+      {
+       "cpu": 73,
+       "tid": 4098718
+      },
+      {
+       "cpu": 74,
+       "tid": 4098719
+      },
+      {
+       "cpu": 75,
+       "tid": 4098720
+      },
+      {
+       "cpu": 76,
+       "tid": 4098721
+      },
+      {
+       "cpu": 77,
+       "tid": 4098722
+      },
+      {
+       "cpu": 78,
+       "tid": 4098723
+      },
+      {
+       "cpu": 79,
+       "tid": 4098724
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4098450,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4098450 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4098422
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4098422,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4098422
+      },
+      {
+       "cpu": 73,
+       "tid": 4098718
+      },
+      {
+       "cpu": 74,
+       "tid": 4098719
+      },
+      {
+       "cpu": 75,
+       "tid": 4098720
+      },
+      {
+       "cpu": 76,
+       "tid": 4098721
+      },
+      {
+       "cpu": 77,
+       "tid": 4098722
+      },
+      {
+       "cpu": 78,
+       "tid": 4098723
+      },
+      {
+       "cpu": 79,
+       "tid": 4098724
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4098450,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4098450 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-8C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4098422,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4098422 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 6,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-8C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4098422,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125357,
+    "startup_log_device_lines": [],
+    "tag": "8C"
+   },
+   "probe_file": "arm-8C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565422592
+   },
+   "tag": "8C"
+  },
+  {
+   "arm": "C",
+   "llama_bench": null,
+   "llama_bench_residency": {
+    "gpu_busy_pct_max": 0,
+    "n_samples": 0,
+    "n_samples_pid_in_kfd": 0,
+    "n_samples_pid_vram_nonzero": 0,
+    "pid_vram_bytes_max": 0,
+    "resident": false,
+    "total_vram_used_bytes_max": 0
+   },
+   "meta": {
+    "affinity_post": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4105574
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4105574,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4105574
+      },
+      {
+       "cpu": 73,
+       "tid": 4105864
+      },
+      {
+       "cpu": 74,
+       "tid": 4105865
+      },
+      {
+       "cpu": 75,
+       "tid": 4105866
+      },
+      {
+       "cpu": 76,
+       "tid": 4105867
+      },
+      {
+       "cpu": 77,
+       "tid": 4105868
+      },
+      {
+       "cpu": 78,
+       "tid": 4105869
+      },
+      {
+       "cpu": 79,
+       "tid": 4105870
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4105602,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4105602 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "affinity_pre": {
+     "affinity_groups": {
+      "0-191": 1,
+      "72": 1,
+      "72-79": 194,
+      "73": 1,
+      "74": 1,
+      "75": 1,
+      "76": 1,
+      "77": 1,
+      "78": 1,
+      "79": 1
+     },
+     "compute_pool_seen": true,
+     "cpuset": "72-79",
+     "main_thread": {
+      "comm": "llama-server",
+      "cpus": "72",
+      "tid": 4105574
+     },
+     "n_threads": 203,
+     "ok": true,
+     "pid": 4105574,
+     "pinned_inside_cpuset": 8,
+     "pinned_single_cpu_threads": [
+      {
+       "cpu": 72,
+       "tid": 4105574
+      },
+      {
+       "cpu": 73,
+       "tid": 4105864
+      },
+      {
+       "cpu": 74,
+       "tid": 4105865
+      },
+      {
+       "cpu": 75,
+       "tid": 4105866
+      },
+      {
+       "cpu": 76,
+       "tid": 4105867
+      },
+      {
+       "cpu": 77,
+       "tid": 4105868
+      },
+      {
+       "cpu": 78,
+       "tid": 4105869
+      },
+      {
+       "cpu": 79,
+       "tid": 4105870
+      }
+     ],
+     "problems": [],
+     "runtime_threads_outside": [
+      {
+       "comm": "llama-server",
+       "cpus": "0-191",
+       "tid": 4105602,
+       "wchan_seen": [
+        "kfd_wait_on_events"
+       ],
+       "why": "blocked in kfd_wait_on_events (ROCr async-event thread)"
+      }
+     ],
+     "summary": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4105602 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+     "threads_arg": 8,
+     "unexplained_threads_outside": []
+    },
+    "arm": "C",
+    "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin",
+    "binary_sha256": "e834cda58652b6199dc52b1ad18a28e88fdb581f0ef3c2f23e62203575ced0e5",
+    "cmdline": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/llama-server",
+     "-m",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "--host",
+     "127.0.0.1",
+     "--port",
+     "8197",
+     "-np",
+     "4",
+     "-c",
+     "393216",
+     "-t",
+     "8",
+     "-ub",
+     "2048",
+     "--flash-attn",
+     "on",
+     "--jinja",
+     "-ctk",
+     "q8_0",
+     "-ctv",
+     "q8_0",
+     "--kv-unified",
+     "--no-mmap",
+     "-ngl",
+     "all",
+     "--cache-ram",
+     "65536",
+     "--chat-template-file",
+     "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+     "-md",
+     "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+     "-ngld",
+     "99",
+     "--spec-type",
+     "draft-dflash",
+     "--spec-draft-n-max",
+     "7",
+     "--device",
+     "ROCm0",
+     "--slot-save-path",
+     "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/slots",
+     "--device-draft",
+     "ROCm0"
+    ],
+    "cpuset": "72-79",
+    "device_evidence": {
+     "argv_device": [
+      "ROCm0"
+     ],
+     "argv_ngl": [
+      "all"
+     ],
+     "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-9C.server.log",
+     "min_vram_bytes": 1000000000,
+     "n_startup_log_device_lines": 0,
+     "ok": true,
+     "pid": 4105574,
+     "pid_in_kfd": true,
+     "pid_vram_bytes": 54517780480,
+     "startup_log_device_lines": [],
+     "summary": "OK: pid 4105574 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']"
+    },
+    "expected_build": "10324",
+    "expected_commit": "61bdb18",
+    "libggml_hip_sha256": "ea456fcaf2bc34efd023dc7930f185d36d75910af508fdbc5cb4ec43b4410a39",
+    "load_s": 7,
+    "log": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/arm-9C.server.log",
+    "mapped_libs": [
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-base.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-cpu.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml-hip.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libggml.so.0.16.0",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-common.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama-server-impl.so",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libllama.so.0.0.10324",
+     "/mnt/raid0/llm/kernels/builds/gpu-20261004-61bdb185c/bin/libmtmd.so.0.0.10324"
+    ],
+    "membind": "3",
+    "omp_lib": [
+     "/usr/lib/llvm-20/lib/libomp.so.5"
+    ],
+    "pid": 4105574,
+    "port": 8197,
+    "props": {
+     "build_info": "b10324-61bdb185c",
+     "modalities": {
+      "audio": false,
+      "video": false,
+      "vision": false
+     },
+     "model_path": "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+     "ok": true,
+     "port": 8197,
+     "problems": [],
+     "speculative_n_max_props": 3,
+     "speculative_types_props": "none",
+     "summary": "OK: build_info=b10324-61bdb185c model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False",
+     "total_slots": 4
+    },
+    "props_build_info": "b10324-61bdb185c",
+    "runtime_maps_ok": true,
+    "started_epoch": 1791125410,
+    "startup_log_device_lines": [],
+    "tag": "9C"
+   },
+   "probe_file": "arm-9C.probe.json",
+   "residency": {
+    "gpu_busy_pct_max": 100,
+    "n_samples": 27,
+    "n_samples_pid_in_kfd": 26,
+    "n_samples_pid_vram_nonzero": 26,
+    "pid_vram_bytes_max": 55550545920,
+    "resident": true,
+    "total_vram_used_bytes_max": 55565283328
+   },
+   "tag": "9C"
+  }
+ ],
+ "context": null,
+ "kind": "mtp",
+ "run_dir": "/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z",
+ "schema": "epyc.gpu_champion_ab.result.v1",
+ "verdict": {
+  "PASS": false,
+  "affinity_detail": {
+   "10C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4106821 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4106821 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "11C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4108193 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4108193 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "12C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4109770 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4109770 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "13C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4111113 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4111113 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "14C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4112489 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4112489 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "15C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4114054 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4114054 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "1C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4088291 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4088291 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "2C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4089590 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4089590 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "3C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4091104 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4091104 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "4C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4092574 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4092574 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "5C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4094390 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4094390 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "6C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4095756 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4095756 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "7C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4097112 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4097112 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "8C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4098450 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4098450 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   },
+   "9C": {
+    "post": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4105602 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]",
+    "pre": "OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4105602 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]"
+   }
+  },
+  "affinity_ok": {
+   "10C": true,
+   "11C": true,
+   "12C": true,
+   "13C": true,
+   "14C": true,
+   "15C": true,
+   "1C": true,
+   "2C": true,
+   "3C": true,
+   "4C": true,
+   "5C": true,
+   "6C": true,
+   "7C": true,
+   "8C": true,
+   "9C": true
+  },
+  "checks": {
+   "affinity_ok": true,
+   "arms_P_and_C_with_ok_probe": false,
+   "gpu_device_evidence": true,
+   "gpu_resident_during_run": true,
+   "identity_C_equals_P": false,
+   "no_failed_probe": true,
+   "own_ggml_mapped": true,
+   "speed_no_regression": false,
+   "sw9_champion_probs_on_every_token": true
+  },
+  "failed_checks": [
+   "arms_P_and_C_with_ok_probe",
+   "identity_C_equals_P",
+   "speed_no_regression"
+  ],
+  "gpu_device_evidence": {
+   "10C": true,
+   "11C": true,
+   "12C": true,
+   "13C": true,
+   "14C": true,
+   "15C": true,
+   "1C": true,
+   "2C": true,
+   "3C": true,
+   "4C": true,
+   "5C": true,
+   "6C": true,
+   "7C": true,
+   "8C": true,
+   "9C": true
+  },
+  "gpu_resident_during_run": {
+   "10C": true,
+   "11C": true,
+   "12C": true,
+   "13C": true,
+   "14C": true,
+   "15C": true,
+   "1C": true,
+   "2C": true,
+   "3C": true,
+   "4C": true,
+   "5C": true,
+   "6C": true,
+   "7C": true,
+   "8C": true,
+   "9C": true
+  },
+  "identity": {
+   "C_equals_P": null,
+   "P_self_deterministic": null,
+   "n_digests_per_arm": 0,
+   "per_arm_digests": {
+    "10C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "11C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "12C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "13C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "14C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "15C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "1C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "2C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "3C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "4C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "5C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "6C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "7C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "8C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ],
+    "9C": [
+     "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+     "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b"
+    ]
+   },
+   "reference": null
+  },
+  "own_ggml_mapped": {
+   "10C": true,
+   "11C": true,
+   "12C": true,
+   "13C": true,
+   "14C": true,
+   "15C": true,
+   "1C": true,
+   "2C": true,
+   "3C": true,
+   "4C": true,
+   "5C": true,
+   "6C": true,
+   "7C": true,
+   "8C": true,
+   "9C": true
+  },
+  "probe_failed": {},
+  "speed": {},
+  "sw9": {
+   "10C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "11C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "12C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "13C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "14C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "15C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "1C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "2C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "3C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "4C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "5C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "6C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "7C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "8C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   },
+   "9C": {
+    "post": {
+     "draft_n_accepted": 28,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    },
+    "raw": {
+     "draft_n_accepted": 35,
+     "n_empty": 0,
+     "n_tokens": 64,
+     "n_without_probs": 0,
+     "tokens_predicted": 64
+    }
+   }
+  },
+  "sw9_champion_probs_on_every_token": true,
+  "sw9_v10_shows_gap": false
+ },
+ "written_at": "2026-10-04T14:56:22Z"
+}

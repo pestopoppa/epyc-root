@@ -1,0 +1,51 @@
+{
+ "label": "armA",
+ "pid": 2107702,
+ "extra_env": {},
+ "phases": [
+  {
+   "phase": "warm",
+   "capped": false,
+   "own_before_b": 54513426432,
+   "own_after_b": 55504134144,
+   "delta_gib": 0.923
+  },
+  {
+   "phase": "ctrl",
+   "capped": false,
+   "own_before_b": 55504134144,
+   "own_after_b": 55571243008,
+   "delta_gib": 0.062
+  },
+  {
+   "phase": "t7a",
+   "capped": false,
+   "own_before_b": 55571243008,
+   "own_after_b": 61829144576,
+   "delta_gib": 5.828
+  },
+  {
+   "phase": "t7b2",
+   "capped": false,
+   "own_before_b": 61829144576,
+   "own_after_b": 62800125952,
+   "delta_gib": 0.904
+  }
+ ],
+ "skipped": [],
+ "aborted": null,
+ "load_s": 6.0,
+ "healthy": true,
+ "soft_ceiling_hit": false,
+ "teardown": {
+  "pid": 2107702,
+  "already_exited": false,
+  "sent": [
+   "TERM"
+  ],
+  "at": "2026-10-04T11:18:35Z",
+  "verified_dead": true,
+  "returncode": 0
+ },
+ "peak_own_gib": 58.487
+}

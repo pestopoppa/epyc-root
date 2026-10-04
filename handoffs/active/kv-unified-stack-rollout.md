@@ -384,10 +384,13 @@ is olympiad-style reasoning.
       `/mnt/raid0/llm/tmp/prefill-budget-20261004/` (`FOLD.md`, `cpu_identity_summary.txt`, `dryrun2/`). The 27B A/B
       runner `gpu_slot.sh` is ready for schedule row 5c: arms off / b512 / pb512 / t1000, DEPTH 20000, NEIGHBOUR 80000,
       default build `gpu-20261004-65d48a7a0`.
+    - *(2026-10-04 PM, workspace-ec; GPU A/B queued, so not ticked.)* **Rebased onto champion Y** as `98c0ce12a`. The
+      slot's earlier refusal was a `pipefail` false alarm in the runner, now fixed. The row-5c GPU A/B (KVU-16g-1) is
+      next in the GPU queue, on the Y-based build.
     - [ ] **KVU-16g-1 — run the row-5c prefill-budget A/B (`gpu_slot.sh`) and score it against the done-when above.**
       (filed 2026-10-04, workspace-ec) Then fold `65d48a7a0` into the champion through the KVU-19 fold route if it
       passes, or record why not.
-  - [ ] **KVU-16h — URGENT: attribute :8083's +7.2 GiB VRAM growth while serving.** (filed 2026-10-04, workspace-ec)
+  - [x] **KVU-16h — URGENT: attribute :8083's +7.2 GiB VRAM growth while serving.** ✅ 2026-10-04 (filed 2026-10-04, workspace-ec)
     KFD for pid 1703677 was 51.69 GiB right after load, 58.88 after Q38-T7 #1's concurrent prefill+decode traffic, and
     59.77 after Q38-T7 #2, still rising. That leaves ~2.2 GiB to the 62 GiB gate. The growth follows request shape,
     not KV occupancy: KVU-16b at 310k cells added nothing. Candidates: the ggml-cuda legacy pool (`NO_VMM=1` →
@@ -395,6 +398,8 @@ is olympiad-style reasoning.
     and rocBLAS/hipBLASLt workspaces. In a GPU window, relaunch :8083's argv on a scratch port at `-lv 4`, replay the
     Q38-T7 phases one at a time with phase markers, and sample KFD at 1 Hz. Done when the growth is attributed to a
     named allocator with a per-phase table, and either bounded by a flag or carried as a runtime term in KVU-16i.
+    - **2026-10-04 PM (workspace-ec): ATTRIBUTED, CONFIRMED and FIXED** (KVU-16h-confirm, KVU-16h-fold below); the
+      runtime term on v10 production stays in KVU-16i.
     - **2026-10-04 (workspace-ec): ATTRIBUTED; a fix is built, and GPU confirmation is pending, so the parent stays open.**
       Durable copy: [`artifacts/kvu16h-vram-20261004/`](../../artifacts/kvu16h-vram-20261004/) (replay summary, runner,
       shim analysis, follow-up scripts; originals `/mnt/raid0/llm/tmp/kvu16h-vram-20261004/`).
@@ -419,16 +424,25 @@ is olympiad-style reasoning.
     - [x] **KVU-16h-a — attribute the growth to a named allocator with a per-phase table.** ✅ 2026-10-04 (workspace-ec)
       Replay table plus the follow-up mechanism above: legacy pool, held by the local HIP-graph MMVQ q8_1 cache, triggered
       by `n_max: 0` requests.
-    - [ ] **KVU-16h-confirm — confirm the fix on the GPU (schedule row 4c, `gpu_slot_kvu16h_followup_c.sh`).** (filed
+    - [x] **KVU-16h-confirm — confirm the fix on the GPU (schedule row 4c, `gpu_slot_kvu16h_followup_c.sh`).** ✅ 2026-10-04 (filed
       2026-10-04, workspace-ec) Run `/mnt/raid0/llm/tmp/kvu16h-vram-20261004/gpu_slot_kvu16h_followup_c.sh` (durable
       copy in `artifacts/kvu16h-vram-20261004/scripts/`) in a coordinated GPU slot: the `n_max: 0` alternation that grows
       the champion must stay flat on `gpu-20261004-656c9a66b`, with output byte-identical and decode within noise.
       Done when the row-4c summary shows growth bounded (no per-event step) on the fix and present on the control.
-    - [ ] **KVU-16h-fold — fold `656c9a66b` into the champion after KVU-16h-confirm passes.** (filed 2026-10-04,
+      - *(2026-10-04 PM, workspace-ec.)* **CONFIRMED, and the fix HOLDS.** Run `fuc-20261004T110509Z` (own-pid KFD;
+        durable copy `artifacts/kvu16h-vram-20261004/results/fuc-20261004T110509Z/summary.md`):
+        - arm A (v10): +5.83 GiB over 21 `n_max: 0` → prefill events, 0.28 GiB per event (model 0.29); control +0.06.
+        - arm B (`GGML_CUDA_DISABLE_GRAPHS=1`): +0.05 GiB, but no-draft decode −5.6% (31.38 → 29.63 tok/s).
+        - arm C (fix `656c9a66b`, graphs on): +0.057 GiB over the same 21 events, no MMVQ pool pins, arena 1 × 4 MiB;
+          decode +1.0% no-draft and +4.9% drafted vs A.
+    - [x] **KVU-16h-fold — fold `656c9a66b` into the champion after KVU-16h-confirm passes.** ✅ 2026-10-04 (filed 2026-10-04,
       workspace-ec) Guarded fast-forward of `ak/champion/llama-cpp-ffc1bac82eec` from `1bceceb05` (its parent), the same
       CAS route as `artifacts/champion-fold-kvu19-20261004/scripts/advance_ref.sh`; G0 plus `test-backend-ops` ROCm0 on
       the folded build; the fold-table ledger entry goes through workspace-89. Done when the champion tip carries
       `656c9a66b` and the standing receipt is refreshed.
+      - *(2026-10-04 PM.)* Folded in champion Y `61bdb185c` (the all-keeps fold, executed by ak-ds41-main with
+        workspace-89; ledger in `autokernel-champion-aggregate.md`). Y gates: FA 2949/2949, MUL_MAT 1139/1139, 27B greedy
+        Y ≡ X 3/3. Standing receipt refreshed: Y champion-only tg +0.35% (pp +18.2% is flagged as unpaired host drift).
     - [ ] **KVU-16h-runner — bench runners give `n_max: 0` (no-draft) arms their own server launch.** (filed
       2026-10-04, workspace-ec, from workspace-89's suggestion) Mixing per-request `speculative.n_max: 0` into a drafted
       server's traffic is exactly the KVU-16h trigger: it grows VRAM on every pre-fix build and alternates HIP-graph
@@ -447,6 +461,14 @@ is olympiad-style reasoning.
       (legacy-pool growth per `n_max: 0` event), so the term does not shrink to the replay's +1.42 GiB plateau. Keep the
       +8.08 GiB runtime term until KVU-16h-confirm (row 4c) shows the fix bounds the growth; re-derive it from the
       confirm run's measured peak only then, and only for a build that carries `656c9a66b`.
+    - *(2026-10-04 PM, workspace-ec.)* KVU-16h-confirm passed and `656c9a66b` is in the champion (Y). The term drops to
+      the bounded ~1.42 GiB replay plateau only when a production kernel that carries `656c9a66b` serves (v11). Until
+      then v10 production keeps the +8.08 GiB term, under the operating rule **no per-request `speculative.n_max: 0`
+      against :8083** (KVU-16h-runner enforces it for bench runners).
+    - [ ] **KVU-16i-v11 — at the v11 promotion, re-measure :8083's runtime term on the v11 build and lower it in the
+      master.** (filed 2026-10-04, workspace-ec) Replay the row-4c traffic (with `n_max: 0` alternation) on the v11
+      candidate; expect the ~1.42 GiB plateau. Done when the master carries the v11-measured term with its evidence path
+      and the +8.08 GiB term retires with the v10 kernel.
   - [x] **KVU-16c — or cite workspace-89's P3 parked-neighbour run as the residency proof.** (filed 2026-10-03)
     ✅ 2026-10-03 — resolved: **NOT citable**, so KVU-16b runs. P3 A1 (`/mnt/raid0/llm/tmp/x0-27b-quants/results/p3/report.md`)
     had zero slot-failure lines, but it ran with `--no-cache-idle-slots` (not the production flag), and its ≈355k fill
@@ -759,7 +781,7 @@ is olympiad-style reasoning.
           `GGML_CUDA_FA_SEQ_ROWS=0` and `-no-kvu`; no-draft arms on their own server launch (KVU-16h-runner). Run it
           in the coordinated GPU block that also serves KVU-19 (workspace-89). Done when the per-arm table is recorded
           here.
-        - [ ] **KVU-19b-fold-c1-receipt — record the ONE-champion standing receipt for `1bceceb05`.** (filed
+        - [x] **KVU-19b-fold-c1-receipt — record the ONE-champion standing receipt for `1bceceb05`.** ✅ 2026-10-04 (filed
           2026-10-04, workspace-ec) `standing_receipt.sh` (single arm per operator ruling: champion only, 1 warm-up +
           20 launches tg128 on the 27B; baseline = the FOLD-2 G5 `ef81196d5` samples of 2026-09-08, median 31.301
           tok/s, unpaired, 26 days apart, BIOS change in between) was started ~07:59Z under `region-lock run
@@ -767,6 +789,20 @@ is olympiad-style reasoning.
           Done when `loop-memory/champion-vs-production.json` names `1bceceb05` (exit 0) and the ratio plus its
           caveats are recorded here, or exit 4 is recorded with the reason. tg128 runs at n_kv ≈ 128, so the number is
           the lineage's decode aggregate, not a KVU-19 effect.
+          - *(2026-10-04 PM, workspace-ec.)* **Recorded as a PAIRED receipt** (operator decision 2026-10-04: measure v10
+            once on DFlash2). 14 paired launches, v10 `ffc1bac82` vs champion `1bceceb05`, on the :8083 DFlash2 argv:
+            tg +0.61% [95% CI −0.20, +1.41] (40.125 vs 40.369 tok/s), pp −0.21%, output identity C ≡ P on every launch.
+            Ingested as the v10 `serving_probe` baseline (`production-baseline.ffc1bac82eec.serving_probe-{tg,pp}.json`)
+            and `champion-vs-production.1bceceb0514d.serving_probe.json`. The raw run dir was lost to a glob `rm`
+            (INC-20261004-glob-rm-deleted-receipt-evidence); surviving evidence is in
+            `artifacts/champion-fold-kvu19-20261004/paired-receipt-20261004T094057Z/`.
+          - Later the same day: candidate X `cf23279ae`, paired vs v10, tg −0.23% [−0.57, +0.23], FA `test-backend-ops`
+            2949/2949 (`artifacts/champion-fold-kvu19-20261004/receipt-ab/paired-cf23279ae-20261004T115822Z/`). The
+            operator chose Y `61bdb185c` (DS41 serving-gated keeps + `656c9a66b`, no IQ4_NL allowlist); Y champion-only
+            tg +0.35%, pp +18.2% flagged as unpaired drift
+            (`artifacts/champion-fold-kvu19-20261004/receipt-ab/champion-only-61bdb185c-20261004T144303Z/`).
+            workspace-89 advanced the champion `1bceceb05` → `61bdb185c`. The next fold is Yfa `9a3f1392a` (+ CPU FA
+            hybrid v2), with its gates passed.
       - [ ] **KVU-19b-rework-c2 — make WMMA sequence tiles exact, straddle-only, and separately switchable; then
         `gpu_slot3.sh`.** (filed 2026-10-04, workspace-ec, owner workspace-ec, from KVU-19b-1; rework dispatched)
         (1) Root-cause the skip on/off difference on cases 110/111/118/119/126/127 (384 elements differ in each). The
@@ -797,6 +833,23 @@ is olympiad-style reasoning.
           - CPU harness v2 on the v2 build: 141/141 bit-identical to the v2 reference (`rework/cpu_v3_vs_v2ref.txt`).
           - (4) `gpu_slot3.sh` is ready (default `NEW=gpu-20261004-54df2c030`, controls `gpu-20261003-a0d0ae238` and
             `gpu-20261004-c7f5ac9ad`, host side under `region-lock`); it runs in the next coordinated GPU slot.
+        - *(2026-10-04 PM, workspace-ec; step 4 ran, but calibration triage is open, so not ticked.)* **`gpu_slot3.sh`
+          ran** (`slot3-20261004T115000Z`, durable copy `artifacts/fa-maskskip-batched-20261004/slot3-20261004T115000Z/`).
+          - Exactness: all five bit-identity criteria PASS, 132/132 each (on ≡ skipoff, on ≡ tilesoff, force ≡ seqoff,
+            tilesonly ≡ seqoff, seqoff ≡ alloff).
+          - Kernel µs/op vs KVU-19a at 4 seqs × 80k cells: 4×9 ×0.708; uneven ×0.88-0.90; aligned 4×8 ×0.98; streams
+            ×0.99-1.01.
+          - `test-backend-ops`: 118/118 ×2.
+          - Two calibration FAILs remain:
+            - seqoff vs k19a: 22 hs=128 cases at nmse 7.79e-08 against the pinned Q-rounding bound;
+            - case 152 vs the CPU reference: nmse 0.00176 > 5e-4 on every arm, the KVU-19a build included.
+          - p3batch draft 1: on 8.14 vs no-kvu 7.40 ms/step (KVU-19b-gap).
+        - [ ] **KVU-19b-rework-c2-cal — triage the two slot-3 calibration FAILs, then hand commit 2 v2 to workspace-89.**
+          (filed 2026-10-04, workspace-ec)
+          - (a) The hs=128 bound: decide whether the bound is mis-set, or the layouts-off path still differs from KVU-19a.
+          - (b) Case 152: it fails against the CPU reference on every arm, k19a included, so fix the reference or the
+            threshold.
+          - Done when both are explained with numbers, and the fold hand-off (or the drop of commit 2) is recorded here.
       - [ ] **KVU-19b-gap — commit 1 still trails no-kvu at draft=1 in p3batch; find out why.** (filed 2026-10-04,
         workspace-ec, from KVU-19b-1) p3batch gemma-3-1b 4×16k draft=1: 449 vs 518 tok/s (round 3; medians 440 vs
         518, about 15% short), while the kernel micro-bench is at the streams reference (5.53 vs 5.26 ms) and
@@ -844,8 +897,8 @@ is olympiad-style reasoning.
   ([`kv-prefix-fork-and-paged-attention.md`](kv-prefix-fork-and-paged-attention.md) KPF-40..42), and inform KVU-21.
   Owner of V11-FA-1..4: **workspace-ec** (filed 2026-10-04 at the coordinator's direction). Every build and run below
   takes `region-lock` for its host side.
-- [ ] **V11-FA-1 — A/B the champion with ROCWMMA=OFF (exact v11 FA routing) against ROCWMMA=ON, plus a third arm with
-  #27870 and #28576 cherry-picked.** (filed 2026-10-04, workspace-ec, from the v11 FA-path audit §5) ROCWMMA=OFF
+- [x] **V11-FA-1 — A/B the champion with ROCWMMA=OFF (exact v11 FA routing) against ROCWMMA=ON, plus a third arm with
+  #27870 and #28576 cherry-picked.** ✅ 2026-10-04 (filed 2026-10-04, workspace-ec, from the v11 FA-path audit §5) ROCWMMA=OFF
   reproduces upstream's D=256 routing: TILE at ≤32 rows, MMA above. The third arm approximates v11's MMA kernel
   (`b74f590ea` divergent-barrier fix, `bfdc32183` fp32 VKQ). Build in an experimental worktree, never the frozen tree.
   Bands: 4×1 decode, 1-3-slot DFlash2 verify (9-27 rows), 4-slot verify (36 rows), prefill (512 and mixed 512+3×9),
@@ -868,7 +921,19 @@ is olympiad-style reasoning.
   - **In v11 the drafter's 9-row block moves to MMA.** The DFlash2 drafter (D=128, GQA 4) block of 9 rows runs WMMA on
     the champion and D=128 MMA on v11 (≥ 5 rows), TILE at 3-4 rows. The audit did not list this shape; it belongs in
     the V11-FA-1 bands and the DF2-9 probes.
-- [ ] **V11-FA-2 — root-cause DF2-9: all-NaN target features at ~2k-token prompts with ROCWMMA OFF.** (filed
+  - *(2026-10-04 PM, workspace-ec.)* **Ran; decision: carry WMMA (V11-FA-4).**
+    - Slots: `slot-20261004T113710Z` (arms A/B/C/D/M/D32/D9; merged summary) and `slot-20261004T150551Z` (A/B/E/C).
+      Durable copies: `artifacts/v11-fa-ab-20261004/slot-*/` (`summary.txt`, `perf_table.tsv`).
+    - FA µs/op vs A (rocWMMA ON), on the v11 route:
+      - 4×1 decode: ×0.60 (faster).
+      - 1-3-slot verify, 9-27 rows: ×1.14-1.24 (TILE slower).
+      - 36 rows: ×0.5-0.9 (B/C/M faster).
+      - prefill-512: master M ×0.84-0.90; C ×1.09-1.16; B ×1.28-1.35.
+      - drafter D=128, 9 rows: ×1.64-1.86 slower; 64 rows ×0.55-0.74.
+    - Patches D and D9 do not help: D ≡ C at 512 rows, and D9 is ×1.35-1.42 at 9-27 rows.
+    - The server DF2-9 arm errored on a busy port (18093) in both slots, so the model probe carries the DF2-9
+      verdict (V11-FA-2).
+- [x] **V11-FA-2 — root-cause DF2-9: all-NaN target features at ~2k-token prompts with ROCWMMA OFF.** ✅ 2026-10-04 (filed
   2026-10-04, workspace-ec, from the audit §0.4 and §4b) Build a standalone reproducer first: `test-backend-ops` cannot
   catch it, because its random [-1,1] inputs never overflow. Add a new FA case with large magnitudes and long KV
   (|V|~30, kv ≥ 4k) checked against the CPU reference. The length discriminator fits the >32-row MMA route: a short
@@ -884,6 +949,22 @@ is olympiad-style reasoning.
     in FP16 for F16 V and goes non-finite on diffuse attention over 2048 cells (CPU-FA-VKQ below), the same mechanism
     #28576 fixes for MFMA. Upstream issue text is drafted, never posted:
     `artifacts/v11-fa-ab-20261004/UPSTREAM-ISSUE-DRAFT.md`.
+  - *(2026-10-04 PM, workspace-ec.)* **ROOT-CAUSED: the pre-#27870 MMA divergent-barrier race.**
+    - Model-level probe (27B, 10 runs per arm):
+      - B (ROCWMMA OFF): FAIL, 6/10 runs non-finite; first bad node `FLASH_ATTN_EXT` at layer 3.
+      - E (B + #27870 only, `gpu-20261004-e9b3b04df-E`): PASS.
+      - C (B + #27870 + #28576): PASS.
+      - A (rocWMMA ON): PASS.
+    - `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0`: B 598/640; E and C 640/640.
+    - Op-level determinism: B 84/228 identical; C, D and E 228/228.
+    - So **#27870 is a mandatory v11 carry** (V11-FA-6), and #28576 is not needed for DF2-9.
+    - The NaN is not an upstream issue, because #27870 already fixes it. The NaN framing in
+      `UPSTREAM-ISSUE-DRAFT.md` is superseded; only a perf-only issue remains (V11-FA-5).
+    - The opnan non-finites left on A/C/D/E/M are the synthetic `v=bias1024` diffuse cases (fp16-range stress), and
+      they occur on every arm.
+  - [ ] **V11-FA-2b — give `df29_server.sh` a free port.** (filed 2026-10-04, workspace-ec) The fixed port 18093 was
+    busy in both slots, so the server-level DF2-9 arm produced no verdict. Pick a free port at launch and refuse
+    loudly if none is free. Done when a slot records a server verdict for every arm.
 - [ ] **V11-FA-3 — MMA `<256,256,32,2>` spills 314 VGPRs on gfx90a under ROCm 6.2; evaluate an ncols cap for D=256
   prefill.** (filed 2026-10-04, workspace-ec, from the audit §0.3 and §3.1) `<256,256,16,2>` has 0 spills (499
   registers including 243 AGPR). The spill is structural: 512 threads means 2 waves per SIMD on gfx90a's unified
@@ -897,6 +978,12 @@ is olympiad-style reasoning.
     would run (`NCOLS_CAP.md`, register numbers from `fa_codeobj_audit.py`). Arm D implements the tuning: ncols2 by
     divisibility plus a 16-column cap (GQA 6 → `<256,256,8,2>`, the only spill-free D=256 MMA config with fp32 VKQ),
     with runtime knobs `GGML_CUDA_FA_CDNA_D256_MAX_COLS` and `GGML_CUDA_FA_CDNA_D256_MMA_MIN_ROWS` (arms D32, D9).
+  - *(2026-10-04 PM, workspace-ec; A/B recorded, not ticked.)* **The ncols cap brings no gain.**
+    - Arm D (16-column cap) ≡ C on 512-row prefill: ×1.16 / ×1.12 vs A.
+    - D9 (MMA from 9 rows) is ×1.35-1.42 at 9-27 rows.
+    - For reference, D32 measured ×0.97 / ×0.92 and master M ×0.90 / ×0.84 at 512 rows.
+    - Recommendation: decline the cap. Still missing before the tick: the register re-check on v11's own code object
+      (master `11fe02151`), which the slots' register tables do not include.
 - [ ] **V11-FA-4 — in v11, carry rocWMMA FA as an in-binary arm until TILE/MMA is at least as fast on every band.**
   (filed 2026-10-04, workspace-ec, from the audit §4 "Can rocWMMA FA be carried in v11? Yes" and §5.3)
   - Restore `fattn-wmma-f16.{cu,cuh}`, the dispatch branch and the CMake/`hip.h` flags.
@@ -911,6 +998,23 @@ is olympiad-style reasoning.
   - Done when the v11 candidate carries the arm, or V11-FA-1 shows it is not needed.
   - *(2026-10-04, workspace-ec.)* The bands that decide it now include the drafter's 9-row D=128 block, which v11 moves
     from WMMA to MMA (V11-FA-1 note); arm A vs B/C/D in `gpu_slot_v11fa.sh` is the deciding run.
+  - *(2026-10-04 PM, workspace-ec.)* **Justified by V11-FA-1.** On the v11 route:
+    - TILE is ×1.14-1.24 slower for 9-27 rows.
+    - The drafter's 9-row D=128 block is ×1.7-1.9 slower.
+
+    WMMA therefore stays the arm for 9-32 rows. 4×1 decode (×0.60) and 36 rows are faster on the v11 route, so the
+    knob should send only the 9-32-row band to WMMA.
+- [ ] **V11-FA-5 — draft (never post) the upstream perf-only issue: on gfx90a, v11's TILE/MMA is slower than the removed
+  rocWMMA FA for 9-32 rows.** (filed 2026-10-04, workspace-ec; WARRANTED under the upstream-report rule.)
+  - Scope is perf only: the DF2-9 NaN is already fixed upstream by #27870.
+  - Content: the V11-FA-1 numbers (`perf_table.tsv`), the arms and builds, and the drafter's D=128 9-row shape.
+  - Done when the draft is in `artifacts/v11-fa-ab-20261004/` and handed to the operator. Posting it is the operator's
+    call.
+- [ ] **V11-FA-6 — the v11 candidate must carry #27870 (mandatory for DF2-9).** (filed 2026-10-04, workspace-ec)
+  - The v11 rebase must contain `b74f590ea` (#27870).
+  - Gate the candidate on the DF2-9 model probe (`df29/`, 10 runs, 0 non-finite).
+  - Also gate it on `test-backend-ops -o FLASH_ATTN_EXT -b ROCm0` at 640/640 on the ROCWMMA-OFF route.
+  - Done when the v11 candidate's gate record shows both.
 - **CPU FlashAttention FP16 VKQ overflow (2026-10-04, workspace-ec).** `ggml-cpu/ops.cpp`
   `ggml_compute_forward_flash_attn_ext_f16_one_chunk` accumulates the un-normalised VKQ in FP16 whenever V is F16. For
   diffuse attention that is about the per-channel sum of V over the visible cells, so 2048 cells × a same-sign channel
@@ -933,10 +1037,16 @@ is olympiad-style reasoning.
     champion recipe, G0 plus `test-backend-ops -o FLASH_ATTN_EXT -b CPU` and the CPU FA harnesses v1/v2 (expect the
     F16-V cases to change, every other case bit-identical), then the guarded CAS advance and the standing receipt.
     Done when the champion tip carries the commit with those gates recorded here.
+    - *(2026-10-04 PM, workspace-ec; not ticked until the champion tip carries it.)*
+      - The fix was ported as hybrid v2 `a99e5330a`.
+      - It is folded into the next fold candidate, Yfa `9a3f1392a` (Y + the fix, without the opt-in arms).
+      - Yfa's gates passed: bit-identical on the KVU-19 FA harness, 86 + 141 cases.
+      - The advance to Yfa is workspace-89's next fold.
   - [ ] **CPU-FA-VKQ-2 — decode A/B of the fix on a CPU role at production threads.** (filed 2026-10-04, workspace-ec)
     The harness shows FA-op parity; serving decode is not yet measured. `llama-bench` tg at depth (e.g. 16k and 64k,
     F16 KV) fix vs `GGML_FA_VKQ_F16=1` in one binary, alternating, under `region-lock run --role bench`, n ≥ 5 per arm.
     Done when the decode delta is recorded with its noise floor; it gates CPU-FA-VKQ-1's promotion, not its fold.
+    - *(2026-10-04 PM, workspace-ec.)* PENDING: the end-to-end bench of hybrid v2 is running; no result yet.
   - [ ] **CPU-FA-VKQ-3 (optional) — MTP acceptance at > 64k on the architect, fix vs legacy.** (filed 2026-10-04,
     workspace-ec) The dense F16 MTP head is the one consumer whose visible window is not bounded by the indexer. Replay
     a > 64k architect conversation with MTP on a scratch port in a CPU window, `GGML_FA_VKQ_F16=1` vs default, and

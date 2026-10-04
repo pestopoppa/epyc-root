@@ -1,0 +1,29 @@
+[2026-10-04T15:05:51Z +0m] slot start, budget 80 min, steps: a1 det a2 a3 d arms: A B E C dry=0 out=/mnt/raid0/llm/tmp/v11-fa-ab-20261004/slot-20261004T150551Z
+[2026-10-04T15:05:51Z +0m] VRAM used before: 12 MiB
+[2026-10-04T15:05:51Z +0m] arm A: linkage PASS (VERDICT rocwmma_fattn=ON)
+[2026-10-04T15:05:51Z +0m] arm B: linkage PASS (VERDICT rocwmma_fattn=OFF)
+[2026-10-04T15:05:51Z +0m] arm E: linkage PASS (VERDICT rocwmma_fattn=OFF)
+[2026-10-04T15:05:51Z +0m] arm C: linkage PASS (VERDICT rocwmma_fattn=OFF)
+[2026-10-04T15:05:51Z +0m] arms: A B E C
+[2026-10-04T15:05:51Z +0m] (a1) op-level nan/overflow probe
+[2026-10-04T15:06:01Z +0m] (a1) E rc=0 run_nan nan gpu-20261004-e9b3b04df-E rc=0 summary mode=nan cases=228 ok=222 nonfinite=6 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=9.7 
+[2026-10-04T15:06:01Z +0m] (a2) model probe (fa_nan_probe, 27B, no server), cap 180s/arm
+[2026-10-04T15:07:18Z +1m] (a2) A rc=0 PROBE arm=A verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.09 vram_base_gib=0.01 wall=77s 
+[2026-10-04T15:08:38Z +2m] (a2) B rc=0 PROBE arm=B verdict=FAIL rc=3 runs=10 runs_nonfinite=6 first_fail_run=[kv=f16 R=2048 prompt=probe_olymp00.txt] first_bad_node=[ubatch=0 pos0=0 node=node_216 op=FLASH_ATTN_EXT layer=3 tok=1 bad=90940/1597440] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.12 vram_base_gib=25.55 wall=80s 
+[2026-10-04T15:09:57Z +4m] (a2) E rc=0 PROBE arm=E verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.12 vram_base_gib=25.59 wall=79s 
+[2026-10-04T15:11:14Z +5m] (a2) C rc=0 PROBE arm=C verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml-hip.so.0.16.0 vram_peak_gib=30.86 vram_base_gib=25.59 wall=77s 
+[2026-10-04T15:11:14Z +5m] (a3) server reproducer (df29_server.sh: orig + prod), cap 300s/arm
+[2026-10-04T15:11:15Z +5m] (a3) A rc=2 DF29 arm=A config=- verdict=ERROR reason=port-18093-busy 
+[2026-10-04T15:11:15Z +5m] (a3) B rc=2 DF29 arm=B config=- verdict=ERROR reason=port-18093-busy 
+[2026-10-04T15:11:15Z +5m] (a3) E rc=2 DF29 arm=E config=- verdict=ERROR reason=port-18093-busy 
+[2026-10-04T15:11:15Z +5m] (a3) C rc=2 DF29 arm=C config=- verdict=ERROR reason=port-18093-busy 
+[2026-10-04T15:11:15Z +5m] (a) done; VRAM now 12 MiB
+[2026-10-04T15:11:25Z +5m] (det) E rc=0 run_nan exact gpu-20261004-e9b3b04df-E rc=0 summary mode=exact cases=228 identical=228 differ=0 unsupported=0 wall_s=9.9 
+[2026-10-04T15:11:25Z +5m] (d) test-backend-ops B -p hsk=(128|256), (lock wait <= 900s)
+[2026-10-04T15:12:14Z +6m] (d) tbo B rc=1   598/640 tests passed  fails=44
+[2026-10-04T15:12:14Z +6m] (d) test-backend-ops E -p hsk=(128|256), (lock wait <= 900s)
+[2026-10-04T15:13:02Z +7m] (d) tbo E rc=0   640/640 tests passed  fails=0
+[2026-10-04T15:13:02Z +7m] (d) test-backend-ops C -p hsk=(128|256), (lock wait <= 900s)
+[2026-10-04T15:13:50Z +7m] (d) tbo C rc=0   640/640 tests passed  fails=0
+[2026-10-04T15:13:50Z +7m] VRAM used after: 12 MiB
+[2026-10-04T15:13:50Z +7m] done in 7 min -> /mnt/raid0/llm/tmp/v11-fa-ab-20261004/slot-20261004T150551Z/summary.txt

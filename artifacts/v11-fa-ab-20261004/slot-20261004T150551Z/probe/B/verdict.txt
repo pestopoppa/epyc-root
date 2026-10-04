@@ -1,0 +1,1 @@
+PROBE arm=B verdict=FAIL rc=3 runs=10 runs_nonfinite=6 first_fail_run=[kv=f16 R=2048 prompt=probe_olymp00.txt] first_bad_node=[ubatch=0 pos0=0 node=node_216 op=FLASH_ATTN_EXT layer=3 tok=1 bad=90940/1597440] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.12 vram_base_gib=25.55 wall=80s

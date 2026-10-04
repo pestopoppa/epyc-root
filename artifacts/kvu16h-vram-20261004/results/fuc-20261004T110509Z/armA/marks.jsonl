@@ -1,0 +1,18 @@
+{"t": 1791111912.185, "at": "2026-10-04T11:05:12Z", "phase": "load", "event": "pre_launch", "server_log_off": null, "shim_log_off": null, "card_used_b": 13094912}
+{"t": 1791111912.186, "at": "2026-10-04T11:05:12Z", "phase": "load", "event": "launched", "server_log_off": 0, "shim_log_off": null, "pid": 2107702}
+{"t": 1791111918.195, "at": "2026-10-04T11:05:18Z", "phase": "load", "event": "healthy", "server_log_off": 43491, "shim_log_off": 14682, "load_s": 6.0, "build": "b10303-ffc1bac82", "hip_ok": true, "shim_mapped": true, "own_vram_b": 54513426432}
+{"t": 1791111948.195, "at": "2026-10-04T11:05:48Z", "phase": "load", "event": "idle_end", "server_log_off": 43491, "shim_log_off": 14682, "own_vram_b": 54513426432}
+{"t": 1791111948.195, "at": "2026-10-04T11:05:48Z", "phase": "warm", "event": "begin", "server_log_off": 43491, "shim_log_off": 14682, "own_vram_b": 54513426432}
+{"t": 1791111989.88, "at": "2026-10-04T11:06:29Z", "phase": "warm", "event": "traffic_end", "server_log_off": 56839, "shim_log_off": 25783, "capped": false, "aborted": false, "own_vram_b": 55504134144}
+{"t": 1791112019.88, "at": "2026-10-04T11:06:59Z", "phase": "warm", "event": "idle_end", "server_log_off": 56839, "shim_log_off": 25783, "own_vram_b": 55504134144, "delta_gib": 0.923}
+{"t": 1791112019.88, "at": "2026-10-04T11:06:59Z", "phase": "ctrl", "event": "begin", "server_log_off": 56839, "shim_log_off": 25783, "own_vram_b": 55504134144}
+{"t": 1791112125.364, "at": "2026-10-04T11:08:45Z", "phase": "ctrl", "event": "traffic_end", "server_log_off": 208503, "shim_log_off": 25783, "capped": false, "aborted": false, "own_vram_b": 55571243008}
+{"t": 1791112155.364, "at": "2026-10-04T11:09:15Z", "phase": "ctrl", "event": "idle_end", "server_log_off": 208503, "shim_log_off": 25783, "own_vram_b": 55571243008, "delta_gib": 0.062}
+{"t": 1791112155.364, "at": "2026-10-04T11:09:15Z", "phase": "t7a", "event": "begin", "server_log_off": 208503, "shim_log_off": 25783, "own_vram_b": 55571243008}
+{"t": 1791112416.149, "at": "2026-10-04T11:13:36Z", "phase": "t7a", "event": "traffic_end", "server_log_off": 491830, "shim_log_off": 527176, "capped": false, "aborted": false, "own_vram_b": 61829144576}
+{"t": 1791112446.149, "at": "2026-10-04T11:14:06Z", "phase": "t7a", "event": "idle_end", "server_log_off": 491830, "shim_log_off": 527176, "own_vram_b": 61829144576, "delta_gib": 5.828}
+{"t": 1791112446.149, "at": "2026-10-04T11:14:06Z", "phase": "t7b2", "event": "begin", "server_log_off": 491830, "shim_log_off": 527176, "own_vram_b": 61829144576}
+{"t": 1791112685.884, "at": "2026-10-04T11:18:05Z", "phase": "t7b2", "event": "traffic_end", "server_log_off": 565620, "shim_log_off": 637958, "capped": false, "aborted": false, "own_vram_b": 62800125952}
+{"t": 1791112715.885, "at": "2026-10-04T11:18:35Z", "phase": "t7b2", "event": "idle_end", "server_log_off": 565620, "shim_log_off": 637958, "own_vram_b": 62800125952, "delta_gib": 0.904}
+{"t": 1791112715.885, "at": "2026-10-04T11:18:35Z", "phase": "teardown", "event": "begin", "server_log_off": 565620, "shim_log_off": 637958, "own_vram_b": 62800125952}
+{"t": 1791112716.232, "at": "2026-10-04T11:18:36Z", "phase": "teardown", "event": "end", "server_log_off": 566177, "shim_log_off": 652918, "pid": 2107702, "already_exited": false, "sent": ["TERM"], "verified_dead": true, "returncode": 0}

@@ -1,0 +1,89 @@
+{
+ "cmd": [
+  "numactl",
+  "--membind=3",
+  "--",
+  "taskset",
+  "-c",
+  "184-191",
+  "/mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin/llama-server",
+  "-m",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf",
+  "--host",
+  "127.0.0.1",
+  "--port",
+  "18083",
+  "-np",
+  "4",
+  "-c",
+  "393216",
+  "-t",
+  "8",
+  "-ub",
+  "2048",
+  "--flash-attn",
+  "on",
+  "--jinja",
+  "-ctk",
+  "q8_0",
+  "-ctv",
+  "q8_0",
+  "--kv-unified",
+  "--no-mmap",
+  "-ngl",
+  "all",
+  "--cache-ram",
+  "65536",
+  "--chat-template-file",
+  "/mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja",
+  "-md",
+  "/mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf",
+  "-ngld",
+  "99",
+  "--spec-type",
+  "draft-dflash",
+  "--spec-draft-n-max",
+  "7",
+  "--device",
+  "ROCm0",
+  "--slot-save-path",
+  "/mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armC_fix/slots",
+  "--device-draft",
+  "ROCm0",
+  "--verbosity",
+  "4"
+ ],
+ "mock_cmd": null,
+ "argv_notes": [
+  "--port 8083 -> 18083",
+  "--slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic -> /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armC_fix/slots",
+  "--verbosity (absent) -> 4"
+ ],
+ "argv_source": "/mnt/raid0/llm/epyc-orchestrator/logs/server_launches/8083.json (launched_at 2026-10-04T02:48:09.776Z, pid 1703677, argv_sha256 b865820d557f, launcher scripts/server/orchestrator_stack.py reload architect_critic, stack_commit ff92a580ea1a)",
+ "env": {
+  "dropped_ambient": [
+   "LD_LIBRARY_PATH"
+  ],
+  "set": {
+   "LD_LIBRARY_PATH": "/mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib",
+   "HIP_PATH": "/opt/rocm",
+   "ROCM_PATH": "/opt/rocm",
+   "OMP_PROC_BIND": "spread",
+   "OMP_PLACES": "cores",
+   "OMP_WAIT_POLICY": "active",
+   "OMP_DYNAMIC": "false",
+   "GGML_IQK": "1"
+  },
+  "shim": {
+   "LD_PRELOAD": "/mnt/raid0/llm/tmp/kvu16h-vram-20261004/shim/libhipmalloc_trace.so",
+   "KVU16H_SHIM_LOG": "/mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armC_fix/shim.log"
+  }
+ },
+ "shim": true,
+ "extra_env": {},
+ "bin_dir": "/mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin",
+ "bin_real": "/mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin",
+ "build_tokens": [
+  "656c9a66b"
+ ]
+}

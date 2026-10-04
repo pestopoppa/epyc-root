@@ -1,0 +1,17 @@
+plain64k gpu: 0.42.819.709 I Final estimate: PPL = 14.3944 +/- 0.21593
+dca gpu: 1.55.759.708 I Final estimate: PPL = 13.0719 +/- 0.19549
+dca_t gpu: 1.57.183.171 I Final estimate: PPL = 12.9575 +/- 0.19404
+
+== test-dca ROCm0
+numeric  qwen2   chunk=24 local=8 orig=0   rel_err vs DCA ref=1.23e-06  vs plain-rope ref=8.01e-01  OK
+numeric  qwen2   chunk=24 local=8 orig=40  rel_err vs DCA ref=1.22e-06  vs plain-rope ref=8.09e-01  OK
+equiv    qwen2     chunk>ctx max|d|=0.00e+00 (must be 0)  chunk=24: max|d|=6.65e-01 of max|l|=6.37e-01 finite=1  OK
+equiv    qwen35    chunk>ctx max|d|=0.00e+00 (must be 0)  chunk=24: max|d|=1.07e-01 of max|l|=6.50e-01 finite=1  OK
+equiv    qwen35moe chunk>ctx max|d|=0.00e+00 (must be 0)  chunk=24: max|d|=1.11e-01 of max|l|=7.03e-01 finite=1  OK
+
+== CPU reference PPL (real_model_ppl_cpu.sh, latest run)
+native32k: 1.50.626.756 I Final estimate: PPL = 12.1095 +/- 0.24897
+plain64k: 6.38.991.622 I Final estimate: PPL = 13.6293 +/- 0.20758
+
+== VRAM peak (MiB used, sampled every 2 s)
+13851770880

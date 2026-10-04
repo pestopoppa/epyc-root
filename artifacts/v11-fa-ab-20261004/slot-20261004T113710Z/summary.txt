@@ -1,0 +1,171 @@
+# v11 FA routing A/B slot summary — slot-20261004T113710Z
+
+arms:
+  A    /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A 
+  B    /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B 
+  C    /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C 
+  D    /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D 
+  M    /mnt/raid0/llm/tmp/v11-fa-ab-20261004/build-master-11fe02151 
+  D32  /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D GGML_CUDA_FA_CDNA_D256_MAX_COLS=32
+  D9   /mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D GGML_CUDA_FA_CDNA_D256_MMA_MIN_ROWS=9
+
+## (a) DF2-9
+  server A    DF29 arm=A config=- verdict=ERROR reason=port-18093-busy
+  server B    DF29 arm=B config=- verdict=ERROR reason=port-18093-busy
+  server C    DF29 arm=C config=- verdict=ERROR reason=port-18093-busy
+  server D    (no server verdict)
+  server M    (no server verdict)
+  server D32  (no server verdict)
+  server D9   (no server verdict)
+  probe  A    PROBE arm=A verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.09 vram_base_gib=0.01 wall=77s
+  probe  B    PROBE arm=B verdict=FAIL rc=3 runs=10 runs_nonfinite=6 first_fail_run=[kv=f16 R=2048 prompt=probe_olymp00.txt] first_bad_node=[ubatch=0 pos0=0 node=node_216 op=FLASH_ATTN_EXT layer=3 tok=1 bad=90940/1597440] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/libggml-hip.so.0.16.0 vram_peak_gib=29.12 vram_base_gib=25.55 wall=80s
+  probe  C    PROBE arm=C verdict=PASS rc=0 runs=10 runs_nonfinite=0 first_fail_run=[none] first_bad_node=[none] hip_lib=/mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml-hip.so.0.16.0 vram_peak_gib=30.86 vram_base_gib=25.59 wall=77s
+  probe  D    (no probe summary)
+  probe  M    (no probe summary)
+  probe  D32  (no probe summary)
+  probe  D9   (no probe summary)
+  opnan  A    summary mode=nan cases=228 ok=224 nonfinite=4 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=9.6 arm_check=OK
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=6144 nmse=4.825e-07
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=5.227e-07
+           NONFINITE grp=tail kv=q8_0 rows=64 n_kv=2048 v=bias1024 attn=diffuse nonfinite=6144 nmse=5.342e-07
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=4.785e-07
+  opnan  B    summary mode=nan cases=228 ok=84 nonfinite=104 mismatch=40 noref=0 badref=0 unsupported=0 wall_s=9.8 arm_check=OK
+           MISMATCH grp=prefill kv=f16 rows=64 n_kv=256 v=unit attn=diffuse nonfinite=0 nmse=9.250e-02
+           NONFINITE grp=prefill kv=f16 rows=128 n_kv=256 v=unit attn=diffuse nonfinite=2496 nmse=5.743e+04
+           NONFINITE grp=prefill kv=f16 rows=256 n_kv=256 v=unit attn=diffuse nonfinite=59848 nmse=1.095e+72
+           MISMATCH grp=tail kv=f16 rows=36 n_kv=512 v=unit attn=diffuse nonfinite=0 nmse=4.322e-01
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=512 v=unit attn=diffuse nonfinite=8037 nmse=1.063e+04
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=512 v=unit attn=diffuse nonfinite=908555 nmse=2.033e+73
+           NONFINITE grp=prefill kv=f16 rows=300 n_kv=512 v=unit attn=diffuse nonfinite=197415 nmse=2.204e+73
+           NONFINITE grp=prefill kv=f16 rows=512 n_kv=512 v=unit attn=diffuse nonfinite=924690 nmse=1.024e+72
+           MISMATCH grp=tail kv=f16 rows=36 n_kv=2048 v=unit attn=diffuse nonfinite=0 nmse=4.555e-01
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=2048 v=unit attn=diffuse nonfinite=13899 nmse=3.056e+03
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=2048 v=unit attn=diffuse nonfinite=1012753 nmse=1.665e+61
+           MISMATCH grp=tail kv=f16 rows=36 n_kv=4096 v=unit attn=diffuse nonfinite=0 nmse=5.052e-01
+           ... 132 more
+  opnan  C    summary mode=nan cases=228 ok=222 nonfinite=6 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=9.8 arm_check=OK
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=46848 nmse=8.010e-09
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=6.713e-08
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=6.673e-08
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=46848 nmse=1.166e-08
+           NONFINITE grp=tail kv=q8_0 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=9.228e-08
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=9.368e-08
+  opnan  D    summary mode=nan cases=228 ok=222 nonfinite=6 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=9.6 arm_check=OK
+           NONFINITE grp=tail kv=f16 rows=36 n_kv=4096 v=bias1024 attn=diffuse nonfinite=3200 nmse=2.672e-09
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=6.821e-08
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=48640 nmse=2.790e-09
+           NONFINITE grp=tail kv=q8_0 rows=36 n_kv=4096 v=bias1024 attn=diffuse nonfinite=3200 nmse=5.204e-09
+           NONFINITE grp=tail kv=q8_0 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=9.246e-08
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=48640 nmse=7.619e-09
+  opnan  M    summary mode=nan cases=228 ok=222 nonfinite=6 mismatch=0 noref=0 badref=0 unsupported=0 wall_s=10.2 arm_check=OK
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=49152 nmse=6.088e-08
+           NONFINITE grp=tail kv=f16 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=6.713e-08
+           NONFINITE grp=tail kv=f16 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=6.695e-08
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=2048 v=bias1024 attn=diffuse nonfinite=49152 nmse=1.017e-07
+           NONFINITE grp=tail kv=q8_0 rows=64 n_kv=4096 v=bias1024 attn=diffuse nonfinite=6144 nmse=9.228e-08
+           NONFINITE grp=tail kv=q8_0 rows=512 n_kv=4096 v=bias1024 attn=diffuse nonfinite=49152 nmse=9.398e-08
+  opnan  D32  summary missing arm_check=?
+  opnan  D9   summary missing arm_check=?
+  det    B    summary mode=exact cases=228 identical=84 differ=144 unsupported=0 wall_s=9.6
+  det    C    summary mode=exact cases=228 identical=228 differ=0 unsupported=0 wall_s=10.0
+  det    D    summary mode=exact cases=228 identical=228 differ=0 unsupported=0 wall_s=9.8
+
+## (b) FA micro-bench, median of rounds, us/op (min-max), ratio vs A
+  layout  rows  n_kv    kv                   A                 B                 C                 D                 M               D32                D9
+  single     1   16384 q8_0               264         264 x1.00         264 x1.00         264 x1.00         264 x1.00         264 x1.00         264 x1.00
+  single     1  131072 q8_0              1983        1984 x1.00        1983 x1.00        1998 x1.01        1984 x1.00        1987 x1.00        1997 x1.01
+  single     4   16384 q8_0               456         278 x0.61         282 x0.62         282 x0.62         278 x0.61         278 x0.61         278 x0.61
+  single     4  131072 q8_0              3463        2072 x0.60        2074 x0.60        2074 x0.60        2070 x0.60        2069 x0.60        2069 x0.60
+  single     9   16384 q8_0               480         547 x1.14         548 x1.14         546 x1.14         549 x1.14         546 x1.14         650 x1.35
+  single     9  131072 q8_0              3556        4214 x1.18        4215 x1.19        4213 x1.18        4213 x1.18        4212 x1.18        4881 x1.37
+  single    18   16384 q8_0               798         981 x1.23         983 x1.23         982 x1.23         981 x1.23         979 x1.23         905 x1.13
+  single    18  131072 q8_0              7249        7727 x1.07        7727 x1.07        7731 x1.07        7730 x1.07        7728 x1.07        7383 x1.02
+  single    27   16384 q8_0               796         986 x1.24         989 x1.24         986 x1.24         988 x1.24         988 x1.24        1133 x1.42
+  single    27  131072 q8_0              6468        7733 x1.20        7738 x1.20        7743 x1.20        7735 x1.20        7731 x1.20        9031 x1.40
+  single    36   16384 q8_0              1193         987 x0.83        1099 x0.92        1392 x1.17         979 x0.82        1059 x0.89        1390 x1.17
+  single    36  131072 q8_0             11449        5768 x0.50        6568 x0.57       11641 x1.02        5604 x0.49        6044 x0.53       11654 x1.02
+  single   512   16384 q8_0             10578       14284 x1.35       12228 x1.16       12232 x1.16        9555 x0.90       10286 x0.97       12224 x1.16
+  single   512  131072 q8_0             86440      110959 x1.28       93937 x1.09       96572 x1.12       72310 x0.84       79282 x0.92       96501 x1.12
+  4x1        4   16384 q8_0               457         278 x0.61         281 x0.62         281 x0.62         278 x0.61         278 x0.61         278 x0.61
+  4x1        4  131072 q8_0              3460        2067 x0.60        2069 x0.60        2069 x0.60        2067 x0.60        2065 x0.60        2066 x0.60
+  drafter    1    2048 q8_0              40.1        40.1 x1.00        40.4 x1.01        40.1 x1.00        40.5 x1.01        40.6 x1.01        40.5 x1.01
+  drafter    1    2304 q8_0              42.1        41.9 x1.00        41.6 x0.99        41.7 x0.99        41.5 x0.99        41.5 x0.98        41.6 x0.99
+  drafter    9    2048 q8_0              70.6         122 x1.73         131 x1.85         131 x1.86         122 x1.73         132 x1.86         131 x1.85
+  drafter    9    2304 q8_0              72.5         119 x1.64         130 x1.80         130 x1.79         125 x1.73         130 x1.79         131 x1.81
+  drafter   64    2048 q8_0               250         185 x0.74         183 x0.73         183 x0.73         184 x0.74         183 x0.73         183 x0.73
+  drafter   64    2304 q8_0               329         184 x0.56         183 x0.55         183 x0.56         186 x0.56         183 x0.56         184 x0.56
+
+## (d) test-backend-ops -o FLASH_ATTN_EXT -b ROCm0
+  B    passed=[('598', '640')] fails=10
+         [FLASH_ATTN_EXT] ERR = 0.936959711 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,
+         [FLASH_ATTN_EXT] ERR = 0.941499789 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,
+         [FLASH_ATTN_EXT] ERR = 0.856455368 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,p
+         [FLASH_ATTN_EXT] ERR = 0.842943290 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,p
+         [FLASH_ATTN_EXT] ERR = 0.930402662 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,
+         [FLASH_ATTN_EXT] ERR = 0.961058229 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,
+         [FLASH_ATTN_EXT] ERR = 0.887293760 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,p
+         [FLASH_ATTN_EXT] ERR = 0.846905769 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,p
+         [FLASH_ATTN_EXT] ERR = 0.961189534 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,
+         [FLASH_ATTN_EXT] ERR = 0.947368540 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,
+  C    passed=[('640', '640')] fails=0
+  D    passed=[('640', '640')] fails=0
+
+## registers (gfx90a code objects; vgpr agpr vgpr_spill sgpr_spill lds scratch)
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 256, 8, 8, false, false>	256	0	190	30	0	696
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 256, 16, 2, false, false>	499	243	0	24	0	0
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 256, 32, 2, false, false>	256	0	314	26	0	1040
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 256, 4, 8, false, false>	512	256	67	26	0	272
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 256, 8, 2, false, false>	414	158	0	21	0	0
+  gpu-20261004-90c12df42-A	flash_attn_ext_f16<256, 16, 4, 64, float, false>	192	16	0	0	25344	0
+  gpu-20261004-90c12df42-A	flash_attn_tile<256, 256, 16, 2, false>	37	0	0	0	0	16
+  gpu-20261004-90c12df42-A	flash_attn_tile<256, 256, 8, 2, false>	37	0	0	0	0	16
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 256, 8, 8, false, false>	256	0	190	30	0	696
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 256, 16, 2, false, false>	499	243	0	24	0	0
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 256, 32, 2, false, false>	256	0	314	26	0	1040
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 256, 4, 8, false, false>	512	256	67	26	0	272
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 256, 8, 2, false, false>	414	158	0	21	0	0
+  gpu-20261004-90c12df42-B	flash_attn_ext_f16<256, 16, 4, 64, float, false>	37	0	0	0	0	16
+  gpu-20261004-90c12df42-B	flash_attn_tile<256, 256, 16, 2, false>	220	0	0	0	27136	0
+  gpu-20261004-90c12df42-B	flash_attn_tile<256, 256, 8, 2, false>	160	0	0	0	17920	0
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 256, 8, 8, false, false>	256	0	215	30	0	780
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 256, 16, 2, false, false>	512	256	209	40	0	840
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 256, 32, 2, false, false>	256	0	285	27	0	908
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 256, 4, 8, false, false>	512	256	104	27	0	420
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 256, 8, 2, false, false>	512	256	0	49	0	0
+  gpu-20261004-5026470c6-C	flash_attn_ext_f16<256, 16, 4, 64, float, false>	37	0	0	0	0	16
+  gpu-20261004-5026470c6-C	flash_attn_tile<256, 256, 16, 2, false>	220	0	0	0	27136	0
+  gpu-20261004-5026470c6-C	flash_attn_tile<256, 256, 8, 2, false>	160	0	0	0	17920	0
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 256, 8, 8, false, false>	256	0	215	30	0	780
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 256, 16, 2, false, false>	512	256	209	40	0	840
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 256, 32, 2, false, false>	256	0	285	27	0	908
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 256, 4, 8, false, false>	512	256	104	27	0	420
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 256, 8, 2, false, false>	512	256	0	49	0	0
+  gpu-20261004-fa5ebc0c8-D	flash_attn_ext_f16<256, 16, 4, 64, float, false>	37	0	0	0	0	16
+  gpu-20261004-fa5ebc0c8-D	flash_attn_tile<256, 256, 16, 2, false>	220	0	0	0	27136	0
+  gpu-20261004-fa5ebc0c8-D	flash_attn_tile<256, 256, 8, 2, false>	160	0	0	0	17920	0
+  build-master-11fe02151	flash_attn_ext_f16<256, 256, 8, 8, false, false, false>	256	0	197	29	0	740
+  build-master-11fe02151	flash_attn_ext_f16<256, 256, 16, 2, false, false, false>	512	256	91	40	0	368
+  build-master-11fe02151	flash_attn_ext_f16<256, 256, 32, 2, false, false, false>	256	0	330	25	0	1176
+  build-master-11fe02151	flash_attn_ext_f16<256, 256, 4, 8, false, false, false>	512	256	79	25	0	320
+  build-master-11fe02151	flash_attn_ext_f16<256, 256, 8, 2, false, false, false>	489	233	0	16	0	0
+  build-master-11fe02151	flash_attn_tile<256, 256, 16, 2, false>	220	0	0	0	27136	0
+  build-master-11fe02151	flash_attn_tile<256, 256, 8, 2, false>	160	0	0	0	17920	0
+
+## questions
+  A    DF2-9 server=pass probe=pass op-nonfinite-cases=4
+  B    DF2-9 server=pass probe=FAIL op-nonfinite-cases=104
+  C    DF2-9 server=pass probe=pass op-nonfinite-cases=6
+  D    DF2-9 server=n/a probe=n/a op-nonfinite-cases=6
+  M    DF2-9 server=n/a probe=n/a op-nonfinite-cases=6
+  D32  DF2-9 server=n/a probe=n/a op-nonfinite-cases=0
+  D9   DF2-9 server=n/a probe=n/a op-nonfinite-cases=0
+  Q1 do #27870+#28576 fix DF2-9 on the OFF route? compare B vs C rows above (B FAIL & C pass => yes).
+  Q2 picks on the ON route: A+ skipped (PICKS_ON_ROUTE.md: champion ON never launches MMA for production shapes).
+  upstream issue: WARRANTED; N=[]; P=7 shapes
+     ('drafter', 9, 2304, 'q8_0'): A 72.5 us -> master 125.3 us (x1.73)
+     ('drafter', 9, 2048, 'q8_0'): A 70.6 us -> master 121.9 us (x1.73)
+     ('single', 27, 16384, 'q8_0'): A 796.0 us -> master 988.1 us (x1.24)
+     ('single', 18, 16384, 'q8_0'): A 797.6 us -> master 980.8 us (x1.23)
+     ('single', 27, 131072, 'q8_0'): A 6468.0 us -> master 7735.0 us (x1.20)
+     ('single', 9, 131072, 'q8_0'): A 3556.5 us -> master 4212.8 us (x1.18)
+     ('single', 9, 16384, 'q8_0'): A 480.4 us -> master 549.0 us (x1.14)

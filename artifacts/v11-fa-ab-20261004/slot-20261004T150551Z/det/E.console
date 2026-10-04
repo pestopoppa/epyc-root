@@ -1,0 +1,1 @@
+run_nan exact gpu-20261004-e9b3b04df-E rc=0 summary mode=exact cases=228 identical=228 differ=0 unsupported=0 wall_s=9.9

@@ -1,0 +1,1 @@
+VRAM used=12 MiB total=65520 MiB free=63 GiB need=32 GiB

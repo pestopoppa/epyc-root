@@ -1,0 +1,5 @@
+	libllama.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libllama.so.0 (0x00007fe14ce00000)
+	libggml-base.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml-base.so.0 (0x00007fe14d2c6000)
+	libggml.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml.so.0 (0x00007fe14d286000)
+	libggml-cpu.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml-cpu.so.0 (0x00007fe14c400000)
+	libggml-hip.so.0 => /mnt/raid0/llm/kernels/builds/gpu-20261004-e9b3b04df-E/bin/libggml-hip.so.0 (0x00007fe148400000)

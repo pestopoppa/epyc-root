@@ -1,0 +1,5 @@
+/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml-hip.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml-cpu.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libggml-base.so.0.16.0
+/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A/bin/libllama.so.0.0.10308

@@ -1,0 +1,39 @@
+{
+ "label": "armB_nographs",
+ "pid": 1136735,
+ "extra_env": {
+  "GGML_CUDA_DISABLE_GRAPHS": "1"
+ },
+ "phases": [
+  {
+   "phase": "warm",
+   "capped": false,
+   "own_before_b": 54511329280,
+   "own_after_b": 55497326592,
+   "delta_gib": 0.918
+  },
+  {
+   "phase": "t7a",
+   "capped": false,
+   "own_before_b": 55497326592,
+   "own_after_b": 55552368640,
+   "delta_gib": 0.051
+  }
+ ],
+ "skipped": [],
+ "aborted": null,
+ "load_s": 6.0,
+ "healthy": true,
+ "soft_ceiling_hit": false,
+ "teardown": {
+  "pid": 1136735,
+  "already_exited": false,
+  "sent": [
+   "TERM"
+  ],
+  "at": "2026-10-04T11:32:07Z",
+  "verified_dead": true,
+  "returncode": 0
+ },
+ "peak_own_gib": 51.737
+}

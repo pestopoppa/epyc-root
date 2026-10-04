@@ -1,0 +1,275 @@
+[ab 11:58:23Z] arm P: /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin  llama-server 2b49713f0e3c  linkage PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin
+[ab 11:58:23Z] arm C: /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin  llama-server 2d1653c12f9d  linkage PASS: all linked ggml libraries resolve inside /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin
+[ab 11:58:23Z] sequence 'P C P C P C P C P C P C P C P C P C P C P C P C P C P C P C' kind=mtp port=8197 cpuset=72-79 membind=3 llama-bench='off' model=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf slot_dir=/mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-cf23279ae-20261004T115822Z/slots
+[ab 11:58:23Z] arm 1P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 11:58:29Z] arm 1P device: OK: pid 4180202 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 11:58:30Z] arm 1P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4180230 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 11:58:30Z] arm 1P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 11:58:30Z] arm 1P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.37 pp=838.7 tok/s
+[ab 11:59:15Z] arm 1P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4180230 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 11:59:16Z] arm 1P server PID 4180202 verified dead
+[ab 11:59:16Z] arm 1P done (53 s)
+[ab 11:59:16Z] arm 2C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 11:59:22Z] arm 2C device: OK: pid 4183497 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 11:59:23Z] arm 2C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4183525 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 11:59:23Z] arm 2C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 11:59:23Z] arm 2C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.38 pp=836.4 tok/s
+[ab 12:00:08Z] arm 2C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4183525 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:00:10Z] arm 2C server PID 4183497 verified dead
+[ab 12:00:10Z] arm 2C done (54 s)
+[ab 12:00:10Z] arm 3P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:00:16Z] arm 3P device: OK: pid 4185347 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:00:17Z] arm 3P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4185375 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:00:17Z] arm 3P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:00:17Z] arm 3P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.39 pp=848.4 tok/s
+[ab 12:01:02Z] arm 3P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4185375 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:01:03Z] arm 3P server PID 4185347 verified dead
+[ab 12:01:03Z] arm 3P done (53 s)
+[ab 12:01:03Z] arm 4C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:01:09Z] arm 4C device: OK: pid 4187370 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:01:10Z] arm 4C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4187398 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:01:10Z] arm 4C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:01:10Z] arm 4C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.39 pp=831.8 tok/s
+[ab 12:01:55Z] arm 4C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4187398 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:01:56Z] arm 4C server PID 4187370 verified dead
+[ab 12:01:56Z] arm 4C done (53 s)
+[ab 12:01:56Z] arm 5P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:02:02Z] arm 5P device: OK: pid 4190230 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:02:04Z] arm 5P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4190258 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:02:04Z] arm 5P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:02:04Z] arm 5P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.50 pp=835.4 tok/s
+[ab 12:02:49Z] arm 5P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4190258 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:02:50Z] arm 5P server PID 4190230 verified dead
+[ab 12:02:50Z] arm 5P done (54 s)
+[ab 12:02:50Z] arm 6C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:02:56Z] arm 6C device: OK: pid 4192305 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:02:57Z] arm 6C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4192333 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:02:57Z] arm 6C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:02:57Z] arm 6C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.22 pp=829.9 tok/s
+[ab 12:03:42Z] arm 6C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4192333 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:03:43Z] arm 6C server PID 4192305 verified dead
+[ab 12:03:43Z] arm 6C done (53 s)
+[ab 12:03:43Z] arm 7P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:03:49Z] arm 7P device: OK: pid 4193899 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:03:51Z] arm 7P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4193943 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:03:51Z] arm 7P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:03:51Z] arm 7P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.23 pp=833.4 tok/s
+[ab 12:04:36Z] arm 7P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [4193943 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:04:37Z] arm 7P server PID 4193899 verified dead
+[ab 12:04:37Z] arm 7P done (54 s)
+[ab 12:04:37Z] arm 8C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:04:43Z] arm 8C device: OK: pid 2890 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:04:44Z] arm 8C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [2918 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:04:44Z] arm 8C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:04:44Z] arm 8C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.32 pp=834.5 tok/s
+[ab 12:05:29Z] arm 8C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [2918 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:05:30Z] arm 8C server PID 2890 verified dead
+[ab 12:05:30Z] arm 8C done (53 s)
+[ab 12:05:30Z] arm 9P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:05:37Z] arm 9P device: OK: pid 5398 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:05:38Z] arm 9P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [5426 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:05:38Z] arm 9P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:05:38Z] arm 9P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 7s
+probe mtp port 8197: ok=True tg=40.38 pp=834.6 tok/s
+[ab 12:06:23Z] arm 9P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [5426 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:06:24Z] arm 9P server PID 5398 verified dead
+[ab 12:06:24Z] arm 9P done (54 s)
+[ab 12:06:24Z] arm 10C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:06:30Z] arm 10C device: OK: pid 7645 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:06:31Z] arm 10C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [7673 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:06:31Z] arm 10C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:06:31Z] arm 10C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.39 pp=849.4 tok/s
+[ab 12:07:16Z] arm 10C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [7673 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:07:17Z] arm 10C server PID 7645 verified dead
+[ab 12:07:17Z] arm 10C done (53 s)
+[ab 12:07:17Z] arm 11P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:07:23Z] arm 11P device: OK: pid 9181 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:07:24Z] arm 11P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [9209 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:07:25Z] arm 11P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:07:25Z] arm 11P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.53 pp=851.3 tok/s
+[ab 12:08:09Z] arm 11P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [9209 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:08:10Z] arm 11P server PID 9181 verified dead
+[ab 12:08:10Z] arm 11P done (53 s)
+[ab 12:08:10Z] arm 12C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:08:16Z] arm 12C device: OK: pid 11100 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:08:18Z] arm 12C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [11128 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:08:18Z] arm 12C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:08:18Z] arm 12C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.63 pp=833.7 tok/s
+[ab 12:09:03Z] arm 12C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [11128 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:09:04Z] arm 12C server PID 11100 verified dead
+[ab 12:09:04Z] arm 12C done (54 s)
+[ab 12:09:04Z] arm 13P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:09:10Z] arm 13P device: OK: pid 14241 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:09:11Z] arm 13P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [14278 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:09:11Z] arm 13P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:09:11Z] arm 13P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.10 pp=849.9 tok/s
+[ab 12:09:56Z] arm 13P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [14278 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:09:57Z] arm 13P server PID 14241 verified dead
+[ab 12:09:57Z] arm 13P done (53 s)
+[ab 12:09:57Z] arm 14C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:10:03Z] arm 14C device: OK: pid 22492 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:10:04Z] arm 14C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [22520 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:10:04Z] arm 14C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:10:04Z] arm 14C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.29 pp=835.1 tok/s
+[ab 12:10:49Z] arm 14C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [22520 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:10:51Z] arm 14C server PID 22492 verified dead
+[ab 12:10:51Z] arm 14C done (54 s)
+[ab 12:10:51Z] arm 15P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:10:57Z] arm 15P device: OK: pid 31520 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:10:58Z] arm 15P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [31557 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:10:58Z] arm 15P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:10:58Z] arm 15P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.40 pp=849.8 tok/s
+[ab 12:11:43Z] arm 15P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [31557 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:11:44Z] arm 15P server PID 31520 verified dead
+[ab 12:11:44Z] arm 15P done (53 s)
+[ab 12:11:44Z] arm 16C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:11:50Z] arm 16C device: OK: pid 40267 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:11:51Z] arm 16C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [40295 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:11:51Z] arm 16C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:11:51Z] arm 16C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.21 pp=833.3 tok/s
+[ab 12:12:36Z] arm 16C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [40295 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:12:37Z] arm 16C server PID 40267 verified dead
+[ab 12:12:37Z] arm 16C done (53 s)
+[ab 12:12:37Z] arm 17P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:12:43Z] arm 17P device: OK: pid 42193 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:12:45Z] arm 17P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [42221 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:12:45Z] arm 17P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:12:45Z] arm 17P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.48 pp=835.1 tok/s
+[ab 12:13:30Z] arm 17P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [42221 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:13:31Z] arm 17P server PID 42193 verified dead
+[ab 12:13:31Z] arm 17P done (54 s)
+[ab 12:13:31Z] arm 18C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:13:37Z] arm 18C device: OK: pid 51271 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:13:38Z] arm 18C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [51300 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:13:38Z] arm 18C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:13:38Z] arm 18C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.29 pp=834.6 tok/s
+[ab 12:14:23Z] arm 18C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [51300 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:14:24Z] arm 18C server PID 51271 verified dead
+[ab 12:14:24Z] arm 18C done (53 s)
+[ab 12:14:24Z] arm 19P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:14:30Z] arm 19P device: OK: pid 57361 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:14:31Z] arm 19P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [57389 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:14:31Z] arm 19P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:14:32Z] arm 19P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.53 pp=850.1 tok/s
+[ab 12:15:16Z] arm 19P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [57389 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:15:17Z] arm 19P server PID 57361 verified dead
+[ab 12:15:17Z] arm 19P done (53 s)
+[ab 12:15:17Z] arm 20C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:15:23Z] arm 20C device: OK: pid 69267 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:15:24Z] arm 20C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [69295 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:15:25Z] arm 20C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:15:25Z] arm 20C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.25 pp=834.0 tok/s
+[ab 12:16:10Z] arm 20C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [69295 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:16:11Z] arm 20C server PID 69267 verified dead
+[ab 12:16:11Z] arm 20C done (54 s)
+[ab 12:16:11Z] arm 21P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:16:17Z] arm 21P device: OK: pid 76428 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:16:18Z] arm 21P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [76456 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:16:18Z] arm 21P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:16:18Z] arm 21P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.61 pp=834.3 tok/s
+[ab 12:17:03Z] arm 21P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [76456 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:17:04Z] arm 21P server PID 76428 verified dead
+[ab 12:17:04Z] arm 21P done (53 s)
+[ab 12:17:04Z] arm 22C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:17:10Z] arm 22C device: OK: pid 87119 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:17:12Z] arm 22C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [87148 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:17:12Z] arm 22C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:17:12Z] arm 22C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.56 pp=833.2 tok/s
+[ab 12:17:57Z] arm 22C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [87148 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:17:58Z] arm 22C server PID 87119 verified dead
+[ab 12:17:58Z] arm 22C done (54 s)
+[ab 12:17:58Z] arm 23P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:18:04Z] arm 23P device: OK: pid 88339 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:18:05Z] arm 23P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [88367 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:18:05Z] arm 23P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:18:05Z] arm 23P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.54 pp=834.8 tok/s
+[ab 12:18:50Z] arm 23P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [88367 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:18:51Z] arm 23P server PID 88339 verified dead
+[ab 12:18:51Z] arm 23P done (53 s)
+[ab 12:18:51Z] arm 24C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:18:55Z] arm 24C device: OK: pid 91589 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:18:56Z] arm 24C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [91617 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:18:56Z] arm 24C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:18:56Z] arm 24C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 4s
+probe mtp port 8197: ok=True tg=40.69 pp=833.9 tok/s
+[ab 12:19:41Z] arm 24C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [91617 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:19:42Z] arm 24C server PID 91589 verified dead
+[ab 12:19:42Z] arm 24C done (51 s)
+[ab 12:19:43Z] arm 25P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:19:49Z] arm 25P device: OK: pid 94414 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:19:50Z] arm 25P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [94442 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:19:50Z] arm 25P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:19:50Z] arm 25P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.22 pp=827.1 tok/s
+[ab 12:20:35Z] arm 25P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [94442 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:20:36Z] arm 25P server PID 94414 verified dead
+[ab 12:20:36Z] arm 25P done (53 s)
+[ab 12:20:36Z] arm 26C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:20:42Z] arm 26C device: OK: pid 96943 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:20:43Z] arm 26C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [96971 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:20:43Z] arm 26C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:20:43Z] arm 26C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.19 pp=849.4 tok/s
+[ab 12:21:28Z] arm 26C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [96971 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:21:29Z] arm 26C server PID 96943 verified dead
+[ab 12:21:29Z] arm 26C done (53 s)
+[ab 12:21:29Z] arm 27P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:21:35Z] arm 27P device: OK: pid 106406 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:21:37Z] arm 27P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [106434 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:21:37Z] arm 27P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:21:37Z] arm 27P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.28 pp=849.1 tok/s
+[ab 12:22:21Z] arm 27P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [106434 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:22:23Z] arm 27P server PID 106406 verified dead
+[ab 12:22:23Z] arm 27P done (54 s)
+[ab 12:22:23Z] arm 28C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:22:29Z] arm 28C device: OK: pid 108050 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:22:30Z] arm 28C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [108078 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:22:30Z] arm 28C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:22:30Z] arm 28C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.63 pp=850.2 tok/s
+[ab 12:23:15Z] arm 28C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [108078 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:23:16Z] arm 28C server PID 108050 verified dead
+[ab 12:23:16Z] arm 28C done (53 s)
+[ab 12:23:16Z] arm 29P: launching /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+[ab 12:23:22Z] arm 29P device: OK: pid 109871 in KFD=True VRAM=54.51 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:23:23Z] arm 29P placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [109899 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:23:23Z] arm 29P /props: OK: build_info=b10303-ffc1bac82 model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:23:23Z] arm 29P verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10303-ffc1bac82, load 6s
+probe mtp port 8197: ok=True tg=40.16 pp=829.7 tok/s
+[ab 12:24:08Z] arm 29P placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [109899 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:24:09Z] arm 29P server PID 109871 verified dead
+[ab 12:24:09Z] arm 29P done (53 s)
+[ab 12:24:09Z] arm 30C: launching /mnt/raid0/llm/kernels/builds/gpu-20261004-cf23279ae/bin/llama-server
+[ab 12:24:15Z] arm 30C device: OK: pid 111215 in KFD=True VRAM=54.52 GB (need >= 1.00); 0 device line(s) in the log; argv --device ['ROCm0'] -ngl ['all']
+[ab 12:24:16Z] arm 30C placement (pre-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [111243 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:24:16Z] arm 30C /props: OK: build_info=b10325-cf23279ae model_path=/mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf vision=False
+[ab 12:24:17Z] arm 30C verified: GPU (KFD VRAM), own libggml-hip mapped, placement OK, build_info=b10325-cf23279ae, load 6s
+probe mtp port 8197: ok=True tg=40.22 pp=845.8 tok/s
+[ab 12:25:02Z] arm 30C placement (post-probe): OK: 203 threads, main on 72, 8 pinned inside 72-79 (-t 8), runtime outside: [111243 llama-server cpus=0-191 (blocked in kfd_wait_on_events (ROCr async-event thread))]
+[ab 12:25:03Z] arm 30C server PID 111215 verified dead
+[ab 12:25:03Z] arm 30C done (54 s)
+RESULT mtp: PASS=True arms P=15 C=15 identity C==P=True P-self=True pp_tps_median:-0.29%(floor 2.89%) tg_tps_median:-0.01%(floor 2.00%) sw9_C_all_probs=True sw9_P_gap=True
+result -> /mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/receipt-ab/paired-cf23279ae-20261004T115822Z/result.json

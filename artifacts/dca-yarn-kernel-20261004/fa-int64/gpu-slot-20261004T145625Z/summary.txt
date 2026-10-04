@@ -1,0 +1,21 @@
+== 1 fixed (-p mask_ne0)
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /workspace/repos/epyc-orchestrator taskset -c 48-71 nice -n 19 /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/fa-int64/build-hip/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 -p mask_ne0
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=64,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=64,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): [1;32mOK[0m
+  4/4 tests passed
+== 2 champion (-p mask_ne0)
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /workspace/repos/epyc-orchestrator taskset -c 48-71 nice -n 19 /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/fa-int64/build-hip/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 -p mask_ne0
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=64,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.028597042 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.463976790 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=64,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.594848166 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056): test failed [1;31mFAIL[0m
+  1/4 tests passed
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056)
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=64,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056)
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[6,1],kv=512,nb=2048,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3],mask_ne0=557056)
+== 3 full suite (fixed)
+  2872/2872 tests passed
+== 4 bit-identity
+119 cases, 119 bit-identical, worst nmse 0

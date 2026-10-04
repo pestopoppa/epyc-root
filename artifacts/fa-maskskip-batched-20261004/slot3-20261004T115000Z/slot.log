@@ -1,0 +1,25 @@
+[2026-10-04T11:50:01Z] VRAM before: 13094912  NEW=/mnt/raid0/llm/kernels/builds/gpu-20261004-54df2c030/bin
+[2026-10-04T11:50:01Z] linkage PASS
+[2026-10-04T11:50:01Z] 1 exact
+s3_k19a rc=0 ALL 791915f139089768
+s3_on rc=0 ALL bdd6b86e64ea4f89
+s3_skipoff rc=0 GGML_CUDA_FA_MASK_SKIP=0 ALL bdd6b86e64ea4f89
+s3_tilesoff rc=0 GGML_CUDA_FA_SEQ_TILES=0 ALL bdd6b86e64ea4f89
+s3_tilesonly rc=0 GGML_CUDA_FA_SEQ_VEC=0 ALL 4ad7e32a4ab40ea9
+s3_force rc=0 GGML_CUDA_FA_SEQ_TILES_MIN_GAIN=-1 GGML_CUDA_FA_SEQ_VEC=0 ALL 4ad7e32a4ab40ea9
+s3_seqoff rc=0 GGML_CUDA_FA_SEQ_ROWS=0 ALL 4ad7e32a4ab40ea9
+s3_alloff rc=0 GGML_CUDA_FA_SEQ_ROWS=0 GGML_CUDA_FA_MASK_SKIP=0 ALL 4ad7e32a4ab40ea9
+[2026-10-04T11:52:01Z] 2 kernel perf
+[2026-10-04T11:55:19Z] 3 p3batch
+[2026-10-04T11:57:33Z] 4 test-backend-ops (region lock)
+[region-lock] acquiring regions ['q0', 'q1', 'q2', 'q3'] as role='test' (timeout_s=600.0) …
+[region-lock] held ['q0', 'q1', 'q2', 'q3'] after 0.0s wait; running: env -u LD_LIBRARY_PATH bash -c 
+    OMP_NUM_THREADS=24 nice -n 19 taskset -c 160-183 /mnt/raid0/llm/kernels/builds/gpu-20261004-54df2c030/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 -p hint= > /mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot3-20261004T115000Z/tbo_on.log 2>&1; echo tbo_on rc=$?
+    GGML_CUDA_FA_SEQ_TILES_MIN_GAIN=-1 GGML_CUDA_FA_MASK_SKIP_MIN_KV=0 OMP_NUM_THREADS=24 nice -n 19 taskset -c 160-183 /mnt/raid0/llm/kernels/builds/gpu-20261004-54df2c030/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 -p hint= > /mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot3-20261004T115000Z/tbo_force_minkv0.log 2>&1; echo tbo_force rc=$?
+
+tbo_on rc=0
+tbo_force rc=0
+  118/118 tests passed
+  118/118 tests passed
+[2026-10-04T11:58:06Z] VRAM after: 13094912
+[2026-10-04T11:58:06Z] done -> /mnt/raid0/llm/tmp/fa-maskskip-batched-20261004/slot3-20261004T115000Z (summary.txt)

@@ -1,0 +1,16 @@
+built /mnt/raid0/llm/tmp/kvu16h-vram-20261004/shim/libhipmalloc_trace.so
+  export 0000000000001920 T hipExtMallocWithFlags@@hip_4.2
+  export 0000000000001890 T hipFree@@hip_4.2
+  export 0000000000001b30 T hipFreeAsync@@hip_5.1
+  export 00000000000017e0 T hipMalloc@@hip_4.2
+  export 0000000000001a80 T hipMallocAsync@@hip_5.1
+  export 00000000000019d0 T hipMallocManaged@@hip_4.2
+  fake backend imports                  U hipFree@hip_4.2
+  fake backend imports                  U hipMalloc@hip_4.2
+--- trace.log
+  # kvu16h hipmalloc_trace v1 pid 2107562 frames 28 (real symbols resolved lazily)
+  A 1791111909.493093 2107562 hipMalloc 1048576 0x708295704010 0 | libhipmalloc_trace.so+0x1844:hipMalloc libfake_backend.so+0x1290:_ZN18ggml_cuda_pool_leg5allocEm libfake_backend.so+0x11ff:fake_pool_alloc main+0x1288 libc.so.6+0x2a575 libc.so.6+0x2a628:__libc_start_main main+0x1105
+  A 1791111909.493130 2107562 hipMalloc 3145728 0x708295403010 0 | libhipmalloc_trace.so+0x1844:hipMalloc libfake_backend.so+0x11b3 libfake_backend.so+0x1231:fake_compute_alloc main+0x1297 libc.so.6+0x2a575 libc.so.6+0x2a628:__libc_start_main main+0x1105
+  F 1791111909.493146 2107562 hipFree 0 0x708295704010 0
+  offline addr2line libfake_backend.so 0x11b3 -> hidden_compute_alloc(unsigned long)
+SHIM SELFTEST OK

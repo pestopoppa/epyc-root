@@ -1,0 +1,262 @@
+[kvu16h-fuc-slot 11:05:09Z] PREFLIGHT (v10 store binary /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin, scratch port 18083)
+  GGML_CUDA_DISABLE_GRAPHS compiled in (arm B valid)
+  build flags: GGML_HIP_GRAPHS:BOOL=ON GGML_HIP_NO_VMM:BOOL=ON 
+  linkage PASS (ldd only; residency is proven at runtime from /proc/<pid>/maps)
+  shim built + CPU self-test OK
+  arm C bin /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin -> /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin; build start 2026-10-04T07:41:06Z src=656c9a66b6434c15bf15a8703da0890015867124
+  arm C linkage PASS
+  arm C libggml-hip.so carries mmvq_q8_1_graph_arena::alloc (fix compiled in)
+  arm C build flags: GGML_HIP_GRAPHS:BOOL=ON GGML_HIP_NO_VMM:BOOL=ON 
+  === DRY RUN kvu16h_followup_c.py (nothing started, nothing sent) ===
+  [argv source] /mnt/raid0/llm/epyc-orchestrator/logs/server_launches/8083.json (launched_at 2026-10-04T02:48:09.776Z, pid 1703677, argv_sha256 b865820d557f, launcher scripts/server/orchestrator_stack.py reload architect_critic, stack_commit ff92a580ea1a); production invariants: OK
+    numactl --membind=3 -- taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armA/slots --device-draft ROCm0 --verbosity 4
+    changes: --port 8083 -> 18083; --slot-save-path /mnt/raid0/llm/cache/kv_slots/architect_critic -> /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armA/slots; --verbosity (absent) -> 4
+  [env] fallback: env recorded by b4i launch_ON.sh from live :8083 PID 1703677 (2026-10-04T02:48Z); matches the script: {'LD_LIBRARY_PATH': '/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib', 'HIP_PATH': '/opt/rocm', 'ROCM_PATH': '/opt/rocm', 'OMP_PROC_BIND': 'spread', 'OMP_PLACES': 'cores', 'OMP_WAIT_POLICY': 'active', 'OMP_DYNAMIC': 'false', 'GGML_IQK': '1'}
+  [shim] ON /mnt/raid0/llm/tmp/kvu16h-vram-20261004/shim/libhipmalloc_trace.so exists True; marker True
+  [t7a source] q38_t7.py.orig-20261004 + /mnt/raid0/llm/tmp/inf70/agents/e3-alpha/prompts.json: 48 requests, H1 events in run #1's own phase A = 21 -> model +6.09 GiB
+  [arm A] graphs ON  phases ['warm', 'ctrl', 't7a', 't7b2']: 12.0 min essential, 17.5 with t7b2
+  [arm B] env {'GGML_CUDA_DISABLE_GRAPHS': '1'} phases ['warm', 't7a']: 10.0 min
+  [arm C] /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin -> /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin; build src 656c9a66b6434c15bf15a8703da0890015867124; phases ['warm', 't7a']: 10.0 min
+    numactl --membind=3 -- taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armA/slots --device-draft ROCm0 --verbosity 4
+    LD_LIBRARY_PATH /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin:/opt/rocm/lib:/usr/lib/llvm-20/lib:/opt/AMD/aocc-compiler-5.0.0/lib:/opt/rocm/lib
+    recipe C {'CMAKE_BUILD_TYPE': 'Release', 'GGML_CUDA_FA_ALL_QUANTS': 'OFF', 'GGML_CUDA_GRAPHS': 'ON', 'GGML_HIP': 'ON', 'GGML_HIP_GRAPHS': 'ON', 'GGML_HIP_NO_VMM': 'ON', 'GGML_HIP_ROCWMMA_FATTN': 'ON', 'GGML_NATIVE': 'ON', 'GPU_TARGETS': 'gfx90a'}
+  [budget] 35.0 min hard; essential plan 32.0 min; t7b2 runs only if it fits with arm B's reserve. Ceilings: hard 62.5 (own KFD or card) -> exit 3; soft 60.5 (own KFD) -> stop that arm
+  [preflight now] would REFUSE:
+    - not running under kvu16h_claim.py (mi210_0 device claim); use gpu_slot_kvu16h_followup_c.sh --execute
+  runner preflight: PASS (claim taken at --execute)
+  host load 23.32 34.97 29.07
+[kvu16h-fuc-slot 11:05:09Z] results /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z; budget 35 min; arm A 1; arm C /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin; arm B 1; shim 1
+[region-lock] acquiring gpu-quiet exclusive as role='bench' (timeout_s=60.0) …
+[region-lock] held gpu-quiet exclusive + regions [] after 0.0s wait; running: python3 -B /mnt/raid0/llm/tmp/kvu16h-vram-20261004/kvu16h_claim.py --results-dir /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z --max-hold-s 3000 --purpose KVU-16h follow-up + arm C: mmvq graph-cache pool pinning and its arena fix (T7 #1 phase A replay) on scratch :18083 -- python3 -B /mnt/raid0/llm/tmp/kvu16h-vram-20261004/kvu16h_followup_c.py --results /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z --port 18083 --budget-min 35 --arm-c-bin /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin
+[kvu16h-claim] holding mi210_0 for: KVU-16h follow-up + arm C: mmvq graph-cache pool pinning and its arena fix (T7 #1 phase A replay) on scratch :18083
+[kvu16h-fu 11:05:10Z +0.0m] [armA] launch (env {}): numactl --membind=3 -- taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armA/slots --device-draft ROCm0 --verbosity 4
+[kvu16h 11:05:12Z] load pre_launch card_used_b=13094912
+[kvu16h 11:05:12Z] load launched pid=2107702
+[kvu16h 11:05:18Z] load healthy load_s=6.0 build=b10303-ffc1bac82 hip_ok=True shim_mapped=True own_vram_b=54513426432
+[kvu16h 11:05:48Z] load idle_end own_vram_b=54513426432
+[kvu16h 11:05:48Z] warm begin own_vram_b=54513426432
+[kvu16h-fu 11:06:23Z +1.2m] [armA] warm/warm24000: http 200 prompt_n 23917 pred 64 nodraft False dKFD 0.921
+[kvu16h-fu 11:06:29Z +1.3m] [armA] warm/warm2500: http 200 prompt_n 2946 pred 64 nodraft False dKFD 0.002
+[kvu16h 11:06:29Z] warm traffic_end capped=False aborted=False own_vram_b=55504134144
+[kvu16h 11:06:59Z] warm idle_end own_vram_b=55504134144 delta_gib=0.923
+[kvu16h 11:06:59Z] ctrl begin own_vram_b=55504134144
+[kvu16h-fu 11:07:02Z +1.9m] [armA] ctrl/mbpp_0391|dflash2: http 200 prompt_n 483 pred 41 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:07Z +2.0m] [armA] ctrl/mbpp_0303|dflash2: http 200 prompt_n 243 pred 200 nodraft False dKFD 0.031
+[kvu16h-fu 11:07:10Z +2.0m] [armA] ctrl/mbpp_0508|dflash2: http 200 prompt_n 278 pred 57 nodraft False dKFD 0.022
+[kvu16h-fu 11:07:13Z +2.1m] [armA] ctrl/bcb_BigCodeBench/547|dflash2: http 200 prompt_n 251 pred 88 nodraft False dKFD 0.002
+[kvu16h-fu 11:07:18Z +2.1m] [armA] ctrl/bcb_BigCodeBench/512|dflash2: http 200 prompt_n 329 pred 200 nodraft False dKFD 0.002
+[kvu16h-fu 11:07:22Z +2.2m] [armA] ctrl/debugbench_flood-fill_cpp|dflash2: http 200 prompt_n 836 pred 200 nodraft False dKFD 0.004
+[kvu16h-fu 11:07:28Z +2.3m] [armA] ctrl/leetcode_the-number-of-the-smallest-unoccupied-chair|dflash2: http 200 prompt_n 777 pred 200 nodraft False dKFD 0.002
+[kvu16h-fu 11:07:32Z +2.4m] [armA] ctrl/ma_multi_015|dflash2: http 200 prompt_n 249 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:37Z +2.5m] [armA] ctrl/gsm8k_00739|dflash2: http 200 prompt_n 244 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:42Z +2.5m] [armA] ctrl/gsm8k_00115|dflash2: http 200 prompt_n 279 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:47Z +2.6m] [armA] ctrl/gsm8k_00041|dflash2: http 200 prompt_n 313 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:53Z +2.7m] [armA] ctrl/gpqa_diamond_cot_5fd3fe9084c9|dflash2: http 200 prompt_n 325 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:07:58Z +2.8m] [armA] ctrl/gpqa_diamond_cot_8116937b0ca6|dflash2: http 200 prompt_n 298 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:04Z +2.9m] [armA] ctrl/phybench_electricity_25|dflash2: http 200 prompt_n 295 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:06Z +2.9m] [armA] ctrl/mmlu_pro_law_01532|dflash2: http 200 prompt_n 472 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:09Z +3.0m] [armA] ctrl/mmlu_pro_health_05883|dflash2: http 200 prompt_n 347 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:15Z +3.1m] [armA] ctrl/ifeval_3456|dflash2: http 200 prompt_n 241 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:17Z +3.1m] [armA] ctrl/ifeval_322|dflash2: http 200 prompt_n 225 pred 9 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:26Z +3.3m] [armA] ctrl/ifeval_1481|dflash2: http 200 prompt_n 273 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:31Z +3.4m] [armA] ctrl/ifeval_1129|dflash2: http 200 prompt_n 256 pred 139 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:38Z +3.5m] [armA] ctrl/real_suite_v1_0003|dflash2: http 200 prompt_n 250 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:40Z +3.5m] [armA] ctrl/real_suite_v1_0032|dflash2: http 200 prompt_n 264 pred 53 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:43Z +3.6m] [armA] ctrl/simpleqa_general_01814|dflash2: http 200 prompt_n 213 pred 8 nodraft False dKFD 0.0
+[kvu16h-fu 11:08:45Z +3.6m] [armA] ctrl/hellaswag_06230|dflash2: http 200 prompt_n 259 pred 2 nodraft False dKFD 0.0
+[kvu16h 11:08:45Z] ctrl traffic_end capped=False aborted=False own_vram_b=55571243008
+[kvu16h 11:09:15Z] ctrl idle_end own_vram_b=55571243008 delta_gib=0.062
+[kvu16h 11:09:15Z] t7a begin own_vram_b=55571243008
+[kvu16h-fu 11:09:18Z +4.1m] [armA] t7a/mbpp_0391|dflash2: http 200 prompt_n 483 pred 41 nodraft False dKFD -0.004
+[kvu16h-fu 11:09:22Z +4.2m] [armA] t7a/mbpp_0391|nodraft: http 200 prompt_n 483 pred 41 nodraft True dKFD -0.104
+[kvu16h-fu 11:09:26Z +4.3m] [armA] t7a/mbpp_0303|dflash2: http 200 prompt_n 243 pred 200 nodraft False dKFD 0.279
+[kvu16h-fu 11:09:35Z +4.4m] [armA] t7a/mbpp_0303|nodraft: http 200 prompt_n 243 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:09:37Z +4.5m] [armA] t7a/mbpp_0508|dflash2: http 200 prompt_n 278 pred 57 nodraft False dKFD 0.279
+[kvu16h-fu 11:09:41Z +4.5m] [armA] t7a/mbpp_0508|nodraft: http 200 prompt_n 278 pred 57 nodraft True dKFD 0.0
+[kvu16h-fu 11:09:44Z +4.6m] [armA] t7a/bcb_BigCodeBench/547|dflash2: http 200 prompt_n 251 pred 88 nodraft False dKFD 0.281
+[kvu16h-fu 11:09:49Z +4.7m] [armA] t7a/bcb_BigCodeBench/547|nodraft: http 200 prompt_n 251 pred 88 nodraft True dKFD 0.0
+[kvu16h-fu 11:09:54Z +4.7m] [armA] t7a/bcb_BigCodeBench/512|dflash2: http 200 prompt_n 329 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:10:03Z +4.9m] [armA] t7a/bcb_BigCodeBench/512|nodraft: http 200 prompt_n 329 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:10:08Z +5.0m] [armA] t7a/debugbench_flood-fill_cpp|dflash2: http 200 prompt_n 836 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:10:17Z +5.1m] [armA] t7a/debugbench_flood-fill_cpp|nodraft: http 200 prompt_n 836 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:10:22Z +5.2m] [armA] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|dflash2: http 200 prompt_n 777 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:10:31Z +5.4m] [armA] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|nodraft: http 200 prompt_n 777 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:10:36Z +5.4m] [armA] t7a/ma_multi_015|dflash2: http 200 prompt_n 249 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:10:44Z +5.6m] [armA] t7a/ma_multi_015|nodraft: http 200 prompt_n 249 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:10:49Z +5.7m] [armA] t7a/gsm8k_00739|dflash2: http 200 prompt_n 244 pred 200 nodraft False dKFD 0.281
+[kvu16h-fu 11:10:57Z +5.8m] [armA] t7a/gsm8k_00739|nodraft: http 200 prompt_n 244 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:11:02Z +5.9m] [armA] t7a/gsm8k_00115|dflash2: http 200 prompt_n 279 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:11:11Z +6.0m] [armA] t7a/gsm8k_00115|nodraft: http 200 prompt_n 279 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:11:17Z +6.1m] [armA] t7a/gsm8k_00041|dflash2: http 200 prompt_n 313 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:11:25Z +6.3m] [armA] t7a/gsm8k_00041|nodraft: http 200 prompt_n 313 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:11:30Z +6.3m] [armA] t7a/gpqa_diamond_cot_5fd3fe9084c9|dflash2: http 200 prompt_n 325 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:11:39Z +6.5m] [armA] t7a/gpqa_diamond_cot_5fd3fe9084c9|nodraft: http 200 prompt_n 325 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:11:45Z +6.6m] [armA] t7a/gpqa_diamond_cot_8116937b0ca6|dflash2: http 200 prompt_n 298 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:11:53Z +6.7m] [armA] t7a/gpqa_diamond_cot_8116937b0ca6|nodraft: http 200 prompt_n 298 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:11:59Z +6.8m] [armA] t7a/phybench_electricity_25|dflash2: http 200 prompt_n 295 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:12:07Z +7.0m] [armA] t7a/phybench_electricity_25|nodraft: http 200 prompt_n 295 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:10Z +7.0m] [armA] t7a/mmlu_pro_law_01532|dflash2: http 200 prompt_n 472 pred 2 nodraft False dKFD 0.283
+[kvu16h-fu 11:12:12Z +7.0m] [armA] t7a/mmlu_pro_law_01532|nodraft: http 200 prompt_n 472 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:15Z +7.1m] [armA] t7a/mmlu_pro_health_05883|dflash2: http 200 prompt_n 347 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:12:17Z +7.1m] [armA] t7a/mmlu_pro_health_05883|nodraft: http 200 prompt_n 347 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:23Z +7.2m] [armA] t7a/ifeval_3456|dflash2: http 200 prompt_n 241 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:12:32Z +7.4m] [armA] t7a/ifeval_3456|nodraft: http 200 prompt_n 241 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:34Z +7.4m] [armA] t7a/ifeval_322|dflash2: http 200 prompt_n 225 pred 9 nodraft False dKFD 0.283
+[kvu16h-fu 11:12:36Z +7.4m] [armA] t7a/ifeval_322|nodraft: http 200 prompt_n 225 pred 9 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:45Z +7.6m] [armA] t7a/ifeval_1481|dflash2: http 200 prompt_n 273 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:12:54Z +7.7m] [armA] t7a/ifeval_1481|nodraft: http 200 prompt_n 273 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:12:59Z +7.8m] [armA] t7a/ifeval_1129|dflash2: http 200 prompt_n 256 pred 139 nodraft False dKFD 0.283
+[kvu16h-fu 11:13:05Z +7.9m] [armA] t7a/ifeval_1129|nodraft: http 200 prompt_n 256 pred 139 nodraft True dKFD 0.0
+[kvu16h-fu 11:13:12Z +8.0m] [armA] t7a/real_suite_v1_0003|dflash2: http 200 prompt_n 250 pred 200 nodraft False dKFD 0.283
+[kvu16h-fu 11:13:20Z +8.2m] [armA] t7a/real_suite_v1_0003|nodraft: http 200 prompt_n 250 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:13:23Z +8.2m] [armA] t7a/real_suite_v1_0032|dflash2: http 200 prompt_n 264 pred 53 nodraft False dKFD 0.283
+[kvu16h-fu 11:13:27Z +8.3m] [armA] t7a/real_suite_v1_0032|nodraft: http 200 prompt_n 264 pred 53 nodraft True dKFD 0.0
+[kvu16h-fu 11:13:29Z +8.3m] [armA] t7a/simpleqa_general_01814|dflash2: http 200 prompt_n 213 pred 8 nodraft False dKFD 0.283
+[kvu16h-fu 11:13:31Z +8.4m] [armA] t7a/simpleqa_general_01814|nodraft: http 200 prompt_n 213 pred 8 nodraft True dKFD 0.0
+[kvu16h-fu 11:13:34Z +8.4m] [armA] t7a/hellaswag_06230|dflash2: http 200 prompt_n 259 pred 2 nodraft False dKFD 0.283
+[kvu16h-fu 11:13:36Z +8.4m] [armA] t7a/hellaswag_06230|nodraft: http 200 prompt_n 259 pred 2 nodraft True dKFD 0.0
+[kvu16h 11:13:36Z] t7a traffic_end capped=False aborted=False own_vram_b=61829144576
+[kvu16h 11:14:06Z] t7a idle_end own_vram_b=61829144576 delta_gib=5.828
+[kvu16h 11:14:06Z] t7b2 begin own_vram_b=61829144576
+[kvu16h-fu 11:14:47Z +9.6m] [armA] t7b2/2000|drafted: http 200 prompt_n 2542 pred 1500 nodraft False dKFD 0.004
+[kvu16h-fu 11:15:37Z +10.5m] [armA] t7b2/2000|nodraft_cached: http 200 prompt_n 4 pred 1500 nodraft True dKFD 0.0
+[kvu16h-fu 11:15:42Z +10.5m] [armA] t7b2/2000|needle: http 200 prompt_n 2387 pred 17 nodraft False dKFD 0.289
+[kvu16h-fu 11:15:44Z +10.6m] [armA] t7b2/2000|needle_nodraft: http 200 prompt_n 4 pred 17 nodraft True dKFD 0.0
+[kvu16h-fu 11:16:41Z +11.5m] [armA] t7b2/16000|drafted: http 200 prompt_n 15969 pred 1500 nodraft False dKFD 0.281
+[kvu16h-fu 11:17:38Z +12.5m] [armA] t7b2/16000|nodraft_cached: http 200 prompt_n 4 pred 1500 nodraft True dKFD 0.002
+[kvu16h-fu 11:18:03Z +12.9m] [armA] t7b2/16000|needle: http 200 prompt_n 15814 pred 18 nodraft False dKFD 0.328
+[kvu16h-fu 11:18:05Z +12.9m] [armA] t7b2/16000|needle_nodraft: http 200 prompt_n 4 pred 18 nodraft True dKFD 0.0
+[kvu16h 11:18:05Z] t7b2 traffic_end capped=False aborted=False own_vram_b=62800125952
+[kvu16h 11:18:35Z] t7b2 idle_end own_vram_b=62800125952 delta_gib=0.904
+[kvu16h 11:18:35Z] teardown begin own_vram_b=62800125952
+[kvu16h 11:18:36Z] teardown end pid=2107702 already_exited=False sent=['TERM'] verified_dead=True returncode=0
+[kvu16h-fu 11:18:38Z +13.5m] [armC_fix] launch (env {}): numactl --membind=3 -- taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20261004-656c9a66b/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armC_fix/slots --device-draft ROCm0 --verbosity 4
+[kvu16h 11:18:40Z] load pre_launch card_used_b=13094912
+[kvu16h 11:18:40Z] load launched pid=1084687
+[kvu16h 11:18:46Z] load healthy load_s=6.0 build=b10312-656c9a66b hip_ok=True shim_mapped=True own_vram_b=54517784576
+[kvu16h 11:19:16Z] load idle_end own_vram_b=54517784576
+[kvu16h 11:19:16Z] warm begin own_vram_b=54517784576
+[kvu16h-fu 11:19:52Z +14.7m] [armC_fix] warm/warm24000: http 200 prompt_n 23918 pred 64 nodraft False dKFD 0.921
+[kvu16h-fu 11:19:58Z +14.8m] [armC_fix] warm/warm2500: http 200 prompt_n 2945 pred 64 nodraft False dKFD 0.0
+[kvu16h 11:19:58Z] warm traffic_end capped=False aborted=False own_vram_b=55506509824
+[kvu16h 11:20:28Z] warm idle_end own_vram_b=55506509824 delta_gib=0.921
+[kvu16h 11:20:28Z] t7a begin own_vram_b=55506509824
+[kvu16h-fu 11:20:32Z +15.4m] [armC_fix] t7a/mbpp_0391|dflash2: http 200 prompt_n 483 pred 41 nodraft False dKFD 0.002
+[kvu16h-fu 11:20:35Z +15.4m] [armC_fix] t7a/mbpp_0391|nodraft: http 200 prompt_n 483 pred 41 nodraft True dKFD 0.004
+[kvu16h-fu 11:20:40Z +15.5m] [armC_fix] t7a/mbpp_0303|dflash2: http 200 prompt_n 243 pred 200 nodraft False dKFD 0.029
+[kvu16h-fu 11:20:48Z +15.6m] [armC_fix] t7a/mbpp_0303|nodraft: http 200 prompt_n 243 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:20:51Z +15.7m] [armC_fix] t7a/mbpp_0508|dflash2: http 200 prompt_n 278 pred 57 nodraft False dKFD 0.022
+[kvu16h-fu 11:20:55Z +15.8m] [armC_fix] t7a/mbpp_0508|nodraft: http 200 prompt_n 278 pred 57 nodraft True dKFD 0.0
+[kvu16h-fu 11:20:58Z +15.8m] [armC_fix] t7a/bcb_BigCodeBench/547|dflash2: http 200 prompt_n 251 pred 88 nodraft False dKFD 0.0
+[kvu16h-fu 11:21:03Z +15.9m] [armC_fix] t7a/bcb_BigCodeBench/547|nodraft: http 200 prompt_n 251 pred 88 nodraft True dKFD 0.0
+[kvu16h-fu 11:21:07Z +16.0m] [armC_fix] t7a/bcb_BigCodeBench/512|dflash2: http 200 prompt_n 329 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:21:16Z +16.1m] [armC_fix] t7a/bcb_BigCodeBench/512|nodraft: http 200 prompt_n 329 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:21:21Z +16.2m] [armC_fix] t7a/debugbench_flood-fill_cpp|dflash2: http 200 prompt_n 836 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:21:30Z +16.3m] [armC_fix] t7a/debugbench_flood-fill_cpp|nodraft: http 200 prompt_n 836 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:21:35Z +16.4m] [armC_fix] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|dflash2: http 200 prompt_n 777 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:21:44Z +16.6m] [armC_fix] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|nodraft: http 200 prompt_n 777 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:21:49Z +16.7m] [armC_fix] t7a/ma_multi_015|dflash2: http 200 prompt_n 249 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:21:57Z +16.8m] [armC_fix] t7a/ma_multi_015|nodraft: http 200 prompt_n 249 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:22:02Z +16.9m] [armC_fix] t7a/gsm8k_00739|dflash2: http 200 prompt_n 244 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:22:10Z +17.0m] [armC_fix] t7a/gsm8k_00739|nodraft: http 200 prompt_n 244 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:22:15Z +17.1m] [armC_fix] t7a/gsm8k_00115|dflash2: http 200 prompt_n 279 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:22:23Z +17.2m] [armC_fix] t7a/gsm8k_00115|nodraft: http 200 prompt_n 279 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:22:29Z +17.3m] [armC_fix] t7a/gsm8k_00041|dflash2: http 200 prompt_n 313 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:22:37Z +17.5m] [armC_fix] t7a/gsm8k_00041|nodraft: http 200 prompt_n 313 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:22:43Z +17.6m] [armC_fix] t7a/gpqa_diamond_cot_5fd3fe9084c9|dflash2: http 200 prompt_n 325 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:22:51Z +17.7m] [armC_fix] t7a/gpqa_diamond_cot_5fd3fe9084c9|nodraft: http 200 prompt_n 325 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:22:57Z +17.8m] [armC_fix] t7a/gpqa_diamond_cot_8116937b0ca6|dflash2: http 200 prompt_n 298 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:05Z +17.9m] [armC_fix] t7a/gpqa_diamond_cot_8116937b0ca6|nodraft: http 200 prompt_n 298 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:11Z +18.0m] [armC_fix] t7a/phybench_electricity_25|dflash2: http 200 prompt_n 295 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:19Z +18.2m] [armC_fix] t7a/phybench_electricity_25|nodraft: http 200 prompt_n 295 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:22Z +18.2m] [armC_fix] t7a/mmlu_pro_law_01532|dflash2: http 200 prompt_n 472 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:24Z +18.2m] [armC_fix] t7a/mmlu_pro_law_01532|nodraft: http 200 prompt_n 472 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:27Z +18.3m] [armC_fix] t7a/mmlu_pro_health_05883|dflash2: http 200 prompt_n 347 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:29Z +18.3m] [armC_fix] t7a/mmlu_pro_health_05883|nodraft: http 200 prompt_n 347 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:35Z +18.4m] [armC_fix] t7a/ifeval_3456|dflash2: http 200 prompt_n 241 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:43Z +18.6m] [armC_fix] t7a/ifeval_3456|nodraft: http 200 prompt_n 241 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:46Z +18.6m] [armC_fix] t7a/ifeval_322|dflash2: http 200 prompt_n 225 pred 9 nodraft False dKFD 0.0
+[kvu16h-fu 11:23:48Z +18.6m] [armC_fix] t7a/ifeval_322|nodraft: http 200 prompt_n 225 pred 9 nodraft True dKFD 0.0
+[kvu16h-fu 11:23:57Z +18.8m] [armC_fix] t7a/ifeval_1481|dflash2: http 200 prompt_n 273 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:06Z +18.9m] [armC_fix] t7a/ifeval_1481|nodraft: http 200 prompt_n 273 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:24:10Z +19.0m] [armC_fix] t7a/ifeval_1129|dflash2: http 200 prompt_n 256 pred 139 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:17Z +19.1m] [armC_fix] t7a/ifeval_1129|nodraft: http 200 prompt_n 256 pred 139 nodraft True dKFD 0.0
+[kvu16h-fu 11:24:23Z +19.2m] [armC_fix] t7a/real_suite_v1_0003|dflash2: http 200 prompt_n 250 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:32Z +19.4m] [armC_fix] t7a/real_suite_v1_0003|nodraft: http 200 prompt_n 250 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:24:35Z +19.4m] [armC_fix] t7a/real_suite_v1_0032|dflash2: http 200 prompt_n 264 pred 53 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:39Z +19.5m] [armC_fix] t7a/real_suite_v1_0032|nodraft: http 200 prompt_n 264 pred 53 nodraft True dKFD 0.0
+[kvu16h-fu 11:24:41Z +19.5m] [armC_fix] t7a/simpleqa_general_01814|dflash2: http 200 prompt_n 213 pred 8 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:43Z +19.6m] [armC_fix] t7a/simpleqa_general_01814|nodraft: http 200 prompt_n 213 pred 8 nodraft True dKFD 0.0
+[kvu16h-fu 11:24:45Z +19.6m] [armC_fix] t7a/hellaswag_06230|dflash2: http 200 prompt_n 259 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:24:47Z +19.6m] [armC_fix] t7a/hellaswag_06230|nodraft: http 200 prompt_n 259 pred 2 nodraft True dKFD 0.0
+[kvu16h 11:24:47Z] t7a traffic_end capped=False aborted=False own_vram_b=55567327232
+[kvu16h 11:25:17Z] t7a idle_end own_vram_b=55567327232 delta_gib=0.057
+[kvu16h 11:25:17Z] teardown begin own_vram_b=55567327232
+[kvu16h 11:25:18Z] teardown end pid=1084687 already_exited=False sent=['TERM'] verified_dead=True returncode=0
+[kvu16h-fu 11:25:20Z +20.2m] [armB_nographs] launch (env {'GGML_CUDA_DISABLE_GRAPHS': '1'}): numactl --membind=3 -- taskset -c 184-191 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server -m /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf --host 127.0.0.1 --port 18083 -np 4 -c 393216 -t 8 -ub 2048 --flash-attn on --jinja -ctk q8_0 -ctv q8_0 --kv-unified --no-mmap -ngl all --cache-ram 65536 --chat-template-file /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja -md /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf -ngld 99 --spec-type draft-dflash --spec-draft-n-max 7 --device ROCm0 --slot-save-path /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/armB_nographs/slots --device-draft ROCm0 --verbosity 4
+[kvu16h 11:25:22Z] load pre_launch card_used_b=13094912
+[kvu16h 11:25:22Z] load launched pid=1136735
+[kvu16h 11:25:28Z] load healthy load_s=6.0 build=b10303-ffc1bac82 hip_ok=True shim_mapped=True own_vram_b=54511329280
+[kvu16h 11:25:58Z] load idle_end own_vram_b=54511329280
+[kvu16h 11:25:58Z] warm begin own_vram_b=54511329280
+[kvu16h-fu 11:26:33Z +21.4m] [armB_nographs] warm/warm24000: http 200 prompt_n 23921 pred 64 nodraft False dKFD 0.918
+[kvu16h-fu 11:26:40Z +21.5m] [armB_nographs] warm/warm2500: http 200 prompt_n 2944 pred 64 nodraft False dKFD 0.0
+[kvu16h 11:26:40Z] warm traffic_end capped=False aborted=False own_vram_b=55497326592
+[kvu16h 11:27:10Z] warm idle_end own_vram_b=55497326592 delta_gib=0.918
+[kvu16h 11:27:10Z] t7a begin own_vram_b=55497326592
+[kvu16h-fu 11:27:13Z +22.1m] [armB_nographs] t7a/mbpp_0391|dflash2: http 200 prompt_n 483 pred 41 nodraft False dKFD 0.0
+[kvu16h-fu 11:27:16Z +22.1m] [armB_nographs] t7a/mbpp_0391|nodraft: http 200 prompt_n 483 pred 41 nodraft True dKFD 0.0
+[kvu16h-fu 11:27:21Z +22.2m] [armB_nographs] t7a/mbpp_0303|dflash2: http 200 prompt_n 243 pred 200 nodraft False dKFD 0.029
+[kvu16h-fu 11:27:30Z +22.3m] [armB_nographs] t7a/mbpp_0303|nodraft: http 200 prompt_n 243 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:27:33Z +22.4m] [armB_nographs] t7a/mbpp_0508|dflash2: http 200 prompt_n 278 pred 57 nodraft False dKFD 0.022
+[kvu16h-fu 11:27:37Z +22.5m] [armB_nographs] t7a/mbpp_0508|nodraft: http 200 prompt_n 278 pred 57 nodraft True dKFD 0.0
+[kvu16h-fu 11:27:40Z +22.5m] [armB_nographs] t7a/bcb_BigCodeBench/547|dflash2: http 200 prompt_n 251 pred 88 nodraft False dKFD 0.0
+[kvu16h-fu 11:27:45Z +22.6m] [armB_nographs] t7a/bcb_BigCodeBench/547|nodraft: http 200 prompt_n 251 pred 88 nodraft True dKFD 0.0
+[kvu16h-fu 11:27:49Z +22.7m] [armB_nographs] t7a/bcb_BigCodeBench/512|dflash2: http 200 prompt_n 329 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:27:58Z +22.8m] [armB_nographs] t7a/bcb_BigCodeBench/512|nodraft: http 200 prompt_n 329 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:28:03Z +22.9m] [armB_nographs] t7a/debugbench_flood-fill_cpp|dflash2: http 200 prompt_n 836 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:28:13Z +23.1m] [armB_nographs] t7a/debugbench_flood-fill_cpp|nodraft: http 200 prompt_n 836 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:28:18Z +23.1m] [armB_nographs] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|dflash2: http 200 prompt_n 777 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:28:28Z +23.3m] [armB_nographs] t7a/leetcode_the-number-of-the-smallest-unoccupied-chair|nodraft: http 200 prompt_n 777 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:28:33Z +23.4m] [armB_nographs] t7a/ma_multi_015|dflash2: http 200 prompt_n 249 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:28:41Z +23.5m] [armB_nographs] t7a/ma_multi_015|nodraft: http 200 prompt_n 249 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:28:46Z +23.6m] [armB_nographs] t7a/gsm8k_00739|dflash2: http 200 prompt_n 244 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:28:55Z +23.8m] [armB_nographs] t7a/gsm8k_00739|nodraft: http 200 prompt_n 244 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:28:59Z +23.8m] [armB_nographs] t7a/gsm8k_00115|dflash2: http 200 prompt_n 279 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:29:08Z +24.0m] [armB_nographs] t7a/gsm8k_00115|nodraft: http 200 prompt_n 279 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:29:14Z +24.1m] [armB_nographs] t7a/gsm8k_00041|dflash2: http 200 prompt_n 313 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:29:23Z +24.2m] [armB_nographs] t7a/gsm8k_00041|nodraft: http 200 prompt_n 313 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:29:28Z +24.3m] [armB_nographs] t7a/gpqa_diamond_cot_5fd3fe9084c9|dflash2: http 200 prompt_n 325 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:29:37Z +24.5m] [armB_nographs] t7a/gpqa_diamond_cot_5fd3fe9084c9|nodraft: http 200 prompt_n 325 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:29:43Z +24.6m] [armB_nographs] t7a/gpqa_diamond_cot_8116937b0ca6|dflash2: http 200 prompt_n 298 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:29:52Z +24.7m] [armB_nographs] t7a/gpqa_diamond_cot_8116937b0ca6|nodraft: http 200 prompt_n 298 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:29:58Z +24.8m] [armB_nographs] t7a/phybench_electricity_25|dflash2: http 200 prompt_n 295 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:07Z +25.0m] [armB_nographs] t7a/phybench_electricity_25|nodraft: http 200 prompt_n 295 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:09Z +25.0m] [armB_nographs] t7a/mmlu_pro_law_01532|dflash2: http 200 prompt_n 472 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:11Z +25.0m] [armB_nographs] t7a/mmlu_pro_law_01532|nodraft: http 200 prompt_n 472 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:14Z +25.1m] [armB_nographs] t7a/mmlu_pro_health_05883|dflash2: http 200 prompt_n 347 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:16Z +25.1m] [armB_nographs] t7a/mmlu_pro_health_05883|nodraft: http 200 prompt_n 347 pred 2 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:22Z +25.2m] [armB_nographs] t7a/ifeval_3456|dflash2: http 200 prompt_n 241 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:31Z +25.4m] [armB_nographs] t7a/ifeval_3456|nodraft: http 200 prompt_n 241 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:34Z +25.4m] [armB_nographs] t7a/ifeval_322|dflash2: http 200 prompt_n 225 pred 9 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:36Z +25.4m] [armB_nographs] t7a/ifeval_322|nodraft: http 200 prompt_n 225 pred 9 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:45Z +25.6m] [armB_nographs] t7a/ifeval_1481|dflash2: http 200 prompt_n 273 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:30:54Z +25.7m] [armB_nographs] t7a/ifeval_1481|nodraft: http 200 prompt_n 273 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:30:59Z +25.8m] [armB_nographs] t7a/ifeval_1129|dflash2: http 200 prompt_n 256 pred 139 nodraft False dKFD 0.0
+[kvu16h-fu 11:31:06Z +25.9m] [armB_nographs] t7a/ifeval_1129|nodraft: http 200 prompt_n 256 pred 139 nodraft True dKFD 0.0
+[kvu16h-fu 11:31:12Z +26.0m] [armB_nographs] t7a/real_suite_v1_0003|dflash2: http 200 prompt_n 250 pred 200 nodraft False dKFD 0.0
+[kvu16h-fu 11:31:21Z +26.2m] [armB_nographs] t7a/real_suite_v1_0003|nodraft: http 200 prompt_n 250 pred 200 nodraft True dKFD 0.0
+[kvu16h-fu 11:31:24Z +26.2m] [armB_nographs] t7a/real_suite_v1_0032|dflash2: http 200 prompt_n 264 pred 53 nodraft False dKFD 0.0
+[kvu16h-fu 11:31:28Z +26.3m] [armB_nographs] t7a/real_suite_v1_0032|nodraft: http 200 prompt_n 264 pred 53 nodraft True dKFD 0.0
+[kvu16h-fu 11:31:30Z +26.3m] [armB_nographs] t7a/simpleqa_general_01814|dflash2: http 200 prompt_n 213 pred 8 nodraft False dKFD 0.0
+[kvu16h-fu 11:31:32Z +26.4m] [armB_nographs] t7a/simpleqa_general_01814|nodraft: http 200 prompt_n 213 pred 8 nodraft True dKFD 0.0
+[kvu16h-fu 11:31:34Z +26.4m] [armB_nographs] t7a/hellaswag_06230|dflash2: http 200 prompt_n 259 pred 2 nodraft False dKFD 0.0
+[kvu16h-fu 11:31:37Z +26.4m] [armB_nographs] t7a/hellaswag_06230|nodraft: http 200 prompt_n 259 pred 2 nodraft True dKFD 0.0
+[kvu16h 11:31:37Z] t7a traffic_end capped=False aborted=False own_vram_b=55552368640
+[kvu16h 11:32:07Z] t7a idle_end own_vram_b=55552368640 delta_gib=0.051
+[kvu16h 11:32:07Z] teardown begin own_vram_b=55552368640
+[kvu16h 11:32:07Z] teardown end pid=1136735 already_exited=False sent=['TERM'] verified_dead=True returncode=0
+[kvu16h-fu 11:32:09Z +27.0m] verdict CONFIRMED: KVU-16i runtime term = 1.42 GiB (bounded warm-up) ONLY for traffic without single-slot no-draft decodes; every 'speculative.n_max 0 decode -> fresh prefill' transition adds ~0.28 GiB with no bound below OOM (pinned buffers are invisible to the pool's OOM flush). Gate: no per-request n_max 0 against :8083 (bench runners use scratch servers), or GGML_CUDA_DISABLE_GRAPHS=1 at the decode cost shown, or fix the cache on llama.cpp-experimental (dedicated exact-size pool / release at capture end)
+[kvu16h-fu 11:32:09Z +27.0m] arm C fix: HOLDS
+[kvu16h-fu 11:32:09Z +27.0m] summary: /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/summary.md
+[kvu16h-fuc-slot 11:32:09Z] DONE rc=0 (0 ok, 2 refused, 3 hard-ceiling abort, 4 error)  summary: /mnt/raid0/llm/tmp/kvu16h-vram-20261004/results/fuc-20261004T110509Z/summary.md

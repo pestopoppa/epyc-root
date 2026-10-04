@@ -1,0 +1,11 @@
+mask nb31*ic0  ub= 512: 983040 cases, 0 differ; first n_kv with a wrapped offset = -1
+mask nb31*ic0  ub=1024: 1966080 cases, 293396 differ; first n_kv with a wrapped offset = 1057024
+mask nb31*ic0  ub=2048: 3932160 cases, 1574084 differ; first n_kv with a wrapped offset = 526592
+mask nb31*ic0  ub=4096: 7864320 cases, 4823019 differ; first n_kv with a wrapped offset = 262912
+K nb12*(head/gqa) D=128 n_head_kv=2: first n_kv with a wrapped offset = -1
+K nb12*(head/gqa) D=128 n_head_kv=4: first n_kv with a wrapped offset = 2796288
+K nb12*(head/gqa) D=128 n_head_kv=8: first n_kv with a wrapped offset = 1198592
+K nb12*(head/gqa) D=256 n_head_kv=2: first n_kv with a wrapped offset = -1
+K nb12*(head/gqa) D=256 n_head_kv=4: first n_kv with a wrapped offset = 1398272
+K nb12*(head/gqa) D=256 n_head_kv=8: first n_kv with a wrapped offset = 599296
+OK: identical offsets wherever int32 did not overflow; all differences are overflows

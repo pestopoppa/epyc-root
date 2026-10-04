@@ -1,0 +1,14 @@
+[region-lock] acquiring regions ['q2'] as role='bench' (timeout_s=0.0) …
+[region-lock] held ['q2'] after 0.0s wait; running: /bin/bash -c cd "$1" && shift && exec "$@" _ /workspace/repos/epyc-orchestrator taskset -c 48-71 nice -n 19 /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/build-hip/bin/llama-perplexity -m /mnt/raid0/llm/models/Qwen2.5-0.5B-Instruct-f16.gguf -f /mnt/raid0/llm/data/wiki.test.raw -t 24 -fa off -ub 256 -b 2048 --chunks 1 -ngl 99 -dev ROCm0 -c 65536
+0.00.409.530 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.00.562.280 W llama_context: n_ctx_seq (65536) > n_ctx_train (32768) -- possible training context overflow
+0.00.598.763 W llama_perplexity: model was trained on only 32768 context tokens (65536 specified)
+0.00.598.767 I 
+0.00.598.857 I system_info: n_threads = 24 (n_threads_batch = 24) / 192 | ROCm : NO_VMM = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.00.598.872 I perplexity: tokenizing the input ..
+0.00.893.484 I perplexity: tokenization took 294.605 ms
+0.00.893.632 I perplexity: calculating perplexity over 1 chunks, n_ctx=65536, batch_size=2048, n_seq=1
+0.42.061.195 I perplexity: 41.17 seconds per pass - ETA 0.68 minutes
+[1]14.3944,
+0.42.819.709 I Final estimate: PPL = 14.3944 +/- 0.21593
+

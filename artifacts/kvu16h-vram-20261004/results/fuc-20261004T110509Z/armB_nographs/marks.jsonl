@@ -1,0 +1,12 @@
+{"t": 1791113122.358, "at": "2026-10-04T11:25:22Z", "phase": "load", "event": "pre_launch", "server_log_off": null, "shim_log_off": null, "card_used_b": 13094912}
+{"t": 1791113122.358, "at": "2026-10-04T11:25:22Z", "phase": "load", "event": "launched", "server_log_off": 0, "shim_log_off": null, "pid": 1136735}
+{"t": 1791113128.362, "at": "2026-10-04T11:25:28Z", "phase": "load", "event": "healthy", "server_log_off": 43491, "shim_log_off": 14682, "load_s": 6.0, "build": "b10303-ffc1bac82", "hip_ok": true, "shim_mapped": true, "own_vram_b": 54511329280}
+{"t": 1791113158.362, "at": "2026-10-04T11:25:58Z", "phase": "load", "event": "idle_end", "server_log_off": 43491, "shim_log_off": 14682, "own_vram_b": 54511329280}
+{"t": 1791113158.362, "at": "2026-10-04T11:25:58Z", "phase": "warm", "event": "begin", "server_log_off": 43491, "shim_log_off": 14682, "own_vram_b": 54511329280}
+{"t": 1791113200.16, "at": "2026-10-04T11:26:40Z", "phase": "warm", "event": "traffic_end", "server_log_off": 56838, "shim_log_off": 25783, "capped": false, "aborted": false, "own_vram_b": 55497326592}
+{"t": 1791113230.161, "at": "2026-10-04T11:27:10Z", "phase": "warm", "event": "idle_end", "server_log_off": 56838, "shim_log_off": 25783, "own_vram_b": 55497326592, "delta_gib": 0.918}
+{"t": 1791113230.161, "at": "2026-10-04T11:27:10Z", "phase": "t7a", "event": "begin", "server_log_off": 56838, "shim_log_off": 25783, "own_vram_b": 55497326592}
+{"t": 1791113497.073, "at": "2026-10-04T11:31:37Z", "phase": "t7a", "event": "traffic_end", "server_log_off": 312763, "shim_log_off": 25783, "capped": false, "aborted": false, "own_vram_b": 55552368640}
+{"t": 1791113527.073, "at": "2026-10-04T11:32:07Z", "phase": "t7a", "event": "idle_end", "server_log_off": 312763, "shim_log_off": 25783, "own_vram_b": 55552368640, "delta_gib": 0.051}
+{"t": 1791113527.073, "at": "2026-10-04T11:32:07Z", "phase": "teardown", "event": "begin", "server_log_off": 312763, "shim_log_off": 25783, "own_vram_b": 55552368640}
+{"t": 1791113527.371, "at": "2026-10-04T11:32:07Z", "phase": "teardown", "event": "end", "server_log_off": 313319, "shim_log_off": 26938, "pid": 1136735, "already_exited": false, "sent": ["TERM"], "verified_dead": true, "returncode": 0}

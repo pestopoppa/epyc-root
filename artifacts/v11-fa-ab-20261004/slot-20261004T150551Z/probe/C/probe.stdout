@@ -1,0 +1,17 @@
+LOADED /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf in 4.0s (n_layer=64 n_embd=5120)
+MAPS /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml-hip.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml-cpu.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml-base.so.0.16.0
+MAPS /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libllama.so.0.0.10310
+MAPS /mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C/bin/libggml.so.0.16.0
+SUMMARY tag=armC kv=f16 R=2048 prompt=probe_olymp00.txt n_tokens=260 ubatches=1 decode_rc=0 fa_ops=16 fa_nonfinite_ops=0 feat_nonfinite=0/6656000 logits_nonfinite=0 max_fa_out=80.6782 max_v=103.812 max_v_chansum=13884.7 first_bad_node=[none] first_bad_feat=[none] t=4.7s VERDICT=PASS
+SUMMARY tag=armC kv=f16 R=9 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=253 decode_rc=0 fa_ops=4048 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=79.5046 max_v=94.6875 max_v_chansum=107365 first_bad_node=[none] first_bad_feat=[none] t=23.9s VERDICT=PASS
+SUMMARY tag=armC kv=f16 R=36 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=64 decode_rc=0 fa_ops=1024 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=79.5642 max_v=94.6875 max_v_chansum=107360 first_bad_node=[none] first_bad_feat=[none] t=32.3s VERDICT=PASS
+SUMMARY tag=armC kv=f16 R=512 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=5 decode_rc=0 fa_ops=80 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=79.4518 max_v=94.875 max_v_chansum=107262 first_bad_node=[none] first_bad_feat=[none] t=36.9s VERDICT=PASS
+SUMMARY tag=armC kv=f16 R=2048 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=2 decode_rc=0 fa_ops=32 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=79.4346 max_v=94.875 max_v_chansum=107257 first_bad_node=[none] first_bad_feat=[none] t=41.0s VERDICT=PASS
+SUMMARY tag=armC kv=q8_0 R=2048 prompt=probe_olymp00.txt n_tokens=260 ubatches=1 decode_rc=0 fa_ops=16 fa_nonfinite_ops=0 feat_nonfinite=0/6656000 logits_nonfinite=0 max_fa_out=26.1994 max_v=29.316 max_v_chansum=4786.66 first_bad_node=[none] first_bad_feat=[none] t=41.6s VERDICT=PASS
+SUMMARY tag=armC kv=q8_0 R=9 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=253 decode_rc=0 fa_ops=4048 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=26.1994 max_v=29.2695 max_v_chansum=41335.8 first_bad_node=[none] first_bad_feat=[none] t=60.5s VERDICT=PASS
+SUMMARY tag=armC kv=q8_0 R=36 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=64 decode_rc=0 fa_ops=1024 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=26.1369 max_v=29.2385 max_v_chansum=41337.6 first_bad_node=[none] first_bad_feat=[none] t=68.6s VERDICT=PASS
+SUMMARY tag=armC kv=q8_0 R=512 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=5 decode_rc=0 fa_ops=80 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=26.1994 max_v=29.2695 max_v_chansum=41349.7 first_bad_node=[none] first_bad_feat=[none] t=72.9s VERDICT=PASS
+SUMMARY tag=armC kv=q8_0 R=2048 prompt=probe_long2k_a.txt n_tokens=2273 ubatches=2 decode_rc=0 fa_ops=32 fa_nonfinite_ops=0 feat_nonfinite=0/58188800 logits_nonfinite=0 max_fa_out=26.1994 max_v=29.254 max_v_chansum=41348.3 first_bad_node=[none] first_bad_feat=[none] t=77.0s VERDICT=PASS
+FINAL tag=armC runs=10 runs_nonfinite=0 timed_out=0 wall=77.0s VERDICT=PASS

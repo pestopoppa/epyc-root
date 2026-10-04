@@ -1,0 +1,753 @@
+[region-lock] acquiring regions ['q0'] as role='build' (timeout_s=900.0) …
+[region-lock] held ['q0'] after 0.0s wait; running: env -u LD_LIBRARY_PATH LD_LIBRARY_PATH=/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin OMP_NUM_THREADS=24 timeout 900 nice -n 19 taskset -c 0-23 /mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B/bin/test-backend-ops test -o FLASH_ATTN_EXT -b ROCm0 -p hsk=(128|256),
+ggml_cuda_init: found 1 ROCm devices (Total VRAM: 65520 MiB):
+  Device 0: AMD Instinct MI210, gfx90a:sramecc+:xnack- (0x90a), VMM: no, Wave Size: 64, VRAM: 65520 MiB
+Testing 2 devices
+
+Backend 1/2: ROCm0
+  Device description: AMD Instinct MI210
+  Device memory: 65520 MB (65416 MB free)
+
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+[1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.881673889 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.823372040 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.936959711 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.941499789 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.856455368 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.842943290 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.930402662 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.961058229 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.887293760 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.846905769 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.961189534 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.947368540 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.897390704 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.854345975 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.948208841 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.942870391 > 0.000500000   FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.490110657 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.455835683 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.466354556 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.450450352 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+ggml_backend_cuda_graph_compute: CUDA graph warmup complete
+test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.507271661 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+ggml_backend_cuda_graph_compute: CUDA graph warmup reset
+test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.507471381 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.451487090 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.485597030 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.459756187 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] NaN at index 370 (ROCm0=-nan CPU=-0.012063)   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.483603775 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.472614074 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.495142349 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.456408890 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.494059524 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.487670309 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+[FLASH_ATTN_EXT] ERR = 0.497902367 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.467780352 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.466047983 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] NaN at index 482 (ROCm0=-nan CPU=0.010582)   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.476854520 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.486268186 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] NaN at index 312 (ROCm0=-nan CPU=-0.005915)   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=113,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.419434864 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] ERR = 0.500990165 > 0.000500000   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=3,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): [1;32mOK[0m
+[FLASH_ATTN_EXT] NaN at index 320 (ROCm0=nan CPU=0.021104)   FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3]): test failed [1;31mFAIL[0m
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=256,nb=1,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=q4_0,permute=[0,1,2,3]): not supported [ROCm0] 
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[1,1],kv=96,nb=2,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=q1_0,type_V=q1_0,permute=[0,1,2,3]): not supported [ROCm0] 
+  FLASH_ATTN_EXT(hsk=128,hsv=64,nh=4,nr23=[1,1],kv=128,nb=2,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=q1_0,type_V=q4_0,permute=[0,1,2,3]): not supported [ROCm0] 
+  FLASH_ATTN_EXT(hsk=128,hsv=64,nh=4,nr23=[1,1],kv=64,nb=2,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=q1_0,type_V=f16,permute=[0,1,2,3]): not supported [ROCm0] 
+  598/640 tests passed
+
+Failing tests:
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=1,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=1,sinks=0,max_bias=8.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=1,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=128,hsv=128,nh=4,nr23=[12,1],kv=512,nb=32,mask=0,sinks=0,max_bias=0.000000,logit_softcap=10.000000,prec=def,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=1,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=32,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,2,1,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=1,sinks=0,max_bias=8.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=1,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[1,1],kv=1024,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  FLASH_ATTN_EXT(hsk=256,hsv=256,nh=4,nr23=[4,1],kv=512,nb=75,mask=0,sinks=0,max_bias=0.000000,logit_softcap=0.000000,prec=f32,type_K=f16,type_V=f16,permute=[0,1,2,3])
+  Backend ROCm0: [1;31mFAIL[0m
+Backend 2/2: CPU
+  Skipping
+1/2 backends passed
+[1;31mFAIL[0m

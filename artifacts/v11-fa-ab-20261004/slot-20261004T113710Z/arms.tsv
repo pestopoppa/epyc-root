@@ -1,0 +1,7 @@
+A	/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-A	
+B	/mnt/raid0/llm/kernels/builds/gpu-20261004-90c12df42-B	
+C	/mnt/raid0/llm/kernels/builds/gpu-20261004-5026470c6-C	
+D	/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D	
+M	/mnt/raid0/llm/tmp/v11-fa-ab-20261004/build-master-11fe02151	
+D32	/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D	GGML_CUDA_FA_CDNA_D256_MAX_COLS=32
+D9	/mnt/raid0/llm/kernels/builds/gpu-20261004-fa5ebc0c8-D	GGML_CUDA_FA_CDNA_D256_MMA_MIN_ROWS=9

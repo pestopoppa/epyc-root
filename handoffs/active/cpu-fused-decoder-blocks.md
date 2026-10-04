@@ -67,6 +67,17 @@ Checklist (the dashboard gate — flipped as the phases land):
 - [x] Phase 3 partial: fused_ple committed (`8fd4c7f15`); head + decode-loop skeleton already in; the process_ubatch hook committed (`99a1c111e`)
 - [ ] Phase 1 gate: logit diff ≤1e-4 + greedy generation + arch test (needs the MoE fix)
 - [ ] Phase 4: thread-pool integration + fused-kernel micro-opt
+- [ ] **FD-DIV-1 — the Flash-Next (`qwen4exp`) fused decode diverges from the graph at non-production weight scales,
+  and double-frees at w=1.0.** (filed 2026-10-04, workspace-ec; **owner TBD, the Flash-Next owner**)
+  - The repro is committed as `45d8f2937` on `experimental/fused-yarn-20261004`: `QFR_*` knobs, with the log at
+    `artifacts/dca-yarn-kernel-20261004/fused-divergence-repro.log`.
+  - Default synthetic weights: OK (logits 1.7e-11).
+  - `w=0.05, norm N(1,0.1)`: logits nmse 1.84, K 1.08, indexer 1.06 on all three rope configs.
+  - `w=1.0`: abort, "double free or corruption (out)".
+  - The divergence starts before attention, in layer 0 (GDN + MoE + hyper-connections).
+  - **Keep `GGML_FUSED_DECODE_OFF=1` in production** until this is root-caused.
+  - Done when the divergence and the double free are root-caused and fixed (fused ≡ graph within tolerance at
+    w ∈ {0.05, 0.3, 1.0}), or the fused path is retired.
 
 ## Validation strategy (learned the hard way — the arch test is self-consistent and cannot see graph-math errors)
 

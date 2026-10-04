@@ -1,0 +1,119 @@
+{
+ "identity_text": [
+  {
+   "content": " Johannes Gutenberg, a German inventor who, around 1440, developed a system of movable type printing. This innovation, which used metal type and an oil-based ink, revolutionized the way books were produced, making them more accessible and affordable. Gutenberg's first major work, the 42-line Bible, was printed in 1455, marking the beginning of the printing revolution in Europe.\n\nThe impact of Gutenberg's invention was profound. It facilitated the rapid spread of ideas, contributing to the Renaissance, the Reformation, and the Scientific Revolution. The printing press also democratized knowledge, enabling the creation of encyclopedias, dictionaries, and other reference works. It transformed the book industry, leading to the establishment of printing houses and the growth of a publishing industry.\n\nThe history of the printing press is not limited to Gutenberg's invention. Before him, woodblock printing was used in China, Korea, and Japan. The first known printed book, the Diamond Sutra, was produced in China in 868. However, it was Gutenberg's movable type system that truly transformed printing, enabling the mass production of books and other printed materials.\n\nThe printing press also had significant social and political implications. It allowed for the rapid dissemination",
+   "content_sha256": "bd6f455f08767f27bc1d5dd31e6d4117404d4d3c3505de199159f7ccf776ee87",
+   "prompt_sha256": "782c717992df3c790e95c5856ea22c26d4734788ba7b59ac61161a61501c411d",
+   "timings": {
+    "draft_n": 591,
+    "draft_n_accepted": 169,
+    "predicted_ms": 6480.382,
+    "predicted_n": 256,
+    "predicted_per_second": 39.50384406351354,
+    "prompt_ms": 119.036,
+    "prompt_n": 8,
+    "prompt_per_second": 67.20655936019355
+   }
+  },
+  {
+   "content": "    if len(xs) <= 1:\n        return xs\n    mid = len(xs) // 2\n    left = merge_sort(xs[:mid])\n    right = merge_sort(xs[mid:])\n    return merge(left, right)\n\n\ndef merge(left, right):\n    \"\"\"Merge two sorted lists.\"\"\"\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n\n\ndef merge_sort_inplace(xs):\n    \"\"\"Sort a list in place with merge sort.\"\"\"\n    if len(xs) <= 1:\n        return\n    mid = len(xs) // 2\n    left = xs[:mid]\n    right = xs[mid:]\n    merge_sort_inplace(left)\n    merge_sort_inplace(right)\n    xs[:] = merge(left, right)\n\n\ndef merge_sort_iterative(xs):\n    \"\"\"Sort a list with iterative merge sort.\"\"\"\n    n",
+   "content_sha256": "200b45ba82a7cce51b70dd2f6c830d4e0cddd53907ac2651cb07c3a8341feb1b",
+   "prompt_sha256": "4549027587a97e2007231c03c667904a2bc0efa5a130035505f3727e0639bda0",
+   "timings": {
+    "draft_n": 277,
+    "draft_n_accepted": 215,
+    "predicted_ms": 3069.448,
+    "predicted_n": 256,
+    "predicted_per_second": 83.40261832094892,
+    "prompt_ms": 142.815,
+    "prompt_n": 16,
+    "prompt_per_second": 112.03304974967615
+   }
+  }
+ ],
+ "kind": "mtp",
+ "nprobs_post": {
+  "key": "top_probs",
+  "n_empty": 0,
+  "n_missing": 0,
+  "n_tokens": 64,
+  "n_without_probs": 0,
+  "timings": {
+   "draft_n": 224,
+   "draft_n_accepted": 28,
+   "predicted_ms": 2604.23,
+   "predicted_n": 64,
+   "predicted_per_second": 24.575402326215425,
+   "prompt_ms": 135.526,
+   "prompt_n": 11,
+   "prompt_per_second": 81.16523766657319
+  },
+  "tokens_predicted": 64
+ },
+ "nprobs_raw": {
+  "key": "top_logprobs",
+  "n_empty": 0,
+  "n_missing": 0,
+  "n_tokens": 64,
+  "n_without_probs": 0,
+  "timings": {
+   "draft_n": 189,
+   "draft_n_accepted": 35,
+   "predicted_ms": 2172.362,
+   "predicted_n": 64,
+   "predicted_per_second": 29.461019848441467,
+   "prompt_ms": 117.166,
+   "prompt_n": 7,
+   "prompt_per_second": 59.7442944198829
+  },
+  "tokens_predicted": 64
+ },
+ "ok": true,
+ "port": 8197,
+ "speed": {
+  "pp": [
+   {
+    "predicted_ms": 0.001,
+    "predicted_n": 1,
+    "predicted_per_second": 1000000.0,
+    "prompt_ms": 7690.207,
+    "prompt_n": 6465,
+    "prompt_per_second": 840.6795811868262
+   },
+   {
+    "predicted_ms": 0.001,
+    "predicted_n": 1,
+    "predicted_per_second": 1000000.0,
+    "prompt_ms": 7533.751,
+    "prompt_n": 6465,
+    "prompt_per_second": 858.1382633962817
+   }
+  ],
+  "pp_tps_median": 849.408922291554,
+  "tg": [
+   {
+    "content_sha256": "f3f6821a83d89bdd94eb4e11b2d1c6462adbe223051e727afe87b4eac93ec167",
+    "draft_n": 576,
+    "draft_n_accepted": 171,
+    "predicted_ms": 6394.647,
+    "predicted_n": 256,
+    "predicted_per_second": 40.03348425644136,
+    "prompt_ms": 150.962,
+    "prompt_n": 27,
+    "prompt_per_second": 178.852956373127
+   },
+   {
+    "content_sha256": "f3f6821a83d89bdd94eb4e11b2d1c6462adbe223051e727afe87b4eac93ec167",
+    "draft_n": 576,
+    "draft_n_accepted": 171,
+    "predicted_ms": 6344.09,
+    "predicted_n": 256,
+    "predicted_per_second": 40.35251706706557,
+    "prompt_ms": 152.503,
+    "prompt_n": 27,
+    "prompt_per_second": 177.0456974616893
+   }
+  ],
+  "tg_tps_median": 40.193000661753466
+ }
+}

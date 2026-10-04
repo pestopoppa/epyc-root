@@ -100,12 +100,67 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
   workflow from a fresh champion on `llama.cpp-experimental`: intra/successive/inter chunk positions over a
   chunk-periodic K cache, plus the mscale logit temperature. Done when the design note and a `test-backend-ops`-green
   build exist, and an E1-style needle A/B (DCA vs YaRN f2 at 400K/500K) is filed as its own GPU-window task.
-- [ ] **YARN-FN-FIX — Flash-Next fused decode must honour the rope parameters (in flight).** `qwen4exp-fused.cpp:1709-1717`
+  - *(2026-10-04 PM, workspace-ec; not ticked: a `test-backend-ops`-green DCA build is not yet shown.)*
+    - Branch `experimental/dca-20261004`; the GPU slot ran commit `9264f8095`. `test-dca` PASS on ROCm0 and on CPU.
+    - Perplexity on Qwen2.5-0.5B f16 (trained 32K), wikitext-2, positions 32K-64K, one window per arm (lower is
+      better). Durable copy: `artifacts/dca-yarn-kernel-20261004/`.
+
+      | arm | GPU (`gpu-slot-20261004T150049Z`) | CPU (`ppl-20261004T080609Z`) |
+      |---|---|---|
+      | plain 64K (raw extrapolation) | 14.39 ± 0.22 | 13.63 ± 0.21 |
+      | YaRN f2 | — | 12.63 ± 0.19 |
+      | DCA | 13.07 ± 0.20 | 12.46 ± 0.19 |
+      | DCA + temperature (DCA+T) | 12.96 ± 0.19 | — |
+
+    - DCA beats raw extrapolation on both devices. DCA vs YaRN is within the one-window spread, so it is suggestive
+      only.
+    - The same arm differs by ~0.6-0.8 PPL between GPU and CPU, which is unexplained (YARN-DCA-XDEV).
+  - [ ] **YARN-DCA-E1 — needle A/B, DCA vs YaRN f2 at 400K/500K on the 27B, in its own GPU window.** (filed
+    2026-10-04, workspace-ec, from YARN-DCA's done-when) The build must carry YARN-FA-INT64: mask offsets wrap past
+    n_kv 526,592 at ub 2048. Done when needle correctness per depth is recorded for both arms.
+  - [ ] **YARN-DCA-XDEV — explain the GPU-vs-CPU perplexity offset before quoting numbers across devices.** (filed
+    2026-10-04, workspace-ec) Plain 64K is 14.39 on ROCm0 vs 13.63 on CPU, with the same model and text. Compare the
+    batch/ubatch sizes, FA on/off and KV type of the two scripts, then re-run one arm with matched settings. Done when
+    the offset is attributed or removed.
+- [x] **YARN-FA-INT64 — fix the int32 mask/K offsets in GPU FlashAttention (probable llama.cpp #27090).** ✅ 2026-10-04
+  (workspace-ec; coordinator add-on to the DCA work)
+  - Branch `experimental/fa-int64-offset-20261004`, on the champion, three commits:
+    - `6152cdf7a` fixes the WMMA kernel;
+    - `0c4801127` fixes tile, MMA and vec, and adds `launch_fattn` truncation asserts;
+    - `4f21c3477` adds the `test-backend-ops` `mask_ne0` cases.
+  - CPU proof: the first wrapped mask offset is at n_kv 526,592 (ub 2048), 262,912 (ub 4096) and 1,057,024 (ub 1024);
+    nothing wraps at ub 512.
+  - GPU slot `gpu-slot-20261004T145625Z`: **PASS** (durable copy `artifacts/dca-yarn-kernel-20261004/fa-int64/`).
+    - `mask_ne0` cases: the fixed build passes 4/4; the champion passes 1/4 (3 FAIL, ERR 0.03-0.59).
+    - Full `FLASH_ATTN_EXT` suite on the fixed build: 2872/2872.
+    - Existing cases: 119/119 bit-identical to the champion (worst nmse 0).
+  - The v11 carry is `fork/experimental/fa-int64-offset-master-20261004`: the revert of #26046 plus the picks. It is
+    not compile-verified on master.
+- [ ] **YARN-FA-INT64-fold — fold the three FA-INT64-OFFSET commits into the champion before any run past 512K
+  cells.** (filed 2026-10-04, workspace-ec) Use the guarded CAS fold route with workspace-89: G0, `test-backend-ops`
+  on ROCm0, and the `mask_ne0` cases. Done when the champion tip carries them.
+- [ ] **YARN-FA-INT64-up — draft (never post) the upstream report for master's int32 FA offsets.** (filed 2026-10-04,
+  workspace-ec) Master `11fe02151` still multiplies int32 strides in tile, MMA and vec; the WMMA half is moot upstream
+  (#26046). Done when the draft sits in the artifact dir for the operator.
+- [x] **YARN-FN-FIX — Flash-Next fused decode must honour the rope parameters (in flight).** ✅ 2026-10-04 `qwen4exp-fused.cpp:1709-1717`
   hardcodes `freq_scale=1, ext_factor=0, n_ctx_orig=0`. Pass the model's real `freq_scale`, `ext_factor`,
   `n_ctx_orig_yarn`, `attn_factor` and `beta_*` through to the fused path. This is latent at native length as well,
   where `n_ctx_orig=0` is harmless only while `ext_factor` is 0. It is being built on `llama.cpp-experimental` in the
   same subagent dir. Done when the fused decode matches the graph path bit-for-bit (or within the fused path's
   existing tolerance) under a YaRN configuration in a CPU test, with no regression at native length.
+  - *(2026-10-04, workspace-ec.)* **Fixed** in `5bfdcd18c` on `experimental/fused-yarn-20261004`.
+    - The fused decode now takes the context's rope/YaRN parameters. `freq_base` was hardcoded as well, so
+      `--rope-freq-base` had also been ignored.
+    - `6c126e975` gates two per-token debug leftovers behind `GGML_FUSED_DECODE_TRACE`: a stderr line, and `/tmp`
+      file writes on every token.
+    - Test `tests/test-qwen4exp-fused-rope.cpp`: K nmse 6e-9 (YaRN) and 8e-9 (freq-base), against 0.53 and 1.09
+      before; logits 1.7e-11; native OK; 56/56 steps fused.
+    - Notes: `artifacts/dca-yarn-kernel-20261004/NOTES.md`.
+    - A separate fidelity gap at non-production weight scales is FD-DIV-1 in `cpu-fused-decoder-blocks.md`.
+  - [ ] **YARN-FN-FIX-fold — fold `5bfdcd18c` + `6c126e975` into the champion.** (filed 2026-10-04, workspace-ec)
+    Production keeps `GGML_FUSED_DECODE_OFF=1`, but the champion's fused path still writes `/tmp` files on every
+    token and ignores rope parameters. Done when the champion tip carries both commits, with the fused-rope test
+    green.
 - [ ] **YARN-1M — research: what fits 1M, and how the hybrid recurrent layers behave past 262K (in flight).** A
   research subagent is answering two questions in `/mnt/raid0/llm/tmp/yarn-e1-20261004/`:
   - which shapes fit 1M: q4_0 KV on the lean shape (≈ 54 GiB; the R10 advice in `kv-cache-quantization.md` says q8_0
