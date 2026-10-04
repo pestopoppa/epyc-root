@@ -1,3 +1,5 @@
+> **SUPERSEDED (2026-10-04): the correctness FAIL / "word salad" verdict below is a classifier artifact (INF-70 classifier: fake ids + length-biased uniq floor).** Deterministic re-score: **Q38-T7 correctness PASS**, see `artifacts/gpu-block-27b-20261004/analysis/q38t7-rescore/RESCORE.md`. The paired v2 re-run is `20261004T040110Z`. Do not cite this run as failed.
+
 # Q38-T7 — DFlash2 at the production shape (2026-10-04T03:24:58Z)
 
 Server: b10303-ffc1bac82 · speculative ['none,draft-dflash'] · slot n_ctx 262144 · argv n-max-7 True · SLOTS_DEBUG env None
