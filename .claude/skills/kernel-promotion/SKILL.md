@@ -222,6 +222,17 @@ Marker sweep, champion reseed off the newly frozen kernel, and prove it serves â
 this host; a binary inheriting the wrong tree's ggml answers normally and computes wrong, and `ldd`
 cannot settle it because llama.cpp dlopens `libggml-hip.so`), per-port health, and real inference.
 
+**Carry the champion's measurements forward as the new production baseline â€” never discard them.**
+The kernel being frozen WAS the champion, so its last measured standing (the `champion-vs-production`
+receipt, fold/keep-gate samples: protocol, samples, host state, date) IS the new production's baseline.
+Write it as `loop-memory/production-baseline.<sha>.json` (via `production.py`'s writer) in the same step
+as the champion reseed, before any old receipt is set aside. Origin: after the v10 promotion
+(2026-09-22) the receipt was set aside and nothing carried over, so on 2026-10-04 the first post-v10
+champion standing had no production baseline. The operator: "v10 was once a champion. We have those
+measurements. The production promotion should have transferred those results." The single-arm standing
+rule (operator, same day: "We have the production numbers already. You just need to measure the
+champion") depends on this record existing.
+
 ## Never
 
 - report a store repoint as a completed promotion
