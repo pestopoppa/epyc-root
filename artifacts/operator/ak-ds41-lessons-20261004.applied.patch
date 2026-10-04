@@ -1,0 +1,30 @@
+--- a/agents/shared/OPERATING_CONSTRAINTS.md
++++ b/agents/shared/OPERATING_CONSTRAINTS.md
+@@ -133,6 +133,14 @@
+   live-only checks, such as startup-log regexes, thread placement, directories that must exist, or `set -e`
+   interactions. Run each check read-only against real logs or the live production process first, and have it
+   print what it saw. (origin: INC-20260929-dry-run-missed-live-checks)
++- **Your own subagents are load; light foreign load is metadata.** Before any measurement,
++  including an AutoKernel loop's own floor calibration and A/B phases, pause your subagents' tests
++  and builds, wait for their PIDs to exit and confirm quiet with a live `top -bn2`; a pause message
++  lands only at the agent's next tool round. A preflight refuses only on heavy local compute (builds,
++  benchmarks, local inference, `test-backend-ops`, test suites) and records lighter load, such as
++  agent-harness traffic, as run metadata. Procedure: `docs/guides/agent-workflows/benchmark-analyst.md`
++  → *Your own load, and what counts as noise*. (origin: 2026-09-30 — subagent pytest during a DS41
++  floor calibration verified the floor at 4.533% instead of ~1.9%; operator ruling 2026-10-04)
+ - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
+ - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
+ - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
+@@ -258,6 +266,12 @@
+      identical. For processes: only kill PIDs you captured yourself (see Process Management).
+    - Cross-check with `du -sb <parent tree>`: a real second copy adds its size to the parent;
+      a symlink/bind alias adds nothing.
++   - **Reference check — idle is not unused.** Before removing a worktree, checkout, store or
++     model, also search live process environments and argv (`/proc/*/environ`, `cmdline`), recent
++     launch and watchdog scripts, crontab and campaign state for its path, honour KEEP markers, and
++     hold a live run's watchdog first. Procedure: `docs/guides/agent-workflows/cleanup-reference-check.md`.
++     (origin: INC-20261004-cleanup-removed-load-bearing-worktree — an approved cleanup removed a landed, clean, 7-day-idle worktree that
++     DS41's launchers export as `EPYC_ROOT_REPO`, and DS41's next relaunches died)
+ 2. **Trash-first, always:** recursive deletes of data go through
+    `scripts/safety/guarded_rm.sh`, which moves the target to `/mnt/raid0/llm/.trash/` and logs
+    a manifest (recoverable until `scripts/safety/trash-sweep.sh --older-than DAYS` ages it

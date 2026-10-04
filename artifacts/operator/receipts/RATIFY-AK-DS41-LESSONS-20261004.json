@@ -1,0 +1,7 @@
+{
+  "gate_id": "RATIFY-AK-DS41-LESSONS-20261004",
+  "indexed_by": "ratify",
+  "receipt": "/mnt/raid0/llm/worktrees/root-ratify-20261004/artifacts/operator/ratify_ak_ds41_lessons_20261004.receipt.json",
+  "schema_version": "session_bus.receipt_index.v1",
+  "status": "ratified"
+}
