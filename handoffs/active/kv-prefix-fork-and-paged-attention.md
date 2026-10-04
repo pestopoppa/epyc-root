@@ -195,7 +195,7 @@ attention, DFlash2 n-max 7, `-np 4 -c 393216 --kv-unified`). This program carrie
   /mnt/raid0/llm/worktrees/kv-prefix-fork-p1 -b experimental/kv-prefix-fork-p1-<date> <champion tip>`, with the
   champion tip resolved live. Then `scripts/gitnexus-analyze.sh /mnt/raid0/llm/worktrees/kv-prefix-fork-p1`. Done
   when `gitnexus list` shows the worktree at its HEAD.
-- [ ] **KPF-02: GitNexus impact pass on the P1 worktree.** Run `context` + `impact --direction upstream` on
+- [x] **KPF-02: GitNexus impact pass on the P1 worktree.** ✅ 2026-10-04 Run `context` + `impact --direction upstream` on
   `update_slots`, `pre_decode`, `get_available_slot`, `launch_slot_with_task`, `create_checkpoint`, `copy_state_to`,
   `llama_kv_cache::seq_cp`, `llama_memory_hybrid::seq_cp`, `llama_memory_recurrent::seq_cp`,
   `llama_memory_recurrent::state_read`, `llama_state_seq_set_data_ext`, `common_speculative_set_state`, and
@@ -216,7 +216,7 @@ Target: a new task whose prompt shares a long prefix with **any** slot, busy or 
 of that slot's attention cells plus a checkpoint-restored recurrent and drafter state at the fork position. It
 prefills only the suffix.
 
-- [ ] **KPF-11: cross-slot fork-source selection.** Add `find_fork_source(task)` to `server_context_impl`, called
+- [x] **KPF-11: cross-slot fork-source selection.** ✅ 2026-10-04 Add `find_fork_source(task)` to `server_context_impl`, called
   from `get_available_slot` (L1601) / `launch_slot_with_task`:
   - For every slot ≠ dst, **busy ones included**, compute `lcp = slot.prompt.tokens.get_common_prefix(task.tokens)`.
   - Fork position `p` = the largest checkpoint in that slot's `prompt.checkpoints` with `n_tokens ≤ lcp`, or the
@@ -225,7 +225,7 @@ prefills only the suffix.
   - Pick the largest `p` across slots. Ties: idle source first, then most recent. Compare against the dst slot's
     own LCP/checkpoint and the `--cache-ram` best hit, and take the largest reuse.
   - Threshold: new argv `--slot-fork-min-tokens N` (0 = off, the A/B control). Default chosen in KPF-18.
-- [ ] **KPF-12: attention-only zero-copy share.** Add an explicit attention-only copy so the recurrent half is never
+- [x] **KPF-12: attention-only zero-copy share.** ✅ 2026-10-04 Add an explicit attention-only copy so the recurrent half is never
   aliased: `llama_memory_seq_cp_ext(mem, src, dst, p0, p1, flags)` with an `ATTN_ONLY` flag. Touches
   `include/llama.h`, `src/llama-memory.h` (`llama_memory_i`), `src/llama-memory-hybrid.cpp:152`, `src/llama-context.cpp`
   (API) and `common/common.cpp` (`common_context_seq_cp`). Sequence: `seq_rm(dst, -1, -1)`, then
@@ -233,21 +233,21 @@ prefills only the suffix.
   - Rejected alternative: hybrid `seq_cp` followed by a checkpoint load into dst. Recurrent `seq_cp` makes dst
     share src's tail cell, so the following `state_read` could write src's live state unless it copies on write.
     That is an aliasing window with no test that would catch it.
-- [ ] **KPF-13: recurrent and drafter state from the checkpoint.** Into dst: `ckpt.load_tgt(ctx_tgt, dst.id,
+- [x] **KPF-13: recurrent and drafter state from the checkpoint.** ✅ 2026-10-04 Into dst: `ckpt.load_tgt(ctx_tgt, dst.id,
   PARTIAL_ONLY)`, `ckpt.load_dft(ctx_dft, dst.id, PARTIAL_ONLY)` (the drafter's SWA window travels in the
   checkpoint, `llama-kv-cache-iswa.cpp:259-273`) and `common_speculative_set_state(spec, dst.id, ckpt.data_spec)`.
   Then set `dst.prompt.tokens = task.tokens[0:p]`, clone the source checkpoints with `n_tokens ≤ p` into
   `dst.prompt.checkpoints`, set `n_past = p`, and prefill from p. Positions are unchanged, so no shift.
   - Verify in code and in a test that `llama_memory_recurrent::state_read` for dst allocates or uses **dst's own**
     rows: 4 slots × 8 rows with the rollback ring, `n_rs_seq`. It must never write a cell src still references.
-- [ ] **KPF-14: launch ordering and seq-bit safety.**
+- [x] **KPF-14: launch ordering and seq-bit safety.** ✅ 2026-10-04
   - Take the fork at launch, before the `[TAG_IDLE_SLOT_CLEAR]` loop (L2469-2484), so an idle source is not
     cleared first.
   - Confirm `prompt_clear()` / `seq_rm(src, -1, -1)` on a source removes only its own seq bit: a cell is freed only
     when its last bit goes, and `used` stays right.
   - Cover `cache_idle_slots` on AND off, because production flips to `--no-cache-idle-slots` with the in-progress
     package.
-- [ ] **KPF-15: explicit junction checkpoint, request field `checkpoint_at`.**
+- [x] **KPF-15: explicit junction checkpoint, request field `checkpoint_at`.** ✅ 2026-10-04
   - Format: an array of token positions; `-1` means end of prompt. Parse it in `tools/server/server-task.cpp`.
   - In `pre_decode` (~L3640-3720), end a prompt chunk exactly at each requested position and create a checkpoint
     there, regardless of `checkpoint_min_step`.
@@ -255,7 +255,7 @@ prefills only the suffix.
     carry them through `prompt_save`/`prompt_load` (`server_prompt_cache`, `server-task.h`).
   - This is vLLM's `--enable-mamba-shared-prefix-checkpoint` and SGLang's branch-point caching, on demand.
   - Snapshots stay sparse: one costs ~150 MiB, about 4.4k tokens of KV (survey §1.3).
-- [ ] **KPF-16: fork telemetry.**
+- [x] **KPF-16: fork telemetry.** ✅ 2026-10-04
   - Response `timings`: `n_fork_tokens`, `fork_src_slot`, `fork_src_kind` (`checkpoint` | `end`).
   - One INFO log line per fork.
   - `/slots`: per-slot private vs shared cell counts. `/props` or `/metrics`: pool **unique** cells used. P2's gate
@@ -271,6 +271,13 @@ prefills only the suffix.
     case in the GPU window on the 27B.
   - Extend KVU-19a's `test_flash_attn_ext_unified` cases and the 64-case exactness harness with **multi-seq
     (shared) cells**, so 19a/19b stay exact over shared trunks.
+- [ ] **KPF-17a: shared-trunk cases for KVU-19a/19b's `test_flash_attn_ext_unified`, applied at the 19a/19b fold.**
+  KPF-17's fourth bullet cannot land on the P1 branch, because the test lives on the unfolded 19a/19b line. The
+  patch is prepared: `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf17-19a/kpf17-shared-trunk-fa-unified.patch`, which adds
+  an `n_shared` trunk owned by every sequence plus 25 cases, and passes `git apply --check` on
+  `fork/experimental/fa-maskskip-batched-20261004`. Apply it with the fold, then run `-o FLASH_ATTN_EXT` on ROCm0 and
+  CPU and the 64-case harness. KPF-17 stays open until it is applied (P1 branch: `test-kv-seq-share` + `test_slot_fork.py`
+  are done).
 - [ ] **KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched
   instrument is the same binary with `--slot-fork-min-tokens 0` vs on, in alternating windows. Done when ALL hold:
   1. **Equivalence vs fresh.** Prompt set ≥ 32 trunk/suffix pairs (trunk 8k-80k, suffix 0.5-8k), greedy, DFlash2
@@ -517,3 +524,109 @@ upstream code, so it is not copied into this repo — re-fetch with `gh pr diff 
 Flip boxes here. The owning session (ak-ds41-main) updates RTG-58's `Next action`; workspace-ec reports phase
 boundaries to it on the bus. Append to `progress/YYYY-MM/`. Production default-on of any feature goes through the
 kernel-promotion ratification, not this handoff.
+
+## P1 progress, 2026-10-04 (workspace-ec lane)
+
+**Branch** `experimental/kv-prefix-fork-p1-20261004` (worktree `/mnt/raid0/llm/worktrees/kv-prefix-fork-p1`), base
+`90c12df42` = `ak/champion/llama-cpp-ffc1bac82eec` tip resolved live (KVU-19a is **not** folded in it). Scratch:
+`/mnt/raid0/llm/tmp/kpf-p1-20261004/` (PROGRESS.md, INTERFACE.md for P2, KPF02/03 records, smoke records).
+
+### KPF-02 impact pass (index: sibling `fastload-ds41` @ `00d118d`; own-worktree index pending: two attempts did not complete (a parse-worker timeout, then an external stop during a peer CPU window); the coordinator will schedule the re-run; KPF-01 stays open until `gitnexus list` shows it)
+
+| Symbol | Direction | Impacted | Risk | Direct dependants |
+|---|---|---|---|---|
+| `update_slots` | upstream | 3 | LOW | 1 |
+| `pre_decode` | upstream | 0 | LOW | 0 |
+| `get_available_slot` | upstream | 3 | LOW | 1 |
+| `launch_slot_with_task` | upstream | 4 | LOW | 2 |
+| `create_checkpoint` | upstream | 1 | LOW | 1 |
+| `copy_state_to` | upstream | 3 | LOW | 1 |
+| `llama_kv_cache::seq_cp` / `llama_memory_hybrid::seq_cp` / `llama_memory_recurrent::seq_cp` / `llama_memory_recurrent::state_read` | upstream | 0 | (LOW, virtual dispatch unresolved) | 0 |
+| `llama_state_seq_set_data_ext` | upstream | 9 | **HIGH** | 5 |
+| `common_speculative_set_state` | upstream | 1 | LOW | 1 |
+| `prompt_clear` | upstream | 14 | **HIGH** | 5 |
+| `llama_memory_seq_cp` (public) | upstream | 7 | MEDIUM | 6 |
+| `common_context_seq_cp` | upstream | 3 | LOW | 1 |
+| `llama_memory_i` (interface we add two defaulted virtuals to) | upstream | 12 | MEDIUM | 8 |
+
+Flags: **HIGH** on `llama_state_seq_set_data_ext` (the fork restores dst's recurrent/drafter state through it) and
+`prompt_clear` (a purge of a fork source). Acknowledged by the owner: experimental branch; mitigated by
+calling both only through their existing, unchanged signatures, and by KPF-17's purge/restore tests. Grep
+supplement (`kpf02/KPF02.md`): 8 classes derive from `llama_memory_i` plus `tests/test-batch-alloc.cpp` `mock_memory`
+— the new virtuals are defaulted (not pure), so none of them changes.
+
+### What was built (KPF-11..17)
+Commits on `fork` (`experimental/kv-prefix-fork-p1-20261004`):
+
+- `eb59174a1`: KPF-12/16 API. `llama_memory_seq_cp_ext(..., LLAMA_MEMORY_SEQ_CP_FLAGS_ATTN_ONLY)`:
+  - a zero-copy share of the attention cells only;
+  - never aliases the recurrent tail;
+  - same-stream only, with a capability probe.
+
+  Also `llama_memory_get_cell_stats` (pool size/used/shared plus per-seq private/shared), `common_context_seq_cp_attn`,
+  `common_prompt_checkpoint::pinned`, and `--slot-fork-min-tokens N` (0 = off). The `llama_memory_i` virtuals are
+  defaulted.
+- `993b73765`: KPF-11/13/14/15/16, server.
+  - The fork is taken in `launch_slot_with_task`, before `[TAG_IDLE_SLOT_CLEAR]`.
+  - Modes are probed at load: `kv` for pure attention, `checkpoint` for hybrid/recurrent/SWA.
+  - The source is any slot, busy or idle. Never a WAIT_OTHER child, a different LoRA set, mtmd, or a
+    context-shifted/compressed/restored slot.
+  - dst becomes "dst processed task[0,p) itself", so `pre_decode` takes `n_past = p` unchanged.
+  - `get_available_slot` skips a `--cache-ram` load that the fork beats.
+  - `checkpoint_at` creates pinned junction checkpoints; the end-of-prompt one is created in `post_decode`.
+  - The `slot_fork` request opt-out.
+  - Telemetry in `timings`, `/slots` and `/metrics`.
+- `8279261a5`: P2 interface for workspace-89 (answers in `INTERFACE.md` §6): `content_epoch`, the `prefix_hash` ladder,
+  `id_slot`/`id_task` in OAI timings, `/props.slot_fork`, and `checkpoint_at` `{"message": k}` (chat endpoints: rendered
+  prefix, verified byte- then token-prefix).
+- `a17ebe094` and `857d7ec1f`: KPF-17 tests (`tests/test-kv-seq-share.cpp`, `tools/server/tests/unit/test_slot_fork.py`).
+- 19a/19b shared-trunk FlashAttention cases are prepared, not applied (KVU-19a is not in the champion):
+  `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf17-19a/kpf17-shared-trunk-fa-unified.patch`. It applies to
+  `fork/experimental/fa-maskskip-batched-20261004` (`git apply --check` OK).
+- KPF-18 runner, not run: `/mnt/raid0/llm/tmp/kpf-p1-20261004/kpf18/` (`kpf18_gate.py`, `run_kpf18.sh`, `RUNBOOK.md`).
+  It needs about 12 h 45 min of GPU time in 4 windows; the argv comes from `logs/server_launches/8083.json`.
+
+### Results
+CPU only, under `region-lock` (q1 after the coordinator's 2026-10-04 single-quadrant rule). Records are in
+`/mnt/raid0/llm/tmp/kpf-p1-20261004/smoke-*/`.
+
+- **test-kv-seq-share passes on 4 memory types:**
+  - generated qwen35 GDN hybrid;
+  - Qwen3.5-0.8B Q8_0 hybrid, rollback ring 0 and 8;
+  - Qwen2.5-0.5B attention;
+  - gemma-3-1b SWA.
+
+  On those models (gemma-3 gets top-1 checks only, since one token ≠ one cell under SWA), fork vs fresh suffix,
+  fork vs full-state copy, and source continuation with/without the fork are all **bit-identical** (max|d| = 0).
+  Cell counts are exact: `used` does not grow at the fork, `find_slot` never reuses a shared cell, and a purge
+  frees exactly the source's private cells. The fork's serialized state is byte-identical across the source purge.
+- **Regressions green:** `test-recurrent-state-rollback` (qwen35), `test-save-load-state`,
+  `test-state-restore-fragmented`.
+- **Off = champion:** at `--slot-fork-min-tokens 0` vs the champion CPU store build `cpu-20260925-90c12df42`,
+  7/7 generations (tokens + top-5 probs) are byte-identical on both models, with identical `timings` and `/slots`
+  key sets.
+- **Fork on, trunk-first 1575-token prompts, 3 children:**
+  - every child forks 1560 tokens (hybrid kinds: `end` from the trunk slot, then `checkpoint` from the previous
+    child's inherited junction) and prefills 9-15 tokens instead of 1575;
+  - with `--no-cache-idle-slots` the pool holds 1772 unique cells vs 6452 logical (the trunk is held once);
+  - pool invariant `used = Σ private + shared` holds;
+  - zero "failed to find a memory slot".
+- **Equivalence, matched instrument (same binary, fork-off arm at `--slot-fork-min-tokens 0`, same sequence):**
+  - `cache-idle`: fork-on children = fork-off children = fresh, 3/3 on both models.
+  - `no-cache-idle`: one child in three diverges from fresh at token 57 (hybrid) or 45 (attention). The
+    **fork-off** arm diverges at the same token, and fresh-vs-fresh across arms diverges too.
+  - So this is the unified-pool layout noise floor (resident neighbours change the FA partition), not the fork.
+    KPF-18 item 1 measures it at production scale.
+- **Server pytest:** Qwen2.5-0.5B 8 passed, 2 skipped (kv mode). Qwen3.5-0.8B 10 passed, including the P2 cases (epoch, hash ladder, ids in timings, `/props`, and message-index
+  `checkpoint_at` on the Qwen3.5 template). Final run `smoke-20261004T073455Z`, all rc 0, q1 bench lock, `-t 8`.
+- **Open finding for KPF-18 item 1 (not dismissed).** In the `-t 8` run, one hybrid child in cache-idle mode (child 2,
+  forked from child 1's junction checkpoint) matched fresh for 55 of 64 greedy tokens and then diverged, while
+  fresh-vs-fresh across arms was identical in that run. So it is fork-attributable at that thread count.
+  - Likely mechanism, isolated in `test-kv-seq-share`: after the source purge, the fork's new tokens land in freed
+    cells **before** its suffix cells, so the attention sum runs in a different order than a contiguous fresh
+    prefill. On this hybrid that moved logits by up to 0.29 with top-1 unchanged.
+  - The serialized state is byte-identical and every suffix/continuation check before the purge is bit-exact, so this
+    is cell order, not wrong data.
+  - KPF-18 item 1 must report fork-vs-fresh against the fresh-vs-fresh **and** fragmented-layout control. If it exceeds
+    that control at production length, the fix is order-preserving placement for fork children (a P3 /
+    `--kv-affine-chunk` concern), not the share itself.
