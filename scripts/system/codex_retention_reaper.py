@@ -699,6 +699,14 @@ def _refuse(msg: str) -> int:
 
 
 def cmd_apply(a) -> int:
+    # OPERATOR DIRECTIVE 2026-10-04 (hard rule): "Claude/codex backup logs should NOT BE TOUCHED UNDER ANY
+    # CIRCUMSTANCES. They are historical transcripts used by a root filesystem project far more senior to
+    # anything performed in this project repo." apply is permanently disabled; this tool is report-only.
+    print("codex_retention_reaper: apply is PERMANENTLY DISABLED by operator directive (2026-10-04): "
+          "Claude/codex session logs and backups are never deleted by this project. Report-only.", file=sys.stderr)
+    return 4
+
+def _cmd_apply_disabled_original(a) -> int:
     home, vault, state = a.home, a.vault, Path(a.state_dir)
     if not os.path.isdir(home):
         print(f"codex home {home} missing", file=sys.stderr)
@@ -867,7 +875,7 @@ def build_parser() -> argparse.ArgumentParser:
     r.add_argument("--max-hash-gib", type=float, default=DEFAULT_MAX_HASH_GIB,
                    help="sha256 budget per run over size-matched candidates (default 4)")
     r.add_argument("--max-list", type=int, default=20, help="sample paths listed per class")
-    p = sub.add_parser("apply", parents=[common], help="delete the reviewed list (needs token)")
+    p = sub.add_parser("apply", parents=[common], help="DISABLED (operator 2026-10-04): never deletes codex/claude logs")
     p.add_argument("--older-than-days", type=float, required=True)
     p.add_argument("--confirm-token", default=None)
     return ap

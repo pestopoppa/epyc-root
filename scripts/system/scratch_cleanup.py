@@ -90,6 +90,18 @@ def parse_scratch(text: str) -> Decl | None:
     return d
 
 
+# OPERATOR DIRECTIVE 2026-10-04 (hard rule): Claude/codex backup logs and session transcripts are NEVER
+# touched by this project (they serve a more senior root-filesystem project). Defense in depth on top of
+# ALLOWED_PARENTS: any path under these prefixes is refused outright, whatever a handoff declares.
+NEVER_TOUCH = ("/home/node/.codex", "/home/node/.claude", "/mnt/raid0/llm/claude-backups",
+               "/mnt/raid0/llm/cloud-llm-vault")
+
+
+def _never_touch(path: str) -> bool:
+    rp = os.path.realpath(path)
+    return any(rp == n or rp.startswith(n + "/") for n in NEVER_TOUCH)
+
+
 def validate(d: Decl) -> list[str]:
     errs = []
     if not d.none and not d.dirs and not d.worktree_globs:
@@ -293,6 +305,9 @@ def apply_plan(entries: list[Entry], decl: Decl, *, base: str = wg.DEFAULT_BASE,
         else:
             e.verdict = "REMOVE"
     for e in entries:                                         # then plain scratch, trash-first
+        if _never_touch(e.path):
+            e.result = "REFUSED: NEVER_TOUCH (operator 2026-10-04: claude/codex logs are off-limits)"
+            continue
         if e.kind == "worktree":
             continue
         if e.verdict != "REMOVE":
