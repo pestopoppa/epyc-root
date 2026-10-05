@@ -1,0 +1,7 @@
+# NI05-57 routing fixture originals
+
+The routing-pool job in CI37369215336 attempt1 passes the complete72-case module with zero skips, failures or errors. Main independently verifies native TRUE, shared Judged/Located grade, all62 Git-backed source inputs, three context/install inputs and19 postchecks. The empty-lookup refusal uses the existing path-bound research-loader seam; the stale bare-import trap and SystemExit1 assertion remain.
+
+`artifacts/` contains78 exact extracted original files, byte-equal to the private original custody. `public-original-manifest.json` records relative paths, hashes and lengths. `main-original-review.json` is a derivative review, not a new native receipt. Private custody additionally retains the three original artifact ZIPs and API/log-response metadata; that metadata is intentionally outside this public subset. No original is rewritten or resealed.
+
+Tested APP candidate774fed8f0894482b5f48004a4ef9a5fdab0bf21f contains two test deltas. Only the separately reviewed routing file was promoted to APP main198ee59d54750d23b211e80856b913d07357bfbe; the other53 tracked APP inputs match that integration base. The sibling prompt-forge job had no runner execution in attempt1 and remains an open task with its own retry. Neither whole-run failure nor routing success implies a prompt result. No production loader, corpus, live inference, capacity or full-suite claim.

@@ -1,0 +1,400 @@
+{
+  "attempt": 1,
+  "files": [
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-install/install-status.json",
+      "sha256": "afad83fb325b467b24746a2cd9f4ff2c52960b6de3414656f113ab582e120c56",
+      "size_bytes": 222
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-install/install.log",
+      "sha256": "bcf179d49a44e23471ba3180b8ee67f7ce84f74c57e866ebcb3172d395efd5b4",
+      "size_bytes": 5044
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/context.json",
+      "sha256": "dc510ef7c9173f23c3a7103d57420d6847f85f8dc243aca867a3d7d1c8f9ad2a",
+      "size_bytes": 9280
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/command.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/execution-request.json",
+      "sha256": "e5c264945d6f5578c29230173279ec18e89115896b362ac57dbf0e5bb880dc49",
+      "size_bytes": 17358
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/original-junit.xml",
+      "sha256": "c3efc7e546b0c6c393b72ebac7273e7740d6b698918935924934d02229e985b0",
+      "size_bytes": 14370
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-001.bin",
+      "sha256": "c60801ec492ae7ecfbcb494e12d76b045f0964ef7cb458f5921c5da3ab237f76",
+      "size_bytes": 43002
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-002.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-003.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-004.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-005.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size_bytes": 5909
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-006.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size_bytes": 10240
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-007.bin",
+      "sha256": "bcf179d49a44e23471ba3180b8ee67f7ce84f74c57e866ebcb3172d395efd5b4",
+      "size_bytes": 5044
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-008.bin",
+      "sha256": "afad83fb325b467b24746a2cd9f4ff2c52960b6de3414656f113ab582e120c56",
+      "size_bytes": 222
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-009.bin",
+      "sha256": "dc510ef7c9173f23c3a7103d57420d6847f85f8dc243aca867a3d7d1c8f9ad2a",
+      "size_bytes": 9280
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-010.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-011.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-012.bin",
+      "sha256": "b15105046ae8a52098f1d1db7b6bdf6b116fd881a4760e843279ade01f2a1480",
+      "size_bytes": 63902
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-013.bin",
+      "sha256": "12e4a92989b16d4cba71ae25ae1ed7a80d9213ff6f090e211ddebf88c78718fa",
+      "size_bytes": 7598
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-014.bin",
+      "sha256": "0725bcd494cf7889602506c75d0121da388964789c29b63adf7a9bcb3f71b539",
+      "size_bytes": 67074
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-015.bin",
+      "sha256": "9286132f29f20e3b4ed1f26533d68ba3c427269fbf96e8f7da8bd9ca12d6f2bc",
+      "size_bytes": 61248
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-016.bin",
+      "sha256": "08f515e6d670f252a7c81cbc09124c3ca5ef7adc2eef7f2383bb62239ff1f19b",
+      "size_bytes": 11964
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-017.bin",
+      "sha256": "8bac7003785e49f6ad3834987797e88d961cda60530a74743048b83c5fbffd59",
+      "size_bytes": 27175
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-018.bin",
+      "sha256": "2714ee4e1f405463aad85a8cf4ca290996ebc256ad42c9335489292d89c7ebf9",
+      "size_bytes": 34405
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-019.bin",
+      "sha256": "1b5887cc9369ad2b7c3584b6eef7d64d28b3dbf0dd146eeab7c653852e4c01d9",
+      "size_bytes": 24066
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-020.bin",
+      "sha256": "a6f6b42d38485395e2015e7f4c665de221115a6c8eb9023b5068b89fad720fda",
+      "size_bytes": 5325
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-021.bin",
+      "sha256": "6510f0c9d1ed6134561deaa54dbc8385c1f06661e38649a986ab8ca7cc68f720",
+      "size_bytes": 10104
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-022.bin",
+      "sha256": "584429dc348b23f23c7d0355a2aa3fd16d840763a4b80115cd9916c4026235af",
+      "size_bytes": 50559
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-023.bin",
+      "sha256": "129cfd0e94f4a9875c92874f5a7b68b086e9eed56ad8fae4ac459dbfba24b01a",
+      "size_bytes": 12231
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-024.bin",
+      "sha256": "1341623a27dde7e2b23aaa35fba82dc2f5826122b0a1d4eaaed37c67ea7d8322",
+      "size_bytes": 54115
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-025.bin",
+      "sha256": "d0107014d65c7a9aa3f9a77737302cf025fffc977d51a38d6fd3da496e8e8e16",
+      "size_bytes": 29482
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-026.bin",
+      "sha256": "b18b6db01632912601ea878879aff98225fafb3ea8ff9e721004eba6bdee2af6",
+      "size_bytes": 3320
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-027.bin",
+      "sha256": "04cca8359b78d062f79fa1d4cb8224800bb6da1399d1a8a98469ac003b286994",
+      "size_bytes": 14898
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-028.bin",
+      "sha256": "b62785ce0cc4507ed91d34139874cbd0da93cf1714c8e393e1bcef3277e1b144",
+      "size_bytes": 416
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-029.bin",
+      "sha256": "b0009a7f2b11b5b4dbf33826bc72fb4535a98bb4a33d934b3e21afa0d757e900",
+      "size_bytes": 17786
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-030.bin",
+      "sha256": "866e5ce04b158089202aa28fabff92336bfd5bd105c033529a4f50400ced6a2a",
+      "size_bytes": 17812
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-031.bin",
+      "sha256": "f015ca8e8a5cab370eedd5a6d9e2463f7c240c7eb54e8d4eceb2a3667354cbcb",
+      "size_bytes": 44091
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-032.bin",
+      "sha256": "3829d6ca8bda54e169af51d96047371126af858188e465cede02ce854f34db56",
+      "size_bytes": 21839
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-033.bin",
+      "sha256": "f19a580ae3135f11e91d8aedb2163ad6aee647cad453ee75a68158c10a4a51d1",
+      "size_bytes": 2270
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-034.bin",
+      "sha256": "7c03be638e2737fd3fab0b3d6121b957e644c1c3a83807f07b4c5c4d71e6d648",
+      "size_bytes": 8364
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-035.bin",
+      "sha256": "65f0df9671abaa98761521d6a3d692e91d45c6fc31bb13577f56c19663b36f11",
+      "size_bytes": 5720
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-036.bin",
+      "sha256": "380aed0f4e9b5b289af7b552552feeae9a9c697add4771f66a6d2892c14a4083",
+      "size_bytes": 17358
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-037.bin",
+      "sha256": "82ff627ca7a8516d4dd7360173928576057314fc435a8c9b9d96d2d4a801d8f7",
+      "size_bytes": 5820
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-038.bin",
+      "sha256": "da17110e685de14d355e7f10fa3b30982a3f004cf5db97978128bdebba5ef88d",
+      "size_bytes": 6510
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-039.bin",
+      "sha256": "1c7b290824ce4c4c1a18e721afac6e6b99b97fe8d06f72ef1758c83d9ebb17b9",
+      "size_bytes": 16122
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-040.bin",
+      "sha256": "b89166516ea8b1a61ec99b5bf409cab05ac8e22a7901a59ae99c9a3b381ba48a",
+      "size_bytes": 4226
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-041.bin",
+      "sha256": "6d85659fcc5621af3c491311f4478acb74f7310367797c7ff553200b2b50a107",
+      "size_bytes": 4131
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-042.bin",
+      "sha256": "0ca9176f25e3137f695bf52a2710d8be531f235229a70da7f69b0cba7a232eec",
+      "size_bytes": 144183
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-043.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-044.bin",
+      "sha256": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa",
+      "size_bytes": 3904
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-045.bin",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c",
+      "size_bytes": 6706
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-046.bin",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f",
+      "size_bytes": 14483
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-047.bin",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68",
+      "size_bytes": 7883
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-048.bin",
+      "sha256": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e",
+      "size_bytes": 11966
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-049.bin",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6",
+      "size_bytes": 5839
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-050.bin",
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26",
+      "size_bytes": 11863
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-051.bin",
+      "sha256": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d",
+      "size_bytes": 29215
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-052.bin",
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
+      "size_bytes": 30706
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-053.bin",
+      "sha256": "408f10be964705638562ec9a6d0e1cd56b26ac849fdb964e8bac0c9a7fe4be61",
+      "size_bytes": 31024
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-054.bin",
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4",
+      "size_bytes": 18893
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-055.bin",
+      "sha256": "c17fce700487390e9ccaaf207015549eeab198841d53c934e9574d3d4ea2af3d",
+      "size_bytes": 4226
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-056.bin",
+      "sha256": "fd73fd8d4723cb05f27576b375a4f4a1a32e524cae3a9451b60f2e8cc2c9de5d",
+      "size_bytes": 60062
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-057.bin",
+      "sha256": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
+      "size_bytes": 21770
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-058.bin",
+      "sha256": "a8e374e95679301566965bec15029a9134e3a0f53961a7c41dbbb1ba5b189dde",
+      "size_bytes": 34401
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-059.bin",
+      "sha256": "b738980f5258f711f647235450762fa8320b35bcc7cd75c22541c58e52111fb5",
+      "size_bytes": 40611
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-060.bin",
+      "sha256": "987e5d37aee70a387219e2f4662e40aa350a738fdc77307d9a4597f93cf22146",
+      "size_bytes": 97412
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-061.bin",
+      "sha256": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
+      "size_bytes": 20938
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-062.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-063.bin",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+      "size_bytes": 6832
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/read-064.bin",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "size_bytes": 1099589
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/native/receipt.json",
+      "sha256": "06fcc8fed77e231d01e71e42de20f9a1705b69415c2550f144bd4fb0d502b1ed",
+      "size_bytes": 49540
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/original-pytest.xml",
+      "sha256": "c3efc7e546b0c6c393b72ebac7273e7740d6b698918935924934d02229e985b0",
+      "size_bytes": 14370
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/pytest.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-native/pytest.stdout",
+      "sha256": "603662ac9e6e00e527c238ea77ea4523b4c24992e43b45c8b4406fefc24de917",
+      "size_bytes": 1409
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-postcheck/postcheck.json",
+      "sha256": "6a78552326945c0005256e0bcb0d6b600d915c98b41984c973e623d603ea5f95",
+      "size_bytes": 9498
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-postcheck/postcheck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "artifacts/ni57-58-37369215336-1-routing-pool-postcheck/postcheck.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    }
+  ],
+  "job_scope": "routing-pool",
+  "original_extracted_file_count": 78,
+  "private_custody_manifest_sha256": "6a9fe635952788e058304b15ba11298cc00092f6a279182f58b115375f5aa4b0",
+  "run_id": 37369215336,
+  "schema": "ni05.public-original-subset.v1"
+}

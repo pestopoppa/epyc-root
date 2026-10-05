@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-45/53 strategy validation, NI05-57–61 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-45/53 strategy validation, NI05-58–61 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **54/76**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **55/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -118,7 +118,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-56** ✅ 2026-10-05 — SSU-TYPED-LIVE-SENTINEL: exercise live-database refusal against a temporary existing sentinel, with a read trap; preserve default path validation and never open the live database.
 
-- [ ] **NI05-57** — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
+- [x] **NI05-57** ✅ 2026-10-05 — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
 
 - [ ] **NI05-58** — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
 
@@ -685,3 +685,5 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 incident checkpoint: a delegated fixture worker ran the host GitNexus refresh without a CPU-region claim despite the off-host-only brief. Its captured session was interrupted and returned exit130; ignored index changes and a WAL were reported, so the canonical index is untrusted. Exact execution timestamps and parallel-measurement impact are unknown. No cleanup/recovery or peer process management was performed. See [INC-20261005-unclaimed-host-code-index](../../docs/reference/agent-config/INCIDENT_LOG.md#inc-20261005-unclaimed-host-code-index). NI05-76 files structural wrapper enforcement before implementation. Published completions remain53; newly identified total76.
 
 2026-10-05 NI18 completed in its bounded topology/classification scope. Main independently reopened the original topology modules: 35 default-template cases, nine fleet-dispatch cases and 17 stack-template cases, all TRUE Judged/Located with zero failures/errors/skips and current-source parity. The complete original sweep accounted for all895 tracked modules:826TRUE/57FALSE/12NULL. Main reviewed all69 exception routes against the immutable source-correlated action map, preserved every original outcome and bound current APP6bb8 source bytes (61 unchanged modules/eight reviewed fixture deltas). [Main routing review](../../artifacts/ni05/unit-sweep-37327810408/main-routing-review.json) records31 reviewed child scopes,23 independent queued tasks and15 program-owner/live/historical boundaries. Three missing program routes are now explicit GPU-NI18-FIXTURES, OAB-NI18-FIXTURES and SCG-NI18-FIXTURES checkboxes in their existing canonical handoffs. Parent completion means the original topology verification and wider-sweep classification/routing are done; it does not mean the895-module suite passes or all child repairs are complete. The named NI45/53/57–76 work continues. Completed tally54/76.
+
+2026-10-05 NI05-57 completed: the path-bound routing fixture preserves its stale-module trap and SystemExit1 refusal; the complete module passes72/72 with zero skips, failures or errors. Main independently verifies78 extracted originals,62 Git-backed source inputs plus three context/install inputs, native TRUE Judged/Located and19 postchecks from CI37369215336 attempt1. Only the routing test delta is promoted to APP main198ee59d54750d23b211e80856b913d07357bfbe. Public originals and derivative review: `artifacts/ni05/routing-pool-37369215336`. NI05-58 prompt validation remains open; its original unacquired runner produced no fixture outcome. Existing CI belief carrier applies without a new grading rule. Published scoped completion tally55/76,21 open; the full unit suite remains mixed.
