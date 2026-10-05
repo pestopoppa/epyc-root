@@ -1702,14 +1702,14 @@ Codex's sign-off before it lands** (shared files).
   numbers in its next revision, with the `PRODUCER_SHA256` bump. Replace root's fixture with the producer's real
   `summarize_cell` output. The research test `test_the_producers_native_summary_shape_is_ingestable` is a strict
   xfail that flips when this is fixed. Blocks VB-KVQ-V10-INGEST. Needs Codex coordination (root adapter).
-- [ ] **VB-APPLICABILITY — persist an applicability scope in the ledger.** `claim_tuple.to_frames()` drops
+- [x] **VB-APPLICABILITY — persist an applicability scope in the ledger.** `claim_tuple.to_frames()` drops
   `ClaimTuple.extra`, where adapters keep model/quant/backend/device, so a reader cannot match a claim to a target
   from the ledger alone. Add an optional `ClaimTuple.applicability` (`{model_file, quant, backend, device,
   context_tokens, kernel}`), filled from native fields only and emitted as a CONDITIONAL key in the
   `source_observed` assertion, so frames without it stay byte-identical. Add `run_id` + `run_expected_keys` on the
   same key, so both planners apply one completeness rule. Until it lands, the AutoKernel reader matches through a
   declared per-source scope table with a producer pin per entry. Needs Codex coordination (shared contract).
-- [ ] **VB-INGEST-IDEMPOTENT — make a repeated ingest a no-op.** `ingest_sources.ingest()` appends every projected
+- [x] **VB-INGEST-IDEMPOTENT — make a repeated ingest a no-op.** `ingest_sources.ingest()` appends every projected
   frame, and frame ids include `created_at`, so a second ingest duplicates evidence. The AutoKernel post-sweep
   ingester guards this caller-side (deterministic `as_of` = the sidecar's `emitted_at`, a pre-check of the claim
   ids, refusal of partial ledger state, a run-dir lock). Add an `--only-new` mode (skip frames whose claim id
@@ -2430,3 +2430,11 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   and waived-lost outcomes as distinct caveats; never invent protocol, attestation or repetitions. Ordinary
   registry validation and its strict exit behavior remain independent of legacy-prose advisories.
   Owner: Codex NI05-13; scratch `/mnt/raid0/llm/worktrees/codex-ni-durability-20261005` and a separate root adapter lane.
+
+- [ ] **VB-CI-CONFORMANCE — capture original off-host selected-fixture conformance before artifact upload.**
+  NI05-15's leaf producer records exact command/cases/statuses, UTC, tested source SHA(s), allowlisted runner
+  context, explicit exclusions and original JUnit/log/source readset hashes. Project the exact native bounded
+  boolean proposition through the existing verifier class and `ClaimTuple.grade()`; counts remain descriptive.
+  Missing, inconsistent or entirely skipped cases stay diagnostics. No old-run backfill, protocol/trust
+  amendments, scientific attestation, inference, performance or promotion authority. Initial CI runs remain
+  ordinary validation evidence. Owner: Codex NI05-15; scratch `/mnt/raid0/llm/worktrees/codex-ni-ci-capture-20261005`.

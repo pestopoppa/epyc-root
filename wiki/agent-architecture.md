@@ -4990,3 +4990,21 @@ OAB-35 is verified: a regression test reproduces the crash on the old code.
 - [2026-09-30 ak-ds41-main progress](../progress/2026-09/2026-09-30-ak-ds41-main.md) — the C83 planner-gap verdict.
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35 root cause and fix, OAB-36.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the serving evidence behind D5–D8.
+
+
+## Incremental operational checkpoint — 2026-10-05
+
+File-backed `ingest --only-new` skips complete claim bundles with live evidence and refuses partial,
+damaged, divergent or wholly historical bundles before writing. It cannot revive retracted evidence.
+Optional native applicability scope is emitted only when present in `source_observed`; absent scope
+retains legacy frame bytes. Neither change alters the grading ladder.
+
+Promotion's default lease directory now derives from the repository git common directory, so two
+worktrees contend for the same lease. Explicit CLI and environment overrides preserve their priority.
+Off-host run `37273697465` executed 16 ingestion fixtures, 24 applicability fixtures, 106 carrier tests
+and three real-lock promotion fixtures successfully; these are code-validation results with no inference
+or production deployment claim. This is an incremental note, not a wiki compilation sweep.
+
+Sources: [ingestion progress](../progress/2026-10/2026-10-05-codex-ni-ingest.md),
+[applicability progress](../progress/2026-10/2026-10-05-codex-ni-applicability.md),
+[promotion progress](../progress/2026-10/2026-10-05-codex-ni-promote.md).

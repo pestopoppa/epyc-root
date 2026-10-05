@@ -1,0 +1,7 @@
+# VB-APPLICABILITY — 2026-10-05
+
+Added optional `ClaimTuple.applicability` at the end of the constructor contract. Native scope fields serialize conditionally in `source_observed`; absent scope retains byte-identical complete legacy frames and the legacy constructor's import dependencies. KVQ projects only fields actually recorded by its producer: arm context, kernel, run ID, and optional model path, device, and expected run keys. Malformed, nonfinite, or nonserializable declarations refuse. Producer pins, grading ladders, and fold weights are unchanged.
+
+Source candidate: `5fb860a3`. Main accepted NI05-09 after reviewing off-host CI run `37273697465`, source pin `23298f00`: **24/24 focused applicability tests and 106 ClaimTuple tests passed, zero failures or skips**, from `root-results/vidya.xml`. Validation includes independently reconstructed legacy frame bytes, scoped validator/fold compatibility, packaged/top-level constructors, omitted fields, and malformed native scope. The broader root suite's two durability source-registration failures and two KVQ nonfinite fixture failures are separate corrections; the broader result was 1,630 passed and 89 skipped.
+
+No inference, deployment, runtime mutation, or production write. Local test jobs remain CPU-claim queued; acceptance uses actual off-host execution. Only this task's checkbox changed. Index/wiki updates remain prepared text for the owning session.

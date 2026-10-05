@@ -30,25 +30,31 @@ is delegated, acceptance and publishing belong to Codex main. Each completed ite
 progress record and source-handoff checkbox update after review. Shared indices, wiki integration
 and promotion are serialized by main. No inference grants, production mutations or ratifications.
 
-**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`; integration lane:
+**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`, `/mnt/raid0/llm/worktrees/codex-ni05-*`; integration lane:
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
+Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
+host-dependent checks remain explicitly separate. Published completion tally: **3/16**. The remaining items keep their narrower source, fixture,
+and host-dependent acceptance boundaries explicit.
 
 - [ ] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
-- [ ] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
+- [x] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
 - [ ] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
 - [ ] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
 - [ ] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
 - [ ] **NI05-06** — HS-17: MCP timeout and progress contract.
-- [ ] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
+- [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
 - [ ] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
-- [ ] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
+- [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
 - [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
 - [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
 - [ ] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
+- [ ] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
+- [ ] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
+- [ ] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
 
-Follow-on pool: DCP-13a/b; DCP-10 offline scoring; HS-16; HS-OD-4/5/6; tool-use grader
+Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
 NIB2-80a/83; bounded static kernel preparation; KB fixture/pin preparation; existing-trace UTM
 integration; harness pin/card/source audit; typed-decision offline adapters and workflow plans.
@@ -460,3 +466,11 @@ Canonical sources (always verify status in these files first):
   - [ ] **NIB2-80a** (LOW) — the budget-bounded early-abort escalation still skips `_detect_role_cycle_impl` (A→B→A bouncing), which `_should_escalate` applies to every other site. Add the cycle check to the early-abort branch with a test.
 - [ ] **NIB2-82** (LOW) — `scripts/autopilot/baseline_authority_seed.py::_autopilot_running_pids` detects AutoPilot with `pgrep -af "autopilot.py start"` — a name-pattern read CLAUDE.md forbids. Replace with the read-only /proc cmdline scan used by the 2026-09-23 ratify script.
 - [ ] **NIB2-83** (MED) — after ETR-1 (era E17) `task_failed` rows score 0, and `task_failed` is the RESIDUAL class (any error `infra_failure_reason` does not recognise). Once post-E17 eval rows exist, histogram their error texts and move any platform-caused shape into `INFRA_ERROR_PATTERNS`/provenance classes, so an unrecognised infra error is not scored as an agent failure.
+
+### NI05-16 — explicit kernel path overrides
+
+- [ ] Honor explicit configured CPU/GPU binary paths without evaluating the production-store default first.
+  CI run `37275807626` collected no orchestrator tests because configuration import tried to discover the
+  absent host store despite explicit fixture overrides. Preserve store discovery when no override exists;
+  verify both branches with isolated configuration fixtures. No fabricated store, frozen-kernel edit or reload.
+  Owner: Codex config-override worker; tests execute off-host.

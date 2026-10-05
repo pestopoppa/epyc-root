@@ -1,0 +1,7 @@
+# VB-INGEST-IDEMPOTENT — 2026-10-05
+
+Implemented optional `ingest --only-new` for file-backed native sources. A repeated sidecar ingest skips whole bundles whose claim IDs already have live evidence, including canonical aliases. Default ingestion retains its existing append behavior. Duplicate input paths dedupe; divergent duplicate payloads, partial bundles, damaged ledgers, and complete historical bundles without live evidence refuse before any write. Historical retractions are never automatically revived. Direct internal Namespace callers remain compatible.
+
+Source candidate: `8216e5a1`. Main accepted NI05-02 after reviewing off-host CI run `37273697465`, source pin `23298f00`: **16/16 focused only-new tests passed, zero failures or skips**, extracted from `root-results/vidya.xml`. Tests cover repeat byte preservation, changed timestamps, duplicates, partial state, retractions, opposing live evidence, dry runs, and corruption. The broader root suite reported 1,630 passed, 89 skipped, four failures: two unrelated durability source-registration cases and two KVQ nonfinite fixture failures. Those failures are being corrected separately; they do not invalidate the focused result.
+
+No inference, runtime mutation, production write, or deployment. Host tests remain queued behind the required CPU claim; acceptance uses the actual off-host test execution. Only this task's checkbox changed. Index/wiki text is prepared for the owning session, with no index mutation or broad wiki compilation.
