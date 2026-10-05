@@ -1,0 +1,7 @@
+# NI18 full unit scan checkpoint
+
+Read-only derivative inventory copied unchanged from the original [run37327810408](https://github.com/pestopoppa/epyc-root/actions/runs/37327810408); this JSON is a metadata index, not a native receipt or a suite pass. Main independently reopened all895 original native receipts and verified all32 deterministic module manifests, every receipt hash and exact source/selection identity. Counts:826 conformant TRUE,57 FALSE,12 NULL;16,227 collected,15,719 passed,258 failures,68 errors,182 skips.
+
+Original owned artifact prefixes remain at `/mnt/raid0/llm/artifacts/ci/ni18-unit-sweep-37327810408/` and in the CI artifacts. The copied derivative SHA-256 is `adc3a0a6d6611726bb9a3dc4b48a4709f9ae926609bc02f8230bb41523ddc655`. Its label `reader-rejected-inconsistent-junit-counts` means refused JUnit summary/proposition; custody of that native receipt is accepted. Three JUnits are absent, not hash mismatches. All892 present JUnits match;891 comparable summary pairs match.
+
+NI18 stays open for cause classification and bounded repairs. The subsequent nine-module runner scratch-fixture rerun passed 282 cases with 30 skips in CI `37331885023`; the separate ordinary capacity guard passed 1/1. Original FALSE/NULL records remain unchanged. No inference, whole-unit conformance or production deployment claim. [Fullscan progress](../../../progress/2026-10/2026-10-05-ni18-fullscan-custody.md) and [scratch-fixture progress](../../../progress/2026-10/2026-10-05-ni18-tmp-fixture-phase.md).

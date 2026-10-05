@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **35/38**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **35/39**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -79,6 +79,8 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
 
 - [ ] **NI05-38** — DCP-10-SCORE-PREP: deterministic offline macro/path/span/post-pack scorer plus prospective immutable scored-report custody; full ContextBench benchmark remains separate.
+
+- [ ] **NI05-39** — SSU-FIXTURE-KVSLOTS: targeted pure launch-command fixtures with runner-only owned cache-directory preparation; preserve original failures and independent native captures.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -572,3 +574,7 @@ NI34/NI35 complete 2026-10-05: prospective private actual-index and named manage
 2026-10-05 reviewed source boundary: NI10 explicit optional `x_client_class` validates and forwards self-reported metadata with `caller_supplied:x_client_class` provenance; omitted fields remain absent. App source is published at `099dc1af69cf`. Original CI 37325396069 verifies 1/1 ordinary capacity refusal and 17/17 synthetic request-to-record controls. NI32 source59e adds 12/12 native/exact/proxy and tap/progress/checkpoint schema controls; original CI37326107920 is TRUE Judged/Located. The preceding 8/12 failed fixture expectation remains FALSE unchanged; missing-ledger custody correctly refuses to report OK (SC73). Neither fixture result supplies live gap data. HSF-3 remains open pending ≥50 properly keyed/classed sessions per reported basis in each independent window; no percentile, client brand, TTL or inferred enqueue. Delivery tally **34/36**.
 
 2026-10-05 NI36/DCP-13a,b source boundary accepted: remove unreachable fetch instruction, keep compact loop telemetry and return the separately retained full report to the user on cache hits; legacy summary-only entries miss the report-required path. Original CI37327525343 reopens TRUE Judged/Located for 57/57 complete cache/architect cases and 1/1 separate ordinary capacity refusal, zero skips/failures/errors. Ordinary five-source candidate504 is promoted as appdb38737d; helper/workflow stay candidates. No inference or live-cache performance claim; inference-dependent DCP-13 arms stay open. NI37 timeout reporting is newly filed; tally **35/37**.
+
+2026-10-05 NI18 fullscan checkpoint accepted: all895 tracked unit modules have independently reopened original native receipts and deterministic selection/source/hash accounting across32 shards. Outcomes826TRUE57FALSE12NULL;16,227 collected/15,719 passed/258 failures/68 errors/182 skipped. This is capture/accounting acceptance, never whole-suite conformance. Originals remain unchanged in CI37327810408 and owned custody; [derivative inventory](../../artifacts/ni05/unit-sweep-37327810408/README.md) records the distinction. A prospective nine-module fixture rerun prepares only missing owned0700 runner scratch; parentNI18/SSU-F13 remains open for classification/repairs. Running tally **35/38**.
+
+NI18 scratch-fixture phase independently accepted from original CI37331885023: all nine unchanged test modules reopen TRUE Judged/Located;312 collected282passed30skipped0fail/error, separate ordinary guard1/1. Runner-only owned0700 scratch preparation resolves the observed path failures while preserving fence assertions. Earlier895-module FALSE/NULL originals are unchanged; this is no whole-suite pass. NI39 cache-fixture follow-on is newly filed; tally **35/39**, NI18/37/38/39 continue.
