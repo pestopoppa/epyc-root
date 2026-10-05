@@ -1,0 +1,18 @@
+{
+  "schema": "epyc.ci.fixture_context.v1",
+  "scope": "verify_ggml_linkage.sh vacuity behavior only",
+  "planned_cases": {
+    "existing_stubbed_ldd_fixtures": 4,
+    "actual_system_binary_control": {
+      "case": "test_real_non_ggml_binary_is_rejected_as_vacuous",
+      "binary": "/bin/true",
+      "expected": "exit 2 with FAIL: VACUOUS CHECK and zero libggml-base.so sightings"
+    }
+  },
+  "exclusions": [
+    "production kernel or kernel-store execution",
+    "inference",
+    "performance measurement",
+    "production linkage result"
+  ]
+}

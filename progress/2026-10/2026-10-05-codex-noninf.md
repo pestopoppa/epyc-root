@@ -282,3 +282,30 @@ NI28 finds the canonical-linkage fix already landed as research `58ca325f`; curr
 retains the exact canonical comparison and vacuity refusal. Five-fixture acceptance is being
 prepared without duplicate source repair. Fresh actual-store verification remains separate
 and requires a CPU claim and prospective write-side receipt (VB-LINKAGE-GUARD filed now).
+
+
+## Recovery prefixes accepted and CPU leaf defaults published
+
+Recovery `37299780302` immediately retains two original phase prefixes. Main independently
+reopens each seal and all 923 declared readset hashes: ordinary guards 2/2, CPU leaves 13/13
+with zero failed/error/skipped cases. App `4244e72b2aa8` publishes three reviewed commits over
+four files, byte-identical to tested candidate `def18591` for those files. Test-only broad
+bootstrap and GPU-negative module remain candidate infrastructure. NI26 closes; native API
+orders, broad classification and full recovery recipe remain separate pending boundaries.
+
+Research `2c5d60f515ef` publishes the real `/bin/true` vacuity fixture. Original `37299711542`
+passes all five linkage cases, with seven source/control reads and actual empty generated log
+hashed and retained. Main independently reopens every bound byte. NI28 actual-host acceptance
+is still separate and queued behind prospective dependency-receipt preparation and CPU claim.
+
+New NI30 carries verified NIB2-80a early-abort admission omissions through active-mode review
+and actual route fixtures. Shared running tally becomes **23/31**. Original linkage bundle is preserved in `artifacts/ni05/ggml-linkage-37299711542/`. Recovery
+originals remain unchanged at `/mnt/raid0/llm/artifacts/ci/ni05-recovery-for-main-37299780302/`;
+its root directory currently publishes custody documentation only.
+
+
+The enabled pre-commit privacy hook blocks recovery source snapshots of synthetic redaction
+credentials and a public book ISBN. Main retains every original byte and files NI31 for a
+narrow source/request/readset-bound fixture correction with genuine-secret negative controls.
+No gate bypass, blanket artifact exemption, fixture relocation exception, redaction or reseal
+is used. Full public native recovery custody remains partial pending that correction.

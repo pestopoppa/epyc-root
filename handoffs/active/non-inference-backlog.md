@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **22/29**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **23/31**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -62,10 +62,12 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
 - [x] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
 - [ ] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
-- [ ] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
+- [x] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
 - [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
 - [ ] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
 - [ ] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
+- [ ] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
+- [ ] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -510,7 +512,10 @@ Canonical sources (always verify status in these files first):
 
 ## 2026-10-05 supplement — offline CPU CLI overrides
 
-- [ ] **NI-OFFLINE-CPU-CLI — defer default kernel-store discovery in two leaf commands.**
+- [x] **NI-OFFLINE-CPU-CLI — defer default kernel-store discovery in two leaf commands.**
+  ✅ 2026-10-05 — app `4244e72b2aa8` publishes both lazy-default repairs and their focused
+  fixtures. Original recovery `37299780302` preserves 13/13 CPU cases and a separate 2/2
+  ordinary guard phase; main reopens native receipts and every bound original byte.
   `scripts/benchmark/md_self_draft_ab.py` and `scripts/corpus/build_static_ngram_cache.py`
   currently resolve CPU-store defaults at import, before explicit CLI/config overrides can apply.
   Resolve defaults only when no override exists; preserve strict failure for missing defaults.
@@ -528,3 +533,23 @@ Canonical sources (always verify status in these files first):
   the captured argv, and keep partial counts distinct from whole-scope completion. Replace
   unavailable runner `rg` enumeration with fail-closed stdlib source-readset enumeration.
   No source grading or producer-schema change; candidate recipe and original artifacts only.
+
+
+## 2026-10-05 supplement — immediate escalation admission
+
+NI05-30 / existing NIB2-80a: read-only current source review finds five legacy immediate
+early-abort branches skip the shared role-cycle guard. Five analogous LangGraph branches
+also omit an explicit escalation budget. Verify active graph selection and shared admission
+semantics before editing; exercise actual early-abort routing with cycle, budget, and first-abort
+controls. This is offline source/fixture work; no route activation, live requests or reload.
+
+
+## 2026-10-05 supplement — native source-fixture custody
+
+- [ ] **NI-CI-FIXTURE-CUSTODY — retain original synthetic source fixtures through the privacy gate.**
+  NI05-31: recovery snapshots include unchanged public redactor fake-credential fixtures and
+  search fixtures carrying a book ISBN. The gate blocks those copied inputs. Prepare a narrow
+  exact-byte/source/request/readset-bound correction with genuine-secret/edit negative controls;
+  never redact or reseal native records, bypass hooks, exempt whole artifact trees, relocate
+  fixtures to hide from scanning, or widen vendor-placeholder authority. Original native
+  bundles remain on RAID0 and immutable phase artifacts; public custody is partial until fixed.

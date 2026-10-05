@@ -1327,3 +1327,18 @@ A later wide unit run can outlive its CI budget, so completed native phases need
 immutable uploads. Ninth run `37295291738` lost its receipts before final upload; its logs
 remain ordinary evidence. NI29 files per-phase retention and an explicit interrupt-bound
 wide attempt, preserving partial results without implying whole-unit completion.
+
+
+### CPU command overrides and linkage vacuity acceptance (2026-10-05)
+
+App `4244e72b2aa8` defers two CPU leaf defaults until no explicit path was supplied. Explicit
+CLI/configuration and help now work without a production store; missing defaults still fail
+strictly. Thirteen original CPU fixtures plus two separate ordinary guards pass in recovery
+`37299780302`; [custody note](../artifacts/ni05/recovery-37299780302/README.md) identifies the unchanged native
+originals on RAID0 and immutable phase artifacts. Full public snapshot custody awaits NI31
+privacy-gate fixture correction. No shared kernel-path provider changed.
+
+Research `2c5d60f515ef` adds actual `/bin/true` rejection to the four canonical-linkage
+fixtures. All five pass in original `37299711542`; [original bundle](../artifacts/ni05/ggml-linkage-37299711542/README.md)
+retains their custody. Actual production-store linkage acceptance remains a separate read-only
+dependency receipt and CPU-claim boundary; static linkage cannot establish dlopen residency.
