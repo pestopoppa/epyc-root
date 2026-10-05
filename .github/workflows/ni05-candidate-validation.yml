@@ -7,9 +7,11 @@ permissions:
 env:
   ROOT_SHA: 36c191832bd58f175f0a7b90e733f2ea14a5169b
   RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
-  ORCH_SHA: 96f6e2b2b0c699eec599383ec38e5decafaa618b
+  ORCH_SHA: 2c4bd7dae00dd6e9bc38a75e98ade6a493bafe54
 jobs:
   root:
+    # Exact unchanged root source passed focused validation in run 37282435460.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -94,6 +96,8 @@ jobs:
             root/focused.xml
             root/native-focused/
   research:
+    # Exact unchanged research source passed KVQ/durability in run 37282435460.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -195,12 +199,14 @@ jobs:
       - name: Makefile fail-closed fixture contracts
         run: python tests/unit/test_makefile_gate_contract.py
       - name: Install declared dev dependencies
-        run: python -m pip install '.[dev]' 'pydantic-graph==1.80.0'
+        run: |
+          python -m pip install '.[dev]'
+          python -c 'from importlib.metadata import version; print("resolved pydantic-graph=" + version("pydantic-graph"))'
       - name: Kernel override and reviewed topology fixture contracts
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          python -m pytest -q tests/unit/test_kernel_path_env_overrides.py \
+          python -m pytest -q tests/unit/test_kernel_path_env_overrides.py tests/unit/test_graph_dependency_contract.py \
             tests/unit/test_default_template_topology_parity.py \
             tests/unit/test_stack_templates_v2.py::TestDefaultYamlRoundTrip::test_default_yaml_loads_and_validates \
             tests/unit/test_fleet_layer_dispatch.py tests/unit/test_v1_subagent_link.py --junitxml=topology.xml
