@@ -15,7 +15,7 @@ jobs:
       # Immutable reviewed sources: image recipe, native producer, and tested repos.
       IMAGE_ROOT_SHA: 7b48473d2a80b5ff1ddf58251d692ab7f50fc4ea
       CI_SOURCE_SHA: c35f35ce2ad825b5f49efc8391d41d9766fde593
-      ORCHESTRATOR_SHA: 96f6e2b2b0c699eec599383ec38e5decafaa618b
+      ORCHESTRATOR_SHA: 3fbdea2dea738db3d38c078b808c8d5bf20fa81f
       RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
     steps:
       - name: Checkout validation workflow and fixture
