@@ -1,0 +1,19 @@
+{
+  "schema": "ni18.derivative_identity_review.v1",
+  "map_sha256": "762216ac685cd3cde86a17443263b38545bfdd06c39e3234436da7eebac6dc4c",
+  "review_scope": "original receipt, source and immutable pin identity only; follow-on implementation hypotheses remain proposals",
+  "reviewed_rows": 69,
+  "outcomes": {
+    "FALSE": 57,
+    "NULL": 12
+  },
+  "app_655_source_parity": 69,
+  "app_648_source_parity": 65,
+  "changed_accepted_fixture_modules": [
+    "tests/unit/test_gpu_window_parked_role.py",
+    "tests/unit/test_oab3_quiescence_witness.py",
+    "tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py",
+    "tests/unit/test_td21_19_vl_structured_repair.py"
+  ],
+  "parent_remains_open": true
+}

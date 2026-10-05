@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **49/60**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **49/75**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -123,6 +123,36 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup.
 
 - [ ] **NI05-60** — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
+
+- [ ] **NI05-61** — SSU-ONNX-THREAD-CONTRACT: Resolve topology-dependent thread defaults against actual source/configuration, then bind deterministic small-host and production-shaped fixture controls; do not change expected values solely to pass.
+
+- [ ] **NI05-62** — SSU-KV-PURE-ARITHMETIC: Review a pure KV formula boundary for the two modules refused by import-time capacity validation. Require fresh impact/manual callers before production refactoring; keep actual serving-capacity refusal and avoid synthetic RAM.
+
+- [ ] **NI05-63** — SSU-ARGV-CAPACITY-CHILD: Investigate the two foreign-interpreter argv-import cases with an owned temporary topology that genuinely fits actual runner RAM. Preserve the import-time capacity guard and original traceback; no fake RAM or source-guard move.
+
+- [ ] **NI05-64** — SSU-ARCHIVE-INTERRUPTED-ATTRIBUTION: Prospectively capture test_design_archive with finite verbose node attribution and immediate original-prefix retention; preserve the original missing-JUnit NULL and diagnose the exact interrupted node.
+
+- [ ] **NI05-65** — SSU-QSCORER-INTERRUPTED-ATTRIBUTION: Prospectively capture test_q_scorer with finite verbose node attribution and immediate original-prefix retention. Preserve censored nodes and original NULL; mock or local code paths only, no inference service.
+
+- [ ] **NI05-66** — SSU-IMPORT-LOCK-INTERRUPTED-ATTRIBUTION: Prospectively capture test_inference_lock_concurrent_import with finite child/node bounds and private fixture state. Preserve original NULL, shared host locks and peer processes; review actual child behavior before execution.
+
+- [ ] **NI05-67** — SSU-JUNIT-COUNT-ATTRIBUTION: Inspect the six-pass command versus twelve-test/six-node JUnit inconsistency in test_makefile_gate_contract, then capture fresh native originals. Retain strict count refusal and never rewrite or reseal the historical XML.
+
+- [ ] **NI05-68** — SSU-SYSTEM-CARD-PATH-FIXTURES: Review the two pure missing-priors fallback cases in test_autopilot_system_card and bind explicit owned path fixtures before capture. Preserve renderer/fallback assertions; no real launch or kernel-store claim.
+
+- [ ] **NI05-69** — SSU-EXTERNAL-DRAFTER-ARGV-FIXTURES: Review five failed external-drafter command/compiler cases for exact resolver seams and no-execution proof, then capture synthetic argv fixtures. Separate any genuine runtime assertion; no external drafter/server launch.
+
+- [ ] **NI05-70** — SSU-STACK-PRIORS-COMPILER-FIXTURES: Review sixteen failed stack-priors compiler cases and bind owned registry/backend path fixtures only for pure compilation. Preserve source-policy assertions and separate real binary/linkage evidence.
+
+- [ ] **NI05-71** — SSU-NUMA-READER-PATH-FIXTURES: Resolve six failed NUMA reader-agreement cases as path metadata versus actual kernel evidence, then capture only the proven pure fixture scope. Never substitute a fake production store or imply residency.
+
+- [ ] **NI05-72** — SSU-SPEECH-ENV-COMPOSITION: Split seven speech environment/path composition failures from two actual ggml loader cases. Use declared temporary paths only for composition, retain the frozen-service loader requirement and each service-specific library policy.
+
+- [ ] **NI05-73** — SSU-LCB-SYNTHETIC-ORACLE: Separate nine scratch failures and three synthetic-oracle assertions in test_livecodebench_oracle from the cached-JSONL helper/skips. Review finite offline fixtures and preserve dataset boundaries; no upstream dataset read or acquisition.
+
+- [ ] **NI05-74** — SSU-E8-T2-ALGORITHM-FIXTURE: Separate local T2 question-vector/refusal logic from the omitted research full-pool property in test_e8_quality_baseline_reseed. Review a tiny source-bound synthetic fixture only for algorithm behavior; preserve actual corpus and human-authorization requirements.
+
+- [ ] **NI05-75** — SSU-EXECUTOR-REGISTRY-FALLBACK: Trace and repair the early registry-unavailable fallback in scripts/lib/executor.py:get_binary_paths, which returns an in-tree build/bin literal before the delegated kernel-store override. Review fresh impact and exact existing loader-patch callers first; retain explicit binary overrides and missing-store refusal. Test with unavailable registry and an owned absent override, never launch or modify a kernel.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -637,3 +667,7 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 NI46–50 accepted: originalCI37352568892 passes101/101 whole-module cases (8vision/10quiescence/48requestschema/13pairwiseplanner/22parkedrole), zero skips/failures/errors. Main independently reopens allfive TRUE Judged/Located receipts, verifies31Git-boundsource snapshots+4context/install originals per capture and five absent-path/unchanged-lock postchecks. Exact four fixture files and one schema-description file are published to appmain64843e13642930895bb2e52694cd444de5892903; runtime policies and original FALSE sweep outcomes remain unchanged. NI45 still requires fresh source analysis and prospective evidence. NI53 newly filed before execution for active strategy-report original boolean integrity custody, with descriptive counts and no new ladder/method/quality claim. Tally **49/53**; NI18/45/52/53 continue. No inference, liveKFD/GPU/hold/store access or API reload.
 
 2026-10-05 NI18 source review unlocks seven independent fixture tasks NI54–60: mocked executor validation, declared placement topology/CLI leaf, live-DB sentinel, path-bound routing pool, injected leakage vocabulary, owned REPL/scorer scratch and local deterministic embeddings. Main reopens all69 original exception receipts/source snapshots (57FALSE12NULL); originals remain unchanged. APP65599ff retains69/69 source parity; current64843 retains65/69 with exactly four accepted NI46/47/49/50 fixture changes. These are queued proposals, not accepted repairs. Existing native CI carrier/source wiring is extended before captures. Delivery tally49/60; main owns shared metadata and publication.
+
+2026-10-05 reviewed NI18 action-map checkpoint: derivative exception-action-map.json is copied byte-for-byte (SHA762216ac685cd3cde86a17443263b38545bfdd06c39e3234436da7eebac6dc4c), with separate main identity review. All69 original receipts/source snapshots reopen;57FALSE12NULL remain unchanged, and implementation hypotheses remain proposals. Independent investigations NI61–74 are now filed for thread defaults, pure KV arithmetic, real-RAM child fixtures, three interrupted modules, JUnit count attribution, four path-only fixture groups, speech env composition, synthetic LCB and T2 logic. Peer-owned GPU/AutoKernel/8083 and genuine live/corpus/human-authorization scopes remain routed to their existing owners. Main source review and prospective evidence precede each repair; no production guard bypass or all-suite pass. Delivery tally49/74; NI18 remains open pending final disposition review.
+
+2026-10-05 source review additionally files NI75 before repair: executor.py has an early registry-load exception fallback returning the old in-tree build/bin path; executor_paths.py normally applies the kernel-store override, but that branch never reaches it. Review impact/callers and bounded fail-closed fixture before source changes. No actual launch, production regression or kernel modification is claimed. Queue tally49/75.
