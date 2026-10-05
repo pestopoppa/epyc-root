@@ -19,5 +19,23 @@ validation log are retained under
 
 This is synthetic off-host validation only. It does not establish the current
 production kernel-store state. A separate bounded read-only production capture
-has been prepared for main review using an immutable checkout of `79622da`; no
-production store capture, host test, build, inference or reload has run.
+was run using an immutable checkout of `79622da`; no host unit-test suite, build, inference
+or reload was run. The original producer command exited 0 and recorded seven
+linkage checks (CPU launch; GPU launch and ambient; STT launch and ambient; TTS
+launch and ambient), each with exit 0 and zero non-OK libraries. The native
+reader independently returned valid with no diagnostics. The receipt records
+only dependency verification; it does not establish inference, residency,
+performance, or a new `ClaimTuple`.
+
+The unmodified receipt is under
+`/mnt/raid0/llm/artifacts/ni28-store-capture-20261005.eQEysE/receipts/20261005T130426Z-12e23f9cdff4/`.
+Native receipt seal SHA-256 is
+`6ee3b6f98e040cc2608381e823aab08ed3dd882a803109435c4673cc04550053`, capture
+SHA-256 is
+`ff810a42d6bdc6f7c523812446b7db8b954fe8ae6f1399e836741d678805b07f`, and
+request SHA-256 is
+`9e8ff12a87c5272488576ec9fde0bd1da30a5de29f819b4d8aa9466e6033d49f`. The full
+original artifact archive remains unchanged under
+`/mnt/raid0/llm/artifacts/ni28-store-capture-20261005.eQEysE/`.
+
+The SHA-256 of the complete original receipt file is `976dd1d36e1ff0ca3d517083ea3e8fe779582923244d3bf00749f4fb9cccf081`. All four captured `link_path` values use `kernels/production/`; the recorded build directories are their canonical resolved targets.
