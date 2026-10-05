@@ -30,6 +30,7 @@ jobs:
       ORCHESTRATOR_MOCK_MODE: 'true'
       MODULE_ID: ${{ matrix.module_id }}
       MODULE_PATH: ${{ matrix.module_path }}
+      APP_CHECKOUT: /mnt/raid0/llm/ni43-app-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
     steps:
       - name: Create and attest disposable filesystem roots
         run: |
@@ -41,6 +42,17 @@ jobs:
           test "$(stat -c '%u' /mnt/raid0/llm/tmp)" = "$(id -u)"
           test "$(stat -c '%g' /mnt/raid0/llm/tmp)" = "$(id -g)"
           test -z "$(find /mnt/raid0/llm/tmp -mindepth 1 -maxdepth 1 -print -quit)"
+          test -d /mnt/raid0/llm
+          test ! -L /mnt/raid0/llm
+          test ! -e "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0700 "$APP_CHECKOUT"
+          test -d "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+          test -z "$(find "$APP_CHECKOUT" -mindepth 1 -maxdepth 1 -print -quit)"
           for leaf in test_peek test_grep test_listdir test_listdir_sort test_file_mutation test_deep; do
             test ! -e "/mnt/raid0/llm/tmp/$leaf"
             test ! -L "/mnt/raid0/llm/tmp/$leaf"
@@ -67,20 +79,37 @@ jobs:
           ref: ${{ env.ROOT_SOURCE_SHA }}
           path: root-producer
 
-      - name: Checkout pinned orchestrator source
+      - name: Checkout pinned orchestrator source seed
         uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-orchestrator
           ref: ${{ env.APP_SOURCE_SHA }}
           fetch-depth: 1
-          path: app
+          path: app-source
 
-      - name: Verify immutable pins and module-level opt-in scope
-        working-directory: app
+      - name: Create real pinned source checkout under allowed filesystem root
         run: |
           set -euo pipefail
-          test "$(git -C ../ci-control rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git -C ../root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test -d "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+          git clone --no-hardlinks --no-checkout "$GITHUB_WORKSPACE/app-source" "$APP_CHECKOUT"
+          git -C "$APP_CHECKOUT" checkout --detach "$APP_SOURCE_SHA"
+          test "$(git -C "$APP_CHECKOUT" rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test -z "$(git -C "$APP_CHECKOUT" status --porcelain=v1)"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+
+      - name: Verify immutable pins and module-level opt-in scope
+        run: |
+          set -euo pipefail
+          cd "$APP_CHECKOUT"
+          test "$(git -C "$GITHUB_WORKSPACE/ci-control" rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$GITHUB_WORKSPACE/root-producer" rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
           test "$(git rev-parse HEAD)" = "$APP_SOURCE_SHA"
           python3 - <<'PY'
           import os
@@ -130,14 +159,16 @@ jobs:
 
       - name: Install frozen unit-test dependencies
         id: dependencies
-        working-directory: app
-        run: uv sync --frozen --extra dev
+        run: |
+          set -euo pipefail
+          cd "$APP_CHECKOUT"
+          uv sync --frozen --extra dev
 
       - name: Write pre-execution scope context
         id: context
         if: ${{ always() && steps.dependencies.outcome == 'success' }}
-        working-directory: app
         run: |
+          cd "$APP_CHECKOUT"
           mkdir -p ni43_context
           python - <<'PY'
           import json
@@ -160,6 +191,10 @@ jobs:
               "recipe_sha": os.environ["GITHUB_SHA"],
               "root_source_sha": os.environ["ROOT_SOURCE_SHA"],
               "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_source_checkout": str(Path(os.environ["APP_CHECKOUT"]).resolve()),
+              "app_source_checkout_mode": format(stat.S_IMODE(Path(os.environ["APP_CHECKOUT"]).lstat().st_mode), "04o"),
+              "app_source_checkout_uid": Path(os.environ["APP_CHECKOUT"]).lstat().st_uid,
+              "app_source_checkout_gid": Path(os.environ["APP_CHECKOUT"]).lstat().st_gid,
               "selection": os.environ["MODULE_PATH"],
               "locked_extras": ["dev"],
               "test_process_environment": {
@@ -182,7 +217,7 @@ jobs:
               },
               "scratch_root": str(scratch),
               "scratch_mode": format(stat.S_IMODE(st.st_mode), "04o"),
-              "writable_checkout_fixture_roots": ["app/logs", "app/orchestration/patches"],
+              "writable_checkout_fixture_roots": [str(Path(os.environ["APP_CHECKOUT"]) / "logs"), str(Path(os.environ["APP_CHECKOUT"]) / "orchestration/patches")],
               "inference_and_network": "none; direct REPLEnvironment with llm_primitives=None; subprocess.run is mocked in patch-tool tests",
               "scope_exclusions": ["pytest conftest hooks, including memory guard", "real backend/server", "external API", "production filesystem", "capacity or serving", "other REPL modules"],
           }
@@ -192,8 +227,8 @@ jobs:
       - name: Capture complete filesystem module with skip flags removed only for pytest
         id: capture
         if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
-        working-directory: app
         run: |
+          cd "$APP_CHECKOUT"
           mkdir -p "ni43_junit/$MODULE_ID"
           timeout --verbose --signal=TERM --kill-after=15s 360s \
             python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
@@ -247,15 +282,18 @@ jobs:
 
       - name: Record post-capture filesystem custody
         if: always()
-        working-directory: app
         run: |
+          cd "$APP_CHECKOUT"
           mkdir -p ni43_context
           python - <<'PY'
           import json
           import os
+          import stat
           from pathlib import Path
 
           scratch = Path("/mnt/raid0/llm/tmp")
+          checkout = Path(os.environ["APP_CHECKOUT"])
+          checkout_stat = checkout.lstat()
           targets = {
               key: {"value": os.environ[key], "exists": Path(os.environ[key]).exists(), "is_symlink": Path(os.environ[key]).is_symlink()}
               for key in (
@@ -270,6 +308,7 @@ jobs:
               "schema": "ni43.repl_filesystem_postcheck.v1",
               "module_id": os.environ["MODULE_ID"],
               "scratch_root_empty": scratch.exists() and not any(scratch.iterdir()),
+              "app_source_checkout_private": checkout.is_dir() and not checkout.is_symlink() and stat.S_IMODE(checkout_stat.st_mode) == 0o700 and checkout_stat.st_uid == os.getuid() and checkout_stat.st_gid == os.getgid(),
               "runtime_override_targets_absent": all(not item["exists"] and not item["is_symlink"] for item in targets.values()),
               "runtime_override_targets": targets,
               "checkout_fixture_leftover_files": leftover_files,
@@ -277,11 +316,30 @@ jobs:
           Path(f"ni43_context/{os.environ['MODULE_ID']}-postcheck.json").write_text(
               json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8"
           )
-          if not state["scratch_root_empty"] or not state["runtime_override_targets_absent"]:
-              raise SystemExit("scratch or absent runtime-path custody failed; see postcheck JSON")
+          if not state["scratch_root_empty"] or not state["app_source_checkout_private"] or not state["runtime_override_targets_absent"]:
+              raise SystemExit("scratch, source checkout, or absent runtime-path custody failed; see postcheck JSON")
           if leftover_files:
               raise SystemExit("checkout fixture roots retained files; see postcheck JSON")
           PY
+
+      - name: Stage original checkout-side evidence for upload
+        if: always()
+        run: |
+          set -euo pipefail
+          destination="$GITHUB_WORKSPACE/ni43-app-evidence/$MODULE_ID"
+          mkdir -p "$destination"
+          for path in \
+            "$APP_CHECKOUT/ni43_context/context.json" \
+            "$APP_CHECKOUT/ni43_context/$MODULE_ID-postcheck.json" \
+            "$APP_CHECKOUT/ni43_junit/$MODULE_ID/original-pytest.xml" \
+            "$APP_CHECKOUT/ni43_junit/$MODULE_ID/pytest.log"; do
+            if [ -f "$path" ]; then
+              relative="${path#"$APP_CHECKOUT"/}"
+              mkdir -p "$destination/$(dirname "$relative")"
+              cp -- "$path" "$destination/$relative"
+              cmp -- "$path" "$destination/$relative"
+            fi
+          done
 
       - name: Upload original filesystem-module prefix
         if: always()
@@ -290,7 +348,5 @@ jobs:
           name: ni43-repl-filesystem-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
           path: |
             ${{ env.RUN_ROOT }}/${{ matrix.module_id }}/native/
-            app/ni43_context/context.json
-            app/ni43_context/${{ matrix.module_id }}-postcheck.json
-            app/ni43_junit/${{ matrix.module_id }}/
+            ni43-app-evidence/${{ matrix.module_id }}/
           if-no-files-found: warn
