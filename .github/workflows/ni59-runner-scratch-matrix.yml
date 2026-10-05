@@ -21,7 +21,9 @@ env:
   APP_LOCK_SHA256: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
   ROOT_PRODUCER_SHA: ff8a6baa7e4bc86fc7318055d3fe1050f31422c7
   ROOT_RECIPE_BASE_SHA: e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1
-  ROOT_RECIPE_PARENT_SHA: d1fcdc52bdae272828a27d1003c90fc1154683df
+  ROOT_RECIPE_PARENT_SHA: 179ed59788a3a7dd3e696a75f9c33842781fa933
+  ROOT_RECIPE_PREVIOUS_SHA: d1fcdc52bdae272828a27d1003c90fc1154683df
+  ROOT_RECIPE_PREVIOUS2_SHA: c2666662fac794441e54002648ad6c18414f54aa
   EXPECTED_REPL_TEST_SHA256: d6befe192f52910ff511f5bfbbdb5d3adbff8d2206106237dc8a0bf8ddba4859
   EXPECTED_SCORER_TEST_SHA256: 6d042a42a8746ce9481a2e27b8905cca4116bccf96eb7f2e28479a1cd5b48ef8
   EXPECTED_DEBUG_SCORER_SHA256: e1b79e69dec755365d8bb69e2a8accb8e3ec747f4212e5bc2393561937d039fd
@@ -80,7 +82,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 4
+          fetch-depth: 5
           path: ci-control
           persist-credentials: false
 
@@ -140,8 +142,9 @@ jobs:
           test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA:pyproject.toml")" = b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1
           test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA:uv.lock")" = ef2306018773ff9a1e80389970d92f66fcf8d5b7
           test "$(git -C ci-control rev-parse HEAD^)" = "$ROOT_RECIPE_PARENT_SHA"
-          test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^")" = c2666662fac794441e54002648ad6c18414f54aa
-          test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^^")" = "$ROOT_RECIPE_BASE_SHA"
+          test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^")" = "$ROOT_RECIPE_PREVIOUS_SHA"
+          test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^^")" = "$ROOT_RECIPE_PREVIOUS2_SHA"
+          test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^^^")" = "$ROOT_RECIPE_BASE_SHA"
           test "$(git -C root-producer rev-parse "$ROOT_PRODUCER_SHA:scripts/ci/native_conformance.py")" = d2d7bd90f86cffa23c51db803288641c5c6fe461
           test "$(git -C root-producer rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/adapters/ci_conformance.py")" = b5a521ef4debe7ad105830f5fa27bbf9c2168dcd
           test "$(git -C root-producer rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/claim_tuple.py")" = 309af769e45245fd1452482eb2e0592a86a4a79f
@@ -687,6 +690,23 @@ jobs:
               metadata = path.lstat()
               if stat.S_ISLNK(metadata.st_mode):
                   private_capture_ok = False
+                  link_target = os.readlink(path)
+                  relative_parent = relative.parent.as_posix()
+                  candidate = os.path.normpath(os.path.join(relative_parent, link_target))
+                  if os.path.isabs(candidate):
+                      target_inside = False
+                      safe_target = None
+                  else:
+                      target_inside = candidate != ".." and not candidate.startswith("../")
+                      safe_target = candidate if target_inside else None
+                  private_capture_paths.append({"path": relative.as_posix(),
+                      "type": "symlink", "mode": oct(stat.S_IMODE(metadata.st_mode)),
+                      "uid": metadata.st_uid, "gid": metadata.st_gid,
+                      "link_target_sha256": hashlib.sha256(os.fsencode(link_target)).hexdigest(),
+                      "link_target_length": len(os.fsencode(link_target)),
+                      "link_target_is_absolute": os.path.isabs(link_target),
+                      "link_target_within_result_dir_lexically": target_inside,
+                      "link_target_relative_if_contained": safe_target})
                   continue
               expected_mode = 0o700 if stat.S_ISDIR(metadata.st_mode) else 0o600
               owned_mode = (stat.S_IMODE(metadata.st_mode) == expected_mode
