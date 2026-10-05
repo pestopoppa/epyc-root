@@ -1,0 +1,141 @@
+name: NI05 candidate hermetic validation
+on:
+  push:
+    branches: ['codex/ni05-validation-*']
+permissions:
+  contents: read
+env:
+  ROOT_SHA: 23298f00096f24b5d665a478467692f2085c09a0
+  RESEARCH_SHA: 725eb41296c926cbb39abaa43a842ac675155a2b
+  ORCH_SHA: 8ebfbc50e073a0203655f36ee9bc9d72d23c3277
+jobs:
+  root:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROOT_SHA }}
+          path: root
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+          path: orchestrator
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install declared fixture dependencies
+        run: python -m pip install pytest==9.1.1 pyyaml numpy requests httpx rich sympy
+      - name: Bind pinned sibling producers in ephemeral runner
+        run: |
+          sudo mkdir -p /workspace/repos /mnt/raid0/llm
+          sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE/orchestrator" /workspace/repos/epyc-orchestrator
+          sudo ln -s "$GITHUB_WORKSPACE/orchestrator" /mnt/raid0/llm/epyc-orchestrator
+          echo '47846292cdb2a9e5e3d4ab81dc49f6bebdd90db137a4805debec1b76e5489067  research/scripts/validate/check_evidence_durability.py' | sha256sum -c -
+          echo '8caeb33dbb12986fadc385afe25d22bd791b036253c736f9527e67a55f85e268  research/scripts/kernel_rnd/exl3/evidence.py' | sha256sum -c -
+      - name: Promotion fixture (no real promotion)
+        working-directory: root
+        run: python scripts/coordination/tests/test_promote_lane.py DefaultLockDirectoryTests
+      - name: Vidya including actual writer archive roundtrip
+        working-directory: root
+        run: python -m pytest -q tests/vidya --junitxml=vidya.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: root-results
+          path: root/vidya.xml
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned test extra and declared benchmark dependencies
+        run: python -m pip install '.[benchmark,test]'
+      - name: Durability strict and optional fixture contracts
+        run: python -m pytest -q scripts/validate/test_check_evidence_durability.py --junitxml=durability.xml
+      - name: Benchmark collection reproduction
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python -m pytest scripts/benchmark --collect-only -q 2>&1 | tee collection.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: research-results
+          path: |
+            durability.xml
+            collection.txt
+  orchestrator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install declared dev dependencies
+        run: python -m pip install '.[dev]'
+      - name: Makefile fail-closed fixture contracts
+        run: python tests/unit/test_makefile_gate_contract.py
+      - name: Flags MCP and v1 mock isolation
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python -m pytest -q tests/unit/test_runtime_flags.py tests/unit/test_openai_compat_backend_failure_status.py tests/unit/test_features.py tests/unit/test_mcp_undeclared_args_refused.py tests/unit/test_mcp_server.py tests/unit/test_mcp_chat_tool.py tests/unit/test_openai* --junitxml=orchestrator.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orchestrator-results
+          path: orchestrator.xml
+  node-harness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROOT_SHA }}
+      - uses: actions/checkout@v4
+        with:
+          repository: anomalyco/opencode
+          ref: 350c726aa8b6b11eb9242040bc5eb7ae837fbf8a
+          path: opencode-source
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.18.0'
+      - name: Install exact audited SDK contract inputs (no repository lock exists)
+        run: |
+          mkdir sdk-fixture
+          cd sdk-fixture
+          npm init -y
+          npm install --ignore-scripts --save-exact @ai-sdk/openai-compatible@2.0.41 @ai-sdk/provider@3.0.8 @ai-sdk/provider-utils@4.0.23
+      - name: Node fixture and captured-fetch contract (no live service)
+        env:
+          EPYC_OPENCODE_SOURCE_DIR: ${{ github.workspace }}/opencode-source
+          EPYC_OPENCODE_CONTRACT: '1'
+          EPYC_OPENCODE_SDK_DIR: ${{ github.workspace }}/sdk-fixture
+        working-directory: harness/opencode-plugin
+        run: |
+          node --test 'test/*.test.ts'
+          npm run lint:config
+          npm run lint:config:subagents
