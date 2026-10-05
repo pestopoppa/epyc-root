@@ -164,6 +164,16 @@ investigation; Appendix)
   root, because the shared venv's editable install otherwise shadows it. Procedure:
   `docs/guides/agent-workflows/benchmark-analyst.md` → *Running more than one AutoKernel lane*. (origin: 2026-10-04,
   research `aef2da6c` and the Q38FN lane launch, DS41-C111/C122)
+- **gpu-quiet and region locks: hold once, use absolute paths, and schedule subagent benches.**
+  - An outer hold covers everything inside it. A bench helper must not request gpu-quiet `shared` while its caller
+    holds it `exclusive`, because the run then deadlocks on itself. The helper either inherits the hold or takes the
+    lock only when called unwrapped.
+  - `region-lock run` changes directory into the epyc-orchestrator repo before it execs, so every path in the wrapped
+    command must be absolute.
+  - Neither lock is FIFO, so free-running subagent CPU benches can starve a GPU headline run that waits on the same
+    claims. Schedule subagent benches around headline runs; never leave them free-running against a lock that a
+    headline run needs.
+  - (origin: INC-20261004-subagent-unlocked-cpu-in-held-window, second recurrence)
 - Full policy: `agents/shared/MEASUREMENT_POLICY.md` → `/workspace/MEASUREMENT.md`.
 - **Reload ownership (operator, 2026-07-28)**: if a session owns the inference, any orchestrator API or stack reload — API-only included, see CLAUDE.md → Process Management for the mechanics — must be executed BY THAT SESSION, at a moment it chooses; it is never forced upon that session's workflow from outside. If you need a reload while another session holds inference, do not run it **and do not approve one around the owner**: route the request via coordinator-agent to the owning session, which schedules it and reports done. Waiting is correct behaviour — work the next queued item meanwhile (BUS_PROTOCOL rule 2: never block). This is the drain-at-boundary axiom (fabric axiom 4) applied to the API: an externally-forced reload is a preemption of running inference by another name. The owner-side duty to *own the reload timing* is stated in `agents/inference-main.md` → Guardrails. (origin: INC-20260728-reload-preemption)
 - **Inference resource ownership:** `agents/inference-main.md` owns the advisory compute schedule
@@ -314,6 +324,9 @@ treated as two copies when both were aliases of one physical tree.)
 3. **Audit:** every guarded deletion and every identity check that found aliases appends to
    `/workspace/logs/safety_audit.log`; a deletion that was justified by a wrong identity
    conclusion must be reported as an incident, not folded into the task summary.
+4. **Delete exact paths only.** A cleanup removes only the exact paths it created, never a glob or pattern such as
+   `rm -rf dir/prefix-*`. A pattern names whatever matches today, including evidence that another run wrote. (origin:
+   INC-20261004-glob-rm-deleted-receipt-evidence: a dry-run cleanup glob deleted a ledgered receipt's raw run dir)
 
 ## Act, Don't Defer — the admission test for escalating at all
 
