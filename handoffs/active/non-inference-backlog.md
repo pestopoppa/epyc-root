@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 complete unit sweep and NI05-37 timeout reporting; continue reviewing unlocked offline follow-ons.
+- **Next:** NI05-18 exception classification, NI05-38 scoring custody and NI05-40–44 offline follow-ons.
 - **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **36/42**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **37/44**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -76,7 +76,7 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
 - [x] **NI05-36** — DCP-13a/b: remove unreachable report-fetch instructions and return full reports on delegation-cache hits; retain separate inference-dependent DCP-13 arms.
 
-- [ ] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
+- [x] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
 
 - [ ] **NI05-38** — DCP-10-SCORE-PREP: deterministic offline macro/path/span/post-pack scorer plus prospective immutable scored-report custody; full ContextBench benchmark remains separate.
 
@@ -87,6 +87,10 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-41** — SSU-SCORING-EXTRA: declare and lock the optional mathematical scorer dependency, then rerun three offline modules and their missing-dependency refusal controls; exact source/recipe review precedes execution.
 
 - [ ] **NI05-42** — SSU-GRAPH-FIXTURES: validate named temporary-DB graph modules with the existing locked optional graph extra; no live graph, model or dataset access.
+
+- [ ] **NI05-43** — SSU-FIXTURE-REPL-FILESYSTEM: named optional captures of two otherwise skipped pure filesystem modules with disposable owned roots; source default skip guards remain.
+
+- [ ] **NI05-44** — OBS-9: require qualified existing authoritative probe evidence in three surviving leaf idle prefilters; unknown/read failures/drift suppress action, no text-derived idle authority or liveness-core mutation.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -211,6 +215,8 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   their markers in the same cycle is a TUI release and not a fleet-wide stall. It is exercised in
   both directions by `scripts/coordination/tests/test_fleet_watch.sh` and mutation-tested (removing
   the guard turns the suite red). Generalising it is what closes this row.
+2026-10-05 current-source correction (NI05-44): the fleet pane classifiers/canary above were removed in2026-08-16; do not restore them. Three surviving leaf prefilters (idle_watch, idle_supervisor, coordinator) must require existing authoritative probe JSON with runtime_decided=true, runtime_state=idle and nudge_ok=true. Marker absence, unknown vocabulary, unreadable/malformed/timeout/refused probes and active/compacting contradictions cannot provide idle authority. Keep tmux_adapter runtime/probe, fleet_watch and peer ownership unchanged; final nudge still rechecks its existing guard. Uninstrumented Claude state remains UNKNOWN. New helper/consumer changes require exact source and off-host fixture review.
+
 - [ ] **OBS-10** (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
   *Note 2026-09-16: the E8 chain these ratifiers served is retired by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling re-anchors the reseed gate to the current eras; the gate binds only at promotion.*
   `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh` and

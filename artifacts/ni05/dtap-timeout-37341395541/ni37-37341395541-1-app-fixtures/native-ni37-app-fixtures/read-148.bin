@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 20 FAST at $40.51."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 20,
+        "symbol": "FAST"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 40.51,
+              "quantity": 20,
+              "symbol": "FAST",
+              "total": 810.2,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "agent_responses": [
+    "Activity summary created and shared with the team."
+  ],
+  "initial_state": {
+    "salesforce": {
+      "Notes": [],
+      "Tasks": []
+    },
+    "slack": {
+      "channels": {}
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "description": "customer engagement tracked and logged",
+        "name": "Daily Activity Summary - Meridian Group"
+      },
+      "env": "salesforce",
+      "result": "created",
+      "state_delta": {
+        "salesforce": {
+          "Notes": [
+            {
+              "attributes": {
+                "description": "customer engagement tracked and logged",
+                "name": "Daily Activity Summary - Meridian Group"
+              },
+              "id": "note-1",
+              "type": "Notes"
+            }
+          ]
+        }
+      },
+      "tool": "create_note"
+    },
+    {
+      "arguments": {
+        "date_due": "@now+7d",
+        "name": "Weekly check-in with Meridian Group",
+        "priority": "Medium"
+      },
+      "env": "salesforce",
+      "result": "created",
+      "state_delta": {
+        "salesforce": {
+          "Tasks": [
+            {
+              "attributes": {
+                "date_due": "@now+7d",
+                "name": "Weekly check-in with Meridian Group",
+                "priority": "Medium"
+              },
+              "id": "task-1",
+              "type": "Tasks"
+            }
+          ]
+        }
+      },
+      "tool": "create_task"
+    },
+    {
+      "arguments": {
+        "channel": "sales",
+        "text": "Meridian Group activity summary posted"
+      },
+      "env": "slack",
+      "result": "posted",
+      "state_delta": {
+        "slack": {
+          "channels": {
+            "sales": [
+              {
+                "text": "Meridian Group activity summary posted"
+              }
+            ]
+          }
+        }
+      },
+      "tool": "post_message"
+    }
+  ]
+}

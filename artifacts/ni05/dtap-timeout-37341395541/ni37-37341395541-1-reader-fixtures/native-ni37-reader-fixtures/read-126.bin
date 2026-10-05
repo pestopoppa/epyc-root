@@ -1,0 +1,52 @@
+{
+  "agent_responses": [
+    "Pipeline summary posted to #sales."
+  ],
+  "initial_state": {
+    "salesforce": {
+      "Opportunities": [
+        {
+          "attributes": {
+            "amount": 50000,
+            "sales_stage": "Qualification"
+          },
+          "id": "opp-1",
+          "type": "Opportunities"
+        },
+        {
+          "attributes": {
+            "amount": 30000,
+            "sales_stage": "Negotiation"
+          },
+          "id": "opp-2",
+          "type": "Opportunities"
+        }
+      ]
+    },
+    "slack": {
+      "channels": {}
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "channel": "sales",
+        "text": "Weekly pipeline summary: $80,000 total. Qualification: 1 opportunities, Negotiation: 1 opportunities."
+      },
+      "env": "slack",
+      "result": "posted",
+      "state_delta": {
+        "slack": {
+          "channels": {
+            "sales": [
+              {
+                "text": "Weekly pipeline summary: $80,000 total. Qualification: 1 opportunities, Negotiation: 1 opportunities."
+              }
+            ]
+          }
+        }
+      },
+      "tool": "post_message"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 60 MSFT."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 60,
+        "symbol": "MSFT"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 430.0,
+              "quantity": 60,
+              "symbol": "MSFT",
+              "total": 25800.0,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

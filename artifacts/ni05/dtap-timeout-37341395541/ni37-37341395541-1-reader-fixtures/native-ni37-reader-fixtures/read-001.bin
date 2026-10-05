@@ -1,0 +1,28 @@
+{
+  "app_source_sha": "4238a82eee82a38d5fe5b868949649dcc5c7e5d1",
+  "applicability": "synthetic reviewed dry-run fixtures and typed fault controls only; network calls replaced by named urlopen fixture",
+  "censoring": "actual terminal native TimeoutError only; recovered retries not censored; non-timeout errors retained in finished denominator; empty rate null",
+  "command_time_limit_s": 180,
+  "dependency_scope": "pytest9.1.1 plus PyYAML6.0.3 from the checked-in app uv.lock; selected recorded dependency alignment, not a full frozen lock install",
+  "exclusions": [
+    "live transport applicability",
+    "inference",
+    "production/provider access",
+    "performance",
+    "promotion",
+    "field robustness rates",
+    "entire dependency completeness",
+    "private body/filename/argv export",
+    "old-run backfill"
+  ],
+  "native_write_boundary": "opt-in run_matrix original pre-request before any endpoint factory/run; original traces and terminal recomputation before receipt",
+  "outer_capture_time_limit_s": 240,
+  "outer_termination_policy": "native CI producer SIGTERM then SIGKILL after 15 seconds; interrupted or incomplete originals remain diagnostic",
+  "phase": "ni37-reader-fixtures",
+  "primary_metrics": "benign task_success higher; attack_success lower; count/rate components descriptive",
+  "private_custody": "owned 0700 test hierarchy under runner HOME; original source/trace/request/terminal/receipt bodies remain private and are not uploaded",
+  "public_proof": "existing CI original JUnit/log/readset; root phase generated safe five-unit fixture projection and native artifact digests only, no private filenames/body/argv",
+  "root_source_sha": "a2494f019d5d662f56971142ccfd9b1d4610bc0c",
+  "scope": "approved synthetic DTAP fixture command; real trusted producer/judges and sole verifier reader, no endpoint request",
+  "termination_policy": "inner SIGINT then SIGKILL after 15 seconds"
+}

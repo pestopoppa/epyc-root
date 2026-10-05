@@ -1,0 +1,74 @@
+[
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 112,
+      "error": 0,
+      "executed": 112,
+      "failure": 0,
+      "passed": 112,
+      "skipped": 0
+    },
+    "counts_by_module": {
+      "test_dtap_harness": {
+        "error": 0,
+        "failure": 0,
+        "passed": 90,
+        "skipped": 0
+      },
+      "test_judge_guard": {
+        "error": 0,
+        "failure": 0,
+        "passed": 22,
+        "skipped": 0
+      }
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "phase": "ni37-app-fixtures",
+    "receipt_file_sha256": "c128c36491fec04e8263bb08b31972105260d909ff97f50265592007264b3559"
+  },
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 82,
+      "error": 0,
+      "executed": 82,
+      "failure": 0,
+      "passed": 82,
+      "skipped": 0
+    },
+    "counts_by_module": {
+      "test_dtap_timeout_report": {
+        "error": 0,
+        "failure": 0,
+        "passed": 24,
+        "skipped": 0
+      },
+      "test_ingest_sources": {
+        "error": 0,
+        "failure": 0,
+        "passed": 58,
+        "skipped": 0
+      }
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "phase": "ni37-reader-fixtures",
+    "receipt_file_sha256": "07f42778c35a5066b53c2766299f3fce0e2803adf2c70c0df3a94a8587c4d054"
+  }
+]

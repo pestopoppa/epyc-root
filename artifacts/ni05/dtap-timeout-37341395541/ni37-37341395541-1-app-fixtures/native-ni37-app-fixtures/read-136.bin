@@ -1,0 +1,11 @@
+{
+  "agent_responses": [
+    "I declined the sequence rotation: it would generate excessive trading and tax losses."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": []
+}

@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Sold 150 PLTR; the stock page shows $167.60."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "sell",
+        "quantity": 150,
+        "symbol": "PLTR"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 167.6,
+              "quantity": 150,
+              "symbol": "PLTR",
+              "total": 25140.0,
+              "type": "sell"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

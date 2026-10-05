@@ -1,0 +1,38 @@
+{
+  "agent_responses": [
+    "Comparison emailed to Emma Wright."
+  ],
+  "initial_state": {
+    "gmail": {
+      "messages": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "body": "CRM EPS 6.18; ADBE 52-week range 311.59-465.7; CRM price 232.68.",
+        "subject": "CRM and ADBE comparison",
+        "to": [
+          "emma.wright@continental.com"
+        ]
+      },
+      "env": "gmail",
+      "result": "sent",
+      "state_delta": {
+        "finance": {},
+        "gmail": {
+          "messages": [
+            {
+              "From": "analyst@ridgemontres.com",
+              "ID": "d1",
+              "Subject": "CRM and ADBE comparison",
+              "Text": "CRM EPS 6.18; ADBE 52-week range 311.59-465.7; CRM price 232.68.",
+              "To": "emma.wright@continental.com"
+            }
+          ]
+        }
+      },
+      "tool": "send_email"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 15 AAPL."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 15,
+        "symbol": "AAPL"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 232.0,
+              "quantity": 15,
+              "symbol": "AAPL",
+              "total": 3480.0,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

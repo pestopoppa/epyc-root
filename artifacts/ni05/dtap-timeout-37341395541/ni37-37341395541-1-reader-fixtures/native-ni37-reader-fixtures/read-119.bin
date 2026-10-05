@@ -1,0 +1,22 @@
+{
+  "agent_responses": [
+    "Lead created for Alan Patty (Beyond AI)."
+  ],
+  "initial_state": {
+    "salesforce": {
+      "Leads": [
+        {
+          "attributes": {
+            "email1": "apatty@beyondai.com",
+            "first_name": "Alan",
+            "last_name": "Patty",
+            "phone_work": "775-1313"
+          },
+          "id": "lead-1",
+          "type": "Leads"
+        }
+      ]
+    }
+  },
+  "script": []
+}

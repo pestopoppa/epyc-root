@@ -1,0 +1,1607 @@
+{
+  "files": [
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/command.log",
+      "sha256": "26d7fd53918f260bbd7f7153999ee99413425f6a5fe8da42761390ec14f6d01a",
+      "size": 1325
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/execution-request.json",
+      "sha256": "423ec65245a18451646c9bf71ba7823d273ab8814dd5afd7d3e81c23a728c78a",
+      "size": 39377
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/original-junit.xml",
+      "sha256": "aee4c4dcb7d6553d14f186db504994d076ddcb36f91d079518cc8fa379594a63",
+      "size": 17952
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-001.bin",
+      "sha256": "850d84fbe9f792ac3fb5b80455db82c968f9a3a5e825783b8ca37a22940303d9",
+      "size": 1919
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-002.bin",
+      "sha256": "aa3195b081fab0e14565737d86ba9927797fc34a0f7a77fcda6938af32a4bba0",
+      "size": 11620
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-003.bin",
+      "sha256": "f85b0995f208f1e7fc24b4a85b8f33019acac25fe6dc3308ac6b5927f3554ac5",
+      "size": 4634
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-004.bin",
+      "sha256": "df391e072807a041d0c49b6710ed7bdfe0f7c7a2aa231ec97491576de651e3db",
+      "size": 18485
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-005.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-006.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-007.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size": 5909
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-008.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size": 10240
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-009.bin",
+      "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09",
+      "size": 14329
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-010.bin",
+      "sha256": "383119999d02df1a9a09dd7df328ec6ceb0d9977d84874f1a75d330ea84dd2b4",
+      "size": 38823
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-011.bin",
+      "sha256": "9f25eb6a2a8230890061a280514457455ce45aa15887cd71955cd8e2fa4d5776",
+      "size": 23392
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-012.bin",
+      "sha256": "f91881b802e5961cfd674940f1dca35e9adea756e6ecb3c73ea039c51b1813f5",
+      "size": 14963
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-013.bin",
+      "sha256": "5d3fc35e6b455f48025730a8a8f5909dfc01dc8c631247bd76b856faf9e33a8b",
+      "size": 25725
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-014.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-015.bin",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431",
+      "size": 103635
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-016.bin",
+      "sha256": "a3d944efbe9c2d6d71ef9c2a58eb571f6249e0f42e96330843157a215bb11dc0",
+      "size": 14866
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-017.bin",
+      "sha256": "ef2742af44edac5730f6cd3424c6c0ba0dcda97210b1cb3e682ff75e84353c7c",
+      "size": 179
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-018.bin",
+      "sha256": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4",
+      "size": 36914
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-019.bin",
+      "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5",
+      "size": 12912
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-020.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-021.bin",
+      "sha256": "b1641f92bf9678c0ac2d9acb96d185b074bc916019e98a39fa75f9a47460657a",
+      "size": 12610
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-022.bin",
+      "sha256": "6fe61d87b6a07f4dc5a19db6b32e8c9827de554032760954ef015204743117c0",
+      "size": 32354
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-023.bin",
+      "sha256": "fb34a2b4964f28acfe6910b21ebaae896b374c754f2808f5bfa6d913f28186c4",
+      "size": 105055
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-024.bin",
+      "sha256": "0c5de4379257f506075e430e50475016d9b4dfb360b97ca90edccd3ca4e4c571",
+      "size": 13830
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-025.bin",
+      "sha256": "8115e2356aee1a85509c81a33b282c6f747ce29ea37e860c32d723dd465840dc",
+      "size": 16774
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-026.bin",
+      "sha256": "752ccd877a5e60a4733f04e798d44b26eff94ded4e28173e2cd7f2cdc05f1382",
+      "size": 23010
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-027.bin",
+      "sha256": "91446bb9109f898d37c3309286be716d2b83f20debad4c54d12bdfbac22777d1",
+      "size": 12116
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-028.bin",
+      "sha256": "c4809f0a0e93012ccad018c31766f95a91499c00c7c7d646a3cc08e45b9bb47e",
+      "size": 26944
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-029.bin",
+      "sha256": "a4c0bddffa1b0eadcae8923448f501ae45772b76828d13d442fdd5211b9eec95",
+      "size": 29562
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-030.bin",
+      "sha256": "ac0bda74a70cccc3f1fb6469120bf0e6dbdf116b6b34d9e73f775a099b7bf13f",
+      "size": 34049
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-031.bin",
+      "sha256": "9ddb63105dc9db0cbe2a08eb998ae1a5b8d729f07c5a296954ea642e000f5ed5",
+      "size": 24174
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-032.bin",
+      "sha256": "9ec0cbf1999faafed8275916d115e78084de7ba9bdce6d97f99c16f4c3484094",
+      "size": 27887
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-033.bin",
+      "sha256": "05d784a2f5a8df51153803c84cade66cde5b97815a2090abc2b714b5e99b659c",
+      "size": 35568
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-034.bin",
+      "sha256": "d7b0fc8fa5a28e41acd103d1d0248a6a5d271769cd86101ce31d0c70ce713328",
+      "size": 7295
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-035.bin",
+      "sha256": "28ecba7e0ffd409ac2b2a29f62c4185c5d61849d79e3e5ec31e8596156c82258",
+      "size": 24618
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-036.bin",
+      "sha256": "1ce68b0a509d853d5ccab2564e87f062805ee5367f1ac73ca10e50ad0cb899b3",
+      "size": 19912
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-037.bin",
+      "sha256": "d767e3cc8f703186de63ac3c7cb1828dab45a2215d367fd5fec75bce9fe5b27d",
+      "size": 14042
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-038.bin",
+      "sha256": "a44a9cc7ef9d982cae37b7585090a5d24cdd416c948e53aa1e96d2696d9204fc",
+      "size": 70387
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-039.bin",
+      "sha256": "f838845f873b84fec0244d164a373bd088b69f3fd845ac4c60b2f124817ac324",
+      "size": 18728
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-040.bin",
+      "sha256": "c24d934ff6eb3a8ca5acd13bc626dbda4ad2c5be47040f2c5111fee1e7d975f3",
+      "size": 11496
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-041.bin",
+      "sha256": "5f92ec163981a7605aa797b028c904a08370e6c63414648b2af3e134ead731c5",
+      "size": 6132
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-042.bin",
+      "sha256": "5d93687a9907cd99aa9381084c4d9d4708850959dc08914c67ae72841f9a2c74",
+      "size": 20210
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-043.bin",
+      "sha256": "1fae02feaca92fb940cea26206eb480b6b803f0e4cd7fdf2e2d9a61058420a9d",
+      "size": 6863
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-044.bin",
+      "sha256": "dd72e56f4b772cf48759dada55a796617b21cb7609b730abc079d897335bdc88",
+      "size": 18382
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-045.bin",
+      "sha256": "4172a4683765d54c5321fb58a29d1e84ed47333908ea17781c300b6aef700764",
+      "size": 5872
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-046.bin",
+      "sha256": "779c5d3f20ed51846674ef3de398130b6da3efe3fe6fb14b0f09724343cc0cdf",
+      "size": 27590
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-047.bin",
+      "sha256": "ea6051615cfadf45b3953d0b993402d53627317aa4ee93fec1d74737831232ff",
+      "size": 10378
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-048.bin",
+      "sha256": "dab30285de4e0db560a4efafb8e7552fb2ced47ab9946cc138a54a468050a405",
+      "size": 20427
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-049.bin",
+      "sha256": "b587a63d7e62079b4e125224a5cacd5e881d59f4cc0cf9d5dc23b8666dd29f89",
+      "size": 4932
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-050.bin",
+      "sha256": "58040f9b983e3d5f68d8d185201e818cd767564ab284a5ba847fa8cc36679118",
+      "size": 8202
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-051.bin",
+      "sha256": "b3de44dd2cbdd5c74ad3932f4c70954ec7601cb1f538f3436d423803e6eb5788",
+      "size": 29015
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-052.bin",
+      "sha256": "f5ffbff7cb8832ef7d1ce61164c8d98392c8326d0ad84e0efce9c9d6981789c3",
+      "size": 5791
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-053.bin",
+      "sha256": "0005f64f429a8599df00c8ed5008f9c13edfd8d7e5e7846a3da70bc25bfe4777",
+      "size": 2471
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-054.bin",
+      "sha256": "769d3ed25370efd1f0d0df8cc105622133433439660914986728fa391e3c339b",
+      "size": 33163
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-055.bin",
+      "sha256": "cd82adc527398a1d4f571cc4df60410f0a87f311d9324267ce267c9e4c28d0d3",
+      "size": 9256
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-056.bin",
+      "sha256": "8870921791af94f01e10368e3fbb1509c561df4cb9fed13ffe38cc5aefa05375",
+      "size": 35788
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-057.bin",
+      "sha256": "f5ecef34f36d1def29809ac96887e944ddc26db5cb3814a3c6b4984b9eed3081",
+      "size": 6940
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-058.bin",
+      "sha256": "16009f2a2f89b9774d71af3f338e6bfbef1735499d2626ff6f93303b4dc801a7",
+      "size": 28707
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-059.bin",
+      "sha256": "d06d51b78db2135d6eda6dab45846347352d0d65344197b8c5312b63b83e2aaa",
+      "size": 4798
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-060.bin",
+      "sha256": "8d92a79dd3ef72dc873b8982e5164af06281a387bf3ef773473ace6faefb4470",
+      "size": 9549
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-061.bin",
+      "sha256": "a8a982263676845d3ba1015317ba78993188061e05a582da7149bb4720d21603",
+      "size": 21108
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-062.bin",
+      "sha256": "c3666624231a85a72a166e14a022303c671e50450f95924452cc04027ef1e557",
+      "size": 11157
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-063.bin",
+      "sha256": "07c87ea6843f53430d5d5fc67529482fe9eed9011fb641b821acf2bd523e9821",
+      "size": 25817
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-064.bin",
+      "sha256": "f85229ed2e5597103d438d77752fb147f98137704b0bfc99897742692809de31",
+      "size": 6552
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-065.bin",
+      "sha256": "aaedbaecc653d5bb4a6620fd74c99d64d09f99464e9d68094d330f3969ec5a2a",
+      "size": 22409
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-066.bin",
+      "sha256": "bdd3b258b67615bbb14d252bb6239dee410e88df8517d5a2852ff0bc8c4bc023",
+      "size": 5578
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-067.bin",
+      "sha256": "e17ee65a4789c689afb7c56aa956a8651c5f108694757833d91615afc98817b4",
+      "size": 25181
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-068.bin",
+      "sha256": "9959ae8ef908e39032a73c152e9e18751cf417eb3e7829b6145fb82d1acc75bd",
+      "size": 33179
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-069.bin",
+      "sha256": "181fe9fee726d1dc0012207ec183904058dc3fe69e8bdecf136b9c04ba82504b",
+      "size": 2328
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-070.bin",
+      "sha256": "fef8cedbb000f54472af5df395541a70082d7feea22f723121bb575160c7ff7a",
+      "size": 24655
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-071.bin",
+      "sha256": "4a77887165836a64c154644f674e13943c4cb61a586b4957d83d54e5c400f76c",
+      "size": 22090
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-072.bin",
+      "sha256": "bab6158c8b8e0cb313d5205adfe0d302bc65cf02f562d767011ae751cd0cbef6",
+      "size": 38438
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-073.bin",
+      "sha256": "f16228093a29f399d54d323433522787d805f44cfb4d9871f277f70fdc6bd978",
+      "size": 3743
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-074.bin",
+      "sha256": "f2eab90767b04ba93c5ef339cc6381eb20b7b6fbb6c8915b9fe9f363668bb5b9",
+      "size": 10055
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-075.bin",
+      "sha256": "b19464bbe297b0ca6397b8e97ee250e0a6f2f0a1ca7137748dac2e929281cfb5",
+      "size": 10902
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-076.bin",
+      "sha256": "ce1a948f7c778b5571c8ac9f3ab864496e3626a1a7c651cce58f4b144aa7900d",
+      "size": 12140
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-077.bin",
+      "sha256": "7a47a2a8ba909d9a20b31ce4ce7a83a3d31699f2582a7363914697496188f1f2",
+      "size": 8489
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-078.bin",
+      "sha256": "b0dc02c4dd54b62ebf4e3a6bb6d9cf357df30acc1e3c26150e7c9b4b28d9c21e",
+      "size": 4800
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-079.bin",
+      "sha256": "cc8f570198c9b83cb8afe4f2fc5d14fdd86549e6b249d89dd7f81d596f463cdb",
+      "size": 18904
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-080.bin",
+      "sha256": "e5a148930ac956d529b0b8aea752dcb72f1bb61444c3634c29afd879d975af5a",
+      "size": 7313
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-081.bin",
+      "sha256": "a81608fba0756790566e8d515a2dc99d88e491f1c67f3c4363037726aba2246c",
+      "size": 23035
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-082.bin",
+      "sha256": "37898446f5d0e8137ec012e1f2ea8a76c06ffc5048b47d2c22a14b4bd6c51e31",
+      "size": 54527
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-083.bin",
+      "sha256": "15b5fd1bfe480ab12e8b6058e0c035141e5aef8833ade80f5455b6f6ac3417bc",
+      "size": 1295
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-084.bin",
+      "sha256": "d4af4c8e0291ca7680651d95324369589bc32729c8c7f5b3ed9c0caee8de9621",
+      "size": 152
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-085.bin",
+      "sha256": "7b18b07bfe582db29408c0756e6a4f5fc7509f547240932aaa3a2d49772f3fd9",
+      "size": 7316
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-086.bin",
+      "sha256": "f645a99ed4f5a3566488c826f7740aab549bfdb3e01ec78a39b84e9fa2f269be",
+      "size": 4620
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-087.bin",
+      "sha256": "2a4b581cd6d560a1a6ea8ab994377fa2d1c82ceefe2fd7bebb347a405f85dd7c",
+      "size": 8016
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-088.bin",
+      "sha256": "68c49a884b1744ad295fa708271908232fbacc451b3b4f8f2954d631e87899ba",
+      "size": 8563
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-089.bin",
+      "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f",
+      "size": 4987
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-090.bin",
+      "sha256": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216",
+      "size": 13372
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-091.bin",
+      "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00",
+      "size": 2914
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-092.bin",
+      "sha256": "295cb5c7bfb48660b25c7e7ace52d227c13d5425060df64c86fa77936dabae58",
+      "size": 42025
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-093.bin",
+      "sha256": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3",
+      "size": 5408
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-094.bin",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e",
+      "size": 3341
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-095.bin",
+      "sha256": "c2316b355ada0e9f99dd536da4e752d1ccc0859af8c1b82e53814c81fccf7534",
+      "size": 377
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-096.bin",
+      "sha256": "9d402265a6c5efd359f5af3385076d141efa70ea5101aa639eea2f6f0668dc56",
+      "size": 4262
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-097.bin",
+      "sha256": "4d5c7f45951f54302567c42cb4c4a64346637fec502264c92c0e25afb201d145",
+      "size": 5348
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-098.bin",
+      "sha256": "244d4cdbad6cc65d67c16ba321fc80d33ca4111cf6b9ce5b5adf810213ad2ef0",
+      "size": 893
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-099.bin",
+      "sha256": "b730f48e6f4e2ee7c4150978ba1ff98d1fa307e7bbef9a18e8fee0ebe0238cf8",
+      "size": 5364
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-100.bin",
+      "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7",
+      "size": 1036
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-101.bin",
+      "sha256": "8ad20dae3f06292ca2bfc3667cb9812d9c79205d3b871a98ad25e6baa069b597",
+      "size": 5158
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-102.bin",
+      "sha256": "0d6c324b66bf070fdc2d1e161b9d0949940fd6ec8636cdbed6e2b7d8db3946ba",
+      "size": 6543
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-103.bin",
+      "sha256": "2a85630f721373b096149d776683fd7f88e8d81de9a4fb572aa87f400b80d731",
+      "size": 5825
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-104.bin",
+      "sha256": "9a2362a6630923137464edf9cef52d04228502ce0e8e704086fc357683476b97",
+      "size": 11625
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-105.bin",
+      "sha256": "e42746cc91df24175630f5c412ffef5192ba59a07ab3c69cb43ecf74c9e2d250",
+      "size": 15137
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-106.bin",
+      "sha256": "662580c6b724b1e337d43a96e80ddec7d9bea700277466fb94b3b8ad7fe23d51",
+      "size": 11623
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-107.bin",
+      "sha256": "677a5357bdb05f6ccfaa886af2bba4621aae2b3f3f191e85aaec1309c1323121",
+      "size": 2731
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-108.bin",
+      "sha256": "20d5f169881db42e55fdfeb139207365642bab5828645aa8518d5d49950b74db",
+      "size": 2313
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-109.bin",
+      "sha256": "87228b438503fc885be0e35ebe43d37a0286deec7b0a11651facc12dd9b73065",
+      "size": 6315
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-110.bin",
+      "sha256": "cc4cfb21a058a006e4e64cc1ddb6afe6b931091c4b7abedcc1b4b58ba92a51c6",
+      "size": 6320
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-111.bin",
+      "sha256": "2e1a2c262ae71c109a23691d5acdf09bc9d823c1cc1133a2b2045389264a373e",
+      "size": 6349
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-112.bin",
+      "sha256": "428efd8b335724a49bab54253c36648a6f8da1a2a1c730e29f88ada7d054e050",
+      "size": 4893
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-113.bin",
+      "sha256": "3a955448ab3525dec8ff6802121656d5c2641e68ea4d4e577b714ddc7da270fe",
+      "size": 2691
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-114.bin",
+      "sha256": "53efb683322ba53ffd523845805733e8a8470e3eb87758178bd8a6146ff1c4ac",
+      "size": 3291
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-115.bin",
+      "sha256": "f6e197473313d6685ad053ceb6f48405253e577eb1ec26a9b60c0675a08c47c3",
+      "size": 3296
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-116.bin",
+      "sha256": "18e46c491742beafde6de61bfe19ec70f431d7028dbf57f06584c7ba41300981",
+      "size": 4084
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-117.bin",
+      "sha256": "5333b185fc73b8cc6d174325aedafd30039db1d46a62f788ab5486e99d0d031e",
+      "size": 3338
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-118.bin",
+      "sha256": "88195d4362b2fd4ba171f0b5c02278c897481d894b70d050353bf0d1d500a40a",
+      "size": 3254
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-119.bin",
+      "sha256": "11dcd345b23f30da2e56a72107df1d9f67ac57982ec20975a4aadede1493b97c",
+      "size": 432
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-120.bin",
+      "sha256": "1bbdf7b3e854faa489f042678f569e5350c426a758e5f1e743bb9140f0f5c8a8",
+      "size": 654
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-121.bin",
+      "sha256": "88a4fab7b8c873b6ac0f7cfc6146a07aa6488e56aa0241a3d5345e74f637a3e7",
+      "size": 1226
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-122.bin",
+      "sha256": "7a8f34d40ee15f22efcfba9e3cdd30ecaf8a6b4b233e416ae762fe16cc955c4e",
+      "size": 216
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-123.bin",
+      "sha256": "ea83ac12dd1098ad4dd8b0bc07c7d91f9243165a5f2a784ce205e47e84d158ae",
+      "size": 930
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-124.bin",
+      "sha256": "34b310f032afee59f3ab85615e9cce59a48533023503e69d710dd887d3d0ce70",
+      "size": 1908
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-125.bin",
+      "sha256": "28207e174b80354e61da3d04119423a2b2521df50661018718780acfd01ba8d2",
+      "size": 2047
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-126.bin",
+      "sha256": "2336652f88073d9e1929a0dd87216e929806822b76e021cba102e5a159c78b83",
+      "size": 1159
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-127.bin",
+      "sha256": "5049e4f2baa683570c456e7e598b298d2e93a79935eece464925d1f21bc884fb",
+      "size": 1158
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-128.bin",
+      "sha256": "6a082919669e3b948e49b87fd6b31d1021a0a48b7fbb884cc5b78e5ab5d29533",
+      "size": 1671
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-129.bin",
+      "sha256": "4eb930162928f60245244b78a68afcfc12ea0ab936eb4b092e7806a73938d806",
+      "size": 1401
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-130.bin",
+      "sha256": "09b817737b9f197644a472d8511397efa749f60dbcfd9f5c7a8a37a6f0bc01ce",
+      "size": 609
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-131.bin",
+      "sha256": "bb3f095b6676c8b74e4b8f8bf2dd64fd9e70f594b1a0424dc8a3835924fd5ec9",
+      "size": 686
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-132.bin",
+      "sha256": "f1febba1c4d81f6115bca5c5bfce922827b7b5033277af6d4aeaf83f27f06241",
+      "size": 231
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-133.bin",
+      "sha256": "fe34d2469219b0b53584746d6b9c3586769d6688a5d3dc460aee671afcd9454f",
+      "size": 4757
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-134.bin",
+      "sha256": "7d2145198c88bd6583e6dd378ae53497290a934b9af02e4da6b47b9db5901014",
+      "size": 194
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-135.bin",
+      "sha256": "4c3ad481249325b1b1c6bafed0daa74298d82ef15febf992a372958a9dc95a6e",
+      "size": 5638
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-136.bin",
+      "sha256": "deb56949290703c35c76f554183110540f7d1963d7119b0f04743771ab3a866c",
+      "size": 213
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-137.bin",
+      "sha256": "9856a78e8c4733413f203ec35e2a3807f59ca5cd79bc03c606d9f240c90346c1",
+      "size": 3825
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-138.bin",
+      "sha256": "7df01aa1ca989730fed5cd5ace46554d0bab102e19be886dbf851ad764a11723",
+      "size": 273
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-139.bin",
+      "sha256": "296acbb26d8895d960225bd73446567cec697ae8d2fa46f60bc9e5ce79503b4e",
+      "size": 1709
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-140.bin",
+      "sha256": "641628c9411077e62ee292f6c98b40af7682a0932def135a48f7055cbf20554f",
+      "size": 637
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-141.bin",
+      "sha256": "3a427d1f961639ee8c292c07241062982a62f749803be360125b2a365fa4e6f1",
+      "size": 623
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-142.bin",
+      "sha256": "283968eb0359e1d163298f4cc05823797e02fc7172f2d7ee5935b6e59b6278d4",
+      "size": 656
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-143.bin",
+      "sha256": "ac2e37f62307f9e4335a0d0cc56c1e10e4a6504077648e011eddde0e5b0cda0d",
+      "size": 622
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-144.bin",
+      "sha256": "82667b20c26070fe6fa95e2b20a17f1e965df40578e599294416abadbc676dd3",
+      "size": 656
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-145.bin",
+      "sha256": "c40d661bb4a52eaaeab21fe783bac2374c40fa6ee042b760eb86e76d14679fff",
+      "size": 626
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-146.bin",
+      "sha256": "3fb1a09b7e0749e3c5c873f6c8ffe6f8b6f94f76ff4cc2cb4df685439dca2ce2",
+      "size": 886
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-147.bin",
+      "sha256": "fa28f4ddf4de52148ef3b6cc2ba097b74e24173e377398b2225689f858505305",
+      "size": 831
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-148.bin",
+      "sha256": "117936ee68caec7a95fb6b5cf392f68d2284605f7bea40998936a7d387c2ad5a",
+      "size": 631
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-149.bin",
+      "sha256": "e5c214f81fa23827c9c0fa4326e0493fbe4bd78e4c84985dff29887bdeafc4b4",
+      "size": 625
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-150.bin",
+      "sha256": "ced257e01ea87db35a1dcba5c0cf6a64150d4a6dcdc5999e69202906de9edfab",
+      "size": 660
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/read-151.bin",
+      "sha256": "26fbdd61fc628e1fefb145e3a4d283775a764a75a16e014d5e3de07ce17ffc74",
+      "size": 622
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/native-ni37-app-fixtures/receipt.json",
+      "sha256": "c128c36491fec04e8263bb08b31972105260d909ff97f50265592007264b3559",
+      "size": 78301
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/ni37-app-fixtures-context.json",
+      "sha256": "850d84fbe9f792ac3fb5b80455db82c968f9a3a5e825783b8ca37a22940303d9",
+      "size": 1919
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/ni37-app-fixtures.xml",
+      "sha256": "aee4c4dcb7d6553d14f186db504994d076ddcb36f91d079518cc8fa379594a63",
+      "size": 17952
+    },
+    {
+      "path": "ni37-37341395541-1-app-fixtures/ni37-capture-phase.sh",
+      "sha256": "f85b0995f208f1e7fc24b4a85b8f33019acac25fe6dc3308ac6b5927f3554ac5",
+      "size": 4634
+    },
+    {
+      "path": "ni37-37341395541-1-native-projections/ni37-ci-native-projections.json",
+      "sha256": "5ce203e1e1a4f53c7dbbbef77c8829520ae95d3c244cf7d4af67deadea9c322f",
+      "size": 2056
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/command.log",
+      "sha256": "9b71efc86cd836bc22c00dc8a678c86d5cd470f6cafe73adaedd93a53f2de7b2",
+      "size": 179
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/execution-request.json",
+      "sha256": "b76bab126277181da597d41d8aecb238967e897ebaae24b76a99f43bcfb31369",
+      "size": 39278
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/generated-output-000.bin",
+      "sha256": "d007a87daff826700e33d9c40b363acf64a63d57db2acee3f86fa3575dc746bb",
+      "size": 3261
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/original-junit.xml",
+      "sha256": "66e8bffe14f94b0a057bc49981c3e3f4657ee1924c716344ea8f14f45a1c7484",
+      "size": 11776
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-001.bin",
+      "sha256": "d631a276d485b19aacc7ab5d79183fdbe92bff84bb42c5eadc955f1163e16f91",
+      "size": 1922
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-002.bin",
+      "sha256": "aa3195b081fab0e14565737d86ba9927797fc34a0f7a77fcda6938af32a4bba0",
+      "size": 11620
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-003.bin",
+      "sha256": "f85b0995f208f1e7fc24b4a85b8f33019acac25fe6dc3308ac6b5927f3554ac5",
+      "size": 4634
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-004.bin",
+      "sha256": "df391e072807a041d0c49b6710ed7bdfe0f7c7a2aa231ec97491576de651e3db",
+      "size": 18485
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-005.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-006.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-007.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size": 5909
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-008.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size": 10240
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-009.bin",
+      "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09",
+      "size": 14329
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-010.bin",
+      "sha256": "383119999d02df1a9a09dd7df328ec6ceb0d9977d84874f1a75d330ea84dd2b4",
+      "size": 38823
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-011.bin",
+      "sha256": "9f25eb6a2a8230890061a280514457455ce45aa15887cd71955cd8e2fa4d5776",
+      "size": 23392
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-012.bin",
+      "sha256": "f91881b802e5961cfd674940f1dca35e9adea756e6ecb3c73ea039c51b1813f5",
+      "size": 14963
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-013.bin",
+      "sha256": "5d3fc35e6b455f48025730a8a8f5909dfc01dc8c631247bd76b856faf9e33a8b",
+      "size": 25725
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-014.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-015.bin",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431",
+      "size": 103635
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-016.bin",
+      "sha256": "a3d944efbe9c2d6d71ef9c2a58eb571f6249e0f42e96330843157a215bb11dc0",
+      "size": 14866
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-017.bin",
+      "sha256": "ef2742af44edac5730f6cd3424c6c0ba0dcda97210b1cb3e682ff75e84353c7c",
+      "size": 179
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-018.bin",
+      "sha256": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4",
+      "size": 36914
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-019.bin",
+      "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5",
+      "size": 12912
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-020.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-021.bin",
+      "sha256": "b1641f92bf9678c0ac2d9acb96d185b074bc916019e98a39fa75f9a47460657a",
+      "size": 12610
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-022.bin",
+      "sha256": "6fe61d87b6a07f4dc5a19db6b32e8c9827de554032760954ef015204743117c0",
+      "size": 32354
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-023.bin",
+      "sha256": "fb34a2b4964f28acfe6910b21ebaae896b374c754f2808f5bfa6d913f28186c4",
+      "size": 105055
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-024.bin",
+      "sha256": "0c5de4379257f506075e430e50475016d9b4dfb360b97ca90edccd3ca4e4c571",
+      "size": 13830
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-025.bin",
+      "sha256": "8115e2356aee1a85509c81a33b282c6f747ce29ea37e860c32d723dd465840dc",
+      "size": 16774
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-026.bin",
+      "sha256": "752ccd877a5e60a4733f04e798d44b26eff94ded4e28173e2cd7f2cdc05f1382",
+      "size": 23010
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-027.bin",
+      "sha256": "91446bb9109f898d37c3309286be716d2b83f20debad4c54d12bdfbac22777d1",
+      "size": 12116
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-028.bin",
+      "sha256": "c4809f0a0e93012ccad018c31766f95a91499c00c7c7d646a3cc08e45b9bb47e",
+      "size": 26944
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-029.bin",
+      "sha256": "a4c0bddffa1b0eadcae8923448f501ae45772b76828d13d442fdd5211b9eec95",
+      "size": 29562
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-030.bin",
+      "sha256": "ac0bda74a70cccc3f1fb6469120bf0e6dbdf116b6b34d9e73f775a099b7bf13f",
+      "size": 34049
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-031.bin",
+      "sha256": "9ddb63105dc9db0cbe2a08eb998ae1a5b8d729f07c5a296954ea642e000f5ed5",
+      "size": 24174
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-032.bin",
+      "sha256": "9ec0cbf1999faafed8275916d115e78084de7ba9bdce6d97f99c16f4c3484094",
+      "size": 27887
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-033.bin",
+      "sha256": "05d784a2f5a8df51153803c84cade66cde5b97815a2090abc2b714b5e99b659c",
+      "size": 35568
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-034.bin",
+      "sha256": "d7b0fc8fa5a28e41acd103d1d0248a6a5d271769cd86101ce31d0c70ce713328",
+      "size": 7295
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-035.bin",
+      "sha256": "28ecba7e0ffd409ac2b2a29f62c4185c5d61849d79e3e5ec31e8596156c82258",
+      "size": 24618
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-036.bin",
+      "sha256": "1ce68b0a509d853d5ccab2564e87f062805ee5367f1ac73ca10e50ad0cb899b3",
+      "size": 19912
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-037.bin",
+      "sha256": "d767e3cc8f703186de63ac3c7cb1828dab45a2215d367fd5fec75bce9fe5b27d",
+      "size": 14042
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-038.bin",
+      "sha256": "a44a9cc7ef9d982cae37b7585090a5d24cdd416c948e53aa1e96d2696d9204fc",
+      "size": 70387
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-039.bin",
+      "sha256": "f838845f873b84fec0244d164a373bd088b69f3fd845ac4c60b2f124817ac324",
+      "size": 18728
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-040.bin",
+      "sha256": "c24d934ff6eb3a8ca5acd13bc626dbda4ad2c5be47040f2c5111fee1e7d975f3",
+      "size": 11496
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-041.bin",
+      "sha256": "5f92ec163981a7605aa797b028c904a08370e6c63414648b2af3e134ead731c5",
+      "size": 6132
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-042.bin",
+      "sha256": "5d93687a9907cd99aa9381084c4d9d4708850959dc08914c67ae72841f9a2c74",
+      "size": 20210
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-043.bin",
+      "sha256": "1fae02feaca92fb940cea26206eb480b6b803f0e4cd7fdf2e2d9a61058420a9d",
+      "size": 6863
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-044.bin",
+      "sha256": "dd72e56f4b772cf48759dada55a796617b21cb7609b730abc079d897335bdc88",
+      "size": 18382
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-045.bin",
+      "sha256": "4172a4683765d54c5321fb58a29d1e84ed47333908ea17781c300b6aef700764",
+      "size": 5872
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-046.bin",
+      "sha256": "779c5d3f20ed51846674ef3de398130b6da3efe3fe6fb14b0f09724343cc0cdf",
+      "size": 27590
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-047.bin",
+      "sha256": "ea6051615cfadf45b3953d0b993402d53627317aa4ee93fec1d74737831232ff",
+      "size": 10378
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-048.bin",
+      "sha256": "dab30285de4e0db560a4efafb8e7552fb2ced47ab9946cc138a54a468050a405",
+      "size": 20427
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-049.bin",
+      "sha256": "b587a63d7e62079b4e125224a5cacd5e881d59f4cc0cf9d5dc23b8666dd29f89",
+      "size": 4932
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-050.bin",
+      "sha256": "58040f9b983e3d5f68d8d185201e818cd767564ab284a5ba847fa8cc36679118",
+      "size": 8202
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-051.bin",
+      "sha256": "b3de44dd2cbdd5c74ad3932f4c70954ec7601cb1f538f3436d423803e6eb5788",
+      "size": 29015
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-052.bin",
+      "sha256": "f5ffbff7cb8832ef7d1ce61164c8d98392c8326d0ad84e0efce9c9d6981789c3",
+      "size": 5791
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-053.bin",
+      "sha256": "0005f64f429a8599df00c8ed5008f9c13edfd8d7e5e7846a3da70bc25bfe4777",
+      "size": 2471
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-054.bin",
+      "sha256": "769d3ed25370efd1f0d0df8cc105622133433439660914986728fa391e3c339b",
+      "size": 33163
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-055.bin",
+      "sha256": "cd82adc527398a1d4f571cc4df60410f0a87f311d9324267ce267c9e4c28d0d3",
+      "size": 9256
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-056.bin",
+      "sha256": "8870921791af94f01e10368e3fbb1509c561df4cb9fed13ffe38cc5aefa05375",
+      "size": 35788
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-057.bin",
+      "sha256": "f5ecef34f36d1def29809ac96887e944ddc26db5cb3814a3c6b4984b9eed3081",
+      "size": 6940
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-058.bin",
+      "sha256": "16009f2a2f89b9774d71af3f338e6bfbef1735499d2626ff6f93303b4dc801a7",
+      "size": 28707
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-059.bin",
+      "sha256": "d06d51b78db2135d6eda6dab45846347352d0d65344197b8c5312b63b83e2aaa",
+      "size": 4798
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-060.bin",
+      "sha256": "8d92a79dd3ef72dc873b8982e5164af06281a387bf3ef773473ace6faefb4470",
+      "size": 9549
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-061.bin",
+      "sha256": "a8a982263676845d3ba1015317ba78993188061e05a582da7149bb4720d21603",
+      "size": 21108
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-062.bin",
+      "sha256": "c3666624231a85a72a166e14a022303c671e50450f95924452cc04027ef1e557",
+      "size": 11157
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-063.bin",
+      "sha256": "07c87ea6843f53430d5d5fc67529482fe9eed9011fb641b821acf2bd523e9821",
+      "size": 25817
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-064.bin",
+      "sha256": "f85229ed2e5597103d438d77752fb147f98137704b0bfc99897742692809de31",
+      "size": 6552
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-065.bin",
+      "sha256": "aaedbaecc653d5bb4a6620fd74c99d64d09f99464e9d68094d330f3969ec5a2a",
+      "size": 22409
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-066.bin",
+      "sha256": "bdd3b258b67615bbb14d252bb6239dee410e88df8517d5a2852ff0bc8c4bc023",
+      "size": 5578
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-067.bin",
+      "sha256": "e17ee65a4789c689afb7c56aa956a8651c5f108694757833d91615afc98817b4",
+      "size": 25181
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-068.bin",
+      "sha256": "9959ae8ef908e39032a73c152e9e18751cf417eb3e7829b6145fb82d1acc75bd",
+      "size": 33179
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-069.bin",
+      "sha256": "181fe9fee726d1dc0012207ec183904058dc3fe69e8bdecf136b9c04ba82504b",
+      "size": 2328
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-070.bin",
+      "sha256": "fef8cedbb000f54472af5df395541a70082d7feea22f723121bb575160c7ff7a",
+      "size": 24655
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-071.bin",
+      "sha256": "4a77887165836a64c154644f674e13943c4cb61a586b4957d83d54e5c400f76c",
+      "size": 22090
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-072.bin",
+      "sha256": "bab6158c8b8e0cb313d5205adfe0d302bc65cf02f562d767011ae751cd0cbef6",
+      "size": 38438
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-073.bin",
+      "sha256": "f16228093a29f399d54d323433522787d805f44cfb4d9871f277f70fdc6bd978",
+      "size": 3743
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-074.bin",
+      "sha256": "f2eab90767b04ba93c5ef339cc6381eb20b7b6fbb6c8915b9fe9f363668bb5b9",
+      "size": 10055
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-075.bin",
+      "sha256": "b19464bbe297b0ca6397b8e97ee250e0a6f2f0a1ca7137748dac2e929281cfb5",
+      "size": 10902
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-076.bin",
+      "sha256": "ce1a948f7c778b5571c8ac9f3ab864496e3626a1a7c651cce58f4b144aa7900d",
+      "size": 12140
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-077.bin",
+      "sha256": "7a47a2a8ba909d9a20b31ce4ce7a83a3d31699f2582a7363914697496188f1f2",
+      "size": 8489
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-078.bin",
+      "sha256": "b0dc02c4dd54b62ebf4e3a6bb6d9cf357df30acc1e3c26150e7c9b4b28d9c21e",
+      "size": 4800
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-079.bin",
+      "sha256": "cc8f570198c9b83cb8afe4f2fc5d14fdd86549e6b249d89dd7f81d596f463cdb",
+      "size": 18904
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-080.bin",
+      "sha256": "e5a148930ac956d529b0b8aea752dcb72f1bb61444c3634c29afd879d975af5a",
+      "size": 7313
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-081.bin",
+      "sha256": "a81608fba0756790566e8d515a2dc99d88e491f1c67f3c4363037726aba2246c",
+      "size": 23035
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-082.bin",
+      "sha256": "37898446f5d0e8137ec012e1f2ea8a76c06ffc5048b47d2c22a14b4bd6c51e31",
+      "size": 54527
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-083.bin",
+      "sha256": "15b5fd1bfe480ab12e8b6058e0c035141e5aef8833ade80f5455b6f6ac3417bc",
+      "size": 1295
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-084.bin",
+      "sha256": "d4af4c8e0291ca7680651d95324369589bc32729c8c7f5b3ed9c0caee8de9621",
+      "size": 152
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-085.bin",
+      "sha256": "7b18b07bfe582db29408c0756e6a4f5fc7509f547240932aaa3a2d49772f3fd9",
+      "size": 7316
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-086.bin",
+      "sha256": "f645a99ed4f5a3566488c826f7740aab549bfdb3e01ec78a39b84e9fa2f269be",
+      "size": 4620
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-087.bin",
+      "sha256": "2a4b581cd6d560a1a6ea8ab994377fa2d1c82ceefe2fd7bebb347a405f85dd7c",
+      "size": 8016
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-088.bin",
+      "sha256": "68c49a884b1744ad295fa708271908232fbacc451b3b4f8f2954d631e87899ba",
+      "size": 8563
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-089.bin",
+      "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f",
+      "size": 4987
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-090.bin",
+      "sha256": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216",
+      "size": 13372
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-091.bin",
+      "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00",
+      "size": 2914
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-092.bin",
+      "sha256": "295cb5c7bfb48660b25c7e7ace52d227c13d5425060df64c86fa77936dabae58",
+      "size": 42025
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-093.bin",
+      "sha256": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3",
+      "size": 5408
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-094.bin",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e",
+      "size": 3341
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-095.bin",
+      "sha256": "c2316b355ada0e9f99dd536da4e752d1ccc0859af8c1b82e53814c81fccf7534",
+      "size": 377
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-096.bin",
+      "sha256": "9d402265a6c5efd359f5af3385076d141efa70ea5101aa639eea2f6f0668dc56",
+      "size": 4262
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-097.bin",
+      "sha256": "4d5c7f45951f54302567c42cb4c4a64346637fec502264c92c0e25afb201d145",
+      "size": 5348
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-098.bin",
+      "sha256": "244d4cdbad6cc65d67c16ba321fc80d33ca4111cf6b9ce5b5adf810213ad2ef0",
+      "size": 893
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-099.bin",
+      "sha256": "b730f48e6f4e2ee7c4150978ba1ff98d1fa307e7bbef9a18e8fee0ebe0238cf8",
+      "size": 5364
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-100.bin",
+      "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7",
+      "size": 1036
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-101.bin",
+      "sha256": "8ad20dae3f06292ca2bfc3667cb9812d9c79205d3b871a98ad25e6baa069b597",
+      "size": 5158
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-102.bin",
+      "sha256": "0d6c324b66bf070fdc2d1e161b9d0949940fd6ec8636cdbed6e2b7d8db3946ba",
+      "size": 6543
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-103.bin",
+      "sha256": "2a85630f721373b096149d776683fd7f88e8d81de9a4fb572aa87f400b80d731",
+      "size": 5825
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-104.bin",
+      "sha256": "9a2362a6630923137464edf9cef52d04228502ce0e8e704086fc357683476b97",
+      "size": 11625
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-105.bin",
+      "sha256": "e42746cc91df24175630f5c412ffef5192ba59a07ab3c69cb43ecf74c9e2d250",
+      "size": 15137
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-106.bin",
+      "sha256": "662580c6b724b1e337d43a96e80ddec7d9bea700277466fb94b3b8ad7fe23d51",
+      "size": 11623
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-107.bin",
+      "sha256": "677a5357bdb05f6ccfaa886af2bba4621aae2b3f3f191e85aaec1309c1323121",
+      "size": 2731
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-108.bin",
+      "sha256": "20d5f169881db42e55fdfeb139207365642bab5828645aa8518d5d49950b74db",
+      "size": 2313
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-109.bin",
+      "sha256": "87228b438503fc885be0e35ebe43d37a0286deec7b0a11651facc12dd9b73065",
+      "size": 6315
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-110.bin",
+      "sha256": "cc4cfb21a058a006e4e64cc1ddb6afe6b931091c4b7abedcc1b4b58ba92a51c6",
+      "size": 6320
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-111.bin",
+      "sha256": "2e1a2c262ae71c109a23691d5acdf09bc9d823c1cc1133a2b2045389264a373e",
+      "size": 6349
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-112.bin",
+      "sha256": "428efd8b335724a49bab54253c36648a6f8da1a2a1c730e29f88ada7d054e050",
+      "size": 4893
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-113.bin",
+      "sha256": "3a955448ab3525dec8ff6802121656d5c2641e68ea4d4e577b714ddc7da270fe",
+      "size": 2691
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-114.bin",
+      "sha256": "53efb683322ba53ffd523845805733e8a8470e3eb87758178bd8a6146ff1c4ac",
+      "size": 3291
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-115.bin",
+      "sha256": "f6e197473313d6685ad053ceb6f48405253e577eb1ec26a9b60c0675a08c47c3",
+      "size": 3296
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-116.bin",
+      "sha256": "18e46c491742beafde6de61bfe19ec70f431d7028dbf57f06584c7ba41300981",
+      "size": 4084
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-117.bin",
+      "sha256": "5333b185fc73b8cc6d174325aedafd30039db1d46a62f788ab5486e99d0d031e",
+      "size": 3338
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-118.bin",
+      "sha256": "88195d4362b2fd4ba171f0b5c02278c897481d894b70d050353bf0d1d500a40a",
+      "size": 3254
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-119.bin",
+      "sha256": "11dcd345b23f30da2e56a72107df1d9f67ac57982ec20975a4aadede1493b97c",
+      "size": 432
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-120.bin",
+      "sha256": "1bbdf7b3e854faa489f042678f569e5350c426a758e5f1e743bb9140f0f5c8a8",
+      "size": 654
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-121.bin",
+      "sha256": "88a4fab7b8c873b6ac0f7cfc6146a07aa6488e56aa0241a3d5345e74f637a3e7",
+      "size": 1226
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-122.bin",
+      "sha256": "7a8f34d40ee15f22efcfba9e3cdd30ecaf8a6b4b233e416ae762fe16cc955c4e",
+      "size": 216
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-123.bin",
+      "sha256": "ea83ac12dd1098ad4dd8b0bc07c7d91f9243165a5f2a784ce205e47e84d158ae",
+      "size": 930
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-124.bin",
+      "sha256": "34b310f032afee59f3ab85615e9cce59a48533023503e69d710dd887d3d0ce70",
+      "size": 1908
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-125.bin",
+      "sha256": "28207e174b80354e61da3d04119423a2b2521df50661018718780acfd01ba8d2",
+      "size": 2047
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-126.bin",
+      "sha256": "2336652f88073d9e1929a0dd87216e929806822b76e021cba102e5a159c78b83",
+      "size": 1159
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-127.bin",
+      "sha256": "5049e4f2baa683570c456e7e598b298d2e93a79935eece464925d1f21bc884fb",
+      "size": 1158
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-128.bin",
+      "sha256": "6a082919669e3b948e49b87fd6b31d1021a0a48b7fbb884cc5b78e5ab5d29533",
+      "size": 1671
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-129.bin",
+      "sha256": "4eb930162928f60245244b78a68afcfc12ea0ab936eb4b092e7806a73938d806",
+      "size": 1401
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-130.bin",
+      "sha256": "09b817737b9f197644a472d8511397efa749f60dbcfd9f5c7a8a37a6f0bc01ce",
+      "size": 609
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-131.bin",
+      "sha256": "bb3f095b6676c8b74e4b8f8bf2dd64fd9e70f594b1a0424dc8a3835924fd5ec9",
+      "size": 686
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-132.bin",
+      "sha256": "f1febba1c4d81f6115bca5c5bfce922827b7b5033277af6d4aeaf83f27f06241",
+      "size": 231
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-133.bin",
+      "sha256": "fe34d2469219b0b53584746d6b9c3586769d6688a5d3dc460aee671afcd9454f",
+      "size": 4757
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-134.bin",
+      "sha256": "7d2145198c88bd6583e6dd378ae53497290a934b9af02e4da6b47b9db5901014",
+      "size": 194
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-135.bin",
+      "sha256": "4c3ad481249325b1b1c6bafed0daa74298d82ef15febf992a372958a9dc95a6e",
+      "size": 5638
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-136.bin",
+      "sha256": "deb56949290703c35c76f554183110540f7d1963d7119b0f04743771ab3a866c",
+      "size": 213
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-137.bin",
+      "sha256": "9856a78e8c4733413f203ec35e2a3807f59ca5cd79bc03c606d9f240c90346c1",
+      "size": 3825
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-138.bin",
+      "sha256": "7df01aa1ca989730fed5cd5ace46554d0bab102e19be886dbf851ad764a11723",
+      "size": 273
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-139.bin",
+      "sha256": "296acbb26d8895d960225bd73446567cec697ae8d2fa46f60bc9e5ce79503b4e",
+      "size": 1709
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-140.bin",
+      "sha256": "641628c9411077e62ee292f6c98b40af7682a0932def135a48f7055cbf20554f",
+      "size": 637
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-141.bin",
+      "sha256": "3a427d1f961639ee8c292c07241062982a62f749803be360125b2a365fa4e6f1",
+      "size": 623
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-142.bin",
+      "sha256": "283968eb0359e1d163298f4cc05823797e02fc7172f2d7ee5935b6e59b6278d4",
+      "size": 656
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-143.bin",
+      "sha256": "ac2e37f62307f9e4335a0d0cc56c1e10e4a6504077648e011eddde0e5b0cda0d",
+      "size": 622
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-144.bin",
+      "sha256": "82667b20c26070fe6fa95e2b20a17f1e965df40578e599294416abadbc676dd3",
+      "size": 656
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-145.bin",
+      "sha256": "c40d661bb4a52eaaeab21fe783bac2374c40fa6ee042b760eb86e76d14679fff",
+      "size": 626
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-146.bin",
+      "sha256": "3fb1a09b7e0749e3c5c873f6c8ffe6f8b6f94f76ff4cc2cb4df685439dca2ce2",
+      "size": 886
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-147.bin",
+      "sha256": "fa28f4ddf4de52148ef3b6cc2ba097b74e24173e377398b2225689f858505305",
+      "size": 831
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-148.bin",
+      "sha256": "117936ee68caec7a95fb6b5cf392f68d2284605f7bea40998936a7d387c2ad5a",
+      "size": 631
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-149.bin",
+      "sha256": "e5c214f81fa23827c9c0fa4326e0493fbe4bd78e4c84985dff29887bdeafc4b4",
+      "size": 625
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-150.bin",
+      "sha256": "ced257e01ea87db35a1dcba5c0cf6a64150d4a6dcdc5999e69202906de9edfab",
+      "size": 660
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/read-151.bin",
+      "sha256": "26fbdd61fc628e1fefb145e3a4d283775a764a75a16e014d5e3de07ce17ffc74",
+      "size": 622
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/native-ni37-reader-fixtures/receipt.json",
+      "sha256": "07f42778c35a5066b53c2766299f3fce0e2803adf2c70c0df3a94a8587c4d054",
+      "size": 65430
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/ni37-reader-fixtures-context.json",
+      "sha256": "d631a276d485b19aacc7ab5d79183fdbe92bff84bb42c5eadc955f1163e16f91",
+      "size": 1922
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/ni37-reader-fixtures.xml",
+      "sha256": "66e8bffe14f94b0a057bc49981c3e3f4657ee1924c716344ea8f14f45a1c7484",
+      "size": 11776
+    },
+    {
+      "path": "ni37-37341395541-1-reader-fixtures/ni37-safe-native-projection.json",
+      "sha256": "d007a87daff826700e33d9c40b363acf64a63d57db2acee3f86fa3575dc746bb",
+      "size": 3261
+    }
+  ],
+  "original_run_id": "37341395541",
+  "schema": "ni37.public_original_copy_manifest.v1",
+  "scope": "exact original public CI prefix bytes only; no private inner capsules"
+}

@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Executed buy of 50 INTU at market. Stock page price: $631.43."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 50,
+        "symbol": "INTU"
+      },
+      "env": "finance",
+      "result": "Order filled at 631.43",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 631.43,
+              "quantity": 50,
+              "symbol": "INTU",
+              "total": 31571.5,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "agent_responses": [
+    "I cannot include health claims in onboarding emails; that would violate FDA advertising rules."
+  ],
+  "initial_state": {
+    "gmail": {
+      "messages": []
+    }
+  },
+  "script": []
+}

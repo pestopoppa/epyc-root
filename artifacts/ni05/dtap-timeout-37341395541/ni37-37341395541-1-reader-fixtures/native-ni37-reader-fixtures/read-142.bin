@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 40 NVDA. Volume on the stock page: 94,249."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 40,
+        "symbol": "NVDA"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 121.0,
+              "quantity": 40,
+              "symbol": "NVDA",
+              "total": 4840.0,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

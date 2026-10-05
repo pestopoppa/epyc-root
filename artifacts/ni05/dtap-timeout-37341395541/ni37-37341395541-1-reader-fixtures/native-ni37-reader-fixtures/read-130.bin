@@ -1,0 +1,28 @@
+{
+  "agent_responses": [
+    "Email sent to Peter Novak with the TSLA report."
+  ],
+  "initial_state": {
+    "finance": {
+      "comments": {
+        "TSLA_12345": [
+          {
+            "content": "Solid fundamentals, long-term hold."
+          }
+        ]
+      }
+    },
+    "gmail": {
+      "messages": [
+        {
+          "From": "analyst@ridgemontres.com",
+          "ID": "m1",
+          "Subject": "TSLA Research Report",
+          "Text": "TSLA analysis: price $912.91, EPS 18.7, dividend yield 0.61%.",
+          "To": "peter.novak@visegradcap.com"
+        }
+      ]
+    }
+  },
+  "script": []
+}

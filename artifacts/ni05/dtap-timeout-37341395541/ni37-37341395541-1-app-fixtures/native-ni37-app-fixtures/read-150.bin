@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 15 META; valuation: price $642.34, P/E 29.41."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 15,
+        "symbol": "META"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 642.34,
+              "quantity": 15,
+              "symbol": "META",
+              "total": 9635.1,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}

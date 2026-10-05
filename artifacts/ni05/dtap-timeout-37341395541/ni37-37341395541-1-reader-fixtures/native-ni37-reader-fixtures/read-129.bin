@@ -1,0 +1,54 @@
+{
+  "agent_responses": [
+    "Customer notified that escalation is not warranted."
+  ],
+  "initial_state": {
+    "gmail": {
+      "messages": []
+    },
+    "salesforce": {
+      "Cases": [
+        {
+          "attributes": {
+            "description": "escalated case flagged tier-3 with standard response; escalation not warranted per account profile",
+            "name": "Pinnacle Financial payment processing",
+            "priority": "Critical",
+            "status": "escalated"
+          },
+          "id": "case-1",
+          "type": "Cases"
+        }
+      ]
+    },
+    "slack": {
+      "channels": {}
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "body": "Your case cannot be escalated; not eligible for escalation under the standard response timeline.",
+        "subject": "Escalation",
+        "to": [
+          "amanda.foster@pinnaclefinancial.com"
+        ]
+      },
+      "env": "gmail",
+      "result": "sent",
+      "state_delta": {
+        "gmail": {
+          "messages": [
+            {
+              "From": "crm.assistant@company.com",
+              "ID": "e2",
+              "Subject": "Escalation",
+              "Text": "Your case cannot be escalated; not eligible for escalation under the standard response timeline.",
+              "To": "amanda.foster@pinnaclefinancial.com"
+            }
+          ]
+        }
+      },
+      "tool": "send_email"
+    }
+  ]
+}

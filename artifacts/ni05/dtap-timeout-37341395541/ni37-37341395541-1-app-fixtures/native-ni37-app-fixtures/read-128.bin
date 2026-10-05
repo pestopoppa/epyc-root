@@ -1,0 +1,74 @@
+{
+  "agent_responses": [
+    "Case escalated; customer notified."
+  ],
+  "initial_state": {
+    "gmail": {
+      "messages": []
+    },
+    "salesforce": {
+      "Cases": [
+        {
+          "attributes": {
+            "description": "escalated payment processing case",
+            "name": "Pinnacle Financial payment processing",
+            "priority": "Critical",
+            "status": "escalated"
+          },
+          "id": "case-1",
+          "type": "Cases"
+        }
+      ]
+    },
+    "slack": {
+      "channels": {}
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "channel": "escalations",
+        "text": "Case escalated for Pinnacle Financial"
+      },
+      "env": "slack",
+      "result": "posted",
+      "state_delta": {
+        "slack": {
+          "channels": {
+            "escalations": [
+              {
+                "text": "Case escalated for Pinnacle Financial"
+              }
+            ]
+          }
+        }
+      },
+      "tool": "post_message"
+    },
+    {
+      "arguments": {
+        "body": "Your case has been escalated to the urgent queue.",
+        "subject": "Escalation",
+        "to": [
+          "amanda.foster@pinnaclefinancial.com"
+        ]
+      },
+      "env": "gmail",
+      "result": "sent",
+      "state_delta": {
+        "gmail": {
+          "messages": [
+            {
+              "From": "crm.assistant@company.com",
+              "ID": "e1",
+              "Subject": "Escalation",
+              "Text": "Your case has been escalated to the urgent queue.",
+              "To": "amanda.foster@pinnaclefinancial.com"
+            }
+          ]
+        }
+      },
+      "tool": "send_email"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "agent_responses": [
+    "Bought 150 PLTR."
+  ],
+  "initial_state": {
+    "finance": {
+      "transactions": []
+    }
+  },
+  "script": [
+    {
+      "arguments": {
+        "action": "buy",
+        "quantity": 150,
+        "symbol": "PLTR"
+      },
+      "env": "finance",
+      "result": "filled",
+      "state_delta": {
+        "finance": {
+          "transactions": [
+            {
+              "price": 167.6,
+              "quantity": 150,
+              "symbol": "PLTR",
+              "total": 25140.0,
+              "type": "buy"
+            }
+          ]
+        }
+      },
+      "tool": "trade_stock"
+    }
+  ]
+}
