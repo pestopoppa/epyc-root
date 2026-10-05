@@ -7,7 +7,7 @@ permissions:
 env:
   ROOT_SHA: 36c191832bd58f175f0a7b90e733f2ea14a5169b
   RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
-  ORCH_SHA: 2d24b1cb5157f91fd305f2d95b33c152297e088e
+  ORCH_SHA: 96f6e2b2b0c699eec599383ec38e5decafaa618b
 jobs:
   root:
     runs-on: ubuntu-latest
@@ -15,6 +15,7 @@ jobs:
     env:
       ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
       ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni05-unused-llama-server
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,6 +96,10 @@ jobs:
   research:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni05-unused-llama-server
     steps:
       - uses: actions/checkout@v4
         with:
@@ -168,6 +173,7 @@ jobs:
       ORCHESTRATOR_MOCK_MODE: 'true'
       ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
       ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni05-unused-llama-server
     steps:
       - uses: actions/checkout@v4
         with:
