@@ -40,8 +40,9 @@
   *all-keeps fold (candidate "Y")*): the DS41 port and the 7 serving-gated keeps (bundles `a1faab471` +7.113% and COR
   `053c3bd82` +11.18%) are in the global champion, now `b0ba1d427` after three more folds the same day. The 14 held
   keeps failed two bundle gates and stay off it (rebased as Z' `70e7133a1`, DS41-C125). C112 resolved (culprit
-  `9b148baab`, shape-gated). DS41 relaunch on `b0ba1d427` with folding enabled is pending (~03:00Z 10-05, after
-  workspace-ec's YaRN CPU leg; DS41-C121).
+  `9b148baab`, shape-gated). **DS41 and Q38FN both relaunched on `b0ba1d427` 2026-10-05** after a bundle-ancestry
+  refusal and a fresh-store fix (DS41-C126) — see DS41-C121/C126 for the chain, the unlanded fixes (a)-(c) and the
+  calibration-priority ruling (d).
 - The 2026-09-22 status line ("download in progress, no port yet") is history.
 **Created**: 2026-09-22 (operator retargeting of INF-69: "translate the GLM-5.3-Flash handoffs to
 target DeepSeek-V4.1-Flash instead (assuming they are applicable)")
@@ -1085,7 +1086,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   returns a "peer busy, retry" refusal before the harness timeout; the actor seat raises the shell timeout for
   ak-check; or the wait moves out of the actor's shell. Done with a test and one observed peer wait that ends as a
   refusal or a completed check.
-- [ ] DS41-C121 — **restart both lanes after the backlog drain, opted into ONE-champion folding.** (filed 2026-10-04)
+- [x] DS41-C121 — **restart both lanes after the backlog drain, opted into ONE-champion folding.** (filed 2026-10-04)
   After the backlog (`/mnt/raid0/llm/tmp/backlog-schedule-20261004.md`) is exhausted: remove `WATCHDOG3_HOLD` and
   relaunch DS41 at a batch boundary on its lane0 args; relaunch the Q38FN lane with
   `/mnt/raid0/llm/tmp/q38fn-lane-run1-20261004/relaunch.sh`. Both run research ≥ `be23ac25` (which contains `aef2da6c`,
@@ -1093,7 +1094,35 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   KVU-19 fold. Before DS41 opts in, disposition the 27 un-ledgered commits its working branch carries over the champion
   (ledger, fold through G0, or drop), so folding does not carry unmeasured commits into the champion. Fold in C113b,
   C108a and C119 at the same boundary. Done when both lanes run with folding enabled and the first fold or deferral is
-  ledgered.
+  ledgered. ✅ 2026-10-05 — both lanes relaunched (DS41-C126), but **not** carrying C113b/C108a/C119 at this
+  boundary — those three remain open and are now untethered from a boundary that already happened.
+  - [ ] DS41-C126 — **relaunch on `b0ba1d427` REFUSED on bundle/anchor ancestry; fixed with a fresh per-anchor
+    store, not a code change.** Anchor builds done 03:18:59Z; `prepare_inputs` + 4 dry runs rc=0; DS41 launched
+    03:19:35Z and refused: `bundle recovery required: invalid tip/anchor ancestry: persisted tip dd6c9cdbdf85 is
+    not an ancestor of anchor b0ba1d427835`. The persisted accumulator bundle from the pre-backlog-drain epoch
+    pinned an old tip; `seed_bundle` is documented as not the repair for this. Fix applied: each lane got a fresh
+    store `store-b0ba1d427` (accumulator `champion_of_record` = tip = `b0ba1d427`, keeps `[]`, inbox notes copied
+    across; old stores left untouched). DS41 relaunched 03:24:35Z (`serial_run` pid 3987149, watchdog4 3979082);
+    Q38FN relaunched 03:25:05Z (pid 3988340). Prep dir `/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/`
+    (`RELAUNCH.md` has the full timeline). Gaps this surfaced, none of them closed yet:
+    - [ ] **(a) no supported path to start a new epoch on a new anchor.** The loop has nothing it is
+      *meant* to do when the champion moves to an anchor the persisted bundle doesn't descend from — the refusal
+      is correct (it caught a real staleness) but there is no code path short of hand-building a fresh store.
+      A new-anchor epoch should create/rotate the bundle explicitly instead of refusing with no repair.
+    - [ ] **(b) `dryrun.sh` exited 0 on failure.** Fixed ad hoc in the prep dir
+      (`/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/`); the fix has not been landed in the research repo's
+      checked-in script.
+    - [ ] **(c) research commit `6cb5f0c5` (accept `--longctx-surface` in common args) is UNPUSHED** on branch
+      `fix/ak-lanes-relaunch-20261005` in `epyc-inference-research` — needs review and landing.
+    - [ ] **(d) the newcomer-lane calibration-vs-incumbent-batch race.** Q38FN cannot start hosted planning
+      until its startup CPU calibration runs; with DS41 holding the CPU it waited >30 min past its wait bound.
+      Operator ruling 2026-10-05: *"if the calibration is indispensable, prioritize making space for it."* Applied:
+      DS41 pause queued via its control endpoint (`pause-for-q38fn-calibration-20261005`, takes effect at the next
+      batch boundary ~05:30Z); watcher `resume_ds41_v3.py` resumes DS41 after Q38FN's calibration plus
+      workspace-ec's decode check and the :8083 relaunch (gated on files `EC_DECODE_CHECK_DONE`,
+      `EC_8083_RELAUNCH_DONE`; 120-min bound). Structural follow-up, still open: the loop should schedule a
+      newcomer lane's calibration ahead of the incumbent's next batch automatically, rather than needing this
+      per-incident watcher.
   - [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
     inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv` (`orig → new` sha, keep id, gate evidence,
     disposition): 4 port + 1 profiling (`ebb68dc55`, compiled out unless `GGML_CPU_PROF`) + 7 serving-gated keeps

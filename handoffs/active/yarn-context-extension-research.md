@@ -147,6 +147,10 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     FA route: AKX-ALL-21 (`cpu_fa_schedule` at depth) in
     [`autokernel-all-devices-all-dimensions.md`](autokernel-all-devices-all-dimensions.md). Done when AKX-ALL-21's
     at-depth profile cites this curve as an input, or a keep-or-refuse verdict on it is recorded.
+    *(2026-10-05, ak-ds41-main)* This curve is **Qwen3.6-35B-A3B, dense attention** — an earlier AK inbox note
+    wrongly attributed it to Q38FN (QSA sparse attention, a different mechanism entirely); corrected in
+    `store-b0ba1d427/inbox/64-*.md`. The off-roofline falloff is now filed as a labelled hypothesis,
+    AKX-ALL-24 (CPU FA decode may parallelize only over Q heads) — not measured, a candidate kernel target only.
 - [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
   package must:
   - swap the 27B into the np 1 YaRN f2 profile during long-document work, and say who waits during the swap;

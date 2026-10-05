@@ -122,3 +122,11 @@ bullets below are the working detail.
 - **Dry-run cleanup removes only the exact paths it created, never a glob.** See INC-20261004-glob-rm-deleted-receipt-evidence
   in `docs/reference/agent-config/INCIDENT_LOG.md` (a `rm -rf receipt-ab/paired-*` deleted a real, ingested run dir).
   Copy any ledger-cited run dir under root `artifacts/` before cleanup runs in its scratch tree.
+- **Never present a measurement from model A as model B's cost curve because they are "siblings."** Check
+  architecture first — Qwen3.6-35B-A3B (dense attention) and Qwen3.8-Flash-Next (QSA sparse indexer attention) are
+  both `qwen4exp`-family but have different attention mechanisms with different cost-at-depth behavior; a decode
+  falloff curve measured on one does not transfer to the other. (origin: 2026-10-05 — an AK inbox note attributed
+  workspace-ec's Qwen3.6-35B-A3B YaRN CPU-leg decode curve to Q38FN; corrected in `store-b0ba1d427/inbox/64-*.md`)
+- **A status claim that something was handed off must be backed by the actual send.** "Relayed to X" or "handed to
+  the coordinator" is a claim about an event, not a description of intent — verify the message, file or bus entry
+  that constitutes the handoff actually exists before writing the claim down. (origin: 2026-10-05 wrap-up review)

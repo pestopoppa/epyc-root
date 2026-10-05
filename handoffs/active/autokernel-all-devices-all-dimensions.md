@@ -322,6 +322,29 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 - [ ] **AKX-ALL-21: first CPU attention campaign round at depth.** After AKX-ALL-4/6/7/9/10/17. A Q38FN lane round
   where the planner sees the at-depth profile, authors a `cpu_fa_schedule` candidate, and the C1 surface plus the G5
   gate decide it. Done when one keep-or-refuse verdict at depth is recorded with all dimensions.
+  - [ ] **AKX-ALL-23 — Q38FN's QSA top-k may not bound decode cost; structural lever if it doesn't.** (filed
+    2026-10-05, ak-ds41-main) Q38FN (GGUF arch `qwen4exp`: 48 layers, full attention every 4th layer = 12 attn
+    layers, 24 Q heads, 2 KV heads, head_dim 256) has QSA sparse attention with indexer `top_k=2048` (indexer 4
+    heads, key_length 128, compressed blocks) — a **different attention family from DS41's dense mask-and-concat**
+    (AKX-ALL-12/20); do not reuse that finding's arithmetic here. In llama.cpp `src/models/qwen4exp.cpp`
+    (`build_qsa_top_k` / `build_attn_qsa`, ~L675-880) the top-k is realized by `ggml_set_rows` unmasking cells in a
+    FULL `n_kv` KQ mask, then dense FA over all `n_kv` cells — so decode cost may still be **O(n_kv)** despite
+    `top_k=2048`, i.e. the sparsity may be masked, not computed sparse. **Q38FN decode-vs-context is UNMEASURED**
+    (code reading only, not benched). Structural lever if the at-depth profile shows it is not flat: gather the
+    top-k K/V rows into a compact O(2048) buffer before FA instead of masking a dense `n_kv`-wide pass. Feeds the
+    AKX-ALL-21 at-depth profile and `cpu_fa_schedule` candidate authoring directly — confirm or refute the O(n_kv)
+    read before the planner commits to a candidate shape. Done when the at-depth profile shows flat (QSA bounds
+    cost, drop this lever) or growing (structural gather lever is real; scope a candidate) decode cost.
+  - [ ] **AKX-ALL-24 — candidate CPU kernel target: dense attention decode may parallelize only over Q heads.**
+    (filed 2026-10-05, ak-ds41-main; **hypothesis, not measured**) workspace-ec's INF-59 YaRN CPU leg
+    (`yarn-context-extension-research.md` → YARN-CPU-ATTN) measured Qwen3.6-35B-A3B (dense attention, not QSA)
+    decode falling ~5x from 34K to 253K context (20.4 → 3.7 tok/s) while per-8K-turn append cost rose ~30x over
+    the same range — a falloff that reads far off the DRAM-bandwidth roofline for a model whose weight-read cost
+    per token is constant with depth. Candidate explanation, unconfirmed: CPU FA decode parallelizes only over the
+    model's Q heads (16 for this model), so the achievable thread count at the attention-at-depth stage is capped
+    well below the host's 96 threads regardless of context length. Label this a hypothesis until a thread-occupancy
+    profile at depth either confirms or refutes it; it is a candidate explanation for YARN-CPU-ATTN's curve, not an
+    independent claim.
 - [ ] **AKX-ALL-22: first GPU campaign batch in a granted window.** After AKX-ALL-14..18. One GPU serving target,
   planner fed by the G2 profile, one candidate decided by G4 surfaces and the G5 gate, inside an AKX-ALL-15 window.
   Done when the batch's receipts show both claims, the residency proof, the window cycle and per-dimension verdicts.
