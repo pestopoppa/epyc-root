@@ -1,0 +1,398 @@
+name: NI18 targeted KV slot directory fixture controls
+
+on:
+  push:
+    branches:
+      - codex/ni18-kv-slot-fixture-validation-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: 56236b13d6ffe6820e2a33453e1094ca217a365d
+  APP_BASE_SHA: 6714c72ff42cd7b4216182bbf3431444b0a91846
+  APP_SYNTHETIC_SHA: bd89cf0de087e885a7ca4e23bdcf605b62a27e73
+  BOOTSTRAP_SHA256: 9b1758788336d7d42d55171dbd463762f0a160a0efeb382db701194a3e0d7cda
+  RUN_ROOT: artifacts/ni18-kv-slot-fixtures/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  actual-runner-capacity-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - name: Define absent runtime paths
+        run: |
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni18-kv-slot-capacity-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni18-kv-slot-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni18-kv-slot-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni18-kv-slot-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout ordinary app source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_BASE_SHA }}
+          fetch-depth: 1
+          path: app-ordinary
+
+      - name: Verify source pins and absent path overrides
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app-ordinary rev-parse HEAD)" = "$APP_BASE_SHA"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install locked ordinary test environment
+        id: dependencies
+        working-directory: app-ordinary
+        run: uv sync --frozen --extra dev
+
+      - name: Prepare ordinary actual-capacity refusal control
+        id: fixture
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          mkdir -p ni18_capacity_guard
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import textwrap
+          from pathlib import Path
+
+          test_path = Path("tests/unit/test_ni18_actual_capacity_guard.py")
+          if test_path.exists():
+              raise RuntimeError(f"refusing to overwrite capacity test: {test_path}")
+          test_path.parent.mkdir(parents=True, exist_ok=True)
+          test_path.write_text(textwrap.dedent('''\
+            from pathlib import Path
+            import subprocess
+            import sys
+
+
+            APP_ROOT = Path(__file__).resolve().parents[2]
+
+
+            def test_actual_runner_capacity_guard_refuses_import_before_serving():
+                result = subprocess.run(
+                    [sys.executable, "-c", "import scripts.server.stack_manifest"],
+                    cwd=APP_ROOT,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                )
+                output = result.stdout + result.stderr
+                assert result.returncode != 0, "actual runner unexpectedly passed serving-capacity import"
+                assert "Declared serving_shape lineup does not fit the hardware" in output, output
+                assert "device host (CPU RAM) OVERSUBSCRIBED" in output, output
+          '''), encoding="utf-8")
+          context = {
+              "schema": "ni18.actual_runner_capacity_context.v1",
+              "app_sha": os.environ["APP_BASE_SHA"],
+              "phase": "ordinary_actual_runner_capacity_guard",
+              "synthetic_ram": False,
+              "runner_meminfo": "actual /proc/meminfo through fresh stack_manifest import",
+              "path_overrides": {
+                  key: {"value": os.environ[key], "must_remain_absent": True}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+              "pytest_rootdir": str(Path.cwd()),
+              "pytest_junit_prefix": "ni18_kv_slot_actual_capacity_guard",
+              "scope": "one expected refusal before serving; no inference or kernel claim",
+              "test_sha256": hashlib.sha256(test_path.read_bytes()).hexdigest(),
+          }
+          Path("ni18_capacity_guard/context.json").write_text(
+              json.dumps(context, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Capture ordinary actual-capacity refusal control
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.fixture.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          timeout --verbose --signal=TERM --kill-after=15s 150s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit ni18_capacity_guard/original-pytest.xml \
+              --output "$GITHUB_WORKSPACE/$RUN_ROOT/capacity/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_ordinary=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni18-targeted-kv-slot-fixtures.yml" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path ni18_capacity_guard/context.json \
+              --read-path tests/unit/test_ni18_actual_capacity_guard.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/stack_topology.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output ni18_capacity_guard/pytest.log \
+              --select tests/unit/test_ni18_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving \
+              -- timeout --verbose --signal=TERM --kill-after=10s 90s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --noconftest \
+                  --rootdir="$PWD" --junit-prefix=ni18_kv_slot_actual_capacity_guard \
+                  tests/unit/test_ni18_actual_capacity_guard.py \
+                  --junitxml=ni18_capacity_guard/original-pytest.xml \
+                  --log-file=ni18_capacity_guard/pytest.log
+
+      - name: Upload ordinary actual-capacity prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-kv-slot-${{ github.run_id }}-${{ github.run_attempt }}-capacity
+          path: |
+            artifacts/ni18-kv-slot-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/capacity/native/
+            app-ordinary/ni18_capacity_guard/
+            app-ordinary/tests/unit/test_ni18_actual_capacity_guard.py
+          if-no-files-found: warn
+
+  targeted-kv-slot-module:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - module_id: build-server-command-helpers
+            module_path: tests/unit/test_build_server_command_helpers.py
+          - module_id: k4-ubatch-not-inert
+            module_path: tests/unit/test_k4_ubatch_not_inert.py
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+    steps:
+      - name: Define absent runtime paths
+        run: |
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni18-kv-slot-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni18-kv-slot-module-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni18-kv-slot-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni18-kv-slot-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni18-kv-slot-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout synthetic-only app fixture candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SYNTHETIC_SHA }}
+          fetch-depth: 2
+          path: app-synthetic
+
+      - name: Verify source pins and declared missing runtime paths
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD)" = "$APP_SYNTHETIC_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD^)" = "$APP_BASE_SHA"
+          changed="$(git -C app-synthetic diff --name-only "$APP_BASE_SHA" "$APP_SYNTHETIC_SHA")"
+          test "$changed" = "tests/fixtures/offhost_unit_bootstrap.py"
+          test "$(sha256sum app-synthetic/tests/fixtures/offhost_unit_bootstrap.py | cut -d' ' -f1)" = "$BOOTSTRAP_SHA256"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install locked synthetic app test environment
+        id: dependencies
+        working-directory: app-synthetic
+        run: uv sync --frozen --extra dev
+
+      - name: Materialize and attest empty runner-owned KV slot fixture
+        id: kv_slot_fixture
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app-synthetic
+        run: |
+          kv_slots=/mnt/raid0/llm/cache/kv_slots
+          test ! -e "$kv_slots"
+          test ! -L "$kv_slots"
+          sudo install -d --mode=0700 --owner="$(id -u)" --group="$(id -g)" "$kv_slots"
+          test -d "$kv_slots"
+          test ! -L "$kv_slots"
+          test "$(stat -c '%a' "$kv_slots")" = 700
+          test "$(stat -c '%u' "$kv_slots")" = "$(id -u)"
+          test "$(stat -c '%g' "$kv_slots")" = "$(id -g)"
+          test -z "$(find "$kv_slots" -mindepth 1 -maxdepth 1 -print -quit)"
+          module_root="$RUN_ROOT/$MODULE_ID"
+          mkdir -p "$module_root"
+          python - <<'PY'
+          import json
+          import os
+          import stat
+          from pathlib import Path
+
+          kv_slots = Path('/mnt/raid0/llm/cache/kv_slots')
+          info = kv_slots.stat(follow_symlinks=False)
+          cache_override_present = 'ORCHESTRATOR_PATHS_CACHE_DIR' in os.environ
+          context = {
+              'schema': 'ni18.runner_kv_slot_fixture_context.v1',
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'app_base_sha': os.environ['APP_BASE_SHA'],
+              'app_synthetic_sha': os.environ['APP_SYNTHETIC_SHA'],
+              'root_producer_sha': os.environ['ROOT_SOURCE_SHA'],
+              'root_workflow_sha': os.environ['GITHUB_SHA'],
+              'module_id': os.environ['MODULE_ID'],
+              'module_path': os.environ['MODULE_PATH'],
+              'kv_slots_preexisting': False,
+              'kv_slots_path': str(kv_slots),
+              'kv_slots_is_symlink': kv_slots.is_symlink(),
+              'kv_slots_mode': format(stat.S_IMODE(info.st_mode), '04o'),
+              'kv_slots_uid': info.st_uid,
+              'kv_slots_gid': info.st_gid,
+              'kv_slots_empty_before_tests': not any(kv_slots.iterdir()),
+              'cache_dir_override_present': cache_override_present,
+              'cache_dir_default': '/mnt/raid0/llm/cache',
+              'runner_uid': os.getuid(),
+              'runner_gid': os.getgid(),
+              'fixture': 'ephemeral GitHub runner owned mode-0700 empty KV slot directory only',
+              'synthetic_ram_gib': 1024,
+              'ram_provider': 'pinned offhost unit bootstrap; test process only',
+              'bootstrap_sha256': os.environ['BOOTSTRAP_SHA256'],
+              'runtime_overrides': {
+                  key: {'value': os.environ[key], 'must_remain_absent': True}
+                  for key in (
+                      'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN',
+                      'ORCHESTRATOR_PATHS_LLAMA_MTMD',
+                      'ORCHESTRATOR_PATHS_LLAMA_SERVER',
+                  )
+              },
+              'scope': 'one original command-construction test module; no server process, KV data, inference, kernel-store, or production capacity claim',
+          }
+          if context['kv_slots_is_symlink'] or context['kv_slots_mode'] != '0700':
+              raise RuntimeError('KV slot fixture violates declared path/mode contract')
+          if context['kv_slots_empty_before_tests'] is not True:
+              raise RuntimeError('KV slot fixture was not empty before tests')
+          if context['cache_dir_override_present']:
+              raise RuntimeError('refusing a cache-dir override; these tests must exercise the declared default')
+          if (info.st_uid, info.st_gid) != (os.getuid(), os.getgid()):
+              raise RuntimeError('KV slot fixture is not owned by the executing runner')
+          output = Path(os.environ['RUN_ROOT']) / os.environ['MODULE_ID'] / 'context.json'
+          output.write_text(json.dumps(context, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Capture exactly this original test module
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.kv_slot_fixture.outcome == 'success' }}
+        continue-on-error: true
+        working-directory: app-synthetic
+        run: |
+          module_root="$RUN_ROOT/$MODULE_ID"
+          mkdir -p "$module_root"
+          timeout --verbose --signal=TERM --kill-after=15s 180s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "$module_root/original-pytest.xml" \
+              --output "$module_root/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_synthetic=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni18-targeted-kv-slot-fixtures.yml" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path "$module_root/context.json" \
+              --read-path tests/fixtures/offhost_unit_bootstrap.py \
+              --read-path tests/conftest.py \
+              --read-path tests/unit/conftest.py \
+              --read-path "$MODULE_PATH" \
+              --read-path src/config/models.py \
+              --read-path scripts/server/orchestrator_stack.py \
+              --read-path scripts/server/stack_commands.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/stack_topology.yaml \
+              --read-path orchestration/launch_manifest.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output "$module_root/pytest.log" \
+              --select "$MODULE_PATH" \
+              -- timeout --verbose --signal=TERM --kill-after=15s 120s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" tests/fixtures/offhost_unit_bootstrap.py \
+                  -q --tb=short \
+                  --rootdir="$PWD" --junit-prefix=ni18_kv_slot \
+                  "$MODULE_PATH" \
+                  --junitxml="$module_root/original-pytest.xml" \
+                  --log-file="$module_root/pytest.log"
+
+      - name: Upload immutable per-module prefix immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-kv-slot-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+          path: |
+            app-synthetic/artifacts/ni18-kv-slot-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/
+          if-no-files-found: warn
+
+      - name: Preserve native command outcome after upload
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: test "$CAPTURE_OUTCOME" = success
