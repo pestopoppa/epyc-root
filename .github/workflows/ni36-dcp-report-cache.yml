@@ -1,0 +1,400 @@
+name: NI36 delegation report-cache fixtures
+
+on:
+  push:
+    branches:
+      - codex/ni36-dcp-report-cache-ci-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_PRODUCER_SHA: adbbe58e591f5e6dc444019551c91a9d6cd10a11
+  APP_BASE_SHA: 6714c72ff42cd7b4216182bbf3431444b0a91846
+  APP_SOURCE_SHA: 504543838551fe901035312ff4d1c793f2d7d719
+  APP_SYNTHETIC_SHA: b61b0f3a3414c91ea807c03187f58b513730c5e8
+  CAPTURE_ROOT: artifacts/ni36-dcp-report-cache
+
+jobs:
+  dcp-report-cache-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - name: Define runner-local locked environment and absent binary overrides
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/ni36-unavailable-binary-directory"
+          test ! -e "$RUNNER_TEMP/ni36-unavailable-mtmd-binary"
+          test ! -e "$RUNNER_TEMP/ni36-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni36-orchestrator-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni36-unavailable-binary-directory\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni36-unavailable-mtmd-binary\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni36-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+
+      - name: Checkout ordinary orchestrator source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 2
+          path: app-ordinary
+
+      - name: Checkout synthetic-only fixture candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SYNTHETIC_SHA }}
+          fetch-depth: 2
+          path: app-synthetic
+
+      - name: Verify source ancestry and bounded fixture-only delta
+        id: compare
+        run: |
+          set -euo pipefail
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_PRODUCER_SHA"
+          test "$(git -C app-ordinary rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test "$(git -C app-ordinary rev-parse HEAD^)" = "$APP_BASE_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD)" = "$APP_SYNTHETIC_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD^)" = "$APP_SOURCE_SHA"
+          changed="$(git -C app-synthetic diff --name-only "$APP_SOURCE_SHA" "$APP_SYNTHETIC_SHA")"
+          test "$changed" = "tests/fixtures/offhost_unit_bootstrap.py"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import subprocess
+          from pathlib import Path
+
+          ordinary = Path("app-ordinary")
+          synthetic = Path("app-synthetic")
+          expected_source_delta = sorted([
+              "src/api/routes/chat_delegation.py",
+              "src/api/routes/chat_delegation_reports.py",
+              "src/orchestration/delegation_cache.py",
+              "tests/unit/test_architect_delegation.py",
+              "tests/unit/test_delegation_cache.py",
+          ])
+          source_delta = subprocess.check_output(
+              ["git", "-C", str(ordinary), "diff", "--name-only", "6714c72ff42cd7b4216182bbf3431444b0a91846", "504543838551fe901035312ff4d1c793f2d7d719"],
+              text=True,
+          )
+          if sorted(p for p in source_delta.splitlines() if p) != expected_source_delta:
+              raise SystemExit("ordinary NI36 candidate differs from reviewed five-file source manifest")
+          paths = [
+              *expected_source_delta,
+              "tests/conftest.py",
+              "tests/unit/conftest.py",
+              "pyproject.toml",
+              "uv.lock",
+              "scripts/server/stack_manifest.py",
+              "scripts/server/stack_paths.py",
+              "src/registry/kernel_paths.py",
+              "src/config/models.py",
+              "orchestration/model_registry.yaml",
+              "orchestration/stack_topology.yaml",
+          ]
+          records = []
+          for relative in paths:
+              left, right = ordinary / relative, synthetic / relative
+              if not left.is_file() or not right.is_file():
+                  raise SystemExit(f"missing declared comparison input: {relative}")
+              left_sha = hashlib.sha256(left.read_bytes()).hexdigest()
+              right_sha = hashlib.sha256(right.read_bytes()).hexdigest()
+              if left_sha != right_sha:
+                  raise SystemExit(f"ordinary/synthetic input mismatch: {relative}")
+              records.append({"path": relative, "sha256": left_sha, "identical": True})
+          helper = synthetic / "tests/fixtures/offhost_unit_bootstrap.py"
+          helper_sha = hashlib.sha256(helper.read_bytes()).hexdigest()
+          if helper_sha != "9b1758788336d7d42d55171dbd463762f0a160a0efeb382db701194a3e0d7cda":
+              raise SystemExit("synthetic bootstrap differs from reviewed helper bytes")
+          producer = Path("root-producer/scripts/ci/native_conformance.py")
+          if not producer.is_file():
+              raise SystemExit("pinned native producer is missing")
+          comparison = {
+              "schema": "ni36.dcp_report_cache_source_comparison.v1",
+              "ordinary_app_sha": "504543838551fe901035312ff4d1c793f2d7d719",
+              "ordinary_app_parent_sha": "6714c72ff42cd7b4216182bbf3431444b0a91846",
+              "synthetic_app_sha": "b61b0f3a3414c91ea807c03187f58b513730c5e8",
+              "synthetic_app_parent_sha": "504543838551fe901035312ff4d1c793f2d7d719",
+              "synthetic_only_changed_path": "tests/fixtures/offhost_unit_bootstrap.py",
+              "synthetic_bootstrap_sha256": helper_sha,
+              "native_producer_sha256": hashlib.sha256(producer.read_bytes()).hexdigest(),
+              "ordinary_changed_paths": expected_source_delta,
+              "compared_path_count": len(records),
+              "ordinary_and_synthetic_paths_identical": True,
+              "synthetic_scope": "explicit test-process-only 1 TiB host RAM; production capacity guard unchanged",
+              "inputs": records,
+          }
+          with Path("ci-control/ni36-source-comparison.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(comparison, sort_keys=True) + "\n")
+          PY
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install locked orchestrator test environment
+        id: dependencies
+        working-directory: app-synthetic
+        run: uv sync --frozen --extra dev
+
+      - name: Write standalone actual-runner capacity guard fixture
+        id: guard_fixture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.compare.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          set -euo pipefail
+          mkdir -p ni36_capacity_guard artifacts/ni36-dcp-report-cache/capacity
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+
+          test_path = Path("ni36_capacity_guard/test_actual_capacity_guard.py")
+          overrides = {
+              "llama_cpp_bin": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"]),
+              "llama_mtmd": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"]),
+              "llama_server": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"]),
+          }
+          for name, path in overrides.items():
+              if path.exists():
+                  raise RuntimeError(f"actual capacity fixture override must remain absent ({name}): {path}")
+          test_source = '''from pathlib import Path
+          import subprocess
+          import sys
+
+
+          APP_ROOT = Path(__file__).resolve().parents[1]
+
+
+          def test_actual_runner_capacity_guard_refuses_import_before_serving():
+              result = subprocess.run(
+                  [sys.executable, "-c", "import scripts.server.stack_manifest"],
+                  cwd=APP_ROOT,
+                  capture_output=True,
+                  text=True,
+                  timeout=60,
+                  check=False,
+              )
+              output = result.stdout + result.stderr
+              assert result.returncode != 0, "actual runner unexpectedly passed serving-capacity import"
+              assert "Declared serving_shape lineup does not fit the hardware" in output, output
+              assert "device host (CPU RAM) OVERSUBSCRIBED" in output, output
+          '''
+          with test_path.open("x", encoding="utf-8") as output:
+              output.write(test_source)
+          context = {
+              "schema": "ni36.dcp_report_cache_capacity_context.v1",
+              "phase": "ordinary_actual_runner_capacity_guard",
+              "synthetic_ram": False,
+              "runner_meminfo": "actual /proc/meminfo through a fresh locked-venv stack_manifest import",
+              "path_overrides": {key: str(value) for key, value in overrides.items()},
+              "all_override_paths_intentionally_absent": True,
+              "scope": "one expected refusal before serving/import completion; no cache claim",
+              "inference_or_kernel_execution": "none",
+              "guard_fixture_sha256": hashlib.sha256(test_path.read_bytes()).hexdigest(),
+          }
+          with Path("ni36_capacity_guard/context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+
+      - name: Capture ordinary actual-runner capacity guard
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.compare.outcome == 'success' && steps.guard_fixture.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          set -euo pipefail
+          timeout --verbose --signal=TERM --kill-after=30s 240s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit ni36_capacity_guard/ni36_actual_capacity_guard.junit.xml \
+              --output "$GITHUB_WORKSPACE/$CAPTURE_ROOT/capacity/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_ordinary=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni36-dcp-report-cache.yml" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni36-source-comparison.json" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/app-ordinary/ni36_capacity_guard/test_actual_capacity_guard.py" \
+              --read-path "$GITHUB_WORKSPACE/app-ordinary/ni36_capacity_guard/context.json" \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/stack_topology.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output ni36_capacity_guard/ni36_actual_capacity_guard.pytest.log \
+              --select 'ni36_capacity_guard/test_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving' \
+              -- timeout --verbose --signal=TERM --kill-after=30s 180s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --noconftest -c /dev/null \
+                  ni36_capacity_guard/test_actual_capacity_guard.py \
+                  --rootdir="$PWD" \
+                  --junit-prefix=ni36_actual_capacity_guard \
+                  --junitxml=ni36_capacity_guard/ni36_actual_capacity_guard.junit.xml \
+                  --log-file=ni36_capacity_guard/ni36_actual_capacity_guard.pytest.log \
+                  --log-file-level=INFO
+
+      - name: Upload immutable ordinary capacity prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni36-dcp-report-cache-${{ github.run_id }}-${{ github.run_attempt }}-capacity-prefix
+          path: |
+            artifacts/ni36-dcp-report-cache/capacity/native/
+            ci-control/ni36-source-comparison.json
+            ci-control/.github/workflows/ni36-dcp-report-cache.yml
+            app-ordinary/ni36_capacity_guard/
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Write synthetic cache and architect fixture context
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.compare.outcome == 'success' }}
+        working-directory: ci-control
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          overrides = {
+              "llama_cpp_bin": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"]),
+              "llama_mtmd": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"]),
+              "llama_server": Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"]),
+          }
+          for name, path in overrides.items():
+              if path.exists():
+                  raise RuntimeError(f"synthetic fixture override must remain absent ({name}): {path}")
+          context = {
+              "schema": "ni36.dcp_report_cache_fixture_context.v1",
+              "phase": "synthetic_whole_cache_and_architect_module_suites",
+              "ordinary_app_sha": "504543838551fe901035312ff4d1c793f2d7d719",
+              "synthetic_app_sha": "b61b0f3a3414c91ea807c03187f58b513730c5e8",
+              "bootstrap_sha256": "9b1758788336d7d42d55171dbd463762f0a160a0efeb382db701194a3e0d7cda",
+              "runner_fact": "declared synthetic 1024 GiB host RAM only inside the explicit fixture test process",
+              "path_overrides": {key: str(value) for key, value in overrides.items()},
+              "all_override_paths_intentionally_absent": True,
+              "selection": "complete tests/unit/test_delegation_cache.py and tests/unit/test_architect_delegation.py modules",
+              "inference_or_kernel_execution": "none",
+              "claim_scope": "selected NI36 unit modules under the explicit synthetic bootstrap",
+          }
+          with Path("ni36-synthetic-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+          test ! -e "$GITHUB_WORKSPACE/$CAPTURE_ROOT/synthetic/native"
+
+      - name: Capture synthetic whole cache and architect module suites
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.compare.outcome == 'success' }}
+        working-directory: app-synthetic
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/$CAPTURE_ROOT/synthetic"
+          mkdir -p "$CAPTURE_ROOT/synthetic"
+          timeout --verbose --signal=TERM --kill-after=30s 240s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "$CAPTURE_ROOT/synthetic/ni36_cache_architect.junit.xml" \
+              --output "$GITHUB_WORKSPACE/$CAPTURE_ROOT/synthetic/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_synthetic=$PWD" \
+              --repo "orchestrator_ordinary=$GITHUB_WORKSPACE/app-ordinary" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni36-dcp-report-cache.yml" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni36-source-comparison.json" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni36-synthetic-context.json" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path tests/fixtures/offhost_unit_bootstrap.py \
+              --read-path pyproject.toml --read-path uv.lock \
+              --read-path tests/conftest.py --read-path tests/unit/conftest.py \
+              --read-path src/api/routes/chat_delegation.py \
+              --read-path src/api/routes/chat_delegation_reports.py \
+              --read-path src/orchestration/delegation_cache.py \
+              --read-path tests/unit/test_delegation_cache.py \
+              --read-path tests/unit/test_architect_delegation.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/stack_topology.yaml \
+              --generated-output "$CAPTURE_ROOT/synthetic/ni36_cache_architect.pytest.log" \
+              --select tests/unit/test_delegation_cache.py \
+              --select tests/unit/test_architect_delegation.py \
+              -- timeout --verbose --signal=TERM --kill-after=30s 180s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" tests/fixtures/offhost_unit_bootstrap.py \
+                  -q \
+                  tests/unit/test_delegation_cache.py \
+                  tests/unit/test_architect_delegation.py \
+                  --junitxml="$CAPTURE_ROOT/synthetic/ni36_cache_architect.junit.xml" \
+                  --log-file="$CAPTURE_ROOT/synthetic/ni36_cache_architect.pytest.log" \
+                  --log-file-level=INFO
+
+      - name: Reopen, project, and grade both original CI receipts
+        if: success()
+        env:
+          PYTHONPATH: ${{ github.workspace }}/root-producer/scripts/vidya
+          NI36_CAPTURE_ROOT: ${{ github.workspace }}/artifacts/ni36-dcp-report-cache
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+          from adapters import ci_conformance
+          from claim_tuple import grade
+
+          root = Path(os.environ["NI36_CAPTURE_ROOT"])
+          expected = {
+              "capacity": ("capacity", 1),
+              "synthetic": ("synthetic", None),
+          }
+          for phase, (directory, exact_count) in expected.items():
+              receipt = root / directory / "native" / "receipt.json"
+              rows = ci_conformance.native_rows(receipt)
+              assert len(rows) == 1, (phase, rows)
+              record = rows[0]["record"]
+              claim = ci_conformance.project_ci_conformance(rows[0])
+              assert record["fixture_execution_conformant"] is True
+              assert claim.value is True and grade(claim)[:2] == ("Judged", "Located")
+              counts = record["summary"]["counts"]
+              assert counts["executed"] > 0 and counts["skipped"] == 0, counts
+              if exact_count is not None:
+                  assert counts["collected"] == exact_count, counts
+          print("both original NI36 fixture receipts reopened, projected, and graded")
+          PY
+
+      - name: Upload immutable synthetic fixture prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni36-dcp-report-cache-${{ github.run_id }}-${{ github.run_attempt }}-synthetic-prefix
+          path: |
+            artifacts/ni36-dcp-report-cache/synthetic/native/
+            ci-control/ni36-source-comparison.json
+            ci-control/ni36-synthetic-context.json
+            ci-control/.github/workflows/ni36-dcp-report-cache.yml
+            app-synthetic/artifacts/ni36-dcp-report-cache/synthetic/
+            app-synthetic/tests/fixtures/offhost_unit_bootstrap.py
+          if-no-files-found: warn
+          retention-days: 30
