@@ -26,8 +26,10 @@ jobs:
       - name: Define runner-local locked environment path
         run: |
           test ! -e "$RUNNER_TEMP/ni10-unavailable-binary-directory"
+          test ! -e "$RUNNER_TEMP/ni10-unavailable-mtmd-binary"
           printf 'UV_PROJECT_ENVIRONMENT=%s/ni10-client-class-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni10-unavailable-binary-directory\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni10-unavailable-mtmd-binary\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Checkout immutable workflow candidate
         uses: actions/checkout@v4
@@ -105,6 +107,7 @@ jobs:
               "scripts/server/stack_manifest.py",
               "scripts/server/stack_paths.py",
               "src/registry/kernel_paths.py",
+              "src/config/models.py",
               "orchestration/model_registry.yaml",
               "orchestration/stack_topology.yaml",
           ]
@@ -166,17 +169,20 @@ jobs:
         if: ${{ always() && steps.dependencies.outcome == 'success' && steps.compare.outcome == 'success' }}
         working-directory: app-ordinary
         run: |
-          mkdir -p .ni10-capacity-guard
+          mkdir -p ni10_capacity_guard
           python - <<'PY'
           import hashlib
           import json
           import os
           from pathlib import Path
 
-          test_path = Path(".ni10-capacity-guard/test_actual_capacity_guard.py")
+          test_path = Path("ni10_capacity_guard/test_actual_capacity_guard.py")
           kernel_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"])
           if kernel_path_override.exists():
               raise RuntimeError(f"actual capacity fixture kernel path must remain absent: {kernel_path_override}")
+          mtmd_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"])
+          if mtmd_path_override.exists():
+              raise RuntimeError(f"actual capacity fixture vision binary path must remain absent: {mtmd_path_override}")
           test_source = '''from pathlib import Path
           import subprocess
           import sys
@@ -208,11 +214,13 @@ jobs:
               "runner_meminfo": "actual /proc/meminfo through fresh stack_manifest import",
               "kernel_path_override": str(kernel_path_override),
               "kernel_path_intentionally_absent": True,
+              "vision_binary_path_override": str(mtmd_path_override),
+              "vision_binary_path_intentionally_absent": True,
               "scope": "one expected refusal before app import or serving",
               "inference": "none; no kernel availability, linkage, or runtime claim",
               "guard_fixture_sha256": hashlib.sha256(test_path.read_bytes()).hexdigest(),
           }
-          with Path(".ni10-capacity-guard/context.json").open("x", encoding="utf-8") as output:
+          with Path("ni10_capacity_guard/context.json").open("x", encoding="utf-8") as output:
               output.write(json.dumps(context, sort_keys=True) + "\n")
           PY
           mkdir -p artifacts/ni10-client-class-validation/capacity
@@ -224,7 +232,7 @@ jobs:
           timeout --verbose --signal=TERM --kill-after=15s 150s \
             python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
               --cwd "$PWD" \
-              --junit .ni10-capacity-guard/original-pytest.xml \
+              --junit ni10_capacity_guard/original-pytest.xml \
               --output "$GITHUB_WORKSPACE/$CAPTURE_ROOT/capacity/native" \
               --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
               --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
@@ -232,21 +240,22 @@ jobs:
               --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni10-client-class-validation.yml" \
               --read-path "$GITHUB_WORKSPACE/ci-control/ni10-source-comparison.json" \
               --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
-              --read-path "$GITHUB_WORKSPACE/app-ordinary/.ni10-capacity-guard/test_actual_capacity_guard.py" \
-              --read-path "$GITHUB_WORKSPACE/app-ordinary/.ni10-capacity-guard/context.json" \
+              --read-path "$GITHUB_WORKSPACE/app-ordinary/ni10_capacity_guard/test_actual_capacity_guard.py" \
+              --read-path "$GITHUB_WORKSPACE/app-ordinary/ni10_capacity_guard/context.json" \
               --read-path scripts/server/stack_manifest.py \
               --read-path scripts/server/stack_paths.py \
               --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
               --read-path orchestration/model_registry.yaml \
               --read-path orchestration/stack_topology.yaml \
               --read-path pyproject.toml --read-path uv.lock \
-              --generated-output .ni10-capacity-guard/pytest.log \
-              --select '.ni10-capacity-guard/test_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving' \
+              --generated-output ni10_capacity_guard/pytest.log \
+              --select 'ni10_capacity_guard/test_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving' \
               -- timeout --verbose --signal=TERM --kill-after=10s 90s \
                 "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --noconftest -c /dev/null \
-                    .ni10-capacity-guard/test_actual_capacity_guard.py \
-                    --junitxml=.ni10-capacity-guard/original-pytest.xml \
-                    --log-file=.ni10-capacity-guard/pytest.log
+                    ni10_capacity_guard/test_actual_capacity_guard.py \
+                    --junitxml=ni10_capacity_guard/original-pytest.xml \
+                    --log-file=ni10_capacity_guard/pytest.log
       - name: Upload immutable ordinary capacity prefix
         if: always()
         uses: actions/upload-artifact@v4
@@ -256,7 +265,7 @@ jobs:
             artifacts/ni10-client-class-validation/capacity/native/
             ci-control/ni10-source-comparison.json
             ci-control/.github/workflows/ni10-client-class-validation.yml
-            app-ordinary/.ni10-capacity-guard/
+            app-ordinary/ni10_capacity_guard/
           if-no-files-found: warn
 
       - name: Write synthetic client-class fixture context
@@ -270,6 +279,9 @@ jobs:
           kernel_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"])
           if kernel_path_override.exists():
               raise RuntimeError(f"synthetic kernel path override must remain absent: {kernel_path_override}")
+          mtmd_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"])
+          if mtmd_path_override.exists():
+              raise RuntimeError(f"synthetic vision binary path override must remain absent: {mtmd_path_override}")
           context = {
               "schema": "ni10.client_class_fixture_context.v1",
               "phase": "explicit_synthetic_bootstrap_route_and_native_record",
@@ -279,6 +291,8 @@ jobs:
               "runner_fact": "declared synthetic 1024 GiB only inside the explicit fixture process",
               "kernel_path_override": str(kernel_path_override),
               "kernel_path_intentionally_absent": True,
+              "vision_binary_path_override": str(mtmd_path_override),
+              "vision_binary_path_intentionally_absent": True,
               "selection": "three route tests and one parametrized route-to-native-record test",
               "inference": "none",
               "claim_scope": "selected NI10 request metadata fixtures only",
@@ -317,6 +331,7 @@ jobs:
               --read-path scripts/server/stack_manifest.py \
               --read-path scripts/server/stack_paths.py \
               --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
               --read-path orchestration/model_registry.yaml \
               --read-path orchestration/stack_topology.yaml \
               --generated-output artifacts/ni10-client-class-validation/synthetic/pytest.log \
