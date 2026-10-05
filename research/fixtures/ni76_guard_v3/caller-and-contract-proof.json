@@ -1,0 +1,472 @@
+{
+  "app_source": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1",
+  "root_source": "e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1",
+  "native_readset": {
+    "src/__init__.py": {
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "imports": [
+        "import sys as _sys",
+        "from importlib.abc import Loader as _Loader, MetaPathFinder as _MetaPathFinder",
+        "from importlib.util import spec_from_loader as _spec_from_loader"
+      ]
+    },
+    "src/runtime/__init__.py": {
+      "sha256": "8ac7118ea6f4f3134f219d094b325f74006c47a2f220b8a6b04b2355d021f4e0",
+      "blob": "f96855d4e4b4689a8ee2a07618ca5ecef12d45d7",
+      "imports": []
+    },
+    "src/runtime/cpu_region_lock.py": {
+      "sha256": "24a4a377fe5050e0f34514294e7d14bcc94db4c99fe89b91881d68ae81ece56c",
+      "blob": "31f3086319bd1b495429a27ce36c3004da0634ba",
+      "imports": [
+        "from __future__ import annotations",
+        "import errno",
+        "import fcntl",
+        "import json",
+        "import logging",
+        "import os",
+        "import threading",
+        "import time",
+        "import uuid",
+        "from contextlib import contextmanager",
+        "from pathlib import Path",
+        "from typing import Any, Callable, IO, Optional",
+        "from src.runtime.lock_queue import CLIENT_VERSION, LockQueueTimeout, append_event_log, check_nesting, install_ticket_sigterm_cleanup as _fifo_install_sigterm_cleanup, is_fifo_enabled, queue_dir as _fifo_queue_dir, remove_ticket as _fifo_remove_ticket, restore_ticket_sigterm_cleanup as _fifo_restore_sigterm_cleanup, wait_for_admission, write_ticket"
+      ]
+    },
+    "src/runtime/gpu_quiet_lock.py": {
+      "sha256": "7e79fa19d92d50dd5b94611c83316d66a4c935f6e0badd5e0fd335153b91fd58",
+      "blob": "03bfb08a9d1c8413a064c368a2b1af3e83c94537",
+      "imports": [
+        "from __future__ import annotations",
+        "import fcntl",
+        "import json",
+        "import os",
+        "import time",
+        "import uuid",
+        "from contextlib import ExitStack, contextmanager",
+        "from pathlib import Path",
+        "from typing import Callable, Iterator, Optional",
+        "from src.runtime.cpu_region_lock import CpuRegionLockTimeout, _acquire_one_with_timeout, _tmp_dir, _try_flock, cpu_region_lock",
+        "from src.runtime.lock_queue import CLIENT_VERSION, GPU_QUIET_RESOURCE, LockQueueTimeout, append_event_log, check_nesting, install_ticket_sigterm_cleanup as _fifo_install_sigterm_cleanup, is_fifo_enabled, queue_dir as _fifo_queue_dir, remove_ticket as _fifo_remove_ticket, restore_ticket_sigterm_cleanup as _fifo_restore_sigterm_cleanup, wait_for_admission, write_ticket"
+      ]
+    },
+    "src/runtime/region_lock_cli.py": {
+      "sha256": "58c2ea675db751f7403222ebbb3d6e52a4ce151ade86035e00fddda411b69940",
+      "blob": "87bf20fecef2004c8d76b7f15128e3d9b7562439",
+      "imports": [
+        "from __future__ import annotations",
+        "import argparse",
+        "import json",
+        "import os",
+        "import signal",
+        "import subprocess",
+        "import sys",
+        "import time",
+        "from pathlib import Path",
+        "from src.runtime.cpu_region_lock import CpuRegionLockTimeout, cpu_region_lock, global_region_lock_path, read_region_lock_payload, region_lock_path",
+        "from src.runtime.gpu_quiet_lock import GPU_QUIET_MODES, gpu_quiet_then_regions",
+        "from src.runtime.gpu_quiet_lock import holders as gpu_quiet_holders",
+        "from src.runtime.instance_topology import ATOMIC_REGIONS, cpu_list_to_regions",
+        "from src.runtime.lock_queue import queue_dir as _fifo_queue_dir",
+        "from src.runtime.lock_queue import queue_status as _fifo_queue_status"
+      ]
+    },
+    "src/runtime/lock_queue.py": {
+      "sha256": "27e562521085308ea0a13fbb4b6739eac86725f012105dbf185883fa113e84ad",
+      "blob": "4075f0fc2503c1bcb7122cd1d522cc97087538bc",
+      "imports": [
+        "from __future__ import annotations",
+        "import json",
+        "import logging",
+        "import os",
+        "import signal",
+        "import time",
+        "import uuid",
+        "from pathlib import Path",
+        "from typing import Callable, Iterable, Optional"
+      ]
+    },
+    "src/runtime/instance_topology.py": {
+      "sha256": "b6d7b679bd063883f9f1ab50eb293b7aa2675fddca1665e949d86f1a1860b77c",
+      "blob": "f0c158ad08700b758abe15c9d78820146047b3d7",
+      "imports": [
+        "from __future__ import annotations",
+        "import functools",
+        "import subprocess",
+        "from pathlib import Path",
+        "from typing import Iterable, Literal, Mapping"
+      ]
+    }
+  },
+  "callers": {
+    "root": {
+      "exit_code": 0,
+      "stdout": "e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:CLAUDE.md:216:**Re-index when stale:** `scripts/gitnexus-analyze.sh` \u2014 NOT bare `gitnexus analyze` (re-installs skills into a nested subdir and rewrites this block). The wrapper takes a nonblocking per-repo lock at `/tmp/gitnexus-<repo>-analyze.lock`; exit `75` means another analyze is already running \u2014 wait/retry, never delete `.gitnexus/` metadata.\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-analyze.sh:13:# Before each run we (re-)apply gitnexus-patch.js: gitnexus tracks progress but\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-analyze.sh:20:node \"$HERE/gitnexus-patch.js\" || true\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:14:// dist/. This patch is sentinel-guarded and re-applied by scripts/gitnexus-analyze.sh\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:113:    process.stderr.write('gitnexus-patch: could not locate gitnexus dist/cli/analyze.js \u2014 skipping (analyze will run unpatched).\\n');\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:119:    process.stderr.write(`gitnexus-patch: ${path.dirname(target)} is not writable \u2014 skipping (analyze will run unpatched).\\n`);\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:125:    process.stderr.write(`gitnexus-patch: already patched (${SENTINEL}).\\n`);\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:137:        `gitnexus-patch: anchor \"${p.name}\" found ${count}x (expected 1) \u2014 gitnexus ${version} internals changed; skipping (analyze will run unpatched).\\n`);\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/gitnexus-patch.js:148:  process.stderr.write(`gitnexus-patch: applied non-TTY progress patch to ${target} (gitnexus ${version}).\\n`);\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/validate/repo_readiness_scorer.py:371:        exists_any(\"scripts/gitnexus-analyze.sh\", \"scripts/validate/check_numeric_literals.py\"),\ne6c0c9db7282ab85acdc2cc4b9119c72bfab02e1:scripts/vidya/adapters/README.md:197:| Offhost code-intelligence snapshot dependency (NI52) | dependency evidence (no ClaimTuple class) | Accepted originalCI37358369281 at immutable appc885: pinned source/tool/npm identities, nine bounded command/validator statuses zero, exact LOW strategy/OpenAI targets,0embeddings and source/bus postchecks. First failed37356899671 remains unchanged. Ordinary code-intelligence dependency only; no new grader, scientific/performance tuple or canonical-index deployment. | Existing tracked `scripts/gitnexus-analyze.sh`; exact public originals `artifacts/ni05/code-index-37358369281/` |\n",
+      "stderr": ""
+    },
+    "app": {
+      "exit_code": 0,
+      "stdout": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1:CLAUDE.md:86:**Re-index when stale:** `scripts/gitnexus-analyze.sh` \u2014 NOT bare `gitnexus analyze` (re-installs skills into a nested subdir).\nb27e5543199ba4f7a8c3fec87c263f35fb5bcbf1:README.md:189:Pre-edit gate for non-trivial changes: run `gitnexus impact <symbol> --direction upstream` (see [CLAUDE.md](CLAUDE.md)). The wrapper script `scripts/gitnexus-analyze.sh` re-indexes without re-bloating agent files.\n",
+      "stderr": ""
+    }
+  },
+  "widened_scope": [
+    "scripts/gitnexus-writer.py new helper: guard/writer_lock/main unindexed UNASSESSED",
+    "shell wrappers delegate argument/flag handling to Python writer helper",
+    "APP native reference closure now includes lock_queue; old6bb reference impact is historical only"
+  ],
+  "unchanged_scope": [
+    "ROOT gitnexus-patch.js guard insertion byte-identical to prior reviewed proposal",
+    "No runtime lock source edits",
+    "Existing native device/inode/FLOCK contract remains; FIFO schedules only when acquisition attempts proceed"
+  ],
+  "unchanged_native_contract_ast": {
+    "src/runtime/cpu_region_lock.py:_tmp_dir": true,
+    "src/runtime/cpu_region_lock.py:region_lock_path": true,
+    "src/runtime/cpu_region_lock.py:global_region_lock_path": true,
+    "src/runtime/cpu_region_lock.py:_cross_role_mutex_enabled": true,
+    "src/runtime/cpu_region_lock.py:_lock_payload_for_region": true,
+    "src/runtime/cpu_region_lock.py:_acquire": true,
+    "src/runtime/cpu_region_lock.py:_write_lock_payload": true,
+    "src/runtime/region_lock_cli.py:_spawn": true,
+    "src/runtime/region_lock_cli.py:_run": true,
+    "src/runtime/region_lock_cli.py:_resolve_regions": true
+  },
+  "v3_strict_types": {
+    "schema_version": "type is int, equality1 required",
+    "pid": "type is int, equality actualflock ancestorowner required",
+    "new_held_controls": [
+      "schema_version=True",
+      "pid=float(actualownerpid)"
+    ],
+    "not_run": true
+  },
+  "v3_new_guard_writer_callers": {
+    "risk": "UNASSESSED new helpers; no indexed impact invented",
+    "wrapper_roots": [
+      "root/scripts/gitnexus-analyze.sh -> root/scripts/gitnexus-writer.py:main",
+      "app/scripts/gitnexus-analyze.sh -> app/scripts/gitnexus-writer.py:main"
+    ],
+    "writer_calls": [
+      "main -> guard -> subprocess guard.py",
+      "main -> writer_lock; admitted root -> patcher JS then GitNexus CLI; admitted APP -> GitNexus CLI"
+    ],
+    "guard_calls": [
+      "main -> admit",
+      "admit -> safe_root/ancestors/proc_lock_owners/regular_snapshot/valid_payload/proc_stat",
+      "valid_payload -> deny"
+    ],
+    "prior_JS_impact_reuse": "Only actual indexed source symbol/source-byte parity to retained original; unchanged v2 proposed JS alone does not establish indexed source parity. New guard/writer remain UNASSESSED.",
+    "exact_AST_readset": {
+      "root/scripts/gitnexus-guard.py": {
+        "risk": "UNASSESSED new helper",
+        "native_AST_calls": {
+          "deny": [
+            "Refusal"
+          ],
+          "proc_stat": [
+            "deny",
+            "f.read",
+            "int",
+            "len",
+            "line.startswith",
+            "next",
+            "open",
+            "raw.rfind",
+            "raw[end + 2:].split",
+            "status.splitlines",
+            "uid_line.split"
+          ],
+          "ancestors": [
+            "os.getpid",
+            "proc_stat",
+            "seen.add",
+            "set"
+          ],
+          "proc_lock_owners": [
+            "fields[4].isdigit",
+            "fields[5].split",
+            "int",
+            "len",
+            "line.split",
+            "open",
+            "owners.setdefault",
+            "owners.setdefault(key, set()).add",
+            "set"
+          ],
+          "safe_root": [
+            "deny",
+            "open_fixed_root",
+            "os.close",
+            "os.environ.get"
+          ],
+          "open_fixed_root": [
+            "LOCK_ROOT.strip",
+            "LOCK_ROOT.strip('/').split",
+            "getattr",
+            "os.close",
+            "os.fstat",
+            "os.open"
+          ],
+          "open_identity": [
+            "deny",
+            "len",
+            "open_fixed_root",
+            "os.close",
+            "os.fstat",
+            "os.getuid",
+            "os.open",
+            "os.path.basename",
+            "os.path.dirname",
+            "os.read",
+            "os.stat",
+            "stat.S_ISLNK",
+            "stat.S_ISREG"
+          ],
+          "dev_inode": [
+            "os.major",
+            "os.minor"
+          ],
+          "valid_payload": [
+            "data.decode",
+            "deny",
+            "isinstance",
+            "json.loads",
+            "list",
+            "math.isfinite",
+            "p.get",
+            "p['request_tag'].strip",
+            "time.time",
+            "type"
+          ],
+          "admit": [
+            "ancestors",
+            "deny",
+            "dev_inode",
+            "identities.append",
+            "iter",
+            "kernel.get",
+            "kernel2.get",
+            "len",
+            "next",
+            "open_identity",
+            "os.environ.get",
+            "os.environ.get('ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT', '').strip",
+            "os.environ.get('ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT', '').strip().lower",
+            "os.getpid",
+            "os.getuid",
+            "os.path.join",
+            "owners.intersection",
+            "path.rsplit",
+            "proc_lock_owners",
+            "proc_stat",
+            "safe_root",
+            "set",
+            "valid_payload"
+          ],
+          "main": [
+            "admit",
+            "deny",
+            "len",
+            "print"
+          ]
+        }
+      },
+      "root/scripts/gitnexus-writer.py": {
+        "risk": "UNASSESSED new helper",
+        "native_AST_calls": {
+          "guard": [
+            "Refusal",
+            "str",
+            "subprocess.run"
+          ],
+          "writer_lock": [
+            "Path",
+            "Refusal",
+            "fcntl.flock",
+            "os.close",
+            "os.fstat",
+            "os.getuid",
+            "os.open",
+            "os.stat",
+            "stat.S_ISREG",
+            "subprocess.check_output",
+            "subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip"
+          ],
+          "main": [
+            "Refusal",
+            "args.append",
+            "guard",
+            "len",
+            "os.close",
+            "os.execvp",
+            "os.set_inheritable",
+            "print",
+            "str",
+            "subprocess.run",
+            "writer_lock"
+          ]
+        }
+      },
+      "app/scripts/gitnexus-guard.py": {
+        "risk": "UNASSESSED new helper",
+        "native_AST_calls": {
+          "deny": [
+            "Refusal"
+          ],
+          "proc_stat": [
+            "deny",
+            "f.read",
+            "int",
+            "len",
+            "line.startswith",
+            "next",
+            "open",
+            "raw.rfind",
+            "raw[end + 2:].split",
+            "status.splitlines",
+            "uid_line.split"
+          ],
+          "ancestors": [
+            "os.getpid",
+            "proc_stat",
+            "seen.add",
+            "set"
+          ],
+          "proc_lock_owners": [
+            "fields[4].isdigit",
+            "fields[5].split",
+            "int",
+            "len",
+            "line.split",
+            "open",
+            "owners.setdefault",
+            "owners.setdefault(key, set()).add",
+            "set"
+          ],
+          "safe_root": [
+            "deny",
+            "open_fixed_root",
+            "os.close",
+            "os.environ.get"
+          ],
+          "open_fixed_root": [
+            "LOCK_ROOT.strip",
+            "LOCK_ROOT.strip('/').split",
+            "getattr",
+            "os.close",
+            "os.fstat",
+            "os.open"
+          ],
+          "open_identity": [
+            "deny",
+            "len",
+            "open_fixed_root",
+            "os.close",
+            "os.fstat",
+            "os.getuid",
+            "os.open",
+            "os.path.basename",
+            "os.path.dirname",
+            "os.read",
+            "os.stat",
+            "stat.S_ISLNK",
+            "stat.S_ISREG"
+          ],
+          "dev_inode": [
+            "os.major",
+            "os.minor"
+          ],
+          "valid_payload": [
+            "data.decode",
+            "deny",
+            "isinstance",
+            "json.loads",
+            "list",
+            "math.isfinite",
+            "p.get",
+            "p['request_tag'].strip",
+            "time.time",
+            "type"
+          ],
+          "admit": [
+            "ancestors",
+            "deny",
+            "dev_inode",
+            "identities.append",
+            "iter",
+            "kernel.get",
+            "kernel2.get",
+            "len",
+            "next",
+            "open_identity",
+            "os.environ.get",
+            "os.environ.get('ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT', '').strip",
+            "os.environ.get('ORCHESTRATOR_CROSS_ROLE_DISJOINT_PLACEMENT', '').strip().lower",
+            "os.getpid",
+            "os.getuid",
+            "os.path.join",
+            "owners.intersection",
+            "path.rsplit",
+            "proc_lock_owners",
+            "proc_stat",
+            "safe_root",
+            "set",
+            "valid_payload"
+          ],
+          "main": [
+            "admit",
+            "deny",
+            "len",
+            "print"
+          ]
+        }
+      },
+      "app/scripts/gitnexus-writer.py": {
+        "risk": "UNASSESSED new helper",
+        "native_AST_calls": {
+          "guard": [
+            "Refusal",
+            "str",
+            "subprocess.run"
+          ],
+          "writer_lock": [
+            "Path",
+            "Refusal",
+            "fcntl.flock",
+            "os.close",
+            "os.fstat",
+            "os.getuid",
+            "os.open",
+            "os.stat",
+            "stat.S_ISREG",
+            "subprocess.check_output",
+            "subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], text=True).strip"
+          ],
+          "main": [
+            "Refusal",
+            "args.append",
+            "guard",
+            "len",
+            "os.close",
+            "os.execvp",
+            "os.set_inheritable",
+            "print",
+            "str",
+            "subprocess.run",
+            "writer_lock"
+          ]
+        }
+      }
+    }
+  },
+  "v3_js_byte_parity": {
+    "native_source_sha256": "a568a90041c16b179e376ea2d760098f9caaf1d5749051623af989b0c55c295a",
+    "proposed_source_sha256": "6c8052d3d055a24361cfb221b1927359759b12ed7d16b763f422ff55ca666d98",
+    "wholefile_native_parity": false,
+    "v2_proposal_parity": true,
+    "impact_reuse": "Prior LOW native main/resolveAnalyzeJs is historical bounded source evidence; guarded proposed main differs, no exact proposed-main impact claimed."
+  }
+}

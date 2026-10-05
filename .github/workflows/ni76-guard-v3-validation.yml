@@ -1,0 +1,169 @@
+name: NI76 proposed guard v3 real-kernel controls
+on:
+  push:
+    branches: [codex/ni76-guard-v3-validation-20261005]
+    paths:
+      - .github/workflows/ni76-guard-v3-validation.yml
+      - research/fixtures/ni76_guard_v3/**
+permissions:
+  contents: read
+concurrency:
+  group: ni76-guard-v3-validation-20261005
+  cancel-in-progress: false
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RECIPE_PARENT: e8d223ad47629e90d74c84bc5f8c6b8385096e1f
+      ROOT_BASE: e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1
+      APP_BASE: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
+      MANIFEST_SHA: df0bec3e96af8a059f4ad3273913a3b4e4c5684985b9f6ae5dcf58678d0e18c8
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
+          path: _ni76_app_input
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e
+        with:
+          node-version: 22.14.0
+          check-latest: false
+      - name: Verify immutable proposal and prepare private disposable snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$(git rev-parse HEAD^)" = "$RECIPE_PARENT"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test "$(node --version)" = v22.14.0
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C _ni76_app_input rev-parse HEAD)" = "$APP_BASE"
+          NI76_SCOPE="$RUNNER_TEMP/ni76-v3-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$NI76_SCOPE" && test ! -L "$NI76_SCOPE"
+          mkdir -m 700 "$NI76_SCOPE"
+          export NI76_SCOPE
+          mkdir -m 700 "$NI76_SCOPE/originals"
+          cat /proc/self/mountinfo > "$NI76_SCOPE/originals/mountinfo-before.txt"
+          set +e
+          grep -nE '/mnt/raid0/llm|/workspace/repos' "$NI76_SCOPE/originals/mountinfo-before.txt" > "$NI76_SCOPE/originals/mount-absence.stdout" 2> "$NI76_SCOPE/originals/mount-absence.stderr"
+          mount_rc=$?
+          set -e
+          printf '{"exit_code":%s,"required_absence_exit":1}\n' "$mount_rc" > "$NI76_SCOPE/originals/mount-absence-status.json"
+          test "$mount_rc" -eq 1
+          printf 'NI76_SCOPE=%s\nNI76_REAL_NODE=%s\n' "$NI76_SCOPE" "$(command -v node)" >> "$GITHUB_ENV"
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni76_guard_v3"
+          export assets
+          mkdir -m 700 "$NI76_SCOPE/root" "$NI76_SCOPE/app"
+          test "$(sha256sum "$assets/proposal-manifest.json" | cut -d' ' -f1)" = "$MANIFEST_SHA"
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          a=Path(os.environ['assets']);m=json.loads((a/'proposal-manifest.json').read_text())
+          assert m['root_base']==os.environ['ROOT_BASE'] and m['app_base']==os.environ['APP_BASE']
+          import subprocess
+          expected={'.github/workflows/ni76-guard-v3-validation.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json'}
+          expected.update('research/fixtures/ni76_guard_v3/'+name for name in m['files'])
+          actual=set(subprocess.check_output(['git','diff','--name-only',os.environ['RECIPE_PARENT'],'HEAD'],text=True).splitlines())
+          assert actual==expected, ('unexpected recipe changed paths',sorted(actual^expected))
+          for name,entry in m['files'].items():
+              p=a/name
+              assert '..' not in Path(name).parts and not Path(name).is_absolute()
+              assert stat.S_ISREG(p.lstat().st_mode) and not p.is_symlink()
+              for parent in p.parents:
+                  assert not parent.is_symlink()
+                  if parent==a:break
+              b=p.read_bytes();assert len(b)==entry['size'] and hashlib.sha256(b).hexdigest()==entry['sha256']
+          PY
+          # Native mount absence and exact recipe/assets gates passed before VM-only creation.
+          sudo install -d -m 700 -o "$(id -u)" -g "$(id -g)" /mnt/raid0/llm
+          git ls-tree -r "$ROOT_BASE" > "$NI76_SCOPE/originals/root-native-readset.txt"
+          git -C _ni76_app_input ls-tree -r "$APP_BASE" > "$NI76_SCOPE/originals/app-native-readset.txt"
+          git archive "$ROOT_BASE" | tar -x -C "$NI76_SCOPE/root"
+          git -C _ni76_app_input archive "$APP_BASE" | tar -x -C "$NI76_SCOPE/app"
+          git -C "$NI76_SCOPE/root" apply --check "$assets/implementation.patch"
+          git -C "$NI76_SCOPE/root" apply "$assets/implementation.patch"
+          git -C "$NI76_SCOPE/app" apply --check "$assets/app.patch"
+          git -C "$NI76_SCOPE/app" apply "$assets/app.patch"
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          a=Path(os.environ['assets']);s=Path(os.environ['NI76_SCOPE']);m=json.loads((a/'proposal-manifest.json').read_text())
+          for name,e in m['files'].items():
+              if name.startswith(('root/','app/')):assert hashlib.sha256((s/name).read_bytes()).hexdigest()==e['sha256']
+          before={}
+          for repo in ['root','app']:
+              for p in sorted((s/repo).rglob('*')):
+                  st=p.lstat()
+                  if stat.S_ISREG(st.st_mode):before[str(p.relative_to(s))]=hashlib.sha256(p.read_bytes()).hexdigest()
+                  elif stat.S_ISLNK(st.st_mode):before[str(p.relative_to(s))]={'link':os.readlink(p)}
+          (s/'originals/source-before.json').write_text(json.dumps(before,sort_keys=True))
+          for name in ['implementation.patch','app.patch','hosted-controls.py','race-controls.py','native-child.py','caller-and-contract-proof.json','proposal-manifest.json']:
+              (s/'originals'/name).write_bytes((a/name).read_bytes())
+          PY
+          cp .github/workflows/ni76-guard-v3-validation.yml "$NI76_SCOPE/originals/workflow.original.yml"
+          printf '%s\n' "$HOME" > "$NI76_SCOPE/originals/home-before.txt"
+          /usr/bin/python3 --version > "$NI76_SCOPE/originals/python-version.txt"
+          node --version > "$NI76_SCOPE/originals/node-version.txt"
+          git --version > "$NI76_SCOPE/originals/git-version.txt"
+          printf '{"recipe_sha":"%s","root_base":"%s","app_base":"%s","run_id":"%s","attempt":"%s","source_applied_only_to_disposable_snapshots":true}\n' "$GITHUB_SHA" "$ROOT_BASE" "$APP_BASE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$NI76_SCOPE/originals/provenance.json"
+      - name: Run real kernel claim and writer controls once
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni76_guard_v3"
+          rc=0
+          timeout --signal=TERM --kill-after=5s 600s /usr/bin/python3 -I "$assets/hosted-controls.py" > "$NI76_SCOPE/originals/harness.stdout" 2> "$NI76_SCOPE/originals/harness.stderr" || rc=$?
+          printf '{"exit_code":%s,"timeout_seconds":600,"kill_after_seconds":5}\n' "$rc" > "$NI76_SCOPE/originals/command-status.json"
+          test "$rc" -eq 0
+          test -f "$NI76_SCOPE/originals/complete.json"
+      - name: Independent source and payload custody postchecks
+        if: always() && env.NI76_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          s=Path(os.environ['NI76_SCOPE']);o=s/'originals';before=json.loads((o/'source-before.json').read_text());after={}
+          for name in before:
+              p=s/name;st=p.lstat()
+              after[name]={'link':os.readlink(p)} if stat.S_ISLNK(st.st_mode) else hashlib.sha256(p.read_bytes()).hexdigest()
+          (o/'source-after.json').write_text(json.dumps(after,sort_keys=True))
+          assert after==before,'source payload changed'
+          assert os.environ['HOME']==(o/'home-before.txt').read_text().strip()
+          assert not Path('/workspace/repos').exists()
+          checks={'source_bytes_unchanged':True,'HOME_unchanged':True,'host_index_deployed':False,
+                  'fixed_root_created_only_on_disposable_runner':True}
+          (o/'postchecks.json').write_text(json.dumps(checks))
+          for p in o.rglob('*'):
+              assert not p.is_symlink()
+              assert p.stat().st_uid==os.getuid() and p.stat().st_gid==os.getgid()
+              p.chmod(0o700 if p.is_dir() else 0o600)
+          o.chmod(0o700)
+          files={str(p.relative_to(o)):{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'size':p.stat().st_size}
+                 for p in sorted(o.rglob('*')) if p.is_file()}
+          with (o/'custody-manifest.json').open('x') as f:json.dump(files,f,indent=2)
+          (o/'custody-manifest.json').chmod(0o600)
+          PY
+      - name: Preserve complete originals even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni76-v3-originals-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.NI76_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

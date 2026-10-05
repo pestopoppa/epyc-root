@@ -1,0 +1,58 @@
+{
+  "root_base": "e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1",
+  "app_base": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1",
+  "files": {
+    "implementation.patch": {
+      "sha256": "226465c69f0198365fe9bef6c7fe94a2a1df8a2f8022655ac27a02d7703f0a40",
+      "size": 13576
+    },
+    "app.patch": {
+      "sha256": "9cdf5543602a56ab1ef202bc96122d1cbe5c971fb39315c8c85149df728f80e4",
+      "size": 13001
+    },
+    "hosted-controls.py": {
+      "sha256": "dfaffb845426d0719083e499560783ecd5221ff56f50f0d232038febfd2540ab",
+      "size": 11390
+    },
+    "root/scripts/gitnexus-analyze.sh": {
+      "sha256": "dacb98191be75abf64f73763d52fa89e8b738f5f3e6eac0e988159abe40d22c3",
+      "size": 1071
+    },
+    "root/scripts/gitnexus-guard.py": {
+      "sha256": "e3534605c775380d4c39c04b20fc699172f099b93a8a2d0398fc795d051daef0",
+      "size": 8210
+    },
+    "root/scripts/gitnexus-patch.js": {
+      "sha256": "6c8052d3d055a24361cfb221b1927359759b12ed7d16b763f422ff55ca666d98",
+      "size": 5933
+    },
+    "root/scripts/gitnexus-writer.py": {
+      "sha256": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",
+      "size": 3736
+    },
+    "app/scripts/gitnexus-analyze.sh": {
+      "sha256": "4772a8ac245e4fdb20521a17ddb48b9b7bdff6438afbebd069e70e4eb42fba89",
+      "size": 683
+    },
+    "app/scripts/gitnexus-guard.py": {
+      "sha256": "e3534605c775380d4c39c04b20fc699172f099b93a8a2d0398fc795d051daef0",
+      "size": 8210
+    },
+    "app/scripts/gitnexus-writer.py": {
+      "sha256": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",
+      "size": 3736
+    },
+    "race-controls.py": {
+      "sha256": "973ca6b7d74244caabd87b56f965ea7547f290dd8762e62cdd1f4c5148796b3b",
+      "size": 1403
+    },
+    "native-child.py": {
+      "sha256": "00ec7854df34c9cf71e4be02ef89029d38ee6b8eb5457a3d216640b05ed557f0",
+      "size": 1616
+    },
+    "caller-and-contract-proof.json": {
+      "sha256": "714a1d849290d711c9d226fef61579e48741a575a6daa8c957c87557dcd16976",
+      "size": 18498
+    }
+  }
+}
