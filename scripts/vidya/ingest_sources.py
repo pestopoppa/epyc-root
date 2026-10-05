@@ -90,6 +90,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("ci-fixture-conformance", "ci_conformance", _files("receipt.json", "**/receipt.json"),
+           project="project_ci_conformance", task="VB-CI-CONFORMANCE",
+           note="prospective selected fixture execution receipts; diagnostics emit zero rows; no default"),
     Source("exl3-measurement", "exl3", _files("*.measurement.json"),
            natives="measurement_rows", project="project_measurement",
            note="prospective self-hashed EXL3 measurement receipts", task="VB-EXL3-CPU-GFX90A"),

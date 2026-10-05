@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 from scripts.ci import native_conformance as nc
-from scripts.vidya.adapters import ci_conformance as adapter
+from adapters import ci_conformance as adapter
 from claim_tuple import ProjectionError, grade
 
 
@@ -67,6 +67,22 @@ def test_failed_execution_remains_false_finding(capture):
     assert record["fixture_execution_conformant"] is False
     claim = adapter.project_ci_conformance(adapter.native_rows(output / "receipt.json")[0])
     assert claim.value is False and grade(claim)[0] == "Judged"
+
+
+def test_original_receipt_ingests_through_cli_to_real_ledger(capture, tmp_path, capsys):
+    import cli
+    from ledger import Ledger
+    output, record = capture()
+    ledger = tmp_path / "ledger.jsonl"
+    assert cli.main(["--ledger", str(ledger), "--json", "ingest", "ci-fixture-conformance",
+                     "--path", str(output / "receipt.json"), "--as-of", record["ended_utc"]]) == 0
+    report = json.loads(capsys.readouterr().out)
+    assert report["rows_projected"] == 1 and report["frames_emitted"] == 3
+    frames = [row.frame for row in Ledger(ledger).read_all()]
+    support = next(frame for frame in frames if frame["frame_type"].endswith("evidence_supports_claim/v1"))
+    assert support["assertion"]["grade"] == {"Q": "Judged", "T": "Located"}
+    claim = next(frame for frame in frames if frame["frame_type"].endswith("claim_proposed/v1"))
+    assert claim["assertion"]["display_text"] == record["decided_proposition"]
 
 
 def test_pass_with_skipped_case_describes_executed_cases_only(capture):
