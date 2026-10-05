@@ -1,0 +1,32 @@
+{
+  "counts": {
+    "collected": 16,
+    "error": 0,
+    "executed": 16,
+    "failure": 0,
+    "passed": 16,
+    "skipped": 0
+  },
+  "external_bound_inputs": 5,
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "module": "ni64-design-archive",
+  "native_git_bound_inputs": 570,
+  "native_receipt_file_sha256": "f8f841ebcd5df37efbe8a9b94cc49a26936ad7765c864285aa2f74478e4bc595",
+  "source_commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+  "true_postchecks": 20,
+  "schema": "ni05.main_review.v1",
+  "run_id": 37381716978,
+  "attempt": 1,
+  "workflow_sha": "fb75e467fe399d1f8f9e221e1d44e511d47fa4c7",
+  "original_receipt_file_sha256": "f8f841ebcd5df37efbe8a9b94cc49a26936ad7765c864285aa2f74478e4bc595",
+  "original_receipt_embedded_self_hash": "f111a8e18d140a8791b032a39130fccb47708f669d189e4ee9850b8a5a29be6e",
+  "full_private_custody_files_verified": 1747,
+  "zip_members_byte_compared": 1731,
+  "current_app_main_parity": "f884406e76d12a98254372a819e1fa6248c9223c",
+  "review_is_derivative": true,
+  "historical_interruption_root_cause": "unrecoverable from missing original JUnit; no retrospective attribution",
+  "public_subset_reopenable": false
+}
