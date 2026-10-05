@@ -1,0 +1,2 @@
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2557 instruction tokens per request)
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2557 instruction tokens per request)

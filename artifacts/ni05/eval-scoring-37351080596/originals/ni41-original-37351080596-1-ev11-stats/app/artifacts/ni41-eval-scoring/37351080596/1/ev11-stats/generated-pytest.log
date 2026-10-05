@@ -1,0 +1,6 @@
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2479 instruction tokens per request)
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2479 instruction tokens per request)
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2479 instruction tokens per request)
+ERROR    autopilot.eval:eval_tower.py:5889 EvalTower aggregate: NOTHING WAS SCORED (tier=1 n=2 infra_failed=0 scoring_failed=0 reasons={}) — quality=0.0 is a placeholder, not a measurement; quality_measured=False
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2479 instruction tokens per request)
+WARNING  autopilot.eval:eval_tower.py:6081 AP-16: Instruction token ratio 100.0% exceeds 20% threshold (2479 instruction tokens per request)

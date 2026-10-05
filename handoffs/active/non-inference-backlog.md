@@ -12,11 +12,11 @@
 
 ## Start here
 
-- **Next:** NI05-18 exception classification and NI05-41/45–50 offline follow-ons plus NI05-52 code-index refresh.
-- **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
+- **Next:** NI05-18 exception classification and NI05-45–50 offline follow-ons plus NI05-52 code-index refresh.
+- **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
-  (dormant), NIB2-80a, NIB2-82, NIB2-87 (filed as NIB2-81), NIB2-88, NIB2-89, NIB2-90, OBS-9, OBS-10.
+  (dormant), NIB2-88, NIB2-89.
 - **Leak robustness (2026-10-04 supplement):** LR-6a is operator-held (LR-9a ratified 2026-10-04, `ae06680f`). LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **43/52**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **44/52**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -84,7 +84,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-40** ✅ 2026-10-05 — SSU-FIXTURE-REPL-SPILL: rerun the unchanged spill-output module with the already reviewed runner scratch fixture; preserve original nine failures.
 
-- [ ] **NI05-41** — SSU-SCORING-EXTRA: declare and lock the optional mathematical scorer dependency, then rerun three offline modules and their missing-dependency refusal controls; exact source/recipe review precedes execution.
+- [x] **NI05-41** ✅ 2026-10-05 — SSU-SCORING-EXTRA: declare and lock the optional mathematical scorer dependency, then rerun three offline modules and their missing-dependency refusal controls; exact source/recipe review precedes execution.
 
 - [x] **NI05-42** ✅ 2026-10-05 — SSU-GRAPH-FIXTURES: validate named temporary-DB graph modules with the existing locked optional graph extra; no live graph, model or dataset access.
 
@@ -615,3 +615,5 @@ NI40/NI42 accepted 2026-10-05: main independently reopened original CI3733965139
 NI38 bounded offline score preparation accepted 2026-10-05: original CI37345306976 passes12/12 scorer and67/67 reader/ingestion cases, zero skips/failures/errors. Main independently reopens both CI receipts TRUE Judged/Located and the bound original synthetic scored-report archive in owned0700 custody: one TRUE report and two diagnostic NULL/zero-row originals, preserving original UUIDs/modes/bytes. Descriptive macro file/span metrics retain failure/empty denominators and caller-declared dispositions/costs; no official dataset denominator or quality claim. Reviewed app sourcec8851695 and root sourcecab789885 are promoted unchanged; recipe remains separate. Original public prefixes: artifacts/ni05/contextbench-score-37345306976. Full DCP-10 benchmark stays open; tally **40/44**, NI18/41/43/44 continue.
 
 2026-10-05 accepted boundary: NI43 retryCI37347669248 passes24/24 exploration plus19/19 mutation cases on unchanged appdb387; main independently verifies both TRUE Judged/Located receipts, every declared source byte, private checkout/empty fixture roots and scratch, and absent binary postchecks. First failed mutation original remains unchanged. NI44 CI37348970500 passes36/36 offline observer cases; main verifies TRUE Judged/Located, pinned source/recipe bytes and isolated bus absence, then integrates exact five source/test files as d4999a170. Qualified authoritative probe evidence replaces marker-derived leaf idle authority; uninstrumented Claude remains UNKNOWN and live processes are not restarted. Public originals: artifacts/ni05/repl-filesystem-37347669248 and artifacts/ni05/observer-leaf-37348970500. NI51 closes only retired E8 active-consumer scope under existing OP-19. Tally **43/52**; NI18/41/45–50/52 remain open, with no inference or live-stack change.
+
+2026-10-05 NI41 accepted: originalCI37351080596 passes68/68 cases (18confidence-probe/9EV11stats/41verifier-mode), zero skips/failures/errors; allfive named positive/missing-package hard-fail controls pass. Main independently reopens allthree TRUE Judged/Located receipts and verifies exact source/dependency/context bytes, installed versions, frozen additive lock and absent binary postchecks. Rawresolver unrelated changes are preserved but rejected for promotion; all214original nonproject lock records/top-level fields remain unchanged. Only the optional extra and its three-package closure are published to appmain65599ff2b02fcf10a9631376e143e507717469b6. Original public custody: artifacts/ni05/eval-scoring-37351080596. SSU-SCORING-EXTRA and VB-CI-OPTIONAL-SCORING-LOCK close; tally **44/52**, NI18/45–50/52 continue. No inference, scientific quality, capacity, default-serving change or runtime reload claim.

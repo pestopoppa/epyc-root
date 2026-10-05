@@ -1,0 +1,15 @@
+DEBUG uv 0.8.15
+DEBUG Found workspace root: `/home/runner/work/epyc-root/epyc-root/app`
+DEBUG Adding root workspace member: `/home/runner/work/epyc-root/epyc-root/app`
+DEBUG No Python version file found in workspace: /home/runner/work/epyc-root/epyc-root/app
+DEBUG Using Python request `>=3.11` from `requires-python` metadata
+DEBUG Checking for Python environment at: `/home/runner/work/_temp/ni41-eval-scoring-venv`
+DEBUG Searching for Python >=3.11 in managed installations or search path
+DEBUG Searching for managed installations at `/home/runner/.local/share/uv/python`
+DEBUG Found `cpython-3.11.14-linux-x86_64-gnu` at `/opt/hostedtoolcache/Python/3.11.14/x64/bin/python3` (first executable in the search path)
+Using CPython 3.11.14 interpreter at: /opt/hostedtoolcache/Python/3.11.14/x64/bin/python3
+DEBUG Using request timeout of 30s
+DEBUG Found static `pyproject.toml` for: epyc-orchestrator @ file:///home/runner/work/epyc-root/epyc-root/app
+DEBUG No workspace root found, using project root
+DEBUG Existing `uv.lock` satisfies workspace requirements
+Resolved 218 packages in 0.94ms

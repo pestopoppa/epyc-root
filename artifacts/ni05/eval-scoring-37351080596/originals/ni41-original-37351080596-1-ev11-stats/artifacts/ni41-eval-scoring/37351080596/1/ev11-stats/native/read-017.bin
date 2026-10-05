@@ -1,0 +1,20 @@
+{
+  "derivative_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+  "extras": [
+    "dev",
+    "eval-scoring"
+  ],
+  "frozen_sync_log_sha256": "eb4c7fc998cdf8898fb81e11a085a00d45696b3b92b527601e6ae7296ff8ef5a",
+  "install_project": false,
+  "installed_versions": {
+    "antlr4-python3-runtime": "4.13.2",
+    "latex2sympy2-extended": "1.11.0",
+    "math-verify": "0.9.0"
+  },
+  "lock_check_log_sha256": "f6b66cba9bed76656f2115df3328d6c15f053886efbe7fba8d08e88664b557b6",
+  "lock_sha256_after": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+  "lock_unchanged": true,
+  "python": "3.11.14",
+  "schema": "epyc.ni41.frozen_dependency_validation.v1",
+  "uv": "0.8.15"
+}

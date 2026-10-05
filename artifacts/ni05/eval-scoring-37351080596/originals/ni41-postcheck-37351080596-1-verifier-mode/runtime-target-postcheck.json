@@ -1,0 +1,21 @@
+{
+  "all_absent": true,
+  "schema": "epyc.ni41.runtime_target_postcheck.v1",
+  "targets": [
+    {
+      "is_symlink": false,
+      "lexists": false,
+      "path": "/home/runner/work/_temp/ni41-unavailable-llama-cpp-bin"
+    },
+    {
+      "is_symlink": false,
+      "lexists": false,
+      "path": "/home/runner/work/_temp/ni41-unavailable-mtmd-bin"
+    },
+    {
+      "is_symlink": false,
+      "lexists": false,
+      "path": "/home/runner/work/_temp/ni41-unavailable-llama-server"
+    }
+  ]
+}

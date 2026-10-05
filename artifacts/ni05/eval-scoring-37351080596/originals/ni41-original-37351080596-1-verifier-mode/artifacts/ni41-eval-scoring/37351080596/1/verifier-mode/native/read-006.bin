@@ -1,0 +1,16 @@
+{
+  "app_parent_sha": "db38737d63363a059212820aaac40b4026f82b51",
+  "app_source_sha": "2273373b2b7d157ef1462897656bd385227ddb59",
+  "expected_math_verify_wheel_sha256": "3703e7c4885354027fa84409d762a596a2906d1fd4deb78361876bd905a76194",
+  "input_sha256": {
+    "pyproject.toml": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+    "uv.lock": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+  },
+  "python_observed": "3.11.14",
+  "recipe_sha": "9fd8182107a22fdefa37a518371e3e045ce65fbc",
+  "requested_extra": "eval-scoring = math-verify[antlr4_13_2]==0.9.0",
+  "resolver_command": "timeout --signal=TERM --kill-after=15s 600s uv lock --verbose (no --upgrade, no uv sync/install, no tests/imports)",
+  "schema": "ni41.optional_eval_scoring_lock_prep.v1",
+  "scope": "dependency resolution only; no package installation, application import, test, service, or inference",
+  "uv_observed": "uv 0.8.15"
+}

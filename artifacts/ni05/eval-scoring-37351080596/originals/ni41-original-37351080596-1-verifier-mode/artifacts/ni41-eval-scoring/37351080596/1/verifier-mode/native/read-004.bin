@@ -1,0 +1,341 @@
+name: NI41 frozen eval-scoring fixture validation
+
+on:
+  push:
+    branches:
+      - codex/ni41-eval-scoring-fixtures-20261005
+    paths:
+      - .github/workflows/ni41-eval-scoring-fixtures.yml
+
+permissions:
+  actions: read
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: fccbb76350f91e428f9f19c731b588eca5f5df01
+  APP_SOURCE_SHA: dac13419caf664da702807fcfea3ffe3fbf9e856
+  DERIVATIVE_LOCK_SHA256: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+  RESOLVER_RUN_ID: '37341313997'
+  RESOLVER_ARTIFACT_NAME: ni41-eval-scoring-lock-37341313997-1
+  RUN_ROOT: artifacts/ni41-eval-scoring/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  eval-scoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module_id: confidence-probe
+            module_path: tests/unit/test_ev_conf2_confidence_probe.py
+          - module_id: ev11-stats
+            module_path: tests/unit/test_eval_tower_ev11_stats.py
+          - module_id: verifier-mode
+            module_path: tests/unit/test_eval_verifier_mode.py
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+    steps:
+      - name: Create isolated absent runtime targets
+        run: |
+          set -euo pipefail
+          for name in llama-cpp-bin mtmd-bin llama-server; do
+            test ! -e "$RUNNER_TEMP/ni41-unavailable-$name"
+            test ! -L "$RUNNER_TEMP/ni41-unavailable-$name"
+          done
+          printf '%s\n' "$RUNNER_TEMP/ni41-eval-scoring-venv" \
+            | sed 's#^#UV_PROJECT_ENVIRONMENT=#' >> "$GITHUB_ENV"
+          printf '%s\n' "$RUNNER_TEMP/ni41-unavailable-llama-cpp-bin" \
+            | sed 's#^#ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=#' >> "$GITHUB_ENV"
+          printf '%s\n' "$RUNNER_TEMP/ni41-unavailable-mtmd-bin" \
+            | sed 's#^#ORCHESTRATOR_PATHS_LLAMA_MTMD=#' >> "$GITHUB_ENV"
+          printf '%s\n' "$RUNNER_TEMP/ni41-unavailable-llama-server" \
+            | sed 's#^#ORCHESTRATOR_PATHS_LLAMA_SERVER=#' >> "$GITHUB_ENV"
+          printf '%s\n' "$GITHUB_WORKSPACE/ni41-resolver-inputs-$GITHUB_RUN_ID" \
+            | sed 's#^#RESOLVER_INPUTS=#' >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout pinned orchestrator source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 1
+          path: app
+
+      - name: Download original resolver artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test ! -e "$RESOLVER_INPUTS"
+          test ! -L "$RESOLVER_INPUTS"
+          mkdir -m 0700 "$RESOLVER_INPUTS"
+          gh run download "$RESOLVER_RUN_ID" \
+            --repo pestopoppa/epyc-root \
+            --name "$RESOLVER_ARTIFACT_NAME" \
+            --dir "$RESOLVER_INPUTS"
+          test -f "$RESOLVER_INPUTS/uv.before.lock"
+          test -f "$RESOLVER_INPUTS/uv.after.lock"
+
+      - name: Verify immutable sources and resolver originals
+        run: |
+          set -euo pipefail
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          for checkout in ci-control root-producer app; do
+            test -z "$(git -C "$checkout" status --porcelain --untracked-files=no)"
+          done
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$DERIVATIVE_LOCK_SHA256"
+          test "$(sha256sum app/pyproject.toml | cut -d' ' -f1)" = 1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b
+          mkdir -p "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID"
+          python - "$RESOLVER_INPUTS" "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/resolver-input-verification.json" <<'PY'
+          import hashlib, json, pathlib, stat, sys
+          root, target = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+          expected = {
+              "after-sha256.txt": "efb16e3a6cc84db5dbda8d70f58585e361ed28b060a2787ce234fb876675d2e8",
+              "context.json": "6a5512f7fe564cf2a81430a4b4fdecb373df177517051ee8120133f88e189a05",
+              "lock-audit.json": "f745d70f50cbb6bae7c0f64026cde13ff27146a60b86ae99ea5544c960fe0095",
+              "pyproject.after.toml": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+              "pyproject.before.toml": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+              "python-version.txt": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7",
+              "resolver-status.txt": "1379ca4134c79694a93d39a3b5f5646cd7bd6b46d598fe5ec06ae51ed6379209",
+              "resolver.log": "90b46eae86f787123ce54cc3fa698b9212880938194a15f134fdf92a5902ced8",
+              "uv-version.txt": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051",
+              "uv.after.lock": "36deb9e6f76ab84aa41e654d593b203607d2650c4bcac53d2e365f46ec6ac04a",
+              "uv.before.lock": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+          }
+          names = {entry.name for entry in root.iterdir()}
+          if names != set(expected):
+              raise SystemExit(f"resolver artifact file set changed: {sorted(names)}")
+          observed = {}
+          for name, wanted in expected.items():
+              path = root / name
+              if path.is_symlink() or not stat.S_ISREG(path.lstat().st_mode):
+                  raise SystemExit(f"resolver input is not a regular file: {name}")
+              data = path.read_bytes()
+              actual = hashlib.sha256(data).hexdigest()
+              if actual != wanted:
+                  raise SystemExit(f"resolver input hash mismatch: {name}")
+              observed[name] = actual
+          if (root / "pyproject.before.toml").read_bytes() != (root / "pyproject.after.toml").read_bytes():
+              raise SystemExit("original resolver pyproject changed")
+          if (root / "resolver-status.txt").read_text().strip() != "resolver_exit_code=0":
+              raise SystemExit("original resolver was unsuccessful")
+          target.write_text(json.dumps({"schema":"epyc.ni41.resolver_input_verification.v1","original_files_sha256":observed,"pyproject_before_equals_after":True,"resolver_run_id":"37341313997"},sort_keys=True,indent=2)+"\n",encoding="utf-8")
+          PY
+          for path in "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" "$ORCHESTRATOR_PATHS_LLAMA_MTMD" "$ORCHESTRATOR_PATHS_LLAMA_SERVER"; do
+            test ! -e "$path"
+            test ! -L "$path"
+          done
+
+      - name: Set up locked Python and uv
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.14'
+
+      - name: Install pinned uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Validate frozen optional scoring extra
+        working-directory: app
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID"
+          lock_log="$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/uv-lock-check.log"
+          sync_log="$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/uv-sync.log"
+          before="$(sha256sum uv.lock | cut -d' ' -f1)"
+          test "$before" = "$DERIVATIVE_LOCK_SHA256"
+          python --version | grep -Fx 'Python 3.11.14'
+          uv --version | grep -Fx 'uv 0.8.15'
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 600s uv lock --check --verbose >"$lock_log" 2>&1
+          lock_rc=$?
+          set -e
+          cat "$lock_log"
+          test "$lock_rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$before"
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 600s uv sync --frozen --extra dev --extra eval-scoring --no-install-project >"$sync_log" 2>&1
+          sync_rc=$?
+          set -e
+          cat "$sync_log"
+          test "$sync_rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$before"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PY'
+          from importlib.metadata import version
+          expected={"math-verify":"0.9.0","antlr4-python3-runtime":"4.13.2","latex2sympy2-extended":"1.11.0"}
+          for package,wanted in expected.items():
+              actual=version(package)
+              if actual != wanted: raise SystemExit(f"{package}: expected {wanted}, got {actual}")
+              print(f"{package}=={actual}")
+          PY
+          python - "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/dependency-validation.json" "$lock_log" "$sync_log" <<'PY'
+          import hashlib, json, pathlib, sys
+          target, lock_log, sync_log = map(pathlib.Path, sys.argv[1:])
+          target.write_text(json.dumps({
+              "schema":"epyc.ni41.frozen_dependency_validation.v1",
+              "python":"3.11.14","uv":"0.8.15",
+              "derivative_lock_sha256":"7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+              "lock_sha256_after":hashlib.sha256(pathlib.Path("uv.lock").read_bytes()).hexdigest(),
+              "lock_check_log_sha256":hashlib.sha256(lock_log.read_bytes()).hexdigest(),
+              "frozen_sync_log_sha256":hashlib.sha256(sync_log.read_bytes()).hexdigest(),
+              "extras":["dev","eval-scoring"],"install_project":False,
+              "installed_versions":{"math-verify":"0.9.0","antlr4-python3-runtime":"4.13.2","latex2sympy2-extended":"1.11.0"},
+              "lock_unchanged":True,
+          },sort_keys=True,indent=2)+"\n",encoding="utf-8")
+          PY
+
+      - name: Record fixture context
+        working-directory: app
+        run: |
+          set -euo pipefail
+          python - "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/fixture-context.json" <<'PY'
+          import json, os, pathlib, sys
+          target=pathlib.Path(sys.argv[1])
+          target.write_text(json.dumps({
+              "schema":"epyc.ni41.fixture_context.v1",
+              "source":{"root_producer":os.environ["ROOT_SOURCE_SHA"],"orchestrator":os.environ["APP_SOURCE_SHA"],"workflow":os.environ["GITHUB_SHA"]},
+              "module_id":os.environ["MODULE_ID"],"module_path":os.environ["MODULE_PATH"],
+              "resolver_run_id":os.environ["RESOLVER_RUN_ID"],"resolver_artifact":os.environ["RESOLVER_ARTIFACT_NAME"],
+              "lock_sha256":os.environ["DERIVATIVE_LOCK_SHA256"],
+              "install":"uv sync --frozen --extra dev --extra eval-scoring --no-install-project",
+              "positive_controls":["test_arm_a_writes_scored_sidecar_with_token_trace","test_require_math_verify_present_does_not_raise","test_score_math_rebaseline_answers_uses_real_math_verify"],
+              "intentional_refusal_controls":["test_require_math_verify_missing_hard_fails","test_score_math_rebaseline_hard_fails_without_math_verify"],
+              "runtime_targets":{"ORCHESTRATOR_PATHS_LLAMA_CPP_BIN":os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"],"ORCHESTRATOR_PATHS_LLAMA_MTMD":os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"],"ORCHESTRATOR_PATHS_LLAMA_SERVER":os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"],"all_absent":True},
+              "exclusions":["no inference or model server","no live endpoint or corpus","no capacity or performance claim","no undeclared-dependency completeness claim"],
+          },sort_keys=True,indent=2)+"\n",encoding="utf-8")
+          PY
+
+      - name: Capture selected native scoring module
+        working-directory: app
+        run: |
+          set -euo pipefail
+          capture_dir="$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/native"
+          junit="$GITHUB_WORKSPACE/app/$RUN_ROOT/$MODULE_ID/original-pytest.xml"
+          pytest_log="$GITHUB_WORKSPACE/app/$RUN_ROOT/$MODULE_ID/generated-pytest.log"
+          mkdir -p "$GITHUB_WORKSPACE/app/$RUN_ROOT/$MODULE_ID"
+          timeout --verbose --signal=TERM --kill-after=15s 600s \
+            "$UV_PROJECT_ENVIRONMENT/bin/python" "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --cwd "$GITHUB_WORKSPACE/app" --junit "$junit" --output "$capture_dir" \
+            --repo "app=$GITHUB_WORKSPACE/app" --repo "root=$GITHUB_WORKSPACE/root-producer" \
+            --repo "workflow=$GITHUB_WORKSPACE/ci-control" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/__init__.py" \
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni41-eval-scoring-fixtures.yml" \
+            --read-path "$RESOLVER_INPUTS/after-sha256.txt" \
+            --read-path "$RESOLVER_INPUTS/context.json" \
+            --read-path "$RESOLVER_INPUTS/lock-audit.json" \
+            --read-path "$RESOLVER_INPUTS/pyproject.after.toml" \
+            --read-path "$RESOLVER_INPUTS/pyproject.before.toml" \
+            --read-path "$RESOLVER_INPUTS/python-version.txt" \
+            --read-path "$RESOLVER_INPUTS/resolver-status.txt" \
+            --read-path "$RESOLVER_INPUTS/resolver.log" \
+            --read-path "$RESOLVER_INPUTS/uv-version.txt" \
+            --read-path "$RESOLVER_INPUTS/uv.after.lock" \
+            --read-path "$RESOLVER_INPUTS/uv.before.lock" \
+            --read-path "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/resolver-input-verification.json" \
+            --read-path "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/dependency-validation.json" \
+            --read-path "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/fixture-context.json" \
+            --read-path "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/uv-lock-check.log" \
+            --read-path "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/uv-sync.log" \
+            --read-path pyproject.toml --read-path uv.lock --read-path tests/conftest.py \
+            --read-path tests/unit/test_ev_conf2_confidence_probe.py \
+            --read-path tests/unit/test_eval_tower_ev11_stats.py \
+            --read-path tests/unit/test_eval_verifier_mode.py \
+            --read-path scripts/analysis/confidence_probe.py \
+            --read-path scripts/analysis/confidence_source_compare.py \
+            --read-path scripts/autopilot/eval_tower.py \
+            --read-path scripts/benchmark/scoring_verifiers_adapter.py \
+            --read-path scripts/benchmark/eval_batch_serving_evaltower_window.py \
+            --read-path src/config/models.py \
+            --read-path src/config/__init__.py \
+            --read-path src/registry/kernel_paths.py \
+            --read-path tests/unit/conftest.py \
+            --read-path src/llm_primitives/stat_tests.py \
+            --select "$MODULE_PATH" \
+            --generated-output "$RUN_ROOT/$MODULE_ID/generated-pytest.log" \
+            -- timeout --verbose --signal=TERM --kill-after=15s 360s \
+              "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q "$MODULE_PATH" \
+              --rootdir="$GITHUB_WORKSPACE/app" --junit-prefix="ni41_$MODULE_ID" \
+              --junitxml="$junit" --log-file="$pytest_log"
+
+      - name: Preserve native execution before postchecks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni41-original-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+          if-no-files-found: warn
+          path: |
+            ${{ github.workspace }}/${{ env.RUN_ROOT }}/${{ matrix.module_id }}/
+            ${{ github.workspace }}/app/${{ env.RUN_ROOT }}/${{ matrix.module_id }}/
+            ${{ github.workspace }}/ni41-resolver-inputs-${{ github.run_id }}/
+
+      - name: Require named positive and refusal controls
+        if: always()
+        working-directory: app
+        run: |
+          set -euo pipefail
+          python - "$GITHUB_WORKSPACE/app/$RUN_ROOT/$MODULE_ID/original-pytest.xml" "$MODULE_ID" <<'PY'
+          import sys, xml.etree.ElementTree as ET
+          root=ET.parse(sys.argv[1]).getroot()
+          cases={item.get("name"):item for item in root.iter("testcase")}
+          required={
+              "confidence-probe":["test_arm_a_writes_scored_sidecar_with_token_trace"],
+              "ev11-stats":["test_require_math_verify_present_does_not_raise","test_require_math_verify_missing_hard_fails"],
+              "verifier-mode":["test_score_math_rebaseline_answers_uses_real_math_verify","test_score_math_rebaseline_hard_fails_without_math_verify"],
+          }[sys.argv[2]]
+          missing=[name for name in required if name not in cases]
+          if missing: raise SystemExit(f"required controls not collected: {missing}")
+          failed=[name for name in required if cases[name].find("failure") is not None or cases[name].find("error") is not None]
+          if failed: raise SystemExit(f"required controls failed: {failed}")
+          skipped=[name for name in required if cases[name].find("skipped") is not None]
+          if skipped: raise SystemExit(f"required controls skipped: {skipped}")
+          for name in required: print(f"PASS {name}")
+          PY
+
+      - name: Verify absent runtime targets remain absent
+        if: always()
+        run: |
+          set -euo pipefail
+          python - "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/runtime-target-postcheck.json" \
+            "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" "$ORCHESTRATOR_PATHS_LLAMA_MTMD" "$ORCHESTRATOR_PATHS_LLAMA_SERVER" <<'PY'
+          import json, os, pathlib, sys
+          target=pathlib.Path(sys.argv[1])
+          checks=[]
+          for path in sys.argv[2:]:
+              exists=os.path.lexists(path)
+              checks.append({"path":path,"lexists":exists,"is_symlink":os.path.islink(path)})
+          target.write_text(json.dumps({"schema":"epyc.ni41.runtime_target_postcheck.v1","targets":checks,"all_absent":not any(item["lexists"] for item in checks)},sort_keys=True,indent=2)+"\n",encoding="utf-8")
+          if any(item["lexists"] for item in checks):
+              raise SystemExit("one or more isolated runtime targets exist after capture")
+          PY
+
+      - name: Preserve runtime target postcheck
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni41-postcheck-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+          if-no-files-found: warn
+          path: ${{ github.workspace }}/${{ env.RUN_ROOT }}/${{ matrix.module_id }}/runtime-target-postcheck.json

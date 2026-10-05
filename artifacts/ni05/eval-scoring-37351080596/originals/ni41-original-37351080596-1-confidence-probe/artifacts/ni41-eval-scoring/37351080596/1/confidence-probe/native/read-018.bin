@@ -1,0 +1,35 @@
+{
+  "exclusions": [
+    "no inference or model server",
+    "no live endpoint or corpus",
+    "no capacity or performance claim",
+    "no undeclared-dependency completeness claim"
+  ],
+  "install": "uv sync --frozen --extra dev --extra eval-scoring --no-install-project",
+  "intentional_refusal_controls": [
+    "test_require_math_verify_missing_hard_fails",
+    "test_score_math_rebaseline_hard_fails_without_math_verify"
+  ],
+  "lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+  "module_id": "confidence-probe",
+  "module_path": "tests/unit/test_ev_conf2_confidence_probe.py",
+  "positive_controls": [
+    "test_arm_a_writes_scored_sidecar_with_token_trace",
+    "test_require_math_verify_present_does_not_raise",
+    "test_score_math_rebaseline_answers_uses_real_math_verify"
+  ],
+  "resolver_artifact": "ni41-eval-scoring-lock-37341313997-1",
+  "resolver_run_id": "37341313997",
+  "runtime_targets": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "/home/runner/work/_temp/ni41-unavailable-llama-cpp-bin",
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": "/home/runner/work/_temp/ni41-unavailable-mtmd-bin",
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": "/home/runner/work/_temp/ni41-unavailable-llama-server",
+    "all_absent": true
+  },
+  "schema": "epyc.ni41.fixture_context.v1",
+  "source": {
+    "orchestrator": "dac13419caf664da702807fcfea3ffe3fbf9e856",
+    "root_producer": "fccbb76350f91e428f9f19c731b588eca5f5df01",
+    "workflow": "c966a7595d551f228dd0dc90655b7007818e7abf"
+  }
+}

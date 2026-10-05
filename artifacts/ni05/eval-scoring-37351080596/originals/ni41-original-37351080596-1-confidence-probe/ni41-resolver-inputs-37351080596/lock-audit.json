@@ -1,0 +1,23 @@
+{
+  "added_distribution_names": [
+    "antlr4-python3-runtime",
+    "latex2sympy2-extended",
+    "math-verify"
+  ],
+  "antlr4_python3_runtime_version": "4.13.2",
+  "changed_existing_distributions": {},
+  "latex2sympy2_extended_version": "1.11.0",
+  "math_verify_version": "0.9.0",
+  "math_verify_wheel_sha256": "3703e7c4885354027fa84409d762a596a2906d1fd4deb78361876bd905a76194",
+  "new_dependency_closure": [
+    "antlr4-python3-runtime",
+    "latex2sympy2-extended",
+    "math-verify",
+    "mpmath",
+    "sympy"
+  ],
+  "old_locked_distribution_identities_preserved": true,
+  "pyproject_after_sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+  "schema": "ni41.lock_delta_audit.v1",
+  "uv_lock_after_sha256": "36deb9e6f76ab84aa41e654d593b203607d2650c4bcac53d2e365f46ec6ac04a"
+}

@@ -1,0 +1,18 @@
+{
+  "original_files_sha256": {
+    "after-sha256.txt": "efb16e3a6cc84db5dbda8d70f58585e361ed28b060a2787ce234fb876675d2e8",
+    "context.json": "6a5512f7fe564cf2a81430a4b4fdecb373df177517051ee8120133f88e189a05",
+    "lock-audit.json": "f745d70f50cbb6bae7c0f64026cde13ff27146a60b86ae99ea5544c960fe0095",
+    "pyproject.after.toml": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+    "pyproject.before.toml": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+    "python-version.txt": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7",
+    "resolver-status.txt": "1379ca4134c79694a93d39a3b5f5646cd7bd6b46d598fe5ec06ae51ed6379209",
+    "resolver.log": "90b46eae86f787123ce54cc3fa698b9212880938194a15f134fdf92a5902ced8",
+    "uv-version.txt": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051",
+    "uv.after.lock": "36deb9e6f76ab84aa41e654d593b203607d2650c4bcac53d2e365f46ec6ac04a",
+    "uv.before.lock": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+  },
+  "pyproject_before_equals_after": true,
+  "resolver_run_id": "37341313997",
+  "schema": "epyc.ni41.resolver_input_verification.v1"
+}
