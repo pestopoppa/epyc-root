@@ -69,6 +69,7 @@ jobs:
           NI05_IMAGE_ROOT: ${{ github.workspace }}/image-root
           NI05_ORCHESTRATOR: ${{ github.workspace }}/orchestrator
           NI05_RESEARCH: ${{ github.workspace }}/research
+          NI05_ARTIFACTS: ${{ github.workspace }}/ni05-generated
           ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/llama-server
           ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
           ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
@@ -86,6 +87,15 @@ jobs:
             --read-path "$GITHUB_WORKSPACE/control/tests/ci/test_devcontainer_gate_contract.py" \
             --read-path "$GITHUB_WORKSPACE/image-root/.devcontainer/Dockerfile" \
             --read-path "$GITHUB_WORKSPACE/orchestrator/Makefile" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/lib/env.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/diffusion/start_sd_server.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/benchmark/package_a_instrumented_eval.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/benchmark/operator_candidates/collect_e8_quality_baseline_v5.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/benchmark/operator_candidates/ratify_and_apply_e8_quality_baseline_v5.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/benchmark/operator_candidates/prepare_e8_quality_baseline_v5_candidate.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/setup/install_editable_pth.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/voice/build_nprocs_shim.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/scripts/autopilot/operator_candidates/ratify_and_apply_resource_lanes_v2.sh" \
             --select tests/ci/test_devcontainer_gate_contract.py \
             -- python -m pytest -q -s tests/ci/test_devcontainer_gate_contract.py \
               --junitxml "$GITHUB_WORKSPACE/ni05-junit.xml"
@@ -98,4 +108,5 @@ jobs:
           path: |
             ni05-capture/
             ni05-junit.xml
+            ni05-generated/
           if-no-files-found: ignore
