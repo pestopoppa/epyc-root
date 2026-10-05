@@ -239,6 +239,9 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "ci-fixture-conformance",
         # Named interpreter child-custody and CLI dry-run: test_managed_tooling_check.py.
         "managed-tooling-check",
+        # Explicit off-host synthetic ContextBench producer and shared-grade roundtrip:
+        # test_contextbench_score_capture.py.
+        "contextbench-discovery-score",
         "sealed-manifest", "kv-quant-27b-v10-measurement",
         # Cross-repo producer pin, both class dispatches and grading: test_exl3_adapter.py.
         "exl3-measurement", "exl3-verifier",

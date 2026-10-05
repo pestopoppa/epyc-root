@@ -550,6 +550,7 @@ _FILE_SOURCES = (
     "pii-staged-gate",
     "ci-fixture-conformance",
     "managed-tooling-check",
+    "contextbench-discovery-score",
     "session-intercall-gap",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
