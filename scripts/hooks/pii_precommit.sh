@@ -375,11 +375,32 @@ if [[ ${#STAGED_FILES[@]} -eq 0 ]]; then
   exit 0
 fi
 
+# Exact reviewed public fixture copies require complete original native custody
+# from the INDEX. This does not waive any other file or change scanner patterns.
+# One helper invocation batches Git reads and caches each verified phase.
+PROVENANCE_FIXTURES=()
+HOOK_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+provenance_file=$(mktemp)
+if python3 "$HOOK_DIR/fixture_snapshot_provenance.py" "$REPO_ROOT" >"$provenance_file"; then
+  while IFS= read -r -d '' verified_path; do
+    PROVENANCE_FIXTURES+=("$verified_path")
+  done <"$provenance_file"
+fi
+rm -f -- "$provenance_file"
+
 for path in "${STAGED_FILES[@]}"; do
   [[ -z "$path" ]] && continue
   if is_allowed "$path"; then
     continue
   fi
+  provenance_verified=0
+  for verified_path in "${PROVENANCE_FIXTURES[@]}"; do
+    if [[ "$path" == "$verified_path" ]]; then
+      provenance_verified=1
+      break
+    fi
+  done
+  [[ "$provenance_verified" -eq 1 ]] && continue
 
   # Skip files >MAX_FILE_BYTES (binary / large data).
   size=$(git cat-file -s ":${path}" 2>/dev/null || echo 0)
