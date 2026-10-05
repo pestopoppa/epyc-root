@@ -1,0 +1,84 @@
+name: NI10 session-gap fixture custody
+
+on:
+  push:
+    branches:
+      - codex/ni10-custody-validation-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  session-gap-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ROOT_SOURCE_SHA: cd1936ceceaacadbb613dd4ad91313fbb07d69e8
+      CAPTURE_DIR: artifacts/ni10-session-gap-validation
+      PYTEST_JUNIT: artifacts/ni10-session-gap-validation/original-pytest.xml
+      PYTEST_LOG: artifacts/ni10-session-gap-validation/generated-pytest.log
+    steps:
+      - name: Checkout immutable source candidate
+        uses: actions/checkout@v4
+        with:
+          ref: cd1936ceceaacadbb613dd4ad91313fbb07d69e8
+
+      - name: Checkout workflow revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: workflow-revision
+
+      - name: Verify pinned source identity
+        run: test "$(git rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install fixture dependency
+        run: python -m pip install --disable-pip-version-check 'pytest==9.1.1'
+
+      - name: Capture named NI10 fixture execution
+        run: |
+          mkdir -p "$CAPTURE_DIR"
+          python scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE" \
+            --junit "$PYTEST_JUNIT" \
+            --output "$CAPTURE_DIR/native" \
+            --repo "root=$GITHUB_WORKSPACE" \
+            --repo "workflow=$GITHUB_WORKSPACE/workflow-revision" \
+            --read-path scripts/ci/native_conformance.py \
+            --read-path scripts/harness/session_gap_measure.py \
+            --read-path scripts/vidya/adapters/session_intercall_gap.py \
+            --read-path scripts/vidya/adapters/__init__.py \
+            --read-path scripts/vidya/claim_tuple.py \
+            --read-path scripts/vidya/cli.py \
+            --read-path scripts/vidya/checkpoint.py \
+            --read-path scripts/vidya/ingest_sources.py \
+            --read-path scripts/vidya/ledger.py \
+            --read-path scripts/vidya/canonical.py \
+            --read-path scripts/vidya/fold.py \
+            --read-path scripts/vidya/frames.py \
+            --read-path scripts/vidya/lattice.py \
+            --read-path tests/vidya/test_session_gap_adapter.py \
+            --read-path tests/vidya/test_ingest_sources.py \
+            --read-path "$GITHUB_WORKSPACE/workflow-revision/.github/workflows/ni10-session-gap-validation.yml" \
+            --select tests/vidya/test_session_gap_adapter.py \
+            --select tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift \
+            --select 'tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end[session-intercall-gap]' \
+            --generated-output "$PYTEST_LOG" \
+            -- python -m pytest -q tests/vidya/test_session_gap_adapter.py \
+              tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift \
+              'tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end[session-intercall-gap]' \
+              --junitxml="$PYTEST_JUNIT" \
+              --log-file="$PYTEST_LOG"
+
+      - name: Preserve prospective fixture custody artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni10-session-gap-validation-${{ github.run_id }}
+          path: artifacts/ni10-session-gap-validation/
+          if-no-files-found: warn

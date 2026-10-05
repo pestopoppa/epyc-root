@@ -2007,6 +2007,12 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   - Cold/partial-cache launches project with their label and never merge into hot C.
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
 - [ ] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
+  2026-10-05 checkpoint: native extractor/reader and CLI source are on root main `d61ae218`;
+  original CI `37294486291` passes 21 cases (19 gap fixtures, two registration/CLI cases).
+  Existing grader only. Passive admission-enqueue field is on app main `b01ab993`, with no
+  reload. Bounded Oct 3/4 existing-log census requires a CPU claim; original timestamps are
+  retained as exact/proxy/unavailable, with no historical backfill or TTL authority.
+
 - [ ] **VB-DS41-C57 — project the DS41-C57 barrier-sleep probe records (INF-77, 2026-09-27).** Source row in
   `scripts/vidya/adapters/README.md`. Raw per-arm artifacts under `/mnt/raid0/llm/tmp/ds41-c57-cpu0-20260927/`
   (`probe*/NN-ARM/`, `probe_table*.tsv`, `gomp/`). One locator per launch × arm; carry binary digest (anchor-gen-001-prof,

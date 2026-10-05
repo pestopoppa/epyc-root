@@ -1301,3 +1301,15 @@ fixtures; artifacts and caveats are preserved in
 [the custody bundle](../artifacts/ni05/custody-validation-37291798409/README.md).
 Subsequent API and synthetic-host unit captures are filed prospectively as NI25; no old receipts
 are resealed and no new grading rule is introduced.
+
+
+### Session-gap source checkpoint (2026-10-05)
+
+The passive backend-admission enqueue field is published in app `b01ab993` (69 offline
+fixtures passed), and root `d61ae218` adds native session-gap extraction plus custody/CLI
+projection. Original CI `37294486291` passes 21 cases; its
+[original fixture bundle](../artifacts/ni05/session-gap-validation-37294486291/README.md)
+binds the selected result. Exact enqueue and staging proxies stay separate; windows, roles
+and client classes never pool, and fewer than 50 sessions remains a coverage gap. The real
+Oct 3/4 log census is queued behind a CPU claim. No API reload or actual distribution/TTL
+acceptance is implied by source publication or hermetic fixture conformance.

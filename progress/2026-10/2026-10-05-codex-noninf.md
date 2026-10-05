@@ -231,3 +231,27 @@ to the existing native capture, and NI26 removes two leaf CPU CLI eager-default 
 retaining strict missing-default refusal. Main owns shared indices; workers own isolated sources
 and prepared progress only. Accepted completion tally **21/26**; host install remains queued,
 HSF3 capture/census and broad unit verification remain open.
+
+
+## Native gap source published; next offline validation underway
+
+NI10 source is published on root main `d61ae218`; 21/21 actual cases pass in original CI
+`37294486291` (19 gap-module, two registration/CLI). Main independently reopens original
+JUnit and sealed receipt, verifies every request/log/JUnit/readset/generated artifact hash,
+and preserves the native bundle in `artifacts/ni05/session-gap-validation-37294486291/`.
+Its paired records retain exact enqueue versus proxy timestamps, disjoint windows and coverage
+floors through the existing grading ladder. App `b01ab993` publishes the exact passive enqueue
+hook and native result fixture; its four files match tested `2c4bd7da` and 69 cases passed.
+No reload or existing-log census has occurred. NI10 remains open until the bounded census boundary.
+
+NI27 adds the still-open NIB2-82 process observer to the dispatch tally (**21/27**). Preparation
+found that unavailable `/proc` observation must refuse an authority append rather than imply no
+AutoPilot; the repair is bounded to that observer/caller and synthetic offline fixtures.
+
+Operating-constraint incident: the cheap worker ran a GitNexus re-index in its isolated NI82
+worktree without a CPU claim for 106.7 seconds. The command exited zero before the stop message
+was handled, changed only ignored index metadata and made no source/process-control changes.
+Original record: `/mnt/raid0/llm/tmp/codex-ni82-gitnexus-unclaimed-analysis-20261005.log`.
+No impact on concurrent measurements is asserted. Further host re-index/test/build execution
+is prohibited for this worker; it prepares source while the previously approved install remains
+queued, and verification runs off-host.
