@@ -1,0 +1,219 @@
+name: NI30 early-abort cycle admission validation
+
+on:
+  push:
+    branches: ['codex/ni30-early-abort-cycle-validation-20261005']
+
+permissions:
+  contents: read
+
+env:
+  ORCH_SHA: b2d38066d3c8d002062fc7a32315074f04ba98fb
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+
+jobs:
+  early-abort-cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni30-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni30-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni30-unused-llama-server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+          path: orchestrator
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Bind the pinned research registry for orchestrator imports
+        run: |
+          sudo mkdir -p /mnt/raid0/llm /workspace/repos
+          sudo ln -s "$GITHUB_WORKSPACE/research" /mnt/raid0/llm/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
+          test -r orchestrator/orchestration/model_registry.yaml
+          test -r research/orchestration/model_registry.yaml
+      - name: Install pinned orchestrator development dependencies and pytest
+        working-directory: orchestrator
+        run: python -m pip install '.[dev]' 'pytest==9.1.1'
+      - name: Record actual-runner capacity-guard context
+        working-directory: orchestrator
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ni30.ci_phase_context.v1",
+              "phase": "actual_runner_capacity_guard",
+              "host_input": "actual runner /proc/meminfo; no synthetic injection",
+              "pytest_scope": "one named fresh-import capacity-guard case",
+              "environment": {name: os.environ[name] for name in names},
+              "capacity_claim": "none; fixture behavior only",
+          }
+          with Path("ni30-capacity-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture actual-runner capacity guard
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ni30-capacity.xml --output native-ni30-capacity \
+            --generated-output ni30-capacity.pytest.log \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ni30-early-abort-cycle.yml \
+            --read-path ../ci-control/scripts/ci/native_conformance.py \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ni30-capacity-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/unit/test_runtime_flags.py \
+            --read-path src/features.py \
+            --read-path src/api/routes/config.py \
+            --read-path src/runtime/config_attestation.py \
+            --read-path scripts/server/stack_manifest.py \
+            --read-path scripts/server/stack_paths.py \
+            --read-path scripts/server/stack_numa.py \
+            --read-path src/scheduling/device_model.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry_full.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --select tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+            -- python -m pytest -q \
+               tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+               --junitxml=ni30-capacity.xml --log-file=ni30-capacity.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni30-${{ github.run_id }}-${{ github.run_attempt }}-capacity-prefix
+          path: |
+            orchestrator/ni30-capacity-context.json
+            orchestrator/ni30-capacity.xml
+            orchestrator/ni30-capacity.pytest.log
+            orchestrator/native-ni30-capacity/
+      - name: Record focused route-fixture context
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ni30.ci_phase_context.v1",
+              "phase": "offline_graph_route_fixtures",
+              "host_context": "ordinary GitHub-hosted runner; no synthetic host input",
+              "pytest_scope": [
+                  "tests/unit/test_nib2_80_early_abort_budget.py",
+                  "tests/unit/test_langgraph_phase2.py",
+                  "tests/unit/test_graph_extracted_modules.py::TestShouldEscalate",
+              ],
+              "inference": "none; model and REPL turns are mocked",
+              "environment": {name: os.environ[name] for name in names},
+              "capacity_claim": "none; fixture behavior only",
+          }
+          with Path("ni30-focused-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture focused legacy and LangGraph routing fixtures
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ni30-focused.xml --output native-ni30-focused \
+            --generated-output ni30-focused.pytest.log \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ni30-early-abort-cycle.yml \
+            --read-path ../ci-control/scripts/ci/native_conformance.py \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ni30-focused-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/conftest.py \
+            --read-path tests/unit/test_nib2_80_early_abort_budget.py \
+            --read-path tests/unit/test_langgraph_phase2.py \
+            --read-path tests/unit/test_graph_extracted_modules.py \
+            --read-path tests/unit/test_graph_nodes.py \
+            --read-path tests/unit/test_runtime_flags.py \
+            --read-path src/graph/decision_gates.py \
+            --read-path src/graph/nodes.py \
+            --read-path src/graph/langgraph/nodes.py \
+            --read-path src/graph/langgraph/state.py \
+            --read-path src/graph/state.py \
+            --read-path src/graph/graph.py \
+            --read-path src/graph/helpers.py \
+            --read-path src/graph/observability.py \
+            --read-path src/graph/think_harder.py \
+            --read-path src/graph/error_classifier.py \
+            --read-path src/graph/escalation_helpers.py \
+            --read-path src/escalation.py \
+            --read-path src/roles.py \
+            --read-path src/features.py \
+            --read-path orchestration/model_registry.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --select tests/unit/test_nib2_80_early_abort_budget.py \
+            --select tests/unit/test_langgraph_phase2.py \
+            --select tests/unit/test_graph_extracted_modules.py::TestShouldEscalate \
+            -- python -m pytest -q \
+               tests/unit/test_nib2_80_early_abort_budget.py \
+               tests/unit/test_langgraph_phase2.py \
+               tests/unit/test_graph_extracted_modules.py::TestShouldEscalate \
+               --junitxml=ni30-focused.xml --log-file=ni30-focused.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni30-${{ github.run_id }}-${{ github.run_attempt }}-focused-prefix
+          path: |
+            orchestrator/ni30-focused-context.json
+            orchestrator/ni30-focused.xml
+            orchestrator/ni30-focused.pytest.log
+            orchestrator/native-ni30-focused/
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni30-${{ github.run_id }}-${{ github.run_attempt }}-combined-results
+          path: |
+            orchestrator/ni30-capacity-context.json
+            orchestrator/ni30-capacity.xml
+            orchestrator/ni30-capacity.pytest.log
+            orchestrator/native-ni30-capacity/
+            orchestrator/ni30-focused-context.json
+            orchestrator/ni30-focused.xml
+            orchestrator/ni30-focused.pytest.log
+            orchestrator/native-ni30-focused/
