@@ -1,0 +1,216 @@
+name: NI27 baseline authority seed validation
+on:
+  push:
+    branches: ['codex/ni27-baseline-authority-root-20261005']
+permissions:
+  contents: read
+env:
+  ORCH_SHA: a1639d96469ca5246637bf66b472ee79b35a4464
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+jobs:
+  baseline-authority-seed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni27-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni27-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni27-unused-llama-server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+          path: orchestrator
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Bind the pinned research registry for orchestrator imports
+        run: |
+          sudo mkdir -p /mnt/raid0/llm /workspace/repos
+          sudo ln -s "$GITHUB_WORKSPACE/research" /mnt/raid0/llm/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
+          test -r orchestrator/orchestration/model_registry_full.yaml
+      - name: Install orchestrator development dependencies and pinned pytest
+        working-directory: orchestrator
+        run: python -m pip install '.[dev]' 'pytest==9.1.1'
+      - name: Record ordinary actual-host phase context before native capture
+        working-directory: orchestrator
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ni27.ci_phase_context.v1",
+              "phase": "actual_host_capacity_guard",
+              "host_input": "actual runner /proc/meminfo; no synthetic injection",
+              "pytest_scope": "one selected actual-host capacity guard fixture",
+              "environment": {name: os.environ[name] for name in names},
+              "capacity_claim": "none; fixture behavior only",
+          }
+          Path("ni27-host-phase-context.json").write_text(
+              json.dumps(context, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Capture actual-host capacity guard before synthetic bootstrap
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ni27-host-capacity.xml --output native-host-capacity \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ni27-baseline-authority-seed.yml \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ni27-host-phase-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/unit/test_runtime_flags.py \
+            --read-path src/features.py \
+            --read-path src/api/routes/config.py \
+            --read-path src/runtime/config_attestation.py \
+            --read-path scripts/server/stack_manifest.py \
+            --read-path scripts/server/stack_paths.py \
+            --read-path scripts/server/stack_numa.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --select tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+            -- python -m pytest -q \
+               tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+               --junitxml=ni27-host-capacity.xml
+      - name: Record whole-pytest synthetic host context before native capture
+        if: always()
+        working-directory: orchestrator
+        env:
+          CI: 'true'
+          ORCHESTRATOR_MOCK_MODE: 'true'
+          ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni27-unused-cpu-bin
+          ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni27-unused-mtmd
+          ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni27-unused-llama-server
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ni27.ci_phase_context.v1",
+              "phase": "baseline_seed_offhost_units",
+              "host_context": {
+                  "mode": "synthetic",
+                  "ram_gib": 1024.0,
+                  "scope": "entire pytest process via explicit bootstrap",
+              },
+              "environment": {name: os.environ[name] for name in names},
+              "capacity_claim": "none; fixture execution only",
+          }
+          Path("ni27-offhost-phase-context.json").write_text(
+              json.dumps(context, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+      - name: Capture baseline seed unit fixtures with declared synthetic host context
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ni27-baseline-seed.xml --output native-baseline-seed \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ni27-baseline-authority-seed.yml \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ni27-offhost-phase-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/fixtures/offhost_unit_bootstrap.py \
+            --read-path tests/unit/test_baseline_authority_seed.py \
+            --read-path scripts/autopilot/baseline_authority_seed.py \
+            --read-path scripts/autopilot/preflight_audit.py \
+            --read-path src/autopilot_core/baseline_ledger.py \
+            --read-path src/registry/stack_priors.py \
+            --read-path scripts/server/stack_manifest.py \
+            --read-path scripts/server/stack_paths.py \
+            --read-path scripts/server/stack_numa.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path orchestration/derived/stack_priors.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --select tests/unit/test_baseline_authority_seed.py \
+            -- python tests/fixtures/offhost_unit_bootstrap.py -q \
+               tests/unit/test_baseline_authority_seed.py --junitxml=ni27-baseline-seed.xml
+      - name: Project both original receipts through the shared ClaimTuple grade
+        if: always()
+        working-directory: ci-control
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          ledger = Path(os.environ["RUNNER_TEMP"]) / "ni27-belief-ledger.jsonl"
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          receipts = [
+              workspace / "orchestrator/native-host-capacity/receipt.json",
+              workspace / "orchestrator/native-baseline-seed/receipt.json",
+          ]
+          missing = []
+          for receipt in receipts:
+              if not receipt.is_file():
+                  missing.append(str(receipt))
+                  continue
+              record = json.loads(receipt.read_text(encoding="utf-8"))
+              subprocess.run(
+                  [
+                      sys.executable,
+                      "scripts/vidya/cli.py",
+                      "--ledger", str(ledger),
+                      "--json",
+                      "ingest", "ci-fixture-conformance",
+                      "--path", str(receipt),
+                      "--as-of", record["ended_utc"],
+                  ],
+                  check=True,
+              )
+          if missing:
+              raise SystemExit("missing original receipt(s): " + ", ".join(missing))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni27-baseline-authority-seed-results
+          path: |
+            orchestrator/ni27-host-capacity.xml
+            orchestrator/native-host-capacity/
+            orchestrator/ni27-baseline-seed.xml
+            orchestrator/native-baseline-seed/
