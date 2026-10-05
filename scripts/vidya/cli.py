@@ -551,6 +551,7 @@ _FILE_SOURCES = (
     "ci-fixture-conformance",
     "managed-tooling-check",
     "contextbench-discovery-score",
+    "strategy-projection-report",
     "session-intercall-gap",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
