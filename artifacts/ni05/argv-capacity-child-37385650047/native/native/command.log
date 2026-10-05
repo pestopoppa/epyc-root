@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.3, pluggy-1.6.0 -- /home/runner/work/_temp/ni63-registry-closure-37385650047-1-ni63-argv-capacity/venv/bin/python
+hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True, suppress_health_check=(HealthCheck.too_slow,)
+rootdir: /home/runner/work/epyc-root/epyc-root/app-fixtures
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, langsmith-0.7.30, timeout-2.4.0, anyio-4.13.0, hypothesis-6.151.13, cov-7.1.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 4 items
+
+tests/unit/test_orchestrator_stack_import_is_argv_safe.py::test_import_with_hostile_argv_does_not_exit_or_print PASSED [ 25%]
+tests/unit/test_orchestrator_stack_import_is_argv_safe.py::test_import_does_not_replace_the_importing_process PASSED [ 50%]
+tests/unit/test_orchestrator_stack_import_is_argv_safe.py::test_reexec_helper_is_still_available_for_the_entry_point PASSED [ 75%]
+tests/unit/test_orchestrator_stack_import_is_argv_safe.py::test_host_capacity_guard_refuses_oversized_fixture PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../_temp/ni63-registry-closure-37385650047-1-ni63-argv-capacity/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /home/runner/work/_temp/ni63-registry-closure-37385650047-1-ni63-argv-capacity/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/runner/work/_temp/ni63-registry-closure-37385650047-1-ni63-argv-capacity/original-pytest.xml -
+========================= 4 passed, 1 warning in 1.85s =========================

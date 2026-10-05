@@ -1,0 +1,31 @@
+{
+  "schema": "ni05.main_review.v1",
+  "task": 63,
+  "files_verified": 623,
+  "zip_members_byte_compared": 616,
+  "git_inputs": 592,
+  "external_inputs": 5,
+  "counts": {
+    "collected": 4,
+    "error": 0,
+    "executed": 4,
+    "failure": 0,
+    "passed": 4,
+    "skipped": 0
+  },
+  "postchecks": 21,
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "receipt_file_sha256": "7bc465ae082e028b8d9c4bca19295d2e8ac395f9b8b9abbd96bfb95270c01a05",
+  "receipt_embedded_self_hash": "0720deaa23002f8acb0ed7ddc9d057e83db533437189ee6976af42ad4114dcdf",
+  "repos": {
+    "orchestrator_candidate": "474959c36c4b32bb70bf4367c106c9309b4af9af",
+    "root_producer": "9bdae9d0b57ebe45dfce7f7e42690e3d2214395c",
+    "root_workflow": "16c6cfc02ea3e3868648198f7c1f535cccd25cd0"
+  },
+  "review_is_derivative": true,
+  "source_integration_commit": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1",
+  "public_subset_reopenable": false
+}
