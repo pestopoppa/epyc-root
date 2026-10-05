@@ -39,8 +39,18 @@ jobs:
       MODULE_ID: ${{ matrix.module_id }}
       MODULE_PATH: ${{ matrix.module_path }}
     steps:
-      - name: Set isolated locked environment path
-        run: printf 'UV_PROJECT_ENVIRONMENT=%s/ni42-graph-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+      - name: Define absent runtime paths and isolated environment
+        run: |
+          test ! -e "$RUNNER_TEMP/ni42-unavailable-llama-cpp-bin"
+          test ! -L "$RUNNER_TEMP/ni42-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni42-unavailable-mtmd-bin"
+          test ! -L "$RUNNER_TEMP/ni42-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni42-unavailable-llama-server"
+          test ! -L "$RUNNER_TEMP/ni42-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni42-graph-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni42-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni42-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni42-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Checkout immutable workflow candidate
         uses: actions/checkout@v4
@@ -68,6 +78,12 @@ jobs:
           test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
           test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
           test "$(git -C app rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
@@ -105,10 +121,25 @@ jobs:
               "locked_extras": ["dev", "graph"],
               "kuzu": "pyproject optional graph extra, exact lock entry",
               "synthetic_capacity": False,
+              "absent_runtime_path_overrides": {
+                  key: {"value": os.environ[key], "must_remain_absent": True}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+              "override_field_semantics": {
+                  "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "PathsConfig.llama_cpp_bin and stack_paths._PATHS.llama_cpp_bin",
+                  "ORCHESTRATOR_PATHS_LLAMA_MTMD": "VisionConfig.llama_mtmd_cli",
+                  "ORCHESTRATOR_PATHS_LLAMA_SERVER": "WorkerPoolPathsConfig.llama_server_path",
+              },
               "serving_capacity_guard_path": (
                   "tests/conftest.py imports src.api.state, which imports "
                   "src.api.admission; its FALLBACK_LIMITS initializer attempts "
-                  "scripts.server.stack_manifest and catches guard/import exceptions"
+                  "scripts.server.stack_manifest. Config/path code uses the explicit "
+                  "absent runtime-path overrides above; admission catches a later "
+                  "capacity/import error if raised by the actual runner"
               ),
               "capacity_guard_bootstrap": "none; use actual GitHub runner memory",
               "storage": "pytest temporary directories only; no production Kuzu path",
@@ -144,7 +175,9 @@ jobs:
             --read-path src/api/state.py
             --read-path src/api/admission.py
             --read-path src/api/health_tracker.py
+            --read-path src/config/models.py
             --read-path src/registry/stack_priors.py
+            --read-path src/registry/kernel_paths.py
             --read-path scripts/server/stack_manifest.py
             --read-path scripts/server/stack_numa.py
             --read-path scripts/server/stack_paths.py
@@ -211,6 +244,37 @@ jobs:
                   --junitxml="ni42_junit/$MODULE_ID/original-pytest.xml" \
                   --log-file="ni42_junit/$MODULE_ID/pytest.log"
 
+      - name: Verify runtime override targets remain absent
+        if: always()
+        run: |
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          state = {
+              "schema": "ni42.absent_runtime_paths_postcheck.v1",
+              "all_absent": True,
+              "targets": {
+                  key: {"value": os.environ[key], "exists": False, "is_symlink": False}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+          }
+          Path("app/ni42_context/runtime-path-postcheck.json").write_text(
+              json.dumps(state, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
       - name: Upload original module prefix
         if: always()
         uses: actions/upload-artifact@v4
@@ -220,4 +284,5 @@ jobs:
             artifacts/ni42-graph-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/native/
             app/ni42_junit/${{ matrix.module_id }}/
             app/ni42_context/context.json
+            app/ni42_context/runtime-path-postcheck.json
           if-no-files-found: warn
