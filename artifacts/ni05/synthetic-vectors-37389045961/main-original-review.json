@@ -1,0 +1,30 @@
+{
+  "schema": "ni7374.main_original_review.v1",
+  "ZIPs": 6,
+  "member_byte_comparisons": 468,
+  "phases": [
+    {
+      "phase": "vectors",
+      "counts": {
+        "collected": 6,
+        "error": 0,
+        "executed": 6,
+        "failure": 0,
+        "passed": 6,
+        "skipped": 0
+      },
+      "inputs": {
+        "git": 85,
+        "external": 7
+      },
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "receipt_file_sha256": "35579f978dce254567f703c66acc0de1b444213a77cb430619f087a1d17587f1",
+      "receipt_embedded_self_hash": "3042be95f42fca9a9626ceaf3a0f5bd8a0fdaad7b75f007354e8b7633825e0ac",
+      "strictly_reopened": true
+    }
+  ],
+  "review_is_derivative": true
+}
