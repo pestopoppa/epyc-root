@@ -141,10 +141,11 @@ def verified_phase(container: PurePosixPath, blobs: IndexBlobs, read_receipt):
     return verified
 
 
-def exemptions(repo: Path) -> list[str]:
+def exemptions(repo: Path, comparison: str | None = None) -> list[str]:
     entries = index_entries(repo)
     changed = subprocess.run(
-        ["git", "-C", str(repo), "diff", "--cached", "--name-only", "-z", "--diff-filter=ACM"],
+        ["git", "-C", str(repo), "diff", "--cached", *([comparison] if comparison else []),
+         "--name-only", "-z", "--diff-filter=ACM"],
         check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
     ).stdout
     candidates = [(path.decode("utf-8", "surrogateescape"),
@@ -195,7 +196,10 @@ def exemptions(repo: Path) -> list[str]:
 
 def main() -> int:
     try:
-        allowed = exemptions(Path(sys.argv[1]).resolve())
+        comparison = sys.argv[2] if len(sys.argv) == 3 else None
+        if comparison is not None and not re.fullmatch(r"[0-9a-f]{40}|[0-9a-f]{64}", comparison):
+            raise ValueError("comparison must identify the original captured Git tree")
+        allowed = exemptions(Path(sys.argv[1]).resolve(), comparison)
     except (IndexError, KeyError, ValueError, TypeError, AttributeError, OSError, subprocess.SubprocessError):
         return 1
     # Emit only after validation, with NUL framing for exact Git paths.

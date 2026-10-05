@@ -90,6 +90,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("pii-staged-gate", "pii_staged_gate", _files("receipt.json"),
+           task="VB-PII-STAGED-WIRE",
+           note="explicit private original PII sub-gate receipt only; no default or public body export"),
     Source("evidence-durability", "evidence_durability", _files("*.json"),
            default=Path("/workspace/repos/epyc-inference-research/logs/evidence_durability_scan.json.d"),
            note="prospective immutable citation durability receipts; qualified caveats yield no boolean",
