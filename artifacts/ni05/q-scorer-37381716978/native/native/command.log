@@ -1,0 +1,97 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.3, pluggy-1.6.0 -- /home/runner/work/_temp/ni63-66-37381716978-1-ni65-q-scorer/venv/bin/python
+hypothesis profile 'ci' -> database=None, deadline=None, print_blob=True, derandomize=True, suppress_health_check=(HealthCheck.too_slow,)
+rootdir: /home/runner/work/epyc-root/epyc-root/app-fixtures
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, langsmith-0.7.30, timeout-2.4.0, anyio-4.13.0, hypothesis-6.151.13, cov-7.1.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 79 items
+
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_cost_penalty_lambda_default PASSED [  1%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_cost_lambda_duration_default_is_ratified PASSED [  2%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_baseline_tps_has_all_production_roles PASSED [  3%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_baseline_tps_loads_current_registry_values PASSED [  5%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_default_config_exposes_stack_prior_sources PASSED [  6%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_stack_prior_priors_load_live_roles_and_skip_candidates PASSED [  7%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_stack_prior_priors_keep_missing_live_fields_visible_as_fallback PASSED [  8%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_stack_prior_priors_fall_back_when_artifact_missing PASSED [ 10%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_default_stack_priors_path_exists PASSED [ 11%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_baseline_tps_falls_back_when_registry_missing PASSED [ 12%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_memory_cost_falls_back_when_registry_missing PASSED [ 13%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_memory_cost_loads_current_hot_registry_roles PASSED [ 15%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_descriptor_priors_overlay_clean_existing_roles PASSED [ 16%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_descriptor_priors_skip_role_server_conflicts PASSED [ 17%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_descriptor_priors_fall_back_when_descriptor_missing PASSED [ 18%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_baseline_tps_values_positive PASSED [ 20%]
+tests/unit/test_q_scorer.py::TestScoringConfigDefaults::test_config_override PASSED [ 21%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_optimized_and_baseline_are_never_folded_into_each_other PASSED [ 22%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_coincident_optimized_and_baseline_are_separable PASSED [ 24%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_substituted_baseline_is_logged_not_silent PASSED [ 25%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_unseparated_pair_is_logged_not_silent PASSED [ 26%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_substituted_source_reaches_the_caller_visible_prior_channel PASSED [ 27%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_float_projection_never_drifts_from_the_records PASSED [ 29%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_numeric_behaviour_is_unchanged_on_the_live_registry PASSED [ 30%]
+tests/unit/test_q_scorer.py::TestRegistryTpsProvenance::test_live_registry_coincidences_are_classified_not_hidden PASSED [ 31%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_success_no_cost PASSED [ 32%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_failure_no_cost PASSED [ 34%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_partial_no_cost PASSED [ 35%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_gate_failures_penalize PASSED [ 36%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_escalation_penalizes PASSED [ 37%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_plan_review_approved PASSED [ 39%]
+tests/unit/test_q_scorer.py::TestComputeRewardNoCost::test_plan_review_corrected PASSED [ 40%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_at_expected_speed_no_penalty PASSED [ 41%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_faster_than_expected_no_penalty PASSED [ 43%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_slower_than_expected_penalized PASSED [ 44%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_much_slower_higher_penalty PASSED [ 45%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_incorrect_no_cost_penalty PASSED [ 46%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_unknown_role_no_penalty PASSED [ 48%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_zero_tokens_no_penalty PASSED [ 49%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_zero_elapsed_no_penalty PASSED [ 50%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_cost_plus_gate_penalties_stack PASSED [ 51%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_clamp_lower_bound PASSED [ 53%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_custom_lambda PASSED [ 54%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_architect_role_slower_baseline PASSED [ 55%]
+tests/unit/test_q_scorer.py::TestComputeRewardWithCost::test_architect_role_2x_slower PASSED [ 56%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_config_has_quality_baselines PASSED [ 58%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_config_has_memory_costs PASSED [ 59%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_quality_gap_penalty_architect PASSED [ 60%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_quality_gap_penalty_worker PASSED [ 62%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_custom_non_hot_memory_cost_penalizes PASSED [ 63%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_memory_tier_no_penalty_hot PASSED [ 64%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_worker_beats_architect_on_simple_task PASSED [ 65%]
+tests/unit/test_q_scorer.py::TestMultiDimensionalCost::test_no_quality_memory_penalty_on_failure PASSED [ 67%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_no_task_context_returns_zero PASSED [ 68%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_none_task_started_returns_zero PASSED [ 69%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_embedding_failure_returns_zero PASSED [ 70%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_no_candidates_returns_zero PASSED [ 72%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_no_alternatives_returns_zero PASSED [ 73%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_all_alternatives_at_default_returns_zero PASSED [ 74%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_success_selected_below_best_alt_positive_adjustment PASSED [ 75%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_success_selected_above_alt_with_margin_returns_zero PASSED [ 77%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_failure_selected_above_worst_alt_negative_adjustment PASSED [ 78%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_failure_selected_below_alt_returns_zero PASSED [ 79%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_positive_adjustment_capped_at_max_adj PASSED [ 81%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_negative_adjustment_capped_at_neg_max_adj PASSED [ 82%]
+tests/unit/test_q_scorer.py::TestComputeContrastiveAdjustment::test_no_memory_id_uses_default_q PASSED [ 83%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_no_task_context_returns_zero PASSED [ 84%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_embedding_failure_returns_zero PASSED [ 86%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_no_candidates_returns_zero PASSED [ 87%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_no_alternatives_returns_zero PASSED [ 88%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_success_with_alternatives_produces_adjustment PASSED [ 89%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_adjustment_bounded PASSED [ 91%]
+tests/unit/test_q_scorer.py::TestComputeSpoPlusAdjustment::test_small_spo_loss_below_margin_returns_zero PASSED [ 92%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_high_similarity_different_identity_is_not_updated PASSED [ 93%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_exact_normalized_identity_is_updated PASSED [ 94%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_fallback_embedding_cannot_update_or_create PASSED [ 96%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_fallback_with_null_task_type_cannot_update_or_create PASSED [ 97%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_external_score_preserves_non_routing_action_namespace PASSED [ 98%]
+tests/unit/test_q_scorer.py::TestExternalScoreIdentity::test_external_score_rejects_empty_action_namespace PASSED [100%]
+
+=============================== warnings summary ===============================
+../../../_temp/ni63-66-37381716978-1-ni65-q-scorer/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /home/runner/work/_temp/ni63-66-37381716978-1-ni65-q-scorer/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/runner/work/_temp/ni63-66-37381716978-1-ni65-q-scorer/original-pytest.xml -
+================== 79 passed, 1 warning in 361.80s (0:06:01) ===================

@@ -1,0 +1,32 @@
+{
+  "counts": {
+    "collected": 79,
+    "error": 0,
+    "executed": 79,
+    "failure": 0,
+    "passed": 79,
+    "skipped": 0
+  },
+  "external_bound_inputs": 5,
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "module": "ni65-q-scorer",
+  "native_git_bound_inputs": 570,
+  "native_receipt_file_sha256": "7c6904d47e7ee8c2382e19b22739e5ff325e7906db1ee168e258ed2264005d3d",
+  "source_commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+  "true_postchecks": 20,
+  "schema": "ni05.main_review.v1",
+  "run_id": 37381716978,
+  "attempt": 1,
+  "workflow_sha": "fb75e467fe399d1f8f9e221e1d44e511d47fa4c7",
+  "original_receipt_file_sha256": "7c6904d47e7ee8c2382e19b22739e5ff325e7906db1ee168e258ed2264005d3d",
+  "original_receipt_embedded_self_hash": "cbb81b005593bd01fb378718244b4e8eb80faf25becbc93149c3b22d77430eda",
+  "full_private_custody_files_verified": 1747,
+  "zip_members_byte_compared": 1731,
+  "current_app_main_parity": "f884406e76d12a98254372a819e1fa6248c9223c",
+  "review_is_derivative": true,
+  "historical_interruption_root_cause": "unrecoverable from missing original JUnit; no retrospective attribution",
+  "public_subset_reopenable": false
+}
