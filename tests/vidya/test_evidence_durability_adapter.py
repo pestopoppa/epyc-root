@@ -17,7 +17,7 @@ from ingest_sources import ingest
 
 class DurabilityAdapterTests(unittest.TestCase):
     def setUp(self):
-        temp = tempfile.TemporaryDirectory(); self.addCleanup(temp.cleanup)
+        temp = tempfile.TemporaryDirectory(dir=Path(__file__).resolve().parents[2]); self.addCleanup(temp.cleanup)
         self.directory = Path(temp.name)
 
     def receipt(self):
