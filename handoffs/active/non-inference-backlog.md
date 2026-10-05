@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 complete unit sweep and NI05-36 report fidelity; then re-audit the follow-on pool below.
+- **Next:** NI05-18 complete unit sweep and NI05-37 timeout reporting; continue reviewing unlocked offline follow-ons.
 - **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **34/36**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **35/37**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -74,7 +74,9 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
 
 - [x] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
-- [ ] **NI05-36** — DCP-13a/b: remove unreachable report-fetch instructions and return full reports on delegation-cache hits; retain separate inference-dependent DCP-13 arms.
+- [x] **NI05-36** — DCP-13a/b: remove unreachable report-fetch instructions and return full reports on delegation-cache hits; retain separate inference-dependent DCP-13 arms.
+
+- [ ] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -566,3 +568,5 @@ NI33/OBS-12a complete 2026-10-05: exact five active command substitutions preser
 NI34/NI35 complete 2026-10-05: prospective private actual-index and named managed-import producers/readers use the existing verifier carrier and shared grade. Original hosted suites pass 84 and 11 cases respectively without skips/failures/errors. An actual two-path PII sub-gate finding independently reopens; earlier setgid custody is refused unchanged. The managed-import positives/negatives remain synthetic CI fixtures, not actual host health. Main integrates source, original public custody, source enrollment and wiki; [privacy progress](../../progress/2026-10/2026-10-05-ni34-staged-pii-native-capture.md), [managed progress](../../progress/2026-10/2026-10-05-ni35-managed-tooling-check.md).
 
 2026-10-05 reviewed source boundary: NI10 explicit optional `x_client_class` validates and forwards self-reported metadata with `caller_supplied:x_client_class` provenance; omitted fields remain absent. App source is published at `099dc1af69cf`. Original CI 37325396069 verifies 1/1 ordinary capacity refusal and 17/17 synthetic request-to-record controls. NI32 source59e adds 12/12 native/exact/proxy and tap/progress/checkpoint schema controls; original CI37326107920 is TRUE Judged/Located. The preceding 8/12 failed fixture expectation remains FALSE unchanged; missing-ledger custody correctly refuses to report OK (SC73). Neither fixture result supplies live gap data. HSF-3 remains open pending ≥50 properly keyed/classed sessions per reported basis in each independent window; no percentile, client brand, TTL or inferred enqueue. Delivery tally **34/36**.
+
+2026-10-05 NI36/DCP-13a,b source boundary accepted: remove unreachable fetch instruction, keep compact loop telemetry and return the separately retained full report to the user on cache hits; legacy summary-only entries miss the report-required path. Original CI37327525343 reopens TRUE Judged/Located for 57/57 complete cache/architect cases and 1/1 separate ordinary capacity refusal, zero skips/failures/errors. Ordinary five-source candidate504 is promoted as appdb38737d; helper/workflow stay candidates. No inference or live-cache performance claim; inference-dependent DCP-13 arms stay open. NI37 timeout reporting is newly filed; tally **35/37**.

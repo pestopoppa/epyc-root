@@ -1,0 +1,61 @@
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: direct (806ms, 1 turns)
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:168 Architect call failed (turn 0): Inference lock timeout (request deadline exceeded)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (168ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): Check the file src/api.py...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (178ms, 40 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: direct (0ms, 1 turns)
+WARNING  src.services.toon_encoder:toon_encoder.py:33 toon_format not installed, falling back to JSON
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (167ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=repl): inspect deterministic path...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (173ms, 24 chars)
+WARNING  src.services.toon_encoder:toon_encoder.py:33 toon_format not installed, falling back to JSON
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (167ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=repl): inspect deterministic path...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (1ms, 24 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (168ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): Check file A...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (177ms, 75 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: investigate (1ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to worker_general (mode=react): Check file B...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist worker_general done (1ms, 75 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 2: direct (1ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (167ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): Check X...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (175ms, 75 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: investigate (1ms, 1 turns)
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:996 Role repetition guard: coder_escalation delegated 2 consecutive times, forcing synthesis
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:1191 Architect delegation capped at 2 loops, forcing synthesis
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (166ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=repl): Draft the implementation...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (279ms, 31 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (344ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:956 Architect still wants to investigate on last loop (0), forcing synthesis
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:1191 Architect delegation capped at 0 loops, forcing synthesis
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (167ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (270ms, 43 chars)
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:1185 Skipping forced synthesis due to timeout break_reason=specialist_timeout, returning latest report
+INFO     src.api.routes.chat_delegation:chat_delegation.py:563 Delegation code report rescue (turn 0): 535 chars returned to architect
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (166ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (268ms, 22 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (170ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (274ms, 4823 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (168ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): draft the document...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (278ms, 125 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: direct (0ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (170ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1038 Delegation cache hit (loop 0, target=coder_escalation, age=1s)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (0ms, 70 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: direct (0ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (278ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (176ms, 26 chars)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 1: direct (0ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:932 Architect loop 0: investigate (279ms, 1 turns)
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1003 Delegating to coder_escalation (mode=react): investigate...
+INFO     src.api.routes.chat_delegation:chat_delegation.py:1145 Specialist coder_escalation done (176ms, 125 chars)
+WARNING  src.api.routes.chat_delegation:chat_delegation.py:1185 Skipping forced synthesis due to timeout break_reason=specialist_timeout, returning latest report
