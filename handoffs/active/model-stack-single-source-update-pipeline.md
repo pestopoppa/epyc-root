@@ -415,6 +415,20 @@ Original CI37327810408 FALSE receipts remain unchanged. Source comparison at app
 
 - [ ] **SSU-STRATEGY-PROJECTION-FLAG (NI05-45)** — Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
 
+- [ ] **SSU-EXECUTOR-MOCKED-VALIDATION (NI05-54)** — Original executor modules pass4/5 and23/26. Four constructors validate unavailable binaries before mocked subprocess paths. Set the existing explicit validation option only for those fixtures; retain missing-binary refusal controls, original outcomes and prospective whole-module receipts. Production executor and launch validation stay unchanged.
+
+- [ ] **SSU-CLAIM-API-FIXTURES (NI05-55)** — Original claim API module passes11/14. Two mocked spawn cases declare cores0–95 without the existing host-core seam; the quiet OCR case names a missing directory where its assertion expects a CLI leaf. Repair only fixture topology and explicit absent executable argv, preserving placement assertions and no-launch mocks.
+
+- [ ] **SSU-TYPED-LIVE-SENTINEL (NI05-56)** — Original typed replay module passes23/24. The live-path refusal case reaches correct missing-path validation offhost. Use an existing temporary sentinel as the monkeypatched live-path identity, trap database reads and assert the actual LIVE refusal; change no resolver behavior and touch no live DB.
+
+- [ ] **SSU-ROUTING-POOL-FIXTURE (NI05-57)** — Original specialist routing module passes71/72. The empty lookup test patches a same-named module while production deliberately resolves research by path. Use the existing `_bind_research_pool` seam with an empty synthetic pool, retaining the stale bare-import trap and SystemExit1. No production loader change or actual corpus access.
+
+- [ ] **SSU-PROMPT-FORGE-VOCAB-FIXTURE (NI05-58)** — Original mutation extraction module passes8/9. Its happy path reaches the data-sourced leakage vocabulary omitted from the app-only runner. Inject a tiny synthetic `EvalIdVocabulary` through the existing constructor seam and keep real leakage checks/mocked generation; do not disable the checker or read the host research pool.
+
+- [ ] **SSU-REPL-SCORER-SCRATCH (NI05-59)** — Original REPL environment and debug code-execution modules pass139/140 and5/11. Prepare fresh owned0700 runner scratch through declared existing seams, then capture exact unchanged modules with finite child bounds and local/mock execution only. Preserve original failures; any remaining assertion becomes an individually attributed source finding, never a blanket pass.
+
+- [ ] **SSU-LOCAL-EMBEDDING-FIXTURES (NI05-60)** — Original creativity/strategy seed modules pass52/53 and4/5. Use existing embedder injection with temporary SQLite/FAISS stores and deterministic vectors. Retain actual store assertions and default semantic/degraded ownership guards; no live store, endpoint or model access. Review exact source/test scope before any capture.
+
 - [x] **SSU-VL-REPAIR-TEMP-CACHE (NI05-46) ✅ 2026-10-05** — Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
 
 - [x] **SSU-QUIESCENCE-TEMP-HOLDS (NI05-47) ✅ 2026-10-05** — Replace the OAB3 fixture hardcoded /mnt hold directory with pytest-owned temporary storage via the existing HOLD_DIR_ENV seam. Original6/10passed. Preserve quiescence/scoring guards, witness semantics and meaningful local-process fixtures; no host holds or live scorer.

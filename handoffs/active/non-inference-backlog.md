@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 exception classification and NI05-45 offline follow-on plus NI05-52 code-index refresh and NI05-53 report custody.
+- **Next:** NI05-54–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-52 code-index refresh and NI05-53 report custody.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **49/53**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **49/60**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -109,6 +109,20 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched.
 
 - [ ] **NI05-53** — VB-AP-STRATEGY-PROJECTION-REPORT-WIRE: prospective original CLI projection-integrity custody and shared verifier projection, with counts descriptive and fallback permission separate from actual method. Source/task filed before implementation/capture.
+
+- [ ] **NI05-54** — SSU-EXECUTOR-MOCKED-VALIDATION: use the existing explicit validation option only in four mocked executor cases; retain missing-binary refusal coverage and prove no real model child starts.
+
+- [ ] **NI05-55** — SSU-CLAIM-API-FIXTURES: bind two mocked placement cases to their declared host-core topology and give the quiet OCR argv fixture an explicit absent executable leaf; preserve placement refusals and mocked spawning.
+
+- [ ] **NI05-56** — SSU-TYPED-LIVE-SENTINEL: exercise live-database refusal against a temporary existing sentinel, with a read trap; preserve default path validation and never open the live database.
+
+- [ ] **NI05-57** — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
+
+- [ ] **NI05-58** — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
+
+- [ ] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup.
+
+- [ ] **NI05-60** — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -621,3 +635,5 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 NI41 accepted: originalCI37351080596 passes68/68 cases (18confidence-probe/9EV11stats/41verifier-mode), zero skips/failures/errors; allfive named positive/missing-package hard-fail controls pass. Main independently reopens allthree TRUE Judged/Located receipts and verifies exact source/dependency/context bytes, installed versions, frozen additive lock and absent binary postchecks. Rawresolver unrelated changes are preserved but rejected for promotion; all214original nonproject lock records/top-level fields remain unchanged. Only the optional extra and its three-package closure are published to appmain65599ff2b02fcf10a9631376e143e507717469b6. Original public custody: artifacts/ni05/eval-scoring-37351080596. SSU-SCORING-EXTRA and VB-CI-OPTIONAL-SCORING-LOCK close; tally **44/52**, NI18/45–50/52 continue. No inference, scientific quality, capacity, default-serving change or runtime reload claim.
 
 2026-10-05 NI46–50 accepted: originalCI37352568892 passes101/101 whole-module cases (8vision/10quiescence/48requestschema/13pairwiseplanner/22parkedrole), zero skips/failures/errors. Main independently reopens allfive TRUE Judged/Located receipts, verifies31Git-boundsource snapshots+4context/install originals per capture and five absent-path/unchanged-lock postchecks. Exact four fixture files and one schema-description file are published to appmain64843e13642930895bb2e52694cd444de5892903; runtime policies and original FALSE sweep outcomes remain unchanged. NI45 still requires fresh source analysis and prospective evidence. NI53 newly filed before execution for active strategy-report original boolean integrity custody, with descriptive counts and no new ladder/method/quality claim. Tally **49/53**; NI18/45/52/53 continue. No inference, liveKFD/GPU/hold/store access or API reload.
+
+2026-10-05 NI18 source review unlocks seven independent fixture tasks NI54–60: mocked executor validation, declared placement topology/CLI leaf, live-DB sentinel, path-bound routing pool, injected leakage vocabulary, owned REPL/scorer scratch and local deterministic embeddings. Main reopens all69 original exception receipts/source snapshots (57FALSE12NULL); originals remain unchanged. APP65599ff retains69/69 source parity; current64843 retains65/69 with exactly four accepted NI46/47/49/50 fixture changes. These are queued proposals, not accepted repairs. Existing native CI carrier/source wiring is extended before captures. Delivery tally49/60; main owns shared metadata and publication.
