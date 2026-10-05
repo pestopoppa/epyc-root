@@ -99,6 +99,7 @@ is_allowed() {
   local path="$1"
   for pat in "${ALLOW_PATTERNS[@]}"; do
     if [[ "$path" =~ $pat ]]; then
+      PII_ALLOWED_PATTERN="$pat"
       return 0
     fi
   done
@@ -368,8 +369,61 @@ scan_blob() {
 
 # ─── Main ─────────────────────────────────────────────────────────────────────
 
+# Original findings remain PRIVATE. Freeze the selected worktree index and its
+# explicit HEAD comparison; recorder failure preserves the existing PII exit.
+HOOK_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PII_CAPTURE_DIR=""
+PII_CAPTURE_SUPPORTED=0
+capture_control=""
+if command -v python3 tee mktemp >/dev/null 2>&1 &&
+   tee --output-error=warn </dev/null >/dev/null 2>&1 && capture_control=$(mktemp); then
+  if python3 "$HOOK_DIR/pii_staged_capture.py" begin "$REPO_ROOT" >"$capture_control"; then
+    {
+      IFS= read -r -d '' PII_CAPTURE_DIR
+      IFS= read -r -d '' PII_CAPTURE_COMPARISON
+      IFS= read -r -d '' PII_CAPTURE_SUPPORTED
+    } <"$capture_control" || PII_CAPTURE_DIR=""
+  fi
+  rm -f -- "$capture_control"
+fi
+
+pii_record_event() {
+  [[ -z "$PII_CAPTURE_DIR" ]] && return 0
+  printf '%s\0' "$@" >&"$PII_EVENTS_FD" || true
+}
+
+pii_finish_capture() {
+  local original_status=$?
+  trap - EXIT
+  exec {PII_EVENTS_FD}>&-
+  exec 1>&3 2>&4
+  local logs_complete=1
+  wait "$pii_stdout_pid" || logs_complete=0
+  wait "$pii_stderr_pid" || logs_complete=0
+  python3 "$HOOK_DIR/pii_staged_capture.py" finish "$PII_CAPTURE_DIR" "$original_status" "$logs_complete" || true
+  exit "$original_status"
+}
+
+if [[ -n "$PII_CAPTURE_DIR" ]] && ! exec {PII_EVENTS_FD}>>"$PII_CAPTURE_DIR/events.nul"; then
+  PII_CAPTURE_DIR=""
+fi
+if [[ -n "$PII_CAPTURE_DIR" ]]; then
+  exec 3>&1 4>&2
+  exec > >(tee --output-error=warn "$PII_CAPTURE_DIR/stdout.log" >&3)
+  pii_stdout_pid=$!
+  exec 2> >(tee --output-error=warn "$PII_CAPTURE_DIR/stderr.log" >&4)
+  pii_stderr_pid=$!
+  trap pii_finish_capture EXIT
+  if [[ "$PII_CAPTURE_SUPPORTED" == 1 ]]; then
+    export GIT_INDEX_FILE="$PII_CAPTURE_DIR/original-index"
+    export GIT_OPTIONAL_LOCKS=0
+  fi
+fi
+
 # Use -z + readarray to handle filenames safely (spaces, newlines).
-mapfile -d '' -t STAGED_FILES < <(git diff --cached --name-only -z --diff-filter=ACM 2>/dev/null || true)
+comparison_args=()
+[[ "$PII_CAPTURE_SUPPORTED" == 1 ]] && comparison_args+=("$PII_CAPTURE_COMPARISON")
+mapfile -d '' -t STAGED_FILES < <(git diff --cached "${comparison_args[@]}" --name-only -z --diff-filter=ACM 2>/dev/null || true)
 
 if [[ ${#STAGED_FILES[@]} -eq 0 ]]; then
   exit 0
@@ -379,9 +433,8 @@ fi
 # from the INDEX. This does not waive any other file or change scanner patterns.
 # One helper invocation batches Git reads and caches each verified phase.
 PROVENANCE_FIXTURES=()
-HOOK_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 provenance_file=$(mktemp)
-if python3 "$HOOK_DIR/fixture_snapshot_provenance.py" "$REPO_ROOT" >"$provenance_file"; then
+if python3 "$HOOK_DIR/fixture_snapshot_provenance.py" "$REPO_ROOT" "${comparison_args[@]}" >"$provenance_file"; then
   while IFS= read -r -d '' verified_path; do
     PROVENANCE_FIXTURES+=("$verified_path")
   done <"$provenance_file"
@@ -391,6 +444,7 @@ rm -f -- "$provenance_file"
 for path in "${STAGED_FILES[@]}"; do
   [[ -z "$path" ]] && continue
   if is_allowed "$path"; then
+    pii_record_event "$path" path-exemption "$PII_ALLOWED_PATTERN"
     continue
   fi
   provenance_verified=0
@@ -400,21 +454,42 @@ for path in "${STAGED_FILES[@]}"; do
       break
     fi
   done
-  [[ "$provenance_verified" -eq 1 ]] && continue
+  if [[ "$provenance_verified" -eq 1 ]]; then
+    pii_record_event "$path" native-exemption original-source-custody
+    continue
+  fi
 
   # Skip files >MAX_FILE_BYTES (binary / large data).
-  size=$(git cat-file -s ":${path}" 2>/dev/null || echo 0)
+  size_status=0
+  size=$(git cat-file -s ":${path}" 2>/dev/null) || { size_status=$?; size=0; }
   if [[ "$size" -gt $MAX_FILE_BYTES ]]; then
+    if [[ "$size_status" == 0 ]]; then
+      pii_record_event "$path" oversized "$MAX_FILE_BYTES"
+    else
+      pii_record_event "$path" read-error "$size_status:unread:unscanned"
+    fi
     continue
   fi
 
   # Read staged blob (NOT working tree — catches partial stages).
-  blob_content=$(git show ":${path}" 2>/dev/null || true)
+  read_status=0
+  blob_content=$(git show ":${path}" 2>/dev/null) || read_status=$?
   if [[ -z "$blob_content" ]]; then
+    if [[ "$size_status" == 0 && "$read_status" == 0 ]]; then
+      pii_record_event "$path" empty existing-text-conversion
+    else
+      pii_record_event "$path" read-error "$size_status:$read_status:unscanned"
+    fi
     continue
   fi
 
-  scan_blob "$path" "$blob_content" || true
+  scan_status=0
+  scan_blob "$path" "$blob_content" || scan_status=$?
+  if [[ "$size_status" == 0 && "$read_status" == 0 ]]; then
+    pii_record_event "$path" scanned "$scan_status"
+  else
+    pii_record_event "$path" read-error "$size_status:$read_status:$scan_status"
+  fi
 done
 
 if [[ $EXIT_CODE -ne 0 ]]; then

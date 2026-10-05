@@ -90,6 +90,9 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("pii-staged-gate", "pii_staged_gate", _files("receipt.json"),
+           task="VB-PII-STAGED-WIRE",
+           note="explicit private original PII sub-gate receipt only; no default or public body export"),
     Source("evidence-durability", "evidence_durability", _files("*.json"),
            default=Path("/workspace/repos/epyc-inference-research/logs/evidence_durability_scan.json.d"),
            note="prospective immutable citation durability receipts; qualified caveats yield no boolean",
@@ -97,6 +100,10 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("ci-fixture-conformance", "ci_conformance", _files("receipt.json", "**/receipt.json"),
            project="project_ci_conformance", task="VB-CI-CONFORMANCE",
            note="prospective selected fixture execution receipts; diagnostics emit zero rows; no default"),
+    Source("managed-tooling-check", "managed_tooling_check",
+           _files("receipt.json", "*/receipt.json", "**/receipt.json"),
+           project="project_managed_tooling_check", task="VB-MANAGED-TOOLING-WIRE",
+           note="prospective named managed-interpreter pytest import checks; diagnostic/null captures decline; no default"),
     Source("session-intercall-gap", "session_intercall_gap", _files("session-gap-pairs.jsonl"),
            note="prospective timestamp-pair integrity observations; exact enqueue and staging proxies stay separate",
            task="VB-GAP-DIST / HSF-3"),
