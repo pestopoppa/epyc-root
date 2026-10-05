@@ -146,6 +146,13 @@ def test_project_reverifies_source_after_native_read(tmp_path):
         reader.project(native)
 
 
+def test_project_refuses_bool_to_integer_native_mapping_mutation(tmp_path):
+    native = reader.native_rows(write_fixture(tmp_path))[0]
+    native["row"]["integrity_result"] = 1  # Python equality alone treats this as True.
+    with pytest.raises(ct.ProjectionError, match="custody"):
+        reader.project(native)
+
+
 def test_recomputed_hash_cannot_invent_manifest_window(tmp_path):
     sidecar = write_fixture(tmp_path)
     row = json.loads(sidecar.read_text())
