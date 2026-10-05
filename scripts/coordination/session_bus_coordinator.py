@@ -4676,49 +4676,22 @@ def _tmux_nudge(agent: str, message: str, min_interval_s: float) -> tuple[int, s
     return proc.returncode, ((proc.stdout or "") + (proc.stderr or "")).strip()
 
 
-# C21 (2026-07-29). The stuck predicate is ENTIRELY heartbeat-derived, and agents
-# let heartbeats go stale in BOTH directions — an agent mid-generation left
-# `state: idle` behind. Observed live: fable-auditor was flagged stuck 4x while
-# its pane was plainly generating; the adapter's own quiet-check refused, so no
-# agent was wrongly interrupted, but `stuck-detected` stopped being a usable
-# signal. The pane is the more trustworthy witness, so cross-check it before
-# spending a detection or a nudge.
+# C21 (2026-07-29). The stuck predicate begins with heartbeat state, and agents
+# can leave stale claims in either direction. Before spending a detection or a
+# nudge, require the existing adapter probe to positively qualify runtime idle.
 #
-# `esc to interrupt` is the marker, deliberately NOT tmux_adapter.probe's
-# window_activity quiet-check: the quiet-check is defeated by cosmetic TUI
-# redraw (an idle pane that re-renders reads as busy), so it cannot answer "is
-# it working". The literal marker is rendered by both TUIs only while a turn is
-# in flight and has held up all day.
-_PANE_BUSY_MARKER = "esc to interrupt"
-
-
 def _pane_generating(agent: str, roster: list[dict]) -> tuple[Optional[bool], str]:
-    """(True | False | None, detail). None = the pane could not be read.
+    """Return False only when the existing authoritative probe qualifies idle.
 
-    Read-only: `tmux capture-pane -p`. Target resolution is delegated to
-    tmux_adapter.resolve_target(), which already verifies that an endpoint's
-    window component resolves to the window it names (tmux silently falls back
-    to the session's current window on a miss) — reimplementing endpoint parsing
-    here is exactly how the wrong pane gets read.
+    All other results are UNKNOWN and suppress stuck detection/nudging. This
+    leaf consumes the probe's JSON; it does not infer state from pane text.
     """
     try:
-        from scripts.coordination import tmux_adapter  # lazy: keeps import cheap/safe
-        target, reason = tmux_adapter.resolve_target({"roster": roster}, agent)
+        from scripts.coordination.qualified_idle_probe import qualified_idle
     except Exception as exc:  # noqa: BLE001 — an unusable adapter is "unreadable"
-        return None, f"could not resolve a tmux target: {exc}"
-    if not target:
-        return None, f"could not resolve a tmux target: {reason}"
-    try:
-        proc = subprocess.run(["tmux", "capture-pane", "-p", "-t", target],
-                              capture_output=True, text=True, timeout=15)
-    except Exception as exc:  # noqa: BLE001
-        return None, f"capture-pane on {target} failed: {exc}"
-    if proc.returncode != 0:
-        return None, f"capture-pane on {target} exited {proc.returncode}: " \
-                     f"{(proc.stderr or proc.stdout or '').strip()[:200]}"
-    if _PANE_BUSY_MARKER in (proc.stdout or "").lower():
-        return True, f"pane {target} shows {_PANE_BUSY_MARKER!r}"
-    return False, f"pane {target} shows no generation marker"
+        return None, f"could not load qualified idle probe: {exc}"
+    idle, detail = qualified_idle(agent)
+    return (False, detail) if idle else (None, detail)
 
 
 def _unread_state_rows(bus_root: Path, aid: str) -> tuple[list[dict], int]:
@@ -5056,7 +5029,7 @@ def resolve_stuck_agents(bus_root: Path, roster: list[dict], epoch: int,
                         pane_active=active, detail=detail,
                         action=("pane is generating — heartbeat is stale, not the agent"
                                 if active else
-                                "pane unreadable — failing closed to suppression, "
+                                "probe did not qualify idle — failing closed to suppression, "
                                 "re-checked next tick"))
                 rec["last_detect_sig"] = psig
                 new_state[aid] = rec
