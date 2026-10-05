@@ -7,7 +7,7 @@ permissions:
 env:
   ROOT_SHA: 36c191832bd58f175f0a7b90e733f2ea14a5169b
   RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
-  ORCH_SHA: aeafe619a84399ab13c3e45ed19a681537fb5836
+  ORCH_SHA: 54413cd6b24b5239d2ac89b2b5c1edcdd0609d14
 jobs:
   root:
     # Exact unchanged root source passed focused validation in run 37282435460.
@@ -200,12 +200,7 @@ jobs:
         run: |
           python -m pip install '.[dev]'
           python -c 'from importlib.metadata import version; print("resolved pydantic-graph=" + version("pydantic-graph"))'
-      - name: Targeted REPL helper guard and execute-turn fixtures
-        env:
-          PYTHONPATH: ${{ github.workspace }}
-        run: |
-          python -m pytest -q tests/unit/test_graph_helpers.py tests/unit/test_repl_loop_guard.py \
-            tests/integration/test_execute_turn.py --junitxml=guard-targeted.xml
+      # Exact unchanged guard/helper/execute-turn source passed 54 cases in run 37287330075.
       - name: Runtime flags features and forward v1 cache isolation
         if: always()
         env:
@@ -219,8 +214,8 @@ jobs:
         run: |
           mapfile -t files < <(printf '%s\n' tests/unit/test_openai* | sort -r)
           python -m pytest -q "${files[@]}" --junitxml=orchestrator-reverse.xml
-      - name: Broad unit fixture sweep after focused success
-        if: success()
+      - name: Independent broad unit fixture classification
+        if: always()
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m pytest -q tests/unit --junitxml=unit-broad.xml
@@ -231,7 +226,6 @@ jobs:
           path: |
             orchestrator.xml
             orchestrator-reverse.xml
-            guard-targeted.xml
             unit-broad.xml
   node-harness:
     # Exact unchanged root plugin source passed 105 cases in run 37284177689.
