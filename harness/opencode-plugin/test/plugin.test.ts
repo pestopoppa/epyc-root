@@ -38,6 +38,46 @@ test("module shape matches OpenCode's path-plugin loader", () => {
   assert.equal((plugin as any).tui, undefined)
 })
 
+test("event hook releases only deleted sessions through the control-only request", async () => {
+  const hooks = (await server(fakeInput, { userId: "u1" })) as AnyHooks
+  const previousFetch = globalThis.fetch
+  const previousBase = process.env.EPYC_ORCHESTRATOR_BASE_URL
+  const previousAbortTimeout = AbortSignal.timeout
+  const calls: Array<{ url: string; init: RequestInit }> = []
+  const timeoutMs: number[] = []
+  process.env.EPYC_ORCHESTRATOR_BASE_URL = "http://orchestrator.test/v1/"
+  ;(AbortSignal as any).timeout = (ms: number) => {
+    timeoutMs.push(ms)
+    return previousAbortTimeout.call(AbortSignal, ms)
+  }
+  globalThis.fetch = (async (input: URL | RequestInfo, init?: RequestInit) => {
+    calls.push({ url: String(input), init: init ?? {} })
+    return new Response("{}", { status: 200 })
+  }) as typeof fetch
+  try {
+    await hooks.event?.({ event: { type: "session.status", properties: { sessionID: "ses_idle", status: { type: "idle" } } } }, {})
+    assert.equal(calls.length, 0, "idle is a normal turn boundary, so TTL retains the session")
+    await hooks.event?.({ event: { type: "session.deleted", properties: { info: { id: "ses_deleted" } } } }, {})
+    assert.equal(calls.length, 1)
+    assert.deepEqual(timeoutMs, [5_000], "the deletion request has a finite timeout")
+    assert.ok(calls[0].init.signal instanceof AbortSignal)
+    assert.equal(calls[0].url, "http://orchestrator.test/v1/chat/completions")
+    assert.equal(calls[0].init.headers && new Headers(calls[0].init.headers).get("X-Session-Id"), "ses_deleted")
+    assert.deepEqual(JSON.parse(String(calls[0].init.body)), {
+      model: "orchestrator",
+      messages: [],
+      x_session_id: "ses_deleted",
+      x_session_final: true,
+      x_session_end_event: "deleted",
+    })
+  } finally {
+    globalThis.fetch = previousFetch
+    ;(AbortSignal as any).timeout = previousAbortTimeout
+    if (previousBase === undefined) delete process.env.EPYC_ORCHESTRATOR_BASE_URL
+    else process.env.EPYC_ORCHESTRATOR_BASE_URL = previousBase
+  }
+})
+
 test("chat.params: request.ts pattern yields x_* keys in params.options", async () => {
   const hooks = (await server(fakeInput, { userId: "u1", staticKeys: { x_memory: "on" } })) as AnyHooks
   const options = { someOther: 1 }
