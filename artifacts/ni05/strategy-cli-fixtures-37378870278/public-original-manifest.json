@@ -1,0 +1,205 @@
+{
+  "attempt": 1,
+  "excluded_private_originals": [],
+  "files": [
+    {
+      "bytes": 754,
+      "path": "install/dependency-status.json",
+      "sha256": "b07ba4bfa658def9fdf1e90aee3ea606de934bbc844e0739c61e5d3df731fc40"
+    },
+    {
+      "bytes": 15,
+      "path": "install/python-version.txt",
+      "sha256": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7"
+    },
+    {
+      "bytes": 2988,
+      "path": "install/source-preflight.json",
+      "sha256": "09ce33416f07e9b959619f4a4ea3e8d54cf50096fe0ed902fbffee70604c64e7"
+    },
+    {
+      "bytes": 5042,
+      "path": "install/uv-sync.log",
+      "sha256": "e8a63e2179e1e2163b44ff71c87acd14fdc1158cdc1abbdd63b37ba7ec2ce5f2"
+    },
+    {
+      "bytes": 10,
+      "path": "install/uv-version.txt",
+      "sha256": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051"
+    },
+    {
+      "bytes": 754,
+      "path": "native/dependency-status.json",
+      "sha256": "b07ba4bfa658def9fdf1e90aee3ea606de934bbc844e0739c61e5d3df731fc40"
+    },
+    {
+      "bytes": 2160,
+      "path": "native/execution-context.json",
+      "sha256": "ebedca335c9dfbd4eb2c9bc63d01878cb474921f2a72a63ef30264ad9c87d555"
+    },
+    {
+      "bytes": 1918,
+      "path": "native/native/command.log",
+      "sha256": "2b360fbde5e31c5d851c0d85da5e8ece804e368ad7f499cccfe497c2a16ccbb4"
+    },
+    {
+      "bytes": 7386,
+      "path": "native/native/execution-request.json",
+      "sha256": "c67258c81c4da211aceb440d4836eb38ed6ced132b76e550a20407a1724bf37d"
+    },
+    {
+      "bytes": 1836,
+      "path": "native/native/original-junit.xml",
+      "sha256": "8b4c9500c85486bc33e69186011b7892df9b6205b82eac5f6bfd9b867ca3c241"
+    },
+    {
+      "bytes": 19249,
+      "path": "native/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 34441,
+      "path": "native/native/read-001.bin",
+      "sha256": "11ae50fdb673d3dc8f2317ed5a5e2be9db3ef6be2d17456341acca7d93318140"
+    },
+    {
+      "bytes": 2260,
+      "path": "native/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 40447,
+      "path": "native/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 0,
+      "path": "native/native/read-004.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2988,
+      "path": "native/native/read-005.bin",
+      "sha256": "09ce33416f07e9b959619f4a4ea3e8d54cf50096fe0ed902fbffee70604c64e7"
+    },
+    {
+      "bytes": 754,
+      "path": "native/native/read-006.bin",
+      "sha256": "b07ba4bfa658def9fdf1e90aee3ea606de934bbc844e0739c61e5d3df731fc40"
+    },
+    {
+      "bytes": 2160,
+      "path": "native/native/read-007.bin",
+      "sha256": "ebedca335c9dfbd4eb2c9bc63d01878cb474921f2a72a63ef30264ad9c87d555"
+    },
+    {
+      "bytes": 15,
+      "path": "native/native/read-008.bin",
+      "sha256": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7"
+    },
+    {
+      "bytes": 10,
+      "path": "native/native/read-009.bin",
+      "sha256": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051"
+    },
+    {
+      "bytes": 5042,
+      "path": "native/native/read-010.bin",
+      "sha256": "e8a63e2179e1e2163b44ff71c87acd14fdc1158cdc1abbdd63b37ba7ec2ce5f2"
+    },
+    {
+      "bytes": 6774,
+      "path": "native/native/read-011.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501"
+    },
+    {
+      "bytes": 1096854,
+      "path": "native/native/read-012.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+    },
+    {
+      "bytes": 13851,
+      "path": "native/native/read-013.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524"
+    },
+    {
+      "bytes": 8353,
+      "path": "native/native/read-014.bin",
+      "sha256": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b"
+    },
+    {
+      "bytes": 89273,
+      "path": "native/native/read-015.bin",
+      "sha256": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756"
+    },
+    {
+      "bytes": 4019,
+      "path": "native/native/read-016.bin",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "bytes": 84131,
+      "path": "native/native/read-017.bin",
+      "sha256": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64"
+    },
+    {
+      "bytes": 25631,
+      "path": "native/native/read-018.bin",
+      "sha256": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d"
+    },
+    {
+      "bytes": 21770,
+      "path": "native/native/read-019.bin",
+      "sha256": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75"
+    },
+    {
+      "bytes": 20938,
+      "path": "native/native/read-020.bin",
+      "sha256": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b"
+    },
+    {
+      "bytes": 4047,
+      "path": "native/native/read-021.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "bytes": 1773,
+      "path": "native/native/read-022.bin",
+      "sha256": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0"
+    },
+    {
+      "bytes": 30706,
+      "path": "native/native/read-023.bin",
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+    },
+    {
+      "bytes": 13711,
+      "path": "native/native/read-024.bin",
+      "sha256": "ef14343e0c75fb90ac55ce2ff192327650d40208123af0557c14744214510d5c"
+    },
+    {
+      "bytes": 13170,
+      "path": "native/native/receipt.json",
+      "sha256": "029fea208adb4ebbab1861f1bbdcd31a2ebc792d59ebf9e62017490f1dbaaa12"
+    },
+    {
+      "bytes": 1836,
+      "path": "native/original-junit.xml",
+      "sha256": "8b4c9500c85486bc33e69186011b7892df9b6205b82eac5f6bfd9b867ca3c241"
+    },
+    {
+      "bytes": 2988,
+      "path": "native/source-preflight.json",
+      "sha256": "09ce33416f07e9b959619f4a4ea3e8d54cf50096fe0ed902fbffee70604c64e7"
+    },
+    {
+      "bytes": 3365,
+      "path": "postcheck/postcheck.json",
+      "sha256": "520ecc66c1661e85905e1f59f63440452479beda391cee2d807e3ed78d62bc35"
+    }
+  ],
+  "private_full_mixed_run_manifest_sha256": "de98b1ccb51b4e745758be797737af649e7c923aeda132ebf563bb9284c017ca",
+  "run_id": 37378870278,
+  "schema": "ni05.public_original_manifest.v1",
+  "scope": "NI05-45 APP job only; NI05-53 ROOT job remains original FALSE8/10"
+}

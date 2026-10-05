@@ -1,0 +1,36 @@
+{
+  "all_six_zip_member_comparisons": 88,
+  "attempt": 1,
+  "counts": {
+    "collected": 11,
+    "error": 0,
+    "executed": 11,
+    "failure": 0,
+    "passed": 11,
+    "skipped": 0
+  },
+  "custody_file_count": 148,
+  "custody_manifest_sha256": "de98b1ccb51b4e745758be797737af649e7c923aeda132ebf563bb9284c017ca",
+  "external_context_install_inputs": 6,
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "integration_differences_previously_approved_optional_extra": [
+    "pyproject.toml",
+    "uv.lock"
+  ],
+  "integration_unchanged_app_input_count": 10,
+  "native_git_input_count": 19,
+  "original_receipt_file_sha256": "029fea208adb4ebbab1861f1bbdcd31a2ebc792d59ebf9e62017490f1dbaaa12",
+  "published_app_main_sha": "f884406e76d12a98254372a819e1fa6248c9223c",
+  "receipt_embedded_self_hash": "fb9efc34152246ad043057dee65c5fd0c79743ff20659ad57994d179a64de1bb",
+  "root_adapter_other_job": "NI05-53 remains FALSE8/10, unchanged original",
+  "run_id": 37378870278,
+  "schema": "ni05.main_original_review.v1",
+  "scope": "explicit CLI fallback permission and restoration fixture behavior; no live store, embedding method/quality, inference or whole-suite claim",
+  "source_candidate_sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a",
+  "strict_native_boolean": true,
+  "task": "NI05-45",
+  "workflow_sha": "c66b7a7b812dc0bba7ac07ac20968e8f7f7a6727"
+}

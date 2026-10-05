@@ -1,0 +1,27 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/runner/work/epyc-root/epyc-root/app
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, langsmith-0.7.30, timeout-2.4.0, anyio-4.13.0, hypothesis-6.151.13, cov-7.1.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 11 items
+
+tests/unit/test_strategy_projection_report.py ...........                [100%]
+
+=============================== warnings summary ===============================
+../../../_temp/ni45-ni53-37378870278-1-ni45-app/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /home/runner/work/_temp/ni45-ni53-37378870278-1-ni45-app/venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+tests/unit/test_strategy_projection_report.py::test_cli_strict_reports_missing_projection
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/unit/test_strategy_projection_report.py::test_cli_strict_reports_missing_projection
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+tests/unit/test_strategy_projection_report.py::test_cli_strict_reports_missing_projection
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/runner/work/_temp/ni45-ni53-37378870278-1-ni45-app/original-junit.xml -
+======================== 11 passed, 4 warnings in 1.40s ========================

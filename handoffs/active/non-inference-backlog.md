@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-45/53 strategy validation, NI05-59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-53 strategy custody validation, NI05-59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **58/77**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **59/77**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -94,7 +94,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-44** ✅ 2026-10-05 — OBS-9: require qualified existing authoritative probe evidence in three surviving leaf idle prefilters; unknown/read failures/drift suppress action, no text-derived idle authority or liveness-core mutation.
 
-- [ ] **NI05-45** — SSU-STRATEGY-PROJECTION-FLAG: Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
+- [x] **NI05-45** ✅ 2026-10-05 — SSU-STRATEGY-PROJECTION-FLAG: Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
 
 - [x] **NI05-46 ✅ 2026-10-05** — SSU-VL-REPAIR-TEMP-CACHE: Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
 
@@ -699,3 +699,5 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 NI77 newly unlocked: the enabled privacy hook rejected three unchanged encoder meminfo carriers because Linux VmallocTotal has a long numeric value. They remain private in complete original custody; the187/190 public subset and its inability to reopen the encoder prefix independently are documented. A narrowly typed gate repair is now queued before further capture, retaining genuine secret/account refusals. No exemption or source change is approved by this filing. Identified tally77, completed58, open19 after the prompt checkpoint; earlier scope totals remain historical.
 
 2026-10-05 review checkpoint (completion tally unchanged58/77,19 open): Original NI59 CI37374639638 passes140 REPL+12 scorer cases with native exit0, but both evidence postchecks refuse an installer-created mode0777 uv lock inside the captured temporary directory. Original files remain unchanged; the reviewed next recipe separates installer temporary files into the already isolated cache while preserving strict native-original mode checks. Original NI53 impact CI37376429724 captures exact upstream LOW results for _validate_inputs (6 nodes) and read_receipt (4), then fails on missing runner rg. Main verifies all499 retained custody files and9 source-readset files against native Git43d9100; the one-line Path(shard).name repair is published only on candidateb2955bb, awaiting fresh fixture evidence and promotion. Original NI62 CI37375358644 captures LOW pure-helper impacts but validate_serving_shape_capacity has exact HIGH105-node impact; no production refactor is authorized or applied. NI76 attempt1 acquired no runner and produced no source outcome; one unchanged-workflow rerun succeeds, with JS main/resolveAnalyzeJs exact LOW1/2-node results. Empty Bash File impacts remain UNASSESSED for callable coverage. Source guard implementation remains under review; canonical host index remains untrusted and untouched. No inference, peer reload, kernel modification or full-suite claim.
+
+2026-10-05 NI05-45 completed: original CI37378870278 attempt1 passes11/11 strategy CLI cases, zero skips/failures/errors, native TRUE Judged/Located and all11 postchecks. Main verifies148 private custody files,88 ZIP-member comparisons,19 Git-backed+6 context/install inputs and integration source parity. Explicit write/fallback permission is scoped and restored across constructor/sync/close errors; default semantic/owned-store guards remain and report permission does not identify the actual embedding method. Exact two source/test files are published to APP mainf884406e76d12a98254372a819e1fa6248c9223c. Public originals: `artifacts/ni05/strategy-cli-fixtures-37378870278`. The separate NI53 ROOT job remains original FALSE8/10 and open; no full-run/full-suite, live-store, model-quality or inference claim. Published scoped completion tally59/77,18 open.

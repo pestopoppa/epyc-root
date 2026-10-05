@@ -1,0 +1,54 @@
+{
+  "dependency_application": {
+    "pyproject_sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+    "sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a",
+    "uv_lock_sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+  },
+  "dependency_install": "uv sync --frozen --extra dev --no-install-project",
+  "native_conformance_source_sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+  "native_producer_repository_sha": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+  "phase": "ni45-app",
+  "python": "Python 3.11.14",
+  "result_dir": "/home/runner/work/_temp/ni45-ni53-37378870278-1-ni45-app",
+  "result_dir_mode": "0700",
+  "run": {
+    "attempt": "1",
+    "event": "push",
+    "id": "37378870278",
+    "job": "strategy-projection",
+    "workflow_sha": "c66b7a7b812dc0bba7ac07ac20968e8f7f7a6727"
+  },
+  "runner_mem_total_kib_actual": 16373452,
+  "runtime_path_overrides_absent_nonlinks": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni45-ni53-unavailable-llama-cpp-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni45-ni53-unavailable-llama-mtmd"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni45-ni53-unavailable-llama-server"
+    }
+  },
+  "schema": "epyc.ni45_ni53_fixture_execution_context.v1",
+  "synthetic_capacity_injection": false,
+  "test_process_environment": {
+    "CI": "true",
+    "ORCHESTRATOR_MOCK_MODE": "true",
+    "network_or_inference": "none in selected tests; vectors are mocked and native invocation uses owned empty temporary roots",
+    "secret_and_provider_environment": "removed via env -i"
+  },
+  "tested_repository": {
+    "parent": "c8851695cc6ae46845c06b9f60402e687f1698ec",
+    "path": "/home/runner/work/epyc-root/epyc-root/app",
+    "sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a"
+  },
+  "trusted_application_source_sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a",
+  "uv": "uv 0.8.15"
+}
