@@ -1275,5 +1275,5 @@ above is historical; HS-OD-9 queue-derived delays remain separate peer-dependent
 Source: [harness acceptance](../handoffs/active/harness-selection-and-integration.md),
 [NI06 MCP evidence](../progress/2026-10/2026-10-05-ni06-hs17-mcp-progress.md), and
 [sixth source boundary](../progress/2026-10/2026-10-05-codex-noninf.md).
-Orchestrator source main `41ab07fc`; run `37284177689`: MCP 48, API 376, config/topology 101,
+Orchestrator source main `41ab07fc`; run `37284177689`: MCP 45, API 376, config/topology 101,
 Node 105 passing cases. Existing live-backend skips remain outside this claim.

@@ -6,8 +6,8 @@ source is published in main package `41ab07fcdaf9920d0d51520586fddae460cb50b4`
 plugin source `ad7cc5c9d8220730b7967d06aea94aed2ea3be4b` is integrated as root
 commit `3e57ed6c`; main has not published that root boundary yet.
 
-Validation passed 48 MCP fixtures: 11 undeclared-tool cases, 16 server cases,
-and 21 chat cases. The pinned OpenCode Node suite passed 105 tests, including
+Validation passed 45 MCP fixtures: 11 undeclared-tool cases, 16 server cases,
+and 18 chat cases. The pinned OpenCode Node suite passed 105 tests, including
 two timeout-lint cases. Coverage exercises asynchronous chat, cancellation,
 monotone progress, and a 90-second virtual MCP call; the template enforces a
 125000 ms minimum timeout. No actual inference was run.

@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **15/23**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **16/24**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -58,8 +58,9 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
 - [x] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
 - [ ] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
-- [ ] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
+- [x] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
 - [ ] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
+- [ ] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -482,3 +483,13 @@ Canonical sources (always verify status in these files first):
   absent host store despite explicit fixture overrides. Preserve store discovery when no override exists;
   verify both branches with isolated configuration fixtures. No fabricated store, frozen-kernel edit or reload.
   Owner: Codex config-override worker; tests execute off-host.
+
+
+## 2026-10-05 supplement — source-only benchmark preflight safety
+
+- [ ] **NI-SHELL-RELOAD-SAFETY — remove peer-process mutation from the instrumented benchmark preflight.**
+  `scripts/benchmark/package_a_instrumented_eval.sh` currently runs `fuser -k 8000/tcp` and starts
+  uvicorn when health is unavailable. Replace this with an actionable failure referring the
+  operator to the API owner, while preserving the healthy path. No process kill, reload or stack
+  mutation is part of validation; source/syntax and hermetic preflight fixtures only. Keep this
+  repair separate from NI05-21's formatting patch. Owner: Codex NI05-24.

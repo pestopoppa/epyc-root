@@ -154,7 +154,7 @@ source inspection identified the refusal/progress seam for a narrow regression r
 ## Sixth accepted source boundary — eight further completions
 
 Sixth run `37284177689` passed 101 configuration/topology cases (including 53 session cases),
-48 MCP cases, all 376 API cases in both tested selections, 69 enqueue cases, 105 pinned Node cases
+45 MCP cases, all 376 API cases in both tested selections, 69 enqueue cases, 105 pinned Node cases
 and six Makefile fixtures. Two named live-backend cases skip; three runtime-flags expiry cases
 fail from a missing cache timestamp argument, so expiry and the required wider unit sweep remain
 open. Fresh pip selected supported pydantic-graph 1.107.7 under `>=1.80,<2`; this proves that actual
@@ -173,3 +173,27 @@ nine raw typed-AST pairs and a 38,786-byte patch (SHA-256
 The formatting assertion rejects disappearing optional Semicolon coordinate fields; source is
 unchanged and no patch is accepted yet. NI23 immediately files generated-output custody through
 the existing CI verifier; no new grading rule or retrospective tuple is authorized.
+
+Count correction: main independently reopened the original sixth-run JUnit. MCP is 45/45
+(11 undeclared + 16 server + 18 chat), not the 48 stated in the earlier worker summary.
+All passed; source acceptance is unchanged. Published handoff/wiki/progress counts are corrected.
+
+
+## Seventh guard acceptance and subsequent fixture boundary
+
+Main independently reopened seventh run `37287330075` guard JUnit: 54/54 passed with zero
+skips/failures/errors. Its three changed files match the reviewed production-source integration
+byte-for-byte; NI22 is published in orchestrator main `3f32efbe9eb0`. This closes only native refusal
+echo classification in the enabled guard. The original diagnostic and executed code remain intact.
+
+The seventh forward selection has 440 passes, three failures and two named live-backend skips;
+reverse API has 376 passes and the same two skips. All three failures now reach the real config
+attestation writer, which lacks a per-test directory and attempts the production host path on CI.
+A bounded fixture relocation preserves the actual atomic writer and checks its native PID JSON.
+Expiry source acceptance and wider-unit classification stay open until actual execution.
+
+Fifth image run `37288497530` passes pinned versions, independent markdownlint, and all nine
+formatter syntax/typed-AST comparisons. The sole failure is original source formatting in real
+`make gates`; the patch awaits application and green real gates. Reviewing it exposed a separate
+benchmark preflight that kills/restarts the API: NI24 is filed for source-only refusal behavior,
+never executing that unsafe branch. Completion tally: **16/24**.
