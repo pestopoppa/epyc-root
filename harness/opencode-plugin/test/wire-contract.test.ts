@@ -17,7 +17,9 @@
  */
 import { test } from "node:test"
 import assert from "node:assert/strict"
-import { createRequire } from "node:module"
+import { createRequire, stripTypeScriptTypes } from "node:module"
+import { execFileSync } from "node:child_process"
+import { runInNewContext } from "node:vm"
 import { join } from "node:path"
 import { applyChatParams, parseOptions } from "../src/lib.ts"
 
@@ -169,4 +171,82 @@ test("wire contract: session-call User-Agent (request.ts) still contains opencod
   // Observed: "opencode/1.18.31 ai-sdk/provider-utils/4.0.23 runtime/node.js/22". The call-level
   // value replaces the template marker and the provider suffix, but it still starts with "opencode/".
   assert.match(ua ?? "", /^opencode\/1\.18\.31 /)
+})
+
+
+function loadPinnedRetry(): any {
+  const sourceDir = process.env.EPYC_OPENCODE_SOURCE_DIR
+  assert.ok(sourceDir, "EPYC_OPENCODE_SOURCE_DIR must name the audited OpenCode checkout")
+  const pin = "350c726aa8b6b11eb9242040bc5eb7ae837fbf8a"
+  const source = execFileSync("git", ["show", `${pin}:packages/opencode/src/session/retry.ts`], {
+    cwd: sourceDir, encoding: "utf8",
+  })
+  // Execute the pinned functions, with only external error-family guards stubbed.
+  // No retry thresholds, patterns or delay math are copied into this test.
+  const isolated = source.replace(/^import .*$/gm, "").replace(/^export /gm, "")
+  const code = stripTypeScriptTypes(isolated, { mode: "transform" })
+  return runInNewContext(`${code}; ({ delay, retryable })`, {
+    SessionV1: {
+      ContextOverflowError: { isInstance: () => false },
+      APIError: { isInstance: (error: any) => error.name === "APIError" },
+    },
+    isRecord: (value: any) => value !== null && typeof value === "object",
+    iife: (fn: any) => fn(),
+  })
+}
+
+const backpressureGate = { skip: !sdk && !required && "EPYC_OPENCODE_SDK_DIR not set" }
+
+test("backpressure: SDK pre-stream 503 headers reach pinned OpenCode delay", backpressureGate, async () => {
+  assert.ok(sdk, "pinned SDK is required")
+  const retry = loadPinnedRetry()
+  const provider = sdk.createOpenAICompatible({
+    name: "epyc-orchestrator", baseURL: "http://fake.invalid/v1",
+    fetch: async () => new Response(JSON.stringify({ error: { message: "503 service unavailable: queue full" } }), {
+      status: 503, headers: { "content-type": "application/json", "retry-after": "5", "retry-after-ms": "5000" },
+    }),
+  })
+  let caught: any
+  try {
+    await provider.languageModel("orchestrator").doStream({
+      prompt: [{ role: "user", content: [{ type: "text", text: "hi" }] }],
+    })
+  } catch (error) { caught = error }
+  assert.ok(caught, "denial must reject before an SDK stream is returned")
+  assert.equal(caught.statusCode, 503)
+  const parsed = { name: "APIError", data: {
+    message: caught.message, statusCode: caught.statusCode,
+    isRetryable: caught.isRetryable, responseHeaders: caught.responseHeaders,
+  } }
+  assert.ok(retry.retryable(parsed, "epyc-orchestrator"))
+  assert.equal(retry.delay(1, parsed, 0), 5000)
+  assert.equal(retry.delay(1, { ...parsed, data: {
+    ...parsed.data, responseHeaders: { "retry-after": "5", "retry-after-ms": "7000" },
+  } }, 0), 7000, "OpenCode prioritizes retry-after-ms")
+  assert.equal(retry.delay(1, { ...parsed, data: {
+    ...parsed.data, responseHeaders: { "retry-after": "5" },
+  } }, 0), 5000, "Retry-After alone is consumed")
+})
+
+test("backpressure: residual SSE denial reaches pinned OpenCode retry patterns", backpressureGate, async () => {
+  assert.ok(sdk)
+  const retry = loadPinnedRetry()
+  const sse = 'data: {"error":{"message":"503 service unavailable: queue full","type":"admission_denied","code":503}}\n\ndata: [DONE]\n\n'
+  const provider = sdk.createOpenAICompatible({
+    name: "epyc-orchestrator", baseURL: "http://fake.invalid/v1",
+    fetch: async () => new Response(sse, { status: 200, headers: { "content-type": "text/event-stream" } }),
+  })
+  const { stream } = await provider.languageModel("orchestrator").doStream({
+    prompt: [{ role: "user", content: [{ type: "text", text: "hi" }] }],
+  })
+  const reader = stream.getReader()
+  const errors: any[] = []
+  for (;;) {
+    const part = await reader.read()
+    if (part.done) break
+    if (part.value.type === "error") errors.push(part.value.error)
+  }
+  assert.equal(errors.length, 1)
+  assert.equal(errors[0], "503 service unavailable: queue full")
+  assert.ok(retry.retryable({ name: "UnknownError", data: { message: errors[0] } }, "epyc-orchestrator"))
 })
