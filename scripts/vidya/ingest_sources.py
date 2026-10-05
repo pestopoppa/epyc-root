@@ -225,8 +225,90 @@ UNWIRED: dict[str, str] = {
 }
 
 
+def _only_new_frames(ledger, frames: list[dict], *, as_of: str) -> list[dict]:
+    """Filter complete bundles using the fold's surviving evidence, never grades.
+
+    The ledger remains single-writer (§11.0). Partial bundles are refused rather
+    than interpreted as unobserved claims. A historical bundle with no surviving
+    evidence is also refused: automatic retries cannot revive withdrawn evidence.
+    """
+    from fold import FT_CLAIM, FT_SOURCE, FT_SUPPORT, FT_OPPOSE, FoldError, fold
+    from ledger import LedgerIntegrityError
+
+    repairs: list[str] = []
+    try:
+        records = ledger.read_all(repair_report=repairs)
+    except LedgerIntegrityError as exc:
+        raise ValueError(f"--only-new refuses an invalid ledger: {exc}") from exc
+    if repairs:
+        raise ValueError("--only-new refuses a torn ledger tail: " + "; ".join(repairs))
+    if records:
+        problems = ledger.verify()
+        if problems:
+            raise ValueError("--only-new refuses an invalid ledger: " + "; ".join(problems))
+    existing = [record.frame for record in records]
+    try:
+        result = fold(existing, as_of=as_of)
+    except FoldError as exc:
+        raise ValueError(f"--only-new refuses an invalid ledger fold: {exc}") from exc
+    live = {cid for cid, belief in result.beliefs.items()
+            if belief.pro_paths or belief.con_paths}
+    sources = {f["assertion"].get("source_id") for f in existing
+               if f.get("frame_type") == FT_SOURCE}
+    claims = {f["assertion"].get("claim_id") for f in existing
+              if f.get("frame_type") == FT_CLAIM}
+    evidence = {f["assertion"].get("claim_id") for f in existing
+                if f.get("frame_type") in (FT_SUPPORT, FT_OPPOSE)}
+    incoming = {f["assertion"]["claim_id"]: f["assertion"].get("source_id")
+                for f in frames if f["frame_type"] == FT_CLAIM}
+    projected_sources = {f["assertion"].get("source_id") for f in frames
+                         if f["frame_type"] == FT_SOURCE}
+    projected_evidence = {f["assertion"].get("claim_id") for f in frames
+                          if f["frame_type"] in (FT_SUPPORT, FT_OPPOSE)}
+    if projected_evidence - incoming.keys():
+        raise ValueError("--only-new refuses projected evidence without a claim")
+    for cid, sid in incoming.items():
+        if sid not in projected_sources or cid not in projected_evidence:
+            raise ValueError(f"--only-new refuses partial projected bundle for {cid}")
+        present = (sid in sources, cid in claims, cid in evidence)
+        if any(present) and not all(present):
+            raise ValueError(f"--only-new refuses partial ledger state for {cid}")
+        if all(present) and result.alias_map.get(cid, cid) not in live:
+            raise ValueError(f"--only-new refuses historical claim {cid} with no live evidence; "
+                             "reconcile explicitly before ingesting again")
+
+    keep_claims = {cid for cid in incoming
+                   if result.alias_map.get(cid, cid) not in live}
+    keep_sources = {incoming[cid] for cid in keep_claims}
+    emitted: dict[tuple[str, str], dict] = {}
+    kept = []
+    for frame in frames:
+        ftype, assertion = frame["frame_type"], frame["assertion"]
+        if ftype == FT_SOURCE:
+            ident = assertion.get("source_id")
+            keep = ident in keep_sources
+        elif ftype in (FT_CLAIM, FT_SUPPORT, FT_OPPOSE):
+            ident = assertion.get("claim_id")
+            keep = ident in keep_claims
+        else:
+            raise ValueError(f"--only-new cannot filter frame type {ftype!r}")
+        key = (ftype, ident)
+        if keep:
+            # Repeated paths may project the same bundle twice. Divergent native
+            # records under one identity are not duplicates and must not merge.
+            payload = {k: v for k, v in frame.items() if k != "frame_id"}
+            payload["pubinfo"] = {k: v for k, v in frame.get("pubinfo", {}).items()
+                                  if k != "created_at"}
+            if key in emitted and emitted[key] != payload:
+                raise ValueError(f"--only-new refuses conflicting projected frames for {ident}")
+            if key not in emitted:
+                emitted[key] = payload
+                kept.append(frame)
+    return kept
+
+
 def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
-           limit: int | None = None, dry_run: bool = False) -> dict:
+           limit: int | None = None, dry_run: bool = False, only_new: bool = False) -> dict:
     """Project every unit under ``paths`` through source ``name``; append unless dry-run."""
     src = SOURCES[name]
     roots = [Path(p) for p in paths] if paths else ([src.default] if src.default else [])
@@ -284,6 +366,11 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
             report["units_projected"] += 1
             report["rows_projected"] += rows
 
+    if only_new:
+        projected_count = len(frames)
+        frames = _only_new_frames(ledger, frames, as_of=as_of)
+        report["only_new"] = True
+        report["frames_skipped"] = projected_count - len(frames)
     if not dry_run:
         for frame in frames:
             ledger.append(frame)
@@ -298,6 +385,8 @@ def human(report: dict) -> str:
         f"refused={len(report['refused'])}  rows={report['rows_projected']}  "
         f"frames={'(dry run) ' if report['dry_run'] else ''}{report['frames_emitted']}",
     ]
+    if report.get("only_new"):
+        lines.append(f"only-new: skipped {report['frames_skipped']} frames")
     if report["missing"]:
         lines.append(f"missing (no such path): {', '.join(report['missing'])}")
     if report["refused"]:

@@ -637,7 +637,8 @@ def _ingest_file_source(args) -> int:
     paths = [Path(p) for p in (args.path or [])] or ([Path(args.root)] if args.root else None)
     try:
         report = ingest_sources.ingest(_ledger(args), args.adapter, paths, as_of=args.as_of,
-                                       limit=args.limit, dry_run=args.dry_run)
+                                       limit=args.limit, dry_run=args.dry_run,
+                                       only_new=getattr(args, "only_new", False))
     except ValueError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -645,6 +646,9 @@ def _ingest_file_source(args) -> int:
 
 
 def cmd_ingest(args) -> int:
+    if getattr(args, "only_new", False) and args.adapter not in _FILE_SOURCES:
+        print("--only-new is supported only for file-shaped sources", file=sys.stderr)
+        return 2
     if args.adapter in _FILE_SOURCES:
         return _ingest_file_source(args)
     if args.adapter == "autokernel":
@@ -828,6 +832,8 @@ def build_parser() -> argparse.ArgumentParser:
     i.add_argument("--limit", type=int, help="only the first N entries")
     i.add_argument("--as-of", required=True, help="explicit ingest timestamp")
     i.add_argument("--dry-run", action="store_true", help="report without appending")
+    i.add_argument("--only-new", action="store_true",
+                   help="skip claims with live evidence (file-shaped sources only)")
     i.set_defaults(func=cmd_ingest)
 
     cc = sub.add_parser("cite-check", help="gate intake citations in project documents")

@@ -448,3 +448,171 @@ def test_review_f1_mutated_summary_still_ingests_as_an_unverified_observation(tm
     assert natives and all(
         ingest_sources.SOURCES["review-f1"].load().project(n).attestation_present is False
         for n in natives)
+
+
+def test_only_new_repeat_at_a_new_timestamp_is_a_noop(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, ledger = _cli(tmp_path, "contention-gate", path, "--only-new")
+    first = json.loads(capsys.readouterr().out)
+    before = ledger.read_bytes()
+    rc2 = cli.main(["--ledger", str(ledger), "--json", "ingest", "contention-gate",
+                    "--path", str(path), "--as-of", "2026-09-17T09:00:00Z", "--only-new"])
+    repeated = json.loads(capsys.readouterr().out)
+    assert rc == rc2 == 0
+    assert first["frames_emitted"] == 6
+    assert repeated["frames_emitted"] == 0 and repeated["frames_skipped"] == 6
+    assert ledger.read_bytes() == before
+    assert Ledger(ledger).verify() == []
+
+
+def test_only_new_duplicate_paths_append_each_claim_once(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    ledger = Ledger(tmp_path / "ledger.jsonl")
+    report = ingest_sources.ingest(ledger, "contention-gate", [path, path],
+                                   as_of=AS_OF, only_new=True)
+    assert report["frames_emitted"] == report["frames_skipped"] == 6
+    assert len(ledger) == 6 and ledger.verify() == []
+
+
+@pytest.mark.parametrize("indices", [(0,), (0, 1), (2,), (1, 2)])
+def test_only_new_refuses_partial_bundles_before_appending(tmp_path, capsys, indices):
+    path = _contention_gate(tmp_path)
+    rc, source = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    frames = [r.frame for r in Ledger(source).read_all()]
+    ledger = Ledger(tmp_path / "partial.jsonl")
+    for index in indices:
+        ledger.append(frames[index])
+    before = ledger.path.read_bytes()
+    with pytest.raises(ValueError, match="partial ledger state"):
+        ingest_sources.ingest(ledger, "contention-gate", [path], as_of=AS_OF, only_new=True)
+    assert ledger.path.read_bytes() == before
+
+
+def test_only_new_accepts_new_claims_alongside_existing_ones(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, source = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    frames = [r.frame for r in Ledger(source).read_all()]
+    ledger = Ledger(tmp_path / "one-claim.jsonl")
+    for frame in frames[:3]:
+        ledger.append(frame)
+    report = ingest_sources.ingest(ledger, "contention-gate", [path],
+                                   as_of=AS_OF, only_new=True)
+    assert report["frames_emitted"] == report["frames_skipped"] == 3
+    assert len(ledger) == 6
+
+
+def test_only_new_refuses_to_revive_retracted_evidence(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, target = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    ledger = Ledger(target)
+    support = ledger.read_all()[2].frame
+    ledger.append({"frame_type": "epyc.vidya/frame/retraction/v1",
+                   "assertion": {"retracts": support["frame_id"]}})
+    before = target.read_bytes()
+    with pytest.raises(ValueError, match="historical claim.*no live evidence"):
+        ingest_sources.ingest(ledger, "contention-gate", [path],
+                              as_of="2026-09-17T09:00:00Z", only_new=True)
+    assert target.read_bytes() == before
+
+
+def test_only_new_dry_run_filters_without_writing(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, target = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    before = target.read_bytes()
+    report = ingest_sources.ingest(Ledger(target), "contention-gate", [path],
+                                   as_of=AS_OF, only_new=True, dry_run=True)
+    assert report["frames_emitted"] == 0 and report["frames_skipped"] == 6
+    assert target.read_bytes() == before
+
+
+def test_only_new_refuses_torn_tail_without_repairing_it(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, target = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    with target.open("ab") as handle:
+        handle.write(b'{"seq":')
+    before = target.read_bytes()
+    with pytest.raises(ValueError, match="torn ledger tail"):
+        ingest_sources.ingest(Ledger(target), "contention-gate", [path],
+                              as_of=AS_OF, only_new=True)
+    assert target.read_bytes() == before
+
+
+def test_only_new_does_not_silently_apply_to_other_ingesters(tmp_path, capsys):
+    rc = cli.main(["--ledger", str(tmp_path / "ledger.jsonl"), "ingest", "intake",
+                   "--as-of", AS_OF, "--only-new"])
+    assert rc == 2
+    assert "file-shaped sources" in capsys.readouterr().err
+
+
+def test_default_repeat_ingestion_preserves_existing_behavior(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, target = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    rc2, target = _cli(tmp_path, "contention-gate", path)
+    report = json.loads(capsys.readouterr().out)
+    assert rc == rc2 == 0 and len(Ledger(target)) == 12
+    assert "only_new" not in report
+
+
+def test_only_new_counts_live_opposing_evidence(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, source = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    frames = [r.frame for r in Ledger(source)]
+    ledger = Ledger(tmp_path / "opposing.jsonl")
+    for frame in frames:
+        if frame["frame_type"] == SUPPORT:
+            frame = copy.deepcopy(frame)
+            frame["frame_type"] = "epyc.vidya/frame/evidence_opposes_claim/v1"
+        ledger.append(frame)
+    before = ledger.path.read_bytes()
+    report = ingest_sources.ingest(ledger, "contention-gate", [path],
+                                   as_of=AS_OF, only_new=True)
+    assert report["frames_emitted"] == 0
+    assert ledger.path.read_bytes() == before
+
+
+def test_only_new_refuses_corrupt_chain_before_append(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, target = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    lines = target.read_text().splitlines()
+    first = json.loads(lines[0])
+    first["frame"]["assertion"]["title"] = "tampered"
+    lines[0] = json.dumps(first)
+    target.write_text("\n".join(lines) + "\n")
+    before = target.read_bytes()
+    with pytest.raises(ValueError, match="invalid ledger"):
+        ingest_sources.ingest(Ledger(target), "contention-gate", [path],
+                              as_of=AS_OF, only_new=True)
+    assert target.read_bytes() == before
+
+
+def test_only_new_refuses_divergent_duplicate_identity(tmp_path, capsys):
+    path = _contention_gate(tmp_path)
+    rc, source = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    frames = [r.frame for r in Ledger(source)]
+    duplicate = copy.deepcopy(frames)
+    duplicate[2]["assertion"]["reps"] = 999
+    ledger = Ledger(tmp_path / "conflict.jsonl")
+    with pytest.raises(ValueError, match="conflicting projected frames"):
+        ingest_sources._only_new_frames(ledger, frames + duplicate, as_of=AS_OF)
+    assert not ledger.path.exists()
+
+
+@pytest.mark.parametrize("indices", [(0, 1), (2,)])
+def test_only_new_refuses_partial_projected_bundles(tmp_path, capsys, indices):
+    path = _contention_gate(tmp_path)
+    rc, source = _cli(tmp_path, "contention-gate", path)
+    capsys.readouterr()
+    frames = [r.frame for r in Ledger(source)]
+    ledger = Ledger(tmp_path / "empty.jsonl")
+    with pytest.raises(ValueError, match="projected"):
+        ingest_sources._only_new_frames(ledger, [frames[i] for i in indices], as_of=AS_OF)
+    assert not ledger.path.exists()
