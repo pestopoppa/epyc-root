@@ -1,0 +1,7 @@
+# NI75 executor impact originals — CI37361379823
+
+Main retains and verifies all 76 manifest-listed originals in owned private custody. This public subset preserves all four original prefixes and 75 of those files. The exact run-job-status.json remains in private custody: the PII gate flags its public GitHub Actions job databaseId as a possible account number. No hook is bypassed and no original record or download manifest is rewritten. The original downloaded-file-sha256.txt therefore intentionally lists that one unpublished file; public-file-sha256.txt identifies the published original subset. Main independently verified their hashes, exact workflow `da9203a9443de991c54b4c48a672e12a32eede54`, historical source `c8851695cc6ae46845c06b9f60402e687f1698ec`, six source/caller/test file identities, and source/bus postchecks. The six source files match APP main before the NI54–56 fixture changes at `64843e13642930895bb2e52694cd444de5892903`.
+
+The exact upstream target `Function:scripts/lib/executor.py:get_binary_paths` reports HIGH: 10 impacted nodes, one direct caller, three affected modules, zero processes. Installation, native prerequisites, indexing, status, query and metadata validators succeeded; the risk validator alone exited 1, correctly stopping source work. This failed run is retained unchanged. NI75 remains open. No proposed patch is applied.
+
+This is ordinary code-intelligence dependency evidence, with embeddings/LLM disabled. It creates no ClaimTuple, runtime/deployment or whole-suite claim and does not install an index on the shared host.

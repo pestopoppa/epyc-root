@@ -1,0 +1,12 @@
+file:///home/runner/work/_temp/ni75-source-c8851695/[eval1]:1
+import fs from "node:fs"; const result = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); const expected = "Function:scripts/lib/executor.py:get_binary_paths"; if (["ambiguous", "not_found", "not-found"].includes(result.status)) throw new Error(`impact status is ${result.status}`); if (result.target?.id !== expected) throw new Error(`target mismatch: ${result.target?.id ?? "<missing>"}`); if (result.direction !== "upstream" || result.epistemic !== "exact") throw new Error(`unqualified impact: direction=${result.direction}, epistemic=${result.epistemic}`); if (!["LOW", "MEDIUM", "HIGH", "CRITICAL"].includes(result.risk)) throw new Error(`unrecognized risk: ${result.risk}`); if (["HIGH", "CRITICAL"].includes(result.risk)) throw new Error(`STOP: ${result.risk} impact requires main review before source work`); process.stdout.write(JSON.stringify({target_id: result.target.id, direction: result.direction, epistemic: result.epistemic, risk: result.risk}) + String.fromCharCode(10));
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^
+
+Error: STOP: HIGH impact requires main review before source work
+    at file:///home/runner/work/_temp/ni75-source-c8851695/[eval1]:1:742
+    at ModuleJob.run (node:internal/modules/esm/module_job:271:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:236:26)
+    at async ModuleLoader.executeModuleJob (node:internal/modules/esm/loader:232:20)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:116:5)
+
+Node.js v22.14.0

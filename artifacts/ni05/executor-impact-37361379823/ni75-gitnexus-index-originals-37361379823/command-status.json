@@ -1,0 +1,1 @@
+{"schema":"ni75.executor_impact_command_status.v1","gitnexus_version":0,"gitnexus_version_validation":0,"analyze":0,"status":0,"impact_get_binary_paths":0,"impact_validation":1,"meta_validation":0,"analyze_timeout_seconds":1200,"analyze_kill_after_seconds":30,"embeddings_flag_passed":false,"wiki_command_run":false}

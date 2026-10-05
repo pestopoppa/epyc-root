@@ -1,0 +1,460 @@
+name: NI75 executor wrapper exact impact query
+
+on:
+  push:
+    branches:
+      - codex/ni75-impact-recipe-20261005
+    paths:
+      - .github/workflows/ni75-executor-wrapper-impact.yml
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ni75-executor-wrapper-impact-20261005
+  cancel-in-progress: false
+
+jobs:
+  immutable-index:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      NI75_SOURCE_SHA: c8851695cc6ae46845c06b9f60402e687f1698ec
+      NI75_PRIOR_RECIPE_SHA: d714f40f9c235501f5b15f425ef348598470a909
+      NI75_PRIOR_PRIOR_RECIPE_SHA: 3af14cb8dd8cab3d8f9f5594ae678fc7dd7639b4
+      NI75_LOCK_RUN_ID: '37352714514'
+      NI75_LOCK_ARTIFACT: ni52-gitnexus-lock-originals-37352714514
+      NI75_LOCK_SHA256: 734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c
+      NI75_REGISTRY_METADATA_SHA256: 47190baab8e7039072a7811bf52b600bb978ed80bf9f29d1c59847e980a29e9e
+      NI75_GITNEXUS_TARBALL_SHA256: 9c90be3532671e6f4a94f949816113389798a26c604e61f7953dadaa405ecdd6
+      NI75_GITNEXUS_INTEGRITY: sha512-1PTqr70qfrXP43Z6S7oiD+x4nHLaSEk6YoyYurs+H1Z/Y1Ga4P5D+Ib3M2XnwXYhMjaPqmyq8wgUvx8GTOA2rQ==
+      NI75_GITNEXUS_PACKAGE_JSON_SHA256: 99deb36e0705d0553fcd1baf1951e0c51c1cfd8297c0cde213c55088cb192750
+      NI75_GITNEXUS_CLI_SHA256: c4a575f85e7c40e707f4cb8bfbe8fcded4ffeefe6e1da1241545fad6c780078d
+      NI75_GITNEXUS_REPO_MANAGER_SHA256: 7e0dbfde84c815f953b02874654304f4c02d21952578f13d09f047609a6625b3
+      NI75_WRAPPER_SHA256: ceffa0e215a363c49b74445ecd2db3818b0fbe6c4d9152f993196412ad57e894
+      NI75_KUZU_INSTALL_SHA256: cb7d1110fa4144d39bd2d7ae347040a16cc5cced6607129409673655f22b099c
+      NI75_KUZU_PREBUILT_SHA256: 85b101251f07b052927443a994c69c23621f7c10159687145fa15b06decf7b49
+      NI75_VENDOR_C_SHA256: 85e912b183a49111b0f4c3a6c8908375732e70aca759ab0124501913cbbd942a
+      NI75_VENDOR_PROTO_SHA256: dea80ed2fb48a6d19866468f652ec48eab5435306c6477b213eafe51cbbbf2ee
+      NI75_REGISTRY_ALIAS: ni75-orch-c8851695-20261005
+    steps:
+      - name: Checkout exact recipe revision
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Pin Node and npm runtime
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e # v4.3.0
+        with:
+          node-version: 22.14.0
+          check-latest: false
+
+      - name: Establish isolated paths and source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          NI75_CAPTURE="$RUNNER_TEMP/ni75-index-originals"
+          NI75_NATIVE="$RUNNER_TEMP/ni75-native-proof"
+          NI75_INDEX="$RUNNER_TEMP/ni75-index-results"
+          NI75_POSTCHECK="$RUNNER_TEMP/ni75-index-postcheck"
+          NI75_LOCK_DIR="$RUNNER_TEMP/ni75-lock-artifact"
+          NI75_PROJECT="$RUNNER_TEMP/ni75-npm-project"
+          NI75_SOURCE_DIR="$RUNNER_TEMP/ni75-source-c8851695"
+          GITNEXUS_HOME="$RUNNER_TEMP/ni75-gitnexus-home"
+          NI75_BUS_ROOT="$RUNNER_TEMP/ni75-session-bus"
+          export NI75_CAPTURE NI75_NATIVE NI75_INDEX NI75_POSTCHECK NI75_LOCK_DIR NI75_PROJECT NI75_SOURCE_DIR GITNEXUS_HOME NI75_BUS_ROOT
+          printf 'NI75_CAPTURE=%s\nNI75_NATIVE=%s\nNI75_INDEX=%s\nNI75_POSTCHECK=%s\nNI75_LOCK_DIR=%s\nNI75_PROJECT=%s\nNI75_SOURCE_DIR=%s\nGITNEXUS_HOME=%s\nNI75_BUS_ROOT=%s\n' \
+            "$NI75_CAPTURE" "$NI75_NATIVE" "$NI75_INDEX" "$NI75_POSTCHECK" "$NI75_LOCK_DIR" "$NI75_PROJECT" "$NI75_SOURCE_DIR" "$GITNEXUS_HOME" "$NI75_BUS_ROOT" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$NI75_PRIOR_RECIPE_SHA"
+          test "$(git rev-parse HEAD^^)" = "$NI75_PRIOR_PRIOR_RECIPE_SHA"
+          test "$(git rev-parse HEAD^^^)" = "$NI75_SOURCE_SHA"
+          test "$(git rev-list --count "$NI75_SOURCE_SHA..HEAD")" = 3
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test "$(node --version)" = v22.14.0
+          test "$(npm --version)" = 10.9.2
+          workflow_sha=$(sha256sum .github/workflows/ni75-executor-wrapper-impact.yml | cut -d' ' -f1)
+          for path in "$NI75_CAPTURE" "$NI75_NATIVE" "$NI75_INDEX" "$NI75_POSTCHECK" "$NI75_LOCK_DIR" "$NI75_PROJECT" "$NI75_SOURCE_DIR" "$GITNEXUS_HOME" "$NI75_BUS_ROOT"; do
+            test ! -e "$path" && test ! -L "$path"
+          done
+          mkdir -m 700 "$NI75_CAPTURE"
+          mkdir -m 700 "$NI75_NATIVE" "$NI75_INDEX" "$NI75_PROJECT"
+          git rev-list --reverse "$NI75_SOURCE_SHA..HEAD" > "$NI75_CAPTURE/recipe-commit-chain.txt"
+          while IFS= read -r recipe_commit; do
+            changed_paths=$(git diff-tree --no-commit-id --name-only -r "$recipe_commit" | paste -sd, -)
+            recipe_parent=$(git show -s --format=%P "$recipe_commit")
+            printf '%s\t%s\t%s\n' "$recipe_commit" "$recipe_parent" "$changed_paths" >> "$NI75_CAPTURE/recipe-commit-manifest.tsv"
+            if [ "$recipe_commit" = "$GITHUB_SHA" ]; then
+              test "$changed_paths" = .github/workflows/ni75-executor-wrapper-impact.yml
+            else
+              test "$changed_paths" = .github/workflows/ni52-gitnexus-index.yml
+            fi
+          done < "$NI75_CAPTURE/recipe-commit-chain.txt"
+          git diff --quiet "$NI75_SOURCE_SHA" HEAD -- . \
+            ':(exclude).github/workflows/ni52-gitnexus-index.yml' \
+            ':(exclude).github/workflows/ni75-executor-wrapper-impact.yml'
+          git worktree add --detach "$NI75_SOURCE_DIR" "$NI75_SOURCE_SHA" > "$NI75_CAPTURE/source-worktree.stdout" 2> "$NI75_CAPTURE/source-worktree.stderr"
+          test "$(git -C "$NI75_SOURCE_DIR" rev-parse HEAD)" = "$NI75_SOURCE_SHA"
+          test -z "$(git -C "$NI75_SOURCE_DIR" status --porcelain=v1 --untracked-files=all)"
+          test ! -e "$NI75_SOURCE_DIR/.gitnexus" && test ! -L "$NI75_SOURCE_DIR/.gitnexus"
+          wrapper_sha=$(sha256sum "$NI75_SOURCE_DIR/scripts/gitnexus-analyze.sh" | cut -d' ' -f1)
+          test "$wrapper_sha" = "$NI75_WRAPPER_SHA256"
+          cat > "$NI75_CAPTURE/context.json" <<JSON
+          {"schema":"ni75.executor_impact_context.v1","scope":"offline exact upstream impact query for immutable historical source snapshot; not a claim about current origin/main","source_sha":"$NI75_SOURCE_SHA","recipe_sha":"$GITHUB_SHA","prior_recipe_sha":"$NI75_PRIOR_RECIPE_SHA","prior_prior_recipe_sha":"$NI75_PRIOR_PRIOR_RECIPE_SHA","recipe_history_count":3,"recipe_path":".github/workflows/ni75-executor-wrapper-impact.yml","recipe_sha256":"$workflow_sha","wrapper_sha256":"$wrapper_sha","lock_run_id":"$NI75_LOCK_RUN_ID","lock_artifact":"$NI75_LOCK_ARTIFACT","lock_sha256":"$NI75_LOCK_SHA256","registry_metadata_sha256":"$NI75_REGISTRY_METADATA_SHA256","gitnexus_tarball_sha256":"$NI75_GITNEXUS_TARBALL_SHA256","gitnexus_tarball_integrity":"$NI75_GITNEXUS_INTEGRITY","gitnexus_package_json_sha256":"$NI75_GITNEXUS_PACKAGE_JSON_SHA256","gitnexus_cli_sha256":"$NI75_GITNEXUS_CLI_SHA256","gitnexus_repo_manager_sha256":"$NI75_GITNEXUS_REPO_MANAGER_SHA256","node_version":"$(node --version)","npm_version":"$(npm --version)","registry_alias":"$NI75_REGISTRY_ALIAS","GITNEXUS_HOME":"$GITNEXUS_HOME","embeddings":false,"wiki":false,"LLM":false,"host_bus_access":"none","live_process_or_API_observation":false,"index_bundle_uploaded":false,"index_bundle_reason":"rebuild exact index from pinned source/dependencies; retain only bounded source, status, and exact impact outputs","impact_target_uid":"Function:scripts/lib/executor.py:get_binary_paths","risk_stop":"HIGH or CRITICAL validation fails the query job for main review"}
+          JSON
+          cp .github/workflows/ni75-executor-wrapper-impact.yml "$NI75_CAPTURE/workflow.yml"
+          cp "$NI75_SOURCE_DIR/scripts/gitnexus-analyze.sh" "$NI75_CAPTURE/gitnexus-analyze.sh"
+          git -C "$NI75_SOURCE_DIR" status --porcelain=v1 --untracked-files=all > "$NI75_CAPTURE/source-status-before.txt"
+          git -C "$NI75_SOURCE_DIR" rev-parse HEAD > "$NI75_CAPTURE/source-head-before.txt"
+          sha256sum "$NI75_SOURCE_DIR/scripts/lib/executor.py" \
+            "$NI75_SOURCE_DIR/scripts/lib/executor_paths.py" \
+            "$NI75_SOURCE_DIR/src/registry/kernel_paths.py" \
+            "$NI75_SOURCE_DIR/scripts/lib/onboard.py" \
+            "$NI75_SOURCE_DIR/tests/unit/test_benchmark_executor_additional.py" \
+            "$NI75_SOURCE_DIR/tests/unit/test_benchmark_executor_branching.py" \
+            > "$NI75_CAPTURE/manual-callers-test-seams-sha256.txt"
+          node --version > "$NI75_CAPTURE/node-version.txt"
+          npm --version > "$NI75_CAPTURE/npm-version.txt"
+          cat /etc/os-release > "$NI75_CAPTURE/os-release.txt"
+          git --version > "$NI75_CAPTURE/git-version.txt"
+
+      - name: Download and verify lock-prep originals
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: ni52-gitnexus-lock-originals-37352714514
+          run-id: 37352714514
+          repository: ${{ github.repository }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: ${{ runner.temp }}/ni75-lock-artifact
+
+      - name: Verify exact reviewed package graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum "$NI75_LOCK_DIR/package-lock.json" | cut -d' ' -f1)" = "$NI75_LOCK_SHA256"
+          test "$(sha256sum "$NI75_LOCK_DIR/gitnexus-1.6.8-registry.json" | cut -d' ' -f1)" = "$NI75_REGISTRY_METADATA_SHA256"
+          test "$(sha256sum "$NI75_LOCK_DIR/gitnexus-1.6.8.tgz" | cut -d' ' -f1)" = "$NI75_GITNEXUS_TARBALL_SHA256"
+          test "$(sha256sum "$NI75_LOCK_DIR/gitnexus-analyze.sh" | cut -d' ' -f1)" = "$NI75_WRAPPER_SHA256"
+          tar_sri="sha512-$(openssl dgst -sha512 -binary "$NI75_LOCK_DIR/gitnexus-1.6.8.tgz" | openssl base64 -A)"
+          test "$tar_sri" = "$NI75_GITNEXUS_INTEGRITY"
+          for archive_member in package/package.json package/dist/cli/index.js package/dist/storage/repo-manager.js; do
+            case "$archive_member" in
+              package/package.json) expected_sha="$NI75_GITNEXUS_PACKAGE_JSON_SHA256" ;;
+              package/dist/cli/index.js) expected_sha="$NI75_GITNEXUS_CLI_SHA256" ;;
+              package/dist/storage/repo-manager.js) expected_sha="$NI75_GITNEXUS_REPO_MANAGER_SHA256" ;;
+            esac
+            actual_sha=$(tar -xOf "$NI75_LOCK_DIR/gitnexus-1.6.8.tgz" "$archive_member" | sha256sum | cut -d' ' -f1)
+            test "$actual_sha" = "$expected_sha"
+            printf '%s  %s\n' "$actual_sha" "$archive_member" >> "$NI75_CAPTURE/published-tool-source.sha256"
+          done
+          node --input-type=module - "$NI75_LOCK_DIR" <<'NODE'
+          import fs from 'node:fs';
+          const root = process.argv[2];
+          const lock = JSON.parse(fs.readFileSync(`${root}/package-lock.json`, 'utf8'));
+          const context = JSON.parse(fs.readFileSync(`${root}/context.json`, 'utf8'));
+          const registry = JSON.parse(fs.readFileSync(`${root}/gitnexus-1.6.8-registry.json`, 'utf8'));
+          const pkg = JSON.parse(fs.readFileSync(`${root}/package.json`, 'utf8'));
+          if (lock.lockfileVersion !== 3) throw new Error('lockfileVersion mismatch');
+          if (lock.packages?.['']?.dependencies?.gitnexus !== '1.6.8') throw new Error('root GitNexus version mismatch');
+          if (pkg.dependencies?.gitnexus !== '1.6.8') throw new Error('root manifest pin mismatch');
+          if (context.source_sha !== 'c8851695cc6ae46845c06b9f60402e687f1698ec' || context.recipe_sha !== '24e0868c8d7e32b0792064665009a2fead300b3e') throw new Error('lock artifact source/recipe pin mismatch');
+          if (registry.name !== 'gitnexus' || registry.version !== '1.6.8') throw new Error('registry identity mismatch');
+          if (registry.dist.integrity !== 'sha512-1PTqr70qfrXP43Z6S7oiD+x4nHLaSEk6YoyYurs+H1Z/Y1Ga4P5D+Ib3M2XnwXYhMjaPqmyq8wgUvx8GTOA2rQ==') throw new Error('registry SRI mismatch');
+          const entries = Object.entries(lock.packages ?? {}).filter(([path]) => path !== '');
+          if (entries.length !== 270) throw new Error(`expected 270 locked packages; got ${entries.length}`);
+          for (const [path, dep] of entries) {
+            if (!dep.resolved?.startsWith('https://registry.npmjs.org/')) throw new Error(`unapproved source: ${path}`);
+            if (!/^sha512-/.test(dep.integrity ?? '')) throw new Error(`missing SHA-512 integrity: ${path}`);
+            if (dep.link || dep.inBundle) throw new Error(`link/bundle not accepted: ${path}`);
+          }
+          const core = lock.packages['node_modules/@ladybugdb/core'];
+          const native = lock.packages['node_modules/@ladybugdb/core-linux-x64'];
+          if (core?.version !== '0.17.1' || core?.hasInstallScript !== true) throw new Error('locked Ladybug core identity mismatch');
+          if (native?.version !== '0.17.1' || native?.optional !== true) throw new Error('locked Linux native package identity mismatch');
+          NODE
+          cp "$NI75_LOCK_DIR/package.json" "$NI75_PROJECT/package.json"
+          cp "$NI75_LOCK_DIR/package-lock.json" "$NI75_PROJECT/package-lock.json"
+          cp "$NI75_LOCK_DIR/npmrc" "$NI75_PROJECT/.npmrc"
+          cp "$NI75_LOCK_DIR/package-lock.json" "$NI75_CAPTURE/package-lock.json"
+          cp "$NI75_LOCK_DIR/gitnexus-1.6.8-registry.json" "$NI75_CAPTURE/gitnexus-1.6.8-registry.json"
+          cp "$NI75_LOCK_DIR/gitnexus-1.6.8.tgz" "$NI75_CAPTURE/gitnexus-1.6.8.tgz"
+          sha256sum "$NI75_CAPTURE/package-lock.json" "$NI75_CAPTURE/gitnexus-1.6.8-registry.json" "$NI75_CAPTURE/gitnexus-1.6.8.tgz" > "$NI75_CAPTURE/verified-lock-inputs.sha256"
+
+      - name: Install locked packages without lifecycle scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s\n' '["timeout","--signal=TERM","--kill-after=15s","480s","npm","ci","--ignore-scripts","--no-audit","--no-fund","--prefix","<NI75_PROJECT>"]' > "$NI75_CAPTURE/npm-ci-argv.json"
+          set +e
+          NPM_CONFIG_USERCONFIG="$NI75_PROJECT/.npmrc" timeout --signal=TERM --kill-after=15s 480s \
+            npm ci --ignore-scripts --no-audit --no-fund --prefix "$NI75_PROJECT" \
+              > "$NI75_CAPTURE/npm-ci.stdout" 2> "$NI75_CAPTURE/npm-ci.stderr"
+          install_rc=$?
+          set -e
+          printf '{"schema":"ni75.locked_npm_ci_status.v1","exit_code":%s,"ignore_scripts":true,"timeout_seconds":480,"kill_after_seconds":15}\n' "$install_rc" > "$NI75_CAPTURE/npm-ci-status.json"
+          if [ "$install_rc" -ne 0 ]; then exit "$install_rc"; fi
+          package_version=$(node -p "JSON.parse(require('node:fs').readFileSync('$NI75_PROJECT/node_modules/gitnexus/package.json','utf8')).version")
+          package_json_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/package.json" | cut -d' ' -f1)
+          cli_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" | cut -d' ' -f1)
+          repo_manager_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/storage/repo-manager.js" | cut -d' ' -f1)
+          cmp -- "$NI75_LOCK_DIR/package-lock.json" "$NI75_PROJECT/package-lock.json"
+          installed_lock_sha=$(sha256sum "$NI75_PROJECT/package-lock.json" | cut -d' ' -f1)
+          set +e
+          timeout --signal=TERM --kill-after=15s 30s "$NI75_PROJECT/node_modules/.bin/gitnexus" --version \
+            > "$NI75_CAPTURE/gitnexus-version.stdout" 2> "$NI75_CAPTURE/gitnexus-version.stderr"
+          cli_version_rc=$?
+          set -e
+          cli_version=$(cat "$NI75_CAPTURE/gitnexus-version.stdout")
+          printf '{"schema":"ni75.installed_gitnexus_attestation.v1","package_version":"%s","package_json_sha256":"%s","cli_dist_sha256":"%s","repo_manager_sha256":"%s","lock_sha256_after_npm_ci":"%s","cli_version_stdout":"%s","cli_version_exit_code":%s}\n' \
+            "$package_version" "$package_json_sha" "$cli_sha" "$repo_manager_sha" "$installed_lock_sha" "$cli_version" "$cli_version_rc" > "$NI75_CAPTURE/installed-gitnexus-attestation.json"
+          test "$package_version" = 1.6.8
+          test "$package_json_sha" = "$NI75_GITNEXUS_PACKAGE_JSON_SHA256"
+          test "$cli_sha" = "$NI75_GITNEXUS_CLI_SHA256"
+          test "$repo_manager_sha" = "$NI75_GITNEXUS_REPO_MANAGER_SHA256"
+          test "$installed_lock_sha" = "$NI75_LOCK_SHA256"
+          test "$cli_version_rc" -eq 0
+          test "$cli_version" = 1.6.8
+
+      - name: Upload verified lock and npm installation originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni75-index-install-originals-${{ github.run_id }}
+          path: ${{ runner.temp }}/ni75-index-originals/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Prove only audited native runtime prerequisites
+        shell: bash
+        working-directory: ${{ runner.temp }}/ni75-npm-project
+        run: |
+          set -uo pipefail
+          status_rc=0
+          mark_failure() { if [ "$status_rc" -eq 0 ]; then status_rc="$1"; fi; }
+          core_install="node_modules/@ladybugdb/core/install.js"
+          core_binary="node_modules/@ladybugdb/core/lbugjs.node"
+          optional_binary="node_modules/@ladybugdb/core-linux-x64/lbugjs.node"
+          test -f "$core_install" && test ! -L "$core_install" || mark_failure 10
+          test -f "$optional_binary" && test ! -L "$optional_binary" || mark_failure 11
+          install_sha=$(sha256sum "$core_install" 2>/dev/null | cut -d' ' -f1 || true)
+          binary_sha=$(sha256sum "$optional_binary" 2>/dev/null | cut -d' ' -f1 || true)
+          test "$install_sha" = "$NI75_KUZU_INSTALL_SHA256" || mark_failure 12
+          test "$binary_sha" = "$NI75_KUZU_PREBUILT_SHA256" || mark_failure 13
+          printf '{"schema":"ni75.native_preflight.v1","core_install_sha256":"%s","expected_install_sha256":"%s","optional_binary_sha256":"%s","expected_optional_binary_sha256":"%s","preflight_exit_code":%s}\n' \
+            "$install_sha" "$NI75_KUZU_INSTALL_SHA256" "$binary_sha" "$NI75_KUZU_PREBUILT_SHA256" "$status_rc" > "$NI75_NATIVE/native-preflight.json"
+          if [ "$status_rc" -eq 0 ]; then
+            if [ -e "$core_binary" ] || [ -L "$core_binary" ]; then
+              if [ ! -f "$core_binary" ] || [ -L "$core_binary" ]; then
+                mark_failure 14
+              else
+                existing_sha=$(sha256sum "$core_binary" | cut -d' ' -f1)
+                if [ "$existing_sha" != "$NI75_KUZU_PREBUILT_SHA256" ]; then mark_failure 15; fi
+                printf '%s\n' "preexisting core binary hash=$existing_sha" > "$NI75_NATIVE/ladybug-copy-command.txt"
+              fi
+            else
+              cp -p -- "$optional_binary" "$core_binary" > "$NI75_NATIVE/ladybug-copy.stdout" 2> "$NI75_NATIVE/ladybug-copy.stderr" || mark_failure 16
+              printf '%s\n' 'cp -p -- node_modules/@ladybugdb/core-linux-x64/lbugjs.node node_modules/@ladybugdb/core/lbugjs.node' > "$NI75_NATIVE/ladybug-copy-command.txt"
+            fi
+          fi
+          if [ "$status_rc" -eq 0 ]; then
+            core_sha=$(sha256sum "$core_binary" 2>/dev/null | cut -d' ' -f1 || true)
+            test "$core_sha" = "$NI75_KUZU_PREBUILT_SHA256" || mark_failure 17
+          fi
+          ladybug_runtime_rc=125
+          if [ "$status_rc" -eq 0 ]; then
+            set +e
+            timeout --signal=TERM --kill-after=15s 30s node --input-type=commonjs -e \
+              'const { Database } = require("@ladybugdb/core"); process.stdout.write(String(Database.getVersion()) + "\\n");' \
+              > "$NI75_NATIVE/ladybug-runtime.stdout" 2> "$NI75_NATIVE/ladybug-runtime.stderr"
+            ladybug_runtime_rc=$?
+            set -e
+            if [ "$ladybug_runtime_rc" -ne 0 ]; then mark_failure "$ladybug_runtime_rc"; fi
+          fi
+          vendor_root="$NI75_PROJECT/node_modules/gitnexus/vendor"
+          (cd "$vendor_root/tree-sitter-c/prebuilds" && sha256sum -c SHA256SUMS) > "$NI75_NATIVE/vendor-c-check.stdout" 2> "$NI75_NATIVE/vendor-c-check.stderr" || mark_failure 20
+          (cd "$vendor_root/tree-sitter-proto/prebuilds" && sha256sum -c SHA256SUMS) > "$NI75_NATIVE/vendor-proto-check.stdout" 2> "$NI75_NATIVE/vendor-proto-check.stderr" || mark_failure 21
+          grep -Fx "$NI75_VENDOR_C_SHA256  ./linux-x64/tree-sitter-c.node" "$vendor_root/tree-sitter-c/prebuilds/SHA256SUMS" > "$NI75_NATIVE/vendor-c-linux-x64-pin.txt" || mark_failure 23
+          grep -Fx "$NI75_VENDOR_PROTO_SHA256  ./linux-x64/tree-sitter-proto.node" "$vendor_root/tree-sitter-proto/prebuilds/SHA256SUMS" > "$NI75_NATIVE/vendor-proto-linux-x64-pin.txt" || mark_failure 24
+          set +e
+          timeout --signal=TERM --kill-after=15s 30s node - <<'NODE' > "$NI75_NATIVE/tree-sitter-native-runtime.stdout" 2> "$NI75_NATIVE/tree-sitter-native-runtime.stderr"
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const resolve = require('node-gyp-build');
+          const root = path.join(process.cwd(), 'node_modules/gitnexus/vendor');
+          const expected = {
+            'tree-sitter-c': '85e912b183a49111b0f4c3a6c8908375732e70aca759ab0124501913cbbd942a',
+            'tree-sitter-proto': 'dea80ed2fb48a6d19866468f652ec48eab5435306c6477b213eafe51cbbbf2ee',
+          };
+          for (const [name, sha] of Object.entries(expected)) {
+            const dir = path.join(root, name);
+            const nativePath = resolve.path(dir);
+            if (!nativePath) throw new Error(`${name}: node-gyp-build resolved no prebuilt native file`);
+            const real = fs.realpathSync(nativePath);
+            if (!real.includes(`${path.sep}prebuilds${path.sep}linux-x64${path.sep}`)) throw new Error(`${name}: resolved outside pinned linux-x64 prebuild: ${real}`);
+            const bytes = fs.readFileSync(real);
+            const actual = crypto.createHash('sha256').update(bytes).digest('hex');
+            if (actual !== sha) throw new Error(`${name}: expected ${sha}, got ${actual}`);
+            require(real);
+            process.stdout.write(JSON.stringify({name, path: real, sha256: actual, loaded: true}) + '\n');
+          }
+          NODE
+          native_resolution_rc=$?
+          set -e
+          if [ "$native_resolution_rc" -ne 0 ]; then mark_failure 22; fi
+          printf '{"schema":"ni75.native_runtime_status.v1","exit_code":%s,"ladybug_runtime_exit_code":%s,"vendor_c_proto_prebuilds_checked":true,"native_resolution_exit_code":%s,"native_compilation_attempted":false,"scripts_enabled_for_npm_ci":false,"telemetry_postinstall_executed":false,"onnx_postinstall_executed":false}\n' \
+            "$status_rc" "$ladybug_runtime_rc" "$native_resolution_rc" > "$NI75_NATIVE/native-runtime-status.json"
+          exit "$status_rc"
+
+      - name: Upload native runtime proof prefix immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni75-index-native-proof-${{ github.run_id }}
+          path: ${{ runner.temp }}/ni75-native-proof/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Capture GitNexus analyze status and source impacts
+        shell: bash
+        working-directory: ${{ runner.temp }}/ni75-source-c8851695
+        run: |
+          set -uo pipefail
+          cli="$NI75_PROJECT/node_modules/.bin/gitnexus"
+          export PATH="$NI75_PROJECT/node_modules/.bin:$PATH"
+          set +e
+          timeout --signal=TERM --kill-after=15s 30s node "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" --version > "$NI75_INDEX/gitnexus-version.stdout" 2> "$NI75_INDEX/gitnexus-version.stderr"
+          version_rc=$?
+          set -e
+          version_text=$(cat "$NI75_INDEX/gitnexus-version.stdout")
+          version_validation_rc=0
+          if [ "$version_text" != 1.6.8 ]; then version_validation_rc=1; fi
+          printf '%s\n' '["node","<NI75_PROJECT>/node_modules/gitnexus/dist/cli/index.js","--version"]' > "$NI75_INDEX/version-argv.json"
+          printf '%s\n' '["bash","scripts/gitnexus-analyze.sh","--index-only","--name","ni75-orch-c8851695-20261005","--workers","2"]' > "$NI75_INDEX/analyze-argv.json"
+          printf '%s\n' '["<NI75_PROJECT>/node_modules/.bin/gitnexus","status"]' > "$NI75_INDEX/status-argv.json"
+          printf '%s\n' '["<NI75_PROJECT>/node_modules/.bin/gitnexus","impact","--direction","upstream","--repo","ni75-orch-c8851695-20261005","--uid","Function:scripts/lib/executor.py:get_binary_paths","--depth","3","--limit","100"]' > "$NI75_INDEX/impact-get-binary-paths-argv.json"
+          set +e
+          timeout --signal=TERM --kill-after=30s 1200s bash scripts/gitnexus-analyze.sh \
+            --index-only --name "$NI75_REGISTRY_ALIAS" --workers 2 \
+            > "$NI75_INDEX/analyze.stdout" 2> "$NI75_INDEX/analyze.stderr"
+          analyze_rc=$?
+          timeout --signal=TERM --kill-after=15s 120s "$cli" status \
+            > "$NI75_INDEX/status.stdout" 2> "$NI75_INDEX/status.stderr"
+          status_rc=$?
+          timeout --signal=TERM --kill-after=15s 120s "$cli" impact \
+            --direction upstream --repo "$NI75_REGISTRY_ALIAS" --uid 'Function:scripts/lib/executor.py:get_binary_paths' --depth 3 --limit 100 \
+            > "$NI75_INDEX/impact-get-binary-paths.stdout" 2> "$NI75_INDEX/impact-get-binary-paths.stderr"
+          impact_rc=$?
+          set -e
+          set +e
+          timeout --signal=TERM --kill-after=15s 30s node --input-type=module -e \
+            'import fs from "node:fs"; const result = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); const expected = "Function:scripts/lib/executor.py:get_binary_paths"; if (["ambiguous", "not_found", "not-found"].includes(result.status)) throw new Error(`impact status is ${result.status}`); if (result.target?.id !== expected) throw new Error(`target mismatch: ${result.target?.id ?? "<missing>"}`); if (result.direction !== "upstream" || result.epistemic !== "exact") throw new Error(`unqualified impact: direction=${result.direction}, epistemic=${result.epistemic}`); if (!["LOW", "MEDIUM", "HIGH", "CRITICAL"].includes(result.risk)) throw new Error(`unrecognized risk: ${result.risk}`); if (["HIGH", "CRITICAL"].includes(result.risk)) throw new Error(`STOP: ${result.risk} impact requires main review before source work`); process.stdout.write(JSON.stringify({target_id: result.target.id, direction: result.direction, epistemic: result.epistemic, risk: result.risk}) + String.fromCharCode(10));' \
+            "$NI75_INDEX/impact-get-binary-paths.stdout" \
+            > "$NI75_INDEX/impact-get-binary-paths-validation.stdout" 2> "$NI75_INDEX/impact-get-binary-paths-validation.stderr"
+          impact_validation_rc=$?
+          set -e
+          if [ -f .gitnexus/meta.json ] && [ ! -L .gitnexus/meta.json ]; then cp .gitnexus/meta.json "$NI75_INDEX/meta.json"; fi
+          if [ -f "$GITNEXUS_HOME/registry.json" ] && [ ! -L "$GITNEXUS_HOME/registry.json" ]; then cp "$GITNEXUS_HOME/registry.json" "$NI75_INDEX/registry.json"; fi
+          lock_after_index_rc=0
+          lock_after_index_sha=$(sha256sum "$NI75_PROJECT/package-lock.json" | cut -d' ' -f1)
+          if ! cmp -s -- "$NI75_LOCK_DIR/package-lock.json" "$NI75_PROJECT/package-lock.json" || [ "$lock_after_index_sha" != "$NI75_LOCK_SHA256" ]; then lock_after_index_rc=1; fi
+          printf '{"schema":"ni75.index_package_lock_postcheck.v1","expected_sha256":"%s","observed_sha256":"%s","exit_code":%s}\n' \
+            "$NI75_LOCK_SHA256" "$lock_after_index_sha" "$lock_after_index_rc" > "$NI75_INDEX/package-lock-after-index.json"
+          tool_package_version=$(node -p "JSON.parse(require('node:fs').readFileSync('$NI75_PROJECT/node_modules/gitnexus/package.json','utf8')).version" 2> "$NI75_INDEX/installed-tool-version.stderr")
+          tool_package_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/package.json" | cut -d' ' -f1)
+          tool_cli_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" | cut -d' ' -f1)
+          tool_repo_manager_sha=$(sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/storage/repo-manager.js" | cut -d' ' -f1)
+          tool_version_text=$(cat "$NI75_INDEX/gitnexus-version.stdout")
+          tool_attestation_rc=0
+          if [ "$tool_package_version" != 1.6.8 ] || [ "$tool_package_sha" != "$NI75_GITNEXUS_PACKAGE_JSON_SHA256" ] || \
+             [ "$tool_cli_sha" != "$NI75_GITNEXUS_CLI_SHA256" ] || [ "$tool_repo_manager_sha" != "$NI75_GITNEXUS_REPO_MANAGER_SHA256" ] || \
+             [ "$tool_version_text" != 1.6.8 ] || [ "$version_validation_rc" -ne 0 ]; then tool_attestation_rc=1; fi
+          printf '{"schema":"ni75.installed_gitnexus_postindex_attestation.v1","package_version":"%s","package_json_sha256":"%s","expected_package_json_sha256":"%s","cli_sha256":"%s","expected_cli_sha256":"%s","repo_manager_sha256":"%s","expected_repo_manager_sha256":"%s","cli_version_stdout":"%s","attestation_exit_code":%s}\n' \
+            "$tool_package_version" "$tool_package_sha" "$NI75_GITNEXUS_PACKAGE_JSON_SHA256" "$tool_cli_sha" "$NI75_GITNEXUS_CLI_SHA256" \
+            "$tool_repo_manager_sha" "$NI75_GITNEXUS_REPO_MANAGER_SHA256" "$tool_version_text" "$tool_attestation_rc" > "$NI75_INDEX/installed-tool-postindex-attestation.json"
+          if [ -f "$NI75_PROJECT/node_modules/gitnexus/package.json" ] && [ ! -L "$NI75_PROJECT/node_modules/gitnexus/package.json" ]; then
+            cp "$NI75_PROJECT/node_modules/gitnexus/package.json" "$NI75_INDEX/installed-gitnexus-package.json"
+          fi
+          if [ -f "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" ] && [ ! -L "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" ]; then
+            sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/cli/index.js" > "$NI75_INDEX/installed-gitnexus-cli.sha256"
+          fi
+          if [ -f "$NI75_PROJECT/node_modules/gitnexus/dist/storage/repo-manager.js" ] && [ ! -L "$NI75_PROJECT/node_modules/gitnexus/dist/storage/repo-manager.js" ]; then
+            sha256sum "$NI75_PROJECT/node_modules/gitnexus/dist/storage/repo-manager.js" > "$NI75_INDEX/installed-gitnexus-repo-manager.sha256"
+          fi
+          meta_rc=10
+          if [ -f .gitnexus/meta.json ] && [ ! -L .gitnexus/meta.json ]; then
+            set +e
+            timeout --signal=TERM --kill-after=15s 30s node --input-type=module -e \
+              'import fs from "node:fs"; const meta = JSON.parse(fs.readFileSync(process.argv[1], "utf8")); const expected = process.argv[2]; if (meta.lastCommit !== expected) throw new Error(`index commit mismatch: ${meta.lastCommit}`); process.stdout.write(JSON.stringify({lastCommit: meta.lastCommit, indexedAt: meta.indexedAt, stats: meta.stats ?? null}));' \
+              .gitnexus/meta.json "$NI75_SOURCE_SHA" > "$NI75_INDEX/meta-validation.stdout" 2> "$NI75_INDEX/meta-validation.stderr"
+            meta_rc=$?
+            set -e
+          fi
+          printf '{"schema":"ni75.executor_impact_command_status.v1","gitnexus_version":%s,"gitnexus_version_validation":%s,"analyze":%s,"status":%s,"impact_get_binary_paths":%s,"impact_validation":%s,"meta_validation":%s,"analyze_timeout_seconds":1200,"analyze_kill_after_seconds":30,"embeddings_flag_passed":false,"wiki_command_run":false}\n' \
+            "$version_rc" "$version_validation_rc" "$analyze_rc" "$status_rc" "$impact_rc" "$impact_validation_rc" "$meta_rc" > "$NI75_INDEX/command-status.json"
+          sha256sum "$NI75_INDEX"/* > "$NI75_INDEX/sha256sums.txt"
+          if [ "$version_rc" -ne 0 ] || [ "$version_validation_rc" -ne 0 ] || [ "$analyze_rc" -ne 0 ] || [ "$status_rc" -ne 0 ] || \
+             [ "$impact_rc" -ne 0 ] || [ "$impact_validation_rc" -ne 0 ] || [ "$meta_rc" -ne 0 ] || \
+             [ "$lock_after_index_rc" -ne 0 ] || [ "$tool_attestation_rc" -ne 0 ]; then exit 1; fi
+
+      - name: Upload untouched GitNexus analysis originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni75-gitnexus-index-originals-${{ github.run_id }}
+          path: ${{ runner.temp }}/ni75-index-results/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+
+      - name: Independently record source and bus postchecks
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -m 700 "$NI75_POSTCHECK"
+          source_head=$(git -C "$NI75_SOURCE_DIR" rev-parse HEAD)
+          git -C "$NI75_SOURCE_DIR" status --porcelain=v1 --untracked-files=all > "$NI75_POSTCHECK/source-status-after.txt"
+          source_status=$(cat "$NI75_POSTCHECK/source-status-after.txt")
+          printf '%s\n' "$source_head" > "$NI75_POSTCHECK/source-head-after.txt"
+          git -C "$NI75_SOURCE_DIR" status --porcelain=v1 --untracked-files=all > "$NI75_POSTCHECK/source-status-after-repeat.txt"
+          git -C "$NI75_SOURCE_DIR" status --porcelain=v1 --untracked-files=all --ignored=matching > "$NI75_POSTCHECK/source-status-including-ignored.txt"
+          source_clean=true
+          if [ -n "$source_status" ] || [ "$source_head" != "$NI75_SOURCE_SHA" ] || \
+             ! cmp -s "$NI75_POSTCHECK/source-status-after.txt" "$NI75_POSTCHECK/source-status-after-repeat.txt"; then source_clean=false; fi
+          allowed_ignored_index_only=true
+          if ! awk 'NF == 0 { next } substr($0, 1, 3) == "!! " && substr($0, 4) == ".gitnexus/" { next } { bad = 1 } END { exit bad }' "$NI75_POSTCHECK/source-status-including-ignored.txt"; then
+            allowed_ignored_index_only=false
+          fi
+          index_inventory_ok=false
+          if [ -d "$NI75_SOURCE_DIR/.gitnexus" ] && [ ! -L "$NI75_SOURCE_DIR/.gitnexus" ]; then
+            index_symlink=$(find "$NI75_SOURCE_DIR/.gitnexus" -type l -print -quit)
+            if [ -z "$index_symlink" ]; then
+              find "$NI75_SOURCE_DIR/.gitnexus" -type f -print0 | sort -z | xargs -0 sha256sum > "$NI75_POSTCHECK/generated-gitnexus-index-files.sha256"
+              if [ -s "$NI75_POSTCHECK/generated-gitnexus-index-files.sha256" ]; then index_inventory_ok=true; fi
+            fi
+          fi
+          printf '{"schema":"ni75.index_source_postcheck.v1","source_clean_except_generated_ignored_index":%s,"only_ignored_index_path_present":%s,"generated_index_inventory_ok":%s,"source_sha":"%s"}\n' \
+            "$source_clean" "$allowed_ignored_index_only" "$index_inventory_ok" "$source_head" > "$NI75_POSTCHECK/source-policy-postcheck.json"
+          if [ -e "$NI75_BUS_ROOT" ] || [ -L "$NI75_BUS_ROOT" ]; then
+            printf '{"schema":"ni75.index_bus_postcheck.v1","bus_absent":false,"bus_not_symlink":%s,"passed":false}\n' "$(test ! -L "$NI75_BUS_ROOT" && echo true || echo false)" > "$NI75_POSTCHECK/bus-postcheck.json"
+            exit 1
+          fi
+          printf '{"schema":"ni75.index_bus_postcheck.v1","bus_absent":true,"bus_not_symlink":true,"passed":true}\n' > "$NI75_POSTCHECK/bus-postcheck.json"
+          test "$source_clean" = true
+          test "$allowed_ignored_index_only" = true
+          test "$index_inventory_ok" = true
+
+      - name: Upload independent source and bus postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni75-gitnexus-index-postcheck-${{ github.run_id }}
+          path: ${{ runner.temp }}/ni75-index-postcheck/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14

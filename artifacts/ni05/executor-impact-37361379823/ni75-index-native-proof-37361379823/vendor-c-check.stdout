@@ -1,0 +1,6 @@
+./darwin-arm64/tree-sitter-c.node: OK
+./darwin-x64/tree-sitter-c.node: OK
+./linux-arm64/tree-sitter-c.node: OK
+./linux-x64/tree-sitter-c.node: OK
+./win32-arm64/tree-sitter-c.node: OK
+./win32-x64/tree-sitter-c.node: OK

@@ -1,0 +1,1 @@
+["timeout","--signal=TERM","--kill-after=15s","480s","npm","ci","--ignore-scripts","--no-audit","--no-fund","--prefix","<NI75_PROJECT>"]

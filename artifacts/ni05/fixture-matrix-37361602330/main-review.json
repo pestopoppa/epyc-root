@@ -1,0 +1,66 @@
+{
+  "schema": "ni54_56.main_review.v1",
+  "original_files_verified": 284,
+  "modules": [
+    {
+      "module": "executor",
+      "cases": 5,
+      "receipt_sha256": "092b20ccfa384bafb215f605b09b49f4e3f18c56f2505d466689c9cde9067d7d",
+      "git_bound_readset": 56,
+      "context_readset": 1,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "negative_controls": []
+    },
+    {
+      "module": "executor-additional",
+      "cases": 26,
+      "receipt_sha256": "74f9eec1887285cc14dbba318a9d726ed8d48ff92cd269ef5eaadcf75c0c0496",
+      "git_bound_readset": 56,
+      "context_readset": 1,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "negative_controls": [
+        "test_validate_binaries_raises_when_required_binary_missing"
+      ]
+    },
+    {
+      "module": "claim-api",
+      "cases": 14,
+      "receipt_sha256": "e24bfb70a8389d70a3fa8a0b6f56a6d7e2c9f53ef0a2822de9bd12388252f004",
+      "git_bound_readset": 56,
+      "context_readset": 1,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "negative_controls": [
+        "test_llamacppbackend_cmd_refuses_unobservable_claim",
+        "test_unobservable_claim_refuses_spawn",
+        "test_bench_claiming_every_core_refuses_spawn"
+      ]
+    },
+    {
+      "module": "typed-replay",
+      "cases": 24,
+      "receipt_sha256": "b5ad194b0282e3b6e8043f7c5120f347871c7bcdf65877496deb65316682ac29",
+      "git_bound_readset": 56,
+      "context_readset": 1,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "negative_controls": [
+        "test_resolve_snapshot_refuses_live_database_without_reading_it"
+      ]
+    }
+  ],
+  "total_cases": 69,
+  "source_sha": "6bb8d860d410217895efb7806e9ef907a62a4350",
+  "recipe_sha": "6793d952fa502094b09b5b34bfbf32c5988446a1",
+  "run_id": 37361602330
+}

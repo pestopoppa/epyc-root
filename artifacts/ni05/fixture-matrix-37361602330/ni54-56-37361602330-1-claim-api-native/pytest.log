@@ -1,0 +1,3 @@
+ERROR    src.services.worker_pool:worker_pool.py:424 Refused to start worker fast: a live CPU bench claims the cores it would run on (fail closed; see bench_core_claim.py)
+ERROR    src.services.worker_pool:worker_pool.py:424 Refused to start worker fast: a live CPU bench claims the cores it would run on (fail closed; see bench_core_claim.py)
+WARNING  scripts.server.bench_core_claim:bench_core_claim.py:465 ORCHESTRATOR_ALLOW_DURING_BENCH=1: spawning worker fast while a CPU bench claims cores UNOBSERVABLE — the bench's campaign-continuity gate may invalidate the run

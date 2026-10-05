@@ -1,0 +1,424 @@
+name: NI54-56 bounded fixture matrix custody
+
+on:
+  push:
+    branches:
+      - codex/ni54-56-matrix-validation-20261005
+    paths:
+      - .github/workflows/ni54-56-fixture-matrix.yml
+
+concurrency:
+  group: ni54-56-fixture-matrix-20261005
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  APP_BASE_SHA: 64843e13642930895bb2e52694cd444de5892903
+  APP_SOURCE_SHA: 6bb8d860d410217895efb7806e9ef907a62a4350
+  APP_SOURCE_PARENT_SHA: 9f899b1b529afa0b4f72c60be6d279e21027b183
+  APP_SOURCE_GRANDPARENT_SHA: 0134f5a6a296e469d46214699867a5801a5021d1
+  APP_LOCK_SHA256: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+  ROOT_PRODUCER_SHA: ff8a6baa7e4bc86fc7318055d3fe1050f31422c7
+
+jobs:
+  fixture-module:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      EXPECTED_CASES: ${{ matrix.expected_cases }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module_id: executor
+            module_path: tests/unit/test_benchmark_executor.py
+            expected_cases: 5
+          - module_id: executor-additional
+            module_path: tests/unit/test_benchmark_executor_additional.py
+            expected_cases: 26
+          - module_id: claim-api
+            module_path: tests/unit/test_bench_core_claim_api_layer.py
+            expected_cases: 14
+          - module_id: typed-replay
+            module_path: tests/unit/test_typed_decisions_routing_replay.py
+            expected_cases: 24
+    steps:
+      - name: Establish explicit absent kernel overrides and private environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          for target in \
+            "$RUNNER_TEMP/ni54-unavailable-llama-cpp-bin" \
+            "$RUNNER_TEMP/ni54-unavailable-mtmd-bin" \
+            "$RUNNER_TEMP/ni54-unavailable-llama-server"; do
+            if [[ -e "$target" || -L "$target" ]]; then
+              echo "refusing preexisting kernel override: $target" >&2
+              exit 1
+            fi
+          done
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni54-56-fixture-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni54-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni54-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni54-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+          persist-credentials: false
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+          persist-credentials: false
+
+      - name: Checkout exact three-commit app fixture candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 4
+          path: app-fixtures
+          persist-credentials: false
+
+      - name: Verify source ancestry, fixture-only delta, lock, and absent targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_PRODUCER_SHA"
+          test "$(git -C app-fixtures rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test -z "$(git -C ci-control status --porcelain --untracked-files=no)"
+          test -z "$(git -C root-producer status --porcelain --untracked-files=no)"
+          test -z "$(git -C app-fixtures status --porcelain --untracked-files=no)"
+          git -C app-fixtures merge-base --is-ancestor "$APP_BASE_SHA" "$APP_SOURCE_SHA"
+          test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA^")" = "$APP_SOURCE_PARENT_SHA"
+          test "$(git -C app-fixtures rev-parse "$APP_SOURCE_PARENT_SHA^")" = "$APP_SOURCE_GRANDPARENT_SHA"
+          test "$(git -C app-fixtures rev-parse "$APP_SOURCE_GRANDPARENT_SHA^")" = "$APP_BASE_SHA"
+          test "$(git -C app-fixtures rev-list --count "$APP_BASE_SHA..$APP_SOURCE_SHA")" = 3
+          expected_paths="$(printf '%s\n' \
+            tests/unit/test_bench_core_claim_api_layer.py \
+            tests/unit/test_benchmark_executor.py \
+            tests/unit/test_benchmark_executor_additional.py \
+            tests/unit/test_typed_decisions_routing_replay.py | LC_ALL=C sort)"
+          actual_paths="$(git -C app-fixtures diff --name-only "$APP_BASE_SHA" "$APP_SOURCE_SHA" | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          test "$(sha256sum app-fixtures/uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" && test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD" && test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER" && test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Create private capture directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          result_dir="$GITHUB_WORKSPACE/app-fixtures/ni54-56-artifacts/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID"
+          if [[ -e "$result_dir" || -L "$result_dir" ]]; then
+            echo "refusing preexisting capture directory: $result_dir" >&2
+            exit 1
+          fi
+          printf 'RESULT_DIR=%s/ni54-56-artifacts/%s/%s/%s\n' \
+            "$GITHUB_WORKSPACE/app-fixtures" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$MODULE_ID" >> "$GITHUB_ENV"
+          mkdir -p "${result_dir%/*}"
+          mkdir -m 700 "$result_dir"
+
+      - name: Install frozen development dependencies
+        id: dependencies
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(sha256sum uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          python --version | grep -Fx 'Python 3.11.14'
+          uv --version | grep -Fx 'uv 0.8.15'
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev \
+            2>&1 | tee "$RESULT_DIR/install.log"
+          result=${PIPESTATUS[0]}
+          set -e
+          python - "$RESULT_DIR/install-status.json" "$result" <<'PY'
+          import json
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          target = Path(sys.argv[1])
+          target.write_text(json.dumps({
+              "schema": "ni54_56.install_status.v1",
+              "exit_code": int(sys.argv[2]),
+              "python": sys.version,
+              "uv": subprocess.check_output(["uv", "--version"], text=True).strip(),
+              "lock_sha256": subprocess.check_output(["sha256sum", "uv.lock"], text=True).split()[0],
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          exit "$result"
+
+      - name: Upload dependency installation prefix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni54-56-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-install
+          path: |
+            app-fixtures/ni54-56-artifacts/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/install.log
+            app-fixtures/ni54-56-artifacts/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/install-status.json
+          if-no-files-found: warn
+
+      - name: Write immutable fixture context
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+
+          if sys.version_info[:3] != (3, 11, 14):
+              raise SystemExit(f"unexpected Python version: {sys.version}")
+          uv_version = subprocess.check_output(["uv", "--version"], text=True).strip()
+          if uv_version != "uv 0.8.15":
+              raise SystemExit(f"unexpected uv version: {uv_version}")
+          lock_after_install = subprocess.check_output(
+              ["sha256sum", "uv.lock"], text=True
+          ).split()[0]
+          if lock_after_install != os.environ["APP_LOCK_SHA256"]:
+              raise SystemExit("frozen uv sync changed uv.lock; refusing fixture capture")
+          context = {
+              "schema": "ni54_56.fixture_matrix_context.v1",
+              "phase": "whole_module_fixture_execution",
+              "module_id": os.environ["MODULE_ID"],
+              "module_path": os.environ["MODULE_PATH"],
+              "expected_case_count": int(os.environ["EXPECTED_CASES"]),
+              "app_base_sha": os.environ["APP_BASE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_source_parent_sha": os.environ["APP_SOURCE_PARENT_SHA"],
+              "app_source_grandparent_sha": os.environ["APP_SOURCE_GRANDPARENT_SHA"],
+              "root_producer_sha": os.environ["ROOT_PRODUCER_SHA"],
+              "lock_sha256_before_install": os.environ["APP_LOCK_SHA256"],
+              "lock_sha256_after_install": lock_after_install,
+              "python": sys.version,
+              "uv": uv_version,
+              "pytest_guard": {
+                  "CI": os.environ["CI"],
+                  "ORCHESTRATOR_MOCK_MODE": os.environ["ORCHESTRATOR_MOCK_MODE"],
+                  "tests_conftest_100GiB_guard": "bypassed by declared CI/mock fixture mode",
+                  "capacity_proof": "none; no synthetic RAM and no host-capacity claim",
+              },
+              "kernel_overrides": {
+                  key: {"path": os.environ[key], "must_remain_absent_nonlink": True}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+              "offline_controls_by_module": {
+                  "executor": [],
+                  "executor-additional": [
+                      "test_validate_binaries_raises_when_required_binary_missing"
+                  ],
+                  "claim-api": [
+                      "test_llamacppbackend_cmd_refuses_unobservable_claim",
+                      "test_unobservable_claim_refuses_spawn",
+                      "test_bench_claiming_every_core_refuses_spawn",
+                  ],
+                  "typed-replay": [
+                      "test_resolve_snapshot_refuses_live_database_without_reading_it"
+                  ],
+              },
+              "ocr_cli_fixture_contract": (
+                  "claim-api case uses an absent nonlink llama-mtmd-cli leaf and captures that exact argv"
+                  if os.environ["MODULE_ID"] == "claim-api" else "not applicable"
+              ),
+              "host_core_fixture": (
+                  "claim-api pinning cases mock host_core_set to HOST_CORES 0..191; no host topology or affinity evidence"
+                  if os.environ["MODULE_ID"] == "claim-api" else "not applicable"
+              ),
+              "execution_scope": "whole selected modules; all model/server spawn seams are mocked; no inference or serving",
+              "exclusions": ["capacity proof", "inference", "performance", "kernel linkage", "production promotion"],
+          }
+          path = Path(os.environ["RESULT_DIR"]) / "context.json"
+          path.write_text(json.dumps(context, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture whole selected module with native producer
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          junit="$RESULT_DIR/original-pytest.xml"
+          pytest_log="$RESULT_DIR/pytest.log"
+          native="$RESULT_DIR/native"
+          junit_relative="ni54-56-artifacts/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID/original-pytest.xml"
+          log_relative="ni54-56-artifacts/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID/pytest.log"
+          prefix="ni54_56_${MODULE_ID//-/_}"
+          timeout --verbose --signal=TERM --kill-after=20s 600s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "$junit" \
+              --output "$native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_candidate=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni54-56-fixture-matrix.yml" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/__init__.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/canonical.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/frames.py" \
+              --read-path "$RESULT_DIR/context.json" \
+              --read-path tests/conftest.py \
+              --read-path tests/unit/conftest.py \
+              --read-path tests/unit/test_benchmark_executor.py \
+              --read-path tests/unit/test_benchmark_executor_additional.py \
+              --read-path tests/unit/test_bench_core_claim_api_layer.py \
+              --read-path tests/unit/test_typed_decisions_routing_replay.py \
+              --read-path scripts/lib/executor.py \
+              --read-path scripts/lib/executor_paths.py \
+              --read-path scripts/lib/registry.py \
+              --read-path scripts/server/bench_core_claim.py \
+              --read-path src/registry/__init__.py \
+              --read-path src/inference/model_server.py \
+              --read-path src/services/lightonocr_llama_server.py \
+              --read-path src/services/worker_pool.py \
+              --read-path src/services/__init__.py \
+              --read-path src/config/__init__.py \
+              --read-path src/config/models.py \
+              --read-path src/config/validation.py \
+              --read-path src/env_parsing.py \
+              --read-path src/features.py \
+              --read-path src/api/state.py \
+              --read-path src/backends/serving_calls.py \
+              --read-path src/backends/context_limits.py \
+              --read-path src/backends/concurrency_aware.py \
+              --read-path src/backends/kv_slot_files.py \
+              --read-path src/runtime/gpu_window.py \
+              --read-path src/runtime/inference_tap.py \
+              --read-path src/runtime/inference_lock.py \
+              --read-path src/runtime/cpu_region_lock.py \
+              --read-path src/runtime/long_prefill_lease.py \
+              --read-path src/scheduling/contention_gate.py \
+              --read-path src/scheduling/prefix_history.py \
+              --read-path src/inference_lock.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/registry/model_descriptors.py \
+              --read-path src/registry/registry_loader.py \
+              --read-path src/registry/stack_priors.py \
+              --read-path src/roles.py \
+              --read-path src/retrieval/kb_rag_query_telemetry.py \
+              --read-path src/vision/config.py \
+              --read-path src/registry_loader.py \
+              --read-path src/typed_decisions/__init__.py \
+              --read-path src/typed_decisions/routing_replay.py \
+              --read-path src/typed_decisions/types.py \
+              --read-path src/llm_primitives/__init__.py \
+              --read-path src/llm_primitives/stat_tests.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path pyproject.toml \
+              --read-path uv.lock \
+              --generated-output "$log_relative" \
+              --select "$MODULE_PATH" \
+              -- timeout --verbose --signal=TERM --kill-after=15s 240s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q \
+                  --rootdir="$PWD" --junit-prefix="$prefix" \
+                  "$MODULE_PATH" --junitxml="$junit_relative" --log-file="$log_relative"
+
+      - name: Upload original native module prefix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni54-56-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-native
+          path: app-fixtures/ni54-56-artifacts/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/
+          if-no-files-found: warn
+
+      - name: Verify module count, absent targets, and lock immutability
+        if: always()
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set +e
+          python - <<'PY' > "$RESULT_DIR/postcheck.json" 2> "$RESULT_DIR/postcheck.stderr"
+          import json
+          import os
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          root = Path(os.environ["RESULT_DIR"])
+          junit = root / "original-pytest.xml"
+          result = {"module_id": os.environ["MODULE_ID"], "checks": {}}
+          if junit.is_file():
+              xml = ET.parse(junit).getroot()
+              cases = list(xml.iter("testcase"))
+              result["case_count"] = len(cases)
+              result["expected_case_count"] = int(os.environ["EXPECTED_CASES"])
+              result["checks"]["whole_module_count"] = len(cases) == int(os.environ["EXPECTED_CASES"])
+          else:
+              result["checks"]["whole_module_count"] = False
+          targets = [os.environ[key] for key in (
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          )]
+          result["checks"]["absent_nonlink_targets"] = all(
+              not Path(target).exists() and not Path(target).is_symlink() for target in targets
+          )
+          lock = Path("uv.lock")
+          import hashlib
+          result["lock_sha256_after_capture"] = hashlib.sha256(lock.read_bytes()).hexdigest()
+          result["checks"]["lock_unchanged"] = result["lock_sha256_after_capture"] == "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+          print(json.dumps(result, sort_keys=True))
+          PY
+          postcheck_rc=$?
+          cat "$RESULT_DIR/postcheck.json" 2>/dev/null || true
+          cat "$RESULT_DIR/postcheck.stderr" 2>/dev/null || true
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          result = json.loads((Path(os.environ["RESULT_DIR"]) / "postcheck.json").read_text())
+          if not all(result["checks"].values()):
+              raise SystemExit(1)
+          PY
+          check_rc=$?
+          if [[ "$postcheck_rc" -ne 0 || "$check_rc" -ne 0 ]]; then
+            exit 1
+          fi
+
+      - name: Upload post-capture custody checks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni54-56-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-postcheck
+          path: |
+            app-fixtures/ni54-56-artifacts/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/postcheck.json
+            app-fixtures/ni54-56-artifacts/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/postcheck.stderr
+          if-no-files-found: warn

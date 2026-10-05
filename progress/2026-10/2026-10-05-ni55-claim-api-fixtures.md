@@ -1,0 +1,9 @@
+# NI55 — claim API placement and optional CLI fixtures
+
+Main reviewed and accepted the bounded source/receipt scope on 2026-10-05. The candidate APP branch is `codex/ni54-fixture-20261005` at `6bb8d860d410217895efb7806e9ef907a62a4350`, based on `64843e13642930895bb2e52694cd444de5892903`; the only claim API test file changed is `tests/unit/test_bench_core_claim_api_layer.py`.
+
+The original off-host receipt in CI run `37361602330` reports 14/14 cases passed, with zero failures, errors, or skips. Two placement fixtures mock the existing `host_core_set` seam with the declared `HOST_CORES` set; this records fixture behavior and says nothing about host topology or affinity. The quiet OCR fixture names an absent, non-symlink `llama-mtmd-cli` leaf and preserves exact argv. Three refusal controls remain in the module: unobservable claim command refusal, unobservable spawn refusal, and claiming every core refusal. Main independently reopened the receipt and declared source readset; the existing CI verifier and shared grade produce `Judged/Located`. The earlier fullscan outcome (11/14) remains unchanged.
+
+The run used Python 3.11.14, uv 0.8.15 and frozen lock SHA-256 `7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3`. Workflow ROOT commit is `6793d952fa502094b09b5b34bfbf32c5988446a1`; root producer is `ff8a6baa7e4bc86fc7318055d3fe1050f31422c7`. Private originals and external hash manifest are recorded in the NI54 note and `/mnt/raid0/llm/tmp/codex-ni54-56-custody-37361602330.SHA256SUMS.json`.
+
+This establishes only the selected mocked claim API module. It makes no claim about physical CPU layout, affinity, capacity, OCR binary availability on a host, inference, performance, or promotion. Main will integrate the exact APP candidate and finish shared documentation and push before counting NI55 as COMPLETED.

@@ -1,0 +1,17 @@
+
+  GitNexus Analyzer
+
+[2K  Skipped 53 large files (>512KB, likely generated/vendored)
+[2K  - benchmarks/results/orchestrator/seeding_20260305_192034.json
+[2K  - benchmarks/results/orchestrator/seeding_20260305_192809.json
+[2K  - orchestration/factual_risk_calibration.jsonl
+[2K  - orchestration/factual_risk_calibration_v2.jsonl
+[2K  - orchestration/factual_risk_calibration_v2_test.jsonl
+[2K  ...and 48 more (set GITNEXUS_VERBOSE=1 to list them all)
+[2K  Set GITNEXUS_MAX_FILE_SIZE=<KB> to include files above the default cap.
+
+  Repository indexed successfully (81.7s)
+
+  75,241 nodes | 138,642 edges | 2922 clusters | 300 flows
+  /home/runner/work/_temp/ni75-source-c8851695
+

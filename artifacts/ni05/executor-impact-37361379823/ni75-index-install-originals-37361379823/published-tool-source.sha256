@@ -1,0 +1,3 @@
+99deb36e0705d0553fcd1baf1951e0c51c1cfd8297c0cde213c55088cb192750  package/package.json
+c4a575f85e7c40e707f4cb8bfbe8fcded4ffeefe6e1da1241545fad6c780078d  package/dist/cli/index.js
+7e0dbfde84c815f953b02874654304f4c02d21952578f13d09f047609a6625b3  package/dist/storage/repo-manager.js

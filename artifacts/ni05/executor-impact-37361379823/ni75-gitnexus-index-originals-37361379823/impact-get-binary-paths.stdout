@@ -1,0 +1,138 @@
+{
+  "target": {
+    "id": "Function:scripts/lib/executor.py:get_binary_paths",
+    "name": "get_binary_paths",
+    "type": "Function",
+    "filePath": "scripts/lib/executor.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 10,
+  "risk": "HIGH",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 1,
+    "processes_affected": 0,
+    "modules_affected": 3
+  },
+  "byDepthCounts": {
+    "1": 1,
+    "2": 4,
+    "3": 5
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Unit",
+      "hits": 4,
+      "impact": "indirect"
+    },
+    {
+      "name": "Cluster_1018",
+      "hits": 3,
+      "impact": "direct"
+    },
+    {
+      "name": "Cluster_1015",
+      "hits": 1,
+      "impact": "indirect"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Function:scripts/lib/executor.py:get_binary",
+        "name": "get_binary",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "Method:scripts/lib/executor.py:ServerManager.start#9",
+        "name": "start",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Method:scripts/lib/executor.py:Executor.build_command#9",
+        "name": "build_command",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:scripts/lib/executor.py:validate_binaries",
+        "name": "validate_binaries",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "Function:scripts/lib/onboard.py:run_health_check",
+        "name": "run_health_check",
+        "filePath": "scripts/lib/onboard.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "Function:scripts/lib/executor.py:build_command",
+        "name": "build_command",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Function:scripts/lib/onboard.py:onboard_model",
+        "name": "onboard_model",
+        "filePath": "scripts/lib/onboard.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/lib/executor.py:Executor.__init__#2",
+        "name": "__init__",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "Method:scripts/lib/executor.py:Executor.run_inference#11",
+        "name": "run_inference",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:scripts/lib/executor.py",
+        "name": "executor.py",
+        "filePath": "scripts/lib/executor.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}

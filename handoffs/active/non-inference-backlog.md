@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-54–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
+- **Next:** NI05-57–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **50/75**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **53/75**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -110,11 +110,11 @@ and host-dependent acceptance boundaries explicit.
 
 - [ ] **NI05-53** — VB-AP-STRATEGY-PROJECTION-REPORT-WIRE: prospective original CLI projection-integrity custody and shared verifier projection, with counts descriptive and fallback permission separate from actual method. Source/task filed before implementation/capture.
 
-- [ ] **NI05-54** — SSU-EXECUTOR-MOCKED-VALIDATION: use the existing explicit validation option only in four mocked executor cases; retain missing-binary refusal coverage and prove no real model child starts.
+- [x] **NI05-54** ✅ 2026-10-05 — SSU-EXECUTOR-MOCKED-VALIDATION: use the existing explicit validation option only in four mocked executor cases; retain missing-binary refusal coverage and prove no real model child starts.
 
-- [ ] **NI05-55** — SSU-CLAIM-API-FIXTURES: bind two mocked placement cases to their declared host-core topology and give the quiet OCR argv fixture an explicit absent executable leaf; preserve placement refusals and mocked spawning.
+- [x] **NI05-55** ✅ 2026-10-05 — SSU-CLAIM-API-FIXTURES: bind two mocked placement cases to their declared host-core topology and give the quiet OCR argv fixture an explicit absent executable leaf; preserve placement refusals and mocked spawning.
 
-- [ ] **NI05-56** — SSU-TYPED-LIVE-SENTINEL: exercise live-database refusal against a temporary existing sentinel, with a read trap; preserve default path validation and never open the live database.
+- [x] **NI05-56** ✅ 2026-10-05 — SSU-TYPED-LIVE-SENTINEL: exercise live-database refusal against a temporary existing sentinel, with a read trap; preserve default path validation and never open the live database.
 
 - [ ] **NI05-57** — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
 
@@ -673,3 +673,7 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 source review additionally files NI75 before repair: executor.py has an early registry-load exception fallback returning the old in-tree build/bin path; executor_paths.py normally applies the kernel-store override, but that branch never reaches it. Review impact/callers and bounded fail-closed fixture before source changes. No actual launch, production regression or kernel modification is claimed. Queue tally49/75.
 
 2026-10-05 NI52 accepted: main independently verifies all79 originalCI37358369281 files, exact recipe d714f40f9c235501f5b15f425ef348598470a909/sourcec885/tool/lock/tarball identities, bounded native prerequisites and nine command/validator statuses zero. Exact strategy and OpenAI targets are LOW/exact (2/22impacted); source is clean except generated ignored index and the isolated bus remains absent. Public exact originals: artifacts/ni05/code-index-37358369281. Failed37356899671 remains unchanged; no index bundle or canonical-host index deployment. This is ordinary code-intelligence dependency evidence only, with0embeddings and no ClaimTuple/quality/runtime claim. Three task checkboxes close; tally50/75. NI18 final disposition, NI45/53 strategy work and NI54–75 independent fixtures/source investigations continue.
+
+2026-10-05 NI54–56 completed: main independently verified all 284 original files from CI37361602330 and reopened four TRUE Judged/Located receipts. The selected whole modules pass 69/69 cases (5 executor, 26 additional executor, 14 claim API, 24 typed replay), with zero failures, errors or skips and five named refusal controls preserved. Each receipt binds 56 Git-backed source inputs plus original runner context. Python 3.11.14, uv 0.8.15, frozen lock and four absent-path/lock postchecks are verified. The exact three commits are published to APP main6bb8d860d410217895efb7806e9ef907a62a4350; four fixture files change, with production behavior intact. Public originals: `artifacts/ni05/fixture-matrix-37361602330`. Original fullscan outcomes stay unchanged. Completed tally **53/75**; NI18 classification, NI45/53 strategy work and NI57–75 continue. No inference, live database, kernel availability, capacity or whole-suite claim.
+
+NI75 impact checkpoint: main verifies all 76 retained files from original CI37361379823. The exact executor wrapper target is HIGH, with 10 impacted nodes, one direct caller and three modules; only the risk validator is nonzero. Source work is stopped and NI75 remains open. Public originals: `artifacts/ni05/executor-impact-37361379823`. This is ordinary offline dependency evidence with no new belief grading rule or host-index deployment.

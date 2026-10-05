@@ -1,0 +1,1 @@
+cp -p -- node_modules/@ladybugdb/core-linux-x64/lbugjs.node node_modules/@ladybugdb/core/lbugjs.node
