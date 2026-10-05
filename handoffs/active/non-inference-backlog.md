@@ -46,6 +46,7 @@ Local test/build execution acquires the existing CPU-region claim and may queue 
 - [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
 - [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
+- [ ] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; HS-16; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;

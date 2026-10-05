@@ -2420,3 +2420,13 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
     at-depth profile (AKX-ALL-7). G5 keep verdicts (AKX-ALL-17) cite the long-surface claims they rest on.
   - Done when AKX-ALL-4's runner and the AKX-ALL-7 regenerator emit the record shape, and one real long-surface run
     plus one bucket regeneration ingest.
+
+## Non-inference campaign source wiring — 2026-10-05
+
+- [ ] **VB-NI-DURABILITY — capture and project docs/handoff durability scan receipts before the first broad scan.**
+  Native carrier `epyc.evidence_durability_scan.v1` binds the source bytes actually read, document/line/target,
+  emitted UTC, checker revision/digest, read-set and exact decided proposition. Project only native durability
+  findings through the existing verifier class and `claim_tuple.grade()`. Preserve withheld, shared-clone-only
+  and waived-lost outcomes as distinct caveats; never invent protocol, attestation or repetitions. Ordinary
+  registry validation and its strict exit behavior remain independent of legacy-prose advisories.
+  Owner: Codex NI05-13; scratch `/mnt/raid0/llm/worktrees/codex-ni-durability-20261005` and a separate root adapter lane.
