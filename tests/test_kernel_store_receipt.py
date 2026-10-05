@@ -78,8 +78,18 @@ backend=$(basename "$expected")
 backend=${backend%%-*}
 printf 'binary : %s\\n' "$binary"
 printf 'expect : libraries under %s\\n' "$expected"
-if [ "${LD_LIBRARY_PATH+x}" = x ]; then echo 'CHILD_LD_LIBRARY_PATH=PRESENT'
-else echo 'CHILD_LD_LIBRARY_PATH=UNSET'; fi
+if [ "${LD_LIBRARY_PATH+x}" = x ]; then state=PRESENT
+else state=UNSET; fi
+phase=launch
+if [ "$backend" != cpu ]; then
+  case ":${LD_LIBRARY_PATH:-}:" in *":$expected:"*) phase=launch ;;
+    *) phase=ambient ;;
+  esac
+fi
+if [ -n "${NI28_FAKE_OBSERVATION_ROOT:-}" ]; then
+  mkdir -p "$NI28_FAKE_OBSERVATION_ROOT"
+  printf '%s\\n' "$state" > "$NI28_FAKE_OBSERVATION_ROOT/$backend-$phase"
+fi
 if [ -f "$expected/.vacuous" ]; then
   echo 'FAIL: VACUOUS CHECK — nothing was inspected'
   exit 2
@@ -165,13 +175,26 @@ exit 1
         return path
 
     def _run_copied_verifier(self, script, *, unset_ld=False):
+        observation_root = self.base / "observations"
+        observation_root.mkdir(exist_ok=True)
         env = {"PATH": os.environ.get("PATH", "/usr/bin:/bin"),
-               "KERNEL_STORE_ROOT": str(self.kernel_root)}
+               "KERNEL_STORE_ROOT": str(self.kernel_root),
+               "NI28_FAKE_OBSERVATION_ROOT": str(observation_root)}
         if not unset_ld:
             env["LD_LIBRARY_PATH"] = self.ambient
-        return subprocess.run(["bash", str(script)], env=env, cwd=str(self.base),
-                              stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                              check=False, text=True)
+        for marker in observation_root.iterdir():
+            if marker.is_file():
+                marker.unlink()
+        result = subprocess.run(["bash", str(script)], env=env, cwd=str(self.base),
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                check=False, text=True)
+        observations = {}
+        for backend in self.targets:
+            for phase in ("launch", "ambient"):
+                marker = observation_root / f"{backend}-{phase}"
+                if marker.exists():
+                    observations[f"{backend}:{phase}"] = marker.read_text(encoding="utf-8").strip()
+        return result, observations
 
     def test_capture_binds_actual_launch_recipe_and_separate_ambient_diagnostics(self):
         result = self._capture()
@@ -201,33 +224,33 @@ exit 1
         baseline = self._copied_verifier(baseline=True)
         cases = ("pass", "cross-tree", "vacuous", "ambient-warning", "unset-ambient")
         for case in cases:
-            with self.subTest(case=case):
-                for target in self.targets.values():
-                    for marker in (".bad", ".vacuous", ".ambient-ok"):
-                        (target / marker).unlink(missing_ok=True)
-                if case == "pass":
-                    for backend in ("gpu", "stt", "tts"):
-                        (self.targets[backend] / ".ambient-ok").touch()
-                elif case == "cross-tree":
-                    (self.targets["gpu"] / ".bad").touch()
-                elif case == "vacuous":
-                    (self.targets["gpu"] / ".vacuous").touch()
-                # The fixture lets the pass case resolve ambient libraries in
-                # every backend; the warning case retains a CPU-only ambient path.
-                expected = 1 if case in ("cross-tree", "vacuous", "unset-ambient") else 0
-                unset_ld = case == "unset-ambient"
-                before = self._run_copied_verifier(baseline, unset_ld=unset_ld)
-                after = self._run_copied_verifier(current, unset_ld=unset_ld)
-                self.assertEqual(before.returncode, expected, before.stdout)
-                self.assertEqual((after.returncode, after.stdout),
-                                 (before.returncode, before.stdout), case)
-                if case == "ambient-warning":
-                    self.assertIn("ambient LD_LIBRARY_PATH mis-resolves", after.stdout)
-                elif case == "pass":
-                    self.assertNotIn("ambient LD_LIBRARY_PATH mis-resolves", after.stdout)
-                elif case == "unset-ambient":
-                    self.assertIn("CHILD_LD_LIBRARY_PATH=UNSET", after.stdout)
-                    self.assertIn("CHILD_LD_LIBRARY_PATH=PRESENT", after.stdout)
+            for target in self.targets.values():
+                for marker in (".bad", ".vacuous", ".ambient-ok"):
+                    (target / marker).unlink(missing_ok=True)
+            if case == "pass":
+                for backend in ("gpu", "stt", "tts"):
+                    (self.targets[backend] / ".ambient-ok").touch()
+            elif case == "cross-tree":
+                (self.targets["gpu"] / ".bad").touch()
+            elif case == "vacuous":
+                (self.targets["gpu"] / ".vacuous").touch()
+            # The fixture lets the pass case resolve ambient libraries in
+            # every backend; the warning case retains a CPU-only ambient path.
+            expected = 1 if case in ("cross-tree", "vacuous", "unset-ambient") else 0
+            unset_ld = case == "unset-ambient"
+            before, before_env = self._run_copied_verifier(baseline, unset_ld=unset_ld)
+            after, after_env = self._run_copied_verifier(current, unset_ld=unset_ld)
+            self.assertEqual(before.returncode, expected, f"{case}: {before.stdout}")
+            self.assertEqual((after.returncode, after.stdout),
+                             (before.returncode, before.stdout), case)
+            self.assertEqual(after_env, before_env, f"{case}: child env observations differ")
+            if case == "ambient-warning":
+                self.assertIn("ambient LD_LIBRARY_PATH mis-resolves", after.stdout)
+            elif case == "pass":
+                self.assertNotIn("ambient LD_LIBRARY_PATH mis-resolves", after.stdout)
+            elif case == "unset-ambient":
+                self.assertEqual(after_env.get("gpu:launch"), "PRESENT", after_env)
+                self.assertEqual(after_env.get("gpu:ambient"), "UNSET", after_env)
         self.assertEqual(hashlib.sha256(Path(self.baseline_readset["path"]).read_bytes()).hexdigest(),
                          self.baseline_readset["sha256"], "parity baseline changed during the test")
 
@@ -277,42 +300,45 @@ exit 1
     def test_validator_rejects_resealed_empty_and_duplicate_backend_coverage(self):
         producer = _producer()
         for mutation in ("empty-map", "empty-snapshots", "duplicate-map"):
-            with self.subTest(mutation=mutation):
-                result = self._capture()
-                self.assertEqual(result.returncode, 0, result.stderr)
-                run_dir = self._run_dir(result)
-                os.chmod(run_dir, 0o700)
-                request_path = run_dir / "request.json"
-                capture_path = run_dir / "capture.json"
-                receipt_path = run_dir / "receipt.json"
-                request = json.loads(request_path.read_bytes())
-                captured = json.loads(capture_path.read_bytes())
-                if mutation == "empty-map":
-                    request["declared_backend_map"] = []
-                elif mutation == "empty-snapshots":
-                    request["backends"] = []
-                else:
-                    request["declared_backend_map"].append(request["declared_backend_map"][0])
-                request["declared_backend_map_sha256"] = producer.sha256_bytes(
-                    producer.canonical_bytes(request["declared_backend_map"]))
-                request_bytes = producer.canonical_bytes(request)
+            result = self._capture()
+            self.assertEqual(result.returncode, 0, f"{mutation}: {result.stderr}")
+            run_dir = self._run_dir(result)
+            os.chmod(run_dir, 0o700)
+            request_path = run_dir / "request.json"
+            capture_path = run_dir / "capture.json"
+            receipt_path = run_dir / "receipt.json"
+            request = json.loads(request_path.read_bytes())
+            captured = json.loads(capture_path.read_bytes())
+            if mutation == "empty-map":
+                request["declared_backend_map"] = []
+            elif mutation == "empty-snapshots":
+                request["backends"] = []
+            else:
+                request["declared_backend_map"].append(request["declared_backend_map"][0])
+            request["declared_backend_map_sha256"] = producer.sha256_bytes(
+                producer.canonical_bytes(request["declared_backend_map"]))
+            request_bytes = producer.canonical_bytes(request)
+            receipt = json.loads(receipt_path.read_bytes())
+            for path in (request_path, capture_path, receipt_path):
+                path.chmod(0o600)
+            try:
                 request_path.write_bytes(request_bytes)
                 captured["request_sha256"] = producer.sha256_bytes(request_bytes)
                 capture_bytes = producer.canonical_bytes(captured)
                 capture_path.write_bytes(capture_bytes)
-                receipt = json.loads(receipt_path.read_bytes())
                 receipt["request_sha256"] = producer.sha256_bytes(request_bytes)
                 receipt["capture_sha256"] = producer.sha256_bytes(capture_bytes)
                 body = {key: value for key, value in receipt.items() if key != "receipt_sha256"}
                 receipt["receipt_sha256"] = producer.sha256_bytes(producer.canonical_bytes(body))
                 receipt_path.write_bytes(producer.canonical_bytes(receipt))
+            finally:
                 for path in (request_path, capture_path, receipt_path):
                     path.chmod(0o400)
                 os.chmod(run_dir, 0o500)
-                valid, problems = producer.verify(run_dir)
-                self.assertFalse(valid)
-                self.assertTrue(any("nonempty" in item or "unique coverage" in item
-                                    for item in problems), problems)
+            valid, problems = producer.verify(run_dir)
+            self.assertFalse(valid, mutation)
+            self.assertTrue(any("nonempty" in item or "unique coverage" in item
+                                for item in problems), (mutation, problems))
 
     def test_child_replay_rejects_missing_duplicate_core_and_bad_rows(self):
         result = self._capture()
