@@ -1,0 +1,390 @@
+name: SSU-F13 bounded repro follow-up
+
+on:
+  push:
+    branches: ['codex/ssu-f13-repro-followup-20261005']
+
+permissions:
+  contents: read
+
+env:
+  ROOT_PRODUCER_SHA: adbbe58e591f5e6dc444019551c91a9d6cd10a11
+  APP_PUBLISHED_SHA: 4244e72b2aa8aae9a92f684fcd5090a852223888
+  APP_SYNTHETIC_SHA: def18591f813070a20906f9d228ddd9dd0da9fd3
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+
+jobs:
+  repro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ssu-f13-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ssu-f13-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ssu-f13-unused-llama-server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PUBLISHED_SHA }}
+          path: app-published
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SYNTHETIC_SHA }}
+          path: app-synthetic
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Bind pinned research registry
+        run: |
+          sudo mkdir -p /mnt/raid0/llm /workspace/repos
+          sudo ln -s "$GITHUB_WORKSPACE/research" /mnt/raid0/llm/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
+          test -r app-published/orchestration/model_registry.yaml
+          test -r app-synthetic/orchestration/model_registry.yaml
+      - name: Install pinned app development dependencies and pytest
+        working-directory: app-synthetic
+        run: |
+          python -m pip install '.[dev]' 'pytest==9.1.1'
+          python -c 'from importlib.metadata import version; print("pytest=" + version("pytest"))'
+      - name: Create only the ordinary-runner scratch directory required by AP54
+        run: |
+          sudo install -d --mode=0700 --owner="$(id -u)" --group="$(id -g)" /mnt/raid0/llm/tmp
+          test "$(stat -c %u /mnt/raid0/llm/tmp)" = "$(id -u)"
+          test "$(stat -c %a /mnt/raid0/llm/tmp)" = 700
+      - name: Record ordinary-runner AP54 context
+        working-directory: app-published
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          context = {
+              "schema": "ssu_f13.repro_context.v2",
+              "phase": "ordinary_runner_ap54",
+              "app_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "runner_context": "ordinary GitHub runner; no synthetic RAM or topology",
+              "scratch_directory": "/mnt/raid0/llm/tmp (owned by runner; mode 0700)",
+              "timeout": "GNU timeout 120s; TERM; KILL after 30s",
+              "selection": "tests/unit/test_ap54_eval_knowledge_fence.py",
+              "inference": "none",
+              "claim_scope": "one bounded AP54 unit-module command only",
+          }
+          with Path("ssu-f13-ap54-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture ordinary-runner AP54 module
+        if: always()
+        working-directory: app-published
+        run: |
+          python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --cwd "$PWD" --junit ssu-f13-ap54.xml --output native-ssu-f13-ap54 \
+            --generated-output ssu-f13-ap54.pytest.log \
+            --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+            --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ssu-f13-bounded-followup.yml" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/cli.py" \
+            --read-path ssu-f13-ap54-context.json --read-path pyproject.toml \
+            --read-path tests/conftest.py --read-path tests/unit/test_ap54_eval_knowledge_fence.py \
+            --read-path src/builtin_tools.py --read-path src/registry/tool_registry.py \
+            --read-path src/repl_environment/knowledge_fence.py \
+            --read-path src/repl_environment/_fence_rules.py \
+            --read-path src/repl_environment/fence_kernel.py \
+            --read-path src/repl_environment/external_access.py \
+            --read-path src/repl_environment/environment.py \
+            --read-path src/repl_environment/parallel_dispatch.py --read-path src/tools/base.py \
+            --read-path src/api/models/__init__.py --read-path src/api/models/requests.py \
+            --read-path src/api/models/responses.py --read-path src/api/routes/chat.py \
+            --read-path scripts/autopilot/eval_tower.py --read-path src/tool_registry.py \
+            --read-path orchestration/model_registry.yaml \
+            --read-path "$GITHUB_WORKSPACE/research/orchestration/model_registry.yaml" \
+            --select tests/unit/test_ap54_eval_knowledge_fence.py -- \
+            timeout --verbose --signal=TERM --kill-after=30s 120s \
+              python -m pytest -q --tb=short tests/unit/test_ap54_eval_knowledge_fence.py \
+              --junitxml=ssu-f13-ap54.xml --log-file=ssu-f13-ap54.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ssu-f13-${{ github.run_id }}-${{ github.run_attempt }}-ap54-ordinary-prefix
+          path: |
+            app-published/ssu-f13-ap54-context.json
+            app-published/ssu-f13-ap54.xml
+            app-published/ssu-f13-ap54.pytest.log
+            app-published/native-ssu-f13-ap54/
+      - name: Record ordinary capacity-guard context
+        if: always()
+        working-directory: app-published
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          context = {
+              "schema": "ssu_f13.repro_context.v2",
+              "phase": "ordinary_runner_capacity_guard",
+              "app_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "runner_context": "ordinary GitHub runner; reads actual /proc/meminfo in a fresh child",
+              "selection": "test_fresh_launcher_import_keeps_real_host_capacity_guard",
+              "inference": "none",
+              "claim_scope": "named actual-host capacity-guard control only",
+          }
+          with Path("ssu-f13-capacity-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture the separate ordinary capacity guard
+        if: always()
+        working-directory: app-published
+        run: |
+          python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --cwd "$PWD" --junit ssu-f13-capacity.xml --output native-ssu-f13-capacity \
+            --generated-output ssu-f13-capacity.pytest.log \
+            --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+            --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ssu-f13-bounded-followup.yml" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/cli.py" \
+            --read-path ssu-f13-capacity-context.json --read-path pyproject.toml \
+            --read-path tests/conftest.py --read-path tests/unit/test_runtime_flags.py \
+            --read-path src/autopilot/species/structural_lab.py \
+            --read-path src/api/routes/config.py --read-path src/runtime/config_attestation.py \
+            --read-path src/config/__init__.py --read-path src/config/models.py \
+            --read-path src/features.py \
+            --read-path scripts/server/orchestrator_stack.py \
+            --read-path scripts/server/stack_manifest.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path "$GITHUB_WORKSPACE/research/orchestration/model_registry.yaml" \
+            --select tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard -- \
+            timeout --verbose --signal=TERM --kill-after=30s 120s \
+              python -m pytest -q --tb=short \
+              tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+              --junitxml=ssu-f13-capacity.xml --log-file=ssu-f13-capacity.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ssu-f13-${{ github.run_id }}-${{ github.run_attempt }}-capacity-ordinary-prefix
+          path: |
+            app-published/ssu-f13-capacity-context.json
+            app-published/ssu-f13-capacity.xml
+            app-published/ssu-f13-capacity.pytest.log
+            app-published/native-ssu-f13-capacity/
+      - name: Compare pinned topology-parity production and test inputs
+        id: compare_topology_inputs
+        if: always()
+        working-directory: app-synthetic
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          from pathlib import Path
+
+          base = Path(os.environ["GITHUB_WORKSPACE"]) / "app-published"
+          donor = Path(os.environ["GITHUB_WORKSPACE"]) / "app-synthetic"
+          paths = [
+              "pyproject.toml", "tests/conftest.py",
+              "tests/unit/test_affinity_preflight_cell_manifest.py",
+              "tests/unit/test_build_server_command_helpers.py",
+              "tests/unit/test_contention_matrix_host_health.py",
+              "scripts/server/affinity_preflight.py", "scripts/server/orchestrator_stack.py",
+              "scripts/server/stack_commands.py", "scripts/server/contention_matrix.py",
+              "scripts/server/stack_manifest.py", "scripts/server/stack_numa.py",
+              "scripts/server/stack_paths.py", "scripts/server/stack_env.py",
+              "scripts/server/stack_runtime.py", "scripts/server/stack_processes.py",
+              "scripts/server/stack_state.py", "src/registry/stack_priors.py",
+              "src/registry/kernel_paths.py", "src/registry_loader.py",
+              "src/scheduling/device_model.py", "orchestration/launch_manifest.yaml",
+              "orchestration/stack_topology.yaml", "orchestration/model_registry.yaml",
+              "orchestration/model_registry_full.yaml", "orchestration/derived/stack_priors.yaml",
+          ]
+
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          records = []
+          for relative in paths:
+              left, right = base / relative, donor / relative
+              if not left.is_file() or not right.is_file():
+                  raise SystemExit(f"missing comparison input: {relative}")
+              left_sha, right_sha = sha(left), sha(right)
+              if left_sha != right_sha:
+                  raise SystemExit(f"published/donor input differs: {relative}")
+              records.append({"path": relative, "published_sha256": left_sha,
+                              "synthetic_donor_sha256": right_sha, "identical": True})
+
+          published_sha = subprocess.check_output(
+              ["git", "-C", str(base), "rev-parse", "HEAD"], text=True
+          ).strip()
+          app_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          bootstrap = donor / "tests/fixtures/offhost_unit_bootstrap.py"
+          if (published_sha != os.environ["APP_PUBLISHED_SHA"]
+                  or app_sha != os.environ["APP_SYNTHETIC_SHA"] or not bootstrap.is_file()):
+              raise SystemExit("synthetic donor pin/bootstrap mismatch")
+          comparison = {
+              "schema": "ssu_f13.source_comparison.v1",
+              "published_app_sha": os.environ["APP_PUBLISHED_SHA"],
+              "synthetic_donor_sha": app_sha,
+              "readset_count": len(records),
+              "readsets_identical": True,
+              "inputs": records,
+              "bootstrap_path": "tests/fixtures/offhost_unit_bootstrap.py",
+              "bootstrap_sha256": sha(bootstrap),
+              "bootstrap_semantics": "test-process-only declared 1 TiB RAM; production validator unchanged",
+          }
+          with Path("ssu-f13-topology-comparison.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(comparison, sort_keys=True) + "\n")
+          PY
+      - name: Record synthetic topology-parity context
+        if: ${{ always() && steps.compare_topology_inputs.outcome == 'success' }}
+        working-directory: app-synthetic
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          context = {
+              "schema": "ssu_f13.repro_context.v2",
+              "phase": "synthetic_topology_parity_13_named_cases",
+              "app_sha": "def18591f813070a20906f9d228ddd9dd0da9fd3",
+              "published_comparison_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "runner_context": "ordinary GitHub runner; explicit existing offhost_unit_bootstrap only for this pytest process",
+              "synthetic_host_ram_gib": 1024,
+              "scope": "13 named topology-parity cases; no source capacity relaxation",
+              "comparison_manifest": "ssu-f13-topology-comparison.json",
+              "timeout": "GNU timeout 120s; TERM; KILL after 30s",
+              "inference": "none",
+              "claim_scope": "selected fixture reproduction only; no topology correction or fleet claim",
+          }
+          with Path("ssu-f13-topology-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture synthetic topology-parity subset
+        if: ${{ always() && steps.compare_topology_inputs.outcome == 'success' }}
+        working-directory: app-synthetic
+        run: |
+          python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --cwd "$PWD" --junit ssu-f13-topology.xml --output native-ssu-f13-topology \
+            --generated-output ssu-f13-topology.pytest.log \
+            --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+            --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+            --repo "orchestrator_synthetic=$PWD" \
+            --repo "orchestrator_published=$GITHUB_WORKSPACE/app-published" \
+            --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ssu-f13-bounded-followup.yml" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/cli.py" \
+            --read-path ssu-f13-topology-context.json \
+            --read-path ssu-f13-topology-comparison.json \
+            --read-path tests/fixtures/offhost_unit_bootstrap.py \
+            --read-path pyproject.toml --read-path tests/conftest.py \
+            --read-path tests/unit/test_affinity_preflight_cell_manifest.py \
+            --read-path tests/unit/test_build_server_command_helpers.py \
+            --read-path tests/unit/test_contention_matrix_host_health.py \
+            --read-path scripts/server/affinity_preflight.py \
+            --read-path scripts/server/orchestrator_stack.py \
+            --read-path scripts/server/stack_commands.py \
+            --read-path scripts/server/contention_matrix.py \
+            --read-path scripts/server/stack_manifest.py --read-path scripts/server/stack_numa.py \
+            --read-path scripts/server/stack_paths.py --read-path scripts/server/stack_env.py \
+            --read-path scripts/server/stack_runtime.py --read-path scripts/server/stack_processes.py \
+            --read-path scripts/server/stack_state.py --read-path src/registry/stack_priors.py \
+            --read-path src/registry/kernel_paths.py --read-path src/registry_loader.py \
+            --read-path src/scheduling/device_model.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path orchestration/model_registry_full.yaml \
+            --read-path orchestration/derived/stack_priors.yaml \
+            --read-path "$GITHUB_WORKSPACE/app-published/pyproject.toml" \
+            --read-path "$GITHUB_WORKSPACE/app-published/tests/conftest.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/tests/unit/test_affinity_preflight_cell_manifest.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/tests/unit/test_build_server_command_helpers.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/tests/unit/test_contention_matrix_host_health.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/affinity_preflight.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/orchestrator_stack.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_commands.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/contention_matrix.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_manifest.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_numa.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_paths.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_env.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_runtime.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_processes.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/scripts/server/stack_state.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/src/registry/stack_priors.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/src/registry/kernel_paths.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/src/registry_loader.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/src/scheduling/device_model.py" \
+            --read-path "$GITHUB_WORKSPACE/app-published/orchestration/launch_manifest.yaml" \
+            --read-path "$GITHUB_WORKSPACE/app-published/orchestration/stack_topology.yaml" \
+            --read-path "$GITHUB_WORKSPACE/app-published/orchestration/model_registry.yaml" \
+            --read-path "$GITHUB_WORKSPACE/app-published/orchestration/model_registry_full.yaml" \
+            --read-path "$GITHUB_WORKSPACE/app-published/orchestration/derived/stack_priors.yaml" \
+            --read-path "$GITHUB_WORKSPACE/research/orchestration/model_registry.yaml" \
+            --read-path "$GITHUB_WORKSPACE/research/scripts/benchmark/server_np_sweep.py" \
+            --read-path "$GITHUB_WORKSPACE/research/scripts/benchmark/server_numa_np_sweep.py" \
+            --select tests/unit/test_affinity_preflight_cell_manifest.py::test_smt_fold_makes_the_gpu_lane_visible_to_a_full_machine_cell \
+            --select tests/unit/test_affinity_preflight_cell_manifest.py::test_physical_overlap_is_empty_for_a_genuinely_disjoint_half \
+            --select tests/unit/test_build_server_command_helpers.py::test_worker_general_launch_witness_is_its_host_primary_role_command \
+            --select tests/unit/test_build_server_command_helpers.py::test_worker_lane_host_command_uses_numa_thread_count_per_instance \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_emits_declared_chat_template_file \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_sub_full_instance_emits_declared_serving_flags \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_omits_md_for_embedded_nextn_stack_prior \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[frontdoor-8070]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_general-8074]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_critic-8083]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[ingest_long_context-8085]' \
+            --select tests/unit/test_build_server_command_helpers.py::test_serial_roles_no_longer_shrinks_the_launched_slot_count \
+            --select tests/unit/test_contention_matrix_host_health.py::test_the_declared_lineup_covers_fulls_halves_and_embedders -- \
+            timeout --verbose --signal=TERM --kill-after=30s 120s \
+              python tests/fixtures/offhost_unit_bootstrap.py -q --tb=short \
+              tests/unit/test_affinity_preflight_cell_manifest.py::test_smt_fold_makes_the_gpu_lane_visible_to_a_full_machine_cell \
+              tests/unit/test_affinity_preflight_cell_manifest.py::test_physical_overlap_is_empty_for_a_genuinely_disjoint_half \
+              tests/unit/test_build_server_command_helpers.py::test_worker_general_launch_witness_is_its_host_primary_role_command \
+              tests/unit/test_build_server_command_helpers.py::test_worker_lane_host_command_uses_numa_thread_count_per_instance \
+              tests/unit/test_build_server_command_helpers.py::test_build_role_command_emits_declared_chat_template_file \
+              tests/unit/test_build_server_command_helpers.py::test_build_role_command_sub_full_instance_emits_declared_serving_flags \
+              tests/unit/test_build_server_command_helpers.py::test_build_role_command_omits_md_for_embedded_nextn_stack_prior \
+              'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[frontdoor-8070]' \
+              'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_general-8074]' \
+              'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_critic-8083]' \
+              'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[ingest_long_context-8085]' \
+              tests/unit/test_build_server_command_helpers.py::test_serial_roles_no_longer_shrinks_the_launched_slot_count \
+              tests/unit/test_contention_matrix_host_health.py::test_the_declared_lineup_covers_fulls_halves_and_embedders \
+              --junitxml=ssu-f13-topology.xml --log-file=ssu-f13-topology.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ssu-f13-${{ github.run_id }}-${{ github.run_attempt }}-topology-synthetic-prefix
+          path: |
+            app-synthetic/ssu-f13-topology-context.json
+            app-synthetic/ssu-f13-topology-comparison.json
+            app-synthetic/ssu-f13-topology.xml
+            app-synthetic/ssu-f13-topology.pytest.log
+            app-synthetic/native-ssu-f13-topology/
