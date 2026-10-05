@@ -1,0 +1,223 @@
+name: NI68 original caught compiler exception diagnostic
+on:
+  push:
+    branches: [codex/ni68-caught-compiler-diagnostic-20261005]
+    paths: [.github/workflows/ni68-caught-compiler-diagnostic.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ni68-caught-compiler-diagnostic-20261005
+  cancel-in-progress: false
+env:
+  ROOT_SHA: e8d223ad47629e90d74c84bc5f8c6b8385096e1f
+  APP_SHA: 21044e3bbd94df775537a0131e6fb67ee23fb981
+  APP_PARENT_SHA: 3c0db2de435e52a5d85b930421072338cd2318fc
+  LOCK_SHA: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - phase: system-card
+            module_path: tests/unit/test_autopilot_system_card.py
+            expected_cases: 13
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PHASE: ${{ matrix.phase }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      EXPECTED_CASES: ${{ matrix.expected_cases }}
+    steps:
+      - name: Checkout immutable recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout exact fixture-only APP candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 21044e3bbd94df775537a0131e6fb67ee23fb981
+          path: app
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout immutable native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: e8d223ad47629e90d74c84bc5f8c6b8385096e1f
+          path: producer
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+      - name: Set up reviewed uv version
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+      - name: Establish private scope and source custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          scope="$RUNNER_TEMP/ni68-$PHASE-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$scope" && test ! -L "$scope"
+          mkdir -m 700 "$scope"
+          mkdir -m 700 "$scope/originals" "$scope/cache" "$scope/tmp" "$scope/cache/install-tmp"
+          printf 'NI68_SCOPE=%s\nUV_PROJECT_ENVIRONMENT=%s/venv\nUV_CACHE_DIR=%s/cache\nTMPDIR=%s/tmp\n' "$scope" "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do
+            test ! -e "$scope/$leaf" && test ! -L "$scope/$leaf"
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/unavailable-cpu\nORCHESTRATOR_PATHS_LLAMA_MTMD=%s/unavailable-mtmd\nORCHESTRATOR_PATHS_LLAMA_SERVER=%s/unavailable-server\n' "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = .github/workflows/ni68-caught-compiler-diagnostic.yml
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C app rev-parse HEAD^)" = "$APP_PARENT_SHA"
+          expected_paths="$(printf '%s\n' tests/unit/test_autopilot_system_card.py | LC_ALL=C sort)"
+          actual_paths="$(git -C app diff-tree --no-commit-id --name-only -r HEAD | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          test "$(sha256sum app/tests/unit/test_autopilot_system_card.py | cut -d' ' -f1)" = 29d6b9f763acb79cb4a29c858863bbd7e3eda7a070aea1aed69640efef7fe8f5
+          test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          printf '%s\n' "$HOME" > "$scope/originals/home-before.txt"
+          cp .github/workflows/ni68-caught-compiler-diagnostic.yml "$scope/originals/workflow.yml"
+          git -C app ls-tree -r --full-tree HEAD > "$scope/originals/app-ls-tree.txt"
+          sha256sum app/uv.lock > "$scope/originals/lock-before.sha256"
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          python - "$scope/originals/context.json" <<'PYCONTEXT'
+          import json, os, pathlib, sys
+          facts=dict(line.split(':',1) for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if ':' in line)
+          scope=pathlib.Path(os.environ['RUNNER_TEMP']) / ('ni68-'+os.environ['PHASE']+'-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({'phase':os.environ['PHASE'],'app_sha':os.environ['APP_SHA'],'root_sha':os.environ['ROOT_SHA'],'scope_path':str(scope),'scope_mode':oct(scope.stat().st_mode & 0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'synthetic_RAM_override':False,'runtime_source_changes':False,'kernel_overrides':'three absent paths; no execution','HOME':os.environ['HOME'],'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'selected_module':os.environ['MODULE_PATH'],'expected_cases':int(os.environ['EXPECTED_CASES']),'scope':'NI68 original renderer/compiler fallback cases; readonly Git provenance and empty backend path metadata only'},sort_keys=True)+'\n')
+          PYCONTEXT
+      - name: Install frozen dependencies off-host
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          cd app
+          set +e
+          TMPDIR="$NI68_SCOPE/cache/install-tmp" timeout --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev --no-install-project > "$NI68_SCOPE/originals/install.stdout" 2> "$NI68_SCOPE/originals/install.stderr"
+          install_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$install_rc" > "$NI68_SCOPE/originals/install-status.json"
+          test "$install_rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" -c 'import pytest; assert pytest.__version__ == "9.0.3"; print(pytest.__version__)' > "$NI68_SCOPE/originals/pytest-version.txt"
+      - name: Retain install originals before native phase
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni68-${{ matrix.phase }}-install-${{ github.run_id }}
+          path: ${{ env.NI68_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Capture native originals using unchanged producer CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(sha256sum app/tests/unit/test_autopilot_system_card.py | cut -d' ' -f1)" = 29d6b9f763acb79cb4a29c858863bbd7e3eda7a070aea1aed69640efef7fe8f5
+          test "$(sha256sum app/src/registry/stack_priors.py | cut -d' ' -f1)" = 188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f
+          test "$(sha256sum app/scripts/registry/render_stack_summary.py | cut -d' ' -f1)" = 2798bd5c1d58aed844204a7b85897346c8fc4c77d0c70d6ebfa9095927be6dc2
+          git -C app diff "$APP_PARENT_SHA" "$APP_SHA" -- tests/unit/test_autopilot_system_card.py > "$NI68_SCOPE/originals/diagnostic-fixture-source.diff"
+          selections=("$MODULE_PATH")
+          arguments=()
+          for selection in "${selections[@]}"; do arguments+=(--select "$selection"); done
+          reads=()
+          for file in "$GITHUB_WORKSPACE/.github/workflows/ni68-caught-compiler-diagnostic.yml" "$NI68_SCOPE/originals/context.json" "$NI68_SCOPE/originals/install.stdout" "$NI68_SCOPE/originals/install.stderr" "$NI68_SCOPE/originals/install-status.json" "$NI68_SCOPE/originals/pytest-version.txt" "$NI68_SCOPE/originals/app-ls-tree.txt" "$NI68_SCOPE/originals/lock-before.sha256" "$GITHUB_WORKSPACE/producer/scripts/ci/native_conformance.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/adapters/__init__.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/adapters/ci_conformance.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/claim_tuple.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/canonical.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/frames.py" "$GITHUB_WORKSPACE/app/scripts/lib/executor.py" "$GITHUB_WORKSPACE/app/scripts/lib/executor_paths.py" "$GITHUB_WORKSPACE/app/scripts/lib/registry.py" "$GITHUB_WORKSPACE/app/scripts/server/bench_core_claim.py" "$GITHUB_WORKSPACE/app/src/registry/__init__.py" "$GITHUB_WORKSPACE/app/src/inference/model_server.py" "$GITHUB_WORKSPACE/app/src/services/lightonocr_llama_server.py" "$GITHUB_WORKSPACE/app/src/services/worker_pool.py" "$GITHUB_WORKSPACE/app/src/services/__init__.py" "$GITHUB_WORKSPACE/app/src/config/__init__.py" "$GITHUB_WORKSPACE/app/src/config/models.py" "$GITHUB_WORKSPACE/app/src/config/validation.py" "$GITHUB_WORKSPACE/app/src/env_parsing.py" "$GITHUB_WORKSPACE/app/src/features.py" "$GITHUB_WORKSPACE/app/src/api/state.py" "$GITHUB_WORKSPACE/app/src/backends/serving_calls.py" "$GITHUB_WORKSPACE/app/src/backends/context_limits.py" "$GITHUB_WORKSPACE/app/src/backends/concurrency_aware.py" "$GITHUB_WORKSPACE/app/src/backends/kv_slot_files.py" "$GITHUB_WORKSPACE/app/src/runtime/gpu_window.py" "$GITHUB_WORKSPACE/app/src/runtime/inference_tap.py" "$GITHUB_WORKSPACE/app/src/runtime/inference_lock.py" "$GITHUB_WORKSPACE/app/src/runtime/cpu_region_lock.py" "$GITHUB_WORKSPACE/app/src/runtime/long_prefill_lease.py" "$GITHUB_WORKSPACE/app/src/scheduling/contention_gate.py" "$GITHUB_WORKSPACE/app/src/scheduling/prefix_history.py" "$GITHUB_WORKSPACE/app/src/inference_lock.py" "$GITHUB_WORKSPACE/app/src/registry/kernel_paths.py" "$GITHUB_WORKSPACE/app/src/registry/model_descriptors.py" "$GITHUB_WORKSPACE/app/src/registry/registry_loader.py" "$GITHUB_WORKSPACE/app/src/registry/stack_priors.py" "$GITHUB_WORKSPACE/app/src/roles.py" "$GITHUB_WORKSPACE/app/src/retrieval/kb_rag_query_telemetry.py" "$GITHUB_WORKSPACE/app/src/vision/config.py" "$GITHUB_WORKSPACE/app/src/registry_loader.py" "$GITHUB_WORKSPACE/app/src/typed_decisions/__init__.py" "$GITHUB_WORKSPACE/app/src/typed_decisions/routing_replay.py" "$GITHUB_WORKSPACE/app/src/typed_decisions/types.py" "$GITHUB_WORKSPACE/app/src/llm_primitives/__init__.py" "$GITHUB_WORKSPACE/app/src/llm_primitives/stat_tests.py" "$GITHUB_WORKSPACE/app/orchestration/model_registry.yaml" "$GITHUB_WORKSPACE/app/scripts/autopilot/gen_system_card.py" "$GITHUB_WORKSPACE/app/scripts/autopilot/autopilot.py" "$GITHUB_WORKSPACE/app/scripts/registry/render_stack_summary.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_manifest.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_paths.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_env.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_numa.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_numa_mode.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_commands.py" "$GITHUB_WORKSPACE/app/scripts/server/orchestrator_stack.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_processes.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_log_banner.py" "$GITHUB_WORKSPACE/app/scripts/server/stack_health.py" "$GITHUB_WORKSPACE/app/scripts/server/fleet_markers.py" "$GITHUB_WORKSPACE/app/scripts/server/runtime_facts_manifest.py" "$GITHUB_WORKSPACE/app/scripts/validate/stack_change_guard.py" "$GITHUB_WORKSPACE/app/src/api/routes/dashboard_topology.py" "$GITHUB_WORKSPACE/app/orchestration/launch_manifest.yaml" "$GITHUB_WORKSPACE/app/orchestration/stack_topology.yaml" "$GITHUB_WORKSPACE/app/orchestration/model_descriptors.yaml" "$GITHUB_WORKSPACE/app/orchestration/derived/stack_priors.yaml" "$GITHUB_WORKSPACE/app/tests/unit/test_autopilot_system_card.py" "$GITHUB_WORKSPACE/app/tests/unit/test_external_drafter_launch.py" "$GITHUB_WORKSPACE/app/tests/unit/test_stack_priors_compiler.py" "$GITHUB_WORKSPACE/app/tests/unit/test_stack_numa_reader_agreement.py" "$GITHUB_WORKSPACE/app/src/__init__.py" "$GITHUB_WORKSPACE/app/Makefile" "$GITHUB_WORKSPACE/app/uv.lock" "$GITHUB_WORKSPACE/app/pyproject.toml" "$GITHUB_WORKSPACE/app/tests/conftest.py" "$GITHUB_WORKSPACE/app/tests/unit/conftest.py"; do reads+=(--read-path "$file"); done
+          set +e
+          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$GITHUB_WORKSPACE/app" --junit "$NI68_SCOPE/originals/generated.xml" --output "$NI68_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" "${arguments[@]}" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI68_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$GITHUB_WORKSPACE/app" --basetemp "$NI68_SCOPE/tmp/pytest" --junit-prefix=ni68 "${selections[@]}" --junitxml="$NI68_SCOPE/originals/generated.xml" > "$NI68_SCOPE/originals/producer.stdout" 2> "$NI68_SCOPE/originals/producer.stderr"
+          producer_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$producer_rc" > "$NI68_SCOPE/originals/producer-status.json"
+          mkdir -m 700 "$NI68_SCOPE/originals/compiler-refusals"
+          if test -d "$NI68_SCOPE/tmp/pytest"; then
+            find "$NI68_SCOPE/tmp/pytest" -type f -name original-compiler-refusal.txt -print0 > "$NI68_SCOPE/originals/compiler-refusal-paths.nul"
+            while IFS= read -r -d '' diagnostic; do
+              relative="${diagnostic#"$NI68_SCOPE/tmp/pytest/"}"
+              destination="$NI68_SCOPE/originals/compiler-refusals/$relative"
+              mkdir -p "$(dirname "$destination")"
+              cp -- "$diagnostic" "$destination"
+              chmod 600 "$destination"
+            done < "$NI68_SCOPE/originals/compiler-refusal-paths.nul"
+          fi
+          # Presence is diagnostic observation only; original FALSE remains FALSE.
+          NI68_PRODUCER_RC="$producer_rc" "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYVERIFY'
+          import json, os, pathlib, sys, xml.etree.ElementTree as ET
+          source=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'producer'
+          sys.path.insert(0,str(source))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          base=pathlib.Path(os.environ['NI68_SCOPE'])/'originals'; receipt=base/'native/receipt.json'
+          r, receipt_digest=read_receipt(receipt); rows=native_rows(receipt)
+          assert r['repositories']=={'app':os.environ['APP_SHA'],'producer':os.environ['ROOT_SHA'],'recipe':os.environ['GITHUB_SHA']}
+          assert r['selections']==[os.environ['MODULE_PATH']]
+          assert r['argv'].count('env')==1 and '-i' in r['argv'] and 'HOME='+os.environ['HOME'] in r['argv']
+          assert not any(arg.startswith('PYTHONPATH=') for arg in r['argv'])
+          assert int(os.environ['NI68_PRODUCER_RC'])!=0 and r['exit_code']!=0
+          assert r['fixture_execution_conformant'] is False
+          n=int(os.environ['EXPECTED_CASES'])
+          assert r['summary']['counts']=={'passed':11,'failure':2,'error':0,'skipped':0,'collected':n,'executed':n}
+          x=ET.fromstring((base/'native/original-junit.xml').read_bytes()); suite=next(x.iter('testsuite')); cases=list(x.iter('testcase'))
+          assert suite.attrib['tests']==str(n) and len(cases)==n
+          assert len(rows)==1
+          tup=project_ci_conformance(rows[0]); q,t,reasons=grade(tup)
+          assert tup.value is False
+          (base/'shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'fixture_execution_conformant':r['fixture_execution_conformant'],'reasons':reasons,'native_rows':len(rows),'receipt_digest':receipt_digest,'scope':'whole selected module; pure path metadata only','counts':r['summary']['counts']})+'\n')
+          PYVERIFY
+          exit "$producer_rc"
+      - name: Retain phase native originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni68-${{ matrix.phase }}-native-${{ github.run_id }}
+          path: ${{ env.NI68_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Independently retain absent-path and unchanged-source postchecks
+        if: always() && env.NI68_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          git -C app status --porcelain=v1 --untracked-files=all > "$NI68_SCOPE/originals/app-poststatus.txt"
+          git -C producer status --porcelain=v1 --untracked-files=all > "$NI68_SCOPE/originals/producer-poststatus.txt"
+          test ! -s "$NI68_SCOPE/originals/app-poststatus.txt"
+          test ! -s "$NI68_SCOPE/originals/producer-poststatus.txt"
+          test "$HOME" = "$(cat "$NI68_SCOPE/originals/home-before.txt")"
+          python - <<'PYMODES'
+          import os, pathlib, stat
+          root=pathlib.Path(os.environ['NI68_SCOPE'])/'originals'; uid=os.getuid()
+          for p in (root,*root.rglob('*')):
+              info=p.lstat()
+              assert info.st_uid==uid and not p.is_symlink()
+              assert stat.S_IMODE(info.st_mode)==(0o700 if p.is_dir() else 0o600), (str(p),oct(info.st_mode))
+          PYMODES
+          git -C app diff --exit-code HEAD > "$NI68_SCOPE/originals/app-postdiff.stdout"
+          git -C producer diff --exit-code HEAD > "$NI68_SCOPE/originals/producer-postdiff.stdout"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do test ! -e "$NI68_SCOPE/$leaf" && test ! -L "$NI68_SCOPE/$leaf"; done
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test "$(stat -c '%a' "$NI68_SCOPE")" = 700
+          test "$(stat -c '%u' "$NI68_SCOPE")" = "$(id -u)"
+          printf '{"app_source_unchanged":true,"lock_unchanged":true,"kernel_paths_absent":true,"host_paths_absent":true}\n' > "$NI68_SCOPE/originals/postchecks.json"
+      - name: Retain independent postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni68-${{ matrix.phase }}-postcheck-${{ github.run_id }}
+          path: ${{ env.NI68_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
