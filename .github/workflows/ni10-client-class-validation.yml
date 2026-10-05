@@ -22,8 +22,10 @@ jobs:
     env:
       CI: 'true'
       ORCHESTRATOR_MOCK_MODE: 'true'
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ni10-client-class-venv
     steps:
+      - name: Define runner-local locked environment path
+        run: printf 'UV_PROJECT_ENVIRONMENT=%s/ni10-client-class-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
       - name: Checkout immutable workflow candidate
         uses: actions/checkout@v4
         with:
