@@ -1,0 +1,495 @@
+name: NI6871 immutable off-host fixture-function impact
+
+on:
+  push:
+    branches: [codex/ni6871-code-index-impact-20261005]
+    paths: [.github/workflows/ni6871-code-index-impact.yml]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ni6871-code-index-impact-20261005
+  cancel-in-progress: false
+
+jobs:
+  impact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [app]
+    env:
+      SOURCE_KIND: ${{ matrix.source }}
+      ROOT_SHA: 61453ea335028acba69536d680023d5ef59ef47e
+      APP_SHA: f884406e76d12a98254372a819e1fa6248c9223c
+      LOCK_SHA: 734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c
+      TARBALL_SHA: 9c90be3532671e6f4a94f949816113389798a26c604e61f7953dadaa405ecdd6
+      PACKAGE_SHA: 99deb36e0705d0553fcd1baf1951e0c51c1cfd8297c0cde213c55088cb192750
+      CLI_SHA: c4a575f85e7c40e707f4cb8bfbe8fcded4ffeefe6e1da1241545fad6c780078d
+      MANAGER_SHA: 7e0dbfde84c815f953b02874654304f4c02d21952578f13d09f047609a6625b3
+      LADYBUG_INSTALL_SHA: cb7d1110fa4144d39bd2d7ae347040a16cc5cced6607129409673655f22b099c
+      LADYBUG_BINARY_SHA: 85b101251f07b052927443a994c69c23621f7c10159687145fa15b06decf7b49
+    steps:
+      - name: Checkout immutable recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Checkout exact APP input with ancestry
+        if: matrix.source == 'app'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: f884406e76d12a98254372a819e1fa6248c9223c
+          path: _ni6871_app_input
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Pin reviewed Node and npm
+        uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e
+        with:
+          node-version: 22.14.0
+          check-latest: false
+
+      - name: Establish private scope and immutable source
+        shell: bash
+        run: |
+          set -euo pipefail
+          NI6871_SCOPE="$RUNNER_TEMP/ni6871-$SOURCE_KIND-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$NI6871_SCOPE" && test ! -L "$NI6871_SCOPE"
+          mkdir -m 700 "$NI6871_SCOPE"
+          export NI6871_SCOPE
+          NI6871_PROJECT="$NI6871_SCOPE/npm-project"
+          NI6871_SOURCE="$NI6871_SCOPE/source"
+          NI6871_CAPTURE="$NI6871_SCOPE/originals"
+          GITNEXUS_HOME="$NI6871_SCOPE/gitnexus-home"
+          NI6871_ALIAS="ni6871-$SOURCE_KIND-$GITHUB_RUN_ID"
+          NPM_CONFIG_CACHE="$NI6871_SCOPE/npm-cache"
+          NPM_CONFIG_PREFIX="$NI6871_SCOPE/npm-prefix"
+          NPM_CONFIG_USERCONFIG="$NI6871_SCOPE/npmrc"
+          export NI6871_PROJECT NI6871_SOURCE NI6871_CAPTURE GITNEXUS_HOME NI6871_ALIAS NPM_CONFIG_CACHE NPM_CONFIG_PREFIX NPM_CONFIG_USERCONFIG
+          for dir in "$NI6871_PROJECT" "$NI6871_CAPTURE" "$GITNEXUS_HOME" "$NPM_CONFIG_CACHE" "$NPM_CONFIG_PREFIX"; do mkdir -m 700 "$dir"; done
+          printf '%s\n' 'ignore-scripts=true' 'audit=false' 'fund=false' 'update-notifier=false' > "$NPM_CONFIG_USERCONFIG"
+          chmod 600 "$NPM_CONFIG_USERCONFIG"
+          printf 'NI6871_SCOPE=%s\nNI6871_PROJECT=%s\nNI6871_SOURCE=%s\nNI6871_CAPTURE=%s\nGITNEXUS_HOME=%s\nNI6871_ALIAS=%s\nNPM_CONFIG_CACHE=%s\nNPM_CONFIG_PREFIX=%s\nNPM_CONFIG_USERCONFIG=%s\n' \
+            "$NI6871_SCOPE" "$NI6871_PROJECT" "$NI6871_SOURCE" "$NI6871_CAPTURE" "$GITNEXUS_HOME" "$NI6871_ALIAS" "$NPM_CONFIG_CACHE" "$NPM_CONFIG_PREFIX" "$NPM_CONFIG_USERCONFIG" >> "$GITHUB_ENV"
+          printf '%s\n' "$HOME" > "$NI6871_CAPTURE/home-before.txt"
+          test "$(node --version)" = v22.14.0
+          test "$(npm --version)" = 10.9.2
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = .github/workflows/ni6871-code-index-impact.yml
+          git diff --exit-code "$ROOT_SHA" HEAD -- . ':(exclude).github/workflows/ni6871-code-index-impact.yml' > "$NI6871_CAPTURE/recipe-only-diff.stdout"
+          cp .github/workflows/ni6871-code-index-impact.yml "$NI6871_CAPTURE/workflow.yml"
+          sha256sum "$NI6871_CAPTURE/workflow.yml" > "$NI6871_CAPTURE/workflow.sha256"
+          if [ "$SOURCE_KIND" = root ]; then input="$GITHUB_WORKSPACE"; source_sha="$ROOT_SHA"; else input="$GITHUB_WORKSPACE/_ni6871_app_input"; source_sha="$APP_SHA"; fi
+          printf 'NI6871_SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
+          timeout --signal=TERM --kill-after=15s 120s git clone --no-local --no-hardlinks --no-checkout "$input" "$NI6871_SOURCE" \
+            > "$NI6871_CAPTURE/source-clone.stdout" 2> "$NI6871_CAPTURE/source-clone.stderr"
+          timeout --signal=TERM --kill-after=15s 60s git -C "$NI6871_SOURCE" checkout --detach "$source_sha" \
+            > "$NI6871_CAPTURE/source-checkout.stdout" 2> "$NI6871_CAPTURE/source-checkout.stderr"
+          chmod 700 "$NI6871_SOURCE"
+          test "$(git -C "$NI6871_SOURCE" rev-parse HEAD)" = "$source_sha"
+          test "$(git -C "$NI6871_SOURCE" rev-parse --is-shallow-repository)" = false
+          test -z "$(git -C "$NI6871_SOURCE" status --porcelain=v1 --untracked-files=all)"
+          test ! -e "$NI6871_SOURCE/.gitnexus" && test ! -L "$NI6871_SOURCE/.gitnexus"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          cat /proc/self/mountinfo > "$NI6871_CAPTURE/mountinfo.txt"
+          set +e
+          grep -nE '/mnt/raid0/llm|/workspace/repos' "$NI6871_CAPTURE/mountinfo.txt" > "$NI6871_CAPTURE/mount-path-check.stdout" 2> "$NI6871_CAPTURE/mount-path-check.stderr"
+          mount_rc=$?
+          set -e
+          printf '{"exit_code":%s,"required_absence_exit":1}\n' "$mount_rc" > "$NI6871_CAPTURE/mount-path-check-status.json"
+          test "$mount_rc" -eq 1
+          git -C "$NI6871_SOURCE" rev-parse HEAD > "$NI6871_CAPTURE/source-head-before.txt"
+          git -C "$NI6871_SOURCE" status --porcelain=v1 --untracked-files=all > "$NI6871_CAPTURE/source-status-before.txt"
+          git -C "$NI6871_SOURCE" ls-tree -r --full-tree HEAD > "$NI6871_CAPTURE/source-full-ls-tree.txt"
+          git -C "$NI6871_SOURCE" ls-tree -r --full-tree HEAD > "$NI6871_CAPTURE/source-full-ls-tree-repeat.txt"
+          cmp "$NI6871_CAPTURE/source-full-ls-tree.txt" "$NI6871_CAPTURE/source-full-ls-tree-repeat.txt"
+          mkdir -m 700 "$NI6871_CAPTURE/source-readset"
+          cp "$NI6871_SOURCE/tests/unit/test_autopilot_system_card.py" "$NI6871_CAPTURE/source-readset/00.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "tests/unit/test_autopilot_system_card.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          cp "$NI6871_SOURCE/tests/unit/test_external_drafter_launch.py" "$NI6871_CAPTURE/source-readset/01.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "tests/unit/test_external_drafter_launch.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          cp "$NI6871_SOURCE/tests/unit/test_stack_priors_compiler.py" "$NI6871_CAPTURE/source-readset/02.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "tests/unit/test_stack_priors_compiler.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          cp "$NI6871_SOURCE/tests/unit/test_stack_numa_reader_agreement.py" "$NI6871_CAPTURE/source-readset/03.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "tests/unit/test_stack_numa_reader_agreement.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          cp "$NI6871_SOURCE/src/registry/kernel_paths.py" "$NI6871_CAPTURE/source-readset/04.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "src/registry/kernel_paths.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          cp "$NI6871_SOURCE/src/registry/stack_priors.py" "$NI6871_CAPTURE/source-readset/05.bin"
+          git -C "$NI6871_SOURCE" ls-tree HEAD -- "src/registry/stack_priors.py" >> "$NI6871_CAPTURE/source-readset/git-blobs.txt"
+          sha256sum "$NI6871_CAPTURE"/source-readset/*.bin > "$NI6871_CAPTURE/source-readset/sha256sums.txt"
+          set +e
+          git -C "$NI6871_SOURCE" grep -n -e 'backend_dir' -e 'backend_ld_library_path' -e 'server_binary' -e '_launch_runtime_record' HEAD -- tests/unit/test_autopilot_system_card.py tests/unit/test_external_drafter_launch.py tests/unit/test_stack_priors_compiler.py tests/unit/test_stack_numa_reader_agreement.py src/registry/kernel_paths.py src/registry/stack_priors.py > "$NI6871_CAPTURE/source-readset/native-callers.stdout" 2> "$NI6871_CAPTURE/source-readset/native-callers.stderr"
+          caller_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$caller_rc" > "$NI6871_CAPTURE/source-readset/native-callers-status.json"
+          test "$caller_rc" -eq 0
+          sha256sum "$NI6871_SOURCE/scripts/gitnexus-analyze.sh" > "$NI6871_CAPTURE/source-wrapper.sha256"
+          if [ "$SOURCE_KIND" = root ]; then
+            test "$(sha256sum "$NI6871_SOURCE/scripts/gitnexus-analyze.sh" | cut -d' ' -f1)" = 628b96a3c6ca54299eb80502ffa0623b22ad0120ccaa75b9b66dae57b87a4a91
+            sha256sum "$NI6871_SOURCE/scripts/gitnexus-patch.js" > "$NI6871_CAPTURE/source-patcher.sha256"
+            test "$(sha256sum "$NI6871_SOURCE/scripts/gitnexus-patch.js" | cut -d' ' -f1)" = a568a90041c16b179e376ea2d760098f9caaf1d5749051623af989b0c55c295a
+          else
+            test "$(sha256sum "$NI6871_SOURCE/scripts/gitnexus-analyze.sh" | cut -d' ' -f1)" = ceffa0e215a363c49b74445ecd2db3818b0fbe6c4d9152f993196412ad57e894
+          fi
+          printf '{"schema":"ni6871.isolated_context.v1","source_kind":"%s","source_sha":"%s","recipe_sha":"%s","scope":"%s","HOME_unchanged":true,"direct_private_cli":true,"host_wrappers_called":false,"global_npm":false,"embeddings":false,"wiki":false,"LLM":false}\n' \
+            "$SOURCE_KIND" "$source_sha" "$GITHUB_SHA" "$NI6871_SCOPE" > "$NI6871_CAPTURE/context.json"
+          cat /etc/os-release > "$NI6871_CAPTURE/os-release.txt"
+          node --version > "$NI6871_CAPTURE/node-version.txt"
+          npm --version > "$NI6871_CAPTURE/npm-version.txt"
+          timeout --signal=TERM --kill-after=15s 30s node --input-type=module - <<'NODE' > "$NI6871_CAPTURE/isolation-validation.stdout" 2> "$NI6871_CAPTURE/isolation-validation.stderr"
+          import fs from 'node:fs'; import path from 'node:path';
+          const scope=process.env.NI6871_SCOPE, uid=process.getuid();
+          for(const value of [scope,process.env.NI6871_PROJECT,process.env.NI6871_SOURCE,process.env.NI6871_CAPTURE,process.env.GITNEXUS_HOME,process.env.NPM_CONFIG_CACHE,process.env.NPM_CONFIG_PREFIX]) {
+            if(!path.isAbsolute(value) || (value!==scope && !value.startsWith(scope+'/'))) throw Error('path outside private scope');
+            const pieces=value.split('/').filter(Boolean); let prefix='/';
+            for(const piece of pieces) {prefix=path.join(prefix,piece); if(fs.lstatSync(prefix).isSymbolicLink()) throw Error(`symlink directory ${prefix}`);}
+            const stat=fs.statSync(value); if(stat.uid!==uid || (stat.mode & 0o777)!==0o700) throw Error(`nonprivate directory ${value}`);
+          }
+          // Preserve tracked symlinks, but ensure no reachable target leaves the private source.
+          const source=process.env.NI6871_SOURCE; const links=[];
+          function visit(dir) {for(const entry of fs.readdirSync(dir,{withFileTypes:true})) {
+            if(entry.name==='.git') continue;
+            const file=path.join(dir,entry.name);
+            if(entry.isSymbolicLink()) {
+              const target=path.resolve(path.dirname(file),fs.readlinkSync(file));
+              const reachable=fs.existsSync(file);
+              if(reachable && !fs.realpathSync(file).startsWith(source+'/')) throw Error(`reachable external source symlink ${file}`);
+              links.push({file,target,reachable});
+            } else if(entry.isDirectory()) visit(file);
+          }}
+          visit(source); console.log(JSON.stringify({scope,uid,private:true,sourceSymlinks:links}));
+          NODE
+
+      - name: Verify reviewed npm graph and install without lifecycle
+        shell: bash
+        run: |
+          set -euo pipefail
+          lock_input="$GITHUB_WORKSPACE/artifacts/ni05/code-index-37358369281/ni52-index-install-originals-37358369281"
+          test "$(sha256sum "$lock_input/package-lock.json" | cut -d' ' -f1)" = "$LOCK_SHA"
+          test "$(sha256sum "$lock_input/gitnexus-1.6.8.tgz" | cut -d' ' -f1)" = "$TARBALL_SHA"
+          timeout --signal=TERM --kill-after=15s 30s node --input-type=module - "$lock_input/package-lock.json" <<'NODE' > "$NI6871_CAPTURE/lock-validation.stdout" 2> "$NI6871_CAPTURE/lock-validation.stderr"
+          import fs from 'node:fs';
+          const lock=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+          if(lock.lockfileVersion!==3 || lock.packages[''].dependencies.gitnexus!=='1.6.8') throw Error('root lock mismatch');
+          const deps=Object.entries(lock.packages).filter(([key])=>key!=='');
+          if(deps.length!==270) throw Error('locked package count mismatch');
+          for(const [key,p] of deps) if(!p.resolved?.startsWith('https://registry.npmjs.org/') || !p.integrity?.startsWith('sha512-') || p.link || p.inBundle) throw Error(`unapproved package ${key}`);
+          for(const key of ['node_modules/@ladybugdb/core','node_modules/@ladybugdb/core-linux-x64']) if(lock.packages[key].version!=='0.17.1') throw Error(`native version mismatch ${key}`);
+          console.log(JSON.stringify({packages:deps.length,gitnexus:'1.6.8',passed:true}));
+          NODE
+          printf '%s\n' '{"name":"ni52-gitnexus-lock-prep","version":"1.0.0","private":true,"dependencies":{"gitnexus":"1.6.8"}}' > "$NI6871_PROJECT/package.json"
+          cp "$lock_input/package-lock.json" "$NI6871_PROJECT/package-lock.json"
+          cp "$lock_input/package-lock.json" "$NI6871_CAPTURE/package-lock.json"
+          timeout --signal=TERM --kill-after=15s 30s npm config get prefix > "$NI6871_CAPTURE/npm-prefix.stdout" 2> "$NI6871_CAPTURE/npm-prefix.stderr"
+          timeout --signal=TERM --kill-after=15s 30s npm config get cache > "$NI6871_CAPTURE/npm-cache.stdout" 2> "$NI6871_CAPTURE/npm-cache.stderr"
+          test "$(cat "$NI6871_CAPTURE/npm-prefix.stdout")" = "$NPM_CONFIG_PREFIX"
+          test "$(cat "$NI6871_CAPTURE/npm-cache.stdout")" = "$NPM_CONFIG_CACHE"
+          printf '%s\n' '["timeout","--signal=TERM","--kill-after=15s","480s","npm","ci","--ignore-scripts","--no-audit","--no-fund","--prefix","<private npm-project>"]' > "$NI6871_CAPTURE/npm-ci-argv.json"
+          set +e
+          timeout --signal=TERM --kill-after=15s 480s npm ci --ignore-scripts --no-audit --no-fund --prefix "$NI6871_PROJECT" \
+            > "$NI6871_CAPTURE/npm-ci.stdout" 2> "$NI6871_CAPTURE/npm-ci.stderr"
+          rc=$?
+          set -e
+          printf '{"exit_code":%s,"timeout_seconds":480,"ignore_scripts":true}\n' "$rc" > "$NI6871_CAPTURE/npm-ci-status.json"
+          test "$rc" -eq 0
+          cmp "$lock_input/package-lock.json" "$NI6871_PROJECT/package-lock.json"
+          pkg="$NI6871_PROJECT/node_modules/gitnexus"
+          test "$(sha256sum "$pkg/package.json" | cut -d' ' -f1)" = "$PACKAGE_SHA"
+          test "$(sha256sum "$pkg/dist/cli/index.js" | cut -d' ' -f1)" = "$CLI_SHA"
+          test "$(sha256sum "$pkg/dist/storage/repo-manager.js" | cut -d' ' -f1)" = "$MANAGER_SHA"
+          readlink -f "$NI6871_PROJECT/node_modules/.bin/gitnexus" > "$NI6871_CAPTURE/actual-cli-realpath.txt"
+          test "$(cat "$NI6871_CAPTURE/actual-cli-realpath.txt")" = "$pkg/dist/cli/index.js"
+          sha256sum "$pkg/package.json" "$pkg/dist/cli/index.js" "$pkg/dist/storage/repo-manager.js" > "$NI6871_CAPTURE/installed-tool.sha256"
+          printf '{"package_sha256":"%s","cli_sha256":"%s","manager_sha256":"%s","lock_sha256":"%s","global_install":false}\n' \
+            "$PACKAGE_SHA" "$CLI_SHA" "$MANAGER_SHA" "$LOCK_SHA" > "$NI6871_CAPTURE/installed-tool-attestation.json"
+
+      - name: Retain install originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni6871-${{ matrix.source }}-install-originals-${{ github.run_id }}
+          path: ${{ env.NI6871_CAPTURE }}/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+      - name: Verify and load audited prebuilt native prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          native="$NI6871_CAPTURE/native"
+          mkdir -m 700 "$native"
+          cd "$NI6871_PROJECT"
+          test "$(sha256sum node_modules/@ladybugdb/core/install.js | cut -d' ' -f1)" = "$LADYBUG_INSTALL_SHA"
+          test ! -L node_modules/@ladybugdb/core-linux-x64/lbugjs.node
+          test "$(sha256sum node_modules/@ladybugdb/core-linux-x64/lbugjs.node | cut -d' ' -f1)" = "$LADYBUG_BINARY_SHA"
+          test ! -e node_modules/@ladybugdb/core/lbugjs.node && test ! -L node_modules/@ladybugdb/core/lbugjs.node
+          cp -p node_modules/@ladybugdb/core-linux-x64/lbugjs.node node_modules/@ladybugdb/core/lbugjs.node
+          test "$(sha256sum node_modules/@ladybugdb/core/lbugjs.node | cut -d' ' -f1)" = "$LADYBUG_BINARY_SHA"
+          set +e
+          timeout --signal=TERM --kill-after=15s 30s node - <<'NODE' > "$native/runtime.stdout" 2> "$native/runtime.stderr"
+          const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
+          const {Database}=require('@ladybugdb/core');
+          console.log(JSON.stringify({ladybugVersion:Database.getVersion(),prebuilt:true}));
+          const resolve=require('node-gyp-build');
+          for(const [name,sha] of Object.entries({'tree-sitter-c':'85e912b183a49111b0f4c3a6c8908375732e70aca759ab0124501913cbbd942a','tree-sitter-proto':'dea80ed2fb48a6d19866468f652ec48eab5435306c6477b213eafe51cbbbf2ee'})) {
+            const file=fs.realpathSync(resolve.path(path.join(process.cwd(),'node_modules/gitnexus/vendor',name)));
+            if(!file.startsWith(process.cwd()+'/node_modules/gitnexus/vendor/') || !file.includes('/prebuilds/linux-x64/')) throw Error('native path outside reviewed prebuild');
+            if(crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex')!==sha) throw Error('native digest mismatch');
+            require(file); console.log(JSON.stringify({name,file,sha256:sha,loaded:true}));
+          }
+          NODE
+          rc=$?
+          set -e
+          printf '{"exit_code":%s,"native_compilation_attempted":false,"lifecycle_scripts_enabled":false}\n' "$rc" > "$native/command-status.json"
+          test "$rc" -eq 0
+
+      - name: Retain native originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni6871-${{ matrix.source }}-native-originals-${{ github.run_id }}
+          path: ${{ env.NI6871_CAPTURE }}/native/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+      - name: Run direct private CLI and exact entry-point evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          index="$NI6871_CAPTURE/index"
+          mkdir -m 700 "$index"
+          cd "$NI6871_SOURCE"
+          cli="$NI6871_PROJECT/node_modules/gitnexus/dist/cli/index.js"
+          # No host wrapper, patcher, global CLI, PATH override or CI grant is used.
+          run_capture() {
+            local label="$1" seconds="$2"
+            shift 2
+            node -e 'require("node:fs").writeFileSync(process.argv[1],JSON.stringify(process.argv.slice(2))+"\n")' "$index/$label-argv.json" "$@"
+            local rc=0
+            if timeout --signal=TERM --kill-after=15s "${seconds}s" "$@" > "$index/$label.stdout" 2> "$index/$label.stderr"; then rc=0; else rc=$?; fi
+            printf '{"exit_code":%s,"timeout_seconds":%s,"kill_after_seconds":15}\n' "$rc" "$seconds" > "$index/$label-status.json"
+            return "$rc"
+          }
+          run_capture version 30 node "$cli" --version
+          test "$(cat "$index/version.stdout")" = 1.6.8
+          run_capture analyze 1200 node "$cli" analyze --index-only --skip-agents-md --skip-skills --name "$NI6871_ALIAS" --workers 2
+          run_capture status 120 node "$cli" status
+          test -f .gitnexus/meta.json && test ! -L .gitnexus/meta.json
+          cp .gitnexus/meta.json "$index/meta.json"
+          cp "$GITNEXUS_HOME/registry.json" "$index/registry.json"
+          run_capture meta-validation 30 node --input-type=module -e \
+            'import fs from "node:fs"; const m=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(m.lastCommit!==process.argv[2] || Number(m.stats?.embeddings ?? -1)!==0) throw Error("wrong source or nonzero/missing embeddings"); console.log(JSON.stringify({lastCommit:m.lastCommit,stats:m.stats,passed:true}));' \
+            "$index/meta.json" "$NI6871_SOURCE_SHA"
+          # Exact existing functions changed by the external unapplied fixture patch only.
+          cp "tests/unit/test_autopilot_system_card.py" "$index/ni68-source.py"
+          test "$(sha256sum "$index/ni68-source.py" | cut -d' ' -f1)" = 19829b77d3c1651d00f5104ffe90947a0db7ac535a6d7694fbdec5d218d57c38
+          uid='Function:tests/unit/test_autopilot_system_card.py:test_renderer_compiles_fallback_rows_when_stack_priors_missing'
+          run_capture ni68-0-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni68-0-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni68-0-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni68-0-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_autopilot_system_card.py:test_system_card_compiles_fallback_rows_when_stack_priors_missing'
+          run_capture ni68-1-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni68-1-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni68-1-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni68-1-impact.stdout" "$uid"
+          cp "tests/unit/test_external_drafter_launch.py" "$index/ni69-source.py"
+          test "$(sha256sum "$index/ni69-source.py" | cut -d' ' -f1)" = dcc7b0f8c62453ba0128a2640d8a66331dca5c260bb8f750afc2cdc715bc014f
+          uid='Function:tests/unit/test_external_drafter_launch.py:test_alias_of_a_dflash_host_does_not_launch_its_own_drafter'
+          run_capture ni69-0-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni69-0-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni69-0-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni69-0-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_external_drafter_launch.py:test_draft_dflash_spec_is_enabled_with_drafter_path_and_ngld'
+          run_capture ni69-1-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni69-1-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni69-1-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni69-1-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_external_drafter_launch.py:test_draft_mtp_spec_is_unchanged_and_carries_no_ngld'
+          run_capture ni69-2-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni69-2-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni69-2-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni69-2-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_external_drafter_launch.py:test_external_drafter_without_a_distinct_drafter_refuses_at_compile'
+          run_capture ni69-3-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni69-3-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni69-3-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni69-3-impact.stdout" "$uid"
+          cp "tests/unit/test_stack_priors_compiler.py" "$index/ni70-source.py"
+          test "$(sha256sum "$index/ni70-source.py" | cut -d' ' -f1)" = 2f928b29090d93c69cbb4188b0095e1f042bdc1771c5e53229ba0816abb23661
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_default_does_not_probe_realized_fleet'
+          run_capture ni70-0-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-0-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-0-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-0-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_maps_model_role_server_binding'
+          run_capture ni70-1-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-1-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-1-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-1-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_prefers_server_mode_for_shared_role_memory_and_serving'
+          run_capture ni70-2-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-2-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-2-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-2-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_prefers_server_mode_launch_requirement_paths'
+          run_capture ni70-3-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-3-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-3-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-3-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_preserves_conflicts_as_gaps_when_allowed'
+          run_capture ni70-4-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-4-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-4-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-4-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_projects_ctx_model_max_and_policy_hints'
+          run_capture ni70-5-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-5-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-5-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-5-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_require_realized_mode_derives_quarter_lineup'
+          run_capture ni70-6-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-6-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-6-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-6-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_shared_aliases_use_runtime_descriptor'
+          run_capture ni70-7-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-7-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-7-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-7-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_compile_uses_stack_manifest_when_server_mode_is_absent'
+          run_capture ni70-8-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-8-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-8-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-8-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_launch_runtime_record_canonicalizes_worker_explore_kv_types'
+          run_capture ni70-9-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-9-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-9-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-9-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_launch_runtime_record_derives_reasoning_off_from_thinking_prior'
+          run_capture ni70-10-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-10-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-10-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-10-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_launch_runtime_record_does_not_force_reasoning_when_template_ignores_toggle'
+          run_capture ni70-11-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-11-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-11-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-11-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_launch_runtime_record_does_not_inject_vision_escalation_override'
+          run_capture ni70-12-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-12-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-12-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-12-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_launch_runtime_record_projects_ap3b_spec_numeric_controls'
+          run_capture ni70-13-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-13-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-13-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-13-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_regenerated_worker_math_url_byte_equals_fix_a_delegated_value'
+          run_capture ni70-14-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-14-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-14-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-14-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_priors_compiler.py:test_serving_record_projects_alias_host_fleet_full_url'
+          run_capture ni70-15-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni70-15-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni70-15-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni70-15-impact.stdout" "$uid"
+          cp "tests/unit/test_stack_numa_reader_agreement.py" "$index/ni71-source.py"
+          test "$(sha256sum "$index/ni71-source.py" | cut -d' ' -f1)" = 12aee312fdad0814debdd96f769dac185b6ce4d09f29743f3024f7840180f02c
+          uid='Function:tests/unit/test_stack_numa_reader_agreement.py:test_alias_serving_fleet_converges_on_host_launch_views_diverge'
+          run_capture ni71-0-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni71-0-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni71-0-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni71-0-impact.stdout" "$uid"
+          uid='Function:tests/unit/test_stack_numa_reader_agreement.py:test_stack_numa_readers_agree_on_host_role_ports'
+          run_capture ni71-1-context 120 node "$cli" context --uid "$uid" --repo "$NI6871_ALIAS" --content
+          run_capture ni71-1-impact 120 node "$cli" impact --uid "$uid" --direction upstream --repo "$NI6871_ALIAS" --depth 3 --limit 100
+          run_capture ni71-1-validate 30 node --input-type=module -e \
+            'import fs from "node:fs"; const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); if(r.target?.id!==process.argv[2] || r.direction!=="upstream" || r.epistemic!=="exact") throw Error("missing/nonexact impact"); if(["HIGH","CRITICAL"].includes(String(r.risk).toUpperCase())) throw Error("STOP: HIGH/CRITICAL"); if(!["LOW","MEDIUM"].includes(String(r.risk).toUpperCase())) throw Error("unrecognized risk"); console.log(JSON.stringify({target:r.target.id,risk:r.risk,epistemic:r.epistemic}));' \
+            "$index/ni71-1-impact.stdout" "$uid"
+          test "$(sha256sum "$cli" | cut -d' ' -f1)" = "$CLI_SHA"
+          test "$(sha256sum "$NI6871_PROJECT/node_modules/gitnexus/package.json" | cut -d' ' -f1)" = "$PACKAGE_SHA"
+          test "$(sha256sum "$NI6871_PROJECT/package-lock.json" | cut -d' ' -f1)" = "$LOCK_SHA"
+          printf '{"passed":true,"source_kind":"%s","source_sha":"%s","direct_private_cli":true,"host_index_deployment":false}\n' "$SOURCE_KIND" "$NI6871_SOURCE_SHA" > "$index/complete.json"
+
+      - name: Retain index and impact originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni6871-${{ matrix.source }}-index-originals-${{ github.run_id }}
+          path: ${{ env.NI6871_CAPTURE }}/index/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+      - name: Independently record source and isolation postchecks
+        if: always() && env.NI6871_SOURCE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          post="$NI6871_CAPTURE/postcheck"
+          mkdir -m 700 "$post"
+          test "$(git -C "$NI6871_SOURCE" rev-parse HEAD)" = "$NI6871_SOURCE_SHA"
+          git -C "$NI6871_SOURCE" status --porcelain=v1 --untracked-files=all > "$post/source-status.txt"
+          git -C "$NI6871_SOURCE" status --porcelain=v1 --untracked-files=all > "$post/source-status-repeat.txt"
+          cmp "$post/source-status.txt" "$post/source-status-repeat.txt"
+          test ! -s "$post/source-status.txt"
+          git -C "$NI6871_SOURCE" diff --exit-code HEAD > "$post/tracked-source-diff.stdout"
+          test "$HOME" = "$(cat "$NI6871_CAPTURE/home-before.txt")"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test ! -e "$NI6871_SCOPE/session-bus" && test ! -L "$NI6871_SCOPE/session-bus"
+          test "$(stat -c '%a' "$NI6871_SCOPE")" = 700
+          test "$(stat -c '%u' "$NI6871_SCOPE")" = "$(id -u)"
+          test ! -L "$NI6871_SOURCE/.gitnexus"
+          if [ -d "$NI6871_SOURCE/.gitnexus" ]; then
+            test -z "$(find "$NI6871_SOURCE/.gitnexus" -type l -print -quit)"
+            find "$NI6871_SOURCE/.gitnexus" -type f -print0 | sort -z | xargs -0 -r sha256sum > "$post/generated-index.sha256"
+          fi
+          printf '{"source_sha":"%s","source_clean":true,"HOME_unchanged":true,"canonical_host_paths_absent":true,"bus_absent":true,"index_deployed":false}\n' "$NI6871_SOURCE_SHA" > "$post/result.json"
+          find "$NI6871_CAPTURE" -type f ! -name sha256sums.txt -print0 | sort -z | xargs -0 -r sha256sum > "$post/sha256sums.txt"
+
+      - name: Retain independent postchecks immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni6871-${{ matrix.source }}-postcheck-${{ github.run_id }}
+          path: ${{ env.NI6871_CAPTURE }}/postcheck/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
