@@ -97,7 +97,11 @@ def test_non_native_source_shapes_never_supply_gap_pairs(tmp_path, kind):
     ledger = Ledger(tmp_path / "ledger.jsonl")
     result = ingest(ledger, "session-intercall-gap", [sidecar],
                     as_of="2026-10-05T00:00:00Z")
-    assert result["frames_emitted"] == 0 and ledger.verify() == []
+    assert result["frames_emitted"] == 0
+    assert not (tmp_path / "ledger.jsonl").exists()
+    diagnostics = ledger.verify()
+    assert len(diagnostics) == 1 and diagnostics[0].startswith("missing ledger at ")
+    assert "refusing to report OK (SC73)" in diagnostics[0]
 
 
 def test_unkeyed_tap_events_do_not_become_keyed_coverage(tmp_path):
