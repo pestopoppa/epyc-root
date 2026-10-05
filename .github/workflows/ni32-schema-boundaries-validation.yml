@@ -1,0 +1,128 @@
+name: NI32 synthetic source-schema boundaries
+on:
+  push:
+    branches: ['codex/ni32-schema-boundaries-validation-20261005']
+permissions:
+  contents: read
+env:
+  SOURCE_SHA: 2500ea31ddc31a184ea2eeabf6e5fe801e05d651
+  APP_CONTRACT_SHA: 300cf5817edccc4f82089f0faa477828496068b6
+jobs:
+  schema-boundaries:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_CONTRACT_SHA }}
+          path: app-contract
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install and identify exact fixture runner
+        run: |
+          python -m pip install pytest==9.1.1
+          python -c 'from importlib.metadata import version; print("pytest=" + version("pytest"))'
+      - name: Declare synthetic scope and source-shaped contract before execution
+        working-directory: source
+        run: |
+          python - <<'PY'
+          import json
+          context = {
+              "scope": "12 synthetic source-shaped schema refusal/native integrity controls; no application modules executed",
+              "app_contract_sha": "300cf5817edccc4f82089f0faa477828496068b6",
+              "source_shapes": {
+                  "tap": "src/runtime/inference_tap.py:TapWriter._emit_event plus src/llm_primitives/inference.py caller metadata",
+                  "progress": "orchestration/repl_memory/progress_logger.py:ProgressEntry.to_json",
+                  "checkpoint": "src/session/models.py:Checkpoint.to_dict plus src/session/sqlite_store.py persistence"},
+              "native_scope": "existing serving_call.v1 producer and sole session gap integrity verifier/grader; exact and staging_proxy remain distinct",
+              "exclusions": ["live tap/DB/checkpoint reads", "inference", "production/provider access", "inferred joins or enqueues", "client brand inference", "fixture distribution or percentiles", "TTL claims", "promotion authority", "dependency completeness"],
+              "command_time_limit_s": 180,
+              "termination_policy": "inner command SIGINT then SIGKILL after 15 seconds",
+              "outer_capture_time_limit_s": 240,
+              "outer_termination_policy": "native producer SIGTERM then SIGKILL after 15 seconds; incomplete originals remain diagnostic, never backfilled"}
+          with open("ni32-context.json", "x") as output:
+              json.dump(context, output, indent=2, sort_keys=True)
+              output.write("\n")
+          PY
+      - name: Prospectively capture only approved schema-boundary fixture command
+        working-directory: source
+        run: |
+          set +e
+          timeout --signal=TERM --kill-after=15s 240s python scripts/ci/native_conformance.py --cwd "$PWD" \
+            --junit ni32-schema-boundaries.xml --output native-ni32-schema-boundaries \
+            --repo "root_source=$PWD" --repo "recipe=$GITHUB_WORKSPACE/recipe" \
+            --repo "app_source_contract=$GITHUB_WORKSPACE/app-contract" \
+            --select tests/vidya/test_session_gap_schema_boundaries.py \
+            --read-path ni32-context.json \
+            --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/ni32-schema-boundaries-validation.yml" \
+            --read-path scripts/ci/native_conformance.py \
+            --read-path tests/vidya/test_session_gap_schema_boundaries.py \
+            --read-path scripts/harness/session_gap_measure.py \
+            --read-path scripts/vidya/adapters/session_intercall_gap.py \
+            --read-path scripts/vidya/adapters/ci_conformance.py \
+            --read-path scripts/vidya/canonical.py \
+            --read-path scripts/vidya/claim_tuple.py \
+            --read-path scripts/vidya/ingest_sources.py \
+            --read-path scripts/vidya/ledger.py \
+            --read-path scripts/vidya/frames.py \
+            --read-path "$GITHUB_WORKSPACE/app-contract/src/runtime/inference_tap.py" \
+            --read-path "$GITHUB_WORKSPACE/app-contract/src/llm_primitives/inference.py" \
+            --read-path "$GITHUB_WORKSPACE/app-contract/orchestration/repl_memory/progress_logger.py" \
+            --read-path "$GITHUB_WORKSPACE/app-contract/src/session/models.py" \
+            --read-path "$GITHUB_WORKSPACE/app-contract/src/session/sqlite_store.py" -- \
+            timeout --signal=INT --kill-after=15s 180s python -m pytest -q \
+              tests/vidya/test_session_gap_schema_boundaries.py --junitxml=ni32-schema-boundaries.xml
+          status=$?
+          if test -f native-ni32-schema-boundaries/command.log; then cat native-ni32-schema-boundaries/command.log; fi
+          exit "$status"
+      - name: Preserve original execution prefix immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni32-${{ github.run_id }}-${{ github.run_attempt }}-schema-boundaries
+          path: |
+            source/native-ni32-schema-boundaries/
+            source/ni32-schema-boundaries.xml
+            source/ni32-context.json
+      - name: Reopen original native receipt using sole shared carrier and grader
+        if: always()
+        working-directory: source
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          path = Path("native-ni32-schema-boundaries/receipt.json")
+          record, digest = read_receipt(path)
+          rows = native_rows(path)
+          result = {"receipt": str(path), "sha256": digest,
+                    "conformant": record["fixture_execution_conformant"],
+                    "diagnostic": record["diagnostic"],
+                    "counts": record["summary"]["counts"] if record["summary"] else None,
+                    "grade": list(grade(project_ci_conformance(rows[0]))) if rows else None}
+          with open("ni32-native-projection.json", "x") as output:
+              json.dump(result, output, indent=2, sort_keys=True)
+          print(json.dumps(result, sort_keys=True))
+          expected = {"collected": 12, "executed": 12, "passed": 12,
+                      "failure": 0, "error": 0, "skipped": 0}
+          if result["conformant"] is not True or result["counts"] != expected:
+              raise ValueError("original captured result does not satisfy the reviewed 12-case success criterion; original outcomes remain unchanged")
+          PY
+      - name: Preserve original projection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni32-${{ github.run_id }}-${{ github.run_attempt }}-native-projection
+          path: source/ni32-native-projection.json
