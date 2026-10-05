@@ -1096,7 +1096,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
   C108a and C119 at the same boundary. Done when both lanes run with folding enabled and the first fold or deferral is
   ledgered. ✅ 2026-10-05 — both lanes relaunched (DS41-C126), but **not** carrying C113b/C108a/C119 at this
   boundary — those three remain open and are now untethered from a boundary that already happened.
-  - [ ] DS41-C126 — **relaunch on `b0ba1d427` REFUSED on bundle/anchor ancestry; fixed with a fresh per-anchor
+  - [x] DS41-C126 — **relaunch on `b0ba1d427` REFUSED on bundle/anchor ancestry; fixed with a fresh per-anchor
     store, not a code change.** Anchor builds done 03:18:59Z; `prepare_inputs` + 4 dry runs rc=0; DS41 launched
     03:19:35Z and refused: `bundle recovery required: invalid tip/anchor ancestry: persisted tip dd6c9cdbdf85 is
     not an ancestor of anchor b0ba1d427835`. The persisted accumulator bundle from the pre-backlog-drain epoch
@@ -1104,16 +1104,12 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
     store `store-b0ba1d427` (accumulator `champion_of_record` = tip = `b0ba1d427`, keeps `[]`, inbox notes copied
     across; old stores left untouched). DS41 relaunched 03:24:35Z (`serial_run` pid 3987149, watchdog4 3979082);
     Q38FN relaunched 03:25:05Z (pid 3988340). Prep dir `/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/`
-    (`RELAUNCH.md` has the full timeline). Gaps this surfaced, none of them closed yet:
-    - [ ] **(a) no supported path to start a new epoch on a new anchor.** The loop has nothing it is
-      *meant* to do when the champion moves to an anchor the persisted bundle doesn't descend from — the refusal
-      is correct (it caught a real staleness) but there is no code path short of hand-building a fresh store.
-      A new-anchor epoch should create/rotate the bundle explicitly instead of refusing with no repair.
+    (`RELAUNCH.md` has the full timeline). Gaps this surfaced:
+    - [x] **(a) no supported path to start a new epoch on a new anchor.** Landed research 5aa6cc5b (`--new-anchor-epoch <COMMIT>` ancestry-refusal only, bound to the anchor's full SHA, journal-locked, archives under store/archived-epochs/, dry-run honors it) + `accumulate.would_refuse_anchor`/`peek_refusal` pre-flight.
     - [ ] **(b) `dryrun.sh` exited 0 on failure.** Fixed ad hoc in the prep dir
-      (`/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/`); the fix has not been landed in the research repo's
-      checked-in script.
-    - [ ] **(c) research commit `6cb5f0c5` (accept `--longctx-surface` in common args) is UNPUSHED** on branch
-      `fix/ak-lanes-relaunch-20261005` in `epyc-inference-research` — needs review and landing.
+      (`/mnt/raid0/llm/tmp/ak-lanes-relaunch-20261005/`); pre-flight API now exists; wire it into the relaunch dryrun before the build lock.
+    - [x] **(c) research commit `6cb5f0c5` (accept `--longctx-surface` in common args) is UNPUSHED** on branch
+      `fix/ak-lanes-relaunch-20261005` in `epyc-inference-research` — ✅ pushed fd925e66 + 5da038ad.
     - [ ] **(d) the newcomer-lane calibration-vs-incumbent-batch race.** Q38FN cannot start hosted planning
       until its startup CPU calibration runs; with DS41 holding the CPU it waited >30 min past its wait bound.
       Operator ruling 2026-10-05: *"if the calibration is indispensable, prioritize making space for it."* Applied:
