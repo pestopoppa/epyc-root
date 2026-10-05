@@ -195,7 +195,7 @@ jobs:
       - name: Makefile fail-closed fixture contracts
         run: python tests/unit/test_makefile_gate_contract.py
       - name: Install declared dev dependencies
-        run: python -m pip install '.[dev]'
+        run: python -m pip install '.[dev]' 'pydantic-graph==1.80.0'
       - name: Kernel override and reviewed topology fixture contracts
         env:
           PYTHONPATH: ${{ github.workspace }}
