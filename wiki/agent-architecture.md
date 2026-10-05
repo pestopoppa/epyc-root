@@ -5008,3 +5008,27 @@ or production deployment claim. This is an incremental note, not a wiki compilat
 Sources: [ingestion progress](../progress/2026-10/2026-10-05-codex-ni-ingest.md),
 [applicability progress](../progress/2026-10/2026-10-05-codex-ni-applicability.md),
 [promotion progress](../progress/2026-10/2026-10-05-codex-ni-promote.md).
+
+
+The non-inference validation path now has a prospective CI fixture receipt producer and the
+`ci-fixture-conformance` ingestion source. It captures the request and declared source bytes before
+execution, then retains the original log and JUnit with the exact result-bearing proposition.
+Counts describe collected/executed cases; skipped or missing cases cannot prove execution. Its shared
+carrier remains Judged/Located without an invented scientific warrant.
+[Original 25-case receipt](../artifacts/ni05/ci-conformance-37278646239/README.md) and
+[implementation/validation record](../progress/2026-10/2026-10-05-ni15-ci-conformance.md).
+
+
+The KVQ adapter now accepts the producer's native median statistics while preserving the original
+records and refusing missing/nonfinite medians. Its native-summary ingestion fixture is a passing
+regression rather than an expected failure. The original complete sweep remains the owning inference
+session's input; adapter compatibility does not create a new sweep.
+
+The documentation evidence checker now scans declared docs/handoff roots and emits immutable
+prospective receipts. A negative finding records its false result and native verdict in the original
+proposition, so its ledger support cannot accidentally support positive durability. Qualified caveats
+remain distinct and project no boolean. Actual positive/negative writer fixtures passed; the full host
+corpus was not scanned by this off-host validation.
+[KVQ record](../progress/2026-10/2026-10-05-ni01-kvq-native-statistics.md),
+[checker record](../progress/2026-10/2026-10-05-ni04-durability-checker.md),
+[projection record](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md).

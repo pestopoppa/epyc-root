@@ -62,3 +62,64 @@ confirmed its analysis session had exited, retained source for review, and repla
 worker. No peer process was killed. Future execution remains behind CPU claims or on isolated CI runners.
 Prospective CI receipt wiring was registered before its first captured run; the two historical runs are
 ordinary validation evidence and will not receive retrofitted tuples.
+
+
+## Second source boundary and publication incident
+
+NI15's prospective native receipt/enrollment fixtures passed 25/25 in off-host run `37278646239`,
+without skips or failures. NI01's KVQ adapter passed 18/18 in the second broad run. Final semantic review
+held NI13 publication: false durability results must record their original false finding in the claim
+text because supporting-evidence frames omit numeric/boolean values. The producer and adapter now have
+a reviewed result-specific proposition correction and an actual negative-writer-to-frame regression;
+execution is pending the next pinned CI run. No grading ladder or trust policy changes.
+
+Source-only config worker accidentally published reviewed commit `ff1063d3f2c6ad5a2cda5e6000ccc88a75022133`
+to orchestrator main before off-host validation because its new branch tracked `origin/main`. Manifest
+contained exactly that one approved commit and three files; remote advance was `aeb3a330` → `ff1063d3`.
+Main stopped its remote writes, told the operator, and prioritized validation rather than rewriting
+peer-shared remote history. No deployment or reload occurred. Future candidate pushes require main
+review of the exact destination/upstream manifest. Validation remains pending, not a completed task.
+
+The queue expands to 19 items (three published completions). HS-OD-5/6 remain independent API contract
+work with mocked tests; SSU-F13 source fixes already exist upstream and receive validation rather than
+a duplicate patch. NIB2-86 code fixtures passed 6/6, but the three host linters are still absent; image
+installation and real gate execution remain explicit work. No host import/installation/test is claimed
+as executed while AutoKernel retains the CPU regions.
+
+
+## Third off-host acceptance boundary
+
+Run `37280071522` executed 216/216 focused root fixtures (18 KVQ, seven corrected durability, 25 CI
+capture, 58 ingestion and 108 carrier), all without failures/skips. Research native KVQ ingest passed
+15/15 after the obsolete strict xfail was removed; durability passed 77 with one named host-corpus
+case deselected, and 2,286 benchmark cases collected. Node passed 105/105; Makefile fixtures six and
+real-lock promotion fixtures three also passed. The root and research focused executions retained
+original prospective receipts. No old run was reconstructed.
+
+Main accepts NI01, NI04 and NI13 within their canonical code/capture conditions, plus NI15's actual
+CLI-to-ledger wiring. Published completion tally advances to 7/19 at this boundary. The separate broad
+root result remains red (1,711 passes, four failures, ten skips and 46 setup errors). Those reduce to
+a missing tmp_path callsite in peer-owned AutoKernel fixtures, native CPU limitation-list drift, and
+a kept/keep_candidate expectation mismatch. Evidence is recorded for the active owner's next fixture
+boundary; no live AutoKernel source, promotion or inference is changed.
+
+Orchestrator fixtures did not execute: WorkerPoolPathsConfig had one remaining eager server-binary
+default. Whole-family source review identified and corrected it as candidate `d8242cc4`; it is included
+in fourth off-host run `37281252723` via combined orchestrator source `96f6e2b2`. No completion is claimed
+for orchestrator-dependent work until actual fixtures execute. Devcontainer lint-tool installation
+requires its own actual image build; source preparation is not installed-tool evidence.
+
+## Research publication and dependency boundary
+
+Research main now carries the four reviewed checker/capture, fixture-isolation, original-verdict and
+native-KVQ fixture commits through `33f235848a40`. Publication preserved the fresh peer main base;
+the checker blob and SHA-256 match the actual tested source. Root's seven completed items include
+only accepted source/capture boundaries; host-dependent installation and whole-corpus execution
+remain separate.
+
+Fourth run `37281252723` cleared eager kernel discovery but exposed dependency drift before API
+fixtures: an unconstrained install selected pydantic-graph 2.54.0, while the checked-in lock records
+1.80.0 and the source uses that constructor API. Fifth run `37282435460` aligns that one recorded
+dependency without claiming full lock synchronization. Its configuration/topology focused step
+executes successfully; API result review is still pending. This unlocks a bounded dependency-contract
+repair, recorded as NI05-20, rather than a speculative graph API migration.

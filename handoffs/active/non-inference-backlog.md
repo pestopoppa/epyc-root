@@ -34,13 +34,13 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **3/16**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **7/20**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
-- [ ] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
+- [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
 - [x] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
 - [ ] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
-- [ ] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
+- [x] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
 - [ ] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
 - [ ] **NI05-06** — HS-17: MCP timeout and progress contract.
 - [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
@@ -49,10 +49,14 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
 - [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
-- [ ] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
+- [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
 - [ ] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
-- [ ] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
+- [x] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
 - [ ] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
+- [ ] **NI05-17** — HS-OD-5: reject unsupported explicit sampling controls on image requests.
+- [ ] **NI05-18** — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
+- [ ] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
+- [ ] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -248,7 +252,7 @@ fast-forwarded to `7b5d1eb6`, tracked tree clean.
 All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (progress note
 `progress/2026-09/2026-09-15-noninf-roi-dispatch.md`).
 
-- [ ] **NIB2-73e** (MED): **the durability gate scans the REGISTRY only, so cited-but-untracked evidence in DOCS and
+- [x] **NIB2-73e** (MED): **the durability gate scans the REGISTRY only, so cited-but-untracked evidence in DOCS and
       HANDOFFS is invisible to it.** Found while writing the 11 READMEs, all recorded in-file:
       `docs/reference/models/model-admission-2026-07-16.md:359-363` cites two `summary.json` files that exist only in
       the shared clone; `gemma-challenge-kernel-techniques-v7.md:141` carries two DANGLING citations (only the n=2 dir

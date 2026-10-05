@@ -8,4 +8,4 @@ Research source `e98909009f5dd2d148ad0e93029ea9fb85ba031f` removes only the obso
 
 The third research execution sealed an original native CI receipt with 15 collected/executed/passed cases and `fixture_execution_conformant=true`, plus original request/log/JUnit/readset sidecars, before artifact upload. Evidence is retained in `/mnt/raid0/llm/worktrees/codex-ni05-validation-root-third-20261005/ni05-third-artifacts/research-results/native-kvq/`.
 
-The first two campaign runs remain plain validation. No sweep, inference, new measurement/model/kernel claim or historical backfill occurred. VB-KVQ-V10-DICT is satisfied; VB-KVQ-V10-INGEST's completed post-hook sweep and profiling requirements remain distinct.
+The first two campaign runs remain plain validation. No sweep, inference, new measurement/model/kernel claim or historical backfill occurred. VB-KVQ-V10-DICT is satisfied; VB-KVQ-V10-INGEST still requires the owning session's new complete post-hook sidecar and recorded fold/planner checks; no inference producer is scheduled by this session.

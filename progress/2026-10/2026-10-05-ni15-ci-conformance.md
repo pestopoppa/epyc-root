@@ -11,3 +11,8 @@ Source commits: `a1001ca0b2f692249c066dea43a897de0f050649` (producer/adapter/fix
 Validation: [run 37277543999](https://github.com/pestopoppa/epyc-root/actions/runs/37277543999) passed 24/24 fixtures. Enrollment [run 37278646239](https://github.com/pestopoppa/epyc-root/actions/runs/37278646239) passed 25/25, with zero failures or skips. Both runs captured their original request, receipt, log, JUnit and source readset prospectively. The first two NI05 campaign runs, 37273697465 and 37275807626, remain plain validation and were not backfilled.
 
 Evidence retained under `/mnt/raid0/llm/worktrees/codex-ni-ci-capture-20261005/native-capture{,-enrollment}-artifacts/` and corresponding full GitHub logs. No local tests, builds, inference or reloads executed.
+
+Main copied the original enrollment receipt and every pinned sidecar byte-for-byte under
+`artifacts/ni05/ci-conformance-37278646239/`; all declared sidecar SHA-256 values were verified.
+The published source omits the isolated fixture-only workflow; its original snapshot remains in the native readset.
+No existing ledger was mutated or historical execution reconstructed.

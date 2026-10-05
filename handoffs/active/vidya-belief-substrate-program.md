@@ -1691,7 +1691,7 @@ Codex's sign-off before it lands** (shared files).
   between campaign runs, and not into run 10's frozen worktree. Also apply the proposal's §7 consumer-table row
   to `scripts/vidya/adapters/README.md` (Codex coordination). Acceptance: Codex sign-off recorded, the lane
   merged, and one planner call writes a receipt with `evidence_status` set.
-- [ ] **VB-KVQ-V10-DICT — BLOCKING: the producer writes stats dicts where the root adapter requires numbers.**
+- [x] **VB-KVQ-V10-DICT — BLOCKING: the producer writes stats dicts where the root adapter requires numbers.**
   `kv_quant_27b_v10_sweep.summarize_cell` returns `prompt_tokens`, `kv_k_mib`, `kv_v_mib` as `{n, median, mad}`,
   and `belief_capture_rows` copies them into `extra.arm.prefill_tokens_measured` and
   `extra.kv_buffer_{k,v}_mib`. Root `scripts/vidya/adapters/kv_quant_27b_v10.py` `_check_row` requires plain
@@ -2423,7 +2423,7 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
 
 ## Non-inference campaign source wiring — 2026-10-05
 
-- [ ] **VB-NI-DURABILITY — capture and project docs/handoff durability scan receipts before the first broad scan.**
+- [x] **VB-NI-DURABILITY — capture and project docs/handoff durability scan receipts before the first broad scan.**
   Native carrier `epyc.evidence_durability_scan.v1` binds the source bytes actually read, document/line/target,
   emitted UTC, checker revision/digest, read-set and exact decided proposition. Project only native durability
   findings through the existing verifier class and `claim_tuple.grade()`. Preserve withheld, shared-clone-only
@@ -2431,10 +2431,14 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   registry validation and its strict exit behavior remain independent of legacy-prose advisories.
   Owner: Codex NI05-13; scratch `/mnt/raid0/llm/worktrees/codex-ni-durability-20261005` and a separate root adapter lane.
 
-- [ ] **VB-CI-CONFORMANCE — capture original off-host selected-fixture conformance before artifact upload.**
+- [x] **VB-CI-CONFORMANCE — capture original off-host selected-fixture conformance before artifact upload.**
   NI05-15's leaf producer records exact command/cases/statuses, UTC, tested source SHA(s), allowlisted runner
   context, explicit exclusions and original JUnit/log/source readset hashes. Project the exact native bounded
   boolean proposition through the existing verifier class and `ClaimTuple.grade()`; counts remain descriptive.
   Missing, inconsistent or entirely skipped cases stay diagnostics. No old-run backfill, protocol/trust
   amendments, scientific attestation, inference, performance or promotion authority. Initial CI runs remain
   ordinary validation evidence. Owner: Codex NI05-15; scratch `/mnt/raid0/llm/worktrees/codex-ni-ci-capture-20261005`.
+
+  Completion evidence: 25/25 original execution and CLI-to-ledger fixtures passed in run `37278646239`;
+  byte-preserved native receipt/request/log/JUnit/source artifacts are in `artifacts/ni05/ci-conformance-37278646239/`.
+  Main progress: `progress/2026-10/2026-10-05-ni15-ci-conformance.md`. Existing shared grading only.
