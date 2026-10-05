@@ -5,9 +5,9 @@ on:
 permissions:
   contents: read
 env:
-  ROOT_SHA: 23298f00096f24b5d665a478467692f2085c09a0
-  RESEARCH_SHA: 725eb41296c926cbb39abaa43a842ac675155a2b
-  ORCH_SHA: 8ebfbc50e073a0203655f36ee9bc9d72d23c3277
+  ROOT_SHA: 2d12dd17191e7329496d70be1bfafccb3cc70b0b
+  RESEARCH_SHA: 1d5550fff05347498aae63ef03082d99052f370b
+  ORCH_SHA: 2f3adb9eb73758e371836cb3ee6fbd7802e67274
 jobs:
   root:
     runs-on: ubuntu-latest
@@ -38,6 +38,8 @@ jobs:
           sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
           sudo ln -s "$GITHUB_WORKSPACE/orchestrator" /workspace/repos/epyc-orchestrator
           sudo ln -s "$GITHUB_WORKSPACE/orchestrator" /mnt/raid0/llm/epyc-orchestrator
+          ln -s research epyc-inference-research
+          ln -s orchestrator epyc-orchestrator
           echo '47846292cdb2a9e5e3d4ab81dc49f6bebdd90db137a4805debec1b76e5489067  research/scripts/validate/check_evidence_durability.py' | sha256sum -c -
           echo '8caeb33dbb12986fadc385afe25d22bd791b036253c736f9527e67a55f85e268  research/scripts/kernel_rnd/exl3/evidence.py' | sha256sum -c -
       - name: Promotion fixture (no real promotion)
@@ -45,6 +47,9 @@ jobs:
         run: python scripts/coordination/tests/test_promote_lane.py DefaultLockDirectoryTests
       - name: Vidya including actual writer archive roundtrip
         working-directory: root
+        env:
+          EPYC_RESEARCH_ROOT: ${{ github.workspace }}/research
+          VIDYA_ORCH_WRITER_ROOT: ${{ github.workspace }}/orchestrator
         run: python -m pytest -q tests/vidya --junitxml=vidya.xml
       - uses: actions/upload-artifact@v4
         if: always()
@@ -62,14 +67,27 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+          path: orchestrator-binding
+      - name: Bind authoritative scoring sibling in ephemeral runner
+        run: |
+          sudo mkdir -p /mnt/raid0/llm
+          sudo ln -s "$GITHUB_WORKSPACE/orchestrator-binding" /mnt/raid0/llm/epyc-orchestrator
+          sudo ln -s "$GITHUB_WORKSPACE" /mnt/raid0/llm/epyc-inference-research
       - name: Install pinned test extra and declared benchmark dependencies
         run: python -m pip install '.[benchmark,test]'
       - name: Durability strict and optional fixture contracts
-        run: python -m pytest -q scripts/validate/test_check_evidence_durability.py --junitxml=durability.xml
+        run: |
+          echo 'NOT RUN off-host: test_the_real_registry_has_no_durability_errors requires the live raw evidence corpus; retained host validator job covers this separately.'
+          python -m pytest -q scripts/validate/test_check_evidence_durability.py -k 'not test_the_real_registry_has_no_durability_errors' --junitxml=durability.xml
       - name: Benchmark collection reproduction
         if: always()
         env:
           PYTHONPATH: ${{ github.workspace }}
+          EPYC_ORCHESTRATOR_ROOT: ${{ github.workspace }}/orchestrator-binding
         shell: bash
         run: |
           set -o pipefail
@@ -95,19 +113,45 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Install declared dev dependencies
-        run: python -m pip install '.[dev]'
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research-binding
+      - name: Resolve tracked registry symlink from pinned research checkout
+        run: |
+          sudo mkdir -p /mnt/raid0/llm
+          sudo ln -s "$GITHUB_WORKSPACE/research-binding" /mnt/raid0/llm/epyc-inference-research
+          test -r orchestration/model_registry_full.yaml
       - name: Makefile fail-closed fixture contracts
         run: python tests/unit/test_makefile_gate_contract.py
+      - name: Install declared dev dependencies
+        run: python -m pip install '.[dev]'
       - name: Flags MCP and v1 mock isolation
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: python -m pytest -q tests/unit/test_runtime_flags.py tests/unit/test_openai_compat_backend_failure_status.py tests/unit/test_features.py tests/unit/test_mcp_undeclared_args_refused.py tests/unit/test_mcp_server.py tests/unit/test_mcp_chat_tool.py tests/unit/test_openai* --junitxml=orchestrator.xml
+      - name: Native enqueue timing producer fixtures
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python -m pytest -q tests/unit/test_serving_calls.py tests/unit/test_inference_mixin.py --junitxml=enqueue-timing.xml
+      - name: v1 mock test set in reversed file order
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        shell: bash
+        run: |
+          mapfile -t files < <(printf '%s\n' tests/unit/test_openai* | sort -r)
+          python -m pytest -q "${files[@]}" --junitxml=orchestrator-reverse.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: orchestrator-results
-          path: orchestrator.xml
+          path: |
+            orchestrator.xml
+            orchestrator-reverse.xml
+            enqueue-timing.xml
   node-harness:
     runs-on: ubuntu-latest
     timeout-minutes: 20
