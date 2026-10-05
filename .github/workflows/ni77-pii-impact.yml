@@ -68,12 +68,14 @@ jobs:
           test "$(node --version)" = v22.14.0
           test "$(npm --version)" = 10.9.2
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git rev-parse HEAD^)" = 0f2717b32a56f1a1ac41cf693d930249cca3e0b3
           test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = .github/workflows/ni77-pii-impact.yml
           git diff --exit-code "$ROOT_SHA" HEAD -- . ':(exclude).github/workflows/ni77-pii-impact.yml' > "$NI77_CAPTURE/recipe-only-diff.stdout"
           cp .github/workflows/ni77-pii-impact.yml "$NI77_CAPTURE/workflow.yml"
           sha256sum "$NI77_CAPTURE/workflow.yml" > "$NI77_CAPTURE/workflow.sha256"
           input="$GITHUB_WORKSPACE"; source_sha="$ROOT_SHA"
+          NI77_SOURCE_SHA="$source_sha"
+          export NI77_SOURCE_SHA
           printf 'NI77_SOURCE_SHA=%s\n' "$source_sha" >> "$GITHUB_ENV"
           timeout --signal=TERM --kill-after=15s 120s git clone --no-local --no-hardlinks --no-checkout "$input" "$NI77_SOURCE" \
             > "$NI77_CAPTURE/source-clone.stdout" 2> "$NI77_CAPTURE/source-clone.stderr"
