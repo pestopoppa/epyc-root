@@ -15,13 +15,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      EPYC_BUS_ROOT: ${{ runner.temp }}/ni44-session-bus
-      NI44_CONTEXT: ${{ runner.temp }}/ni44-preflight-context.json
-      NI44_JUNIT: ${{ runner.temp }}/ni44-original-pytest.xml
-      NI44_CAPTURE: ${{ runner.temp }}/ni44-native
-      NI44_POSTCHECK: ${{ runner.temp }}/ni44-bus-postcheck.json
       NI44_RECIPE_SHA: ${{ github.sha }}
     steps:
+      - name: Initialize isolated runner paths
+        run: |
+          {
+            printf 'EPYC_BUS_ROOT=%s\n' "$RUNNER_TEMP/ni44-session-bus"
+            printf 'NI44_CONTEXT=%s\n' "$RUNNER_TEMP/ni44-preflight-context.json"
+            printf 'NI44_JUNIT=%s\n' "$RUNNER_TEMP/ni44-original-pytest.xml"
+            printf 'NI44_CAPTURE=%s\n' "$RUNNER_TEMP/ni44-native"
+            printf 'NI44_POSTCHECK=%s\n' "$RUNNER_TEMP/ni44-bus-postcheck.json"
+          } >> "$GITHUB_ENV"
+
       - name: Checkout immutable recipe revision
         uses: actions/checkout@v4
         with:
