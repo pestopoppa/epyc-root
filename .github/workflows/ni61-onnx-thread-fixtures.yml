@@ -33,7 +33,6 @@ jobs:
       CI: 'true'
       ORCHESTRATOR_MOCK_MODE: 'true'
       PYTHONDONTWRITEBYTECODE: '1'
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/ni61-thread-fixture-venv
       MODULE_ID: ${{ matrix.module_id }}
       MODULE_PATH: ${{ matrix.module_path }}
       EXPECTED_DELTA: ${{ matrix.expected_delta }}
@@ -202,7 +201,7 @@ jobs:
           python-version: '3.11.14'
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@b75a909f75acd358c2196fb9f3ea08947a1f992a # reviewed NI45/53 pin
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174 # v5.4.0
         with:
           version: '0.8.15'
           enable-cache: false
