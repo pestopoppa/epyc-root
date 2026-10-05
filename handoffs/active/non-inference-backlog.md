@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **21/27**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **22/29**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -63,7 +63,9 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
 - [ ] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
 - [ ] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
-- [ ] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
+- [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
+- [ ] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
+- [ ] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -477,7 +479,11 @@ Canonical sources (always verify status in these files first):
   before/after test and the owning session's judgement on which reading is right.** Zero inference
   to verify (unit tests with a fake backend); zero compute.
   - [ ] **NIB2-80a** (LOW) — the budget-bounded early-abort escalation still skips `_detect_role_cycle_impl` (A→B→A bouncing), which `_should_escalate` applies to every other site. Add the cycle check to the early-abort branch with a test.
-- [ ] **NIB2-82** (LOW) — `scripts/autopilot/baseline_authority_seed.py::_autopilot_running_pids` detects AutoPilot with `pgrep -af "autopilot.py start"` — a name-pattern read CLAUDE.md forbids. Replace with the read-only /proc cmdline scan used by the 2026-09-23 ratify script.
+- [x] **NIB2-82** (LOW) — `scripts/autopilot/baseline_authority_seed.py::_autopilot_running_pids` detects AutoPilot with `pgrep -af "autopilot.py start"` — a name-pattern read CLAUDE.md forbids. Replace with the read-only /proc cmdline scan used by the 2026-09-23 ratify script.
+  ✅ 2026-10-05 — app `9887da8fbb87` scans exact process argv positions; unavailable observation
+  refuses baseline append with a distinct status and exit two. Original CI `37297449498` passes
+  12 baseline fixtures under explicit synthetic RAM plus a separate ordinary actual-host guard.
+  No live journal mutation or process-control command was run; native originals are retained.
 - [ ] **NIB2-83** (MED) — after ETR-1 (era E17) `task_failed` rows score 0, and `task_failed` is the RESIDUAL class (any error `infra_failure_reason` does not recognise). Once post-E17 eval rows exist, histogram their error texts and move any platform-caused shape into `INFRA_ERROR_PATTERNS`/provenance classes, so an unrecognised infra error is not scored as an agent failure.
 
 ### NI05-16 — explicit kernel path overrides
@@ -510,3 +516,15 @@ Canonical sources (always verify status in these files first):
   Resolve defaults only when no override exists; preserve strict failure for missing defaults.
   Verify fresh import, explicit parsing/configuration and absent-override refusal off-host. No
   shared store-provider changes, fabricated store, binary execution or production mutation. NI05-26.
+
+
+## 2026-10-05 supplement — durable CI phase prefixes
+
+- [ ] **NI-CI-PREFIX-DURABILITY — preserve completed native validation before later phases can time out.**
+  NI05-29 / VB-CI-PREFIX-DURABILITY: original ninth run `37295291738` timed out before its final
+  artifact step, losing all original native receipts/JUnit. Ordinary GitHub logs survive; they
+  are not reopened receipts or reconstructed tuples. Upload immutable named phase bundles
+  immediately, declare a bounded broad attempt with graceful interrupt and kill grace inside
+  the captured argv, and keep partial counts distinct from whole-scope completion. Replace
+  unavailable runner `rg` enumeration with fail-closed stdlib source-readset enumeration.
+  No source grading or producer-schema change; candidate recipe and original artifacts only.

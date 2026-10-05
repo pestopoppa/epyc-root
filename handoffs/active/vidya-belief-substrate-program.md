@@ -2473,3 +2473,21 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   Name unavailable GPU-store exclusions. Missing/failed collection remains a diagnostic or the
   original bounded false proposition, never a complete-unit pass. Earlier API runs remain ordinary
   validation evidence without retrospective tuples. Owner: Codex CI worker, main integration.
+
+
+- [ ] **VB-CI-PREFIX-DURABILITY — retain each original prospective phase before a later timeout.**
+  NI05-29: original ninth `37295291738` loses all runner receipts before final upload. Preserve
+  every completed phase independently, with unique immutable artifact names; declare the
+  broad attempt timeout before execution and capture its actual interrupt/result. Original
+  logs remain ordinary evidence, never a repaired/resealed receipt. Existing producer,
+  verifier and shared grade only. The source table owns this prospective CI-command class.
+
+- [ ] **VB-LINKAGE-GUARD — bind prospective static ggml dependency receipts at write time.**
+  NI05-28 / NIB2-85: before fresh host execution, define a native dependency receipt and
+  producer hook binding verifier/binary/tree identity, canonical expected roots, exact loader
+  environment, original stdout/exit, UTC and immutable hashes. Reuse the existing typed linkage
+  receipt precedent; refuse wrong identities, edits, missing hooks, vacuous and nonzero checks.
+  Bind the receipt digest prospectively into eligible producer measurements. Dependency evidence
+  has no ClaimTuple carrier class or standalone evidence_supports_claim until its warrant is
+  ratified; no adapter or new ladder, historical backfill, dlopen/runtime-residency, performance
+  or promotion claim. Source-table row filed before execution; no kernel modification.

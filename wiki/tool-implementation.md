@@ -1313,3 +1313,17 @@ binds the selected result. Exact enqueue and staging proxies stay separate; wind
 and client classes never pool, and fewer than 50 sessions remains a coverage gap. The real
 Oct 3/4 log census is queued behind a CPU claim. No API reload or actual distribution/TTL
 acceptance is implied by source publication or hermetic fixture conformance.
+
+
+### Baseline append observation and CI prefix custody (2026-10-05)
+
+App `9887da8fbb87` replaces the baseline seed name-pattern process observer with exact argv
+inspection. Unknown process-table observation refuses an append with a distinct status and
+exit two. Original CI `37297449498` passes 12 synthetic-host baseline fixtures plus a
+separate ordinary capacity guard; [original captures](../artifacts/ni05/baseline-observer-37297449498/README.md)
+preserve context and readsets. No live journal or process-control change was performed.
+
+A later wide unit run can outlive its CI budget, so completed native phases need immediate
+immutable uploads. Ninth run `37295291738` lost its receipts before final upload; its logs
+remain ordinary evidence. NI29 files per-phase retention and an explicit interrupt-bound
+wide attempt, preserving partial results without implying whole-unit completion.

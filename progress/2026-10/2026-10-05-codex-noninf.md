@@ -255,3 +255,30 @@ Original record: `/mnt/raid0/llm/tmp/codex-ni82-gitnexus-unclaimed-analysis-2026
 No impact on concurrent measurements is asserted. Further host re-index/test/build execution
 is prohibited for this worker; it prepares source while the previously approved install remains
 queued, and verification runs off-host.
+
+
+## Exact observer accepted and CI custody recovery filed
+
+App `9887da8fbb87` publishes the two exact tested NI27 files. Main independently reopens both
+original receipts and all bound hashes: ordinary capacity-guard 1/1, synthetic-host baseline
+12/12, including actual fake-proc enumeration and per-PID permission denial with no journal
+append. Original custody is byte-preserved at `artifacts/ni05/baseline-observer-37297449498/`.
+The test-only bootstrap remains candidate infrastructure; no actual authority journal or
+process-control mutation occurred. NI27 and canonical NIB2-82 close; tally **22/29** after
+filing NI28 canonical-linkage acceptance and NI29 completed-phase custody durability.
+
+Original ninth CI `37295291738` times out at its 20-minute job limit before projection/upload;
+GitHub reports no downloadable artifacts. Only original logs survive (SHA-256
+`fd1cb1ee8d852e3f00c2da64a48b545a284750a6843cae10d30040ab4e7eb7a4`), showing guards
+2 passed, leaf 12 passed/1 failed, and each API order 376 passed/two explicit deselections.
+These are log-only validation observations, not native receipt reopening. The failed existing
+large-scan fixture omitted its explicit binary path, reaching strict missing-store refusal
+before its intended validation assertion; a one-line fixture correction is reviewed. The
+runner also lacks `rg`, so recovery uses fail-closed pathlib source enumeration. NI25/26 and
+broad NI18 remain open; no original receipt or JUnit is reconstructed. NI29 preserves each
+phase immediately and seals the declared six-minute interrupt-bound broad attempt.
+
+NI28 finds the canonical-linkage fix already landed as research `58ca325f`; current source
+retains the exact canonical comparison and vacuity refusal. Five-fixture acceptance is being
+prepared without duplicate source repair. Fresh actual-store verification remains separate
+and requires a CPU claim and prospective write-side receipt (VB-LINKAGE-GUARD filed now).
