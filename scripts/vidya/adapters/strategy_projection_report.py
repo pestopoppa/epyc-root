@@ -26,7 +26,7 @@ PROPOSITION = (
     "result of its journal-derived projection comparison; counts are descriptive only."
 )
 # Set to the source hash of the reviewed, immutable native producer before source publication.
-TRUSTED_PRODUCER_SHA256 = "78feefe306ebd48b8d0dfaddb8be4b8907d9da227495aed896a88eaba2a304db"
+TRUSTED_PRODUCER_SHA256 = "c379d8ed152085ece779b78943ca06d6e55db3e106e162d1349fd25590721d4c"
 TRUSTED_APP_SOURCES = {
     "report-source.bin": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b",
     "journal-source.bin": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
