@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **7/20**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **7/22**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -57,6 +57,8 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-18** — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
 - [ ] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
 - [ ] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
+- [ ] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
+- [ ] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;

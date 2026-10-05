@@ -123,3 +123,29 @@ fixtures: an unconstrained install selected pydantic-graph 2.54.0, while the che
 dependency without claiming full lock synchronization. Its configuration/topology focused step
 executes successfully; API result review is still pending. This unlocks a bounded dependency-contract
 repair, recorded as NI05-20, rather than a speculative graph API migration.
+
+## Fifth execution and next bounded repairs
+
+Run `37282435460` passed 100 configuration/topology cases, including both actual-import override
+fixtures and all 53 session-link/lifecycle cases. In reversed API order, 369 cases passed, seven
+new image fixtures failed because their route import was missing, and two live-backend integration
+cases skipped. Enqueue fixtures passed 68 with one new mock constructor failure; both fixture
+repairs are separately reviewed commits. The forward API/flags selection collected no cases:
+its launcher import correctly refused the hosted runner's insufficient actual RAM. The remedy
+isolates the three feature-environment assertions in fresh subprocesses with named synthetic host
+facts, preserving a separate actual-host guard case and leaving production capacity checks unchanged.
+
+Main accepted the bounded HS-OD-8 source after its 21 cases and the 105-case pinned SDK/Node suite
+passed without skips; HS-16 lifecycle source likewise passed the complete 53-case selection.
+Source publication and canonical completion await integration on the latest peer main base.
+Sixth run `37284177689` uses fresh peer-preserving orchestrator source `2c4bd7dae`, tests the repaired
+fixtures and supported graph constraint with a fresh pip resolution, and excludes unchanged root
+and research suites already validated at their exact immutable source pins.
+
+Actual devcontainer run `37282353793` built the reviewed image and passed its three exact linter
+version checks. Static gates passed schema and shellcheck, then failed visibly on nine pre-existing
+shell formatting mismatches; markdownlint had not run. NI05-21 captures a formatting-only patch
+off-host with original source custody and syntax/AST comparisons, and executes markdownlint separately.
+All nine source paths are clean across registered orchestrator worktrees; no overlap was observed
+with visible peer task scopes, and no frozen-kernel path is involved. TU-TC-1a is separately claimed as NI05-22 after
+source inspection identified the refusal/progress seam for a narrow regression repair. Tally: 7/22.
