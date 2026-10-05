@@ -1119,6 +1119,7 @@ Closed §C items (C10a, C20 with C20a-c/e/h, C21-C25, C28-C32, C35-C40, C44, C45
       `EC_8083_RELAUNCH_DONE`; 120-min bound). Structural follow-up, still open: the loop should schedule a
       newcomer lane's calibration ahead of the incumbent's next batch automatically, rather than needing this
       per-incident watcher.
+    - [ ] **(e) serial-control: offer a supported way to resume a drained lane (or make the control UI warn that drain is terminal).** 2026-10-05 Q38FN incident: drained at 11:11Z to open a measurement window sooner; drain is terminal for that state, so the lane could not be resumed from that point.
   - [x] DS41-C121a — disposition the 27 commits DS41's working branch carried over the champion. ✅ 2026-10-04 — fold
     inventory `/mnt/raid0/llm/tmp/fold-allkeeps-20261004/inventory.tsv` (`orig → new` sha, keep id, gate evidence,
     disposition): 4 port + 1 profiling (`ebb68dc55`, compiled out unless `GGML_CPU_PROF`) + 7 serving-gated keeps
