@@ -1,0 +1,7 @@
+# NI22 — Refusal-marker classifier view
+
+At this boundary, orchestrator source commit `e0cec51f1a7d99c0c513e9ed7f148a8f16e477eb` is accepted and published as `3f32efbe9eb031bc88ade4376c40f62e49dd87aa`. GitHub Actions run [37287330075](https://github.com/pestopoppa/epyc-root/actions/runs/37287330075) reports 54/54 targeted guard cases passing, 0 skipped. The retained XML is `/mnt/raid0/llm/worktrees/codex-ni05-validation-root-third-20261005/ni05-seventh-artifacts/orchestrator-results/guard-targeted.xml`; main independently confirmed the three changed files match the tested candidate byte-for-byte.
+
+The flag-gated refusal classifier tokenizes extracted Python and blanks only decoded string-token spans matching the native “tool call … NOT executed” refusal envelope in a temporary classification copy. Execution, raw output, `state.last_code`, refusal bytes, and normal substring behavior remain intact. LF-only line offsets preserve token positions across Unicode/control separators; malformed lexing falls back without rewriting source. The feature remains default-off. Coverage includes mixed valid/refused calls, real file-write progress, raw-custody equality, Unicode-prefix handling, and flag-off behavior.
+
+This closes the approved guard scope only. It does not claim a repair to broader FINAL/autowrap or raw-marker rescue branches. The stale indexed CRITICAL-49 downstream impact was disclosed before the bounded exception; the accepted change is limited to the existing feature-gated guard callsite.
