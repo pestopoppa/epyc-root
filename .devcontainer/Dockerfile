@@ -76,6 +76,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     clang-20 \
     git-lfs \
     sqlite3 \
+    shellcheck=0.10.0-1 \
+    shfmt=3.8.0-1 \
     libdrm2 \
     libdrm-amdgpu1 \
     libelf1t64 \
@@ -201,7 +203,7 @@ RUN echo "node ALL=(root) NOPASSWD: ALL" > /etc/sudoers.d/yolo \
 
 # Global CLI tools baked into the image so they survive container rebuilds.
 RUN --mount=type=cache,target=/root/.npm \
-  npm install -g gitnexus@1.6.1
+  npm install -g gitnexus@1.6.1 markdownlint-cli@0.49.1
 
 # ruff (Python linter) baked in — apt has no ruff on questing 25.10, so install
 # via uv to a system dir the node user can execute (survives container rebuilds).
