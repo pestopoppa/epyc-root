@@ -207,6 +207,64 @@ def test_project_reopens_original_and_refuses_mutated_in_memory_counts(tmp_path,
         adapter.project_dtap_timeout_report(native)
 
 
+@pytest.mark.parametrize("case_id,arm,secondary", [
+    ("finance-benign-trade-execution-001", "done", "attack_success"),
+    ("crm-malicious-direct-general-ai-restrictions-001", "compromised", "task_success"),
+])
+def test_original_nullable_secondary_projects_without_inventing_a_verdict(tmp_path, producer, monkeypatch,
+                                                                         case_id, arm, secondary):
+    runner, harness = producer
+    from harness.endpoint import DryRunStub
+    actual_judge = runner.JudgeApplication.run
+
+    def source_shaped_secondary(self, responses, trajectory):
+        result = actual_judge(self, responses, trajectory)
+        # Synthetic original shape follows benign bare None and direct attack
+        # (None, metadata) contracts; existing production coercion is untouched.
+        result[secondary] = None
+        return result
+
+    monkeypatch.setattr(runner.JudgeApplication, "run", source_shaped_secondary)
+    fixture = harness / "fixtures" / f"{case_id}.{arm}.json"
+    runner.run_matrix([case_id], [arm], [0], lambda *args: DryRunStub(json.loads(fixture.read_text())),
+                      results_dir=tmp_path / "runs", native_capture_root=tmp_path / "private",
+                      capture_fixture_paths=[fixture, Path(__file__)],
+                      capture_applicability={"mode": "synthetic", "scope": "source-shaped nullable secondary control"})
+    path = next((tmp_path / "private").glob("*/receipt.json"))
+    native = adapter.native_rows(path)[0]
+    original = native["terminal"]["runs"][0]["original_result"]
+    tup = adapter.project_dtap_timeout_report(native)
+    assert original[secondary] is None and grade(tup)[:2] == ("Judged", "Located")
+    counts = tup.extra["components"][0]
+    assert counts["total"] == counts["finished_non_timeout"] == counts["judged"] == 1
+    assert counts["terminal_timeouts"] == counts["other_errors"] == 0
+    assert counts["primary_metric"] == ("task_success" if secondary == "attack_success" else "attack_success")
+    assert counts["metric_direction"] == ("higher_better" if secondary == "attack_success" else "lower_better")
+
+
+@pytest.mark.parametrize("field,value", [("task_success", None), ("task_success", "unknown"), ("attack_success", "unknown")])
+def test_independent_reader_refuses_coherently_resealed_malformed_original_outcomes(tmp_path, producer, field, value):
+    from harness.trace import TraceRecorder
+    path = captured(tmp_path, producer)
+    record, sha, request, terminal = adapter.read_receipt(path)
+    row = terminal["runs"][0]
+    target = path.parent / row["artifact"]["name"]
+    events = [adapter.decode(line) for line in adapter.regular(target).splitlines() if line.strip()]
+    recorder = TraceRecorder(target)
+    for event in events[:-1]:
+        if event["event"] == "run_result":
+            event["payload"]["result"][field] = value
+            row["original_result"] = event["payload"]["result"]
+        recorder.record(event["event"], event["payload"])
+    row["trace_id"] = recorder.close()
+    row["artifact"]["sha256"] = adapter.digest(adapter.regular(target))
+    # All outer pins and the original trace chain now agree; rejection must
+    # come from native outcome applicability, not an incidental stale hash.
+    reseal_terminal(path, record, terminal)
+    with pytest.raises(ProjectionError):
+        adapter.native_rows(path)
+
+
 @pytest.mark.parametrize("state", ["refused", "missing"])
 def test_cli_non_success_locations_and_reasons_do_not_export_caller_names(tmp_path, producer, capsys, state):
     sentinel = "caller-controlled-private-parent-name"

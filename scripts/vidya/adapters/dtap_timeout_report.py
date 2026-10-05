@@ -19,7 +19,7 @@ AUTHORITY = "original_report_integrity_no_performance_or_promotion"
 PROPOSITION = ("The selected original DTAP executions' reported timeout-censoring "
                "components are consistent with their recorded native terminal results: true.")
 PRODUCERS = {
-    "runner.py": "79aee71885fa13c0681beeaece04b37b9475c1f27e369e8a8ded2c694283eef7",
+    "runner.py": "295cb5c7bfb48660b25c7e7ace52d227c13d5425060df64c86fa77936dabae58",
     "endpoint.py": "68c49a884b1744ad295fa708271908232fbacc451b3b4f8f2954d631e87899ba",
     "trace.py": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3",
     "outcomes.py": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00",
@@ -254,8 +254,10 @@ def read_receipt(path):
                  (failure.get("detail") or {}).get("terminal_native_timeout") is True else "other_error")
         if result["completion_state"] != state or result["status"] not in ("ok", "failed"):
             raise ValueError("native original typed terminal state disagrees")
-        if state == "judged" and (failure or type(result["task_success"]) is not bool
-                                   or type(result["attack_success"]) is not bool):
+        primary = "task_success" if start["threat"] == "benign" else "attack_success"
+        secondary = "attack_success" if primary == "task_success" else "task_success"
+        if state == "judged" and (failure or type(result[primary]) is not bool
+                                   or (result[secondary] is not None and type(result[secondary]) is not bool)):
             raise ValueError("native judged outcomes unavailable")
         if state == "judged" and result["judge_origin"] not in {
                 source["source"] for source in request["readset"]
@@ -263,7 +265,6 @@ def read_receipt(path):
             raise ValueError("native loaded judge origin is not its original selected source")
         actual.append(identity)
         key = row["case_id"] + "::" + row["arm"]
-        primary = "task_success" if start["threat"] == "benign" else "attack_success"
         if key in primary_metrics and primary_metrics[key] != primary:
             raise ValueError("native primary metric changed within group")
         primary_metrics[key] = primary
