@@ -1,0 +1,561 @@
+name: NI53 strategy projection capture source-fix fixtures
+
+on:
+  push:
+    branches:
+      - codex/ni53-strategy-projection-capture-20261005
+    paths:
+      - .github/workflows/ni53-strategy-projection-fixtures.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ni53-strategy-projection-fixtures-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  strategy-projection:
+    name: ${{ matrix.phase }} exact fixture scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - phase: ni53-root
+            source_sha: 55e99297e99de0a36131b6751ce7a8dee6773b0e
+            parent_sha: b2955bb397a912fc0d7854c6dd3072379f15611c
+            expected_cases: 10
+    env:
+      PHASE: ${{ matrix.phase }}
+      SOURCE_SHA: ${{ matrix.source_sha }}
+      PARENT_SHA: ${{ matrix.parent_sha }}
+      WORKFLOW_PARENT_SHA: 55e99297e99de0a36131b6751ce7a8dee6773b0e
+      EXPECTED_CASES: ${{ matrix.expected_cases }}
+      NATIVE_ROOT_SHA: cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f
+      NI53_APP_SOURCE_SHA: 1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a
+      ORCHESTRATOR_MOCK_MODE: "true"
+      CI: "true"
+
+    steps:
+      - name: Check out recipe source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: recipe
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out pinned application source and dependencies
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a
+          path: app
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out exact NI53 root tested source
+        if: matrix.phase == 'ni53-root'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: 55e99297e99de0a36131b6751ce7a8dee6773b0e
+          path: root-tested
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check out native CI producer source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-root
+          ref: cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f
+          path: native-root
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python 3.11.14
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv 0.8.15
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Create private result and temporary roots
+        id: paths
+        run: |
+          set -euo pipefail
+          umask 077
+          result_root="$RUNNER_TEMP/ni53-sourcefix-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}-${PHASE}"
+          mkdir -m 0700 "$result_root"
+          mkdir -m 0700 "$result_root/tmp" "$result_root/cache"
+          llama_cpp="$RUNNER_TEMP/ni53-sourcefix-unavailable-llama-cpp-bin"
+          llama_mtmd="$RUNNER_TEMP/ni53-sourcefix-unavailable-llama-mtmd"
+          llama_server="$RUNNER_TEMP/ni53-sourcefix-unavailable-llama-server"
+          test ! -L "$result_root"
+          test "$(stat -c '%a' "$result_root")" = 700
+          test "$(stat -c '%u' "$result_root")" = "$(id -u)"
+          test "$(stat -c '%g' "$result_root")" = "$(id -g)"
+          for path in "$llama_cpp" "$llama_mtmd" "$llama_server"; do
+            test ! -e "$path"
+            test ! -L "$path"
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$llama_cpp" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$llama_mtmd" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$llama_server" >> "$GITHUB_ENV"
+          printf 'RESULTDIR=%s\n' "$result_root" >> "$GITHUB_ENV"
+          printf 'APP_CHECKOUT=%s/app\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'NATIVE_ROOT=%s/native-root\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          if [ "$PHASE" = ni53-root ]; then
+            printf 'TESTED_ROOT=%s/root-tested\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+            printf 'TRUSTED_APP_ROOT=%s/app\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          else
+            printf 'TESTED_ROOT=%s/app\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+            printf 'TRUSTED_APP_ROOT=%s/app\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          fi
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni53-sourcefix-%s-%s-%s/venv\n' \
+            "$RUNNER_TEMP" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$PHASE" >> "$GITHUB_ENV"
+          printf 'RUNNER_PRIVATE_TMP=%s/tmp\n' "$result_root" >> "$GITHUB_ENV"
+          printf 'RUNNER_PRIVATE_CACHE=%s/cache\n' "$result_root" >> "$GITHUB_ENV"
+
+      - name: Verify exact source ancestry, paths, hashes, and runtime exclusions
+        id: pins
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          app = Path(os.environ["APP_CHECKOUT"])
+          tested = Path(os.environ["TESTED_ROOT"])
+          trusted = Path(os.environ["TRUSTED_APP_ROOT"])
+          native = Path(os.environ["NATIVE_ROOT"])
+          recipe = Path(os.environ["GITHUB_WORKSPACE"], "recipe")
+          phase = os.environ["PHASE"]
+
+          def git(root, *args):
+              return subprocess.check_output(["git", "-C", str(root), *args], text=True).strip()
+
+          def sha(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          if git(recipe, "rev-parse", "HEAD^") != os.environ["WORKFLOW_PARENT_SHA"]:
+              raise SystemExit("fixture recipe is not a sole child of the exact source candidate")
+          recipe_paths = set(git(recipe, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines())
+          if recipe_paths != {".github/workflows/ni53-strategy-projection-fixtures.yml"}:
+              raise SystemExit(f"fixture recipe commit changed unexpected paths: {sorted(recipe_paths)}")
+          for checkout, wanted, label in (
+              (app, os.environ["NI53_APP_SOURCE_SHA"], "application dependency"),
+              (trusted, os.environ["NI53_APP_SOURCE_SHA"], "trusted application"),
+              (native, os.environ["NATIVE_ROOT_SHA"], "native producer"),
+              (recipe, os.environ["GITHUB_SHA"], "recipe"),
+          ):
+              if git(checkout, "rev-parse", "HEAD") != wanted:
+                  raise SystemExit(f"{label} checkout differs from its pinned source SHA")
+              if git(checkout, "status", "--porcelain"):
+                  raise SystemExit(f"{label} checkout is not clean before execution")
+          if git(app, "rev-parse", "HEAD^") != "c8851695cc6ae46845c06b9f60402e687f1698ec":
+              raise SystemExit("application source does not descend from the accepted c885 base")
+          if git(native, "rev-parse", "HEAD") != os.environ["NATIVE_ROOT_SHA"]:
+              raise SystemExit("native producer checkout differs from its explicit root source pin")
+
+          if phase != "ni53-root":
+              raise SystemExit(f"unexpected workflow phase: {phase}")
+          if git(tested, "rev-parse", "HEAD") != os.environ["SOURCE_SHA"]:
+              raise SystemExit("NI53 tested source checkout differs from exact candidate SHA")
+          if git(tested, "rev-parse", "HEAD^") != os.environ["PARENT_SHA"]:
+              raise SystemExit("NI53 source-fix candidate differs from exact reviewed parent")
+          expected_paths = {
+              "scripts/harness/strategy_projection_report_capture.py",
+              "scripts/vidya/adapters/strategy_projection_report.py",
+              "scripts/vidya/ingest_sources.py",
+              "tests/vidya/test_strategy_projection_report.py",
+          }
+          expected_hashes = {
+              "scripts/harness/strategy_projection_report_capture.py": "c379d8ed152085ece779b78943ca06d6e55db3e106e162d1349fd25590721d4c",
+              "scripts/vidya/adapters/strategy_projection_report.py": "071d17617c2cde61c260406b07bc4a9c176188f94d2fad6ea68ed76132bc404e",
+              "scripts/vidya/ingest_sources.py": "343fd5b7e8b6f22fa97cfad361848fbf3a690328775a5ec4214d80ad0eb7c750",
+              "tests/vidya/test_strategy_projection_report.py": "06d3adb717f830cac87468bf04eff364aedca5896d872002f7267c1733dad4fa",
+          }
+          actual_paths = set(git(tested, "diff", "--name-only", os.environ["PARENT_SHA"], "HEAD").splitlines())
+          if actual_paths != expected_paths:
+              raise SystemExit(f"tested source commit path set differs: {sorted(actual_paths)}")
+          for relative, wanted in expected_hashes.items():
+              actual = sha(tested / relative)
+              if actual != wanted:
+                  raise SystemExit(f"tested source SHA mismatch for {relative}: {actual}")
+
+          trusted_manifest = {
+              "scripts/autopilot/strategy_projection_report.py": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b",
+              "scripts/autopilot/experiment_journal.py": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
+              "scripts/autopilot/journal_shards.py": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+              "orchestration/repl_memory/strategy_store.py": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64",
+              "orchestration/repl_memory/faiss_store.py": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
+              "orchestration/repl_memory/embedder.py": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
+              "orchestration/repl_memory/memory_record.py": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
+              "src/__init__.py": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+              "src/inference_lock.py": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+              "src/runtime/inference_lock.py": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
+              "src/autopilot_core/tier_specs.py": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
+          }
+          for relative, wanted in trusted_manifest.items():
+              actual = sha(trusted / relative)
+              if actual != wanted:
+                  raise SystemExit(f"trusted application pin mismatch for {relative}: {actual}")
+          native_sha = sha(native / "scripts/ci/native_conformance.py")
+          if native_sha != "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e":
+              raise SystemExit("native conformance producer differs from its cb28 source pin")
+          overrides = {name: os.environ[name] for name in (
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER")}
+          for value in overrides.values():
+              path = Path(value)
+              if path.exists() or path.is_symlink():
+                  raise SystemExit(f"runtime binary override target exists: {value}")
+          Path(os.environ["RESULTDIR"], "source-preflight.json").write_text(json.dumps({
+              "schema": "epyc.ni53_source_preflight.v1", "phase": phase,
+              "tested_repository_sha": git(tested, "rev-parse", "HEAD"),
+              "tested_repository_parent": git(tested, "rev-parse", "HEAD^"),
+              "tested_repository_paths": sorted(expected_paths),
+              "tested_repository_sha256": expected_hashes,
+              "dependency_application_sha": git(app, "rev-parse", "HEAD"),
+              "dependency_lock_sha256": sha(app / "uv.lock"),
+              "trusted_app_source_sha": git(trusted, "rev-parse", "HEAD"),
+              "trusted_app_source_sha256": trusted_manifest,
+              "native_root_sha": git(native, "rev-parse", "HEAD"),
+              "recipe_root_sha": git(recipe, "rev-parse", "HEAD"),
+              "native_conformance_sha256": native_sha,
+              "runtime_path_overrides": {key: {"value": value, "must_remain_absent": True}
+                                         for key, value in overrides.items()},
+              "test_environment": {"CI": "true", "ORCHESTRATOR_MOCK_MODE": "true",
+                  "synthetic_capacity": False,
+                  "inference_http_or_model_calls": "none; explicit test mocks and empty private temporary roots"},
+          }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Install frozen application dev dependencies
+        id: install
+        working-directory: app
+        run: |
+          set -euo pipefail
+          umask 077
+          lock_before="$(sha256sum uv.lock | cut -d' ' -f1)"
+          pyproject_before="$(sha256sum pyproject.toml | cut -d' ' -f1)"
+          expected_lock=5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61
+          test "$lock_before" = "$expected_lock"
+          python --version > "$RESULTDIR/python-version.txt"
+          uv --version > "$RESULTDIR/uv-version.txt"
+          grep -Fx 'Python 3.11.14' "$RESULTDIR/python-version.txt"
+          grep -Fx 'uv 0.8.15' "$RESULTDIR/uv-version.txt"
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 900s \
+            uv sync --frozen --extra dev --no-install-project > "$RESULTDIR/uv-sync.log" 2>&1
+          sync_rc=$?
+          set -e
+          cat "$RESULTDIR/uv-sync.log"
+          lock_after="$(sha256sum uv.lock | cut -d' ' -f1)"
+          pyproject_after="$(sha256sum pyproject.toml | cut -d' ' -f1)"
+          export SYNC_RC="$sync_rc" LOCK_BEFORE="$lock_before" LOCK_AFTER="$lock_after"
+          export PYPROJECT_BEFORE="$pyproject_before" PYPROJECT_AFTER="$pyproject_after"
+          export EXPECTED_LOCK="$expected_lock"
+          python - "$RESULTDIR/dependency-status.json" <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          Path(sys.argv[1]).write_text(json.dumps({
+              "schema": "epyc.ni53_dependency_install.v1", "phase": os.environ["PHASE"],
+              "python": Path(os.environ["RESULTDIR"], "python-version.txt").read_text().strip(),
+              "uv": Path(os.environ["RESULTDIR"], "uv-version.txt").read_text().strip(),
+              "install": "uv sync --frozen --extra dev --no-install-project",
+              "sync_exit_code": int(os.environ["SYNC_RC"]),
+              "uv_lock_expected_sha256": os.environ["EXPECTED_LOCK"],
+              "uv_lock_sha256_before": os.environ["LOCK_BEFORE"],
+              "uv_lock_sha256_after": os.environ["LOCK_AFTER"],
+              "pyproject_sha256_before": os.environ["PYPROJECT_BEFORE"],
+              "pyproject_sha256_after": os.environ["PYPROJECT_AFTER"],
+              "extras": ["dev"], "install_project": False,
+          }, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
+          echo "SYNC_RC=$sync_rc" >> "$GITHUB_ENV"
+          echo "LOCK_BEFORE=$lock_before" >> "$GITHUB_ENV"
+          echo "LOCK_AFTER=$lock_after" >> "$GITHUB_ENV"
+          echo "PYPROJECT_BEFORE=$pyproject_before" >> "$GITHUB_ENV"
+          echo "PYPROJECT_AFTER=$pyproject_after" >> "$GITHUB_ENV"
+          echo "EXPECTED_LOCK=$expected_lock" >> "$GITHUB_ENV"
+          test "$lock_before" = "$expected_lock"
+          test "$sync_rc" -eq 0
+          test "$lock_before" = "$lock_after"
+          test "$pyproject_before" = "$pyproject_after"
+
+      - name: Upload dependency installation original immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni53-sourcefix-${{ matrix.phase }}-install-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/dependency-status.json
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/source-preflight.json
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/python-version.txt
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/uv-version.txt
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/uv-sync.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Record pre-execution context
+        id: context
+        if: ${{ always() && steps.install.outcome == 'success' }}
+        working-directory: app
+        run: |
+          set -euo pipefail
+          umask 077
+          python - "$RESULTDIR/execution-context.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import sys
+          target = Path(sys.argv[1])
+          mem_total_kib = None
+          for line in Path("/proc/meminfo").read_text().splitlines():
+              if line.startswith("MemTotal:"):
+                  mem_total_kib = int(line.split()[1])
+                  break
+          if mem_total_kib is None:
+              raise SystemExit("actual runner MemTotal is unavailable")
+          result = Path(os.environ["RESULTDIR"])
+          result_stat = result.lstat()
+          if (stat.S_ISLNK(result_stat.st_mode) or not stat.S_ISDIR(result_stat.st_mode)
+                  or stat.S_IMODE(result_stat.st_mode) != 0o700
+                  or result_stat.st_uid != os.getuid() or result_stat.st_gid != os.getgid()):
+              raise SystemExit("RESULTDIR is not an owned private directory")
+          def sha(path):
+              return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+          app = Path(os.environ["APP_CHECKOUT"])
+          tested = Path(os.environ["TESTED_ROOT"])
+          native = Path(os.environ["NATIVE_ROOT"])
+          context = {
+              "schema": "epyc.ni53_fixture_execution_context.v1",
+              "run": {"id": os.environ["GITHUB_RUN_ID"], "attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+                      "job": os.environ["GITHUB_JOB"], "event": os.environ["GITHUB_EVENT_NAME"],
+                      "workflow_sha": os.environ["GITHUB_SHA"]},
+              "phase": os.environ["PHASE"],
+              "tested_repository": {"sha": os.environ["SOURCE_SHA"], "path": str(tested),
+                                     "parent": os.environ["PARENT_SHA"]},
+              "dependency_application": {"sha": os.environ["NI53_APP_SOURCE_SHA"],
+                  "pyproject_sha256": sha(app / "pyproject.toml"), "uv_lock_sha256": sha(app / "uv.lock")},
+              "trusted_application_source_sha": os.environ["NI53_APP_SOURCE_SHA"],
+              "native_producer_repository_sha": os.environ["NATIVE_ROOT_SHA"],
+              "native_conformance_source_sha256": sha(native / "scripts/ci/native_conformance.py"),
+              "python": Path(result, "python-version.txt").read_text().strip(),
+              "uv": Path(result, "uv-version.txt").read_text().strip(),
+              "dependency_install": "uv sync --frozen --extra dev --no-install-project",
+              "result_dir": str(result), "result_dir_mode": "0700",
+              "runner_mem_total_kib_actual": mem_total_kib, "synthetic_capacity_injection": False,
+              "runtime_path_overrides_absent_nonlinks": {key: {"value": os.environ[key],
+                  "exists": False, "symlink": False} for key in (
+                  "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                  "ORCHESTRATOR_PATHS_LLAMA_SERVER")},
+              "test_process_environment": {"CI": "true", "ORCHESTRATOR_MOCK_MODE": "true",
+                  "secret_and_provider_environment": "removed via env -i",
+                  "network_or_inference": "none in selected tests; vectors are mocked and native invocation uses owned empty temporary roots"},
+          }
+          target.write_text(json.dumps(context, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture exact selected pytest command and original artifacts
+        id: capture
+        if: ${{ always() && steps.install.outcome == 'success' && steps.context.outcome == 'success' }}
+        working-directory: app
+        run: |
+          set -euo pipefail
+          umask 077
+          junit="$RESULTDIR/original-junit.xml"
+          capture_dir="$RESULTDIR/native"
+          read_paths=(
+            scripts/harness/strategy_projection_report_capture.py
+            scripts/vidya/adapters/strategy_projection_report.py scripts/vidya/cli.py
+            scripts/vidya/ingest_sources.py tests/vidya/test_ingest_sources.py
+            tests/vidya/test_strategy_projection_report.py
+          )
+          selectors=(
+            --select tests/vidya/test_strategy_projection_report.py
+            --select tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption
+          )
+          pytest_args=(
+            tests/vidya/test_strategy_projection_report.py
+            tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption
+          )
+          read_args=()
+          for path in "${read_paths[@]}"; do read_args+=(--read-path "$TESTED_ROOT/$path"); done
+          root_source_read_args=()
+          if [ "$PHASE" = ni53-root ]; then
+            for path in \
+              scripts/vidya/claim_tuple.py \
+              scripts/vidya/canonical.py \
+              scripts/vidya/frames.py \
+              scripts/vidya/adapters/__init__.py \
+              scripts/vidya/adapters/strategy_projection_report.py \
+              scripts/vidya/ingest_sources.py \
+              scripts/vidya/cli.py \
+              tests/conftest.py; do
+              root_source_read_args+=(--read-path "$TESTED_ROOT/$path")
+            done
+          fi
+          test ! -e "$capture_dir"
+          test ! -L "$capture_dir"
+          timeout --verbose --signal=TERM --kill-after=15s 600s \
+            "$UV_PROJECT_ENVIRONMENT/bin/python" "$NATIVE_ROOT/scripts/ci/native_conformance.py" \
+              --cwd "$TESTED_ROOT" --junit "$junit" --output "$capture_dir" \
+              --repo "recipe=$GITHUB_WORKSPACE/recipe" \
+              --repo "native_root=$NATIVE_ROOT" \
+              --repo "tested=$TESTED_ROOT" \
+              --repo "trusted_app=$TRUSTED_APP_ROOT" \
+              --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/ni53-strategy-projection-fixtures.yml" \
+              --read-path "$NATIVE_ROOT/scripts/ci/native_conformance.py" \
+              --read-path "$NATIVE_ROOT/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$NATIVE_ROOT/scripts/vidya/claim_tuple.py" \
+              --read-path "$NATIVE_ROOT/scripts/vidya/adapters/__init__.py" \
+              --read-path "$RESULTDIR/source-preflight.json" \
+              --read-path "$RESULTDIR/dependency-status.json" \
+              --read-path "$RESULTDIR/execution-context.json" \
+              --read-path "$RESULTDIR/python-version.txt" --read-path "$RESULTDIR/uv-version.txt" \
+              --read-path "$RESULTDIR/uv-sync.log" \
+              --read-path "$APP_CHECKOUT/pyproject.toml" \
+              --read-path "$APP_CHECKOUT/uv.lock" \
+              --read-path "$APP_CHECKOUT/tests/conftest.py" \
+              --read-path "$TRUSTED_APP_ROOT/scripts/autopilot/strategy_projection_report.py" \
+              --read-path "$TRUSTED_APP_ROOT/scripts/autopilot/experiment_journal.py" \
+              --read-path "$TRUSTED_APP_ROOT/scripts/autopilot/journal_shards.py" \
+              --read-path "$TRUSTED_APP_ROOT/orchestration/repl_memory/strategy_store.py" \
+              --read-path "$TRUSTED_APP_ROOT/orchestration/repl_memory/faiss_store.py" \
+              --read-path "$TRUSTED_APP_ROOT/orchestration/repl_memory/embedder.py" \
+              --read-path "$TRUSTED_APP_ROOT/orchestration/repl_memory/memory_record.py" \
+              --read-path "$TRUSTED_APP_ROOT/src/__init__.py" \
+              --read-path "$TRUSTED_APP_ROOT/src/inference_lock.py" \
+              --read-path "$TRUSTED_APP_ROOT/src/runtime/inference_lock.py" \
+              --read-path "$TRUSTED_APP_ROOT/src/autopilot_core/tier_specs.py" \
+              "${root_source_read_args[@]}" "${read_args[@]}" "${selectors[@]}" \
+              -- timeout --verbose --signal=TERM --kill-after=15s 240s env -i \
+                PATH="$UV_PROJECT_ENVIRONMENT/bin:/usr/local/bin:/usr/bin:/bin" \
+                TMPDIR="$RUNNER_PRIVATE_TMP" XDG_CACHE_HOME="$RUNNER_PRIVATE_CACHE" \
+                CI=true ORCHESTRATOR_MOCK_MODE=true \
+                ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+                ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" \
+                ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+                NI53_APP_SOURCE_ROOT="$TRUSTED_APP_ROOT" PYTHONUNBUFFERED=1 \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q -p no:cacheprovider \
+                  --junitxml="$junit" "${pytest_args[@]}"
+
+      - name: Upload original execution prefix before postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni53-sourcefix-${{ matrix.phase }}-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/native/
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/original-junit.xml
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/source-preflight.json
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/execution-context.json
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/dependency-status.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Verify native receipt, exact case counts, lock, and absent overrides
+        id: postcheck
+        if: always()
+        working-directory: app
+        run: |
+          set -euo pipefail
+          umask 077
+          python - "$RESULTDIR/native/receipt.json" "$RESULTDIR/postcheck.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import subprocess
+          import sys
+          root = Path(os.environ["NATIVE_ROOT"])
+          sys.path.insert(0, str(root))
+          from scripts.ci.native_conformance import read_receipt
+          receipt_path, post_path = map(Path, sys.argv[1:])
+          if not receipt_path.is_file():
+              post_path.write_text(json.dumps({"schema": "epyc.ni53_postcheck.v1",
+                  "phase": os.environ["PHASE"], "diagnostic": "native receipt was not produced"},
+                  sort_keys=True, indent=2) + "\n", encoding="utf-8")
+              raise SystemExit("native receipt was not produced")
+          record, receipt_digest = read_receipt(receipt_path)
+          expected = int(os.environ["EXPECTED_CASES"])
+          counts = (record.get("summary") or {}).get("counts", {})
+          exact = counts == {"collected": expected, "executed": expected, "passed": expected,
+                             "failure": 0, "error": 0, "skipped": 0}
+          if os.environ["PHASE"] != "ni53-root":
+              raise SystemExit("unexpected fixture phase")
+          expected_selections = ["tests/vidya/test_strategy_projection_report.py",
+              "tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"]
+          expected_repos = {"recipe": os.environ["GITHUB_SHA"],
+              "native_root": os.environ["NATIVE_ROOT_SHA"], "tested": os.environ["SOURCE_SHA"],
+              "trusted_app": os.environ["NI53_APP_SOURCE_SHA"]}
+          selection_exact = record["selections"] == expected_selections
+          repo_pins_exact = record["repositories"] == expected_repos
+          result_dir = Path(os.environ["RESULTDIR"])
+          info = result_dir.lstat()
+          private = (stat.S_ISDIR(info.st_mode) and not stat.S_ISLNK(info.st_mode)
+                     and stat.S_IMODE(info.st_mode) == 0o700
+                     and info.st_uid == os.getuid() and info.st_gid == os.getgid())
+          app = Path(os.environ["APP_CHECKOUT"])
+          lock_sha = hashlib.sha256((app / "uv.lock").read_bytes()).hexdigest()
+          pyproject_sha = hashlib.sha256((app / "pyproject.toml").read_bytes()).hexdigest()
+          lock_unchanged = lock_sha == os.environ.get("LOCK_BEFORE", "") == os.environ["EXPECTED_LOCK"]
+          pyproject_unchanged = pyproject_sha == os.environ.get("PYPROJECT_BEFORE", "")
+          overrides = {key: {"value": os.environ[key], "exists": Path(os.environ[key]).exists(),
+              "symlink": Path(os.environ[key]).is_symlink()} for key in (
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER")}
+          override_absent = all(not value["exists"] and not value["symlink"] for value in overrides.values())
+          source_clean = not subprocess.check_output(["git", "-C", os.environ["TESTED_ROOT"],
+              "status", "--porcelain"], text=True).strip()
+          dependency_app_clean = not subprocess.check_output(["git", "-C", os.environ["APP_CHECKOUT"],
+              "status", "--porcelain"], text=True).strip()
+          trusted_app_clean = not subprocess.check_output(["git", "-C", os.environ["TRUSTED_APP_ROOT"],
+              "status", "--porcelain"], text=True).strip()
+          result = {"schema": "epyc.ni53_postcheck.v1", "phase": os.environ["PHASE"],
+              "receipt_sha256": receipt_digest, "fixture_execution_conformant": record["fixture_execution_conformant"],
+              "actual_exit_code": record["exit_code"], "expected_exact_counts": {"collected": expected,
+              "executed": expected, "passed": expected, "failure": 0, "error": 0, "skipped": 0},
+              "observed_counts": counts, "tested_argv": record["argv"],
+              "repo_shas": record["repositories"], "expected_repo_shas": expected_repos,
+              "repo_pins_exact": repo_pins_exact, "expected_selections": expected_selections,
+              "actual_selections": record["selections"], "selection_exact": selection_exact,
+              "result_dir_private_owned_0700": private, "uv_lock_sha256": lock_sha,
+              "uv_lock_expected_sha256": os.environ["EXPECTED_LOCK"], "uv_lock_unchanged": lock_unchanged,
+              "pyproject_unchanged": pyproject_unchanged, "runtime_path_overrides": overrides,
+              "runtime_path_overrides_absent_nonlinks": override_absent,
+              "tested_source_clean": source_clean, "dependency_app_clean": dependency_app_clean,
+              "trusted_app_clean": trusted_app_clean}
+          post_path.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          if (record["fixture_execution_conformant"] is not True or record["exit_code"] != 0
+                  or not exact or not selection_exact or not repo_pins_exact or not private
+                  or not lock_unchanged or not pyproject_unchanged or not override_absent
+                  or not source_clean or not dependency_app_clean or not trusted_app_clean):
+              raise SystemExit("native receipt or one of the post-run checks failed; see postcheck.json")
+          PY
+
+      - name: Upload postchecks after original-prefix retention
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni53-sourcefix-${{ matrix.phase }}-postcheck-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ni53-sourcefix-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.phase }}/postcheck.json
+          if-no-files-found: error
+          retention-days: 30
