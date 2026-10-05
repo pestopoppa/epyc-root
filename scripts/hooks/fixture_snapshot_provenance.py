@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Recognize two reviewed public fixture blobs in complete staged native custody.
+"""Recognize reviewed public fixture/policy blobs in complete staged native custody.
 
 This is a PII false-positive check, not measurement authority. Unknown/changed or
 unbound contents always fall back to the ordinary scanner. All input bytes come
@@ -26,10 +26,23 @@ FIXTURES = {
         "531a7bcd5239c80f1bd57df66c5214abfc12b0807d2e6260652597d1a743a382",
     "tests/unit/test_knowledge_tools.py":
         "44a331b41ea80f92a2915cc6040fd6ee4f51da0bd5acb0a7daa388e24418bfcc",
+    # Original public policy source at the exact tested ROOT revision. Its
+    # illustrative account-shaped comments are not vendor placeholders.
+    # https://github.com/pestopoppa/epyc-root/blob/4cc17080c6209e5d7f2a744807c9cf87ae0bf70f/scripts/hooks/pii_precommit.sh
+    "scripts/hooks/pii_precommit.sh":
+        "5cafb5e16ed0e14d51b4e151bc2748709018f45d68db650c9d8ce34764d26c88",
 }
 SOURCE_REVISIONS = {
     "def18591f813070a20906f9d228ddd9dd0da9fd3",
     "4244e72b2aa8aae9a92f684fcd5090a852223888",
+}
+# Revision namespaces are independent: app identities never authorize ROOT
+# policy snapshots, and ROOT identities never authorize app test fixtures.
+SOURCE_BINDINGS = {
+    "tests/unit/test_credential_redaction.py": ("orchestrator", SOURCE_REVISIONS),
+    "tests/unit/test_knowledge_tools.py": ("orchestrator", SOURCE_REVISIONS),
+    "scripts/hooks/pii_precommit.sh":
+        ("root_source", {"4cc17080c6209e5d7f2a744807c9cf87ae0bf70f"}),
 }
 REGULAR_MODES = {"100644", "100755"}
 
@@ -125,8 +138,6 @@ def verified_phase(container: PurePosixPath, blobs: IndexBlobs, read_receipt):
             with (destination / name).open("xb") as output:
                 output.write(blobs.read(str(container / name)))
         verified, _ = read_receipt(destination / "receipt.json")
-    if verified["repositories"].get("orchestrator") not in SOURCE_REVISIONS:
-        raise ValueError("fixture source revision is not a reviewed public identity")
     return verified
 
 
@@ -164,6 +175,9 @@ def exemptions(repo: Path) -> list[str]:
                 if not cwd.is_absolute() or ".." in cwd.parts:
                     continue
                 source = [relative for relative, sha in FIXTURES.items() if sha == content_hash][0]
+                repository, revisions = SOURCE_BINDINGS[source]
+                if record["repositories"].get(repository) not in revisions:
+                    continue
                 expected_name = str(cwd / source)
                 bound = [item for item in record["readset"]
                          if item.get("role") == "declared_read"
