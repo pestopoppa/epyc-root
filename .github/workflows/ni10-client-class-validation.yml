@@ -27,9 +27,11 @@ jobs:
         run: |
           test ! -e "$RUNNER_TEMP/ni10-unavailable-binary-directory"
           test ! -e "$RUNNER_TEMP/ni10-unavailable-mtmd-binary"
+          test ! -e "$RUNNER_TEMP/ni10-unavailable-llama-server"
           printf 'UV_PROJECT_ENVIRONMENT=%s/ni10-client-class-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni10-unavailable-binary-directory\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
           printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni10-unavailable-mtmd-binary\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni10-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
 
       - name: Checkout immutable workflow candidate
         uses: actions/checkout@v4
@@ -183,6 +185,9 @@ jobs:
           mtmd_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"])
           if mtmd_path_override.exists():
               raise RuntimeError(f"actual capacity fixture vision binary path must remain absent: {mtmd_path_override}")
+          llama_server_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"])
+          if llama_server_path_override.exists():
+              raise RuntimeError(f"actual capacity fixture llama server path must remain absent: {llama_server_path_override}")
           test_source = '''from pathlib import Path
           import subprocess
           import sys
@@ -216,8 +221,12 @@ jobs:
               "kernel_path_intentionally_absent": True,
               "vision_binary_path_override": str(mtmd_path_override),
               "vision_binary_path_intentionally_absent": True,
+              "llama_server_path_override": str(llama_server_path_override),
+              "llama_server_path_intentionally_absent": True,
               "scope": "one expected refusal before app import or serving",
               "inference": "none; no kernel availability, linkage, or runtime claim",
+              "pytest_rootdir": str(Path.cwd()),
+              "pytest_junit_prefix": "ni10_actual_capacity_guard",
               "guard_fixture_sha256": hashlib.sha256(test_path.read_bytes()).hexdigest(),
           }
           with Path("ni10_capacity_guard/context.json").open("x", encoding="utf-8") as output:
@@ -253,6 +262,7 @@ jobs:
               --select 'ni10_capacity_guard/test_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving' \
               -- timeout --verbose --signal=TERM --kill-after=10s 90s \
                 "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --noconftest -c /dev/null \
+                    --rootdir="$PWD" --junit-prefix=ni10_actual_capacity_guard \
                     ni10_capacity_guard/test_actual_capacity_guard.py \
                     --junitxml=ni10_capacity_guard/original-pytest.xml \
                     --log-file=ni10_capacity_guard/pytest.log
@@ -282,6 +292,9 @@ jobs:
           mtmd_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"])
           if mtmd_path_override.exists():
               raise RuntimeError(f"synthetic vision binary path override must remain absent: {mtmd_path_override}")
+          llama_server_path_override = Path(os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"])
+          if llama_server_path_override.exists():
+              raise RuntimeError(f"synthetic llama server path override must remain absent: {llama_server_path_override}")
           context = {
               "schema": "ni10.client_class_fixture_context.v1",
               "phase": "explicit_synthetic_bootstrap_route_and_native_record",
@@ -293,6 +306,8 @@ jobs:
               "kernel_path_intentionally_absent": True,
               "vision_binary_path_override": str(mtmd_path_override),
               "vision_binary_path_intentionally_absent": True,
+              "llama_server_path_override": str(llama_server_path_override),
+              "llama_server_path_intentionally_absent": True,
               "selection": "three route tests and one parametrized route-to-native-record test",
               "inference": "none",
               "claim_scope": "selected NI10 request metadata fixtures only",
