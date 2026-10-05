@@ -1,0 +1,209 @@
+name: NI05 candidate hermetic validation
+on:
+  push:
+    branches: ['codex/ni05-validation-root-ninth-20261005']
+permissions:
+  contents: read
+env:
+  ROOT_SHA: 6f243dfc6890ad57929a08bd44134329bb508fe0
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+  ORCH_SHA: 76f7d4a9200bf93164e982925c741a7e33275895
+jobs:
+  orchestrator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ni05-unused-llama-server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research-binding
+      - name: Resolve tracked registry symlink from pinned research checkout
+        run: |
+          sudo mkdir -p /mnt/raid0/llm
+          sudo ln -s "$GITHUB_WORKSPACE/research-binding" /mnt/raid0/llm/epyc-inference-research
+          test -r orchestration/model_registry_full.yaml
+      - name: Install declared dev dependencies
+        run: |
+          python -m pip install '.[dev]' 'pytest==9.1.1'
+          python -c 'from importlib.metadata import version; print("resolved pytest=" + version("pytest")); print("resolved pydantic-graph=" + version("pydantic-graph"))'
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SHA }}
+          path: root-capture-binding
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ github.sha }}
+          path: ci-control
+      - name: Prepare original phase context and native capture recipe
+        shell: bash
+        run: |
+          cat > ni05-capture-phase.sh <<'CAPTURE'
+          #!/bin/bash
+          set -uo pipefail
+          phase="$1"
+          junit="$2"
+          context="$3"
+          shift 3
+          python - "$phase" "$context" <<'CONTEXT'
+          import json, os, sys
+          phase, context = sys.argv[1:]
+          allowed = ("CI", "ORCHESTRATOR_MOCK_MODE", "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                     "ORCHESTRATOR_PATHS_LLAMA_MTMD", "ORCHESTRATOR_PATHS_LLAMA_SERVER")
+          record = {"phase": phase, "context": context,
+                    "configuration": {key: os.environ.get(key, "") for key in allowed},
+                    "synthetic_host_ram_gib": 1024 if context == "synthetic-host-unit" else None,
+                    "excluded_collection_modules": (["tests/unit/test_gpu_shadow_lane.py",
+                         "tests/unit/test_gpu_shadow_lane_p2.py", "tests/unit/test_gpu_shadow_lane_preflight.py"]
+                         if context == "synthetic-host-unit" else []),
+                    "excluded_live_nodes": (["tests/unit/test_openai_backend.py::TestOpenAIBackendIntegration",
+                         "tests/unit/test_anthropic_backend.py::TestAnthropicBackendIntegration",
+                         "tests/unit/test_prompt_compressor.py::TestPromptCompressorIntegration::test_real_compression",
+                         "tests/unit/test_pdf_router.py::TestPDFRouterIntegration",
+                         "tests/unit/test_retrieval.py::test_cross_encoder_real_model_discriminates"]
+                         if context == "synthetic-host-unit" else
+                         ["tests/unit/test_openai_backend.py::TestOpenAIBackendIntegration"]
+                         if phase.startswith("api-") else []),
+                    "live_exclusion_reason": "provider inference, real LLMLingua/ONNX model, or host PDF tool fixtures outside offline scope",
+                    "exclusion_reason": "strict production GPU store import contract; no offhost store fabricated"
+                         if context == "synthetic-host-unit" else ""}
+          with open(phase + "-context.json", "x") as output:
+              json.dump(record, output, sort_keys=True)
+          CONTEXT
+          read_args=(--read-path ni05-capture-phase.sh --read-path "$phase-context.json"
+            --read-path ci-control/.github/workflows/ni05-candidate-validation.yml
+            --read-path root-capture-binding/scripts/ci/native_conformance.py
+            --read-path root-capture-binding/scripts/vidya/adapters/ci_conformance.py
+            --read-path root-capture-binding/scripts/vidya/claim_tuple.py
+            --read-path root-capture-binding/scripts/vidya/ingest_sources.py
+            --read-path root-capture-binding/scripts/vidya/cli.py
+            --read-path tests/conftest.py --read-path src/features.py
+            --read-path src/api/routes/config.py --read-path src/runtime/config_attestation.py
+            --read-path src/config/__init__.py --read-path src/config/models.py
+            --read-path src/registry/kernel_paths.py
+            --read-path src/scheduling/device_model.py --read-path scripts/server/stack_manifest.py
+            --read-path scripts/benchmark/md_self_draft_ab.py
+            --read-path scripts/corpus/build_static_ngram_cache.py
+            --read-path tests/fixtures/offhost_unit_bootstrap.py
+            --read-path orchestration/model_registry_full.yaml
+            --read-path orchestration/launch_manifest.yaml
+            --read-path orchestration/gpu_shadow_lane_np_ceiling.yaml)
+          # Explicit declared readscope; this is not a claim to include all dependencies.
+          while IFS= read -r source; do
+            read_args+=(--read-path "$source")
+          done < <(rg --files tests/unit -g '*.py' | sort)
+          python root-capture-binding/scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE" --junit "$junit" --output "native-$phase" \
+            --repo "orchestrator=$GITHUB_WORKSPACE" \
+            --repo "research=$GITHUB_WORKSPACE/research-binding" \
+            --repo "root_capture=$GITHUB_WORKSPACE/root-capture-binding" \
+            --repo "recipe=$GITHUB_WORKSPACE/ci-control" \
+            "${read_args[@]}" --select "$phase" --select "$context" -- "$@"
+          capture_status=$?
+          if test -f "native-$phase/command.log"; then cat "native-$phase/command.log"; fi
+          exit "$capture_status"
+          CAPTURE
+      - name: Ordinary actual-host capacity and strict GPU missing-store fixtures
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          bash ni05-capture-phase.sh ordinary-guards ordinary-guards.xml ordinary-pytest \
+            python -m pytest -q \
+            tests/unit/test_runtime_flags.py::test_fresh_launcher_import_keeps_real_host_capacity_guard \
+            tests/unit/test_gpu_kernel_import_contract.py --junitxml=ordinary-guards.xml
+      - name: Ordinary CPU leaf CLI and builder fixtures
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          bash ni05-capture-phase.sh cpu-leaves cpu-leaves.xml ordinary-pytest \
+            python -m pytest -q tests/unit/test_md_self_draft_ab.py \
+            tests/unit/test_static_ngram_cache_builder.py --junitxml=cpu-leaves.xml
+      - name: Prospective named forward API fixture capture
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          bash ni05-capture-phase.sh api-forward api-forward.xml ordinary-pytest \
+            python -m pytest -q tests/unit/test_openai* \
+            --deselect=tests/unit/test_openai_backend.py::TestOpenAIBackendIntegration --junitxml=api-forward.xml
+      - name: Prospective named reversed API fixture capture
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        shell: bash
+        run: |
+          mapfile -t files < <(printf '%s\n' tests/unit/test_openai* | sort -r)
+          bash ni05-capture-phase.sh api-reverse api-reverse.xml ordinary-pytest \
+            python -m pytest -q "${files[@]}" \
+            --deselect=tests/unit/test_openai_backend.py::TestOpenAIBackendIntegration --junitxml=api-reverse.xml
+      - name: Independent synthetic-host broad unit classification (three named GPU exclusions)
+        if: always()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          bash ni05-capture-phase.sh unit-synthetic unit-synthetic.xml synthetic-host-unit \
+            python tests/fixtures/offhost_unit_bootstrap.py -q tests/unit \
+            --ignore=tests/unit/test_gpu_shadow_lane.py \
+            --ignore=tests/unit/test_gpu_shadow_lane_p2.py \
+            --ignore=tests/unit/test_gpu_shadow_lane_preflight.py \
+            --deselect=tests/unit/test_openai_backend.py::TestOpenAIBackendIntegration \
+            --deselect=tests/unit/test_anthropic_backend.py::TestAnthropicBackendIntegration \
+            --deselect=tests/unit/test_prompt_compressor.py::TestPromptCompressorIntegration::test_real_compression \
+            --deselect=tests/unit/test_pdf_router.py::TestPDFRouterIntegration \
+            --deselect=tests/unit/test_retrieval.py::test_cross_encoder_real_model_discriminates \
+            --junitxml=unit-synthetic.xml
+      - name: Reopen original phase receipts through existing verifier projection
+        if: always()
+        working-directory: root-capture-binding
+        run: |
+          python - <<'VERIFY'
+          import json
+          from pathlib import Path
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          observations = []
+          for path in sorted(Path("..").glob("native-*/receipt.json")):
+              record, digest = read_receipt(path)
+              rows = native_rows(path)
+              observations.append({"receipt": str(path), "sha256": digest,
+                  "conformant": record["fixture_execution_conformant"],
+                  "diagnostic": record["diagnostic"], "counts": record["summary"]["counts"] if record["summary"] else None,
+                  "grade": list(grade(project_ci_conformance(rows[0]))) if rows else None})
+          if len(observations) != 5:
+              raise ValueError("A prospective phase receipt is missing; no replacement or backfill")
+          with open("../native-phase-projections.json", "x") as output:
+              json.dump(observations, output, indent=2, sort_keys=True)
+          print(json.dumps(observations, sort_keys=True))
+          VERIFY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: orchestrator-results
+          path: |
+            ordinary-guards.xml
+            cpu-leaves.xml
+            api-forward.xml
+            api-reverse.xml
+            unit-synthetic.xml
+            native-*/
+            native-phase-projections.json
+            *-context.json
+            ni05-capture-phase.sh
