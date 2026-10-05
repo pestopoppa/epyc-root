@@ -43,8 +43,8 @@
       "size": 3736
     },
     "race-controls.py": {
-      "sha256": "973ca6b7d74244caabd87b56f965ea7547f290dd8762e62cdd1f4c5148796b3b",
-      "size": 1403
+      "sha256": "c6a2754b8fedba15467f4455d224b015b9faba4629eba460ac03c856402f9938",
+      "size": 1435
     },
     "native-child.py": {
       "sha256": "00ec7854df34c9cf71e4be02ef89029d38ee6b8eb5457a3d216640b05ed557f0",
@@ -53,6 +53,10 @@
     "caller-and-contract-proof.json": {
       "sha256": "714a1d849290d711c9d226fef61579e48741a575a6daa8c957c87557dcd16976",
       "size": 18498
+    },
+    "test_native_controls.py": {
+      "sha256": "cc381f401ff19d25c3b58f6d3aebda18ab59c5ad4f6919ba8b84c627580836b6",
+      "size": 1461
     }
   }
 }

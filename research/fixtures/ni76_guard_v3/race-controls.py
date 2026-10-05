@@ -4,6 +4,8 @@ import os
 from pathlib import Path
 import sys
 
+sys.dont_write_bytecode = True
+
 assert os.environ.get('GITHUB_ACTIONS') == 'true'
 source = Path(sys.argv[1])
 spec = importlib.util.spec_from_file_location('ni76_actual_guard', source)

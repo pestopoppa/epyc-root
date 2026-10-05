@@ -1,0 +1,226 @@
+name: NI76 native single-case enrollment of guard controls
+on:
+  push:
+    branches: [codex/ni76-native-enrollment-20261005]
+    paths:
+      - .github/workflows/ni76-native-enrollment.yml
+      - research/fixtures/ni76_guard_v3/**
+permissions:
+  contents: read
+concurrency:
+  group: ni76-guard-v3-validation-20261005
+  cancel-in-progress: false
+jobs:
+  controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      RECIPE_PARENT: 47197c63505bd8eb11c70a4a0bf6c49fde1c19d2
+      ROOT_BASE: e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1
+      APP_BASE: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
+      MANIFEST_SHA: 75dfe1d3363cb5bcad2cf5ae8658cb41e43759ca8251584473a7d5b3ef0a2508
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
+          path: _ni76_app_input
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/setup-node@cdca7365b2dadb8aad0a33bc7601856ffabcc48e
+        with:
+          node-version: 22.14.0
+          check-latest: false
+      - name: Verify immutable proposal and prepare private disposable snapshots
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$GITHUB_ACTIONS" = true
+          test "$RUNNER_ENVIRONMENT" = github-hosted
+          test "$(git rev-parse HEAD^)" = "$RECIPE_PARENT"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test "$(node --version)" = v22.14.0
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C _ni76_app_input rev-parse HEAD)" = "$APP_BASE"
+          NI76_SCOPE="$RUNNER_TEMP/ni76-v3-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$NI76_SCOPE" && test ! -L "$NI76_SCOPE"
+          mkdir -m 700 "$NI76_SCOPE"
+          export NI76_SCOPE
+          mkdir -m 700 "$NI76_SCOPE/originals"
+          cat /proc/self/mountinfo > "$NI76_SCOPE/originals/mountinfo-before.txt"
+          set +e
+          grep -nE '/mnt/raid0/llm|/workspace/repos' "$NI76_SCOPE/originals/mountinfo-before.txt" > "$NI76_SCOPE/originals/mount-absence.stdout" 2> "$NI76_SCOPE/originals/mount-absence.stderr"
+          mount_rc=$?
+          set -e
+          printf '{"exit_code":%s,"required_absence_exit":1}\n' "$mount_rc" > "$NI76_SCOPE/originals/mount-absence-status.json"
+          test "$mount_rc" -eq 1
+          printf 'NI76_SCOPE=%s\nNI76_REAL_NODE=%s\n' "$NI76_SCOPE" "$(command -v node)" >> "$GITHUB_ENV"
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni76_guard_v3"
+          export assets
+          mkdir -m 700 "$NI76_SCOPE/root" "$NI76_SCOPE/app"
+          test "$(sha256sum "$assets/proposal-manifest.json" | cut -d' ' -f1)" = "$MANIFEST_SHA"
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          a=Path(os.environ['assets']);m=json.loads((a/'proposal-manifest.json').read_text())
+          assert m['root_base']==os.environ['ROOT_BASE'] and m['app_base']==os.environ['APP_BASE']
+          import subprocess
+          expected={'.github/workflows/ni76-native-enrollment.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json','research/fixtures/ni76_guard_v3/test_native_controls.py','research/fixtures/ni76_guard_v3/race-controls.py'}
+          actual=set(subprocess.check_output(['git','diff','--name-only',os.environ['RECIPE_PARENT'],'HEAD'],text=True).splitlines())
+          assert actual==expected, ('unexpected recipe changed paths',sorted(actual^expected))
+          for name,entry in m['files'].items():
+              p=a/name
+              assert '..' not in Path(name).parts and not Path(name).is_absolute()
+              assert stat.S_ISREG(p.lstat().st_mode) and not p.is_symlink()
+              for parent in p.parents:
+                  assert not parent.is_symlink()
+                  if parent==a:break
+              b=p.read_bytes();assert len(b)==entry['size'] and hashlib.sha256(b).hexdigest()==entry['sha256']
+          PY
+          # Native mount absence and exact recipe/assets gates passed before VM-only creation.
+          sudo install -d -m 700 -o "$(id -u)" -g "$(id -g)" /mnt/raid0/llm
+          git ls-tree -r "$ROOT_BASE" > "$NI76_SCOPE/originals/root-native-readset.txt"
+          git -C _ni76_app_input ls-tree -r "$APP_BASE" > "$NI76_SCOPE/originals/app-native-readset.txt"
+          git archive "$ROOT_BASE" | tar -x -C "$NI76_SCOPE/root"
+          git -C _ni76_app_input archive "$APP_BASE" | tar -x -C "$NI76_SCOPE/app"
+          git -C "$NI76_SCOPE/root" apply --check "$assets/implementation.patch"
+          git -C "$NI76_SCOPE/root" apply "$assets/implementation.patch"
+          git -C "$NI76_SCOPE/app" apply --check "$assets/app.patch"
+          git -C "$NI76_SCOPE/app" apply "$assets/app.patch"
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          a=Path(os.environ['assets']);s=Path(os.environ['NI76_SCOPE']);m=json.loads((a/'proposal-manifest.json').read_text())
+          for name,e in m['files'].items():
+              if name.startswith(('root/','app/')):assert hashlib.sha256((s/name).read_bytes()).hexdigest()==e['sha256']
+          before={}
+          for repo in ['root','app']:
+              for p in sorted((s/repo).rglob('*')):
+                  st=p.lstat()
+                  if stat.S_ISREG(st.st_mode):before[str(p.relative_to(s))]=hashlib.sha256(p.read_bytes()).hexdigest()
+                  elif stat.S_ISLNK(st.st_mode):before[str(p.relative_to(s))]={'link':os.readlink(p)}
+          (s/'originals/source-before.json').write_text(json.dumps(before,sort_keys=True))
+          for name in ['implementation.patch','app.patch','hosted-controls.py','race-controls.py','native-child.py','caller-and-contract-proof.json','proposal-manifest.json','test_native_controls.py']:
+              (s/'originals'/name).write_bytes((a/name).read_bytes())
+          PY
+          cp .github/workflows/ni76-native-enrollment.yml "$NI76_SCOPE/originals/workflow.original.yml"
+          printf '%s\n' "$HOME" > "$NI76_SCOPE/originals/home-before.txt"
+          /usr/bin/python3 --version > "$NI76_SCOPE/originals/python-version.txt"
+          node --version > "$NI76_SCOPE/originals/node-version.txt"
+          git --version > "$NI76_SCOPE/originals/git-version.txt"
+          printf '{"recipe_sha":"%s","root_base":"%s","app_base":"%s","run_id":"%s","attempt":"%s","source_applied_only_to_disposable_snapshots":true}\n' "$GITHUB_SHA" "$ROOT_BASE" "$APP_BASE" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" > "$NI76_SCOPE/originals/provenance.json"
+      - name: Set up locked native testcase Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.11.14
+      - name: Set up reviewed frozen installer
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: 0.8.15
+          enable-cache: false
+      - name: Prepare owned frozen pytest environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -m 700 "$NI76_SCOPE/venv-cache" "$NI76_SCOPE/venv-cache/install-tmp"
+          export UV_PROJECT_ENVIRONMENT="$NI76_SCOPE/venv"
+          export UV_CACHE_DIR="$NI76_SCOPE/venv-cache"
+          cd "$GITHUB_WORKSPACE/_ni76_app_input"
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+          TMPDIR="$NI76_SCOPE/venv-cache/install-tmp" timeout --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev --no-install-project > "$NI76_SCOPE/originals/native-install.stdout" 2> "$NI76_SCOPE/originals/native-install.stderr"
+          printf 'UV_PROJECT_ENVIRONMENT=%s\n' "$UV_PROJECT_ENVIRONMENT" >> "$GITHUB_ENV"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" -c 'import pytest; assert pytest.__version__ == "9.0.3"; print(pytest.__version__)' > "$NI76_SCOPE/originals/native-pytest-version.txt"
+      - name: Capture one actual native testcase before any audit control executes
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni76_guard_v3"
+          export NI76_ASSETS="$assets"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" --version > "$NI76_SCOPE/originals/native-python-version.txt"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYCONTEXT'
+          import hashlib,json,os,pathlib,shutil,sys
+          scope=pathlib.Path(os.environ['NI76_SCOPE']);o=scope/'originals'
+          assert sys.version_info[:3]==(3,11,14)
+          assert os.environ['GITHUB_ACTIONS']=='true' and os.environ['RUNNER_ENVIRONMENT']=='github-hosted'
+          assert pathlib.Path('/usr/bin/python3').is_file()
+          names=['python-version.txt','node-version.txt','git-version.txt','native-python-version.txt','native-pytest-version.txt','native-install.stdout','native-install.stderr','source-before.json','mountinfo-before.txt','mount-absence-status.json','provenance.json']
+          bindings={name:hashlib.sha256((o/name).read_bytes()).hexdigest() for name in names}
+          context={'native_python':{'path':sys.executable,'version':sys.version,'expected':'3.11.14'},'control_python':{'path':'/usr/bin/python3','version_file':'python-version.txt'},'tools':{'node':os.environ['NI76_REAL_NODE'],'git':shutil.which('git'),'timeout':shutil.which('timeout')},'github_hosted_verified':True,'mount_absence_proof_sha256':bindings['mount-absence-status.json'],'source_snapshot_sha256':bindings['source-before.json'],'pre_execution_bindings':bindings,'inherited_controlled_env':{key:os.environ[key] for key in ['HOME','PATH','NI76_SCOPE','NI76_ASSETS','NI76_REAL_NODE']},'test_env_fixed':{'GITHUB_ACTIONS':'true','PYTHONDONTWRITEBYTECODE':'1'},'native_cases':1,'descriptive_controls':101}
+          (o/'native-pre-context.json').write_text(json.dumps(context,sort_keys=True)+'\n')
+          PYCONTEXT
+          reads=()
+          for file in "$assets"/proposal-manifest.json "$assets"/test_native_controls.py "$assets"/hosted-controls.py "$assets"/native-child.py "$assets"/race-controls.py "$assets"/caller-and-contract-proof.json "$assets"/implementation.patch "$assets"/app.patch "$NI76_SCOPE/originals/provenance.json" "$NI76_SCOPE/originals/source-before.json" "$NI76_SCOPE/originals/mountinfo-before.txt" "$NI76_SCOPE/originals/mount-absence-status.json" "$GITHUB_WORKSPACE/.github/workflows/ni76-native-enrollment.yml" "$GITHUB_WORKSPACE/scripts/ci/native_conformance.py" "$GITHUB_WORKSPACE/scripts/vidya/adapters/__init__.py" "$GITHUB_WORKSPACE/scripts/vidya/adapters/ci_conformance.py" "$GITHUB_WORKSPACE/scripts/vidya/claim_tuple.py" "$GITHUB_WORKSPACE/scripts/vidya/canonical.py" "$GITHUB_WORKSPACE/scripts/vidya/frames.py" "$GITHUB_WORKSPACE/_ni76_app_input/uv.lock" "$GITHUB_WORKSPACE/_ni76_app_input/pyproject.toml"; do reads+=(--read-path "$file"); done
+          for name in python-version.txt node-version.txt git-version.txt native-python-version.txt native-pytest-version.txt native-install.stdout native-install.stderr native-pre-context.json; do reads+=(--read-path "$NI76_SCOPE/originals/$name"); done
+          for repo in root app; do
+            for file in "$NI76_SCOPE/$repo/scripts/gitnexus-guard.py" "$NI76_SCOPE/$repo/scripts/gitnexus-writer.py" "$NI76_SCOPE/$repo/scripts/gitnexus-analyze.sh"; do reads+=(--read-path "$file"); done
+          done
+          reads+=(--read-path "$NI76_SCOPE/root/scripts/gitnexus-patch.js")
+          for name in src/__init__.py src/runtime/__init__.py src/runtime/region_lock_cli.py src/runtime/cpu_region_lock.py src/runtime/gpu_quiet_lock.py src/runtime/lock_queue.py src/runtime/instance_topology.py; do reads+=(--read-path "$NI76_SCOPE/app/$name" --read-path "$GITHUB_WORKSPACE/_ni76_app_input/$name"); done
+          rc=0
+          "$UV_PROJECT_ENVIRONMENT/bin/python" scripts/ci/native_conformance.py --cwd "$assets" --junit "$NI76_SCOPE/originals/native-junit.xml" --output "$NI76_SCOPE/originals/native" --repo "recipe=$GITHUB_WORKSPACE" --repo "producer=$GITHUB_WORKSPACE" --repo "app_source=$GITHUB_WORKSPACE/_ni76_app_input" "${reads[@]}" --select 'test_native_controls.py::test_real_guard_audit_controls_conform' -- timeout --signal=TERM --kill-after=15s 660s env -i HOME="$HOME" PATH="$PATH" GITHUB_ACTIONS=true PYTHONDONTWRITEBYTECODE=1 NI76_SCOPE="$NI76_SCOPE" NI76_ASSETS="$assets" NI76_REAL_NODE="$NI76_REAL_NODE" "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q -s --tb=short -o cache_dir="$NI76_SCOPE/venv-cache/pytest" test_native_controls.py::test_real_guard_audit_controls_conform --junitxml="$NI76_SCOPE/originals/native-junit.xml" > "$NI76_SCOPE/originals/native-producer.stdout" 2> "$NI76_SCOPE/originals/native-producer.stderr" || rc=$?
+          printf '{"exit_code":%s}\n' "$rc" > "$NI76_SCOPE/originals/native-producer-status.json"
+          test "$rc" -eq 0
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYGRADE'
+          import json,os,pathlib,sys,xml.etree.ElementTree as ET
+          sys.path.insert(0,str(pathlib.Path(os.environ['GITHUB_WORKSPACE'])))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows,project_ci_conformance
+          from claim_tuple import grade
+          base=pathlib.Path(os.environ['NI76_SCOPE'])/'originals'; receipt=base/'native/receipt.json'
+          r,digest=read_receipt(receipt); rows=native_rows(receipt)
+          assert r['fixture_execution_conformant'] is True and r['exit_code']==0 and r['diagnostic']==''
+          assert r['repositories']=={'recipe':os.environ['GITHUB_SHA'],'producer':os.environ['GITHUB_SHA'],'app_source':os.environ['APP_BASE']}
+          assert r['selections']==['test_native_controls.py::test_real_guard_audit_controls_conform']
+          assert r['summary']['counts']=={'passed':1,'failure':0,'error':0,'skipped':0,'collected':1,'executed':1}
+          xml=ET.fromstring((base/'native/original-junit.xml').read_bytes()); assert len(list(xml.iter('testcase')))==1
+          assert len(rows)==1; q,t,reasons=grade(project_ci_conformance(rows[0]));assert(q,t)==('Judged','Located')
+          (base/'native-shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_case_count':1,'descriptive_control_count':101,'native_rows':1,'receipt_FILE_digest':digest,'scope':'Admission-only synthetic hosted guard controls; no deployed host/index claim'})+'\n')
+          PYGRADE
+      - name: Independent source and payload custody postchecks
+        if: always() && env.NI76_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          /usr/bin/python3 -I - <<'PY'
+          import hashlib,json,os,stat
+          from pathlib import Path
+          s=Path(os.environ['NI76_SCOPE']);o=s/'originals';before=json.loads((o/'source-before.json').read_text());after={}
+          for name in before:
+              p=s/name;st=p.lstat()
+              after[name]={'link':os.readlink(p)} if stat.S_ISLNK(st.st_mode) else hashlib.sha256(p.read_bytes()).hexdigest()
+          (o/'source-after.json').write_text(json.dumps(after,sort_keys=True))
+          assert after==before,'source payload changed'
+          assert os.environ['HOME']==(o/'home-before.txt').read_text().strip()
+          assert not Path('/workspace/repos').exists()
+          checks={'source_bytes_unchanged':True,'HOME_unchanged':True,'host_index_deployed':False,
+                  'fixed_root_created_only_on_disposable_runner':True}
+          (o/'postchecks.json').write_text(json.dumps(checks))
+          for p in o.rglob('*'):
+              assert not p.is_symlink()
+              assert p.stat().st_uid==os.getuid() and p.stat().st_gid==os.getgid()
+              p.chmod(0o700 if p.is_dir() else 0o600)
+          o.chmod(0o700)
+          files={str(p.relative_to(o)):{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'size':p.stat().st_size}
+                 for p in sorted(o.rglob('*')) if p.is_file()}
+          with (o/'custody-manifest.json').open('x') as f:json.dump(files,f,indent=2)
+          (o/'custody-manifest.json').chmod(0o600)
+          PY
+      - name: Preserve complete originals even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni76-v3-originals-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ env.NI76_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
