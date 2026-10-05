@@ -100,7 +100,7 @@ def test_actual_original_five_unit_components_use_shared_grade_and_preserve_fals
     assert originals[2]["original_result"]["task_success"] is False
     assert originals[3]["original_result"]["completion_state"] == "terminal_timeout"
     assert originals[4]["original_result"]["failure"]["type"] == "tool"
-    assert all("task passed" not in json.dumps(frame) for frame in to_frames(tup))
+    assert all("task passed" not in json.dumps(frame) for frame in to_frames(tup, as_of=tup.date, adapter_id=adapter.ADAPTER_ID, authority=adapter.AUTHORITY))
     output = os.environ.get("NI37_PROJECTION_OUTPUT")
     if output:
         proof = {"schema": "epyc.dtap.synthetic_fixture_projection.v1",
@@ -111,7 +111,7 @@ def test_actual_original_five_unit_components_use_shared_grade_and_preserve_fals
                  "source_sha": native["request"]["source_sha"],
                  "timeout_reporting_integrity": tup.value,
                  "decided_proposition": tup.claim, "components": components,
-                 "grade": list(grade(tup)), "frames_emitted": len(to_frames(tup)),
+                 "grade": list(grade(tup)), "frames_emitted": len(to_frames(tup, as_of=tup.date, adapter_id=adapter.ADAPTER_ID, authority=adapter.AUTHORITY)),
                  "applicability_mode": "synthetic",
                  "exclusions": ["private body/filename/argv export", "live applicability",
                                 "performance", "promotion", "dependency completeness"]}
@@ -184,7 +184,8 @@ def test_original_custody_and_coherent_reseal_controls_refuse(tmp_path, producer
 def test_cli_and_frames_never_export_native_body_or_arbitrary_names(tmp_path, producer, capsys):
     path = captured(tmp_path / "caller-controlled-private-parent-name", producer)
     native = adapter.native_rows(path)[0]
-    frames = to_frames(adapter.project_dtap_timeout_report(native))
+    tup = adapter.project_dtap_timeout_report(native)
+    frames = to_frames(tup, as_of=tup.date, adapter_id=adapter.ADAPTER_ID, authority=adapter.AUTHORITY)
     ledger = tmp_path / "ledger.jsonl"
     rc = cli.main(["--ledger", str(ledger), "--json", "ingest", "dtap-timeout-report",
                    "--path", str(path), "--as-of", "2026-10-06T00:00:00Z", "--dry-run"])
