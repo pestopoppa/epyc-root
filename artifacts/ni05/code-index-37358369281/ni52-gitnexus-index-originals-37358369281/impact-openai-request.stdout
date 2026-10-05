@@ -1,0 +1,230 @@
+{
+  "target": {
+    "id": "Class:src/api/models/openai.py:OpenAIChatRequest",
+    "name": "OpenAIChatRequest",
+    "type": "Class",
+    "filePath": "src/api/models/openai.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 22,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 1,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "byDepthCounts": {
+    "1": 1,
+    "2": 16,
+    "3": 5
+  },
+  "affected_processes": [],
+  "affected_modules": [],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "File:src/api/models/__init__.py",
+        "name": "__init__.py",
+        "filePath": "src/api/models/__init__.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/stats.py",
+        "name": "stats.py",
+        "filePath": "src/api/routes/stats.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/sessions.py",
+        "name": "sessions.py",
+        "filePath": "src/api/routes/sessions.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/openai_compat.py",
+        "name": "openai_compat.py",
+        "filePath": "src/api/routes/openai_compat.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/health.py",
+        "name": "health.py",
+        "filePath": "src/api/routes/health.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/gates.py",
+        "name": "gates.py",
+        "filePath": "src/api/routes/gates.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_vision.py",
+        "name": "chat_vision.py",
+        "filePath": "src/api/routes/chat_vision.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat.py",
+        "name": "chat.py",
+        "filePath": "src/api/routes/chat.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/vision_stage.py",
+        "name": "vision_stage.py",
+        "filePath": "src/api/routes/chat_pipeline/vision_stage.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/stream_adapter.py",
+        "name": "stream_adapter.py",
+        "filePath": "src/api/routes/chat_pipeline/stream_adapter.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/stages.py",
+        "name": "stages.py",
+        "filePath": "src/api/routes/chat_pipeline/stages.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/routing_decision.py",
+        "name": "routing_decision.py",
+        "filePath": "src/api/routes/chat_pipeline/routing_decision.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/routing.py",
+        "name": "routing.py",
+        "filePath": "src/api/routes/chat_pipeline/routing.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/repl_executor.py",
+        "name": "repl_executor.py",
+        "filePath": "src/api/routes/chat_pipeline/repl_executor.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/proactive_stage.py",
+        "name": "proactive_stage.py",
+        "filePath": "src/api/routes/chat_pipeline/proactive_stage.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/direct_stage.py",
+        "name": "direct_stage.py",
+        "filePath": "src/api/routes/chat_pipeline/direct_stage.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 2,
+        "id": "File:src/api/routes/chat_pipeline/delegation_stage.py",
+        "name": "delegation_stage.py",
+        "filePath": "src/api/routes/chat_pipeline/delegation_stage.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ],
+    "3": [
+      {
+        "depth": 3,
+        "id": "File:src/api/__init__.py",
+        "name": "__init__.py",
+        "filePath": "src/api/__init__.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:scripts/benchmark/run_e8_quality_baseline_reseed.py",
+        "name": "run_e8_quality_baseline_reseed.py",
+        "filePath": "scripts/benchmark/run_e8_quality_baseline_reseed.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/api/routes/passthrough.py",
+        "name": "passthrough.py",
+        "filePath": "src/api/routes/passthrough.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/api/routes/__init__.py",
+        "name": "__init__.py",
+        "filePath": "src/api/routes/__init__.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      },
+      {
+        "depth": 3,
+        "id": "File:src/api/routes/chat_pipeline/__init__.py",
+        "name": "__init__.py",
+        "filePath": "src/api/routes/chat_pipeline/__init__.py",
+        "relationType": "IMPORTS",
+        "confidence": 1,
+        "processes": []
+      }
+    ]
+  }
+}

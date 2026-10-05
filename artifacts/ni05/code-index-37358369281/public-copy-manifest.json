@@ -1,0 +1,403 @@
+{
+  "schema": "ni52.exact_public_original_copies.v1",
+  "run_id": "37358369281",
+  "source_commit": "c8851695cc6ae46845c06b9f60402e687f1698ec",
+  "workflow_commit": "d714f40f9c235501f5b15f425ef348598470a909",
+  "copies": [
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/analyze-argv.json",
+      "sha256": "d532aeac3adaff18f8452d18d91076486ecdac5d9d0e4a7a6392753b02f62a1e",
+      "bytes": 109
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/analyze.stderr",
+      "sha256": "e984a6a053f6c70e153e493b7350e5b5f1806777250048145c36073fbf1b4f9d",
+      "bytes": 176
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/analyze.stdout",
+      "sha256": "e8e593a715047ffff065377de93e6323d5d99222ac4cc90f37c50a5fe4579663",
+      "bytes": 695
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/command-status.json",
+      "sha256": "7d70e492119c099a482b333199927b3275f72cdbb4f7981e2d6e2034bb8a0189",
+      "bytes": 407
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/gitnexus-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/gitnexus-version.stdout",
+      "sha256": "90af28d20938c6eb31204d9096a5db8b593f1e976c0d4bda63a4821febe47146",
+      "bytes": 6
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-build-strategy-argv.json",
+      "sha256": "2e924ddad35ee9bb8e1753383e6597a59f375c71372ac3f5801282b851969fe2",
+      "bytes": 184
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-build-strategy-validation.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-build-strategy-validation.stdout",
+      "sha256": "6619d66239a316a964aaddf723f2a64c6896ca50cd4e06b905b7416c462fe99b",
+      "bytes": 162
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-build-strategy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-build-strategy.stdout",
+      "sha256": "b00cd638c90b46045f1110a2d5317a3d3a3077841b50d37beede4855853f7528",
+      "bytes": 1288
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-openai-request-argv.json",
+      "sha256": "96ddf7d2657f4e723e02b215929e4f7433de77ccd5230eebd84a9efe64eb8187",
+      "bytes": 208
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-openai-request-validation.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-openai-request-validation.stdout",
+      "sha256": "9799411bcbc460feb12c3280549881706f06cf4f22a0d3e7db92b38a8d4834af",
+      "bytes": 121
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-openai-request.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/impact-openai-request.stdout",
+      "sha256": "30cdefc8457c61ddfd3e092d7a90b0ccb2be9139f2fda0fd524ed5293a1e4480",
+      "bytes": 6524
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/installed-gitnexus-cli.sha256",
+      "sha256": "27d7be886e63a0239791c3024fc8b2761c9b4324c2c02d9778830a53aca28b14",
+      "bytes": 147
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/installed-gitnexus-package.json",
+      "sha256": "99deb36e0705d0553fcd1baf1951e0c51c1cfd8297c0cde213c55088cb192750",
+      "bytes": 3545
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/installed-gitnexus-repo-manager.sha256",
+      "sha256": "dd942e76c2636a54b8ee05a1660002854305b6562400ede9eb90c0ff549f0944",
+      "bytes": 158
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/installed-tool-postindex-attestation.json",
+      "sha256": "5d7f24172d1a2abb9d8cec447439bce959d16fd77d8a49fca3e3ef22f7e0bedd",
+      "bytes": 686
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/installed-tool-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/meta-validation.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/meta-validation.stdout",
+      "sha256": "f010a02e8912335cf91fd7d0f2db1970c9a9d20c7f50fd95c5c168047d13afec",
+      "bytes": 198
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/meta.json",
+      "sha256": "9d35506da5cfc319ae3779048d4185d3d8ce818000d538c75f493c558a9b715b",
+      "bytes": 446630
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/package-lock-after-index.json",
+      "sha256": "7d281a10158e3ce8f21a4a20f693f53f77a653b60ded64164a9723df684df0b8",
+      "bytes": 234
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/registry.json",
+      "sha256": "2d594388dcc3683b6cdab93bb9990531054a3fc88d378308dd9c45e4839afddc",
+      "bytes": 526
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/sha256sums.txt",
+      "sha256": "71770f217db658dbc0eb5a7136bc5c9f23ff1af60f5a1df0c10e01e597470bf9",
+      "bytes": 4062
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/status-argv.json",
+      "sha256": "fc67a54ad93d047949398361aab0b9b6952de118e5445bcfc56c20f6c84e1701",
+      "bytes": 55
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/status.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/status.stdout",
+      "sha256": "2f5181aba3a3f5c79f53bbda0183b898214cb1bee34ad07a92430a4facbe1127",
+      "bytes": 183
+    },
+    {
+      "path": "ni52-gitnexus-index-originals-37358369281/version-argv.json",
+      "sha256": "079deef160c780d887289df208707c1c9b2c46fd6ac5293f92178ced79f41fc0",
+      "bytes": 78
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/bus-postcheck.json",
+      "sha256": "067df8195aa3522ec24a843d2d3fd606fcf31c29ceba9073149ba96278b05fa2",
+      "bytes": 96
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/generated-gitnexus-index-files.sha256",
+      "sha256": "0859fe8ae83a35480c9c3ff9c18e2943252fac1ee7ee2d7bc36b7ce22cedb0e1",
+      "bytes": 17481
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/source-head-after.txt",
+      "sha256": "39d02954971445814e4ddfaf704ad27abe170c565bae2d9098a977ba33bd4a77",
+      "bytes": 41
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/source-policy-postcheck.json",
+      "sha256": "11c76c27778fc3b3a6fba53a2dfa15fa80d85d21a31f58b74b2a4ea9659e0775",
+      "bytes": 226
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/source-status-after-repeat.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/source-status-after.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-gitnexus-index-postcheck-37358369281/source-status-including-ignored.txt",
+      "sha256": "bc2ee714bfe449bf938e46f6628dbf64b8ff6f8a0741f3f422fbf30ef80c44a3",
+      "bytes": 14
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/context.json",
+      "sha256": "efdc92142cd9536d2e37e84db9241ea17dbef470deeaba2b2ae551ed910c328c",
+      "bytes": 1771
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/git-version.txt",
+      "sha256": "e928567de6f903039a669b7647bf037309d50e4f7916bb5c06f7b05d3bf966fe",
+      "bytes": 19
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/gitnexus-1.6.8-registry.json",
+      "sha256": "47190baab8e7039072a7811bf52b600bb978ed80bf9f29d1c59847e980a29e9e",
+      "bytes": 4026
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/gitnexus-1.6.8.tgz",
+      "sha256": "9c90be3532671e6f4a94f949816113389798a26c604e61f7953dadaa405ecdd6",
+      "bytes": 13052039
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/gitnexus-analyze.sh",
+      "sha256": "ceffa0e215a363c49b74445ecd2db3818b0fbe6c4d9152f993196412ad57e894",
+      "bytes": 866
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/gitnexus-version.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/gitnexus-version.stdout",
+      "sha256": "90af28d20938c6eb31204d9096a5db8b593f1e976c0d4bda63a4821febe47146",
+      "bytes": 6
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/installed-gitnexus-attestation.json",
+      "sha256": "0628f37f27eea3f05a540d44c62cfd788118c18a768708f4ae103df3b190f996",
+      "bytes": 490
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/node-version.txt",
+      "sha256": "7703fd79909af9b17df6395137bee2b07c3f3b27b6e96e18c909f433cce84f19",
+      "bytes": 9
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/npm-ci-argv.json",
+      "sha256": "5e1d04e37df870dddd5a1f1cad370011925144f0b50ffb76278941be5579f7f1",
+      "bytes": 137
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/npm-ci-status.json",
+      "sha256": "c466a6070e9b8fca4845dc46904e3895b633380fca45abf04a11a2b2951c5e6a",
+      "bytes": 124
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/npm-ci.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/npm-ci.stdout",
+      "sha256": "9ae2a55d1e8b35da9357c884c1c2db5e3f218f4ba18e03f95449fe8d8b81ec8a",
+      "bytes": 26
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/npm-version.txt",
+      "sha256": "b90f6efb804599bb0ba84fec754b8c7807381dabfcdc1ffe3437ff37f18fb0f5",
+      "bytes": 7
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/os-release.txt",
+      "sha256": "87458b3b1f1ca0e5c693ade771de7007c3783bdc692fa6b39eb6414bf2af2763",
+      "bytes": 400
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/package-lock.json",
+      "sha256": "734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c",
+      "bytes": 123345
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/published-tool-source.sha256",
+      "sha256": "13a7513562f8722a8e7ab8b02f50b56d3748f192969f45db0fd5fb5ef7c1b184",
+      "bytes": 282
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/recipe-commit-chain.txt",
+      "sha256": "90883efb2e4ba7ec346bcf2cf226763c9343ec791ceb0ab53efb79b78001c59f",
+      "bytes": 82
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/recipe-commit-manifest.tsv",
+      "sha256": "a48a573b040d98c68432301187458099b638b86d5d3b08ca1b2455a33c9f4876",
+      "bytes": 248
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/source-head-before.txt",
+      "sha256": "39d02954971445814e4ddfaf704ad27abe170c565bae2d9098a977ba33bd4a77",
+      "bytes": 41
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/source-status-before.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/source-worktree.stderr",
+      "sha256": "c5a72db60fc9675b4d2b18188a4b02e030a49797185e2a1ca26cf5fb43175a90",
+      "bytes": 44
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/source-worktree.stdout",
+      "sha256": "200908269b361b3433458e5a1f1ccffeaf255c74bb763c340b59cfdc12585e06",
+      "bytes": 68
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/target-source-sha256.txt",
+      "sha256": "2fd3f7d9819e0a8b2e63eb4855e80b63e31dd54c3eb885f3fcec3577566b1690",
+      "bytes": 576
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/verified-lock-inputs.sha256",
+      "sha256": "38e96670809954aae27de63d1c8d943d431f91a9bdf0792e2a45c8bb63afe93f",
+      "bytes": 399
+    },
+    {
+      "path": "ni52-index-install-originals-37358369281/workflow.yml",
+      "sha256": "b6cca8584f8d4ec918f436e8789ba92fa40f216b3f0ef932b8505743299f3d26",
+      "bytes": 36510
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/ladybug-copy-command.txt",
+      "sha256": "3ad41d20dad32d6d6327ea601c0f2cf1dae6e44da7f21a20b3323915341ea025",
+      "bytes": 101
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/ladybug-copy.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/ladybug-copy.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/ladybug-runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/ladybug-runtime.stdout",
+      "sha256": "8b7fd3f99c7d9685d7dd220d096f16c5f71a8ac26451ac5fd811d8bfdfb4e08f",
+      "bytes": 8
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/native-preflight.json",
+      "sha256": "b65116d641d92da254a28dc482306302bda6da9800d41abc15d0c1e30ca43fb7",
+      "bytes": 437
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/native-runtime-status.json",
+      "sha256": "7e5003914cc6c4f6f6a868e7e19801b447f5013ff0958eb0bdfb49be58077bf0",
+      "bytes": 304
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/tree-sitter-native-runtime.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/tree-sitter-native-runtime.stdout",
+      "sha256": "f68b1445079710d883529f71be20ef59be1770683ce3b434da437c590a7ad908",
+      "bytes": 506
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-c-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-c-check.stdout",
+      "sha256": "c0168ae206df7035fe884b0564d55208dfca9159436b656328db3642e770d7cd",
+      "bytes": 218
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-c-linux-x64-pin.txt",
+      "sha256": "855969c805b4ae0fcafb1c2e89fc95a2597c8868e275660930d61b93b4871b79",
+      "bytes": 97
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-proto-check.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-proto-check.stdout",
+      "sha256": "1ee93991f18e3ecbeb36fb443221dc3255c99166227db817f78c34854c2c9a09",
+      "bytes": 242
+    },
+    {
+      "path": "ni52-index-native-proof-37358369281/vendor-proto-linux-x64-pin.txt",
+      "sha256": "de04e0641425d59d3adfae0a68774b22d11e8d302b0eef2da196fc012ab3f244",
+      "bytes": 101
+    }
+  ]
+}

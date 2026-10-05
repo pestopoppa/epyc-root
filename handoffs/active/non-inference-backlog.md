@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-54–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-52 code-index refresh and NI05-53 report custody.
+- **Next:** NI05-54–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **49/75**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **50/75**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -106,7 +106,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-51** ✅ 2026-10-05 — OBS-10 current-consumer audit: existing OP-19 retires the E8 transaction; historical human-only ratifiers remain unchanged, with no surviving autonomous consumer to repair.
 
-- [ ] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched.
+- [x] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched. ✅ 2026-10-05 — main accepted originalCI37358369281; historical c885 scope, exact LOW targets and clean-state proofs, no host-index deployment.
 
 - [ ] **NI05-53** — VB-AP-STRATEGY-PROJECTION-REPORT-WIRE: prospective original CLI projection-integrity custody and shared verifier projection, with counts descriptive and fallback permission separate from actual method. Source/task filed before implementation/capture.
 
@@ -671,3 +671,5 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 reviewed NI18 action-map checkpoint: derivative exception-action-map.json is copied byte-for-byte (SHA762216ac685cd3cde86a17443263b38545bfdd06c39e3234436da7eebac6dc4c), with separate main identity review. All69 original receipts/source snapshots reopen;57FALSE12NULL remain unchanged, and implementation hypotheses remain proposals. Independent investigations NI61–74 are now filed for thread defaults, pure KV arithmetic, real-RAM child fixtures, three interrupted modules, JUnit count attribution, four path-only fixture groups, speech env composition, synthetic LCB and T2 logic. Peer-owned GPU/AutoKernel/8083 and genuine live/corpus/human-authorization scopes remain routed to their existing owners. Main source review and prospective evidence precede each repair; no production guard bypass or all-suite pass. Delivery tally49/74; NI18 remains open pending final disposition review.
 
 2026-10-05 source review additionally files NI75 before repair: executor.py has an early registry-load exception fallback returning the old in-tree build/bin path; executor_paths.py normally applies the kernel-store override, but that branch never reaches it. Review impact/callers and bounded fail-closed fixture before source changes. No actual launch, production regression or kernel modification is claimed. Queue tally49/75.
+
+2026-10-05 NI52 accepted: main independently verifies all79 originalCI37358369281 files, exact recipe d714f40f9c235501f5b15f425ef348598470a909/sourcec885/tool/lock/tarball identities, bounded native prerequisites and nine command/validator statuses zero. Exact strategy and OpenAI targets are LOW/exact (2/22impacted); source is clean except generated ignored index and the isolated bus remains absent. Public exact originals: artifacts/ni05/code-index-37358369281. Failed37356899671 remains unchanged; no index bundle or canonical-host index deployment. This is ordinary code-intelligence dependency evidence only, with0embeddings and no ClaimTuple/quality/runtime claim. Three task checkboxes close; tally50/75. NI18 final disposition, NI45/53 strategy work and NI54–75 independent fixtures/source investigations continue.

@@ -1,0 +1,18 @@
+[
+  {
+    "name": "ni52-orch-c8851695-20261005",
+    "path": "/home/runner/work/_temp/ni52-source-c8851695",
+    "storagePath": "/home/runner/work/_temp/ni52-source-c8851695/.gitnexus",
+    "indexedAt": "2026-10-05T18:47:15.969Z",
+    "lastCommit": "c8851695cc6ae46845c06b9f60402e687f1698ec",
+    "remoteUrl": "https://github.com/pestopoppa/epyc-orchestrator",
+    "stats": {
+      "files": 3376,
+      "nodes": 75241,
+      "edges": 138642,
+      "communities": 2922,
+      "processes": 300,
+      "embeddings": 0
+    }
+  }
+]

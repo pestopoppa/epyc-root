@@ -1,0 +1,1 @@
+dea80ed2fb48a6d19866468f652ec48eab5435306c6477b213eafe51cbbbf2ee  ./linux-x64/tree-sitter-proto.node

@@ -1,0 +1,7 @@
+# NI52 immutable offhost code-index originals
+
+These79 files are exact byte copies of the four original artifacts from [successful run37358369281](https://github.com/pestopoppa/epyc-orchestrator/actions/runs/37358369281), retained in owned0700 custody on RAID0. The [copy manifest](public-copy-manifest.json) records their unchanged hashes. Main independently verifies every file, recipe/source/tool identities, pinned npm lock and tarball SRI, native prerequisites, all nine command/validator statuses, exact upstream targets and source/bus postchecks.
+
+Scope is immutable app `c8851695cc6ae46845c06b9f60402e687f1698ec`, not current origin/main. GitNexus1.6.8 with Node22.14.0/npm10.9.2 reports3,376files,75,241nodes,138,642edges,2,922communities,300processes and0embeddings. Strategy report has one direct caller (two impacted nodes), LOW/exact; the exact OpenAI request class has22impacted nodes, LOW/exact. These are ordinary code-intelligence dependencies, with no standalone ClaimTuple, kernel/runtime/quality assertion or host-index deployment.
+
+[Failed run37356899671](https://github.com/pestopoppa/epyc-orchestrator/actions/runs/37356899671) remains unchanged in its separate owned custody: indexing completed, but the wrapper had a nested shell here-document parse error and its OpenAI query was ambiguous. The retry fixes only the workflow, retains both originals and uses an exact target UID plus explicit JSON validators. No index bundle was uploaded; only original dependency/analysis metadata and streams are published here.

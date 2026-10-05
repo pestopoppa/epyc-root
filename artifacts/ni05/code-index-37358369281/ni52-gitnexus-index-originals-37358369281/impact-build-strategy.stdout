@@ -1,0 +1,53 @@
+{
+  "target": {
+    "id": "Function:scripts/autopilot/strategy_projection_report.py:build_strategy_projection_report",
+    "name": "build_strategy_projection_report",
+    "type": "Function",
+    "filePath": "scripts/autopilot/strategy_projection_report.py"
+  },
+  "direction": "upstream",
+  "impactedCount": 2,
+  "risk": "LOW",
+  "epistemic": "exact",
+  "summary": {
+    "direct": 1,
+    "processes_affected": 0,
+    "modules_affected": 1
+  },
+  "byDepthCounts": {
+    "1": 1,
+    "2": 1
+  },
+  "affected_processes": [],
+  "affected_modules": [
+    {
+      "name": "Unit",
+      "hits": 1,
+      "impact": "direct"
+    }
+  ],
+  "byDepth": {
+    "1": [
+      {
+        "depth": 1,
+        "id": "Function:scripts/autopilot/strategy_projection_report.py:main",
+        "name": "main",
+        "filePath": "scripts/autopilot/strategy_projection_report.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ],
+    "2": [
+      {
+        "depth": 2,
+        "id": "File:scripts/autopilot/strategy_projection_report.py",
+        "name": "strategy_projection_report.py",
+        "filePath": "scripts/autopilot/strategy_projection_report.py",
+        "relationType": "CALLS",
+        "confidence": 0.85,
+        "processes": []
+      }
+    ]
+  }
+}
