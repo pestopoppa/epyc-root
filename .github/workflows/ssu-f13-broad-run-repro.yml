@@ -1,0 +1,240 @@
+name: SSU-F13 broad-run failure repro
+
+on:
+  push:
+    branches: ['codex/ssu-f13-repro-validation-20261005']
+
+permissions:
+  contents: read
+
+env:
+  ORCH_SHA: 4244e72b2aa8aae9a92f684fcd5090a852223888
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+
+jobs:
+  repro:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ssu-f13-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ssu-f13-unused-mtmd
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /tmp/ssu-f13-unused-llama-server
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCH_SHA }}
+          path: orchestrator
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Bind pinned research rules and registry
+        run: |
+          sudo mkdir -p /mnt/raid0/llm /workspace/repos
+          sudo ln -s "$GITHUB_WORKSPACE/research" /mnt/raid0/llm/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE/research" /workspace/repos/epyc-inference-research
+          test -r orchestrator/orchestration/model_registry.yaml
+          test -r research/orchestration/model_registry.yaml
+      - name: Install pinned app development dependencies and pytest
+        working-directory: orchestrator
+        run: python -m pip install '.[dev]' 'pytest==9.1.1'
+      - name: Record topology-parity repro context
+        working-directory: orchestrator
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ssu_f13.repro_context.v1",
+              "phase": "topology_parity_13_observed_failures",
+              "source": "NI05 broad-run verbose-log progress only; no original JUnit/tracebacks",
+              "selection_count": 13,
+              "host_context": "ordinary GitHub runner; no synthetic RAM or topology substitution",
+              "time_limit": "GNU timeout 120s; TERM; KILL after 30s; preserve native command log",
+              "environment": {name: os.environ[name] for name in names},
+              "inference": "none",
+              "claim_scope": "selected fixture reproduction only; no topology correction or fleet claim",
+          }
+          with Path("ssu-f13-topology-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture exact topology-parity failure subset
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ssu-f13-topology.xml --output native-ssu-f13-topology \
+            --generated-output ssu-f13-topology.pytest.log \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ssu-f13-broad-run-repro.yml \
+            --read-path ../ci-control/scripts/ci/native_conformance.py \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ssu-f13-topology-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/conftest.py \
+            --read-path tests/unit/test_affinity_preflight_cell_manifest.py \
+            --read-path tests/unit/test_build_server_command_helpers.py \
+            --read-path tests/unit/test_contention_matrix_host_health.py \
+            --read-path scripts/server/affinity_preflight.py \
+            --read-path scripts/server/orchestrator_stack.py \
+            --read-path scripts/server/stack_commands.py \
+            --read-path scripts/server/contention_matrix.py \
+            --read-path scripts/server/stack_manifest.py \
+            --read-path scripts/server/stack_numa.py \
+            --read-path scripts/server/stack_paths.py \
+            --read-path scripts/server/stack_env.py \
+            --read-path scripts/server/stack_runtime.py \
+            --read-path scripts/server/stack_processes.py \
+            --read-path scripts/server/stack_state.py \
+            --read-path src/registry/stack_priors.py \
+            --read-path src/registry/kernel_paths.py \
+            --read-path src/registry_loader.py \
+            --read-path src/scheduling/device_model.py \
+            --read-path orchestration/launch_manifest.yaml \
+            --read-path orchestration/stack_topology.yaml \
+            --read-path orchestration/model_registry.yaml \
+            --read-path orchestration/model_registry_full.yaml \
+            --read-path orchestration/derived/stack_priors.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --read-path ../research/scripts/benchmark/server_np_sweep.py \
+            --read-path ../research/scripts/benchmark/server_numa_np_sweep.py \
+            --select tests/unit/test_affinity_preflight_cell_manifest.py::test_smt_fold_makes_the_gpu_lane_visible_to_a_full_machine_cell \
+            --select tests/unit/test_affinity_preflight_cell_manifest.py::test_physical_overlap_is_empty_for_a_genuinely_disjoint_half \
+            --select tests/unit/test_build_server_command_helpers.py::test_worker_general_launch_witness_is_its_host_primary_role_command \
+            --select tests/unit/test_build_server_command_helpers.py::test_worker_lane_host_command_uses_numa_thread_count_per_instance \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_emits_declared_chat_template_file \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_sub_full_instance_emits_declared_serving_flags \
+            --select tests/unit/test_build_server_command_helpers.py::test_build_role_command_omits_md_for_embedded_nextn_stack_prior \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[frontdoor-8070]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_general-8074]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_critic-8083]' \
+            --select 'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[ingest_long_context-8085]' \
+            --select tests/unit/test_build_server_command_helpers.py::test_serial_roles_no_longer_shrinks_the_launched_slot_count \
+            --select tests/unit/test_contention_matrix_host_health.py::test_the_declared_lineup_covers_fulls_halves_and_embedders \
+            -- timeout --verbose --signal=TERM --kill-after=30s 120s \
+               python -m pytest -q --tb=short \
+               tests/unit/test_affinity_preflight_cell_manifest.py::test_smt_fold_makes_the_gpu_lane_visible_to_a_full_machine_cell \
+               tests/unit/test_affinity_preflight_cell_manifest.py::test_physical_overlap_is_empty_for_a_genuinely_disjoint_half \
+               tests/unit/test_build_server_command_helpers.py::test_worker_general_launch_witness_is_its_host_primary_role_command \
+               tests/unit/test_build_server_command_helpers.py::test_worker_lane_host_command_uses_numa_thread_count_per_instance \
+               tests/unit/test_build_server_command_helpers.py::test_build_role_command_emits_declared_chat_template_file \
+               tests/unit/test_build_server_command_helpers.py::test_build_role_command_sub_full_instance_emits_declared_serving_flags \
+               tests/unit/test_build_server_command_helpers.py::test_build_role_command_omits_md_for_embedded_nextn_stack_prior \
+               'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[frontdoor-8070]' \
+               'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_general-8074]' \
+               'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[architect_critic-8083]' \
+               'tests/unit/test_build_server_command_helpers.py::test_role_command_np_fallback_equals_the_declared_slots[ingest_long_context-8085]' \
+               tests/unit/test_build_server_command_helpers.py::test_serial_roles_no_longer_shrinks_the_launched_slot_count \
+               tests/unit/test_contention_matrix_host_health.py::test_the_declared_lineup_covers_fulls_halves_and_embedders \
+               --junitxml=ssu-f13-topology.xml --log-file=ssu-f13-topology.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ssu-f13-${{ github.run_id }}-${{ github.run_attempt }}-topology-prefix
+          path: |
+            orchestrator/ssu-f13-topology-context.json
+            orchestrator/ssu-f13-topology.xml
+            orchestrator/ssu-f13-topology.pytest.log
+            orchestrator/native-ssu-f13-topology/
+      - name: Record AP54 fence repro context
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          names = [
+              "CI",
+              "ORCHESTRATOR_MOCK_MODE",
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          ]
+          context = {
+              "schema": "ssu_f13.repro_context.v1",
+              "phase": "ap54_eval_knowledge_fence_module",
+              "source": "NI05 broad-run verbose-log progress only; no original JUnit/tracebacks",
+              "pytest_scope": "one exact existing test module; short tracebacks retained",
+              "host_context": "ordinary GitHub runner; no synthetic RAM or wiki-root binding",
+              "time_limit": "GNU timeout 120s; TERM; KILL after 30s; preserve native command log",
+              "environment": {name: os.environ[name] for name in names},
+              "inference": "none",
+              "claim_scope": "selected fixture reproduction only; no security or production claim",
+          }
+          with Path("ssu-f13-ap54-context.json").open("x", encoding="utf-8") as output:
+              output.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+      - name: Capture AP54 eval-fence module with short tracebacks
+        if: always()
+        working-directory: orchestrator
+        run: |
+          python ../ci-control/scripts/ci/native_conformance.py \
+            --cwd "$PWD" --junit ssu-f13-ap54.xml --output native-ssu-f13-ap54 \
+            --generated-output ssu-f13-ap54.pytest.log \
+            --repo "root=$GITHUB_WORKSPACE/ci-control" \
+            --repo "orchestrator=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --read-path ../ci-control/.github/workflows/ssu-f13-broad-run-repro.yml \
+            --read-path ../ci-control/scripts/ci/native_conformance.py \
+            --read-path ../ci-control/scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../ci-control/scripts/vidya/claim_tuple.py \
+            --read-path ../ci-control/scripts/vidya/cli.py \
+            --read-path ssu-f13-ap54-context.json \
+            --read-path pyproject.toml \
+            --read-path tests/conftest.py \
+            --read-path tests/unit/test_ap54_eval_knowledge_fence.py \
+            --read-path src/builtin_tools.py \
+            --read-path src/registry/tool_registry.py \
+            --read-path src/repl_environment/knowledge_fence.py \
+            --read-path src/repl_environment/_fence_rules.py \
+            --read-path src/repl_environment/fence_kernel.py \
+            --read-path src/repl_environment/external_access.py \
+            --read-path src/repl_environment/environment.py \
+            --read-path src/repl_environment/parallel_dispatch.py \
+            --read-path src/tools/base.py \
+            --read-path src/api/models/__init__.py \
+            --read-path src/api/models/requests.py \
+            --read-path src/api/models/responses.py \
+            --read-path src/api/routes/chat.py \
+            --read-path scripts/autopilot/eval_tower.py \
+            --read-path src/tool_registry.py \
+            --read-path orchestration/model_registry.yaml \
+            --read-path ../research/orchestration/model_registry.yaml \
+            --select tests/unit/test_ap54_eval_knowledge_fence.py \
+            -- timeout --verbose --signal=TERM --kill-after=30s 120s \
+               python -m pytest -q --tb=short \
+               tests/unit/test_ap54_eval_knowledge_fence.py \
+               --junitxml=ssu-f13-ap54.xml --log-file=ssu-f13-ap54.pytest.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ssu-f13-${{ github.run_id }}-${{ github.run_attempt }}-ap54-prefix
+          path: |
+            orchestrator/ssu-f13-ap54-context.json
+            orchestrator/ssu-f13-ap54.xml
+            orchestrator/ssu-f13-ap54.pytest.log
+            orchestrator/native-ssu-f13-ap54/
