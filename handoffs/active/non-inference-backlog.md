@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 exception classification and NI05-45–50 offline follow-ons plus NI05-52 code-index refresh.
+- **Next:** NI05-18 exception classification and NI05-45 offline follow-on plus NI05-52 code-index refresh and NI05-53 report custody.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **44/52**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **49/53**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -94,19 +94,21 @@ and host-dependent acceptance boundaries explicit.
 
 - [ ] **NI05-45** — SSU-STRATEGY-PROJECTION-FLAG: Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
 
-- [ ] **NI05-46** — SSU-VL-REPAIR-TEMP-CACHE: Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
+- [x] **NI05-46 ✅ 2026-10-05** — SSU-VL-REPAIR-TEMP-CACHE: Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
 
-- [ ] **NI05-47** — SSU-QUIESCENCE-TEMP-HOLDS: Replace the OAB3 fixture hardcoded /mnt hold directory with pytest-owned temporary storage via the existing HOLD_DIR_ENV seam. Original6/10passed. Preserve quiescence/scoring guards, witness semantics and meaningful local-process fixtures; no host holds or live scorer.
+- [x] **NI05-47 ✅ 2026-10-05** — SSU-QUIESCENCE-TEMP-HOLDS: Replace the OAB3 fixture hardcoded /mnt hold directory with pytest-owned temporary storage via the existing HOLD_DIR_ENV seam. Original6/10passed. Preserve quiescence/scoring guards, witness semantics and meaningful local-process fixtures; no host holds or live scorer.
 
-- [ ] **NI05-48** — SSU-OPENAI-REPL-SCOPE-DESCRIPTION: Reconcile the x_disable_repl public description with actual vision/client route branches. Original47/48schema cases passed; one description-scope assertion fails. Confirm current request rejection semantics and add only accurate description clauses; no route behavior or serving reload.
+- [x] **NI05-48 ✅ 2026-10-05** — SSU-OPENAI-REPL-SCOPE-DESCRIPTION: Reconcile the x_disable_repl public description with actual vision/client route branches. Original47/48schema cases passed; one description-scope assertion fails. Confirm current request rejection semantics and add only accurate description clauses; no route behavior or serving reload.
 
-- [ ] **NI05-49** — SSU-PAIRWISE-PROMPT-FIXTURES: Make two offline pairwise planner fixtures use an explicit temporary instruction_precision prompt-source mapping with tiny synthetic YAML prompts. Original11/13passed; configured production prompt source is absent offhost. Preserve planner/reference-source policy and assert deterministic counts; no real corpus acquisition or collection.
+- [x] **NI05-49 ✅ 2026-10-05** — SSU-PAIRWISE-PROMPT-FIXTURES: Make two offline pairwise planner fixtures use an explicit temporary instruction_precision prompt-source mapping with tiny synthetic YAML prompts. Original11/13passed; configured production prompt source is absent offhost. Preserve planner/reference-source policy and assert deterministic counts; no real corpus acquisition or collection.
 
-- [ ] **NI05-50** — SSU-PARKED-ROLE-HERMETIC-PROBES: Complete the parked-role fake StackOps fixture with deterministic kfd_pids and gpu_quiet_exclusive injection. Original21/22passed; restore refuses real offhost KFD observation. Preserve all production safety probes and final restore guards; no GPU query, stack action or live process.
+- [x] **NI05-50 ✅ 2026-10-05** — SSU-PARKED-ROLE-HERMETIC-PROBES: Complete the parked-role fake StackOps fixture with deterministic kfd_pids and gpu_quiet_exclusive injection. Original21/22passed; restore refuses real offhost KFD observation. Preserve all production safety probes and final restore guards; no GPU query, stack action or live process.
 
 - [x] **NI05-51** ✅ 2026-10-05 — OBS-10 current-consumer audit: existing OP-19 retires the E8 transaction; historical human-only ratifiers remain unchanged, with no surviving autonomous consumer to repair.
 
 - [ ] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched.
+
+- [ ] **NI05-53** — VB-AP-STRATEGY-PROJECTION-REPORT-WIRE: prospective original CLI projection-integrity custody and shared verifier projection, with counts descriptive and fallback permission separate from actual method. Source/task filed before implementation/capture.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -617,3 +619,5 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 accepted boundary: NI43 retryCI37347669248 passes24/24 exploration plus19/19 mutation cases on unchanged appdb387; main independently verifies both TRUE Judged/Located receipts, every declared source byte, private checkout/empty fixture roots and scratch, and absent binary postchecks. First failed mutation original remains unchanged. NI44 CI37348970500 passes36/36 offline observer cases; main verifies TRUE Judged/Located, pinned source/recipe bytes and isolated bus absence, then integrates exact five source/test files as d4999a170. Qualified authoritative probe evidence replaces marker-derived leaf idle authority; uninstrumented Claude remains UNKNOWN and live processes are not restarted. Public originals: artifacts/ni05/repl-filesystem-37347669248 and artifacts/ni05/observer-leaf-37348970500. NI51 closes only retired E8 active-consumer scope under existing OP-19. Tally **43/52**; NI18/41/45–50/52 remain open, with no inference or live-stack change.
 
 2026-10-05 NI41 accepted: originalCI37351080596 passes68/68 cases (18confidence-probe/9EV11stats/41verifier-mode), zero skips/failures/errors; allfive named positive/missing-package hard-fail controls pass. Main independently reopens allthree TRUE Judged/Located receipts and verifies exact source/dependency/context bytes, installed versions, frozen additive lock and absent binary postchecks. Rawresolver unrelated changes are preserved but rejected for promotion; all214original nonproject lock records/top-level fields remain unchanged. Only the optional extra and its three-package closure are published to appmain65599ff2b02fcf10a9631376e143e507717469b6. Original public custody: artifacts/ni05/eval-scoring-37351080596. SSU-SCORING-EXTRA and VB-CI-OPTIONAL-SCORING-LOCK close; tally **44/52**, NI18/45–50/52 continue. No inference, scientific quality, capacity, default-serving change or runtime reload claim.
+
+2026-10-05 NI46–50 accepted: originalCI37352568892 passes101/101 whole-module cases (8vision/10quiescence/48requestschema/13pairwiseplanner/22parkedrole), zero skips/failures/errors. Main independently reopens allfive TRUE Judged/Located receipts, verifies31Git-boundsource snapshots+4context/install originals per capture and five absent-path/unchanged-lock postchecks. Exact four fixture files and one schema-description file are published to appmain64843e13642930895bb2e52694cd444de5892903; runtime policies and original FALSE sweep outcomes remain unchanged. NI45 still requires fresh source analysis and prospective evidence. NI53 newly filed before execution for active strategy-report original boolean integrity custody, with descriptive counts and no new ladder/method/quality claim. Tally **49/53**; NI18/45/52/53 continue. No inference, liveKFD/GPU/hold/store access or API reload.

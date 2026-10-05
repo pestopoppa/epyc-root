@@ -1,0 +1,5 @@
+# NI47 OAB owned temporary hold directory fixture — 2026-10-05
+
+The bounded off-host run [37352568892](https://github.com/pestopoppa/epyc-root/actions/runs/37352568892) passed the reviewed `test_oab3_quiescence_witness.py` selection: 10 collected, 10 passed, no skips, failures, or errors. Main independently reopened the original native receipt and shared projection as Judged/Located. The source candidate is orchestrator commit `0bc4ec8ffc0c23fed3d9b4ad61d89e260b4129af`, changing only `tests/unit/test_oab3_quiescence_witness.py`.
+
+The matrix bound the frozen app/root producer and workflow pins, installed from the frozen lock, and preserved original receipt, JUnit, log, and postcheck artifacts under `/mnt/raid0/llm/artifacts/ni18-offhost-fixture-matrix-37352568892/`. The matrix recorded the three configured backend executable paths absent and non-symlink, with the lockfile hash unchanged. This validates the named temporary-directory fixture selection only; it does not assert an observed production quiescence event.

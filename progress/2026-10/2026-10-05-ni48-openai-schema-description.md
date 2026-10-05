@@ -1,0 +1,5 @@
+# NI48 OpenAI request schema descriptions — 2026-10-05
+
+The bounded off-host run [37352568892](https://github.com/pestopoppa/epyc-root/actions/runs/37352568892) passed the reviewed `test_api_models_openai.py` selection: 48 collected, 48 passed, no skips, failures, or errors. Main independently reopened the original native receipt and shared projection as Judged/Located. The source candidate is orchestrator commit `51f78a0a8869253ead5bfe7113d3f1b658b294c0`, changing only `src/api/models/openai.py`.
+
+The change is limited to request-field descriptions and leaves client/backend execution selection and request behavior intact. The matrix bound the frozen app/root producer and workflow pins, installed from the frozen lock, and preserved original receipt, JUnit, log, and postcheck artifacts under `/mnt/raid0/llm/artifacts/ni18-offhost-fixture-matrix-37352568892/`. It recorded the three configured backend executable paths absent and non-symlink, with the lockfile hash unchanged. This is schema-test evidence, not API reload or live endpoint evidence.

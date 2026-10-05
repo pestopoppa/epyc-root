@@ -1,0 +1,444 @@
+name: NI18 off-host corrected-fixture matrix
+
+on:
+  push:
+    branches:
+      - codex/ni45-50-matrix-20261005
+    paths:
+      - .github/workflows/ni18-offhost-fixture-matrix.yml
+
+permissions:
+  contents: read
+
+env:
+  ROOT_PRODUCER_SHA: 5009582403cd277d9b50ac76eb537539ba0cb7b1
+  APP_BASE_SHA: c8851695cc6ae46845c06b9f60402e687f1698ec
+  APP_NI46_SHA: e3e2d3531c0d12a4550c4127794ed2c06bd9eb79
+  APP_NI47_SHA: 0bc4ec8ffc0c23fed3d9b4ad61d89e260b4129af
+  APP_NI48_SHA: 51f78a0a8869253ead5bfe7113d3f1b658b294c0
+  APP_NI49_SHA: b851dcf4cf41c04b5f1786ce095eb1f506c47110
+  APP_NI50_SHA: 8e953994e2d975157bddd24daf1da57ea633a3ed
+  CAPTURE_ROOT: artifacts/ni18-offhost-fixture-matrix
+
+jobs:
+  module:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        include:
+          - id: ni46-vl-cache
+            app_sha: e3e2d3531c0d12a4550c4127794ed2c06bd9eb79
+            expected_path: tests/unit/test_td21_19_vl_structured_repair.py
+            module: tests/unit/test_td21_19_vl_structured_repair.py
+            expected_cases: 8
+          - id: ni47-oab-temp
+            app_sha: 0bc4ec8ffc0c23fed3d9b4ad61d89e260b4129af
+            expected_path: tests/unit/test_oab3_quiescence_witness.py
+            module: tests/unit/test_oab3_quiescence_witness.py
+            expected_cases: 10
+          - id: ni48-openai-schema
+            app_sha: 51f78a0a8869253ead5bfe7113d3f1b658b294c0
+            expected_path: src/api/models/openai.py
+            module: tests/unit/test_api_models_openai.py
+            expected_cases: 48
+          - id: ni49-prompt-fixture
+            app_sha: b851dcf4cf41c04b5f1786ce095eb1f506c47110
+            expected_path: tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py
+            module: tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py
+            expected_cases: 13
+          - id: ni50-gpu-mocks
+            app_sha: 8e953994e2d975157bddd24daf1da57ea633a3ed
+            expected_path: tests/unit/test_gpu_window_parked_role.py
+            module: tests/unit/test_gpu_window_parked_role.py
+            expected_cases: 22
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+
+      - name: Checkout one exact app fixture candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ matrix.app_sha }}
+          fetch-depth: 2
+          path: app-candidate
+
+      - name: Set isolated runner paths and assert binary overrides are absent
+        id: paths
+        run: |
+          test ! -L "$RUNNER_TEMP/ni18-unavailable-binary-directory"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-binary-directory"
+          test ! -L "$RUNNER_TEMP/ni18-unavailable-mtmd-binary"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-mtmd-binary"
+          test ! -L "$RUNNER_TEMP/ni18-unavailable-llama-server"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni18-offhost-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni18-unavailable-binary-directory\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni18-unavailable-mtmd-binary\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni18-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'NI18_INSTALL_LOG=%s/ci-control/ni18-uv-sync.log\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'NI18_LOCK_HASHES=%s/ci-control/ni18-uv-lock-hashes.json\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+
+      - name: Verify all source pins and create bound context
+        id: compare
+        env:
+          APP_SOURCE_SHA: ${{ matrix.app_sha }}
+          EXPECTED_PATH: ${{ matrix.expected_path }}
+          MODULE_ID: ${{ matrix.id }}
+          TEST_MODULE: ${{ matrix.module }}
+          EXPECTED_CASES: ${{ matrix.expected_cases }}
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_PRODUCER_SHA"
+          test "$(git -C app-candidate rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test "$(git -C app-candidate rev-parse HEAD^)" = "$APP_BASE_SHA"
+          test -z "$(git -C app-candidate status --porcelain --untracked-files=no)"
+          changed="$(git -C app-candidate diff --name-only "$APP_BASE_SHA" "$APP_SOURCE_SHA")"
+          test "$changed" = "$EXPECTED_PATH"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          import tomllib
+
+          app = Path("app-candidate")
+          module = os.environ["TEST_MODULE"]
+          expected_path = os.environ["EXPECTED_PATH"]
+          dependencies = [
+              "pyproject.toml", "uv.lock", "tests/conftest.py", "tests/unit/conftest.py",
+              "scripts/server/stack_manifest.py", "scripts/server/stack_paths.py",
+              "src/config/models.py", "src/registry/kernel_paths.py",
+              "orchestration/model_registry.yaml", "orchestration/stack_topology.yaml",
+          ]
+          fixture_modules = [
+              "tests/unit/test_td21_19_vl_structured_repair.py",
+              "tests/unit/test_oab3_quiescence_witness.py",
+              "tests/unit/test_api_models_openai.py",
+              "tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py",
+              "tests/unit/test_gpu_window_parked_role.py",
+          ]
+          package_lock = tomllib.loads((app / "uv.lock").read_text(encoding="utf-8"))
+          pyyaml = next(p for p in package_lock["package"] if p["name"] == "pyyaml")
+          if pyyaml["version"] != "6.0.3":
+              raise SystemExit("the reviewed YAML parser pin must remain PyYAML 6.0.3")
+          paths = sorted(set(dependencies + fixture_modules + [
+              module,
+              "src/vision/config.py", "src/vision/analyzers/vl_describe.py",
+              "src/structured_output/repair.py", "src/runtime/quiescence.py",
+              "src/runtime/trailing_work_witness.py", "src/api/models/openai.py",
+              "src/api/routes/openai_compat.py",
+              "src/__init__.py",
+              "src/config/__init__.py",
+              "scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py",
+              "src/runtime/gpu_window.py", "src/runtime/gpu_window_executor.py",
+          ]))
+          records = []
+          for relative in paths:
+              source = app / relative
+              if not source.is_file():
+                  raise SystemExit(f"missing bound read path: {relative}")
+              records.append({
+                  "path": relative,
+                  "sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+              })
+          source_comparison = {
+              "schema": "ni18.offhost_fixture_matrix_source.v1",
+              "candidate": os.environ["MODULE_ID"],
+              "app_base_sha": os.environ["APP_BASE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_source_parent_sha": subprocess.check_output(
+                  ["git", "-C", str(app), "rev-parse", "HEAD^"], text=True
+              ).strip(),
+              "only_changed_path": expected_path,
+              "selected_entire_module": module,
+              "expected_case_count": int(os.environ["EXPECTED_CASES"]),
+              "pyyaml_version": pyyaml["version"],
+              "paths": records,
+          }
+          control = Path("ci-control")
+          with (control / "ni18-source-comparison.json").open("x", encoding="utf-8") as stream:
+              stream.write(json.dumps(source_comparison, sort_keys=True) + "\n")
+          absent = {
+              "llama_cpp_bin": os.environ["ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"],
+              "llama_mtmd": os.environ["ORCHESTRATOR_PATHS_LLAMA_MTMD"],
+              "llama_server": os.environ["ORCHESTRATOR_PATHS_LLAMA_SERVER"],
+          }
+          for name, value in absent.items():
+              if os.path.lexists(value):
+                  raise SystemExit(f"declared absent binary override appeared: {name}")
+          context = {
+              "schema": "ni18.offhost_fixture_matrix_context.v1",
+              "phase": "one complete named module in an off-host GitHub runner",
+              "candidate": os.environ["MODULE_ID"],
+              "selected_module": module,
+              "entire_module": True,
+              "ci": True,
+              "mock_mode": True,
+              "synthetic_host_ram": False,
+              "capacity_scope": "the existing tests/conftest.py bypasses its host-memory check under CI/mock mode; no RAM value is patched",
+              "binary_overrides": {key: {"path": value, "intentionally_absent": True}
+                                   for key, value in absent.items()},
+              "inference": "none; module unit fixtures only",
+              "live_host_or_production_store": "not accessed",
+              "source_pins": {
+                  "workflow_candidate": os.environ["GITHUB_SHA"],
+                  "root_producer": os.environ["ROOT_PRODUCER_SHA"],
+                  "app_base": os.environ["APP_BASE_SHA"],
+                  "app_candidate": os.environ["APP_SOURCE_SHA"],
+              },
+          }
+          with (control / "ni18-matrix-context.json").open("x", encoding="utf-8") as stream:
+              stream.write(json.dumps(context, sort_keys=True) + "\n")
+          PY
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Install locked app test environment
+        id: dependencies
+        working-directory: app-candidate
+        run: |
+          set +e
+          lock_before="$(sha256sum uv.lock | cut -d' ' -f1)"
+          timeout --verbose --signal=TERM --kill-after=30s 300s \
+            uv sync --frozen --extra dev > "$NI18_INSTALL_LOG" 2>&1
+          sync_rc=$?
+          lock_after="$(sha256sum uv.lock | cut -d' ' -f1)"
+          python - "$lock_before" "$lock_after" "$sync_rc" > "$NI18_LOCK_HASHES" <<'PY'
+          import json
+          import sys
+
+          print(json.dumps({
+              "lock_sha256_before": sys.argv[1],
+              "lock_sha256_after": sys.argv[2],
+              "uv_sync_exit_code": int(sys.argv[3]),
+          }, sort_keys=True))
+          PY
+          if [[ "$lock_before" != "$lock_after" ]]; then
+            echo 'uv.lock changed during dependency installation.' >&2
+            exit 1
+          fi
+          exit "$sync_rc"
+
+      - name: Upload locked dependency install evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-${{ matrix.id }}-${{ github.run_id }}-${{ github.run_attempt }}-dependency-install
+          path: |
+            ci-control/ni18-uv-sync.log
+            ci-control/ni18-uv-lock-hashes.json
+          if-no-files-found: warn
+
+      - name: Capture full selected module
+        id: capture
+        if: ${{ always() && steps.paths.outcome == 'success' && steps.compare.outcome == 'success' && steps.dependencies.outcome == 'success' }}
+        working-directory: app-candidate
+        env:
+          TEST_MODULE: ${{ matrix.module }}
+          EXPECTED_CASES: ${{ matrix.expected_cases }}
+          MODULE_ID: ${{ matrix.id }}
+        run: |
+          set -u
+          native_rel="$CAPTURE_ROOT/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID/native"
+          native_out="$GITHUB_WORKSPACE/$native_rel"
+          app_rel="artifacts/ni18-offhost-fixture-matrix/$MODULE_ID"
+          app_junit="$app_rel/original-junit.xml"
+          app_log="$app_rel/pytest.log"
+          mkdir -p "$app_rel"
+          set +e
+          timeout --verbose --signal=TERM --kill-after=30s 240s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "$app_junit" \
+              --output "$native_out" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_candidate=$GITHUB_WORKSPACE/app-candidate" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni18-offhost-fixture-matrix.yml" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni18-source-comparison.json" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni18-matrix-context.json" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni18-uv-sync.log" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/ni18-uv-lock-hashes.json" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path tests/conftest.py --read-path tests/unit/conftest.py \
+              --read-path pyproject.toml --read-path uv.lock \
+              --read-path tests/unit/test_td21_19_vl_structured_repair.py \
+              --read-path tests/unit/test_oab3_quiescence_witness.py \
+              --read-path tests/unit/test_api_models_openai.py \
+              --read-path tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py \
+              --read-path tests/unit/test_gpu_window_parked_role.py \
+              --read-path src/vision/config.py --read-path src/vision/analyzers/vl_describe.py \
+              --read-path src/structured_output/repair.py \
+              --read-path src/runtime/quiescence.py --read-path src/runtime/trailing_work_witness.py \
+              --read-path src/api/models/openai.py --read-path src/api/routes/openai_compat.py \
+              --read-path src/__init__.py \
+              --read-path src/config/__init__.py \
+              --read-path scripts/graph_router/plan_offline_reward_pairwise_holdout_expansion.py \
+              --read-path src/runtime/gpu_window.py --read-path src/runtime/gpu_window_executor.py \
+              --read-path scripts/server/stack_manifest.py --read-path scripts/server/stack_paths.py \
+              --read-path src/config/models.py --read-path src/registry/kernel_paths.py \
+              --read-path orchestration/model_registry.yaml --read-path orchestration/stack_topology.yaml \
+              --generated-output "$app_log" \
+              --select "$TEST_MODULE" \
+              -- timeout --verbose --signal=TERM --kill-after=15s 120s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q \
+                  --rootdir="$PWD" --junit-prefix="ni18_${MODULE_ID}" \
+                  "$TEST_MODULE" --junitxml="$app_junit" --log-file="$app_log"
+          capture_rc=$?
+          printf '{"capture_exit_code":%s,"module":"%s"}\n' \
+            "$capture_rc" "$MODULE_ID" > "$GITHUB_WORKSPACE/ci-control/ni18-capture-status.json"
+          exit "$capture_rc"
+
+      - name: Upload this module's original receipt, JUnit, and log immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-${{ matrix.id }}-${{ github.run_id }}-${{ github.run_attempt }}-original-capture
+          path: |
+            app-candidate/artifacts/ni18-offhost-fixture-matrix/${{ matrix.id }}/original-junit.xml
+            app-candidate/artifacts/ni18-offhost-fixture-matrix/${{ matrix.id }}/pytest.log
+            artifacts/ni18-offhost-fixture-matrix/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.id }}/native/
+            ci-control/ni18-source-comparison.json
+            ci-control/ni18-matrix-context.json
+            ci-control/ni18-uv-sync.log
+            ci-control/ni18-uv-lock-hashes.json
+            ci-control/ni18-capture-status.json
+          if-no-files-found: warn
+
+      - name: Independently reopen original native receipt
+        id: receipt_readback
+        if: always()
+        env:
+          EXPECTED_CASES: ${{ matrix.expected_cases }}
+          MODULE_ID: ${{ matrix.id }}
+          TEST_MODULE: ${{ matrix.module }}
+          APP_SOURCE_SHA: ${{ matrix.app_sha }}
+        run: |
+          set +e
+          mkdir -p "$GITHUB_WORKSPACE/ci-control"
+          native_dir="$GITHUB_WORKSPACE/$CAPTURE_ROOT/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID/native"
+          receipt="$native_dir/receipt.json"
+          output="$GITHUB_WORKSPACE/ci-control/ni18-readback.json"
+          if [[ -f "$receipt" ]]; then
+            python - "$GITHUB_WORKSPACE/root-producer/scripts/ci" "$receipt" "$EXPECTED_CASES" "$TEST_MODULE" "$APP_SOURCE_SHA" "$GITHUB_WORKSPACE/ci-control/ni18-readback.json" <<'PY'
+          import json
+          from pathlib import Path
+          import sys
+
+          sys.path.insert(0, sys.argv[1])
+          from native_conformance import read_receipt
+
+          receipt_path = Path(sys.argv[2])
+          expected_cases = int(sys.argv[3])
+          expected_module = sys.argv[4]
+          expected_app_sha = sys.argv[5]
+          output_path = Path(sys.argv[6])
+          record, receipt_digest = read_receipt(receipt_path)
+          counts = record.get("summary", {}).get("counts", {})
+          cases = record.get("summary", {}).get("cases", [])
+          facts = {
+              "receipt_sha256": receipt_digest,
+              "proposition": record.get("fixture_execution_conformant"),
+              "exit_code": record.get("exit_code"),
+              "counts": counts,
+              "test_module": expected_module,
+              "repository_shas": record.get("repositories"),
+          }
+          output_path.write_text(json.dumps(facts, sort_keys=True) + "\n", encoding="utf-8")
+          repositories = record.get("repositories", {})
+          if (record.get("fixture_execution_conformant") is not True
+                  or record.get("exit_code") != 0
+                  or repositories.get("orchestrator_candidate") != expected_app_sha
+                  or counts.get("collected") != expected_cases
+                  or counts.get("executed") != expected_cases
+                  or counts.get("passed") != expected_cases
+                  or counts.get("skipped") != 0
+                  or counts.get("failure") != 0
+                  or counts.get("error") != 0
+                  or len(cases) != expected_cases):
+              raise SystemExit(f"original module receipt does not meet its named zero-skip expectation: {facts}")
+          PY
+            readback_rc=$?
+          else
+            printf '{"receipt_present":false,"module":"%s"}\n' "$MODULE_ID" > "$output"
+            readback_rc=1
+          fi
+          exit "$readback_rc"
+
+      - name: Verify post-run lock and absent backend paths
+        id: postcheck
+        if: always()
+        env:
+          MODULE_ID: ${{ matrix.id }}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/ci-control"
+          python - "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" "$ORCHESTRATOR_PATHS_LLAMA_MTMD" \
+            "$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$GITHUB_WORKSPACE/app-candidate/uv.lock" \
+            "$NI18_LOCK_HASHES" "$GITHUB_WORKSPACE/ci-control/ni18-postcheck.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import sys
+
+          names = ("llama_cpp_bin", "llama_mtmd", "llama_server")
+          paths = dict(zip(names, sys.argv[1:4]))
+          lock_path = Path(sys.argv[4])
+          lock_hashes_path = Path(sys.argv[5])
+          output_path = Path(sys.argv[6])
+          absent = {name: not os.path.lexists(path) for name, path in paths.items()}
+          expected = None
+          if lock_hashes_path.is_file():
+              expected = json.loads(lock_hashes_path.read_text(encoding="utf-8"))
+          actual_lock_hash = hashlib.sha256(lock_path.read_bytes()).hexdigest() if lock_path.is_file() else None
+          lock_unchanged = bool(expected) and actual_lock_hash == expected.get("lock_sha256_before") == expected.get("lock_sha256_after")
+          facts = {
+              "schema": "ni18.postcheck.v1",
+              "module": os.environ["MODULE_ID"],
+              "declared_absent_paths_remain_absent": absent,
+              "uv_lock_sha256": actual_lock_hash,
+              "uv_lock_unchanged": lock_unchanged,
+          }
+          output_path.write_text(json.dumps(facts, sort_keys=True) + "\n", encoding="utf-8")
+          if not all(absent.values()) or not lock_unchanged:
+              raise SystemExit(f"post-run backend-path or lock invariant failed: {facts}")
+          PY
+
+      - name: Upload original readback and postcheck outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-${{ matrix.id }}-${{ github.run_id }}-${{ github.run_attempt }}-readback
+          path: |
+            ci-control/ni18-readback.json
+            ci-control/ni18-postcheck.json
+          if-no-files-found: warn

@@ -1,0 +1,5 @@
+# NI49 pairwise holdout prompt temporary fixture — 2026-10-05
+
+The bounded off-host run [37352568892](https://github.com/pestopoppa/epyc-root/actions/runs/37352568892) passed the reviewed `test_offline_reward_pairwise_holdout_expansion_plan.py` selection: 13 collected, 13 passed, no skips, failures, or errors. Main independently reopened the original native receipt and shared projection as Judged/Located. The source candidate is orchestrator commit `b851dcf4cf41c04b5f1786ce095eb1f506c47110`, changing only `tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py`.
+
+The matrix bound the frozen app/root producer and workflow pins, installed from the frozen lock, and preserved original receipt, JUnit, log, and postcheck artifacts under `/mnt/raid0/llm/artifacts/ni18-offhost-fixture-matrix-37352568892/`. It recorded the three configured backend executable paths absent and non-symlink, with the lockfile hash unchanged. The result covers the local prompt-fixture selection only; no pairwise benchmark corpus was acquired or scored.

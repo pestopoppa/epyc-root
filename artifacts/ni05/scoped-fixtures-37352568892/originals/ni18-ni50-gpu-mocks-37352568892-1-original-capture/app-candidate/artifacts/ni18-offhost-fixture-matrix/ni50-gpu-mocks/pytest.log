@@ -1,0 +1,14 @@
+WARNING  src.runtime.gpu_window:gpu_window.py:264 gpu_window: /tmp/pytest-of-runner/pytest-0/test_garbled_file_is_not_parke0/gpu-window/mi210.json is garbled (Expecting property name enclosed in double quotes: line 1 column 2 (char 1)) — treating as not parked
+WARNING  src.runtime.gpu_window:gpu_window.py:264 gpu_window: /tmp/pytest-of-runner/pytest-0/test_garbled_file_is_not_parke1/gpu-window/mi210.json is garbled (top level is not a JSON object) — treating as not parked
+WARNING  src.runtime.gpu_window:gpu_window.py:264 gpu_window: /tmp/pytest-of-runner/pytest-0/test_garbled_file_is_not_parke2/gpu-window/mi210.json is garbled (holder 'martians' not in ('production', 'autokernel', 'released')) — treating as not parked
+WARNING  src.runtime.gpu_window:gpu_window.py:264 gpu_window: /tmp/pytest-of-runner/pytest-0/test_garbled_file_is_not_parke3/gpu-window/mi210.json is garbled (parked_roles must be a list) — treating as not parked
+WARNING  src.runtime.gpu_window:gpu_window.py:264 gpu_window: /tmp/pytest-of-runner/pytest-0/test_garbled_file_is_not_parke4/gpu-window/mi210.json is garbled (Expecting value: line 1 column 1 (char 0)) — treating as not parked
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (architect_critic request r1) role=architect_critic request_id=r1
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (architect_critic request req-1) role=architect_critic request_id=req-1
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (architect_critic request unknown) role=architect_critic request_id=None
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (whatever_alias request unknown) role=whatever_alias request_id=None
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (architect_critic request v1-req) role=architect_critic request_id=v1-req
+WARNING  src.api:__init__.py:415 Role parked for POST /v1/chat/completions: role_parked: role=architect_critic port= holder=autokernel retry_after_s=3599 — the GPU serving this role is lent to autokernel work until 2026-10-05T19:00:23+00:00; preempt requested; service unavailable
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+WARNING  src.runtime.gpu_window:gpu_window.py:482 gpu_window: preempt requested (architect_critic request pt-req) role=architect_critic request_id=pt-req

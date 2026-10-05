@@ -1,0 +1,1283 @@
+{
+  "copied_unchanged": true,
+  "files": [
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-dependency-install/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-dependency-install/ni18-uv-sync.log",
+      "sha256": "a93c88d98b6441dba138ec43e0a09e7048bc16bc48d7b16f6572f1514ab5adad",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni46-vl-cache/original-junit.xml",
+      "sha256": "a998024182be2679003cbbd436e86e13d78062140984bf07db38172f7c15445f",
+      "size_bytes": 1746
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni46-vl-cache/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/command.log",
+      "sha256": "8ada11f17975db4e3bad46cc4bc4b0ae920aee3d9c6fbc6090ff50622f658aed",
+      "size_bytes": 1329
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/execution-request.json",
+      "sha256": "3a2a6056610f7b8a81992b373102b962f4cb46421a7ce055175fb3a888b4664d",
+      "size_bytes": 9336
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/original-junit.xml",
+      "sha256": "a998024182be2679003cbbd436e86e13d78062140984bf07db38172f7c15445f",
+      "size_bytes": 1746
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-001.bin",
+      "sha256": "e1b192b98250d717238169d00d4e26062f6e8b508ddd89fc7e1e9cbfec0d860c",
+      "size_bytes": 21501
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-002.bin",
+      "sha256": "3d16a6047861a56e83dd809e581bd52dc7d4a694fe9fb3e50682d4f45e51c392",
+      "size_bytes": 3804
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-003.bin",
+      "sha256": "d4a00d0097e113db8beb6f689d4c1752b0b5c9fedd3af1fabc17efa4fcf4e45c",
+      "size_bytes": 1151
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-004.bin",
+      "sha256": "a93c88d98b6441dba138ec43e0a09e7048bc16bc48d7b16f6572f1514ab5adad",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-005.bin",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-006.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-007.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-008.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-009.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-010.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-011.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-012.bin",
+      "sha256": "59a6cf2d5e3ea251105aa39ce1fa11ffaf07e8e8eebc40d0805f64c902153c2d",
+      "size_bytes": 8053
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-013.bin",
+      "sha256": "a9c68f23099ad3f864f6dc7def0cf14e0d4ae373ebc068e6cf3d7320853fb8aa",
+      "size_bytes": 11849
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-014.bin",
+      "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86",
+      "size_bytes": 13589
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-015.bin",
+      "sha256": "e3f56a81fac0c05fed1271ce52429b02f3158004087cf695b84df1e7045a9325",
+      "size_bytes": 38279
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-016.bin",
+      "sha256": "2714c39318c68e3470aae58413d0e8506a8ee5ae31b237da02d9f43d974020eb",
+      "size_bytes": 15933
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-017.bin",
+      "sha256": "9b1efb6e0b7b9eb2db7ddf32d7dd08b66b4b33e52cdb0aa58bb5f73ffb55f10b",
+      "size_bytes": 3047
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-018.bin",
+      "sha256": "4959ee7197fdc9251d70e4066c4704fe757e39a4e3cc0bd45b0b2c47dec734be",
+      "size_bytes": 19967
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-019.bin",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4",
+      "size_bytes": 47365
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-020.bin",
+      "sha256": "88e2f4bb9583f6ae1a3a3d3f3d42c443f865af2ddfda6ee84dcc00d24548984b",
+      "size_bytes": 8566
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-021.bin",
+      "sha256": "19f55bc242caf7507665e36b3bc13ece9d4b40b90b8904b5429bb3ef351e3685",
+      "size_bytes": 12961
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-022.bin",
+      "sha256": "6899bb14d9c3b578232d6f51ae1e26347a59290837c64ced7b9af4bc3308b2ed",
+      "size_bytes": 22346
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-023.bin",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "size_bytes": 87270
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-024.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-025.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-026.bin",
+      "sha256": "b85d7adac7d286b78f04430ed5e644d1cd8701f64978c8c598fbb2253a75e752",
+      "size_bytes": 60832
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-027.bin",
+      "sha256": "11d06337bc466435f966a51a4c041ef72c35d1b2bd7a8824f47de84c14ad7aa2",
+      "size_bytes": 26866
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-028.bin",
+      "sha256": "889a0982c78be48d737d7814bf2c9036d1097770941cfa21cd3916701964652f",
+      "size_bytes": 50998
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-029.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-030.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-031.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-032.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-033.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/read-034.bin",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size_bytes": 23487
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni46-vl-cache/native/receipt.json",
+      "sha256": "b15ecd24a158857610a757e569d86baea786b8224ff3002866e7e4b54f4f4143",
+      "size_bytes": 14489
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/ci-control/ni18-capture-status.json",
+      "sha256": "00622d4885b437b59bb2d651a54034ce66d613c1b4ccd2bda97cfbe6354b95a3",
+      "size_bytes": 49
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/ci-control/ni18-matrix-context.json",
+      "sha256": "d4a00d0097e113db8beb6f689d4c1752b0b5c9fedd3af1fabc17efa4fcf4e45c",
+      "size_bytes": 1151
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/ci-control/ni18-source-comparison.json",
+      "sha256": "3d16a6047861a56e83dd809e581bd52dc7d4a694fe9fb3e50682d4f45e51c392",
+      "size_bytes": 3804
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/ci-control/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-original-capture/ci-control/ni18-uv-sync.log",
+      "sha256": "a93c88d98b6441dba138ec43e0a09e7048bc16bc48d7b16f6572f1514ab5adad",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-readback/ni18-postcheck.json",
+      "sha256": "9ef9c111e1b3a669941f859af954a792598e496b0feb4eff4b23bc908ef302cb",
+      "size_bytes": 278
+    },
+    {
+      "path": "originals/ni18-ni46-vl-cache-37352568892-1-readback/ni18-readback.json",
+      "sha256": "c563fafcb363a8daf38222e02496ef6f18469694f052e197b6678eee671f3ef2",
+      "size_bytes": 499
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-dependency-install/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-dependency-install/ni18-uv-sync.log",
+      "sha256": "ed66884be078a3270ea3799080d23597b0548f83672245da589450abd0c04a27",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni47-oab-temp/original-junit.xml",
+      "sha256": "4dba0e80c1eabd41b3e9a9e169e01fe742a9842e517c70b65c46b888a7c64ad5",
+      "size_bytes": 1683
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni47-oab-temp/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/command.log",
+      "sha256": "c3e80a1a0e60203285d3b1b2fc8d4b689752200dea5054921bb32e734e309914",
+      "size_bytes": 1330
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/execution-request.json",
+      "sha256": "6af8f808e10ce99541bffb0001d2080d9ada76bdab1225ac58f20fc09e33f636",
+      "size_bytes": 9326
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/original-junit.xml",
+      "sha256": "4dba0e80c1eabd41b3e9a9e169e01fe742a9842e517c70b65c46b888a7c64ad5",
+      "size_bytes": 1683
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-001.bin",
+      "sha256": "e1b192b98250d717238169d00d4e26062f6e8b508ddd89fc7e1e9cbfec0d860c",
+      "size_bytes": 21501
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-002.bin",
+      "sha256": "b942f7c1e61fb5e96c29659d409e808c0986232f9b12f7f19e948a28d5f4ec5b",
+      "size_bytes": 3795
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-003.bin",
+      "sha256": "7621ce39d401a07143a057c851e24cff5ffd6041adf4b5a17eca5361be5eb52a",
+      "size_bytes": 1146
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-004.bin",
+      "sha256": "ed66884be078a3270ea3799080d23597b0548f83672245da589450abd0c04a27",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-005.bin",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-006.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-007.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-008.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-009.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-010.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-011.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-012.bin",
+      "sha256": "04b0af2a030689bff5bfbe1c87da509391dd861881871835fcf4cf40371fdd8e",
+      "size_bytes": 7881
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-013.bin",
+      "sha256": "1f13478d1e41a81085e4388fa075b0ad6282c1ad8d3836a2c9de6e5ccf2a7eb2",
+      "size_bytes": 11762
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-014.bin",
+      "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86",
+      "size_bytes": 13589
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-015.bin",
+      "sha256": "e3f56a81fac0c05fed1271ce52429b02f3158004087cf695b84df1e7045a9325",
+      "size_bytes": 38279
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-016.bin",
+      "sha256": "2714c39318c68e3470aae58413d0e8506a8ee5ae31b237da02d9f43d974020eb",
+      "size_bytes": 15933
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-017.bin",
+      "sha256": "9b1efb6e0b7b9eb2db7ddf32d7dd08b66b4b33e52cdb0aa58bb5f73ffb55f10b",
+      "size_bytes": 3047
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-018.bin",
+      "sha256": "4959ee7197fdc9251d70e4066c4704fe757e39a4e3cc0bd45b0b2c47dec734be",
+      "size_bytes": 19967
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-019.bin",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4",
+      "size_bytes": 47365
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-020.bin",
+      "sha256": "88e2f4bb9583f6ae1a3a3d3f3d42c443f865af2ddfda6ee84dcc00d24548984b",
+      "size_bytes": 8566
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-021.bin",
+      "sha256": "19f55bc242caf7507665e36b3bc13ece9d4b40b90b8904b5429bb3ef351e3685",
+      "size_bytes": 12961
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-022.bin",
+      "sha256": "6899bb14d9c3b578232d6f51ae1e26347a59290837c64ced7b9af4bc3308b2ed",
+      "size_bytes": 22346
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-023.bin",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "size_bytes": 87270
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-024.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-025.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-026.bin",
+      "sha256": "b85d7adac7d286b78f04430ed5e644d1cd8701f64978c8c598fbb2253a75e752",
+      "size_bytes": 60832
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-027.bin",
+      "sha256": "11d06337bc466435f966a51a4c041ef72c35d1b2bd7a8824f47de84c14ad7aa2",
+      "size_bytes": 26866
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-028.bin",
+      "sha256": "889a0982c78be48d737d7814bf2c9036d1097770941cfa21cd3916701964652f",
+      "size_bytes": 50998
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-029.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-030.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-031.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-032.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-033.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/read-034.bin",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size_bytes": 23487
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni47-oab-temp/native/receipt.json",
+      "sha256": "94fcad48e305b6913a66dac46bd2772ab27b45949b78dbf30b21f28f0f64d00d",
+      "size_bytes": 14381
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/ci-control/ni18-capture-status.json",
+      "sha256": "5758a4a9c0135f68bb6d427299b80c15f0f1bbbd7bc86c6ebf126796e679ca6a",
+      "size_bytes": 49
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/ci-control/ni18-matrix-context.json",
+      "sha256": "7621ce39d401a07143a057c851e24cff5ffd6041adf4b5a17eca5361be5eb52a",
+      "size_bytes": 1146
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/ci-control/ni18-source-comparison.json",
+      "sha256": "b942f7c1e61fb5e96c29659d409e808c0986232f9b12f7f19e948a28d5f4ec5b",
+      "size_bytes": 3795
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/ci-control/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-original-capture/ci-control/ni18-uv-sync.log",
+      "sha256": "ed66884be078a3270ea3799080d23597b0548f83672245da589450abd0c04a27",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-readback/ni18-postcheck.json",
+      "sha256": "b192a567e1106c4a512f665b16a9602c1f8d646ef8386c66a126ed227eb6bfb7",
+      "size_bytes": 278
+    },
+    {
+      "path": "originals/ni18-ni47-oab-temp-37352568892-1-readback/ni18-readback.json",
+      "sha256": "36d446a241de9d0e5a7d77136d6c76a349bf84318904c33ade3c4bcc09acca29",
+      "size_bytes": 497
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-dependency-install/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-dependency-install/ni18-uv-sync.log",
+      "sha256": "eb98d8cdaafebb392a777f359a62b2d7d5f51e12a925d69617b92157eb0f636e",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni48-openai-schema/original-junit.xml",
+      "sha256": "d3e08a9b6eb05d09d3fc455ff2d5d64614530d80f5b59a8d0e81448f266f12bf",
+      "size_bytes": 8164
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni48-openai-schema/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/command.log",
+      "sha256": "13b35ad07ef8311904bfaa01e396d57f5bfdd27ac2a81f4d22b04e877533542a",
+      "size_bytes": 1415
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/execution-request.json",
+      "sha256": "f8f001feac120acd8bedd75dc10c59017f38a7e67caf95bb16961b7755b7f61f",
+      "size_bytes": 9334
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/original-junit.xml",
+      "sha256": "d3e08a9b6eb05d09d3fc455ff2d5d64614530d80f5b59a8d0e81448f266f12bf",
+      "size_bytes": 8164
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-001.bin",
+      "sha256": "e1b192b98250d717238169d00d4e26062f6e8b508ddd89fc7e1e9cbfec0d860c",
+      "size_bytes": 21501
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-002.bin",
+      "sha256": "fc9de9b650dfea3245e915147c3e81de73e1ddee923ba40fa075b31d4758e76f",
+      "size_bytes": 3776
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-003.bin",
+      "sha256": "4c44e2736ad80939a80d951872ea6a9018faa0b948ef81830cc0cd25b8d34ffc",
+      "size_bytes": 1145
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-004.bin",
+      "sha256": "eb98d8cdaafebb392a777f359a62b2d7d5f51e12a925d69617b92157eb0f636e",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-005.bin",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-006.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-007.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-008.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-009.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-010.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-011.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-012.bin",
+      "sha256": "04b0af2a030689bff5bfbe1c87da509391dd861881871835fcf4cf40371fdd8e",
+      "size_bytes": 7881
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-013.bin",
+      "sha256": "a9c68f23099ad3f864f6dc7def0cf14e0d4ae373ebc068e6cf3d7320853fb8aa",
+      "size_bytes": 11849
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-014.bin",
+      "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86",
+      "size_bytes": 13589
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-015.bin",
+      "sha256": "e3f56a81fac0c05fed1271ce52429b02f3158004087cf695b84df1e7045a9325",
+      "size_bytes": 38279
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-016.bin",
+      "sha256": "2714c39318c68e3470aae58413d0e8506a8ee5ae31b237da02d9f43d974020eb",
+      "size_bytes": 15933
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-017.bin",
+      "sha256": "9b1efb6e0b7b9eb2db7ddf32d7dd08b66b4b33e52cdb0aa58bb5f73ffb55f10b",
+      "size_bytes": 3047
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-018.bin",
+      "sha256": "4959ee7197fdc9251d70e4066c4704fe757e39a4e3cc0bd45b0b2c47dec734be",
+      "size_bytes": 19967
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-019.bin",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4",
+      "size_bytes": 47365
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-020.bin",
+      "sha256": "88e2f4bb9583f6ae1a3a3d3f3d42c443f865af2ddfda6ee84dcc00d24548984b",
+      "size_bytes": 8566
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-021.bin",
+      "sha256": "19f55bc242caf7507665e36b3bc13ece9d4b40b90b8904b5429bb3ef351e3685",
+      "size_bytes": 12961
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-022.bin",
+      "sha256": "169b0076450a508b7f41ccd29ccdbaf9691a06d2bc8b7b7d13eefca4f3d78221",
+      "size_bytes": 22444
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-023.bin",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "size_bytes": 87270
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-024.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-025.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-026.bin",
+      "sha256": "b85d7adac7d286b78f04430ed5e644d1cd8701f64978c8c598fbb2253a75e752",
+      "size_bytes": 60832
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-027.bin",
+      "sha256": "11d06337bc466435f966a51a4c041ef72c35d1b2bd7a8824f47de84c14ad7aa2",
+      "size_bytes": 26866
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-028.bin",
+      "sha256": "889a0982c78be48d737d7814bf2c9036d1097770941cfa21cd3916701964652f",
+      "size_bytes": 50998
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-029.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-030.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-031.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-032.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-033.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/read-034.bin",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size_bytes": 23487
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni48-openai-schema/native/receipt.json",
+      "sha256": "60bc5144722a863aa39123563566f4fcf394766f43ca662bdf182036553745a5",
+      "size_bytes": 27973
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/ci-control/ni18-capture-status.json",
+      "sha256": "10b2be39e2b04129f1627863801fed5f65df6ff47bdbe4df7929cb2273c24807",
+      "size_bytes": 54
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/ci-control/ni18-matrix-context.json",
+      "sha256": "4c44e2736ad80939a80d951872ea6a9018faa0b948ef81830cc0cd25b8d34ffc",
+      "size_bytes": 1145
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/ci-control/ni18-source-comparison.json",
+      "sha256": "fc9de9b650dfea3245e915147c3e81de73e1ddee923ba40fa075b31d4758e76f",
+      "size_bytes": 3776
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/ci-control/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-original-capture/ci-control/ni18-uv-sync.log",
+      "sha256": "eb98d8cdaafebb392a777f359a62b2d7d5f51e12a925d69617b92157eb0f636e",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-readback/ni18-postcheck.json",
+      "sha256": "9ab7f547cc16a976325e7e1783d17857268ef29ba3f1abc40d895290fb125600",
+      "size_bytes": 283
+    },
+    {
+      "path": "originals/ni18-ni48-openai-schema-37352568892-1-readback/ni18-readback.json",
+      "sha256": "126997bff75a824996438ea4239f4e041e1454ce19aedebef8781c78c4c80883",
+      "size_bytes": 491
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-dependency-install/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-dependency-install/ni18-uv-sync.log",
+      "sha256": "288abfabb8d81c28316e8226b29f307b6d325b14d34136f708f6a2ebd0ab63d1",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni49-prompt-fixture/original-junit.xml",
+      "sha256": "61039578a6d5c1e69106b66fca8f6fce1ebd2b7b6b64c422eee1858348bac7f3",
+      "size_bytes": 2813
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni49-prompt-fixture/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/command.log",
+      "sha256": "63648497dc72ba482172607bcdd3b77e23304ff202ad3c0a2377ec436339e242",
+      "size_bytes": 1416
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/execution-request.json",
+      "sha256": "a661a5cf29d33842568144bc36b5d7817a197169f6e36621c7fd35b0cf7ff1c7",
+      "size_bytes": 9396
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/original-junit.xml",
+      "sha256": "61039578a6d5c1e69106b66fca8f6fce1ebd2b7b6b64c422eee1858348bac7f3",
+      "size_bytes": 2813
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-001.bin",
+      "sha256": "e1b192b98250d717238169d00d4e26062f6e8b508ddd89fc7e1e9cbfec0d860c",
+      "size_bytes": 21501
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-002.bin",
+      "sha256": "b7cdab6e564069b71dd387b4562eed9166c5797839946b388183335051e2d5d0",
+      "size_bytes": 3847
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-003.bin",
+      "sha256": "b58f81299136f8bf9e53bbd2adf8071e55054e0cf37a85c403f76efec7932cb5",
+      "size_bytes": 1175
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-004.bin",
+      "sha256": "288abfabb8d81c28316e8226b29f307b6d325b14d34136f708f6a2ebd0ab63d1",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-005.bin",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-006.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-007.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-008.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-009.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-010.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-011.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-012.bin",
+      "sha256": "04b0af2a030689bff5bfbe1c87da509391dd861881871835fcf4cf40371fdd8e",
+      "size_bytes": 7881
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-013.bin",
+      "sha256": "a9c68f23099ad3f864f6dc7def0cf14e0d4ae373ebc068e6cf3d7320853fb8aa",
+      "size_bytes": 11849
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-014.bin",
+      "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86",
+      "size_bytes": 13589
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-015.bin",
+      "sha256": "484497131ab86a0723b6681e1b7a0f94924818024d7e01835bb1733b60861059",
+      "size_bytes": 38887
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-016.bin",
+      "sha256": "2714c39318c68e3470aae58413d0e8506a8ee5ae31b237da02d9f43d974020eb",
+      "size_bytes": 15933
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-017.bin",
+      "sha256": "9b1efb6e0b7b9eb2db7ddf32d7dd08b66b4b33e52cdb0aa58bb5f73ffb55f10b",
+      "size_bytes": 3047
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-018.bin",
+      "sha256": "4959ee7197fdc9251d70e4066c4704fe757e39a4e3cc0bd45b0b2c47dec734be",
+      "size_bytes": 19967
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-019.bin",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4",
+      "size_bytes": 47365
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-020.bin",
+      "sha256": "88e2f4bb9583f6ae1a3a3d3f3d42c443f865af2ddfda6ee84dcc00d24548984b",
+      "size_bytes": 8566
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-021.bin",
+      "sha256": "19f55bc242caf7507665e36b3bc13ece9d4b40b90b8904b5429bb3ef351e3685",
+      "size_bytes": 12961
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-022.bin",
+      "sha256": "6899bb14d9c3b578232d6f51ae1e26347a59290837c64ced7b9af4bc3308b2ed",
+      "size_bytes": 22346
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-023.bin",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "size_bytes": 87270
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-024.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-025.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-026.bin",
+      "sha256": "b85d7adac7d286b78f04430ed5e644d1cd8701f64978c8c598fbb2253a75e752",
+      "size_bytes": 60832
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-027.bin",
+      "sha256": "11d06337bc466435f966a51a4c041ef72c35d1b2bd7a8824f47de84c14ad7aa2",
+      "size_bytes": 26866
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-028.bin",
+      "sha256": "889a0982c78be48d737d7814bf2c9036d1097770941cfa21cd3916701964652f",
+      "size_bytes": 50998
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-029.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-030.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-031.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-032.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-033.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/read-034.bin",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size_bytes": 23487
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni49-prompt-fixture/native/receipt.json",
+      "sha256": "9e5e71cc1f860154425e3f7949110ee52b0faeae90ecaf7083e140580c23a238",
+      "size_bytes": 16806
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/ci-control/ni18-capture-status.json",
+      "sha256": "b2b2c74e4ba7c1d37b050c2c2536ca8f75c84dde6792f1b0f5c8a3db81408e83",
+      "size_bytes": 55
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/ci-control/ni18-matrix-context.json",
+      "sha256": "b58f81299136f8bf9e53bbd2adf8071e55054e0cf37a85c403f76efec7932cb5",
+      "size_bytes": 1175
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/ci-control/ni18-source-comparison.json",
+      "sha256": "b7cdab6e564069b71dd387b4562eed9166c5797839946b388183335051e2d5d0",
+      "size_bytes": 3847
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/ci-control/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-original-capture/ci-control/ni18-uv-sync.log",
+      "sha256": "288abfabb8d81c28316e8226b29f307b6d325b14d34136f708f6a2ebd0ab63d1",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-readback/ni18-postcheck.json",
+      "sha256": "c909e847e36a9f17d711eb8d034819b486250b3aa15edc21fec4d82a02baa07d",
+      "size_bytes": 284
+    },
+    {
+      "path": "originals/ni18-ni49-prompt-fixture-37352568892-1-readback/ni18-readback.json",
+      "sha256": "a45ee1569cb08ab7aa126aca2138c96627cba165c4d100f47a6099ed0f83c9bf",
+      "size_bytes": 520
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-dependency-install/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-dependency-install/ni18-uv-sync.log",
+      "sha256": "b4077aa839c6b1e53fcd7165771534c39fd80424b1951f18be81b5c041edbb25",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni50-gpu-mocks/original-junit.xml",
+      "sha256": "200b2fb5ccbbd55268a97f8bb639b017e35da07403446517c79c99b861685c21",
+      "size_bytes": 3579
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/app-candidate/artifacts/ni18-offhost-fixture-matrix/ni50-gpu-mocks/pytest.log",
+      "sha256": "c19546be0ab8b0372a8ff663417b41923aa7b3ca3faa33906f95d1500d782436",
+      "size_bytes": 2617
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/command.log",
+      "sha256": "12b27f13c09b2864f6872a5ecd5ee96edd6d200ef060b09f05e01d036c542eaa",
+      "size_bytes": 1331
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/execution-request.json",
+      "sha256": "e0c82efafab2d75fd8e48a237f7d6fa64d5163e1a69a1e6ba3213b90072b19e6",
+      "size_bytes": 9328
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/generated-output-000.bin",
+      "sha256": "c19546be0ab8b0372a8ff663417b41923aa7b3ca3faa33906f95d1500d782436",
+      "size_bytes": 2617
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/original-junit.xml",
+      "sha256": "200b2fb5ccbbd55268a97f8bb639b017e35da07403446517c79c99b861685c21",
+      "size_bytes": 3579
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-001.bin",
+      "sha256": "e1b192b98250d717238169d00d4e26062f6e8b508ddd89fc7e1e9cbfec0d860c",
+      "size_bytes": 21501
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-002.bin",
+      "sha256": "ea474aadb5ecb71da560b9ed03f025bf967821b336e350c20c4e15052b79988a",
+      "size_bytes": 3794
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-003.bin",
+      "sha256": "3b49c075cc4e6591aebe08cce18010ab49238254a60edfe1dbce796da958ca8b",
+      "size_bytes": 1146
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-004.bin",
+      "sha256": "b4077aa839c6b1e53fcd7165771534c39fd80424b1951f18be81b5c041edbb25",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-005.bin",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-006.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-007.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-008.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-009.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-010.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-011.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-012.bin",
+      "sha256": "04b0af2a030689bff5bfbe1c87da509391dd861881871835fcf4cf40371fdd8e",
+      "size_bytes": 7881
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-013.bin",
+      "sha256": "a9c68f23099ad3f864f6dc7def0cf14e0d4ae373ebc068e6cf3d7320853fb8aa",
+      "size_bytes": 11849
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-014.bin",
+      "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86",
+      "size_bytes": 13589
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-015.bin",
+      "sha256": "e3f56a81fac0c05fed1271ce52429b02f3158004087cf695b84df1e7045a9325",
+      "size_bytes": 38279
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-016.bin",
+      "sha256": "abd6651e52bf2a0942872cb7b5d9f6d8a0fb71b3c078d57db6218fe1f7ff6b18",
+      "size_bytes": 15994
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-017.bin",
+      "sha256": "9b1efb6e0b7b9eb2db7ddf32d7dd08b66b4b33e52cdb0aa58bb5f73ffb55f10b",
+      "size_bytes": 3047
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-018.bin",
+      "sha256": "4959ee7197fdc9251d70e4066c4704fe757e39a4e3cc0bd45b0b2c47dec734be",
+      "size_bytes": 19967
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-019.bin",
+      "sha256": "e820099f677f458a9f2cb5206b6bd0183c4578bdba1a70cff761937b86f861e4",
+      "size_bytes": 47365
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-020.bin",
+      "sha256": "88e2f4bb9583f6ae1a3a3d3f3d42c443f865af2ddfda6ee84dcc00d24548984b",
+      "size_bytes": 8566
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-021.bin",
+      "sha256": "19f55bc242caf7507665e36b3bc13ece9d4b40b90b8904b5429bb3ef351e3685",
+      "size_bytes": 12961
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-022.bin",
+      "sha256": "6899bb14d9c3b578232d6f51ae1e26347a59290837c64ced7b9af4bc3308b2ed",
+      "size_bytes": 22346
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-023.bin",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "size_bytes": 87270
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-024.bin",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+      "size_bytes": 4047
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-025.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-026.bin",
+      "sha256": "b85d7adac7d286b78f04430ed5e644d1cd8701f64978c8c598fbb2253a75e752",
+      "size_bytes": 60832
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-027.bin",
+      "sha256": "11d06337bc466435f966a51a4c041ef72c35d1b2bd7a8824f47de84c14ad7aa2",
+      "size_bytes": 26866
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-028.bin",
+      "sha256": "889a0982c78be48d737d7814bf2c9036d1097770941cfa21cd3916701964652f",
+      "size_bytes": 50998
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-029.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-030.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-031.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-032.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-033.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/read-034.bin",
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size_bytes": 23487
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/artifacts/ni18-offhost-fixture-matrix/37352568892/1/ni50-gpu-mocks/native/receipt.json",
+      "sha256": "97795999e45c4b05882b6a257a4f2fa235965289dc83d044513ed58e5007712d",
+      "size_bytes": 18298
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/ci-control/ni18-capture-status.json",
+      "sha256": "c2edb514379b0622572914159627e6e425489e716075af5cd8ddf83066fc18f2",
+      "size_bytes": 50
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/ci-control/ni18-matrix-context.json",
+      "sha256": "3b49c075cc4e6591aebe08cce18010ab49238254a60edfe1dbce796da958ca8b",
+      "size_bytes": 1146
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/ci-control/ni18-source-comparison.json",
+      "sha256": "ea474aadb5ecb71da560b9ed03f025bf967821b336e350c20c4e15052b79988a",
+      "size_bytes": 3794
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/ci-control/ni18-uv-lock-hashes.json",
+      "sha256": "e5903d0e6e87c09fe8fb914dca6996f0e922bd78421a749f2427a21067ce2377",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-original-capture/ci-control/ni18-uv-sync.log",
+      "sha256": "b4077aa839c6b1e53fcd7165771534c39fd80424b1951f18be81b5c041edbb25",
+      "size_bytes": 5298
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-readback/ni18-postcheck.json",
+      "sha256": "0856737d2e1ce81cf307b34f0eb0c4c6a57b7ee5c6b7bc63b18644b7cdf5b2c1",
+      "size_bytes": 279
+    },
+    {
+      "path": "originals/ni18-ni50-gpu-mocks-37352568892-1-readback/ni18-readback.json",
+      "sha256": "d4913d809aa0aab31e51728f2aa807cc06ad615b0533b0ee92358bf7dd6b4283",
+      "size_bytes": 496
+    }
+  ],
+  "run_id": "37352568892",
+  "schema": "epyc.ni05.original_custody.v1",
+  "source_custody": "/mnt/raid0/llm/artifacts/ni18-offhost-fixture-matrix-37352568892"
+}

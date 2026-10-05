@@ -1,0 +1,5 @@
+# NI46 VL cache temporary-directory fixture — 2026-10-05
+
+The bounded off-host run [37352568892](https://github.com/pestopoppa/epyc-root/actions/runs/37352568892) passed the reviewed `test_td21_19_vl_structured_repair.py` selection: 8 collected, 8 passed, no skips, failures, or errors. Main independently reopened the original native receipt and shared projection as Judged/Located. The source candidate is orchestrator commit `e3e2d3531c0d12a4550c4127794ed2c06bd9eb79`, changing only `tests/unit/test_td21_19_vl_structured_repair.py`.
+
+The matrix bound the frozen app/root producer and workflow pins, installed from the frozen lock, and preserved original receipt, JUnit, log, and postcheck artifacts under `/mnt/raid0/llm/artifacts/ni18-offhost-fixture-matrix-37352568892/`. The matrix recorded the three configured backend executable paths absent and non-symlink, with the lockfile hash unchanged. This covers the temporary-cache fixture selection only; it does not establish behavior against a live model, GPU, or production store.
