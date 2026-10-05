@@ -13,6 +13,10 @@ completed governance history through 2026-06-19 is compacted under
 
 > **2026-06-13 finalization bridge**: [standardized-stack-update-pipeline-finalization.md](standardized-stack-update-pipeline-finalization.md) consolidates the older audits into the main workflow pickup plan. Use that file for the next implementation pass; continue recording commit-level progress and guard counts here.
 
+## NI18 source-correlated fixture route — 2026-10-05
+
+- [ ] **SCG-NI18-FIXTURES** — Review the six stack-change/:8083 modules against exact registry/prior/backend/receipt inputs and owner-approved disposable fixture boundaries. Keep synthetic fixtures distinct from operator/runtime evidence; no peer source edits, API traffic, reload or operator receipt is authorized by classification. Modules: `test_stack_change_guard.py`, `test_stack_change_pipeline.py`, `test_stack_change_pipeline_simulated_fixtures.py`, `test_stackchg_8083_batch.py`, `test_stackchg_8083_idle_slots.py`, `test_sync_procedure_role_enums.py`.
+
 ## 2026-07-26 Staleness Review
 
 W4 remains active in the [routing and optimization

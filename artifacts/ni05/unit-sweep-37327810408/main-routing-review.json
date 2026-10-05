@@ -1,0 +1,1031 @@
+{
+  "counts": {
+    "all_originals_unchanged": true,
+    "current_app_changed_rows": 4,
+    "current_app_parity_verified": 65,
+    "modules": 69,
+    "original_FALSE": 57,
+    "original_NULL": 12,
+    "original_TRUE": 0
+  },
+  "main_current_app_pin": "6bb8d860d410217895efb7806e9ef907a62a4350",
+  "main_source_parity": {
+    "changed": 8,
+    "changed_modules": [
+      "tests/unit/test_bench_core_claim_api_layer.py",
+      "tests/unit/test_benchmark_executor.py",
+      "tests/unit/test_benchmark_executor_additional.py",
+      "tests/unit/test_gpu_window_parked_role.py",
+      "tests/unit/test_oab3_quiescence_witness.py",
+      "tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py",
+      "tests/unit/test_td21_19_vl_structured_repair.py",
+      "tests/unit/test_typed_decisions_routing_replay.py"
+    ],
+    "same": 61
+  },
+  "purpose": "Main-reviewed bounded fullscan classification and routing, not whole-suite conformance.",
+  "route_gaps": [],
+  "route_kind_counts": {
+    "child_scope_previously_reviewed_parent_open": 9,
+    "completed_child_scope": 22,
+    "peer_human_or_runtime": 15,
+    "queued_or_in_progress_canonical_task": 23
+  },
+  "routes": [
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "3254245e2f337f31ced95a9f0162273cc48cf91cf604ae2b483c6dd5494d5dfd"
+      },
+      "module": "tests/unit/test_ap54_eval_knowledge_fence.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-48 / CI37352568892; test_api_models_openai.py",
+      "classification": "deterministic-test-contract-candidate",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "415d0fa510c746b6a5c12b76667df9f2e790f2bee21b0417bd895cd09d2c9a86"
+      },
+      "module": "tests/unit/test_api_models_openai.py",
+      "original_disposition": "NI48 accepted follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/autokernel-orchestrator-actor-backend.md / OAB-NI18-FIXTURES",
+      "classification": "model-and-artifact-inputs",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "bb362465d36a4f5e78f2aed7ef7a2908de86b001b202074f0a5cb0b42ed518a1"
+      },
+      "module": "tests/unit/test_autokernel_enrollment.py",
+      "original_disposition": "AutoKernel owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "AutoKernel owner"
+    },
+    {
+      "canonical_route": "handoffs/active/autokernel-orchestrator-actor-backend.md / OAB-NI18-FIXTURES",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "0c87ffdc6d9bf4acbd0796cd86ddef6d73325335477669154f2914f874f47129"
+      },
+      "module": "tests/unit/test_autokernel_enrollment_cross_repo.py",
+      "original_disposition": "AutoKernel cross-repo owner follow-on",
+      "original_outcome": "NULL",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "AutoKernel owner"
+    },
+    {
+      "canonical_route": "NI05-60 SSU-LOCAL-EMBEDDING-FIXTURES",
+      "classification": "live-embedding-service-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "7b05dd8f48b62b7cb7c32bfba94ac3e2e2c2116783baeac532275ad18a3c0c72"
+      },
+      "module": "tests/unit/test_autopilot_creativity.py",
+      "original_disposition": "NI18 follow-on: deterministic embedder fixture",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-68 SSU-SYSTEM-CARD-PATH-FIXTURES",
+      "classification": "kernel-store-path-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "19829b77d3c1651d00f5104ffe90947a0db7ac535a6d7694fbdec5d218d57c38"
+      },
+      "module": "tests/unit/test_autopilot_system_card.py",
+      "original_disposition": "NI18 follow-on: path-only stack-priors fixture",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-72 SSU-SPEECH-ENV-COMPOSITION",
+      "classification": "kernel-store-linkage-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "f9ee3853d76cad2cbc631548de0c22261a382b3fce2da99577e1ed1310ec6f1d"
+      },
+      "module": "tests/unit/test_aux_service_env.py",
+      "original_disposition": "NI18 follow-on: split pure path contract from linkage controls",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-54\u201356 / CI37361602330, published APP6bb8/ROOTb2e31",
+      "classification": "mixed-kernel-path-and-CPU-placement",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "bf845fbcb22a4afcf90961c2027f1e113634fafdc5ab12d109bbd8e3b2ebde18"
+      },
+      "module": "tests/unit/test_bench_core_claim_api_layer.py",
+      "original_disposition": "NI18 follow-on: deterministic claim/argv seams",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_note": "Original fullscan outcome unchanged.",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-54\u201356 / CI37361602330, published APP6bb8/ROOTb2e31",
+      "classification": "binary-fixture-or-real-execution-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "5e19f30f1a898ecd94707eb8de9fafcd4242bdf90732a3e78f368f6e968ab5a9"
+      },
+      "module": "tests/unit/test_benchmark_executor.py",
+      "original_disposition": "NI18 follow-on: executor mocked-construction cases",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_note": "Original fullscan outcome unchanged.",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-54\u201356 / CI37361602330, published APP6bb8/ROOTb2e31",
+      "classification": "binary-fixture-or-real-execution-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "84868ec91374740d3d1667ecffd3a04cd4e45b4bde9362266c7e80874aa6f345"
+      },
+      "module": "tests/unit/test_benchmark_executor_additional.py",
+      "original_disposition": "NI18 follow-on: executor mocked-construction cases",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_note": "Original fullscan outcome unchanged.",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-39 / CI37334324990; test_build_server_command_helpers.py + test_k4_ubatch_not_inert.py",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "07c9a0b14cf636c9551dd62deea060da8bd0483c5604bd5d0068f9c83e166443"
+      },
+      "module": "tests/unit/test_build_server_command_helpers.py",
+      "original_disposition": "NI39 accepted cache-slot fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-61 SSU-ONNX-THREAD-CONTRACT",
+      "classification": "CPU-topology-assumption",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "0ea5374898817c86c95aee8757649c98bb202e221697796eecd2f211b4019219"
+      },
+      "module": "tests/unit/test_colbert_reranker.py",
+      "original_disposition": "NI18 follow-on: CPU topology/default contract",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "48c3a0745629b6920a6380e8b9ae50fd12ec4e3e2e047dce85908efb7c57b5af"
+      },
+      "module": "tests/unit/test_config_endpoint.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/numa-topology-cutover-resume-20260730.md P0-3/P0-3.2 (live stack + contention-matrix rebench)",
+      "classification": "real-kernel-runtime-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "5f8a08089e12161d0bf811f53f9f88653e718166ff2d555c237b0256b103f74e"
+      },
+      "module": "tests/unit/test_contention_matrix_live_recert.py",
+      "original_disposition": "NI18 follow-on: split offline matrix validation from live recert",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Exact existing live-evidence task; retain the original FALSE and do not emulate production binary/runtime.",
+      "route_owner": "Real runtime evidence boundary"
+    },
+    {
+      "canonical_route": "NI05-59 SSU-REPL-SCORER-SCRATCH",
+      "classification": "sandbox-runner-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "d19b44c307671515a68acce12beaf8285de0d788be1c2533c940fcd07fbf3862"
+      },
+      "module": "tests/unit/test_debug_scorer_code_execution.py",
+      "original_disposition": "NI18 follow-on: bounded temp-root fixture",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-64 SSU-ARCHIVE-INTERRUPTED-ATTRIBUTION",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "2c6404f66a1133288baffa4d0742d4a0282e10fe9b0bc93da7ffcdbf5f345e18"
+      },
+      "module": "tests/unit/test_design_archive.py",
+      "original_disposition": "NI18 follow-on: interrupted archive attribution",
+      "original_outcome": "NULL",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "b4b99d0bf45c4ca469867cdc3a0b3694d0f7e0fc953471d53ff707dd39d483cb"
+      },
+      "module": "tests/unit/test_direct_region_claim.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/CURRENT-CAMPAIGN.md \u00a7 E8 chain retired by ruling OP-19 (2026-08-27); handoffs/active/gpu-serving-tie-in-program.md P0-1 historical ratification boundary",
+      "classification": "operator-authorization-artifact-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "e2c4a1e385f62de19ddeb2424698ae427ac7978c8ef3a2faba8be7ce7afecb22"
+      },
+      "module": "tests/unit/test_e8_final_c1_retry.py",
+      "original_disposition": "Human-authorization boundary; preserve exact receipt contract",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Historical human authorization scope only; no current task should be reopened by this fixture map.",
+      "route_owner": "Operator/human authorization boundary"
+    },
+    {
+      "canonical_route": "NI05-74 SSU-E8-T2-ALGORITHM-FIXTURE",
+      "classification": "operator-input-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "4202bdf342e5bbc52d2ffc4401fec44713d3b2270197a17459015ac6d94d6cb1"
+      },
+      "module": "tests/unit/test_e8_quality_baseline_reseed.py",
+      "original_disposition": "Source-backed full-pool prerequisite; split local algorithm test from corpus assertion",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/CURRENT-CAMPAIGN.md \u00a7 E8 chain retired by ruling OP-19 (2026-08-27); handoffs/active/gpu-serving-tie-in-program.md P0-1 historical ratification boundary",
+      "classification": "operator-and-research-artifact-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "478f934d3b6f11f54969526059ac18cab1b305eeed4e74fd12734263866b85f2"
+      },
+      "module": "tests/unit/test_e8_quality_baseline_v5.py",
+      "original_disposition": "Canonical-state/operator boundary; separate synthetic adapter controls",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Historical human authorization scope only; no current task should be reopened by this fixture map.",
+      "route_owner": "Operator/human authorization boundary"
+    },
+    {
+      "canonical_route": "NI05-41 / CI37351080596; three optional math-scoring modules",
+      "classification": "optional-dependency",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "8cde7bc878b62f86cc15d3c113ca2f6497a46da878640cde213564ad9ebe22ce"
+      },
+      "module": "tests/unit/test_ev_conf2_confidence_probe.py",
+      "original_disposition": "NI41 accepted optional-scoring child",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-41 / CI37351080596; three optional math-scoring modules",
+      "classification": "optional-dependency",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "f23b4642e6fc7b429b7f3a430227246678338955e14c7607ba08cd6f3281d353"
+      },
+      "module": "tests/unit/test_eval_tower_ev11_stats.py",
+      "original_disposition": "NI41 accepted optional-scoring child",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-41 / CI37351080596; three optional math-scoring modules",
+      "classification": "optional-dependency",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "b2208bdde11301511313e265469bc394c47ee25d1c8d3adf41796b17025c2540"
+      },
+      "module": "tests/unit/test_eval_verifier_mode.py",
+      "original_disposition": "NI41 accepted optional-scoring child",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-69 SSU-EXTERNAL-DRAFTER-ARGV-FIXTURES",
+      "classification": "kernel-store-path-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "dcc7b0f8c62453ba0128a2640d8a66331dca5c260bb8f750afc2cdc715bc014f"
+      },
+      "module": "tests/unit/test_external_drafter_launch.py",
+      "original_disposition": "NI18 follow-on: command-shape vs real launch",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-42 / CI37339553198; five temporary-DB graph modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "d7e25b6f885cc5accacb03ab3fe61ad5cf1d097f0688fd3bbc48cc37db9bf8f7"
+      },
+      "module": "tests/unit/test_failure_graph.py",
+      "original_disposition": "NI42 accepted graph child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/gpu-serving-tie-in-program.md / GPU-NI18-FIXTURES",
+      "classification": "kernel-store-and-collection",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "ed082d6f49cb2bf03e8d82ee4f302044402991474d8fa8f9cc8127d29d3bdf75"
+      },
+      "module": "tests/unit/test_gpu_shadow_lane.py",
+      "original_disposition": "GPU shadow owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "GPU-shadow/kernel-store owner"
+    },
+    {
+      "canonical_route": "handoffs/active/gpu-serving-tie-in-program.md / GPU-NI18-FIXTURES",
+      "classification": "kernel-store-and-contract",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "78bc997538ce5c29c35c4a510a6b1b356f6f58c6886b7a2af3701144b14fc294"
+      },
+      "module": "tests/unit/test_gpu_shadow_lane_compile_contract.py",
+      "original_disposition": "GPU shadow owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "GPU-shadow/kernel-store owner"
+    },
+    {
+      "canonical_route": "handoffs/active/gpu-serving-tie-in-program.md / GPU-NI18-FIXTURES",
+      "classification": "kernel-store-and-collection",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "07cc5013602bba6a6013b4a3ccdef9fe612fabc00a30983591c795970ac29df9"
+      },
+      "module": "tests/unit/test_gpu_shadow_lane_p2.py",
+      "original_disposition": "GPU shadow owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "GPU-shadow/kernel-store owner"
+    },
+    {
+      "canonical_route": "handoffs/active/gpu-serving-tie-in-program.md / GPU-NI18-FIXTURES",
+      "classification": "kernel-store-and-collection",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "8896814c04f99f7ab3114fb088f6007c99187e4a5f11f16553af9105a5c9f4f4"
+      },
+      "module": "tests/unit/test_gpu_shadow_lane_preflight.py",
+      "original_disposition": "GPU shadow owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "GPU-shadow/kernel-store owner"
+    },
+    {
+      "canonical_route": "NI05-50 / CI37352568892; test_gpu_window_parked_role.py",
+      "classification": "kernel-store-or-state-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "abd6651e52bf2a0942872cb7b5d9f6d8a0fb71b3c078d57db6218fe1f7ff6b18"
+      },
+      "module": "tests/unit/test_gpu_window_parked_role.py",
+      "original_disposition": "NI50 accepted follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-42 / CI37339553198; five temporary-DB graph modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "a51c7cc345d8e26b432aca188273b0af0de1f8e533549815d816c703d6f559dd"
+      },
+      "module": "tests/unit/test_graph_integration.py",
+      "original_disposition": "NI42 accepted graph child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-42 / CI37339553198; five temporary-DB graph modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "dbe03e532518334352324190c2c8da2ecc2ce41e29e74196eb1321dd755072b0"
+      },
+      "module": "tests/unit/test_graph_router_cold_start.py",
+      "original_disposition": "NI42 accepted graph child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-42 / CI37339553198; five temporary-DB graph modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "ffef5ef2071e71df3fc2c5642300afa283943bfe7716466bb5072795318f86bd"
+      },
+      "module": "tests/unit/test_hypothesis_graph.py",
+      "original_disposition": "NI42 accepted graph child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "08ebe77f1da2bd7dfdeef24bbd0b62d23b5ba82e13d5cf3e6e552de2c887e30b"
+      },
+      "module": "tests/unit/test_inf78_oab7_oab8_composition.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-66 SSU-IMPORT-LOCK-INTERRUPTED-ATTRIBUTION",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "3121c8c56798874b63585f1c811286f5ba7ac8077cfea37a78f2a238938a9156"
+      },
+      "module": "tests/unit/test_inference_lock_concurrent_import.py",
+      "original_disposition": "NI18 follow-on: interrupted module attribution",
+      "original_outcome": "NULL",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-39 / CI37334324990; test_build_server_command_helpers.py + test_k4_ubatch_not_inert.py",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "075ecfc4082a994db2683e5de3526cc1afeb2d3d26780a6f99a71b1ed60706a5"
+      },
+      "module": "tests/unit/test_k4_ubatch_not_inert.py",
+      "original_disposition": "NI39 accepted cache-slot fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-62 SSU-KV-PURE-ARITHMETIC",
+      "classification": "ordinary-host-capacity-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "9102f56cd47f98dce2156579913ec54df7f583fda5cfc9ed53587f594da4b669"
+      },
+      "module": "tests/unit/test_kv_per_token_declaration.py",
+      "original_disposition": "NI18 follow-on: import-free KV arithmetic",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-62 SSU-KV-PURE-ARITHMETIC",
+      "classification": "ordinary-host-capacity-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "fb8609c8cf73011d4e8ed51862851a3b345b5754a7bd09f968e73a79da7b8933"
+      },
+      "module": "tests/unit/test_kv_quant_block_widths.py",
+      "original_disposition": "NI18 follow-on: import-free KV arithmetic",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-73 SSU-LCB-SYNTHETIC-ORACLE",
+      "classification": "external-dataset-and-sandbox-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "9fc961bc8f47eee701861f8d9919303d4eea7df58f583a59aaf15a70a182fce0"
+      },
+      "module": "tests/unit/test_livecodebench_oracle.py",
+      "original_disposition": "Split scratch failures, synthetic oracle assertions, and cached-dataset controls",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-67 SSU-JUNIT-COUNT-ATTRIBUTION",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "c3911de9463cfb7becc2396eaa83a46ee735fd258f9d7f1cae393c6ee043a79e"
+      },
+      "module": "tests/unit/test_makefile_gate_contract.py",
+      "original_disposition": "NI18 follow-on: native JUnit inconsistency",
+      "original_outcome": "NULL",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "7921e4b753cef0b3ebbffe303106cd8e05fbf4436fed65cbd82f4ebb5eefdc44"
+      },
+      "module": "tests/unit/test_oab1_task_scope.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-47 / CI37352568892; test_oab3_quiescence_witness.py",
+      "classification": "deterministic-test-contract-candidate",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "1f13478d1e41a81085e4388fa075b0ad6282c1ad8d3836a2c9de6e5ccf2a7eb2"
+      },
+      "module": "tests/unit/test_oab3_quiescence_witness.py",
+      "original_disposition": "NI47 accepted follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "mixed-fixture-and-contract",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "c5c723bac1b9bf5e3a0a2debf6445c1fb71fd7230c78d97561541587da344315"
+      },
+      "module": "tests/unit/test_oab7_context_bundle.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "f5c695d5a6cac919c7c7ae62007f3f33e29b19c9681de70f3dc9d0163c04c305"
+      },
+      "module": "tests/unit/test_oab8_scouts.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-49 / CI37352568892; test_offline_reward_pairwise_holdout_expansion_plan.py",
+      "classification": "deterministic-schema-contract-candidate",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "484497131ab86a0723b6681e1b7a0f94924818024d7e01835bb1733b60861059"
+      },
+      "module": "tests/unit/test_offline_reward_pairwise_holdout_expansion_plan.py",
+      "original_disposition": "NI49 accepted follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-63 SSU-ARGV-CAPACITY-CHILD",
+      "classification": "ordinary-child-capacity-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "89d91d065bdbfb757746fe4d5c3ccde1502c432fc69d05703e66baf02949f05b"
+      },
+      "module": "tests/unit/test_orchestrator_stack_import_is_argv_safe.py",
+      "original_disposition": "Bounded real-RAM-fitting child-fixture investigation; do not move the lazy guard, bypass refusal, or fake RAM.",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-65 SSU-QSCORER-INTERRUPTED-ATTRIBUTION",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "69c41f2fd5da829206c4ab7dae4ccf93b2d5addeca85a519c763a9ac5037877e"
+      },
+      "module": "tests/unit/test_q_scorer.py",
+      "original_disposition": "NI18 follow-on: interrupted scorer attribution",
+      "original_outcome": "NULL",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-59 SSU-REPL-SCORER-SCRATCH",
+      "classification": "test-contract-or-spill-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "6c2cc7261622b09c480d06d003a0fbb4e7a8d533f586191d16272c061143f240"
+      },
+      "module": "tests/unit/test_repl_environment.py",
+      "original_disposition": "NI18 follow-on: scratch-backed spill contract",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-43 / CI37347669248; two REPL filesystem modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "6cfe0b7d35e05d3e1737508f5cc3fb96d37d1158e8a3df3655954d13b05cf4d5"
+      },
+      "module": "tests/unit/test_repl_file_exploration.py",
+      "original_disposition": "NI43 accepted filesystem-only child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-43 / CI37347669248; two REPL filesystem modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "242100acf7ca808a3281b10f446e20a2ed84cec3b2a3177479482f9ff41010b1"
+      },
+      "module": "tests/unit/test_repl_file_mutation.py",
+      "original_disposition": "NI43 accepted filesystem-only child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-40 / CI37339651393; test_repl_spill_output.py",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "eedf2121ec931fb4e4f21815e9ae8fca1a160793a113c0d01b234f3a121e2660"
+      },
+      "module": "tests/unit/test_repl_spill_output.py",
+      "original_disposition": "NI40 accepted; preserve original baseline",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-61 SSU-ONNX-THREAD-CONTRACT",
+      "classification": "CPU-topology-assumption",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "1b3b999a1466a29ff83f1206f8450fb8641a78ec4370d77f5428ae10e5983c94"
+      },
+      "module": "tests/unit/test_retrieval_encoder_onnx_threads.py",
+      "original_disposition": "NI18 follow-on: CPU topology/default contract",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-42 / CI37339553198; five temporary-DB graph modules",
+      "classification": "native-null",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "0c61044908d7909b9b3f49ebaa6a39ad8aaa2954d7f40d7e608d4bf574e17058"
+      },
+      "module": "tests/unit/test_routing_graph.py",
+      "original_disposition": "NI42 accepted graph child",
+      "original_outcome": "NULL",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "fa623483e35ef42c292a2f90b32bedbe177a4a1437c93a360832cf0a90719fee"
+      },
+      "module": "tests/unit/test_script_lib_onboard.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-60 SSU-LOCAL-EMBEDDING-FIXTURES",
+      "classification": "live-embedding-service-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "b7561b3c92a6be90fe780f866872698fe957f069bfd4184e72805357e0cf5db0"
+      },
+      "module": "tests/unit/test_seed_operator_strategies.py",
+      "original_disposition": "NI18 follow-on: deterministic embedder fixture",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-57 SSU-ROUTING-POOL-FIXTURE",
+      "classification": "research-source-input",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "b7b22b2d2aa3500ee07b9ee79bc4386f5173e61e60751d7f06cf554bcd3cc393"
+      },
+      "module": "tests/unit/test_seed_specialist_routing_main_and_retry.py",
+      "original_disposition": "NI18 candidate fixture repair: use the path-bound loader seam",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "kernel-store-and-research-inputs",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "b1b67377d4a9299c3dec6cb6b261c9ef22db325a2f25f9d9ebf582d80d76488b"
+      },
+      "module": "tests/unit/test_stack_change_guard.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "kernel-store-and-research-inputs",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "0b5c8fac89cc8d1169253c7cf001490c35fa3aa75e76c5a64eb2b739b1893fc5"
+      },
+      "module": "tests/unit/test_stack_change_pipeline.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "research-fixture-root",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "e441ec2d662b4a413156ae9618c1d3e18297b504b05606215438d7d9b9a2afcc"
+      },
+      "module": "tests/unit/test_stack_change_pipeline_simulated_fixtures.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "NI05-71 SSU-NUMA-READER-PATH-FIXTURES",
+      "classification": "kernel-store-path-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "12aee312fdad0814debdd96f769dac185b6ce4d09f29743f3024f7840180f02c"
+      },
+      "module": "tests/unit/test_stack_numa_reader_agreement.py",
+      "original_disposition": "NI18 follow-on: path-only registry fixture",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-70 SSU-STACK-PRIORS-COMPILER-FIXTURES",
+      "classification": "kernel-store-path-precondition",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "2f928b29090d93c69cbb4188b0095e1f042bdc1771c5e53229ba0816abb23661"
+      },
+      "module": "tests/unit/test_stack_priors_compiler.py",
+      "original_disposition": "NI18 follow-on: pure compile vs registry inputs",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "peer-owned-stack8083-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "4a48603c3e6702c06633876ab078b53ab78f8664db5f2d05408bb37b8890e743"
+      },
+      "module": "tests/unit/test_stackchg_8083_batch.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "peer-owned-stack8083-boundary",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "aef9e713b9cfdd60b2dcc805423e2ac9f4b5d5a37bc0c4cb65269018b980d15f"
+      },
+      "module": "tests/unit/test_stackchg_8083_idle_slots.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "NI05-45 SSU-STRATEGY-PROJECTION-FLAG",
+      "classification": "test-fixture-or-product-contract",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "1d25c9a6be5003a9380dc5f474d8c141d4f54d07bf4f7aee9101734ef9b601a5"
+      },
+      "module": "tests/unit/test_strategy_projection_report.py",
+      "original_disposition": "NI45 candidate: strategy projection CLI output",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "handoffs/active/stack-change-governance-pipeline.md / SCG-NI18-FIXTURES",
+      "classification": "research-fixture-root",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "51871f39f7745635c6c631bf0419d127d6869c51e5eaf818b9e866315d2aec64"
+      },
+      "module": "tests/unit/test_sync_procedure_role_enums.py",
+      "original_disposition": "Stack-change owner follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "peer_human_or_runtime",
+      "route_note": "Main filed exact canonical program task. No peer source or runtime authorization.",
+      "route_owner": "Stack-change/8083 owner"
+    },
+    {
+      "canonical_route": "NI05-46 / CI37352568892; test_td21_19_vl_structured_repair.py",
+      "classification": "deterministic-test-contract-candidate",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "59a6cf2d5e3ea251105aa39ce1fa11ffaf07e8e8eebc40d0805f64c902153c2d"
+      },
+      "module": "tests/unit/test_td21_19_vl_structured_repair.py",
+      "original_disposition": "NI46 accepted follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-58 SSU-PROMPT-FORGE-VOCAB-FIXTURE",
+      "classification": "research-source-input",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "efebe6889856104a8612b73cd70fe3e30d0733d500b506ec1c94bc892d1c0c76"
+      },
+      "module": "tests/unit/test_td21_27_prompt_forge_extraction.py",
+      "original_disposition": "NI58 accepted existing vocabulary-injection follow-on",
+      "original_outcome": "FALSE",
+      "route_kind": "queued_or_in_progress_canonical_task",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI18 prior child scope; CI37331885023; nine-module runner-scratch fixture phase",
+      "classification": "runner-fixture",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": true,
+        "sha256": "89d452b60a4c54c91fc5568d0b6e1f80debed89169ca9c29d67be27ef0c66536"
+      },
+      "module": "tests/unit/test_trajectory_extractor.py",
+      "original_disposition": "NI18 accepted scratch-fixture child",
+      "original_outcome": "FALSE",
+      "route_kind": "child_scope_previously_reviewed_parent_open",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    },
+    {
+      "canonical_route": "NI05-54\u201356 / CI37361602330, published APP6bb8/ROOTb2e31",
+      "classification": "test-fixture-missing",
+      "main_current_source": {
+        "commit": "6bb8d860d410217895efb7806e9ef907a62a4350",
+        "parity_with_65599ff2": false,
+        "sha256": "a0ec0cc020520525eec026a7b5f8553355ec82ca5b04e9b8c41670ebe22e3c2f"
+      },
+      "module": "tests/unit/test_typed_decisions_routing_replay.py",
+      "original_disposition": "NI18 follow-on: live-DB refusal sentinel",
+      "original_outcome": "FALSE",
+      "route_kind": "completed_child_scope",
+      "route_note": "Original fullscan outcome unchanged.",
+      "route_owner": "SSU/NI18 owner via model-stack-single-source-update-pipeline.md"
+    }
+  ],
+  "schema": "epyc.ni18_main_routing_review.v1",
+  "scope_note": "All69 original exception outcomes remain unchanged. Classifications describe observed evidence and proposed implementation boundaries, not confirmed causes for unexecuted repairs. Every module has a completed child scope, queued canonical task, exact program-owner task, live-window obligation or historical human-only boundary. CI/source preparation is not counted completed.",
+  "source": {
+    "app_current_pin": "64843e13642930895bb2e52694cd444de5892903",
+    "app_original_pin": "65599ff2b02fcf10a9631376e143e507717469b6",
+    "path": "artifacts/ni05/unit-sweep-37327810408/exception-action-map.json",
+    "root_commit": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+    "run_id": "37327810408",
+    "sha256": "762216ac685cd3cde86a17443263b38545bfdd06c39e3234436da7eebac6dc4c"
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "module": "tests/unit/test_default_template_topology_parity.py",
+    "receipt": "shard-2/native/module-0226/receipt.json",
+    "receipt_sha256": "1d32f9312a9e7ce7acc93084628b0a8ae7091f11989b70cc2d8918f62ed821e5",
+    "counts": {
+      "collected": 35,
+      "error": 0,
+      "executed": 35,
+      "failure": 0,
+      "passed": 35,
+      "skipped": 0
+    },
+    "source_sha256": "4b7a27d8765d1b61afea1d8d739b3bb2f9e00ff95d86903d77b5bcda839a4812",
+    "native_conformant": true,
+    "grade": [
+      "Judged",
+      "Located"
+    ],
+    "current_source_parity": true
+  },
+  {
+    "module": "tests/unit/test_fleet_layer_dispatch.py",
+    "receipt": "shard-19/native/module-0339/receipt.json",
+    "receipt_sha256": "c9169ec3cd452f6deae4831110c7bc8fada7be2d571d7b3a6dd9d818d0bdc647",
+    "counts": {
+      "collected": 9,
+      "error": 0,
+      "executed": 9,
+      "failure": 0,
+      "passed": 9,
+      "skipped": 0
+    },
+    "source_sha256": "2740188e1c05c4db13337fb334b8266562a4e6a94fcccfe6f29035d6ae0b1117",
+    "native_conformant": true,
+    "grade": [
+      "Judged",
+      "Located"
+    ],
+    "current_source_parity": true
+  },
+  {
+    "module": "tests/unit/test_stack_templates_v2.py",
+    "receipt": "shard-22/native/module-0790/receipt.json",
+    "receipt_sha256": "900adc8291a6835aa1c29b092a8e47318715b6a012a9bdc39ede9c048562e01d",
+    "counts": {
+      "collected": 17,
+      "error": 0,
+      "executed": 17,
+      "failure": 0,
+      "passed": 17,
+      "skipped": 0
+    },
+    "source_sha256": "c56a4be3145a5029a7e666f54637bbe6cf895f8466e413ed64aeba0d610fc75f",
+    "native_conformant": true,
+    "grade": [
+      "Judged",
+      "Located"
+    ],
+    "current_source_parity": true
+  }
+]

@@ -19,6 +19,10 @@ metric), RTG-56 (TD-21 repair ladder), UFH-01 (MCP tool convergence, opencode sh
 [`typed-decision-plane.md`](typed-decision-plane.md) TD-21.30/21.33,
 [`harness-selection-and-integration.md`](harness-selection-and-integration.md) HS-4 P6/P7, HS-OD-4
 
+## NI18 source-correlated fixture route — 2026-10-05
+
+- [ ] **OAB-NI18-FIXTURES** — Review the two enrollment modules for declared command-builder/template/backend inputs, exact two-repository context and original skip reason. Implementation belongs at the active AutoKernel owner boundary; preserve synthetic and actual enrollment evidence separately. No fabricated artifacts or receipts. Modules: `test_autokernel_enrollment.py`, `test_autokernel_enrollment_cross_repo.py`.
+
 ## Objective
 
 The autokernel loop should call the **orchestrator**, not individual models (operator, 2026-09-24).

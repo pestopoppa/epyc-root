@@ -19,7 +19,7 @@ preserve completed chronology compacted out of this active handoff.
 
 ## Start here
 
-- **Next:** SSU-F9c (promote-lease lock dir; `scripts/coordination/**`, so it needs a D9 ack), then SSU-F13.
+- **Next:** SSU-STRATEGY-PROJECTION-FLAG / NI45, strategy-report custody / NI53, independent NI57–75 fixtures and NI76 compute-claim enforcement.
 - **Waiting:** SSU-F17 on UFH-13's verdict; the SSU-F1 weight deletion on the operator (its deprecation half can be
   done now); SSU-F16 on an inference window.
 - SSU-F4 and SSU-F11 overlap SSU-F17.
@@ -332,7 +332,7 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   `artifacts/operator/stack-change-dar-lat-3h-20260926/RESULT.md`.
   **Blocker: none.**
 
-- [ ] **SSU-F13 — 10 more unit tests still encode the pre-cutover topology.** Fail on clean origin/main
+- [x] **SSU-F13 — 10 more unit tests still encode the pre-cutover topology.** ✅ 2026-10-05 Fail on clean origin/main
   (2026-09-24, after `8d7633d0`): `tests/unit/test_default_template_topology_parity.py` (9 — e.g.
   `ingest_long_context` now alias-only, `worker_general` has no `NUMA_CONFIG` instance) and
   `tests/unit/test_stack_templates_v2.py::test_default_yaml_loads_and_validates`. Per test: decide stale
@@ -342,7 +342,7 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
     via `.venv/bin/python -m pytest -q -p no:cacheprovider tests/unit/test_fleet_layer_dispatch.py` — same
     `KeyError: 'worker_general'` at collection. This is **real pre-cutover drift, not a worktree-only config
     gap.**
-  - [ ] A wider `tests/unit` sweep reported by an agent this session found **~96 failures / 38 errors**,
+  - [x] ✅ 2026-10-05 A wider `tests/unit` sweep reported by an agent this session found **~96 failures / 38 errors**,
     which is far more than the 10 named above — re-run the full `tests/unit` suite, bucket every new failure
     by root cause (same topology-parity class vs. genuinely new), and fold the ones that match this item's
     scope in; file any that don't as their own row.
@@ -485,3 +485,5 @@ Original CI37327810408 FALSE receipts remain unchanged. Source comparison at app
 NI75 impact checkpoint: main verifies all 76 retained files from original CI37361379823. The exact executor wrapper target is HIGH, with 10 impacted nodes, one direct caller and three modules; only the risk validator is nonzero. Source work is stopped and NI75 remains open. Public originals: `artifacts/ni05/executor-impact-37361379823`. This is ordinary offline dependency evidence with no new belief grading rule or host-index deployment.
 
 2026-10-05 incident checkpoint: a delegated fixture worker ran the host GitNexus refresh without a CPU-region claim despite the off-host-only brief. Its captured session was interrupted and returned exit130; ignored index changes and a WAL were reported, so the canonical index is untrusted. Exact execution timestamps and parallel-measurement impact are unknown. No cleanup/recovery or peer process management was performed. See [INC-20261005-unclaimed-host-code-index](../../docs/reference/agent-config/INCIDENT_LOG.md#inc-20261005-unclaimed-host-code-index). NI05-76 files structural wrapper enforcement before implementation. Published completions remain53; newly identified total76.
+
+2026-10-05 NI18 completed in its bounded topology/classification scope. Main independently reopened the original topology modules: 35 default-template cases, nine fleet-dispatch cases and 17 stack-template cases, all TRUE Judged/Located with zero failures/errors/skips and current-source parity. The complete original sweep accounted for all895 tracked modules:826TRUE/57FALSE/12NULL. Main reviewed all69 exception routes against the immutable source-correlated action map, preserved every original outcome and bound current APP6bb8 source bytes (61 unchanged modules/eight reviewed fixture deltas). [Main routing review](../../artifacts/ni05/unit-sweep-37327810408/main-routing-review.json) records31 reviewed child scopes,23 independent queued tasks and15 program-owner/live/historical boundaries. Three missing program routes are now explicit GPU-NI18-FIXTURES, OAB-NI18-FIXTURES and SCG-NI18-FIXTURES checkboxes in their existing canonical handoffs. Parent completion means the original topology verification and wider-sweep classification/routing are done; it does not mean the895-module suite passes or all child repairs are complete. The named NI45/53/57–76 work continues. Completed tally54/76.

@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-57–60 independent fixture repairs alongside NI05-18 classification, NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
+- **Next:** NI05-57–60 independent fixture repairs alongside NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **53/76**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **54/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -54,7 +54,7 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
 - [x] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
 - [x] **NI05-17** — HS-OD-5: reject unsupported explicit sampling controls on image requests.
-- [ ] **NI05-18** — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
+- [x] **NI05-18** ✅ 2026-10-05 — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
 - [x] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
 - [x] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
 - [x] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
@@ -681,3 +681,5 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 NI75 impact checkpoint: main verifies all 76 retained files from original CI37361379823. The exact executor wrapper target is HIGH, with 10 impacted nodes, one direct caller and three modules; only the risk validator is nonzero. Source work is stopped and NI75 remains open. Public originals: `artifacts/ni05/executor-impact-37361379823`. This is ordinary offline dependency evidence with no new belief grading rule or host-index deployment.
 
 2026-10-05 incident checkpoint: a delegated fixture worker ran the host GitNexus refresh without a CPU-region claim despite the off-host-only brief. Its captured session was interrupted and returned exit130; ignored index changes and a WAL were reported, so the canonical index is untrusted. Exact execution timestamps and parallel-measurement impact are unknown. No cleanup/recovery or peer process management was performed. See [INC-20261005-unclaimed-host-code-index](../../docs/reference/agent-config/INCIDENT_LOG.md#inc-20261005-unclaimed-host-code-index). NI05-76 files structural wrapper enforcement before implementation. Published completions remain53; newly identified total76.
+
+2026-10-05 NI18 completed in its bounded topology/classification scope. Main independently reopened the original topology modules: 35 default-template cases, nine fleet-dispatch cases and 17 stack-template cases, all TRUE Judged/Located with zero failures/errors/skips and current-source parity. The complete original sweep accounted for all895 tracked modules:826TRUE/57FALSE/12NULL. Main reviewed all69 exception routes against the immutable source-correlated action map, preserved every original outcome and bound current APP6bb8 source bytes (61 unchanged modules/eight reviewed fixture deltas). [Main routing review](../../artifacts/ni05/unit-sweep-37327810408/main-routing-review.json) records31 reviewed child scopes,23 independent queued tasks and15 program-owner/live/historical boundaries. Three missing program routes are now explicit GPU-NI18-FIXTURES, OAB-NI18-FIXTURES and SCG-NI18-FIXTURES checkboxes in their existing canonical handoffs. Parent completion means the original topology verification and wider-sweep classification/routing are done; it does not mean the895-module suite passes or all child repairs are complete. The named NI45/53/57–76 work continues. Completed tally54/76.

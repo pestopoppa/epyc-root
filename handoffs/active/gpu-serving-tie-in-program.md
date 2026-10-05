@@ -14,6 +14,10 @@
 [reviewer-control-plane-index.md](reviewer-control-plane-index.md) (co-critic plumbing) ·
 `docs/runbooks/vision-escalation-minicpmo-promotion.md` (the State-A/B lane choreography template — **note 2026-07-31: that runbook is DEPRECATED as a promotion plan (MiniCPM-o deleted) but remains valid as the choreography template cited here; it now carries a banner saying exactly that**)
 
+## NI18 source-correlated fixture route — 2026-10-05
+
+- [ ] **GPU-NI18-FIXTURES** — Review four GPU-shadow modules against exact fake-path, collection, compiler and kernel-store seams; separate pure source/argv proposals from actual owner-only kernel-store/residency evidence. No fake binaries, store changes or production launch. Modules: `test_gpu_shadow_lane.py`, `test_gpu_shadow_lane_compile_contract.py`, `test_gpu_shadow_lane_p2.py`, `test_gpu_shadow_lane_preflight.py`.
+
 ## Vision (ratified)
 
 Wire the MI210 into the orchestration stack as a **serving resource** with a **role-agnostic
