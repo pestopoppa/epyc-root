@@ -106,10 +106,10 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 61 | 998 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 72 | 1 | 2026-08-11 |
-| research-evaluation | 43 | 491 | 15 | 2026-07-29 |
+| research-evaluation | 43 | 492 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 51 | 634 | 17 | 2026-07-29 |
-| user-facing-harness | 12 | 125 | 16 | 2026-07-29 |
+| routing-and-optimization | 51 | 626 | 17 | 2026-07-29 |
+| user-facing-harness | 12 | 120 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 
 ## Reporting

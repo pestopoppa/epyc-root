@@ -34,15 +34,15 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **7/22**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **15/23**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
 - [x] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
-- [ ] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
+- [x] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
 - [x] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
-- [ ] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
-- [ ] **NI05-06** — HS-17: MCP timeout and progress contract.
+- [x] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
+- [x] **NI05-06** — HS-17: MCP timeout and progress contract.
 - [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
 - [ ] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
 - [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
@@ -50,15 +50,16 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
 - [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
-- [ ] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
+- [x] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
 - [x] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
-- [ ] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
-- [ ] **NI05-17** — HS-OD-5: reject unsupported explicit sampling controls on image requests.
+- [x] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
+- [x] **NI05-17** — HS-OD-5: reject unsupported explicit sampling controls on image requests.
 - [ ] **NI05-18** — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
-- [ ] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
-- [ ] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
+- [x] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
+- [x] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
 - [ ] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
 - [ ] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
+- [ ] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -291,13 +292,14 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
 
 Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-26-orch-design.md` § Final).
 
-- [ ] **NIB2-86** (MED; filed 2026-09-26 as NIB2-80 and renumbered 2026-09-27, because NIB2-80 is also the closed EARLY_ABORT item below): **`make gates` in epyc-orchestrator checks almost nothing on this host.** Found 2026-09-26:
+- [x] **NIB2-86** (MED; filed 2026-09-26 as NIB2-80 and renumbered 2026-09-27, because NIB2-80 is also the closed EARLY_ABORT item below): **`make gates` in epyc-orchestrator checks almost nothing on this host.** Found 2026-09-26:
       `shellcheck`, `shfmt` and `markdownlint` are not installed; the `nextplaid-reindex` gate needs NextPLAID
       `:8088`, which is down; and `make check-numerics` / `report-numerics` run
       `scripts/validate/check_numeric_literals.py`, which has never existed in the orchestrator's git history
       (`git log --all` on that path is empty). A "✅ All gates passed" here therefore certifies little. Fix it
       either way: install the linters (devcontainer), make each gate fail loudly when its tool is missing rather than
       skip, and implement or delete the numerics targets. Then decide whether `nextplaid-reindex` belongs in `gates`.
+  ✅ 2026-10-05 — six Makefile fixtures and the actual pinned devcontainer tool/version fixture pass; static gates fail loudly on nine existing formatting defects, and independent markdownlint passes. Source is published in orchestrator main `41ab07fc` and root `b07a992e`; the formatting repair remains NI05-21. See [gate evidence](../../progress/2026-10/2026-10-05-codex-ni-gates.md).
 - [ ] **NIB2-87** (LOW; filed 2026-09-26 as NIB2-81 and renumbered 2026-09-27, because NIB2-81 is also the closed daemon-staleness item): **the research repo `.venv` has no pytest**, although `pyproject.toml` declares
       `pytest==9.1.1` in the `test` extra (the venv was synced without it). On 2026-09-26 research tests had to run with
       the orchestrator venv. Add the extra additively, `uv pip install --python .venv/bin/python pytest==9.1.1`

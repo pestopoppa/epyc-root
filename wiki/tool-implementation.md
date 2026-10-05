@@ -1254,3 +1254,26 @@ Reading OpenCode's retry, session and MCP code against the orchestrator found fo
 - [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — HS-OD-8/9, HS-16/17/18, the standing rule, the catalog-growth acceptance, the dormant triggers.
 - [OpenCode P0.3 audit](../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) — the 2026-09-26 addendum (E2 correction, session headers, MCP timeout).
 - [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — the two request headers the API reads; `x_force_role`, with `x_force_model` as its deprecated alias.
+
+
+## Incremental Update — 2026-10-05: Tested shell and API contracts
+
+The reviewed `/v1` implementation now admits before streaming: capacity denials return HTTP 503
+with constant 5000 ms retry headers, residual SSE denial text is retryable, and upstream faults
+retain 502. The actual pinned SDK and OpenCode retry implementation exercise both retry paths.
+MCP chat runs asynchronously with cancellation and monotone progress; a virtual 90-second call
+survives the client's 60-second reset-on-progress timeout. Enabled templates require at least
+125000 ms. Session end signals and the existing idle TTL release state with distinct provenance.
+
+Image requests explicitly refuse unsupported non-null sampling controls with 422 before dispatch.
+Direct requests with REPL disabled refuse tools requiring its executor; client-executed tools remain
+valid. Explicit kernel paths avoid eager production-store discovery, and fresh graph imports are
+validated against the supported dependency major. All evidence here is bounded mock/fixture
+execution, not model inference or deployed-process acceptance. The earlier 2026-09-26 seam audit
+above is historical; HS-OD-9 queue-derived delays remain separate peer-dependent work.
+
+Source: [harness acceptance](../handoffs/active/harness-selection-and-integration.md),
+[NI06 MCP evidence](../progress/2026-10/2026-10-05-ni06-hs17-mcp-progress.md), and
+[sixth source boundary](../progress/2026-10/2026-10-05-codex-noninf.md).
+Orchestrator source main `41ab07fc`; run `37284177689`: MCP 48, API 376, config/topology 101,
+Node 105 passing cases. Existing live-backend skips remain outside this claim.

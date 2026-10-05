@@ -149,3 +149,27 @@ off-host with original source custody and syntax/AST comparisons, and executes m
 All nine source paths are clean across registered orchestrator worktrees; no overlap was observed
 with visible peer task scopes, and no frozen-kernel path is involved. TU-TC-1a is separately claimed as NI05-22 after
 source inspection identified the refusal/progress seam for a narrow regression repair. Tally: 7/22.
+
+
+## Sixth accepted source boundary — eight further completions
+
+Sixth run `37284177689` passed 101 configuration/topology cases (including 53 session cases),
+48 MCP cases, all 376 API cases in both tested selections, 69 enqueue cases, 105 pinned Node cases
+and six Makefile fixtures. Two named live-backend cases skip; three runtime-flags expiry cases
+fail from a missing cache timestamp argument, so expiry and the required wider unit sweep remain
+open. Fresh pip selected supported pydantic-graph 1.107.7 under `>=1.80,<2`; this proves that actual
+constructor/import path, not every version in the range or full-lock synchronization.
+
+Reviewed independently passing packages are published in orchestrator main `41ab07fcdaf9920d0d51520586fddae460cb50b4`,
+preserving peer base `fe07865f` and matching their tested source files exactly. Root completes the
+client timeout, lifecycle audit and progress records at this boundary. NI03, NI05, NI06, NI14, NI16,
+NI17, NI19 and NI20 are accepted; published completion tally advances to **15/23**. No reload,
+inference or production mutation occurred. Expiry, passive capture, parser progress repair and
+test-order/broad-suite acceptance remain separate, unpublished candidate work.
+
+Actual image run `37287200587` passed pinned tools and independent markdownlint. It preserves all
+nine raw typed-AST pairs and a 38,786-byte patch (SHA-256
+`b86f4ce8122b16b912a2e88e203d88a4c4661b70261ebb1d4d16a037e449620a`).
+The formatting assertion rejects disappearing optional Semicolon coordinate fields; source is
+unchanged and no patch is accepted yet. NI23 immediately files generated-output custody through
+the existing CI verifier; no new grading rule or retrospective tuple is authorized.
