@@ -229,6 +229,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        # Original command capture and CLI->Ledger roundtrip: test_ci_conformance.py.
+        "ci-fixture-conformance",
         "sealed-manifest", "kv-quant-27b-v10-measurement",
         # Cross-repo producer pin, both class dispatches and grading: test_exl3_adapter.py.
         "exl3-measurement", "exl3-verifier",

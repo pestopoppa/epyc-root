@@ -546,6 +546,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # Kept literal (not imported) so `cli.py --help` stays cheap; test_ingest_sources pins it
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
+    "ci-fixture-conformance",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
     "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",
