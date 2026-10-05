@@ -5,8 +5,8 @@ on:
 permissions:
   contents: read
 env:
-  SOURCE_SHA: 815e41a4a3e6cc07a5ca46081a3e72d488cda139
-  APP_SOURCE_SHA: 768dcbab41d9cebcd1279156fcf242086e3b00dc
+  SOURCE_SHA: 3f03be39d2b9811cf6ee017afbe1477a4e726523
+  APP_SOURCE_SHA: 4238a82eee82a38d5fe5b868949649dcc5c7e5d1
 jobs:
   timeout-report:
     runs-on: ubuntu-latest
@@ -30,8 +30,8 @@ jobs:
           python-version: '3.13'
       - name: Install and identify the exact fixture runner
         run: |
-          python -m pip install pytest==9.1.1
-          python -c 'from importlib.metadata import version; print("pytest=" + version("pytest"))'
+          python -m pip install pytest==9.1.1 PyYAML==6.0.3
+          python -c 'from importlib.metadata import version; print("pytest=" + version("pytest")); print("PyYAML=" + version("PyYAML"))'
       - name: Declare original offline scope and prepare bounded capture caller
         working-directory: source
         run: |
@@ -53,6 +53,7 @@ jobs:
               "scope": "approved synthetic DTAP fixture command; real trusted producer/judges and sole verifier reader, no endpoint request",
               "app_source_sha": os.environ["APP_SOURCE_SHA"],
               "root_source_sha": os.environ["SOURCE_SHA"],
+              "dependency_scope": "pytest9.1.1 plus PyYAML6.0.3 from the checked-in app uv.lock; selected recorded dependency alignment, not a full frozen lock install",
               "native_write_boundary": "opt-in run_matrix original pre-request before any endpoint factory/run; original traces and terminal recomputation before receipt",
               "primary_metrics": "benign task_success higher; attack_success lower; count/rate components descriptive",
               "censoring": "actual terminal native TimeoutError only; recovered retries not censored; non-timeout errors retained in finished denominator; empty rate null",
@@ -78,6 +79,7 @@ jobs:
             --read-path scripts/vidya/cli.py --read-path scripts/vidya/ingest_sources.py
             --read-path tests/vidya/test_dtap_timeout_report.py
             --read-path tests/vidya/test_ingest_sources.py
+            --read-path "$GITHUB_WORKSPACE/app-source/uv.lock"
             --read-path "$GITHUB_WORKSPACE/app-source/scripts/autopilot/evals/dtap/cases.json"
             --read-path "$GITHUB_WORKSPACE/app-source/scripts/autopilot/evals/dtap/README.md"
             --read-path "$GITHUB_WORKSPACE/app-source/scripts/autopilot/evals/dtap/tests/conftest.py"
@@ -183,8 +185,8 @@ jobs:
               if (result.get("conformant") is not True or result["counts"]["skipped"]
                       or result["counts"]["failure"] or result["counts"]["error"]):
                   raise ValueError("original fixture phase is not successful; original false/diagnostic outcomes remain unchanged")
-          if results[1]["counts_by_module"].get("test_dtap_timeout_report", {}).get("passed") != 19:
-              raise ValueError("reader phase does not have the reviewed 19 native controls; generic ingestion counts are independent")
+          if results[1]["counts_by_module"].get("test_dtap_timeout_report", {}).get("passed") != 24:
+              raise ValueError("reader phase does not have the reviewed 24 native controls; generic ingestion counts are independent")
           PY
       - name: Preserve original public projection
         if: always()
