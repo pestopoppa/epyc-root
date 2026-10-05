@@ -9,8 +9,10 @@ permissions:
 
 env:
   ROOT_PRODUCER_SHA: adbbe58e591f5e6dc444019551c91a9d6cd10a11
-  APP_PUBLISHED_SHA: 4244e72b2aa8aae9a92f684fcd5090a852223888
-  APP_SYNTHETIC_SHA: def18591f813070a20906f9d228ddd9dd0da9fd3
+  APP_FIXTURE_BASE_PUBLISHED_SHA: 4244e72b2aa8aae9a92f684fcd5090a852223888
+  APP_FIXTURE_CANDIDATE_PUBLISHED_SHA: 86015733aa5dbe4c1bfcfbd996d7496a2494f098
+  APP_FIXTURE_BASE_SYNTHETIC_SHA: def18591f813070a20906f9d228ddd9dd0da9fd3
+  APP_FIXTURE_CANDIDATE_SYNTHETIC_SHA: bb6ce5d72c0a2b2b9ec48f9d27e003d626d1fe37
   RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
 
 jobs:
@@ -31,13 +33,25 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-orchestrator
-          ref: ${{ env.APP_PUBLISHED_SHA }}
+          ref: ${{ env.APP_FIXTURE_CANDIDATE_PUBLISHED_SHA }}
+          fetch-depth: 2
           path: app-published
       - uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-orchestrator
-          ref: ${{ env.APP_SYNTHETIC_SHA }}
+          ref: ${{ env.APP_FIXTURE_CANDIDATE_SYNTHETIC_SHA }}
+          fetch-depth: 2
           path: app-synthetic
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_FIXTURE_BASE_PUBLISHED_SHA }}
+          path: app-fixture-base-published
+      - uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_FIXTURE_BASE_SYNTHETIC_SHA }}
+          path: app-fixture-base-synthetic
       - uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-inference-research
@@ -77,7 +91,8 @@ jobs:
           context = {
               "schema": "ssu_f13.repro_context.v2",
               "phase": "ordinary_runner_ap54",
-              "app_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "fixture_candidate_published_sha": "86015733aa5dbe4c1bfcfbd996d7496a2494f098",
+              "fixture_base_published_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
               "runner_context": "ordinary GitHub runner; no synthetic RAM or topology",
               "scratch_directory": "/mnt/raid0/llm/tmp (owned by runner; mode 0700)",
               "timeout": "GNU timeout 120s; TERM; KILL after 30s",
@@ -140,7 +155,8 @@ jobs:
           context = {
               "schema": "ssu_f13.repro_context.v2",
               "phase": "ordinary_runner_capacity_guard",
-              "app_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "fixture_candidate_published_sha": "86015733aa5dbe4c1bfcfbd996d7496a2494f098",
+              "fixture_base_published_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
               "runner_context": "ordinary GitHub runner; reads actual /proc/meminfo in a fresh child",
               "selection": "test_fresh_launcher_import_keeps_real_host_capacity_guard",
               "inference": "none",
@@ -166,7 +182,7 @@ jobs:
             --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/cli.py" \
             --read-path ssu-f13-capacity-context.json --read-path pyproject.toml \
             --read-path tests/conftest.py --read-path tests/unit/test_runtime_flags.py \
-            --read-path src/autopilot/species/structural_lab.py \
+            --read-path scripts/autopilot/species/structural_lab.py \
             --read-path src/api/routes/config.py --read-path src/runtime/config_attestation.py \
             --read-path src/config/__init__.py --read-path src/config/models.py \
             --read-path src/features.py \
@@ -204,8 +220,11 @@ jobs:
           import subprocess
           from pathlib import Path
 
-          base = Path(os.environ["GITHUB_WORKSPACE"]) / "app-published"
+          workspace = Path(os.environ["GITHUB_WORKSPACE"])
+          published = workspace / "app-published"
           donor = Path(os.environ["GITHUB_WORKSPACE"]) / "app-synthetic"
+          published_base = workspace / "app-fixture-base-published"
+          donor_base = workspace / "app-fixture-base-synthetic"
           paths = [
               "pyproject.toml", "tests/conftest.py",
               "tests/unit/test_affinity_preflight_cell_manifest.py",
@@ -226,31 +245,93 @@ jobs:
           def sha(path):
               return hashlib.sha256(path.read_bytes()).hexdigest()
 
+          fixture_paths = {
+              "tests/conftest.py",
+              "tests/unit/test_affinity_preflight_cell_manifest.py",
+              "tests/unit/test_build_server_command_helpers.py",
+              "tests/unit/test_contention_matrix_host_health.py",
+          }
+          modified_readsets = {
+              "tests/unit/test_affinity_preflight_cell_manifest.py",
+              "tests/unit/test_build_server_command_helpers.py",
+              "tests/unit/test_contention_matrix_host_health.py",
+          }
+          if len(paths) != 25:
+              raise SystemExit(f"expected 25 bounded topology readsets, got {len(paths)}")
+          expected_changed = sorted({
+              "tests/unit/test_ap54_eval_knowledge_fence.py",
+              "tests/unit/test_affinity_preflight_cell_manifest.py",
+              "tests/unit/test_build_server_command_helpers.py",
+              "tests/unit/test_contention_matrix_host_health.py",
+          })
+
+          if subprocess.check_output(["git", "-C", str(published), "rev-parse", "HEAD"], text=True).strip() != os.environ["APP_FIXTURE_CANDIDATE_PUBLISHED_SHA"]:
+              raise SystemExit("published fixture candidate pin mismatch")
+          if subprocess.check_output(["git", "-C", str(donor), "rev-parse", "HEAD"], text=True).strip() != os.environ["APP_FIXTURE_CANDIDATE_SYNTHETIC_SHA"]:
+              raise SystemExit("synthetic fixture candidate pin mismatch")
+          if subprocess.check_output(["git", "-C", str(published_base), "rev-parse", "HEAD"], text=True).strip() != os.environ["APP_FIXTURE_BASE_PUBLISHED_SHA"]:
+              raise SystemExit("published fixture base pin mismatch")
+          if subprocess.check_output(["git", "-C", str(donor_base), "rev-parse", "HEAD"], text=True).strip() != os.environ["APP_FIXTURE_BASE_SYNTHETIC_SHA"]:
+              raise SystemExit("synthetic fixture base pin mismatch")
+          for candidate, base, expected in (
+              (published, published_base, os.environ["APP_FIXTURE_BASE_PUBLISHED_SHA"]),
+              (donor, donor_base, os.environ["APP_FIXTURE_BASE_SYNTHETIC_SHA"]),
+          ):
+              parent = subprocess.check_output(
+                  ["git", "-C", str(candidate), "rev-parse", "HEAD^"], text=True
+              ).strip()
+              if parent != expected:
+                  raise SystemExit(f"fixture candidate is not directly based on its pinned original: {candidate.name}")
+              changed = subprocess.check_output(
+                  ["git", "-C", str(candidate), "diff", "--name-only", "HEAD^", "HEAD"],
+                  text=True,
+              )
+              if sorted(path for path in changed.splitlines() if path) != expected_changed:
+                  raise SystemExit(f"fixture candidate has unexpected changed paths: {candidate.name}")
+
           records = []
           for relative in paths:
-              left, right = base / relative, donor / relative
-              if not left.is_file() or not right.is_file():
+              published_path, donor_path = published / relative, donor / relative
+              published_base_path, donor_base_path = published_base / relative, donor_base / relative
+              if not all(path.is_file() for path in (
+                  published_path, donor_path, published_base_path, donor_base_path
+              )):
                   raise SystemExit(f"missing comparison input: {relative}")
-              left_sha, right_sha = sha(left), sha(right)
-              if left_sha != right_sha:
-                  raise SystemExit(f"published/donor input differs: {relative}")
-              records.append({"path": relative, "published_sha256": left_sha,
-                              "synthetic_donor_sha256": right_sha, "identical": True})
+              published_sha, donor_sha = sha(published_path), sha(donor_path)
+              published_base_sha, donor_base_sha = sha(published_base_path), sha(donor_base_path)
+              if published_sha != donor_sha:
+                  raise SystemExit(f"fixture candidate readset differs: {relative}")
+              if relative not in modified_readsets:
+                  if published_base_sha != published_sha:
+                      raise SystemExit(f"published fixture candidate changed an input outside its fixtures: {relative}")
+                  if donor_base_sha != donor_sha:
+                      raise SystemExit(f"synthetic fixture candidate changed an input outside its fixtures: {relative}")
+              records.append({"path": relative,
+                              "fixture_base_published_sha256": published_base_sha,
+                              "fixture_candidate_published_sha256": published_sha,
+                              "fixture_base_synthetic_sha256": donor_base_sha,
+                              "fixture_candidate_synthetic_sha256": donor_sha,
+                              "fixture_inputs_identical": True,
+                              "unchanged_from_base": relative not in modified_readsets})
 
-          published_sha = subprocess.check_output(
-              ["git", "-C", str(base), "rev-parse", "HEAD"], text=True
-          ).strip()
-          app_sha = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
           bootstrap = donor / "tests/fixtures/offhost_unit_bootstrap.py"
-          if (published_sha != os.environ["APP_PUBLISHED_SHA"]
-                  or app_sha != os.environ["APP_SYNTHETIC_SHA"] or not bootstrap.is_file()):
-              raise SystemExit("synthetic donor pin/bootstrap mismatch")
+          if not bootstrap.is_file():
+              raise SystemExit("synthetic donor bootstrap missing")
+          bootstrap_base = donor_base / "tests/fixtures/offhost_unit_bootstrap.py"
+          if not bootstrap_base.is_file() or sha(bootstrap) != sha(bootstrap_base):
+              raise SystemExit("synthetic donor bootstrap changed from its original pin")
           comparison = {
               "schema": "ssu_f13.source_comparison.v1",
-              "published_app_sha": os.environ["APP_PUBLISHED_SHA"],
-              "synthetic_donor_sha": app_sha,
+              "fixture_base_published_sha": os.environ["APP_FIXTURE_BASE_PUBLISHED_SHA"],
+              "fixture_candidate_published_sha": os.environ["APP_FIXTURE_CANDIDATE_PUBLISHED_SHA"],
+              "fixture_base_synthetic_sha": os.environ["APP_FIXTURE_BASE_SYNTHETIC_SHA"],
+              "fixture_candidate_synthetic_sha": os.environ["APP_FIXTURE_CANDIDATE_SYNTHETIC_SHA"],
               "readset_count": len(records),
-              "readsets_identical": True,
+              "production_readset_count": len(paths) - len(fixture_paths),
+              "unchanged_readset_count": len(paths) - len(modified_readsets),
+              "readsets_identical_between_fixture_candidates": True,
+              "non_test_readsets_unchanged_from_each_base": True,
+              "fixture_changed_paths": expected_changed,
               "inputs": records,
               "bootstrap_path": "tests/fixtures/offhost_unit_bootstrap.py",
               "bootstrap_sha256": sha(bootstrap),
@@ -265,16 +346,22 @@ jobs:
         run: |
           python - <<'PY'
           import json
+          import os
           from pathlib import Path
+          runner_temp = Path(os.environ["RUNNER_TEMP"])
           context = {
               "schema": "ssu_f13.repro_context.v2",
               "phase": "synthetic_topology_parity_13_named_cases",
-              "app_sha": "def18591f813070a20906f9d228ddd9dd0da9fd3",
-              "published_comparison_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
+              "fixture_candidate_synthetic_sha": "bb6ce5d72c0a2b2b9ec48f9d27e003d626d1fe37",
+              "fixture_base_synthetic_sha": "def18591f813070a20906f9d228ddd9dd0da9fd3",
+              "comparison_fixture_candidate_published_sha": "86015733aa5dbe4c1bfcfbd996d7496a2494f098",
+              "comparison_fixture_base_published_sha": "4244e72b2aa8aae9a92f684fcd5090a852223888",
               "runner_context": "ordinary GitHub runner; explicit existing offhost_unit_bootstrap only for this pytest process",
               "synthetic_host_ram_gib": 1024,
               "scope": "13 named topology-parity cases; no source capacity relaxation",
               "comparison_manifest": "ssu-f13-topology-comparison.json",
+              "cache_dir": str(runner_temp / "ssu-f13-topology-cache"),
+              "tmp_dir": str(runner_temp / "ssu-f13-topology-tmp"),
               "timeout": "GNU timeout 120s; TERM; KILL after 30s",
               "inference": "none",
               "claim_scope": "selected fixture reproduction only; no topology correction or fleet claim",
@@ -285,14 +372,18 @@ jobs:
       - name: Capture synthetic topology-parity subset
         if: ${{ always() && steps.compare_topology_inputs.outcome == 'success' }}
         working-directory: app-synthetic
+        env:
+          ORCHESTRATOR_PATHS_CACHE_DIR: ${{ runner.temp }}/ssu-f13-topology-cache
+          ORCHESTRATOR_PATHS_TMP_DIR: ${{ runner.temp }}/ssu-f13-topology-tmp
         run: |
+          mkdir -p "$ORCHESTRATOR_PATHS_CACHE_DIR" "$ORCHESTRATOR_PATHS_TMP_DIR"
           python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
             --cwd "$PWD" --junit ssu-f13-topology.xml --output native-ssu-f13-topology \
             --generated-output ssu-f13-topology.pytest.log \
             --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
             --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
             --repo "orchestrator_synthetic=$PWD" \
-            --repo "orchestrator_published=$GITHUB_WORKSPACE/app-published" \
+            --repo "orchestrator_fixture_candidate_published=$GITHUB_WORKSPACE/app-published" \
             --repo "research=$GITHUB_WORKSPACE/research" \
             --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ssu-f13-bounded-followup.yml" \
             --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
