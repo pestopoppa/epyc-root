@@ -135,9 +135,7 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
         timeout=10 * 60,
     )
 
-    def normalized_ast(path: Path) -> object:
-        ast = json.loads(path.read_text())
-
+    def normalized_ast(ast: object) -> object:
         def without_positions(node: object) -> object:
             # mvdan/sh v3.8.0 syntax/typedjson encodes syntax.Pos as exactly
             # {"Offset": uint, "Line": uint, "Col": uint}; this also covers
@@ -167,12 +165,22 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
     for relative in SHELL_FORMAT_FILES:
         original = orchestrator / relative
         formatted = copied / relative
-        before_ast = normalized_ast(Path(f"{formatted}.before.json"))
-        after_ast = normalized_ast(Path(f"{formatted}.after.json"))
-        assert before_ast == after_ast, f"shell AST changed for {relative}"
-        normalized_ast_bytes = json.dumps(
+        before_raw_ast = Path(f"{formatted}.before.json").read_bytes()
+        after_raw_ast = Path(f"{formatted}.after.json").read_bytes()
+        before_ast = normalized_ast(json.loads(before_raw_ast))
+        after_ast = normalized_ast(json.loads(after_raw_ast))
+        normalized_before_bytes = json.dumps(
             before_ast, sort_keys=True, separators=(",", ":")
         ).encode()
+        normalized_after_bytes = json.dumps(
+            after_ast, sort_keys=True, separators=(",", ":")
+        ).encode()
+        typed_ast_artifacts = artifacts / "typed-ast" / relative
+        typed_ast_artifacts.mkdir(parents=True, exist_ok=True)
+        before_ast_artifact = typed_ast_artifacts / "before.json"
+        after_ast_artifact = typed_ast_artifacts / "after.json"
+        before_ast_artifact.write_bytes(before_raw_ast)
+        after_ast_artifact.write_bytes(after_raw_ast)
         before_text = original.read_text().splitlines(keepends=True)
         after_text = formatted.read_text().splitlines(keepends=True)
         diff_lines.extend(
@@ -188,12 +196,19 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
                 "path": relative,
                 "before_sha256": hashlib.sha256(original.read_bytes()).hexdigest(),
                 "after_sha256": hashlib.sha256(formatted.read_bytes()).hexdigest(),
+                "before_ast_artifact": str(before_ast_artifact.relative_to(artifacts)),
+                "before_ast_sha256": hashlib.sha256(before_raw_ast).hexdigest(),
+                "after_ast_artifact": str(after_ast_artifact.relative_to(artifacts)),
+                "after_ast_sha256": hashlib.sha256(after_raw_ast).hexdigest(),
                 "before_lines": len(before_text),
                 "after_lines": len(after_text),
                 "line_delta": len(after_text) - len(before_text),
-                "normalized_ast_equal": True,
-                "normalized_ast_sha256": hashlib.sha256(
-                    normalized_ast_bytes
+                "normalized_ast_equal": before_ast == after_ast,
+                "normalized_before_ast_sha256": hashlib.sha256(
+                    normalized_before_bytes
+                ).hexdigest(),
+                "normalized_after_ast_sha256": hashlib.sha256(
+                    normalized_after_bytes
                 ).hexdigest(),
                 "bash_n_before_after": True,
             }
@@ -221,6 +236,8 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
         "patch_sha256": hashlib.sha256(patch.encode()).hexdigest(),
     }
     (artifacts / "summary.json").write_text(json.dumps(summary, indent=2) + "\n")
+    changed_ast = [record["path"] for record in records if not record["normalized_ast_equal"]]
+    assert not changed_ast, f"normalized shell AST changed for: {', '.join(changed_ast)}"
 
 
 def test_independent_markdownlint_gate(devcontainer_image: str) -> None:
