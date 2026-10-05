@@ -1,0 +1,70 @@
+{
+  "schema": "ni05.main_review.v1",
+  "task": 59,
+  "custody_manifest_sha256": "c36bed597ed390ef70b4fab79501a0cba531d4aee34f6f22d34b5b3ac77b0fcf",
+  "original_files_verified": 191,
+  "zip_members_byte_compared": 180,
+  "modules": [
+    {
+      "receipt": "ni59-37383742953-1-debug-scorer-code-execution-native/native/receipt.json",
+      "counts": {
+        "collected": 12,
+        "error": 0,
+        "executed": 12,
+        "failure": 0,
+        "passed": 12,
+        "skipped": 0
+      },
+      "git_inputs": 62,
+      "external_inputs": 10,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "receipt_file_sha256": "50db72f694633dfe94e1fe1f017f28f60a643be536291cb5a89dcd54871280e9",
+      "receipt_embedded_self_hash": "8d68a7d82ff455f7316fd674261d61701cc356a1e5d0e01ac5417415f07a3eea",
+      "repos": {
+        "orchestrator_candidate": "8024ad80440a6f1bf6e9f0abc2ff9ee9a8c091cd",
+        "root_producer": "ff8a6baa7e4bc86fc7318055d3fe1050f31422c7",
+        "root_workflow": "228dda2b96a9e6d15fd9c046174afd6d1639c59e"
+      }
+    },
+    {
+      "receipt": "ni59-37383742953-1-repl-environment-native/native/receipt.json",
+      "counts": {
+        "collected": 140,
+        "error": 0,
+        "executed": 140,
+        "failure": 0,
+        "passed": 140,
+        "skipped": 0
+      },
+      "git_inputs": 62,
+      "external_inputs": 10,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "receipt_file_sha256": "c68c57f530dc06133f5b2e7c044ac472849d8215305b01405100bdc51765beef",
+      "receipt_embedded_self_hash": "e7e62aff598e79ebf8b707ddf3628512c599660f8345119558771586591611f5",
+      "repos": {
+        "orchestrator_candidate": "8024ad80440a6f1bf6e9f0abc2ff9ee9a8c091cd",
+        "root_producer": "ff8a6baa7e4bc86fc7318055d3fe1050f31422c7",
+        "root_workflow": "228dda2b96a9e6d15fd9c046174afd6d1639c59e"
+      }
+    }
+  ],
+  "postchecks": [
+    {
+      "path": "ni59-37383742953-1-debug-scorer-code-execution-postcheck/postcheck.json",
+      "true_postchecks": 22
+    },
+    {
+      "path": "ni59-37383742953-1-repl-environment-postcheck/postcheck.json",
+      "true_postchecks": 22
+    }
+  ],
+  "review_is_derivative": true,
+  "public_native_prefix_reopenable": false,
+  "source_publication": "ad477541dbc2e6da4cfe4176d5f85045f64c6069"
+}

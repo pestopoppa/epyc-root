@@ -1,0 +1,2918 @@
+{
+  "checks": {
+    "actual_runner_facts_bound": true,
+    "all_declared_absences_hold": true,
+    "exact_full_module_counts": true,
+    "install_status_and_logs_bound": true,
+    "lock_and_project_sha_files_bound": true,
+    "lock_pinned": true,
+    "native_exit_zero": true,
+    "native_readset_includes_install_and_test_inputs": true,
+    "native_true": true,
+    "original_stdout_stderr_present": true,
+    "private_originals_and_native_prefix": true,
+    "private_owned_0700_paths": true,
+    "producer_clean": true,
+    "pyproject_pinned": true,
+    "python_pin": true,
+    "recipe_clean": true,
+    "refusal_controls_collected_passing": true,
+    "repo_pins_exact": true,
+    "selection_exact": true,
+    "shared_grade_judged_located": true,
+    "tested_source_clean": true,
+    "uv_pin": true
+  },
+  "expected_counts": {
+    "collected": 140,
+    "error": 0,
+    "executed": 140,
+    "failure": 0,
+    "passed": 140,
+    "skipped": 0
+  },
+  "install_status_sha256": "226139c8f0990f75a862f96e55421fcf5aaaa5ab6f7c5b9583d809d7a699f910",
+  "install_stderr_sha256": "fea0e742cc378a84f453a7cf5b0276570542561fd209cca62292887b0feac2d4",
+  "install_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "module_id": "repl-environment",
+  "native_exit_code": 0,
+  "native_readset_names": [
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-lock-after-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-lock-before-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-project-after-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-project-before-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/context.json",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install-status.json",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install.stderr",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install.stdout",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/runner-cpuinfo.txt",
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/runner-meminfo.txt",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/pyproject.toml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/debug_scorer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/concurrency.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/config/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/constants.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/delegation_reports.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/embedding_pool/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/features.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/graph/helpers.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/registry/tool_registry.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_audit_hook.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_kernel_shim.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_rules.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/archive_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/code_search.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/combined_ops.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context_bundle.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context_search.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/document_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/environment.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/external_access.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/fence_kernel.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_exploration.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_mutation.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_recency.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/knowledge_fence.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/parallel_dispatch.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/procedure_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/redaction.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/routing.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/safe_pickle.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/security.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/state.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/suggestions.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/task_root.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/types.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/unicode_sanitizer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/research_context.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/restricted_executor.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/roles.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/services/archive_extractor.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/services/toon_encoder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/structured_output/repair.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/task_ir.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/trace/navigation.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/typed_decisions/prepared_action.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/typed_decisions/tool_args_integration.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_debug_scorer_code_execution.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_repl_environment.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/uv.lock",
+    "/home/runner/work/epyc-root/epyc-root/ci-control/.github/workflows/ni59-runner-scratch-matrix.yml",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/ci/native_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/ci_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/canonical.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/claim_tuple.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/frames.py"
+  ],
+  "observed_counts": {
+    "collected": 140,
+    "error": 0,
+    "executed": 140,
+    "failure": 0,
+    "passed": 140,
+    "skipped": 0
+  },
+  "passing_refusal_controls": [
+    "test_import_os_blocked",
+    "test_import_subprocess_blocked",
+    "test_output_capped"
+  ],
+  "private_capture_path_facts": [
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-project-before-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/runner-cpuinfo.txt",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/postcheck.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/postcheck.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/tmp",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-lock-after-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/context.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install-status.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-project-after-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/app-lock-before-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/runner-meminfo.txt",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/install.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/original-pytest.xml",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-065.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-027.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-020.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-049.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-009.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-026.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-022.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-032.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-030.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-034.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/command.log",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-063.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-048.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-041.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-043.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-053.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-044.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-001.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-005.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-029.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-051.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-050.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/receipt.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-058.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/original-junit.xml",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-004.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-011.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-036.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-031.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-062.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-068.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-013.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-000.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-019.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-069.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-037.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-060.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-042.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-047.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-067.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-024.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/execution-request.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-008.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-023.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-002.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-070.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-071.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-017.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-055.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-052.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-016.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-028.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-045.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-057.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-054.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-015.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-025.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-003.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-010.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-046.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-064.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-066.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-038.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-021.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-035.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-059.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-056.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-012.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-014.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-040.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-006.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-018.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-061.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-033.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-039.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native/read-007.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock50",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock54",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease47",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock60",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease1",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease28",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease79",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease114",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock55",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease16",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock84",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock39",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock126",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease66",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease132",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock118",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock25",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease93",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock6",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock69",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease65",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock7",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock10",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease17",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease81",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock62",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease35",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease43",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock87",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock121",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock16",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease108",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock105",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock45",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease116",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock106",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease2",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease96",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock138",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease101",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease131",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock103",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease89",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock139",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock59",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease11",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 85,
+      "link_target_relative_if_contained": "pytest-tmp/runtime_flags0",
+      "link_target_sha256": "1ceea6db4205003f924ff5e323a7e2b9d10b9001b6bfe00f61d1481932363c2a",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/runtime_flagscurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease42",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock96",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease23",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease41",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease18",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock94",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock52",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock47",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock129",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock104",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease104",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 97,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_inference_lock139",
+      "link_target_sha256": "0849e36b91e63994cc29e62012dd8ab60234f12ad65994380a0550b4a8276117",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_inference_lockcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock122",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock14",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock46",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease50",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock78",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease111",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease97",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock24",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock108",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock113",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/runtime_flags0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock26",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock13",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease137",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock51",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock17",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock125",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock128",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease48",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease75",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock127",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease68",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease4",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease90",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease136",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease73",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock3",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease22",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease56",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock86",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease33",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock5",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease84",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease87",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock81",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock20",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock44",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock63",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease99",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock41",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock117",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease118",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease8",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease107",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock66",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease82",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease76",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock53",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease29",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock21",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock36",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease9",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock8",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease74",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease51",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock58",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease45",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease134",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease100",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease37",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease14",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock90",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock115",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock23",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease34",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock116",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease124",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease38",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 90,
+      "link_target_relative_if_contained": "pytest-tmp/test_output_capped0",
+      "link_target_sha256": "7f1b398dd00066fd5cf35981773db92abf560e9c2b9aff4e9189a9f0d6c15534",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_output_cappedcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease40",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock83",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease71",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease109",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock35",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease62",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/test_output_capped0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease59",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock77",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock97",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock91",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease52",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease36",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease13",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock2",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock38",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease127",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock67",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock68",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease21",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease83",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock107",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock98",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock15",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock61",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock101",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock109",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease103",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock30",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock132",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock88",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease117",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock133",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease123",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease126",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease128",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease102",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock112",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease122",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease12",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease69",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease32",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock29",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock71",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock76",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock120",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease54",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease10",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock137",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock79",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease94",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease112",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease121",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease115",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease110",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock1",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock57",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock130",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock9",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock114",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease19",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock32",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock40",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease39",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease129",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease49",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock135",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease60",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease24",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease130",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock111",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock80",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease58",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock74",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease15",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock4",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock95",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock27",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock72",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock136",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease57",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock56",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease3",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease44",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease26",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease25",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock124",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease119",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease80",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock119",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease20",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock89",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock100",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease6",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_tap0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease138",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease31",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease113",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease7",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock42",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock19",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock43",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease86",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock70",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock28",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock102",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock75",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock93",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock123",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease70",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease55",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock34",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease46",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease63",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease77",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease135",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 96,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_prefill_lease139",
+      "link_target_sha256": "07b20f7eecc9b2eee4a838b0ae3f2578b860b76cc6cf0e502d6e410337549884",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_prefill_leasecurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock99",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease27",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease88",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease5",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock65",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock22",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock92",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease98",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease120",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock73",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease64",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease61",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease95",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock12",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease125",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease78",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease53",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 94,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_inference_tap0",
+      "link_target_sha256": "f2a3954c7f98b2ae43bc4bb5778a7160ef67b6619c2b023e3219fdb114176a91",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_inference_tapcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease85",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock82",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease106",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock18",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock48",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock33",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock11",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease30",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease67",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock110",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock31",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease105",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock49",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease92",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease133",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock134",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock85",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock64",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock131",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease91",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease72",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_inference_lock37",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/hermetic_prefill_lease139",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/runtime_flags0/runtime_flags.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/test_output_capped0/4deb21cb",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp/test_output_capped0/4deb21cb/turn_1.txt",
+      "uid": 1001
+    }
+  ],
+  "private_path_facts": {
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/cache": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/cache/uv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/native": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/pytest-tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-repl-environment/venv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    }
+  },
+  "receipt_sha256": "c68c57f530dc06133f5b2e7c044ac472849d8215305b01405100bdc51765beef",
+  "repositories": {
+    "orchestrator_candidate": "8024ad80440a6f1bf6e9f0abc2ff9ee9a8c091cd",
+    "root_producer": "ff8a6baa7e4bc86fc7318055d3fe1050f31422c7",
+    "root_workflow": "228dda2b96a9e6d15fd9c046174afd6d1639c59e"
+  },
+  "schema": "ni59.postcheck.v1",
+  "selections": [
+    "tests/unit/test_repl_environment.py"
+  ],
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "stdout_stderr_sha256": {
+    "pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout": "f07bbfd0ec796091b9b9333d9a3afe30b82e5548c4948b355f0973a04967928e"
+  },
+  "tested_source_clean": true
+}

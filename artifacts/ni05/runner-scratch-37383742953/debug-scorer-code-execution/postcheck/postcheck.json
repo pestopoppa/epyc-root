@@ -1,0 +1,1479 @@
+{
+  "checks": {
+    "actual_runner_facts_bound": true,
+    "all_declared_absences_hold": true,
+    "exact_full_module_counts": true,
+    "install_status_and_logs_bound": true,
+    "lock_and_project_sha_files_bound": true,
+    "lock_pinned": true,
+    "native_exit_zero": true,
+    "native_readset_includes_install_and_test_inputs": true,
+    "native_true": true,
+    "original_stdout_stderr_present": true,
+    "private_originals_and_native_prefix": true,
+    "private_owned_0700_paths": true,
+    "producer_clean": true,
+    "pyproject_pinned": true,
+    "python_pin": true,
+    "recipe_clean": true,
+    "refusal_controls_collected_passing": true,
+    "repo_pins_exact": true,
+    "selection_exact": true,
+    "shared_grade_judged_located": true,
+    "tested_source_clean": true,
+    "uv_pin": true
+  },
+  "expected_counts": {
+    "collected": 12,
+    "error": 0,
+    "executed": 12,
+    "failure": 0,
+    "passed": 12,
+    "skipped": 0
+  },
+  "install_status_sha256": "226139c8f0990f75a862f96e55421fcf5aaaa5ab6f7c5b9583d809d7a699f910",
+  "install_stderr_sha256": "a7e6b7e5e3001088ba8f322ebfac12e65d8ec940d460aaf7cd29117fc8f543ca",
+  "install_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "module_id": "debug-scorer-code-execution",
+  "native_exit_code": 0,
+  "native_readset_names": [
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-lock-after-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-lock-before-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-project-after-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-project-before-install.sha256",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/context.json",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install-status.json",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install.stderr",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install.stdout",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/runner-cpuinfo.txt",
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/runner-meminfo.txt",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/pyproject.toml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/debug_scorer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/concurrency.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/config/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/constants.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/delegation_reports.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/embedding_pool/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/features.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/graph/helpers.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/registry/tool_registry.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_audit_hook.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_kernel_shim.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/_fence_rules.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/archive_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/code_search.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/combined_ops.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context_bundle.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/context_search.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/document_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/environment.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/external_access.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/fence_kernel.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_exploration.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_mutation.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_recency.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/file_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/knowledge_fence.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/parallel_dispatch.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/procedure_tools.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/redaction.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/routing.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/safe_pickle.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/security.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/state.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/suggestions.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/task_root.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/types.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/repl_environment/unicode_sanitizer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/research_context.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/restricted_executor.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/roles.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/services/archive_extractor.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/services/toon_encoder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/structured_output/repair.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/task_ir.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/trace/navigation.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/typed_decisions/prepared_action.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/typed_decisions/tool_args_integration.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_debug_scorer_code_execution.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_repl_environment.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/uv.lock",
+    "/home/runner/work/epyc-root/epyc-root/ci-control/.github/workflows/ni59-runner-scratch-matrix.yml",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/ci/native_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/ci_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/canonical.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/claim_tuple.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/frames.py"
+  ],
+  "observed_counts": {
+    "collected": 12,
+    "error": 0,
+    "executed": 12,
+    "failure": 0,
+    "passed": 12,
+    "skipped": 0
+  },
+  "passing_refusal_controls": [
+    "test_bcb190_sqlite_answer_still_scores_true",
+    "test_code_execution_child_dies_when_its_scorer_parent_is_killed",
+    "test_code_execution_concurrent_relative_files_are_isolated",
+    "test_code_execution_refuses_missing_scorer_scratch",
+    "test_code_execution_timeout_kills_descendant_processes",
+    "test_code_execution_without_oracle_does_not_pass_on_importable_code"
+  ],
+  "private_capture_path_facts": [
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-project-before-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/runner-cpuinfo.txt",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/postcheck.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/postcheck.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/tmp",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-lock-after-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/context.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest.stdout",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install-status.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-project-after-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/app-lock-before-install.sha256",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/runner-meminfo.txt",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/install.stderr",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/original-pytest.xml",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-065.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-027.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-020.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-049.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-009.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-026.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-022.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-032.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-030.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-034.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/command.log",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-063.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-048.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-041.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-043.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-053.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-044.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-001.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-005.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-029.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-051.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-050.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/receipt.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-058.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/original-junit.xml",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-004.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-011.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-036.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-031.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-062.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-068.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-013.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-000.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-019.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-069.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-037.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-060.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-042.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-047.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-067.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-024.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/execution-request.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-008.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-023.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-002.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-070.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-071.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-017.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-055.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-052.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-016.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-028.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-045.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-057.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-054.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-015.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-025.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-003.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-010.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-046.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-064.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-066.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-038.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-021.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-035.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-059.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-056.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-012.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-014.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-040.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-006.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-018.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-061.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-033.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-039.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native/read-007.bin",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease1",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_comment_on0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock6",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_bcb190_sqlite_answer_stil0",
+      "link_target_sha256": "4c8d839f8b27d133798d3b594c946917e15f115bd32cf490f576649d1949290e",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_bcb190_sqlite_answer_stilcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock7",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock10",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_entry_poin1",
+      "link_target_sha256": "a5c2a4f8fa7b3b5f5080a4f079f7d273ba72101e5e3fbb446018e8fa66e60a2a",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_entry_poincurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_vacuous_as0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease2",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease11",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 96,
+      "link_target_relative_if_contained": "pytest-tmp/runtime_flags0",
+      "link_target_sha256": "08b2703546399b7f9363661748793261f48515c3e48967972f02fb7c8b1afb60",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/runtime_flagscurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_vacuous_as0",
+      "link_target_sha256": "0e40b91585f6caa5964014a8f0cc90ec02350d746cf8641ff3686c9d6bbb5865",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_vacuous_ascurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 107,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_inference_lock11",
+      "link_target_sha256": "49dfa0755f7cdb9f0c5a179bb64ede0d3eac7ebe230c6550b314d8eddbc64ad6",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_inference_lockcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_timeout_ki0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_concurrent0",
+      "link_target_sha256": "1a3895b45c4b0a7f424f75eb2aee4a66bacc8416b51a812e9d36e627608fb49b",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_concurrentcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_child_dies0",
+      "link_target_sha256": "2d3fa539d35217b28300b9b91a0b439edb1bd7b3c5a09f6b3e320deb7ba36f1a",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_child_diescurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/runtime_flags0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_without_or0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease4",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock3",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock5",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease8",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_rejects_un0",
+      "link_target_sha256": "99f521ab50672b15b33e0d8122868e77b893dd9465e38ee33f123b4fbb98123e",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_rejects_uncurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease9",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock8",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_timeout_ki0",
+      "link_target_sha256": "db6ac0ca0fdbcab157d49c39270b8acbe21ef36e24500d1d7dbf1e9c7660e0c4",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_timeout_kicurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_rejects_un0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_runs_unitt0",
+      "link_target_sha256": "1d2c67bbecb45d03ba307eca1149741e812143880bd313e218390e844ca26560",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_runs_unittcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock2",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_runs_unitt0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_refuses_mi0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease10",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock1",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock9",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_comment_on0",
+      "link_target_sha256": "f4b7d492be69bd7bc2fbc835ecd5530746eaa8cf8f78df4eef8c6fad8b27f852",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_comment_oncurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock4",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease3",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease6",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_tap0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease7",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_entry_poin0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_bcb190_sqlite_answer_stil0",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_entry_poin1",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 106,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_prefill_lease11",
+      "link_target_sha256": "65cd597cec63a3945bc045b8ebf1ba337d929600e589e2ad3be34f599c60a43d",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_prefill_leasecurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_without_or0",
+      "link_target_sha256": "f97ec3dd31e5e41d34538d82a78adf09f2162f1222c3add5ce78a5ba1b95bc81",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_without_orcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_prefill_lease5",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 105,
+      "link_target_relative_if_contained": "pytest-tmp/hermetic_inference_tap0",
+      "link_target_sha256": "01642cdd57ebd023f70f77e87f6dd64ed0c7cb69a3bcae74eef6c2553600e32c",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/hermetic_inference_tapcurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "link_target_is_absolute": true,
+      "link_target_length": 113,
+      "link_target_relative_if_contained": "pytest-tmp/test_code_execution_refuses_mi0",
+      "link_target_sha256": "429e8203c3aa7d2b5405791b70644bc9def8f1b3044ca388ac4889798254410c",
+      "link_target_within_result_dir_lexically": true,
+      "mode": "0o777",
+      "path": "pytest-tmp/test_code_execution_refuses_micurrent",
+      "pytest_current_alias_accepted": true,
+      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory",
+      "type": "symlink",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/hermetic_inference_lock11",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_comment_on0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0/child-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0/solution.pid",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0/child-scorer-scratch/debug-scorer-ot9tgrsl",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_child_dies0/child-scorer-scratch/debug-scorer-ot9tgrsl/solution.py",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_vacuous_as0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_timeout_ki0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/barrier",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/barrier/right",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/barrier/right.cwd",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/barrier/left.cwd",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_concurrent0/barrier/left",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o600",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/runtime_flags0/runtime_flags.json",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_without_or0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_rejects_un0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_runs_unitt0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_refuses_mi0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_entry_poin0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_bcb190_sqlite_answer_stil0/debug-scorer-scratch",
+      "uid": 1001
+    },
+    {
+      "gid": 1001,
+      "mode": "0o700",
+      "owned_expected_mode": true,
+      "path": "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp/test_code_execution_entry_poin1/debug-scorer-scratch",
+      "uid": 1001
+    }
+  ],
+  "private_path_facts": {
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/cache": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/cache/uv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/native": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/pytest-tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni59-37383742953-1-debug-scorer-code-execution/venv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    }
+  },
+  "receipt_sha256": "50db72f694633dfe94e1fe1f017f28f60a643be536291cb5a89dcd54871280e9",
+  "repositories": {
+    "orchestrator_candidate": "8024ad80440a6f1bf6e9f0abc2ff9ee9a8c091cd",
+    "root_producer": "ff8a6baa7e4bc86fc7318055d3fe1050f31422c7",
+    "root_workflow": "228dda2b96a9e6d15fd9c046174afd6d1639c59e"
+  },
+  "schema": "ni59.postcheck.v1",
+  "selections": [
+    "tests/unit/test_debug_scorer_code_execution.py"
+  ],
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "stdout_stderr_sha256": {
+    "pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout": "4892d80b65f83b6a6780a82da27226e563ac38addf6c84490d0c10adcaba7cf9"
+  },
+  "tested_source_clean": true
+}

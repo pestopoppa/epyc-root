@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-53 strategy custody validation, NI05-59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-53 strategy custody validation, NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **62/77**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **63/77**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -122,7 +122,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-58** ✅ 2026-10-05 — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
 
-- [ ] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup.
+- [x] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup. ✅ 2026-10-05 — 140+12 cases; source and custody complete; artifacts/ni05/runner-scratch-37383742953.
 
 - [x] **NI05-60** ✅ 2026-10-05 — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
 
@@ -707,3 +707,5 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 NI05-65 completed: unchanged q-scorer whole-module fixtures pass79/79, zero skips/failures/errors, in original CI37381716978 attempt1. Main verifies1,747 private custody files and1,731 ZIP-member comparisons, strictly reopens native TRUE Judged/Located, matches570 Git-backed+5 context/install inputs and20 true postchecks, and proves current APP mainf884 source parity. Finite verbose prospective attribution is complete; the historical missing-JUnit NULL remains unchanged and cannot establish the original interrupted node/root cause. Public untouched metadata/log subset and derivative review: `artifacts/ni05/q-scorer-37381716978`; full source/context snapshots remain private, so the public prefix is explicitly not independently reopenable. No source change, inference, kernel/capacity, host-lock, quality or whole-suite claim. Published scoped completion tally61/77,16 open.
 
 2026-10-05 NI05-66 completed: unchanged inference-lock whole-module fixtures pass2/2, zero skips/failures/errors, in original CI37381716978 attempt1. Main verifies1,747 private custody files and1,731 ZIP-member comparisons, strictly reopens native TRUE Judged/Located, matches519 Git-backed+5 context/install inputs and20 true postchecks, and proves reviewed APP mainf884 source parity. Finite verbose prospective attribution is complete; the historical missing-JUnit NULL remains unchanged and cannot establish the original interrupted node/root cause. Public untouched metadata/log subset and derivative review: `artifacts/ni05/inference-lock-37381716978`; full source/context snapshots remain private, so the public prefix is explicitly not independently reopenable. No source change, inference, kernel/capacity, host-lock, quality or whole-suite claim. Published scoped completion tally62/77,15 open.
+
+2026-10-05 NI05-59 completed: reviewed owned0700 scratch fixtures pass140 REPL+12 code-execution cases in original CI37383742953 attempt1, zero skips/failures/errors. Main verifies191 private original files and180 ZIP-member comparisons, strictly reopens both TRUE Judged/Located receipts, matches62 Git-backed+10 context/install inputs each and22 true postchecks each. Real spill-file assertions, missing-scratch refusal before Popen and bounded child-cleanup controls remain. Only two test files are published to APP mainad477541dbc2e6da4cfe4176d5f85045f64c6069; runtime behavior is unchanged. The runner custody gate admits only owned direct pytest *current links targeting captured same-parent private0700 directories; all other links/native-prefix links refuse. Prior FALSE/setup originals remain unchanged. Public original metadata/log subset: artifacts/ni05/runner-scratch-37383742953; excluded private source/context/meminfo snapshots are explicitly hashed, and the public prefix cannot independently reopen. Published completion tally63/77,14 open; no inference, live store/kernel, capacity, quality or whole-suite claim.
