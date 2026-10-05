@@ -129,7 +129,7 @@ def project(native: dict) -> ClaimTuple:
         row = native["row"]
         captured = next((item for item in native_rows(Path(native["receipt_path"]))
                          if item["row"]["pair_id"] == row["pair_id"]), None)
-        if captured != native:
+        if captured is None or producer.canonical(captured) != producer.canonical(native):
             raise ProjectionError("gap native input differs from its reverified receipt custody")
     except (ValueError, KeyError, TypeError, ArithmeticError, OSError) as exc:
         raise ProjectionError(f"gap receipt refused: {exc}") from exc
