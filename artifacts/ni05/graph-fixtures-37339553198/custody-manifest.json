@@ -1,0 +1,861 @@
+{
+  "schema": "ni05.original-public-artifact-copy.v1",
+  "run_id": "37339553198",
+  "files": [
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/app/ni42_context/context.json",
+      "sha256": "52c9cd2266757887cf32a636c6270e9d78e9843196a593e0de8471b4d1e4f86f",
+      "size": 1973
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/app/ni42_context/runtime-path-postcheck.json",
+      "sha256": "7565d45ecb0e342309dc84be38f08872b46e75bcbefcdcf8ceb1ca1e273d70f8",
+      "size": 505
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/app/ni42_junit/failure-graph/original-pytest.xml",
+      "sha256": "9e373467ea81581e9962d5f7733ba61a4cb8bed2c27b08e707bda76d971206c4",
+      "size": 2847
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/app/ni42_junit/failure-graph/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/command.log",
+      "sha256": "031f3fc4a6f770e28ee8dae2e3d8ed30cb3800d2ae341563ffda5c02fbe4d1e8",
+      "size": 1280
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/execution-request.json",
+      "sha256": "cd94fe0e676d0c010a5cbe0eeb8b6cddd44448fe5f2b03b5f79402cd9bf57522",
+      "size": 6219
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/original-junit.xml",
+      "sha256": "9e373467ea81581e9962d5f7733ba61a4cb8bed2c27b08e707bda76d971206c4",
+      "size": 2847
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-001.bin",
+      "sha256": "bdb24dd52bfcf59b7dc7e05727dbb6d2b22ff2e003988f6f167605f24ca110d0",
+      "size": 12811
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-004.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size": 13851
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-005.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size": 9681
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-006.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size": 9719
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-007.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size": 9630
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-008.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size": 9382
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-009.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size": 69648
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-010.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size": 133311
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-011.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size": 6472
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-012.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size": 92602
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-013.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size": 31762
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-014.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size": 4774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-015.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size": 55282
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-016.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size": 149161
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-017.bin",
+      "sha256": "fe4b8dd72a2d7182d81a8266b14c9094552029d5a23c4c5a34ef710216b82381",
+      "size": 107598
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-018.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size": 6774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-019.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-020.bin",
+      "sha256": "d7e25b6f885cc5accacb03ab3fe61ad5cf1d097f0688fd3bbc48cc37db9bf8f7",
+      "size": 11283
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-021.bin",
+      "sha256": "52c9cd2266757887cf32a636c6270e9d78e9843196a593e0de8471b4d1e4f86f",
+      "size": 1973
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/read-022.bin",
+      "sha256": "79c84eefb02f6477bff4dff897fb5d65abe5042128838946b2fc2edc786db40c",
+      "size": 18704
+    },
+    {
+      "path": "ni42-graph-37339553198-1-failure-graph/artifacts/ni42-graph-fixtures/37339553198/1/failure-graph/native/receipt.json",
+      "sha256": "7f489016dadfde3fec4e735a6a94fb00c471d26071facdb17da7b254861c532c",
+      "size": 13614
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/app/ni42_context/context.json",
+      "sha256": "bcc7bcb503e124c275c6492292417fb9564448ad7d0bb16f9bddfcf38bd15b57",
+      "size": 1981
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/app/ni42_context/runtime-path-postcheck.json",
+      "sha256": "7565d45ecb0e342309dc84be38f08872b46e75bcbefcdcf8ceb1ca1e273d70f8",
+      "size": 505
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/app/ni42_junit/graph-integration/original-pytest.xml",
+      "sha256": "8aeb04e5140234c363ea4fc37a8c42faaf2c2fea4fa0e181e63a2926e5a71916",
+      "size": 2931
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/app/ni42_junit/graph-integration/pytest.log",
+      "sha256": "b1fb2d14cb3d745fa35d14edfd29e15847bad7fbdf835f0545c2e88e063171ca",
+      "size": 26404
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/command.log",
+      "sha256": "8bd43d49d588c037f083beec8b149dcce2a7fa42242264689a198da471290232",
+      "size": 1892
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/execution-request.json",
+      "sha256": "552b0a796c5952fff67a1ac2e7ff1001268de21a70369191c3662abcfee3c84d",
+      "size": 8329
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/generated-output-000.bin",
+      "sha256": "b1fb2d14cb3d745fa35d14edfd29e15847bad7fbdf835f0545c2e88e063171ca",
+      "size": 26404
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/original-junit.xml",
+      "sha256": "8aeb04e5140234c363ea4fc37a8c42faaf2c2fea4fa0e181e63a2926e5a71916",
+      "size": 2931
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-001.bin",
+      "sha256": "bdb24dd52bfcf59b7dc7e05727dbb6d2b22ff2e003988f6f167605f24ca110d0",
+      "size": 12811
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-004.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size": 13851
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-005.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size": 9681
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-006.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size": 9719
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-007.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size": 9630
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-008.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size": 9382
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-009.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size": 69648
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-010.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size": 133311
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-011.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size": 6472
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-012.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size": 92602
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-013.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size": 31762
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-014.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size": 4774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-015.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size": 55282
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-016.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size": 149161
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-017.bin",
+      "sha256": "fe4b8dd72a2d7182d81a8266b14c9094552029d5a23c4c5a34ef710216b82381",
+      "size": 107598
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-018.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size": 6774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-019.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-020.bin",
+      "sha256": "a51c7cc345d8e26b432aca188273b0af0de1f8e533549815d816c703d6f559dd",
+      "size": 14013
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-021.bin",
+      "sha256": "bcc7bcb503e124c275c6492292417fb9564448ad7d0bb16f9bddfcf38bd15b57",
+      "size": 1981
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-022.bin",
+      "sha256": "fd73fd8d4723cb05f27576b375a4f4a1a32e524cae3a9451b60f2e8cc2c9de5d",
+      "size": 60062
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-023.bin",
+      "sha256": "79c84eefb02f6477bff4dff897fb5d65abe5042128838946b2fc2edc786db40c",
+      "size": 18704
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-024.bin",
+      "sha256": "e73a3e76f253c5bcd7389a823d2f4a1718f694069231b1821ac703cea225fa4c",
+      "size": 15623
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-025.bin",
+      "sha256": "a8e374e95679301566965bec15029a9134e3a0f53961a7c41dbbb1ba5b189dde",
+      "size": 34401
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-026.bin",
+      "sha256": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
+      "size": 25631
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-027.bin",
+      "sha256": "e7b82dcb26ab9fa744ede1c4854f01bb54ec948fd86d0458ffb1b116c6009a1c",
+      "size": 514
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-028.bin",
+      "sha256": "7ea1ead200b2f863c8e316f28d15eb857990f6e6b2c748c990f4c4390be6a683",
+      "size": 5404
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-029.bin",
+      "sha256": "1d53e034f956764f47aab1cbd86550c7b099fa2ef0d47500b7c66acb61f6555b",
+      "size": 3194
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-030.bin",
+      "sha256": "6024ea895fa61a63284f42e803fd197f1a1d21d6a6013d9fc9f2adb77fc2df64",
+      "size": 3502
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/read-031.bin",
+      "sha256": "cdd671d0e39e26abf3eebbe5d9edec573375596298f54349990c75d1dbbe4764",
+      "size": 31645
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-integration/artifacts/ni42-graph-fixtures/37339553198/1/graph-integration/native/receipt.json",
+      "sha256": "fdab5177825742725e43763b167630db3321ae012b12d6862af463ca4cfb26c4",
+      "size": 15912
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/app/ni42_context/context.json",
+      "sha256": "7441327cfd8863f2088a10e8b232cf950ca6d83870ffb4584450f995ebf2ada9",
+      "size": 1993
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/app/ni42_context/runtime-path-postcheck.json",
+      "sha256": "7565d45ecb0e342309dc84be38f08872b46e75bcbefcdcf8ceb1ca1e273d70f8",
+      "size": 505
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/app/ni42_junit/graph-router-cold-start/original-pytest.xml",
+      "sha256": "469f90c93d65c84d471830a3f841335b13c3d2655aba0e463578ab01d7957c7e",
+      "size": 978
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/app/ni42_junit/graph-router-cold-start/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/command.log",
+      "sha256": "420e256fb0d32f9180c03d7a81f64446521cf53790732373212ecf9b211d386b",
+      "size": 1289
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/execution-request.json",
+      "sha256": "42d57d258ba62ca44c4e85c618fe58fbe8403b4b67532806432ecebc08032b00",
+      "size": 6760
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/original-junit.xml",
+      "sha256": "469f90c93d65c84d471830a3f841335b13c3d2655aba0e463578ab01d7957c7e",
+      "size": 978
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-001.bin",
+      "sha256": "bdb24dd52bfcf59b7dc7e05727dbb6d2b22ff2e003988f6f167605f24ca110d0",
+      "size": 12811
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-004.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size": 13851
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-005.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size": 9681
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-006.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size": 9719
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-007.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size": 9630
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-008.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size": 9382
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-009.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size": 69648
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-010.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size": 133311
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-011.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size": 6472
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-012.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size": 92602
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-013.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size": 31762
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-014.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size": 4774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-015.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size": 55282
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-016.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size": 149161
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-017.bin",
+      "sha256": "fe4b8dd72a2d7182d81a8266b14c9094552029d5a23c4c5a34ef710216b82381",
+      "size": 107598
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-018.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size": 6774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-019.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-020.bin",
+      "sha256": "dbe03e532518334352324190c2c8da2ecc2ce41e29e74196eb1321dd755072b0",
+      "size": 6386
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-021.bin",
+      "sha256": "7441327cfd8863f2088a10e8b232cf950ca6d83870ffb4584450f995ebf2ada9",
+      "size": 1993
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-022.bin",
+      "sha256": "b351e7a96cea05ec5c3a7dac65303cd20e57e6540aaa3a43562e0c6e70f3ce68",
+      "size": 20767
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-023.bin",
+      "sha256": "1051757140bc1346be9520382c55273dc01acdbdaafa100e110776853bdee16c",
+      "size": 17150
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/read-024.bin",
+      "sha256": "f4f8dd47576aa15ae4d386bd16d4fe37e4ebe69bf01cad4ae3cabf929470bbb3",
+      "size": 5824
+    },
+    {
+      "path": "ni42-graph-37339553198-1-graph-router-cold-start/artifacts/ni42-graph-fixtures/37339553198/1/graph-router-cold-start/native/receipt.json",
+      "sha256": "daa3e4bc7892d657d083c0c235d591ff6d23439211a271632298f2ed57a20c14",
+      "size": 10258
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/app/ni42_context/context.json",
+      "sha256": "920e11595645cf638d4a0507178c82017433d8ca910a5e0386cb222fac287b76",
+      "size": 1979
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/app/ni42_context/runtime-path-postcheck.json",
+      "sha256": "7565d45ecb0e342309dc84be38f08872b46e75bcbefcdcf8ceb1ca1e273d70f8",
+      "size": 505
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/app/ni42_junit/hypothesis-graph/original-pytest.xml",
+      "sha256": "30daf13c64d26ae94bb208a00d0baa47d9f1f9bf689a1d9b299686dde69a9084",
+      "size": 3048
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/app/ni42_junit/hypothesis-graph/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/command.log",
+      "sha256": "7ee3b46c13ed8a0072ecc8cd70bd60b4a46eb80a81832b0c16403fb2896eb5f7",
+      "size": 1283
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/execution-request.json",
+      "sha256": "ea2cec8873331f0020c825b3ff3900e89eeaab4556b993e731df85658855a996",
+      "size": 6243
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/original-junit.xml",
+      "sha256": "30daf13c64d26ae94bb208a00d0baa47d9f1f9bf689a1d9b299686dde69a9084",
+      "size": 3048
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-001.bin",
+      "sha256": "bdb24dd52bfcf59b7dc7e05727dbb6d2b22ff2e003988f6f167605f24ca110d0",
+      "size": 12811
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-004.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size": 13851
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-005.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size": 9681
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-006.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size": 9719
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-007.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size": 9630
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-008.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size": 9382
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-009.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size": 69648
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-010.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size": 133311
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-011.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size": 6472
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-012.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size": 92602
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-013.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size": 31762
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-014.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size": 4774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-015.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size": 55282
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-016.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size": 149161
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-017.bin",
+      "sha256": "fe4b8dd72a2d7182d81a8266b14c9094552029d5a23c4c5a34ef710216b82381",
+      "size": 107598
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-018.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size": 6774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-019.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-020.bin",
+      "sha256": "ffef5ef2071e71df3fc2c5642300afa283943bfe7716466bb5072795318f86bd",
+      "size": 11501
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-021.bin",
+      "sha256": "920e11595645cf638d4a0507178c82017433d8ca910a5e0386cb222fac287b76",
+      "size": 1979
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/read-022.bin",
+      "sha256": "e73a3e76f253c5bcd7389a823d2f4a1718f694069231b1821ac703cea225fa4c",
+      "size": 15623
+    },
+    {
+      "path": "ni42-graph-37339553198-1-hypothesis-graph/artifacts/ni42-graph-fixtures/37339553198/1/hypothesis-graph/native/receipt.json",
+      "sha256": "63b82a51fbbe44af4f38ebeb403d359b33b2cf914f2cdff295125427f30f34ed",
+      "size": 14071
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/app/ni42_context/context.json",
+      "sha256": "e914170257b325eaa2b64e875d11bc3f08e8395709db3e045b8fd98b03b04add",
+      "size": 1973
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/app/ni42_context/runtime-path-postcheck.json",
+      "sha256": "7565d45ecb0e342309dc84be38f08872b46e75bcbefcdcf8ceb1ca1e273d70f8",
+      "size": 505
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/app/ni42_junit/routing-graph/original-pytest.xml",
+      "sha256": "3585fdc2aa2d36b699a9f43a031654bcf409216b2800392c8c02ff56d8a1431e",
+      "size": 1633
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/app/ni42_junit/routing-graph/pytest.log",
+      "sha256": "283beafe3b24fa2482587dc48fa211b34c55c0c6f91f5633752e3f6ba4799e35",
+      "size": 121
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/command.log",
+      "sha256": "955052160e93c7a4a40cdfa2dccb768d02fee822f6add6daef745fb8edc8c233",
+      "size": 1279
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/execution-request.json",
+      "sha256": "63c95336f226064c58fac504b30f553eddb0f3c87f7c2953cb0f8d22587d9939",
+      "size": 6219
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/generated-output-000.bin",
+      "sha256": "283beafe3b24fa2482587dc48fa211b34c55c0c6f91f5633752e3f6ba4799e35",
+      "size": 121
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/original-junit.xml",
+      "sha256": "3585fdc2aa2d36b699a9f43a031654bcf409216b2800392c8c02ff56d8a1431e",
+      "size": 1633
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size": 19249
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-001.bin",
+      "sha256": "bdb24dd52bfcf59b7dc7e05727dbb6d2b22ff2e003988f6f167605f24ca110d0",
+      "size": 12811
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size": 2260
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size": 40447
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-004.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size": 13851
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-005.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size": 9681
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-006.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size": 9719
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-007.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size": 9630
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-008.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size": 9382
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-009.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size": 69648
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-010.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size": 133311
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-011.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size": 6472
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-012.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size": 92602
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-013.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size": 31762
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-014.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size": 4774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-015.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size": 55282
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-016.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size": 149161
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-017.bin",
+      "sha256": "fe4b8dd72a2d7182d81a8266b14c9094552029d5a23c4c5a34ef710216b82381",
+      "size": 107598
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-018.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size": 6774
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-019.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size": 1096854
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-020.bin",
+      "sha256": "0c61044908d7909b9b3f49ebaa6a39ad8aaa2954d7f40d7e608d4bf574e17058",
+      "size": 6663
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-021.bin",
+      "sha256": "e914170257b325eaa2b64e875d11bc3f08e8395709db3e045b8fd98b03b04add",
+      "size": 1973
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/read-022.bin",
+      "sha256": "b351e7a96cea05ec5c3a7dac65303cd20e57e6540aaa3a43562e0c6e70f3ce68",
+      "size": 20767
+    },
+    {
+      "path": "ni42-graph-37339553198-1-routing-graph/artifacts/ni42-graph-fixtures/37339553198/1/routing-graph/native/receipt.json",
+      "sha256": "d4149ceed205a3c3920831f15b19ac4c1b63e54d579838556307a37045dda1a4",
+      "size": 11057
+    }
+  ]
+}
