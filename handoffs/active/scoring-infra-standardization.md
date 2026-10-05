@@ -137,9 +137,10 @@ already has bare-letter handling).
       52 passed. research `6cf4a076`..`cbb12fc7`. A whole-directory `scripts/benchmark/` run still has 4
       collection errors (`test_aa_omniscience_manifest`, `test_m12_review_fixes`, `test_rope_position_probe`,
       `tests/test_run_benchmark_suite_selection`) — outside this scorer scope.
-- [ ] **1e. Fix the 4 collection errors in research `scripts/benchmark/`** (`test_aa_omniscience_manifest`,
+- [x] **1e. Fix the 4 collection errors in research `scripts/benchmark/`** (`test_aa_omniscience_manifest`,
       `test_m12_review_fixes`, `test_rope_position_probe`, `tests/test_run_benchmark_suite_selection`) so the
       whole directory runs under the pinned `[test]` extra, not just the four scorer suites. Found 2026-09-24 (1d).
+  ✅ 2026-10-05 — pinned pytest 9.1.1 with declared benchmark/test extras collects all 2,286 cases without errors in run `37282435460`, including the four named modules (4/17/3/3 cases). This closes collection defects on current source; whole-directory execution/passage is not claimed. See [NI11 evidence](../../progress/2026-10/2026-10-05-ni11-api-order-and-benchmark-collection-validation.md).
 
 ### Track 2 — Tool-use / coding eval harness
 - [x] **2a-i. `datasets` + code-execution scorer scaffold.** ✅ 2026-07-24 — DONE. Installed the `benchmark`

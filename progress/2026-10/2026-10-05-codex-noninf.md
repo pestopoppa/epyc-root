@@ -197,3 +197,37 @@ formatter syntax/typed-AST comparisons. The sole failure is original source form
 `make gates`; the patch awaits application and green real gates. Reviewing it exposed a separate
 benchmark preflight that kills/restarts the API: NI24 is filed for source-only refusal behavior,
 never executing that unsafe branch. Completion tally: **16/24**.
+
+
+## Green static gates and independent stale-defect closure
+
+NI21's sixth image run `37289909064` passes four of four actual cases: pinned linter versions,
+nine formatter syntax/typed-AST comparisons, independent markdownlint, and real `make gates CI=`.
+Main verifies original request/log/JUnit/readset hashes and publishes the nine exact tested source
+files in orchestrator main `1aaac554f319`. The original native capture is byte-preserved in
+`artifacts/ni05/static-gates-37289909064/`; its separately generated artifacts remain durable
+and are not retrospectively added to that receipt. NI24's safety change remains a separate candidate.
+
+Main independently parses the sixth/seventh API JUnit in both file orders: identical 378 case
+identities/statuses, 376 passed and two named live-backend skips, including both historical
+problem modules. The current fixture resets are retained; a precise historical leaked-state cause
+is not reconstructed or attributed. Pinned research collection includes all 2,286 cases and all
+four named problem modules without collection errors. NI11 closes these current conditions without
+a duplicate source patch or claiming whole-benchmark execution. Completion tally: **18/24**.
+
+
+## Expiry, custody and safe preflight accepted
+
+NI08 publishes exact tested app source through `7c70ced67c7a`: 19 runtime-flags and 48 feature
+fixtures passed in CI `37289613683`. NI23 integrates `a37c022fa6`, preserving legacy capture
+shape and binding declared original artifacts; original CI `37291798409` passes 41 actual
+producer/reader cases. Native custody artifacts are byte-preserved in
+`artifacts/ni05/custody-validation-37291798409/`. NI24 publishes app `ee9c81618bf9`: healthy
+preflight proceeds; unavailable health exits one with API-owner guidance. Its separate fake-curl
+CI check is ordinary validation, outside the 41-case native proposition. No inference/reload ran.
+
+Two valuable follow-ons are filed before execution: NI25 wires prospective API/off-host commands
+to the existing native capture, and NI26 removes two leaf CPU CLI eager-default lookups while
+retaining strict missing-default refusal. Main owns shared indices; workers own isolated sources
+and prepared progress only. Accepted completion tally **21/26**; host install remains queued,
+HSF3 capture/census and broad unit verification remain open.

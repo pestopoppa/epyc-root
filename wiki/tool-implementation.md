@@ -1277,3 +1277,27 @@ Source: [harness acceptance](../handoffs/active/harness-selection-and-integratio
 [sixth source boundary](../progress/2026-10/2026-10-05-codex-noninf.md).
 Orchestrator source main `41ab07fc`; run `37284177689`: MCP 45, API 376, config/topology 101,
 Node 105 passing cases. Existing live-backend skips remain outside this claim.
+
+
+The static Makefile gates now pass in the pinned devcontainer after nine shell files were
+formatted with syntax and typed-AST comparisons. Missing tools fail visibly, and service-dependent
+reindexing runs separately. The original four-case native receipt is retained in
+[static-gate evidence](../artifacts/ni05/static-gates-37289909064/README.md); no historical receipt
+was resealed when source bytes changed. [Campaign acceptance](../progress/2026-10/2026-10-05-codex-noninf.md).
+
+
+### Offline campaign: expiry and prospective artifact custody (2026-10-05)
+
+Temporary embedding-pool enables now expire using a six-hour default or explicit UTC TTL/expiry.
+Atomic runtime writes persist across restart; an expired load ignores the record without rewriting
+the file. App `7c70ced67c7a` passes 19 runtime-flags and 48 feature fixtures. The instrumented
+benchmark health preflight (`ee9c81618bf9`) now fails with API-owner guidance when health is
+unavailable; hermetic healthy/failure branches passed without an actual endpoint or reload.
+
+The native CI capture can declare generated outputs before execution and bind their original bytes
+to the existing bounded proposition; its strict reader refuses tampering, gaps and reordering.
+Legacy captures keep their previous shape. Original CI `37291798409` passes 41 producer/reader
+fixtures; artifacts and caveats are preserved in
+[the custody bundle](../artifacts/ni05/custody-validation-37291798409/README.md).
+Subsequent API and synthetic-host unit captures are filed prospectively as NI25; no old receipts
+are resealed and no new grading rule is introduced.

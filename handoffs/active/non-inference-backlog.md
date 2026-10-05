@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **16/24**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **21/26**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -44,10 +44,10 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
 - [x] **NI05-06** — HS-17: MCP timeout and progress contract.
 - [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
-- [ ] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
+- [x] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
 - [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
 - [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
-- [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
+- [x] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
 - [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
 - [x] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
@@ -57,10 +57,12 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-18** — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
 - [x] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
 - [x] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
-- [ ] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
+- [x] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
 - [x] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
-- [ ] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
-- [ ] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
+- [x] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
+- [x] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
+- [ ] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
+- [ ] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -334,13 +336,14 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
 
 ## 2026-09-28 supplement — test-order dependence in the orchestrator's openai/v1 tests (workspace-8d)
 
-- [ ] **NIB2-90** (LOW): **two test-order-dependent failures in the orchestrator's openai/v1 test set.**
+- [x] **NIB2-90** (LOW): **two test-order-dependent failures in the orchestrator's openai/v1 test set.**
       `tests/unit/test_openai_compat_bare_name_final.py` and the `[stream]` case of
       `tests/unit/test_openai_compat_compression_fallback.py` fail when run as part of the openai/v1 set, and both
       reproduce on unmodified orch `origin/main` (found 2026-09-28 while testing orch `66ef96b8`, so not caused by it).
       Find the state one test leaks into the next (module-level feature flags, a cached app or backend, or a logger
       level that `caplog` depends on), reset it in a fixture, and prove it by running the set in two different orders
       with both passing.
+  ✅ 2026-10-05 — current/upstream-resolved: original sixth and seventh off-host JUnit show identical API identities/statuses in both file orders (376 pass, zero failure/error, two named live-backend skips). Both named problem modules pass; existing feature/app/logger fixtures are retained. No precise historical leaked-state cause or new source repair is attributed. See [NI11 evidence](../../progress/2026-10/2026-10-05-ni11-api-order-and-benchmark-collection-validation.md).
 
 ## 2026-09-29 supplement — test sections left in the plain inference tap log (workspace-8d)
 
@@ -478,7 +481,7 @@ Canonical sources (always verify status in these files first):
 
 ### NI05-16 — explicit kernel path overrides
 
-- [ ] Honor explicit configured CPU/GPU binary paths without evaluating the production-store default first.
+- [x] Honor explicit configured CPU/GPU binary paths without evaluating the production-store default first.
   CI run `37275807626` collected no orchestrator tests because configuration import tried to discover the
   absent host store despite explicit fixture overrides. Preserve store discovery when no override exists;
   verify both branches with isolated configuration fixtures. No fabricated store, frozen-kernel edit or reload.
@@ -487,9 +490,22 @@ Canonical sources (always verify status in these files first):
 
 ## 2026-10-05 supplement — source-only benchmark preflight safety
 
-- [ ] **NI-SHELL-RELOAD-SAFETY — remove peer-process mutation from the instrumented benchmark preflight.**
+- [x] **NI-SHELL-RELOAD-SAFETY — remove peer-process mutation from the instrumented benchmark preflight.**
   `scripts/benchmark/package_a_instrumented_eval.sh` currently runs `fuser -k 8000/tcp` and starts
   uvicorn when health is unavailable. Replace this with an actionable failure referring the
   operator to the API owner, while preserving the healthy path. No process kill, reload or stack
   mutation is part of validation; source/syntax and hermetic preflight fixtures only. Keep this
   repair separate from NI05-21's formatting patch. Owner: Codex NI05-24.
+
+  Completion: app main `ee9c81618bf9` preserves the healthy branch and exits one with owner guidance
+  on unavailable health. Hermetic fake-curl branches and syntax passed in CI `37291798409`; no actual
+  endpoint, benchmark or lifecycle command ran. See `progress/2026-10/2026-10-05-ni24-package-a-health-preflight.md`.
+
+## 2026-10-05 supplement — offline CPU CLI overrides
+
+- [ ] **NI-OFFLINE-CPU-CLI — defer default kernel-store discovery in two leaf commands.**
+  `scripts/benchmark/md_self_draft_ab.py` and `scripts/corpus/build_static_ngram_cache.py`
+  currently resolve CPU-store defaults at import, before explicit CLI/config overrides can apply.
+  Resolve defaults only when no override exists; preserve strict failure for missing defaults.
+  Verify fresh import, explicit parsing/configuration and absent-override refusal off-host. No
+  shared store-provider changes, fabricated store, binary execution or production mutation. NI05-26.

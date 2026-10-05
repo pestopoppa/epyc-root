@@ -1,0 +1,2 @@
+/home/runner/work/epyc-root/epyc-root/orchestrator-ni24/scripts/benchmark/package_a_instrumented_eval.sh: OK
+NI24 preflight source and both curl outcomes passed; no real API or lifecycle command invoked.

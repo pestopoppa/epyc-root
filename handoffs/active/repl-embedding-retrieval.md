@@ -243,7 +243,7 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
     reads `set_by api:127.0.0.1`, `ts 2026-10-03T03:51:31Z`, `value false`; the session's own estimate was ~04:0xZ. `POST /config` writes that
     gitignored override file (`src/features.py` `runtime_flags_path()`), and every API start reads it back. So an
     experiment enable outlives API restarts and reboots. REPL-EMB-4.5 below.
-- [ ] **REPL-EMB-4.5 — make an experiment-arm flag enable expire.** (filed 2026-10-03, from the 10-03 post-reboot reset)
+- [x] **REPL-EMB-4.5 — make an experiment-arm flag enable expire.** (filed 2026-10-03, from the 10-03 post-reboot reset)
   A runtime `POST /config` flag write persists in `orchestration/runtime_flags.json` across API restarts and host
   reboots. REPL-EMB-4.4 assumed it was runtime-only, and `repl_embedding_pool` came back ON after the reboot, against
   the REPL-EMB-2.1 kill rule's OFF default.
@@ -255,6 +255,11 @@ server's compute. Per-slot context is 256 tokens (`-c 512 -np 4`), a known defec
     write paths persist, or whether a reload rewrites the file, before relying on either behaviour.
   - Until it lands, the enabling session restores the flag itself after the arm, and checks `/config/attest` after
     any restart.
+
+  Completion: app main `7c70ced67c7a`; actual CI `37289613683` passes 19 runtime-flags and 48
+  feature fixtures. Atomic writes persist; expiry ignores expired records without rewriting the file.
+  Six-hour pool-enable default, explicit UTC expiry/TTL and load-start cache crossing are covered.
+  See `progress/2026-10/2026-10-05-ni08-temporary-runtime-flag-expiry-validation.md`; no reload ran.
 
 ### Phase 5 — SEARCH for OAB-8 scouts
 
