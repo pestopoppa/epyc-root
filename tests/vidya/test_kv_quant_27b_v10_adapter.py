@@ -25,12 +25,13 @@ def write_capture(tmp_path, monkeypatch):
     cell_summaries = {}
     for depth in producer.DEPTHS:
         for cell in producer.CELLS:
-            cell_summaries[f"{cell.name}|{depth.name}"] = {
-                "all_ok": True, "prompt_tokens": depth.target_prefill_tokens,
+            replicates = [{
+                "status": "ok", "prompt_tokens": depth.target_prefill_tokens,
                 "kv_k_mib": 100.0, "kv_v_mib": 200.0, "kv_buffer_total_mib": 300.0,
-                "decode_tps": {"median": 123.0, "mad": 2.0, "n": 5},
-                "prompt_tps": {"median": 400.0, "mad": 3.0, "n": 5},
-            }
+                "decode_tps": 123.0, "prompt_tps": 400.0,
+            } for _ in range(5)]
+            cell_summaries[f"{cell.name}|{depth.name}"] = producer.summarize_cell(
+                replicates, cell.name, depth.name, 5)
     summary = {"status": "ok", "production_named_kernel": True, "n": 5,
                "cell_summaries": cell_summaries,
                "candidate": {"binary": {"version_line_matches": True}}}
@@ -51,6 +52,9 @@ def test_writer_rows_project_and_grade_through_shared_ladder(tmp_path, monkeypat
     assert tup.attestation_path == ""
     assert tup.attestation_verified is True
     assert "K buffer 100.0 MiB; V buffer 200.0 MiB" in tup.claim
+    assert isinstance(rows[0]["extra"]["arm"]["prefill_tokens_measured"], dict)
+    assert isinstance(rows[0]["extra"]["kv_buffer_k_mib"], dict)
+    assert rows[0]["extra"]["kv_buffer_k_mib"]["median"] == 100.0
     assert "-fa on" in tup.claim
     assert "d2k" in tup.attestation_locator
     assert tup.extra["arm"]["cache_k"] == tup.extra["arm"]["cache_v"]
@@ -60,7 +64,21 @@ def test_writer_rows_project_and_grade_through_shared_ladder(tmp_path, monkeypat
     assert reader.project(natives[0]).attestation_verified is None
 
 
-@pytest.mark.parametrize("mutation", ["hash", "fa", "kv", "duplicate", "foreign"])
+def test_legacy_finite_scalar_stats_remain_accepted(tmp_path, monkeypatch):
+    sidecar, rows, _, producer = write_capture(tmp_path, monkeypatch)
+    row = rows[0]
+    row["extra"]["arm"]["prefill_tokens_measured"] = 2048
+    row["extra"]["kv_buffer_k_mib"] = 100.0
+    row["extra"]["kv_buffer_v_mib"] = 200.0
+    row["row_sha256"] = producer.row_digest(row)
+    sidecar.write_text("".join(json.dumps(item) + "\n" for item in rows))
+    assert len(reader.native_rows(sidecar)) == 12
+    assert "K buffer 100.0 MiB; V buffer 200.0 MiB" in reader.project(
+        {"row": row, "sidecar_path": str(sidecar)}).claim
+
+
+@pytest.mark.parametrize("mutation", ["hash", "fa", "kv", "median-bool", "median-nan",
+                                       "median-inf", "median-missing", "duplicate", "foreign"])
 def test_any_bad_row_voids_whole_sidecar(tmp_path, monkeypatch, mutation):
     sidecar, rows, _, producer = write_capture(tmp_path, monkeypatch)
     if mutation == "hash":
@@ -70,6 +88,17 @@ def test_any_bad_row_voids_whole_sidecar(tmp_path, monkeypatch, mutation):
         rows[5]["row_sha256"] = producer.row_digest(rows[5])
     elif mutation == "kv":
         rows[5]["extra"]["kv_buffer_k_mib"] = None
+        rows[5]["row_sha256"] = producer.row_digest(rows[5])
+    elif mutation.startswith("median-"):
+        stats = rows[5]["extra"]["kv_buffer_k_mib"]
+        if mutation == "median-bool":
+            stats["median"] = True
+        elif mutation == "median-nan":
+            stats["median"] = float("nan")
+        elif mutation == "median-inf":
+            stats["median"] = float("inf")
+        else:
+            stats.pop("median")
         rows[5]["row_sha256"] = producer.row_digest(rows[5])
     elif mutation == "duplicate":
         rows[5] = rows[4]
