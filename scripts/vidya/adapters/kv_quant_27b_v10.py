@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import json
+import math
 import stat
 import sys
 from pathlib import Path
@@ -59,6 +60,18 @@ def _producer() -> ModuleType:
     return module
 
 
+def _finite_stat_median(value: Any) -> float | None:
+    """Normalize a finite scalar or stats median without rewriting native evidence."""
+    median = value.get("median") if isinstance(value, dict) else value
+    if isinstance(median, bool) or not isinstance(median, (int, float)):
+        return None
+    try:
+        normalized = float(median)
+    except OverflowError:
+        return None
+    return normalized if math.isfinite(normalized) else None
+
+
 def _check_row(row: Any, producer: ModuleType) -> None:
     try:
         problems = producer.validate_row(row)
@@ -77,11 +90,12 @@ def _check_row(row: Any, producer: ModuleType) -> None:
             or arm.get("flash_attention_policy") != producer.FA_FIXED_REASON \
             or arm.get("mixed_kv_policy") != producer.MIXED_KV_REFUSAL:
         raise ProjectionError("KV-quant fixed FA or homogeneous K/V policy drifted")
-    if arm.get("prefill_depth_target_tokens") not in {2048, 32768} \
-            or not isinstance(arm.get("prefill_tokens_measured"), (int, float)):
+    prefill_median = _finite_stat_median(arm.get("prefill_tokens_measured"))
+    if arm.get("prefill_depth_target_tokens") not in {2048, 32768} or prefill_median is None:
         raise ProjectionError("KV-quant prefill depth evidence missing")
-    if not all(isinstance(extra.get(k), (int, float)) for k in
-               ("kv_buffer_k_mib", "kv_buffer_v_mib")):
+    k_median = _finite_stat_median(extra.get("kv_buffer_k_mib"))
+    v_median = _finite_stat_median(extra.get("kv_buffer_v_mib"))
+    if k_median is None or v_median is None:
         raise ProjectionError("KV-quant separate K and V buffer figures missing")
     locator = extra.get("locator")
     if not isinstance(locator, str) or locator != (
@@ -169,8 +183,8 @@ def project(native: Any) -> ClaimTuple:
     return ClaimTuple(
         measurement_id=row["measurement_id"], metric=row["metric"],
         value=row["value"], date=row["date"], category=row["category"],
-        claim=(f"{row['claim']} K buffer {row['extra']['kv_buffer_k_mib']} MiB; "
-               f"V buffer {row['extra']['kv_buffer_v_mib']} MiB; "
+        claim=(f"{row['claim']} K buffer {_finite_stat_median(row['extra']['kv_buffer_k_mib'])} MiB; "
+               f"V buffer {_finite_stat_median(row['extra']['kv_buffer_v_mib'])} MiB; "
                "mixed K/V structurally absent; prefill depth is part of the key."),
         metric_direction=row["metric_direction"],
         protocol_id=row["protocol_id"], reps=row["reps"],
