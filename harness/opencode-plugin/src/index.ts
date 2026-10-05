@@ -40,6 +40,40 @@ export const server: Plugin = async (_input, rawOptions) => {
   }
 
   const hooks: Hooks = {
+    event: async ({ event }) => {
+      // `session.status: idle` is an ordinary turn boundary, not session end;
+      // keep its observed lineage until explicit deletion or the idle TTL.
+      if (configError || !opts || event.type !== "session.deleted") return
+      const properties = (event as { properties?: { info?: { id?: unknown } } }).properties
+      const sessionID = properties?.info?.id
+      if (typeof sessionID !== "string" || sessionID.length === 0) return
+
+      const baseURL = (process.env.EPYC_ORCHESTRATOR_BASE_URL ?? "http://127.0.0.1:8000/v1")
+        .replace(/\/+$/, "")
+      try {
+        const response = await fetch(`${baseURL}/chat/completions`, {
+          method: "POST",
+          headers: { "content-type": "application/json", "X-Session-Id": sessionID },
+          body: JSON.stringify({
+            model: "orchestrator",
+            messages: [],
+            x_session_id: sessionID,
+            x_session_final: true,
+            x_session_end_event: "deleted",
+          }),
+          // Do not hold the event hook open if the control endpoint stalls.
+          // The server's idle TTL remains the recovery path.
+          signal: AbortSignal.timeout(5_000),
+        })
+        if (!response.ok) {
+          console.warn(`[${PLUGIN_ID}] session deletion signal was not accepted: HTTP ${response.status}`)
+        }
+      } catch (err) {
+        // The server's declared idle TTL remains the recovery path when this
+        // best-effort control request cannot reach the orchestrator.
+        console.warn(`[${PLUGIN_ID}] session deletion signal failed: ${String(err)}`)
+      }
+    },
     "chat.params": async (input, output) => {
       // A config error must not break unrelated providers, but it must break ours.
       // With no valid options, the only safe test for "ours" is the default provider ID.
