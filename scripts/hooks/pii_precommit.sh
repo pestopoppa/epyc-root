@@ -272,6 +272,23 @@ is_perf_report_counter_line() {
   return 1
 }
 
+is_only_linux_vmalloc_total_counter_line() {
+  # The exact NI05-61 VmallocTotal counter is a public Linux meminfo value.
+  # Accept a raw line, or that exact line inside a serialized JSON raw_text
+  # string. Remove only that raw_text occurrence in a scratch copy; any other
+  # 12-19 digit candidate on the physical JSON line keeps the normal block path.
+  local line="$1" sanitized
+  if echo "$line" | grep -qE '^VmallocTotal:[[:space:]]+13743895347199[[:space:]]kB$'; then
+    return 0
+  fi
+  sanitized="$(printf '%s\n' "$line" | command sed -E 's/((^[[:blank:]]*|[,{}][[:blank:]]*)"raw_text"[[:space:]]*:[[:space:]]*"[^"]*\\n)VmallocTotal:[[:space:]]+13743895347199[[:space:]]kB(\\n|")/\1\3/')"
+  [[ "$sanitized" != "$line" ]] || return 1
+  if printf '%s\n' "$sanitized" | command grep -qE '\b[0-9]{12,19}\b'; then
+    return 1
+  fi
+  return 0
+}
+
 is_social_status_url_line() {
   # Skip lines containing X / Twitter status URLs — status IDs are 18-19 digit snowflake IDs.
   # Common shapes:
@@ -325,6 +342,9 @@ scan_blob() {
       [[ -z "$lineno" ]] && continue
       local fullline
       fullline="$(echo "$blob_content" | sed -n "${lineno}p")"
+      if is_only_linux_vmalloc_total_counter_line "$fullline"; then
+        continue
+      fi
       if is_phone_number_line "$fullline"; then
         continue
       fi

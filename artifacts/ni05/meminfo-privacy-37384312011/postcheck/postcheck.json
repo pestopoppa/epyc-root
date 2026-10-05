@@ -1,0 +1,2309 @@
+{
+  "checks": {
+    "native_true": true,
+    "native_exit_zero": true,
+    "exact_repo_sha_map": true,
+    "exact_19_cases": true,
+    "shared_grade": true,
+    "selection_exact": true,
+    "baseline_51_regressions": true,
+    "baseline_fixture_unchanged": true,
+    "source_clean_twice": true,
+    "HOME_unchanged": true,
+    "host_paths_absent": true,
+    "private_owned_payload_roots": true,
+    "private_owned_root_files": true,
+    "private_owned_original_inventory": true
+  },
+  "counts": {
+    "collected": 19,
+    "error": 0,
+    "executed": 19,
+    "failure": 0,
+    "passed": 19,
+    "skipped": 0
+  },
+  "grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "receipt_sha256": "9f5dd9bffbbc185ab282b450a162e01c65b09805114af16a89a6c510e5f14402",
+  "baseline": {
+    "rows": 51,
+    "false_accept": 0,
+    "false_reject": 0
+  },
+  "baseline_descriptive_observation": {
+    "scope": "descriptive internal fixture observations; not a new claim tuple or field quality estimate",
+    "false_accept": {
+      "errors": 0,
+      "must_block_denominator": 21
+    },
+    "false_reject": {
+      "errors": 0,
+      "must_not_block_denominator": 30
+    }
+  },
+  "private_inventory": [
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1",
+      "mode": "0o700",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/tmp",
+      "mode": "0o700",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native",
+      "mode": "0o700",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp",
+      "mode": "0o700",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0",
+      "mode": "0o700",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native-launch.stdout",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-files.sha256",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/installed-packages.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native-launch.stderr",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-readset.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/workflow.original.yml",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/expected-source-diff-paths.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest.stderr",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/python-version.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-status-after-0.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/recipe-only-diff.stdout",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/install.stdout",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/home-before.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-status-after-1.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest.stdout",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/install-status.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-diff-paths.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/source-status-before.txt",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/install.stderr",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/original-pytest.xml",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0152.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0072.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0248.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0208.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0202.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0142.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0001.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0050.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0102.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0007.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0147.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0258.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0078.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0162.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0075.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0175.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0189.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0149.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0127.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0156.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0090.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0196.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0042.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0222.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0015.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0065.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0234.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0110.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0035.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0116.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0170.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0066.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0193.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0106.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0158.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0083.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0191.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0256.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0081.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0263.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0049.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0088.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0132.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0076.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0233.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0129.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0133.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0235.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0085.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0094.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0238.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0041.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0036.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0098.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0052.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0003.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0120.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0260.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0187.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0016.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0024.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0030.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0211.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0254.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0206.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0174.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0140.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0245.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0212.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0027.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0176.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0160.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0220.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0019.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0203.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0031.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0182.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0097.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0135.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0047.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0021.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0028.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0089.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0237.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0261.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0163.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0228.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0051.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0112.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0151.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0146.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0214.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0198.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0265.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0117.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0061.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0185.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0131.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0207.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0157.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0200.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0005.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0210.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0002.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0148.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0022.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0048.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0126.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0013.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0011.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0267.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0032.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0188.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0244.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0119.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0184.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0221.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0171.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0264.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0251.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0128.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0062.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0168.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0012.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0086.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0084.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0139.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0226.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0257.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0107.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0130.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0138.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0240.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0069.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0071.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0033.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0105.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0159.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0242.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0231.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0167.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0250.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0068.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0045.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0111.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0213.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0059.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0173.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0165.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0136.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0236.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0143.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0154.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0137.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0070.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0178.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0093.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0043.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0227.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0029.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0080.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0218.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0053.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0060.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0204.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0058.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0144.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0008.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0215.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0025.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0246.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0009.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0262.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0225.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0155.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0192.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0122.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0014.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/hook.original.sh",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0217.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0125.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0166.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0150.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0010.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0216.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0054.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0181.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0006.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0124.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0205.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0018.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0104.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0046.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0253.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0121.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0266.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0199.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0034.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0109.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0079.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0223.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0241.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0000.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0169.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0134.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0172.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0038.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0113.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0004.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0017.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0074.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0269.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0082.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0268.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/baseline-report.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0249.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0239.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0092.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0247.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0064.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0186.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0037.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0183.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0096.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0190.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0055.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0153.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0118.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0103.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0067.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0101.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0073.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0180.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0095.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0044.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0243.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0087.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0161.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0230.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0201.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0063.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0057.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0091.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0141.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0108.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0195.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0115.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0099.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0123.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/controls.original.jsonl",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0219.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0197.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0229.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0259.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0026.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0194.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0177.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0020.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0100.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0114.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0077.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0209.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0179.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0040.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0255.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0145.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0232.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0164.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0224.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0023.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0252.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0039.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/pytest-tmp/ni77-private-originals0/command-0056.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-065.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-027.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-020.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-049.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-009.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-026.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-022.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-032.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-030.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-034.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/command.log",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-063.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-048.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-041.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-043.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-053.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-044.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-001.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-005.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-029.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-051.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-050.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/receipt.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-058.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/original-junit.xml",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-004.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-011.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-036.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-031.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-062.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-068.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-013.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-000.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-019.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-069.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-037.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-060.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-042.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-047.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-067.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-024.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/execution-request.json",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-008.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-072.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-023.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-002.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-070.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-071.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-017.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-055.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-052.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-016.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-028.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-045.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-057.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-054.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-015.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-025.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-003.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-010.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-046.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-064.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-066.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-038.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-021.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-035.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-059.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-056.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-012.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-014.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-040.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-006.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-018.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-061.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-033.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-039.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    },
+    {
+      "path": "/home/runner/work/_temp/ni77-staged-37384312011-1/native/read-007.bin",
+      "mode": "0o600",
+      "uid": 1001,
+      "gid": 1001
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+Collecting pytest==9.0.3 (from -r /home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt (line 1))
+  Downloading pytest-9.0.3-py3-none-any.whl (375 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 375.2/375.2 kB 2.6 MB/s eta 0:00:00
+Collecting iniconfig==2.3.0 (from -r /home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt (line 2))
+  Downloading iniconfig-2.3.0-py3-none-any.whl (7.5 kB)
+Collecting packaging==26.0 (from -r /home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt (line 3))
+  Downloading packaging-26.0-py3-none-any.whl (74 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 74.4/74.4 kB 359.0 kB/s eta 0:00:00
+Collecting pluggy==1.6.0 (from -r /home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt (line 4))
+  Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Collecting pygments==2.20.0 (from -r /home/runner/work/_temp/ni77-staged-37384312011-1/requirements.txt (line 5))
+  Downloading pygments-2.20.0-py3-none-any.whl (1.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 16.9 MB/s eta 0:00:00
+Installing collected packages: pytest, pygments, pluggy, packaging, iniconfig
+Successfully installed iniconfig-2.3.0 packaging-26.0 pluggy-1.6.0 pygments-2.20.0 pytest-9.0.3

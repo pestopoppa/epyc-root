@@ -1,0 +1,42 @@
+{
+  "schema": "ni05.main_review.v1",
+  "task": 77,
+  "custody_manifest_sha256": "a1e86469a5cef51cba41e8d7a2f7901c0f5c211b2a3e081fc0b4b8ffefdb287c",
+  "original_files_verified": 378,
+  "zip_members_byte_compared": 372,
+  "modules": [
+    {
+      "receipt": "ni77-staged-originals-37384312011/native/receipt.json",
+      "counts": {
+        "collected": 19,
+        "error": 0,
+        "executed": 19,
+        "failure": 0,
+        "passed": 19,
+        "skipped": 0
+      },
+      "git_inputs": 68,
+      "external_inputs": 5,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "receipt_file_sha256": "9f5dd9bffbbc185ab282b450a162e01c65b09805114af16a89a6c510e5f14402",
+      "receipt_embedded_self_hash": "9fa2590a0272ac940fe709002f4de14065a45faeec4810949a0b2e5c3d451db7",
+      "repos": {
+        "root_candidate": "e3bdedc62b424ecbca4f66d7fe18984d094a26a5",
+        "root_producer": "61453ea335028acba69536d680023d5ef59ef47e",
+        "root_workflow": "adf33d1f4c9b2302726d559ccf4e1651ae02bb6d"
+      }
+    }
+  ],
+  "postchecks": [
+    {
+      "path": "ni77-staged-postcheck-37384312011/postcheck.json",
+      "true_postchecks": 14
+    }
+  ],
+  "review_is_derivative": true,
+  "public_native_prefix_reopenable": false,
+  "source_publication": "reviewed three-file candidate e3bdedc62b424ecbca4f66d7fe18984d094a26a5, integrated in this ROOT task commit"
+}
