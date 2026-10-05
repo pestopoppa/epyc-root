@@ -2508,3 +2508,5 @@ VB-GAP-DIST write-side wiring is complete at the named fixture/native-custody bo
 
 
 - [ ] **VB-MANAGED-TOOLING-WIRE (NI05-35)** — capture prospective named managed-interpreter import results at the write boundary, with actual interpreter/module/check-source hashes, argv, original stdout/exit and UTC. Narrow import-check scope only; existing verifier carrier/shared grade, no second ladder or full-host-health claim. Preserve refusals and missing inputs as false/diagnostic rather than imported success. NI12's original plain stdout stays ordinary evidence; source table row filed when the additional health producer gap was identified.
+
+NI28 standalone dependency producer/reader accepted through original 12-case CI `37307888066`; source `79622da8` preserves ordinary verifier parity and owned timeout cleanup. Actual claimed store capture remains pending. VB-LINKAGE-GUARD remains open for prospective eligible measurement-producer digest bindings; the standalone dependency record has no ClaimTuple or new ladder.

@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **28/35**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **30/35**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -64,13 +64,13 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
 - [x] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
 - [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
-- [ ] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
+- [x] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
 - [x] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
 - [x] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
 - [x] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
 
 - [ ] **NI05-32** — HSF-3 schema boundaries: synthetic tap/progress/checkpoint coverage controls without inferred enqueue/class joins.
-- [ ] **NI05-33** — OBS-12a: remove active explicit system-Python bus invocations; honor the existing managed-venv shebang.
+- [x] **NI05-33** — OBS-12a: remove active explicit system-Python bus invocations; honor the existing managed-venv shebang.
 - [ ] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
 
 - [ ] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
@@ -178,7 +178,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   - **`research-intake/references/taxonomy.md`** now points at `validate_intake.sh`.
   - **Guard:** `tests/skills/test_skill_interpreters.py`, 18 cases; 16 fail before the fix.
   - **Verification:** each fixed invocation was run under the venv, and none failed on an import.
-  - [ ] **OBS-12a** (LOW; NI05-33): active explicit `python3 session_bus.py` invocations bypass the existing absolute managed-orchestrator-venv shebang. Current CLAUDE/AGENTS direct commands already honor it. Correct BUS_PROTOCOL, STANDING-MAIN-RULES and live `idle_supervisor.sh` calls to direct script execution; preserve YAML roster semantics and historical instructions. Main owns shared task updates; isolated source/fixture preparation is delegated. No bus daemon restart.
+  - [x] **OBS-12a** (LOW; NI05-33): active explicit `python3 session_bus.py` invocations bypass the existing absolute managed-orchestrator-venv shebang. Current CLAUDE/AGENTS direct commands already honor it. Correct BUS_PROTOCOL, STANDING-MAIN-RULES and live `idle_supervisor.sh` calls to direct script execution; preserve YAML roster semantics and historical instructions. Main owns shared task updates; isolated source/fixture preparation is delegated. No bus daemon restart.
   - [x] **OBS-12b** ✅ 2026-09-17 (already fixed by the wrap-up pass-2 wiki compile; all three links now point at `../handoffs/completed/security-review-skill.md`, verified by the main session) (LOW, filed 2026-09-17): `lint_wiki.py` reports two dangling links:
     `wiki/agent-architecture.md:2254` and `wiki/tool-implementation.md:278,321` still point at
     `../handoffs/active/security-review-skill.md`, which moved to `completed/` in `9804fec9`.
@@ -326,7 +326,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
     historical transcripts. Its `apply` path is therefore **permanently disabled** (`722b7196`; exit 4,
     report-only). The acceptance line above (hold `~/.codex` flat) is withdrawn: growth is reported, never reaped. The
     report-only run and `host_hygiene_tick.py`'s grower ranking are the only remaining surface.
-- [ ] **NIB2-85** (MED): **`verify_ggml_linkage.sh` FAILs falsely on a symlinked kernel store.** Found 2026-09-27 by
+- [x] **NIB2-85** (MED): **`verify_ggml_linkage.sh` FAILs falsely on a symlinked kernel store.** Found 2026-09-27 by
   the MMQ J-cap GPU window (research `6b8feb9e` worked around it in the window script): the tool compares unresolved
   paths, so a binary under `kernels/production/{cpu,gpu}` (a symlink into the store) reads its own ggml libraries
   as coming from elsewhere. v10 is served from the kernel store, so every production-arm check is exposed. Fix in
@@ -334,6 +334,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
   tree before comparing, and keep failing on a genuine cross-tree resolution. Acceptance: PASS for
   `kernels/production/gpu` and its resolved build dir; FAIL for a binary whose ggml resolves to another tree
   (fixture); and the `/bin/true` vacuous-pass trap noted in `coordinator-role-failure-modes-and-refactor.md` stays covered.
+  ✅ 2026-10-05 — repaired canonical resolution and five original off-host controls accepted (research `2c5d60f5`). Root producer/verifier plus twelve native receipt controls accepted from run `37307888066`. Claimed prospective actual-store capture at 13:04:26 UTC bound all four production symlinks to their resolved targets; seven child linkage rows exited zero and independent native readback returned `(True, [])`. This closes static linkage repair/custody only; measurement dependency attachment stays open in VB-LINKAGE-GUARD. Original host custody: `/mnt/raid0/llm/artifacts/ni28-store-capture-20261005.eQEysE/receipts/20261005T130426Z-12e23f9cdff4/`, seal `6ee3b6f98e040cc2608381e823aab08ed3dd882a803109435c4673cc04550053`.
 
 ## 2026-09-28 supplement — test-order dependence in the orchestrator's openai/v1 tests (workspace-8d)
 
@@ -557,3 +558,5 @@ binds exact tested source and original bytes. No production activation or reload
 
 
 2026-10-05 reviewed boundary: NI12/NIB2-87 installs research pytest 9.1.1 additively and verifies both managed imports; root health source checks both. NI25 captures both API orders (376/376 each) plus the explicitly synthetic broad attempt. NI29 retains all five original phases before the broad timeout; the broad result is diagnostic/null, never a whole-unit pass. NI31 passes 17 actual-index controls, 8 caller cases, privacy fixture denominators 0/21 false accepts and 0/30 false rejects, and six installed-wrapper assertions. Full unchanged native custody is published in [recovery bundle](../../artifacts/ni05/recovery-37299780302/README.md) and [NI31 bundle](../../artifacts/ni05/fixture-custody-37307260869/README.md). NI10 remains open: one bounded journal census and the source-schema map do not establish HSF-3's requested distribution. Newly unlocked NI32–34 are filed here and in their existing canonical handoffs; no duplicate domain ownership.
+
+NI33/OBS-12a complete 2026-10-05: exact five active command substitutions preserve arguments and honor executable managed-venv shebang. [Unique caller review](../../progress/2026-10/2026-10-05-obs12a-session-bus-interpreter.md). No daemon restart or historical instruction rewrite. NI28 standalone dependency capture source is accepted through 12 named fixtures; actual claimed store capture remains pending, measurement-producer digest bindings stay distinct.

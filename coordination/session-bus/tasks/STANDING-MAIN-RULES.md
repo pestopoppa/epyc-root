@@ -189,7 +189,7 @@ Write `state: idle` when you are **genuinely awaiting dispatch**, `state: workin
 **every** task boundary — not once at startup.
 
 ```bash
-python3 scripts/coordination/session_bus.py append --agent <your-id> \
+scripts/coordination/session_bus.py append --agent <your-id> \
   --target heartbeat --json '{"state":"working","task_id":"<current>"}'
 ```
 
@@ -272,7 +272,7 @@ Anything not persisted at the last boundary is gone, and the next session inheri
 At every task boundary:
 
 ```bash
-python3 scripts/coordination/session_bus.py drain --agent <your-id> --triage
+scripts/coordination/session_bus.py drain --agent <your-id> --triage
 ```
 
 - **`--triage` is not optional.** It prints the standing queue of messages routed to you — in full,

@@ -345,3 +345,7 @@ NI10's claimed journal census completes with 19 missing-session-key records, zer
 Managed-import verified findings expose a separate prospective write-side gap. VB-MANAGED-TOOLING-WIRE/NI35 and its source row are filed immediately; no import-result tuple is retrofitted to the completed NI12 stdout.
 
 Normal publication first refused only the captured PII policy comments, leaving originals intact. Reviewed `6092fa88` adds a third exact source/path/hash with independent ROOT revision binding; original `37311864189` passes 25 provenance cases, 8 callers, six installed-wrapper assertions and unchanged 21/30 denominators. Main reopens both seals and integrates the two tested source files byte-identically. [Policy-leaf progress](2026-10-05-ni31-original-policy-custody.md).
+
+NI33/OBS-12a source/caller review complete; current tally **29/35**. NI28 opt-in dependency producer/reader and its 12-case original fixture custody are integrated; actual read-only production-store capture remains queued under the CPU claim, no environment changes. Main app lane fast-forwards only the already-published peer derived-metadata commit `300cf581`; next optional client-class source work preserves that base.
+
+NI28 actual-store boundary accepted: four production symlinks, seven zero-exit linkage rows, native original readback `(True, [])`, receipt seal `6ee3b6f98e040cc2608381e823aab08ed3dd882a803109435c4673cc04550053`. Static dependency evidence only; no inference/residency/performance assertion. Completion tally now **30/35**; remaining NI10/18/32/34/35.

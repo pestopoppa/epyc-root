@@ -192,7 +192,7 @@ So a standing-instruction change is a **coordination event**, not just a commit:
 Every agent, at every task boundary:
 
 ```
-python3 scripts/coordination/session_bus.py drain --agent <id>
+scripts/coordination/session_bus.py drain --agent <id>
 ```
 
 Act on assignments and nudges; write acks and status to your own outbox.
@@ -335,7 +335,7 @@ on both sides (origin: 2026-08-12 wrap-up — appendix). A `finding` payload may
 - **`provenance`** — `operator-verbatim` | `paraphrase` | `inferred`. A correction whose standing
   is unstated gets read as the operator's own words.
 
-`python3 scripts/coordination/session_bus.py corrections --agent <id> [--since <ts>]` generates the
+`scripts/coordination/session_bus.py corrections --agent <id> [--since <ts>]` generates the
 wrap-up corrections section from your own outbox. A correction that is not in the section is now a
 diff, not a memory lapse.
 

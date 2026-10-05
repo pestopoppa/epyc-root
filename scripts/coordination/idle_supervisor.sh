@@ -49,7 +49,7 @@ source "${_IS_DIR}/../lib/env.sh"
 ADAPTER="${EPYC_TMUX_ADAPTER}"
 LOG="${LOG:-${LOG_DIR}/idle_supervisor.log}"
 
-MSG='You appear to be idle at your prompt. Run: python3 scripts/coordination/session_bus.py drain --agent <your-id> --triage — then continue with your current assignment, or take the next item from coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md respecting its collision map. Never sit idle: take the next item yourself rather than waiting to be told. Set state:idle in your heartbeat ONLY when you are genuinely awaiting dispatch, and state:working otherwise — an idle main whose heartbeat still says working cannot be nudged at all and deadlocks until a human relays by hand. If you are blocked or need operator input, say so on the bus with action_required true and your own recommendation.'
+MSG='You appear to be idle at your prompt. Run: scripts/coordination/session_bus.py drain --agent <your-id> --triage — then continue with your current assignment, or take the next item from coordination/session-bus/tasks/BACKLOG-DISPATCH-QUEUE.md respecting its collision map. Never sit idle: take the next item yourself rather than waiting to be told. Set state:idle in your heartbeat ONLY when you are genuinely awaiting dispatch, and state:working otherwise — an idle main whose heartbeat still says working cannot be nudged at all and deadlocks until a human relays by hand. If you are blocked or need operator input, say so on the bus with action_required true and your own recommendation.'
 
 log() { printf '%s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$*" | tee -a "$LOG"; }
 
