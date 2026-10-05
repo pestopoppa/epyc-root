@@ -1,0 +1,96 @@
+name: NI05 prospective CI fixture custody
+
+on:
+  push:
+    branches:
+      - codex/ni05-validation-ci-custody-source-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  ci-fixture-custody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ROOT_SHA: c68d8a9260bb098210838eb472be2bca6f0591ec
+      ORCHESTRATOR_SHA: 3047a02211c97fd1d5071b7665bf2ae4e08925a9
+      CAPTURE_DIR: artifacts/ni05-custody-validation
+      PYTEST_JUNIT: artifacts/ni05-custody-validation/original-pytest.xml
+      PYTEST_LOG: artifacts/ni05-custody-validation/generated-pytest.log
+      NI24_LOG: artifacts/ni05-custody-validation/ni24-health-preflight.log
+    steps:
+      - name: Checkout immutable root source candidate
+        uses: actions/checkout@v4
+        with:
+          ref: c68d8a9260bb098210838eb472be2bca6f0591ec
+
+      - name: Checkout workflow revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: workflow-revision
+
+      - name: Checkout immutable NI24 orchestrator source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 3047a02211c97fd1d5071b7665bf2ae4e08925a9
+          path: orchestrator-ni24
+
+      - name: Verify pinned source identities
+        run: |
+          test "$(git rev-parse HEAD)" = "$ROOT_SHA"
+          test "$(git -C orchestrator-ni24 rev-parse HEAD)" = "$ORCHESTRATOR_SHA"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install fixture dependencies
+        run: python -m pip install --disable-pip-version-check 'pytest==9.1.1' PyYAML
+
+      - name: Capture original NI05 fixture execution
+        run: |
+          mkdir -p "$CAPTURE_DIR"
+          python scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE" \
+            --junit "$PYTEST_JUNIT" \
+            --output "$CAPTURE_DIR/native" \
+            --repo "root=$GITHUB_WORKSPACE" \
+            --repo "workflow=$GITHUB_WORKSPACE/workflow-revision" \
+            --repo "orchestrator=$GITHUB_WORKSPACE/orchestrator-ni24" \
+            --read-path scripts/ci/native_conformance.py \
+            --read-path scripts/vidya/adapters/ci_conformance.py \
+            --read-path tests/vidya/test_ci_conformance.py \
+            --read-path "$GITHUB_WORKSPACE/workflow-revision/.github/workflows/ni05-custody-validation.yml" \
+            --read-path "$GITHUB_WORKSPACE/workflow-revision/tests/ci/ni24-package-a-health-ci-recipe.sh" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator-ni24/scripts/benchmark/package_a_instrumented_eval.sh" \
+            --select tests/vidya/test_ci_conformance.py \
+            --generated-output "$PYTEST_LOG" \
+            -- python -m pytest -q tests/vidya/test_ci_conformance.py \
+              --junitxml="$PYTEST_JUNIT" \
+              --log-file="$PYTEST_LOG"
+
+      - name: Run NI24 pinned health preflight checks with fake curl
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$CAPTURE_DIR"
+          set +e
+          ORCHESTRATOR_ROOT="$GITHUB_WORKSPACE/orchestrator-ni24" \
+            /bin/bash "$GITHUB_WORKSPACE/workflow-revision/tests/ci/ni24-package-a-health-ci-recipe.sh" \
+            > "$NI24_LOG" 2>&1
+          status=$?
+          set -e
+          cat "$NI24_LOG"
+          exit "$status"
+
+      - name: Preserve prospective custody artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni05-custody-validation-${{ github.run_id }}
+          path: artifacts/ni05-custody-validation/
+          if-no-files-found: warn
