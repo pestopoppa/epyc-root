@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 env:
-  SOURCE_SHA: 3f03be39d2b9811cf6ee017afbe1477a4e726523
+  SOURCE_SHA: a2494f019d5d662f56971142ccfd9b1d4610bc0c
   APP_SOURCE_SHA: 4238a82eee82a38d5fe5b868949649dcc5c7e5d1
 jobs:
   timeout-report:
