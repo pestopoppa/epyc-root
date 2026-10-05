@@ -177,8 +177,8 @@ jobs:
             exit 1
           fi
           mkdir -m 700 "$result_dir"
-          mkdir -m 700 "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/venv"
-          for path in "$result_dir" "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/venv"; do
+          mkdir -m 700 "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/cache/installer-tmp" "$result_dir/venv"
+          for path in "$result_dir" "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/cache/installer-tmp" "$result_dir/venv"; do
             test ! -L "$path"
             test "$(stat -c '%a' "$path")" = 700
             test "$(stat -c '%u' "$path")" = "$(id -u)"
@@ -197,7 +197,7 @@ jobs:
         run: |
           set -euo pipefail
           umask 077
-          export TMPDIR="$RUNNER_PRIVATE_TMP"
+          export TMPDIR="$RUNNER_PRIVATE_CACHE/installer-tmp"
           export XDG_CACHE_HOME="$RUNNER_PRIVATE_CACHE"
           test "$(sha256sum uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
           sha256sum pyproject.toml > "$RESULT_DIR/app-project-before-install.sha256"
@@ -291,7 +291,8 @@ jobs:
           if "MemTotal" not in meminfo_values:
               raise SystemExit("runner /proc/meminfo does not contain MemTotal")
           private_paths = [result_root, result_root / "tmp", result_root / "cache",
-                           result_root / "cache" / "uv", Path(os.environ["UV_PROJECT_ENVIRONMENT"])]
+                           result_root / "cache" / "uv", result_root / "cache" / "installer-tmp",
+                           Path(os.environ["UV_PROJECT_ENVIRONMENT"])]
           private_path_facts = {}
           for private_path in private_paths:
               metadata = private_path.lstat()
