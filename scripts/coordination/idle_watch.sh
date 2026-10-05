@@ -3,23 +3,20 @@
 # idle_watch.sh — return as soon as any main goes idle
 # =============================================================================
 #
-# WHY: heartbeats lie. A main that finishes a task and sits at its prompt very
-# often still has state:working in its heartbeat, so `rebuild` reports a busy
-# fleet while two panes sit at an empty composer. On 2026-07-29 the operator had
-# to point out an idle `inference` and an idle `auditor` that the bus reported as
-# working. Pane state is the ground truth; the heartbeat is a claim.
+# WHY: heartbeats can stay `working` after a task finishes, so `rebuild` may
+# report a busy fleet while an agent is idle. This watcher reports idle only
+# when the existing adapter probe positively qualifies the runtime state.
 #
-# WHAT: polls each roster window's pane for a BUSY marker and exits 0 the moment
-# one or more mains look idle, naming them. Exiting on the first idle main is the
+# WHAT: polls each roster agent through the existing authoritative adapter probe
+# and exits 0 the moment one or more agents have qualified idle evidence, naming
+# them. Exiting on the first idle main is the
 # point — the coordinator's background-task notification then fires immediately,
 # instead of idleness being discovered on the next manual poll.
 #
-# BUSY markers, both TUIs:
-#   claude : "esc to interrupt"
-#   codex  : "Working ("  /  "esc to interrupt"
-# Neither appears at a settled prompt. A pane that cannot be captured is reported
-# as UNKNOWN, never as idle — the C14 polarity: absence of evidence is not
-# evidence of idleness, and a false idle hands out work to a busy main.
+# The existing tmux_adapter probe must return successful JSON with
+# runtime_decided=true, runtime_state=idle, and nudge_ok=true. Every other result
+# is UNKNOWN and cannot produce an idle report. Pane text and marker absence do
+# not grant idle authority.
 #
 # Usage:  idle_watch.sh [poll_seconds] [max_seconds]
 set -uo pipefail
@@ -28,7 +25,12 @@ POLL="${1:-45}"
 MAX="${2:-3600}"
 SESSION="${SESSION:-agent}"
 MAINS="${MAINS:-inference auditor mainA mainB}"
+_IS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "${_IS_DIR}/../lib/env.sh"
+ADAPTER="${EPYC_TMUX_ADAPTER}"
 
+unknown=""
 elapsed=0
 while [ "$elapsed" -lt "$MAX" ]; do
   idle=""
@@ -37,16 +39,12 @@ while [ "$elapsed" -lt "$MAX" ]; do
     if ! tmux has-session -t "$SESSION" 2>/dev/null; then
       echo "SESSION_GONE $SESSION"; exit 3
     fi
-    pane=$(tmux capture-pane -p -t "$SESSION:$w" 2>/dev/null)
-    if [ -z "$pane" ]; then
+    if python3 "${_IS_DIR}/qualified_idle_probe.py" --agent "$w" --adapter "$ADAPTER" \
+         >/dev/null 2>&1; then
+      idle="$idle $w"
+    else
       unknown="$unknown $w"
-      continue
     fi
-    tail=$(printf '%s' "$pane" | tail -20)
-    if printf '%s' "$tail" | grep -qE 'esc to interrupt|Working \('; then
-      continue
-    fi
-    idle="$idle $w"
   done
   if [ -n "$idle" ]; then
     echo "IDLE:$idle"
@@ -57,5 +55,8 @@ while [ "$elapsed" -lt "$MAX" ]; do
   sleep "$POLL"
   elapsed=$((elapsed + POLL))
 done
+if [ -n "$unknown" ]; then
+  echo "UNKNOWN:$unknown"
+fi
 echo "NO_IDLE_WITHIN ${MAX}s"
 exit 1
