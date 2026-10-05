@@ -28,8 +28,8 @@ jobs:
             parent_sha: c8851695cc6ae46845c06b9f60402e687f1698ec
             expected_cases: 11
           - phase: ni53-root
-            source_sha: 43d9100783b74f0b462cab84ab56370575c86d11
-            parent_sha: f074c059859f24d0def09cce0e1555f139635ae2
+            source_sha: b2955bb397a912fc0d7854c6dd3072379f15611c
+            parent_sha: 43d9100783b74f0b462cab84ab56370575c86d11
             expected_cases: 10
     env:
       PHASE: ${{ matrix.phase }}
@@ -63,7 +63,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
           repository: pestopoppa/epyc-root
-          ref: 43d9100783b74f0b462cab84ab56370575c86d11
+          ref: b2955bb397a912fc0d7854c6dd3072379f15611c
           path: root-tested
           fetch-depth: 0
           persist-credentials: false
@@ -179,7 +179,13 @@ jobs:
               if git(tested, "rev-parse", "HEAD") != os.environ["SOURCE_SHA"]:
                   raise SystemExit("NI53 tested root checkout differs from its pinned candidate SHA")
               if git(tested, "rev-parse", "HEAD^") != os.environ["PARENT_SHA"]:
-                  raise SystemExit("NI53 candidate does not descend from accepted f074 base")
+                  raise SystemExit("NI53 candidate does not descend from the pinned adapter-fix parent")
+              original_base = "f074c059859f24d0def09cce0e1555f139635ae2"
+              if git(tested, "rev-parse", f"{os.environ['PARENT_SHA']}^") != original_base:
+                  raise SystemExit("NI53 adapter-fix parent does not descend from the accepted f074 base")
+              fix_paths = set(git(tested, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines())
+              if fix_paths != {"scripts/vidya/adapters/strategy_projection_report.py"}:
+                  raise SystemExit(f"NI53 adapter-fix leaf changed unexpected paths: {sorted(fix_paths)}")
               expected_paths = {
                   "scripts/harness/strategy_projection_report_capture.py",
                   "scripts/vidya/adapters/strategy_projection_report.py",
@@ -190,7 +196,7 @@ jobs:
               }
               expected_hashes = {
                   "scripts/harness/strategy_projection_report_capture.py": "78feefe306ebd48b8d0dfaddb8be4b8907d9da227495aed896a88eaba2a304db",
-                  "scripts/vidya/adapters/strategy_projection_report.py": "7c50daaed973fb3216824637797b8b136c01e41784260905e26b373a37f296d6",
+                  "scripts/vidya/adapters/strategy_projection_report.py": "ddd3973119783c4236a217e69eaace0f1d699f025ac67eded8fbfc666fd03ac5",
                   "scripts/vidya/cli.py": "6c31bbc332a6d289f11587bc41992e57c07b21d50abf51b2d479e0116f964ca7",
                   "scripts/vidya/ingest_sources.py": "98f4b8df9ce09c5faedf2f070915be8ec595a7db3d10adc8dcfd27f7c14669f1",
                   "tests/vidya/test_ingest_sources.py": "3d76b23cea1f279584ec988b871bee147167c0f9b8d6ab669523429d3c771c4a",
@@ -199,7 +205,10 @@ jobs:
           else:
               raise SystemExit(f"unexpected workflow phase: {phase}")
 
-          actual_paths = set(git(tested, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines())
+          if phase == "ni53-root":
+              actual_paths = set(git(tested, "diff", "--name-only", "f074c059859f24d0def09cce0e1555f139635ae2", "HEAD").splitlines())
+          else:
+              actual_paths = set(git(tested, "diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").splitlines())
           if actual_paths != expected_paths:
               raise SystemExit(f"tested source commit path set differs: {sorted(actual_paths)}")
           for relative, wanted in expected_hashes.items():
