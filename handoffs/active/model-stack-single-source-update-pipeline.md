@@ -261,11 +261,15 @@ Closed and moved to the [completed sibling](../completed/model-stack-single-sour
   own guard. **Blocker: none.**
   ✅ 2026-09-23 — fixed in root `0f9a4ef1` (verified an ancestor of origin/main 2026-09-27): guard and wrapper share one lock resolver, the wrapper declares `EPYC_PUSH_LOCK_HOLDER` for its own push, and `--push` verifies with `git cherry` and ends on `PUSH VERIFIED` / `PUSH FAILED` (exit 4). The D9 ack is in the commit (SSU-F9a). Outcome, SSU-F9a and SSU-F9b: [completed sibling](../completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md).
 
-- [ ] **SSU-F9c — `promote_lane.py:519` has the same defect one lease over.** It defaults
+- [x] **SSU-F9c — `promote_lane.py:519` has the same defect one lease over.** It defaults
   `--lock-dir` to `serialized_push.DEFAULT_LOCK_DIR`, the `__file__`-relative fallback, which in a
   lane worktree is that lane's **private** directory — so the *promote* lease serializes nothing
   across lanes, exactly the 2026-09-01 incident that the push lease's git-common-dir derivation was
-  introduced to fix. Different lease, same shape, still live. **Blocker: none.**
+  introduced to fix. ✅ 2026-10-05: default promotion lease now uses the target's git common
+  directory via `serialized_push.default_lock_dir`; environment/CLI overrides remain explicit.
+  Accepted CI run [37273697465](https://github.com/pestopoppa/epyc-root/actions/runs/37273697465),
+  combined source `23298f00096f24b5d665a478467692f2085c09a0`: three focused fixtures passed,
+  including two real worktree leases contending for one lock. No actual promotion was executed.
 
 - [ ] **SSU-F10 — every GPU role on this host is un-auditable for VRAM between reloads, by
   default.** The per-buffer breakdown (`load_tensors:`, `llama_kv_cache:`,
