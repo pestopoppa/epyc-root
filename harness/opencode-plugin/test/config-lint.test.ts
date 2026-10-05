@@ -21,6 +21,26 @@ test("shipped template passes the lint", () => {
   assert.deepEqual(lintConfig(template()), [])
 })
 
+test("enabled orchestrator MCP requires a timeout above the chat deadline", () => {
+  const c = template()
+  c.mcp.orchestrator.enabled = true
+  delete c.mcp.orchestrator.timeout
+  assert.ok(lintConfig(c).some((e) => e.includes("mcp.orchestrator.timeout")))
+
+  c.mcp.orchestrator.timeout = 124_999
+  assert.ok(lintConfig(c).some((e) => e.includes("mcp.orchestrator.timeout")))
+
+  c.mcp.orchestrator.timeout = 125_000
+  assert.deepEqual(lintConfig(c), [])
+})
+
+test("disabled orchestrator MCP may omit its timeout", () => {
+  const c = template()
+  c.mcp.orchestrator.enabled = false
+  delete c.mcp.orchestrator.timeout
+  assert.deepEqual(lintConfig(c), [])
+})
+
 test("shipped env file passes the lint", () => {
   assert.deepEqual(lintEnv(envText), [])
 })

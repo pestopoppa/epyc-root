@@ -47,6 +47,8 @@ export const MAX_SUBAGENT_DEPTH = 1
 const AGENT_MAPS = ["agent", "agents", "mode"] as const
 /** Orchestrator pin keys. Any key with this prefix anywhere in the config is refused. */
 const FORCE_KEY = /^x_force_/
+/** 120 s MCP request budget plus 5 s response grace, in milliseconds. */
+const MIN_ORCHESTRATOR_MCP_TIMEOUT_MS = 125_000
 
 /** Strip // and /* *\/ comments outside strings. Trailing commas are not supported (keep the template strict). */
 export function stripJsonc(text: string): string {
@@ -181,6 +183,14 @@ export function lintConfig(cfg: unknown, options: LintOptions = {}): string[] {
   if (cfg.share !== "disabled") errs.push('share must be "disabled"')
   if (cfg.autoupdate !== false) errs.push("autoupdate must be false")
   if (cfg.agent?.title?.disable !== true) errs.push("agent.title.disable must be true (no title side call)")
+  const orchestratorMcp = isRecord(cfg.mcp) ? cfg.mcp.orchestrator : undefined
+  if (
+    isRecord(orchestratorMcp) &&
+    orchestratorMcp.enabled !== false &&
+    (!Number.isSafeInteger(orchestratorMcp.timeout) || orchestratorMcp.timeout < MIN_ORCHESTRATOR_MCP_TIMEOUT_MS)
+  ) {
+    errs.push(`mcp.orchestrator.timeout must be an integer >= ${MIN_ORCHESTRATOR_MCP_TIMEOUT_MS} ms when MCP is enabled`)
+  }
   if (profile === "default") {
     for (const sub of NATIVE_SUBAGENTS) {
       if (cfg.agent?.[sub]?.disable !== true) errs.push(`agent.${sub}.disable must be true (no sub-agents)`)
