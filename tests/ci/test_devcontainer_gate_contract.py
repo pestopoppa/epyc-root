@@ -136,23 +136,27 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
     )
 
     def normalized_ast(ast: object) -> object:
-        def without_positions(node: object) -> object:
-            # mvdan/sh v3.8.0 syntax/typedjson encodes syntax.Pos as exactly
-            # {"Offset": uint, "Line": uint, "Col": uint}; this also covers
-            # the derived Pos/End fields and named position fields on AST nodes.
-            if (
-                isinstance(node, dict)
-                and set(node) == {"Offset", "Line", "Col"}
+        # mvdan/sh v3.8.0 syntax/typedjson encodes syntax.Pos as exactly
+        # {"Offset": uint, "Line": uint, "Col": uint}; this also covers
+        # derived Pos/End and named position fields such as Semicolon.
+        def is_position(value: object) -> bool:
+            return (
+                isinstance(value, dict)
+                and set(value) == {"Offset", "Line", "Col"}
                 and all(
-                    isinstance(value, int) and not isinstance(value, bool)
-                    for value in node.values()
+                    isinstance(coordinate, int)
+                    and not isinstance(coordinate, bool)
+                    and coordinate >= 0
+                    for coordinate in value.values()
                 )
-            ):
-                return {"__syntax_position__": True}
+            )
+
+        def without_positions(node: object) -> object:
             if isinstance(node, dict):
                 return {
                     key: without_positions(value)
                     for key, value in node.items()
+                    if not is_position(value)
                 }
             if isinstance(node, list):
                 return [without_positions(value) for value in node]
