@@ -2326,6 +2326,11 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     400K/500K; `kfd/*.summary.json`: peaks). An adapter projecting `verdict.json` must carry only what it records — the
     build id and argv digest sit in `run_e1*.log`, not the verdict — and grades no higher than `Judged/Located`.
     Wire the runner's write side before YARN-E1-MEM / YARN-E1-A2 / YARN-DCA-E1 run, so those windows ingest natively.
+  - *(2026-10-05, workspace-ec; not ticked.)* The INF-59 CPU leg (YARN-CPU, Qwen3.6-35B-A3B, CN vs CY2) also ran
+    pre-hook: `yarn_cpu_leg.py` wrote no `belief_measurements.jsonl`. Its durable record is
+    `artifacts/yarn-e1-20261004/cpu_leg/verdict.json` (schema `inf59.yarn_cpu_leg.v1`), and its locator adds device
+    (CPU) and the turn index. The projection carries what that file records and nothing more; the build id and argv sit
+    only in `block.log` and the scratch server logs. Wire both runners' write side before YARN-CPU-512k runs.
 
 ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
 

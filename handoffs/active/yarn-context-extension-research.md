@@ -113,10 +113,40 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     workspace-ec) The logger puts an `--override-kv` value on a timestamped continuation line, so A1 needed
     `--force-preflight`. Done when `yarn_needle.py`'s preflight passes A1's real `A1.server.log` without the force flag
     and a self-test covers the split form.
+    *(2026-10-05)* The CPU leg's `yarn_cpu_leg.py` hit the same missing-proof-line defect: no `--verbosity 4`, so the
+    first launch of both arms refused, rc=3. It was fixed in that script only. Scope now includes moving the launch
+    flags and proof preflight into one shared helper that `yarn_needle.py` and `yarn_cpu_leg.py` both import.
   - [ ] **YARN-E1-A2 — run the A2 negative control at 400K in the next YaRN window.** (filed 2026-10-04, workspace-ec)
     C3 pre-registered "A2 must score clearly worse, or the test is not discriminating", and E1 ran A0 and A1 only.
     Ride it on the YARN-E1-MEM re-measure or the YARN-DCA-E1 window. Done when A2's 400K needle score is recorded
     beside A1's 5/5.
+- [x] **YARN-CPU — CPU leg: Qwen3.6-35B-A3B on CPU, CN (native 262K) vs CY2 (YaRN ×2, 524K), incremental 8K turns.**
+  ✅ 2026-10-05 (workspace-ec; dedicated block 2026-10-04 21:18Z → ~03:15Z 10-05). Results are durable in
+  `artifacts/yarn-e1-20261004/cpu_leg/` (`VERDICT.md`, `verdict.json`, `block.log`, `SOURCES.sha256`). Scratch is
+  `/mnt/raid0/llm/tmp/yarn-e1-20261004/cpu_leg/results/`, which also holds the server logs and the 6.5 GB `slots/`.
+  - **C1 short context (CY2 vs CN):** 0 REGRESSION of 84, 52 identical, 13 needs-review. The gate reads INCOMPLETE
+    only because of those 13. Contrast with the GPU 27B E1, where C1 had 3 regressions: this hybrid MoE showed no
+    short-text regression under YaRN ×2.
+  - **C3 beyond native (CY2):** 5/5 at 323,527 tokens, with needles up to 286K back and the local check OK. **PASS.**
+    CY2 reached 323K, not 512K. The block ran out because the per-turn append cost grew to ~600 s per 8K turn at 350K.
+    The scheduler stopped the server cleanly with the slot saved at turn 42.
+  - **Native range:** CN scored 5/5 at 133K, 193K and 253K. CY2 matched it at 133K and 253K.
+  - **Decode tok/s at 34K / 133K / 253K / 323K:** CN 20.4 / 6.4 / 3.7 / –; CY2 19.6 / 6.2 / 3.6 / 2.9. YaRN costs ≤ 4%
+    at matched depth.
+  - **Turn append cost (s per 8K turn):** 19.7 at depth 0, 141 at 69K, 253 at 143K, 385 at 211K, 557 at 280K and 603 at
+    351K (CY2). CN tracks it within ~4%. The cost grows with depth, so attention at depth, not YaRN, is the bottleneck.
+  - **Process note:** the first launch of each arm refused for missing proof lines, because `--verbosity 4` was
+    absent. It was fixed in `yarn_cpu_leg.py`; this is the same defect as GPU E1, so see YARN-E1-PROOF.
+  - [ ] **YARN-CPU-512k — finish CY2 from 323K to 512K in a later dedicated CPU block.** (filed 2026-10-05,
+    workspace-ec) Resume from the turn-42 slot in the scratch `slots/` if it is still there and its build and argv
+    digest match; otherwise re-prefill. At ~600+ s per 8K turn, the remaining ~24 turns need ~4.5 h or more. Done when
+    CY2's needle score and decode rate at ≥ 500K are recorded beside the 323K row.
+  - [ ] **YARN-CPU-ATTN — CPU attention cost at depth is the CPU long-context bottleneck.** (filed 2026-10-05,
+    workspace-ec) The per-8K-turn append cost rises ~30× from depth 0 to 351K, and decode falls from 20.4 to 2.9
+    tok/s. Hand the measured depth profile (turn cost and decode by depth, from `verdict.json`) to the AutoKernel CPU
+    FA route: AKX-ALL-21 (`cpu_fa_schedule` at depth) in
+    [`autokernel-all-devices-all-dimensions.md`](autokernel-all-devices-all-dimensions.md). Done when AKX-ALL-21's
+    at-depth profile cites this curve as an input, or a keep-or-refuse verdict on it is recorded.
 - [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
   package must:
   - swap the 27B into the np 1 YaRN f2 profile during long-document work, and say who waits during the swap;

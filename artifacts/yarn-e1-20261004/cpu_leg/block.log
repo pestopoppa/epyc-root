@@ -1,0 +1,139 @@
+=== 2026-10-04T21:17:21Z arm CN (block until 2026-10-05T03:20:00Z)
+server PID 3533299 dead
+REFUSING: proof lines missing / forbidden lines: {'proof': {'print_info: n_ctx_train\\s*=\\s*262144\\b': False, 'llama_context: n_ctx_seq\\s*=\\s*262144\\b': False, 'n_slots = 1, n_ctx_slot = 262144\\b': True, 'llama_context: freq_scale\\s*=\\s*1\\s*$': False, 'llama_kv_cache: size =\\s*2720.00 MiB \\(\\s*262144 cells,\\s*10 layers': False}, 'forbidden': {'exceeds the training context of the model .* capping': 0, 'failed to allocate': 0, 'out of memory': 0, 'CUDA error': 0, 'HIP error': 0, 'Bad metadata override type': 0, 'possible training context overflow': 0}, 'ok': False}
+arm CN rc=3
+=== 2026-10-04T21:17:44Z arm CY2 (block until 2026-10-05T03:20:00Z)
+server PID 3533946 dead
+REFUSING: proof lines missing / forbidden lines: {'proof': {'print_info: n_ctx_train\\s*=\\s*524288\\b': False, 'llama_context: n_ctx_seq\\s*=\\s*524288\\b': False, 'n_slots = 1, n_ctx_slot = 524288\\b': True, 'print_info: rope scaling\\s*=\\s*yarn': False, 'print_info: freq_scale_train\\s*=\\s*0.5\\s*$': False, 'print_info: n_ctx_orig_yarn\\s*=\\s*262144\\b': False, 'llama_context: freq_scale\\s*=\\s*0.5\\s*$': False, 'llama_kv_cache: size =\\s*5440.00 MiB \\(\\s*524288 cells,\\s*10 layers': False}, 'forbidden': {'exceeds the training context of the model .* capping': 0, 'failed to allocate': 0, 'out of memory': 0, 'CUDA error': 0, 'HIP error': 0, 'Bad metadata override type': 0, 'possible training context overflow': 0}, 'ok': False}
+arm CY2 rc=3
+# INF-59 CPU leg (Qwen3.6-35B-A3B, CPU) — results
+
+## CN
+
+| depth | decode tok/s | needles (id, distance k, status) | local |
+|---|---|---|---|
+
+turn append cost (depth, s per 8k turn), every 8th: []
+
+## CY2
+
+| depth | decode tok/s | needles (id, distance k, status) | local |
+|---|---|---|---|
+
+turn append cost (depth, s per 8k turn), every 8th: []
+
+=== 2026-10-04T21:18:24Z arm CN (block until 2026-10-05T03:25:00Z)
+{"arm": "CN", "turn": 1, "depth": 8730, "prompt_ms": 19746.313, "eta_next_s": 68}
+{"arm": "CN", "turn": 2, "depth": 17206, "prompt_ms": 35295.091, "eta_next_s": 75}
+{"arm": "CN", "turn": 3, "depth": 25643, "prompt_ms": 50233.461, "eta_next_s": 65}
+{"arm": "CN", "turn": 4, "depth": 34210, "prompt_ms": 67081.963, "eta_next_s": 82}
+{"arm": "CN", "probe": 32000, "depth": 34210, "correct": 1, "decode_tps": 20.365976599492885, "local": "OK"}
+{"arm": "CN", "turn": 5, "depth": 43867, "prompt_ms": 95677.001, "eta_next_s": 111}
+{"arm": "CN", "turn": 6, "depth": 52211, "prompt_ms": 92640.656, "eta_next_s": 116}
+{"arm": "CN", "turn": 7, "depth": 60540, "prompt_ms": 101028.873, "eta_next_s": 123}
+{"arm": "CN", "turn": 8, "depth": 69298, "prompt_ms": 119771.008, "eta_next_s": 136}
+{"arm": "CN", "probe": 64000, "depth": 69298, "correct": 3, "decode_tps": 10.943105937301818, "local": "OK"}
+{"arm": "CN", "turn": 9, "depth": 78212, "prompt_ms": 136862.787, "eta_next_s": 151}
+{"arm": "CN", "turn": 10, "depth": 86797, "prompt_ms": 143447.579, "eta_next_s": 162}
+{"arm": "CN", "turn": 11, "depth": 96807, "prompt_ms": 183082.016, "eta_next_s": 186}
+{"arm": "CN", "turn": 12, "depth": 105766, "prompt_ms": 180194.826, "eta_next_s": 199}
+{"arm": "CN", "turn": 13, "depth": 114082, "prompt_ms": 180373.067, "eta_next_s": 206}
+{"arm": "CN", "turn": 14, "depth": 122636, "prompt_ms": 199005.36, "eta_next_s": 216}
+{"arm": "CN", "turn": 15, "depth": 133275, "prompt_ms": 272034.23, "eta_next_s": 250}
+{"arm": "CN", "probe": 128000, "depth": 133275, "correct": 5, "decode_tps": 6.41593236404301, "local": "OK"}
+{"arm": "CN", "turn": 16, "depth": 142587, "prompt_ms": 251126.427, "eta_next_s": 267}
+{"arm": "CN", "turn": 17, "depth": 150981, "prompt_ms": 241118.311, "eta_next_s": 277}
+{"arm": "CN", "turn": 18, "depth": 159629, "prompt_ms": 263809.628, "eta_next_s": 288}
+{"arm": "CN", "turn": 19, "depth": 168162, "prompt_ms": 278927.724, "eta_next_s": 298}
+{"arm": "CN", "turn": 20, "depth": 176410, "prompt_ms": 282741.809, "eta_next_s": 306}
+{"arm": "CN", "turn": 21, "depth": 184885, "prompt_ms": 304981.128, "eta_next_s": 317}
+{"arm": "CN", "turn": 22, "depth": 193488, "prompt_ms": 324868.16, "eta_next_s": 330}
+{"arm": "CN", "probe": 192000, "depth": 193488, "correct": 5, "decode_tps": 4.678761875328176, "local": "OK"}
+{"arm": "CN", "turn": 23, "depth": 201887, "prompt_ms": 329236.72, "eta_next_s": 344}
+{"arm": "CN", "turn": 24, "depth": 210655, "prompt_ms": 354814.823, "eta_next_s": 360}
+{"arm": "CN", "turn": 25, "depth": 219438, "prompt_ms": 371309.497, "eta_next_s": 373}
+{"arm": "CN", "turn": 26, "depth": 227695, "prompt_ms": 362224.497, "eta_next_s": 378}
+{"arm": "CN", "turn": 27, "depth": 236080, "prompt_ms": 386634.81, "eta_next_s": 400}
+{"arm": "CN", "turn": 28, "depth": 244401, "prompt_ms": 397710.681, "eta_next_s": 415}
+{"arm": "CN", "turn": 29, "depth": 252969, "prompt_ms": 422632.844, "eta_next_s": 430}
+{"arm": "CN", "probe": 248000, "depth": 252969, "correct": 5, "decode_tps": 3.6889615204423802, "local": "OK"}
+server PID 3536219 dead
+arm CN rc=0
+=== 2026-10-04T23:14:17Z arm CY2 (block until 2026-10-05T03:25:00Z)
+{"arm": "CY2", "turn": 1, "depth": 8730, "prompt_ms": 19652.624, "eta_next_s": 68}
+{"arm": "CY2", "turn": 2, "depth": 17206, "prompt_ms": 34753.801, "eta_next_s": 75}
+{"arm": "CY2", "turn": 3, "depth": 25643, "prompt_ms": 49920.287, "eta_next_s": 65}
+{"arm": "CY2", "turn": 4, "depth": 34210, "prompt_ms": 66652.81, "eta_next_s": 82}
+{"arm": "CY2", "probe": 32000, "depth": 34210, "correct": 1, "decode_tps": 19.56441959627292, "local": "OK"}
+{"arm": "CY2", "turn": 5, "depth": 43867, "prompt_ms": 95116.3, "eta_next_s": 110}
+{"arm": "CY2", "turn": 6, "depth": 52211, "prompt_ms": 94294.42, "eta_next_s": 117}
+{"arm": "CY2", "turn": 7, "depth": 60540, "prompt_ms": 104782.804, "eta_next_s": 126}
+{"arm": "CY2", "turn": 8, "depth": 69298, "prompt_ms": 123779.765, "eta_next_s": 140}
+{"arm": "CY2", "turn": 9, "depth": 78212, "prompt_ms": 141353.696, "eta_next_s": 156}
+{"arm": "CY2", "turn": 10, "depth": 86797, "prompt_ms": 149256.149, "eta_next_s": 168}
+{"arm": "CY2", "turn": 11, "depth": 96807, "prompt_ms": 192747.059, "eta_next_s": 194}
+{"arm": "CY2", "turn": 12, "depth": 105766, "prompt_ms": 189625.546, "eta_next_s": 208}
+{"arm": "CY2", "turn": 13, "depth": 114082, "prompt_ms": 189916.495, "eta_next_s": 217}
+{"arm": "CY2", "turn": 14, "depth": 122636, "prompt_ms": 209597.895, "eta_next_s": 228}
+{"arm": "CY2", "turn": 15, "depth": 133275, "prompt_ms": 280378.782, "eta_next_s": 263}
+{"arm": "CY2", "probe": 128000, "depth": 133275, "correct": 5, "decode_tps": 6.244254249446737, "local": "OK"}
+{"arm": "CY2", "turn": 16, "depth": 142587, "prompt_ms": 267177.219, "eta_next_s": 282}
+{"arm": "CY2", "turn": 17, "depth": 150981, "prompt_ms": 252824.167, "eta_next_s": 292}
+{"arm": "CY2", "turn": 18, "depth": 159629, "prompt_ms": 275621.546, "eta_next_s": 302}
+{"arm": "CY2", "turn": 19, "depth": 168162, "prompt_ms": 285455.758, "eta_next_s": 311}
+{"arm": "CY2", "turn": 20, "depth": 176410, "prompt_ms": 289592.976, "eta_next_s": 317}
+{"arm": "CY2", "turn": 21, "depth": 184885, "prompt_ms": 312681.951, "eta_next_s": 327}
+{"arm": "CY2", "turn": 22, "depth": 193488, "prompt_ms": 331579.196, "eta_next_s": 338}
+{"arm": "CY2", "turn": 23, "depth": 201887, "prompt_ms": 339583.595, "eta_next_s": 352}
+{"arm": "CY2", "turn": 24, "depth": 210655, "prompt_ms": 369139.525, "eta_next_s": 369}
+{"arm": "CY2", "turn": 25, "depth": 219438, "prompt_ms": 385279.946, "eta_next_s": 384}
+{"arm": "CY2", "turn": 26, "depth": 227695, "prompt_ms": 376506.348, "eta_next_s": 390}
+{"arm": "CY2", "turn": 27, "depth": 236080, "prompt_ms": 396491.722, "eta_next_s": 411}
+{"arm": "CY2", "turn": 28, "depth": 244401, "prompt_ms": 409012.343, "eta_next_s": 428}
+{"arm": "CY2", "turn": 29, "depth": 252969, "prompt_ms": 434011.437, "eta_next_s": 444}
+{"arm": "CY2", "probe": 248000, "depth": 252969, "correct": 5, "decode_tps": 3.641904711611792, "local": "OK"}
+{"arm": "CY2", "turn": 30, "depth": 262063, "prompt_ms": 482686.176, "eta_next_s": 495}
+{"arm": "CY2", "turn": 31, "depth": 271082, "prompt_ms": 491417.499, "eta_next_s": 543}
+{"arm": "CY2", "turn": 32, "depth": 279800, "prompt_ms": 489144.031, "eta_next_s": 548}
+{"arm": "CY2", "turn": 33, "depth": 289427, "prompt_ms": 556833.901, "eta_next_s": 630}
+{"arm": "CY2", "turn": 34, "depth": 298060, "prompt_ms": 514817.863, "eta_next_s": 625}
+{"arm": "CY2", "turn": 35, "depth": 306310, "prompt_ms": 510144.662, "eta_next_s": 581}
+{"arm": "CY2", "turn": 36, "depth": 314742, "prompt_ms": 541715.499, "eta_next_s": 586}
+{"arm": "CY2", "turn": 37, "depth": 323527, "prompt_ms": 572322.918, "eta_next_s": 617}
+{"arm": "CY2", "probe": 320000, "depth": 323527, "correct": 5, "decode_tps": 2.938802604164825, "local": "OK"}
+{"arm": "CY2", "turn": 38, "depth": 333983, "prompt_ms": 708263.791, "eta_next_s": 785}
+{"arm": "CY2", "turn": 39, "depth": 342691, "prompt_ms": 601055.665, "eta_next_s": 737}
+{"arm": "CY2", "turn": 40, "depth": 350940, "prompt_ms": 579670.202, "eta_next_s": 642}
+{"arm": "CY2", "turn": 41, "depth": 359302, "prompt_ms": 602478.751, "eta_next_s": 640}
+{"arm": "CY2", "turn": 42, "depth": 367636, "prompt_ms": 623780.986, "eta_next_s": 648}
+window will not fit turn (10.8 min): dedicated block: 10 min left, step needs 11+5; stopping our server (slot saved at turn 42)
+server PID 3667973 dead
+not starting turn: dedicated block: 10 min left, step needs 11+5
+arm CY2 rc=0
+# INF-59 CPU leg (Qwen3.6-35B-A3B, CPU) — results
+
+## CN
+
+| depth | decode tok/s | needles (id, distance k, status) | local |
+|---|---|---|---|
+| 34210 | 20.365976599492885 | [('C00', 22, 'correct')] | OK |
+| 69298 | 10.943105937301818 | [('C00', 57, 'correct'), ('C01', 31, 'correct'), ('C02', 6, 'correct')] | OK |
+| 133275 | 6.41593236404301 | [('C00', 121, 'correct'), ('C01', 95, 'correct'), ('C02', 70, 'correct'), ('C03', 44, 'correct'), ('C04', 20, 'correct')] | OK |
+| 193488 | 4.678761875328176 | [('C00', 181, 'correct'), ('C02', 130, 'correct'), ('C03', 104, 'correct'), ('C05', 56, 'correct'), ('C06', 29, 'correct')] | OK |
+| 252969 | 3.6889615204423802 | [('C01', 215, 'correct'), ('C02', 190, 'correct'), ('C05', 115, 'correct'), ('C07', 65, 'correct'), ('C09', 15, 'correct')] | OK |
+
+turn append cost (depth, s per 8k turn), every 8th: [(0, 19.7), (69298, 136.9), (142587, 241.1), (210655, 371.3)]
+
+## CY2
+
+| depth | decode tok/s | needles (id, distance k, status) | local |
+|---|---|---|---|
+| 34210 | 19.56441959627292 | [('C00', 22, 'correct')] | OK |
+| 133275 | 6.244254249446737 | [('C00', 121, 'correct'), ('C01', 95, 'correct'), ('C02', 70, 'correct'), ('C03', 44, 'correct'), ('C04', 20, 'correct')] | OK |
+| 252969 | 3.641904711611792 | [('C01', 215, 'correct'), ('C02', 190, 'correct'), ('C05', 115, 'correct'), ('C07', 65, 'correct'), ('C09', 15, 'correct')] | OK |
+| 323527 | 2.938802604164825 | [('C01', 286, 'correct'), ('C03', 234, 'correct'), ('C06', 159, 'correct'), ('C09', 85, 'correct'), ('C11', 36, 'correct')] | OK |
+
+turn append cost (depth, s per 8k turn), every 8th: [(0, 19.7), (69298, 141.4), (142587, 252.8), (210655, 385.3), (279800, 556.8), (350940, 602.5)]
+
+- C1 short CY2 vs CN: {'gate': 'INCOMPLETE', 'regressions': 0, 'identical': 52, 'both_bad': 0, 'needs_review': 13, 'n': 84}
+- C3 CY2 beyond native (>= 4/5 and local OK at every depth): {'pass': True, 'per_depth': {323527: 5}}
