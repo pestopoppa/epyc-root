@@ -26,7 +26,7 @@ def capture(tmp_path):
                     "user.email=fixture@example.invalid", "commit", "-qm", "fixture"], check=True)
     sequence = 0
 
-    def run(*, status="passed", exit_code=0, xml=None):
+    def run(*, status="passed", exit_code=0, xml=None, generated_output_paths=None, generated_code=""):
         nonlocal sequence
         sequence += 1
         junit = repo / f"out-{sequence}.xml"
@@ -37,11 +37,14 @@ def capture(tmp_path):
                    f'errors="{int(status == "error")}" skipped="{int(status == "skipped")}">'
                    f'<testcase classname="selected.fixture" name="case_one" time="0.1">'
                    f'{child}</testcase></testsuite></testsuites>')
+        generated_clause = f"{generated_code}; " if generated_code else ""
         script = ("from pathlib import Path; import sys; print('original fixture output'); "
+                  f"{generated_clause}"
                   f"Path({str(junit)!r}).write_text({xml!r}); sys.exit({exit_code})")
         record = nc.capture_fixture_execution(argv=[sys.executable, "-c", script], cwd=repo,
             junit=junit, output=output, repositories={"tested": repo},
-            read_paths=[source, Path(nc.__file__)], selections=["selected.fixture::case_one"])
+            read_paths=[source, Path(nc.__file__)], selections=["selected.fixture::case_one"],
+            generated_output_paths=generated_output_paths)
         return output, record
 
     return run
@@ -60,6 +63,148 @@ def test_original_execution_projects_only_bounded_boolean(capture):
     assert record["summary"]["counts"] == dict(passed=1, failure=0, error=0, skipped=0, collected=1, executed=1)
     assert record["exclusions"] == nc.EXCLUSIONS
     assert nc.regular_bytes(output / "command.log") == b"original fixture output\n"
+    assert "generated_output_paths" not in record
+    request = json.loads((output / record["request"]["name"]).read_bytes())
+    assert "generated_output_paths" not in request and "generated_outputs" not in record
+
+
+def test_generated_outputs_are_captured_in_declared_order(capture):
+    declared = ["reports/first.json", "reports/second.json"]
+    code = ("Path('reports').mkdir(); Path('reports/first.json').write_bytes(b'first\\x00bytes'); "
+            "Path('reports/second.json').write_bytes(b'second-bytes')")
+    output, record = capture(generated_output_paths=declared, generated_code=code)
+    assert record["fixture_execution_conformant"] is True
+    assert [item["path"] for item in record["generated_outputs"]] == declared
+    assert [nc.regular_bytes(output / item["artifact"]["name"]) for item in record["generated_outputs"]] == [
+        b"first\x00bytes", b"second-bytes"]
+    native = adapter.native_rows(output / "receipt.json")[0]
+    claim = adapter.project_ci_conformance(native)
+    assert native["record"]["generated_output_paths"] == declared
+    assert claim.value is True and claim.source_class == "verifier"
+    assert claim.claim == claim.decided_proposition == record["decided_proposition"]
+    assert grade(claim)[:2] == ("Judged", "Located")
+    assert "generated_outputs" not in claim.extra
+
+
+def test_generated_output_tamper_refused(capture):
+    output, record = capture(generated_output_paths=["result.bin"],
+                             generated_code="Path('result.bin').write_bytes(b'original')")
+    pin = record["generated_outputs"][0]["artifact"]
+    (output / pin["name"]).write_bytes(b"tampered")
+    with pytest.raises(ProjectionError, match="generated output artifact digest mismatch"):
+        adapter.native_rows(output / "receipt.json")
+
+
+def test_failed_execution_with_generated_output_projects_original_false_finding(capture):
+    output, record = capture(status="failure", exit_code=1,
+        generated_output_paths=["result.bin"],
+        generated_code="Path('result.bin').write_bytes(b'failure-artifact')")
+    native = adapter.native_rows(output / "receipt.json")[0]
+    claim = adapter.project_ci_conformance(native)
+    assert record["fixture_execution_conformant"] is False and claim.value is False
+    assert claim.decided_proposition == record["decided_proposition"]
+    assert "command exited zero: false" in claim.decided_proposition
+    assert grade(claim)[0] == "Judged"
+    assert "generated_outputs" not in claim.extra
+
+
+def test_resealed_request_mutation_cannot_relabel_generated_outputs(capture):
+    output, record = capture(generated_output_paths=["first.bin", "second.bin"],
+        generated_code="Path('first.bin').write_bytes(b'1'); Path('second.bin').write_bytes(b'2')")
+    request_path = output / record["request"]["name"]
+    request = json.loads(request_path.read_bytes())
+    request["generated_output_paths"] = ["second.bin", "first.bin"]
+    record["generated_output_paths"] = ["second.bin", "first.bin"]
+    request_bytes = nc.canonical(request)
+    request_path.write_bytes(request_bytes)
+    record["request"]["sha256"] = nc.digest(request_bytes)
+    record.pop("receipt_sha256")
+    record["receipt_sha256"] = nc.digest(nc.canonical(record))
+    (output / "receipt.json").write_bytes(nc.canonical(record))
+    with pytest.raises(ProjectionError, match="generated output attachments differ from declaration order"):
+        adapter.native_rows(output / "receipt.json")
+
+
+@pytest.mark.parametrize("paths", [["repeat.bin", "repeat.bin"], ["../escape.bin"], [""], ["."]])
+def test_invalid_generated_output_paths_refused_before_launch(capture, monkeypatch, paths):
+    def unexpected_launch(*args, **kwargs):
+        raise AssertionError("invalid output declaration launched a subprocess")
+    monkeypatch.setattr(nc.subprocess, "Popen", unexpected_launch)
+    with pytest.raises(ValueError, match="generated output"):
+        capture(generated_output_paths=paths)
+
+
+def test_preexisting_generated_output_refused_before_launch(capture, monkeypatch, tmp_path):
+    existing = tmp_path / "repo" / "already.bin"
+    existing.write_bytes(b"prior-run")
+    def unexpected_launch(*args, **kwargs):
+        raise AssertionError("pre-existing output launched a subprocess")
+    monkeypatch.setattr(nc.subprocess, "Popen", unexpected_launch)
+    with pytest.raises(ValueError, match="already exists"):
+        capture(generated_output_paths=["already.bin"])
+
+
+def test_generated_output_readset_collision_refused_before_launch(capture, monkeypatch):
+    def unexpected_launch(*args, **kwargs):
+        raise AssertionError("readset collision launched a subprocess")
+    monkeypatch.setattr(nc.subprocess, "Popen", unexpected_launch)
+    with pytest.raises(ValueError, match="collides with JUnit or declared readset"):
+        capture(generated_output_paths=["fixture.py"])
+
+
+def test_generated_output_parent_symlink_escape_refused_before_launch(capture, monkeypatch, tmp_path):
+    repo = tmp_path / "repo"
+    (repo / "escape").symlink_to(tmp_path, target_is_directory=True)
+    def unexpected_launch(*args, **kwargs):
+        raise AssertionError("escaping parent launched a subprocess")
+    monkeypatch.setattr(nc.subprocess, "Popen", unexpected_launch)
+    with pytest.raises(ValueError, match="parent escapes"):
+        capture(generated_output_paths=["escape/output.bin"])
+
+
+def test_missing_generated_output_is_diagnostic_without_tuple(capture):
+    output, record = capture(generated_output_paths=["missing.bin"])
+    assert record["fixture_execution_conformant"] is None
+    assert "No such file" in record["diagnostic"]
+    assert record["generated_outputs"] == []
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_generated_output_fifo_is_diagnostic_without_tuple(capture):
+    output, record = capture(generated_output_paths=["result.fifo"],
+        generated_code="import os; os.mkfifo('result.fifo')")
+    assert record["fixture_execution_conformant"] is None
+    assert "regular file" in record["diagnostic"]
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_generated_output_leaf_symlink_is_diagnostic_without_tuple(capture):
+    output, record = capture(generated_output_paths=["result.link"],
+        generated_code="Path('outside.bin').write_bytes(b'data'); Path('result.link').symlink_to('outside.bin')")
+    assert record["fixture_execution_conformant"] is None
+    assert record["generated_outputs"] == []
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_partial_generated_outputs_are_retained_only_as_diagnostic(capture):
+    output, record = capture(generated_output_paths=["first.bin", "missing.bin"],
+        generated_code="Path('first.bin').write_bytes(b'first')")
+    assert record["fixture_execution_conformant"] is None
+    assert [item["path"] for item in record["generated_outputs"]] == ["first.bin"]
+    assert nc.regular_bytes(output / record["generated_outputs"][0]["artifact"]["name"]) == b"first"
+    assert adapter.native_rows(output / "receipt.json") == ()
+
+
+def test_resealed_attachment_hole_is_refused(capture):
+    output, record = capture(generated_output_paths=["first.bin", "second.bin", "third.bin"],
+        generated_code=("Path('first.bin').write_bytes(b'1'); Path('second.bin').write_bytes(b'2'); "
+                       "Path('third.bin').write_bytes(b'3')"))
+    record["generated_outputs"] = [record["generated_outputs"][0], record["generated_outputs"][2]]
+    record.pop("receipt_sha256")
+    record["receipt_sha256"] = nc.digest(nc.canonical(record))
+    (output / "receipt.json").write_bytes(nc.canonical(record))
+    with pytest.raises(ProjectionError, match="generated output attachments differ from declaration order"):
+        adapter.native_rows(output / "receipt.json")
 
 
 def test_failed_execution_remains_false_finding(capture):
