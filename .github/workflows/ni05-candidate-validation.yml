@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 env:
-  ROOT_SHA: 2d12dd17191e7329496d70be1bfafccb3cc70b0b
+  ROOT_SHA: 33d90cf2811942fe6c3f6a02c9a507f104b35b05
   RESEARCH_SHA: 1d5550fff05347498aae63ef03082d99052f370b
   ORCH_SHA: 2f3adb9eb73758e371836cb3ee6fbd7802e67274
 jobs:
