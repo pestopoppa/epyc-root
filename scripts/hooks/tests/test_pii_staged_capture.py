@@ -3,6 +3,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import shlex
 import subprocess
 import sys
 
@@ -48,11 +49,12 @@ def stage(repo, secret=False, name="sample.txt", env=None):
 
 
 def run(repo, env=None):
+    directory = Path(git(repo, "rev-parse", "--path-format=absolute", "--git-common-dir").stdout.decode().strip())
+    previous = set((directory / "epyc-private/pii-gates").glob("*/receipt.json"))
     result = subprocess.run(["bash", str(HOOK)], cwd=repo, env=env,
                             capture_output=True, timeout=60)
     # Assertion values must never disclose sensitive scanner stdout/stderr.
-    directory = Path(git(repo, "rev-parse", "--path-format=absolute", "--git-common-dir").stdout.decode().strip())
-    receipts = sorted((directory / "epyc-private/pii-gates").glob("*/receipt.json"))
+    receipts = sorted(set((directory / "epyc-private/pii-gates").glob("*/receipt.json")) - previous)
     assert len(receipts) == 1, "one original private receipt required"
     return result.returncode, receipts[0]
 
@@ -458,3 +460,75 @@ def test_escaped_request_pin_refuses_before_external_read(repo, tmp_path, monkey
     monkeypatch.setattr(capture, "regular", observed_regular)
     with pytest.raises(ProjectionError, match="custody refused"):
         adapter.native_rows(receipt)
+
+
+@pytest.mark.parametrize("staged_before", [False, True])
+@pytest.mark.parametrize("secret", [False, True])
+def test_actual_git_commit_only_installed_hook_captures_temporary_index(repo, staged_before, secret):
+    stage(repo)
+    git(repo, "commit", "--quiet", "-m", "Tracked path baseline")
+    original_head = git(repo, "rev-parse", "HEAD").stdout.decode().strip()
+    hook = repo / ".git/hooks/pre-commit"
+    hook.write_text("#!/bin/bash\nexec bash " + shlex.quote(str(HOOK)) + "\n")
+    hook.chmod(0o755)
+    path = repo / "sample.txt"
+    path.write_text(body(True) if secret else "changed ordinary fixture text\n")
+    if staged_before:
+        git(repo, "add", "--", "sample.txt")
+    result = subprocess.run(["git", "-C", str(repo), "commit", "--quiet", "--only",
+                             "-m", "Actual installed-hook pathspec transaction", "--", "sample.txt"],
+                            capture_output=True, timeout=60)
+    assert result.returncode == int(secret), "actual Git transaction exit must match unchanged PII gate"
+    receipts = list((repo / ".git/epyc-private/pii-gates").glob("*/receipt.json"))
+    assert len(receipts) == 1, "actual commit-only hook must seal its original temporary-index finding"
+    record, _ = capture.read_receipt(receipts[0])
+    assert "next-index-" in Path(record["original_index"]).name
+    assert record["head"] == original_head
+    assert record["pii_staged_policy_check_passed"] is (not secret)
+    assert record["exit_code"] == result.returncode
+    assert record["counts"]["selected"] == 1
+    item = record["inputs"][0]
+    assert (receipts[0].parent / item["artifact"]["name"]).read_bytes() == path.read_bytes()
+
+
+@pytest.mark.parametrize("existing_ancestors", [False, True])
+def test_setgid_git_common_new_custody_and_ancestor_only_migration(repo, existing_ancestors):
+    common = repo / ".git"
+    common.chmod(0o2755)
+    ancestors = common / "epyc-private/pii-gates"
+    old = None
+    if existing_ancestors:
+        ancestors.mkdir(parents=True)
+        (common / "epyc-private").chmod(0o2700)
+        ancestors.chmod(0o2700)
+        old = ancestors / "original-unsupported-capsule"
+        old.mkdir()
+        old.chmod(0o2700)
+        original = old / "unchanged-original.bin"
+        original.write_bytes(b"unsupported original must remain unchanged\n")
+        original.chmod(0o600)
+        metadata = (old.stat().st_mode, original.stat().st_mode, original.read_bytes())
+    stage(repo)
+    _, receipt = run(repo)
+    capture.read_receipt(receipt)
+    assert common.stat().st_mode & 0o7777 == 0o2755
+    for path in (common / "epyc-private", ancestors, receipt.parent):
+        assert path.stat().st_mode & 0o7777 == 0o700
+    # A second original execution reuses exact-safe ancestors successfully.
+    second_code, second_receipt = run(repo)
+    capture.read_receipt(second_receipt)
+    assert second_code == 0 and second_receipt != receipt
+    assert second_receipt.parent.stat().st_mode & 0o7777 == 0o700
+    if old is not None:
+        assert (old.stat().st_mode, original.stat().st_mode, original.read_bytes()) == metadata
+
+
+@pytest.mark.parametrize("permission", [0o750, 0o1700, 0o4700])
+def test_unsafe_existing_ancestor_is_not_migrated(repo, permission):
+    ancestor = repo / ".git/epyc-private"
+    ancestor.mkdir()
+    ancestor.chmod(permission)
+    stage(repo)
+    with pytest.raises(ValueError, match="parent is not owner-only"):
+        capture.begin(repo)
+    assert ancestor.stat().st_mode & 0o7777 == permission

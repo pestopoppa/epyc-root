@@ -161,16 +161,29 @@ def verify_original_selection(directory, request):
             raise ValueError("original frozen Git diff membership refused")
 
 
+def private_directory(path):
+    path.mkdir(mode=0o700)
+    # mkdir inherits setgid from real shared Git common directories despite
+    # its requested access mode. New recorder custody must be exactly 0700.
+    path.chmod(0o700, follow_symlinks=False)
+
+
 def private_parent(common):
     parent = common
     for name in ("epyc-private", "pii-gates"):
         parent = parent / name
         try:
-            parent.mkdir(mode=0o700)
+            private_directory(parent)
         except FileExistsError:
             metadata = parent.lstat()
-            if (not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid != os.getuid()
-                    or stat.S_IMODE(metadata.st_mode) != 0o700):
+            if not stat.S_ISDIR(metadata.st_mode) or metadata.st_uid != os.getuid():
+                raise ValueError("private capture parent is not owner-only")
+            permission = stat.S_IMODE(metadata.st_mode)
+            if permission == 0o2700:
+                # Recorder ancestors only: migrate the sole inherited setgid
+                # bit. Never normalize any existing original capsule or file.
+                parent.chmod(0o700, follow_symlinks=False)
+            elif permission != 0o700:
                 raise ValueError("private capture parent is not owner-only")
     return parent
 
@@ -184,7 +197,7 @@ def begin(repo):
     split = bool(git(repo, "rev-parse", "--shared-index-path").stdout.strip())
     original = regular(original_index)
     directory = private_parent(common) / uuid.uuid4().hex
-    directory.mkdir(mode=0o700)
+    private_directory(directory)
     index_pin = write(directory, "original-index", original)
     raw_entries = git(repo, "ls-files", "--stage", "-z").stdout
     entries_pin = write(directory, "original-stage-entries", raw_entries)
@@ -341,7 +354,7 @@ def archive_proof(directory, request, events):
                 container = module.PurePosixPath(value)
                 record = module.verified_phase(container, blobs, module.reader())
                 target = directory / f"native-proof-{number}"
-                target.mkdir(mode=0o700)
+                private_directory(target)
                 pins = [record["request"], record["log"], *[r["artifact"] for r in record["readset"]],
                         *([record["junit"]] if record["junit"] else []),
                         *[r["artifact"] for r in record.get("generated_outputs", [])]]
