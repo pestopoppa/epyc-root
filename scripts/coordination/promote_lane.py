@@ -479,9 +479,12 @@ def _commit_message(req: dict, base: str, head: str, gate: dict) -> str:
 def cmd_promote(args: argparse.Namespace) -> int:
     try:
         req = load_request(args)
+        target = Path(args.target).resolve()
+        lock_dir = (Path(args.lock_dir) if args.lock_dir is not None
+                    else serialized_push.default_lock_dir(target))
         receipt = promote(
-            req, target=Path(args.target).resolve(), agent=args.agent,
-            lock_dir=Path(args.lock_dir), apply=args.apply,
+            req, target=target, agent=args.agent,
+            lock_dir=lock_dir, apply=args.apply,
             operator_ack=args.operator_ack, dwell_s=args.dwell_s,
             repo_key_name=args.repo_key)
     except PromotionRefused as exc:
@@ -515,8 +518,8 @@ def build_parser() -> argparse.ArgumentParser:
     c.add_argument("--request-json", help="promotion row JSON (or '-' for stdin)")
     c.add_argument("--target", default=os.environ.get("EPYC_PROMOTE_TARGET", DEFAULT_TARGET),
                    help="the worktree to promote INTO (default: %(default)s)")
-    c.add_argument("--lock-dir", default=os.environ.get(
-        "SERIALIZED_PUSH_LOCK_DIR", str(serialized_push.DEFAULT_LOCK_DIR)))
+    c.add_argument("--lock-dir", default=os.environ.get("SERIALIZED_PUSH_LOCK_DIR") or None,
+                   help="override the shared git-common-dir promotion lock directory")
     c.add_argument("--repo-key", default="epyc-root", choices=sorted(merge_gate.REPO_PATHS),
                    help="which repo's rules the merge gate applies (default: %(default)s)")
     c.add_argument("--operator-ack",

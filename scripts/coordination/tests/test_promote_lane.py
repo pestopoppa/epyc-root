@@ -38,6 +38,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -442,6 +443,44 @@ class SourceDisciplineTests(unittest.TestCase):
         self.assertLess(self.code.index("check_only=True"),
                         self.code.index("check_only=False"),
                         "the --check must precede the real apply")
+
+
+class DefaultLockDirectoryTests(PromoteTestCase):
+    """Exercise CLI resolution without applying any promotion."""
+
+    def cli_lock_dir(self, target: Path, *options: str, env_dir: str = "") -> Path:
+        with patch.dict(os.environ, {"SERIALIZED_PUSH_LOCK_DIR": env_dir}), \
+                patch.object(pl, "load_request", return_value={}), \
+                patch.object(pl, "promote", return_value={"already_promoted": True}) as promote:
+            self.assertEqual(pl.main(["promote", "--agent", "test",
+                                      "--target", str(target), *options]), 0)
+        return promote.call_args.kwargs["lock_dir"]
+
+    def test_two_worktree_defaults_contend_for_one_promotion_lease(self) -> None:
+        lane_a = self.add_lane("lock-lane-a")
+        lane_b = self.add_lane("lock-lane-b")
+        dir_a = self.cli_lock_dir(lane_a)
+        dir_b = self.cli_lock_dir(lane_b)
+        self.assertEqual(dir_a, serialized_push.default_lock_dir(self.target))
+        self.assertEqual(dir_a, dir_b)
+        key_a = serialized_push.repo_key(lane_a)
+        key_b = serialized_push.repo_key(lane_b)
+        serialized_push.acquire(dir_a, key_a, "main-a", str(lane_a), name=pl.LOCK_NAME)
+        try:
+            with self.assertRaises(serialized_push.LockHeldError):
+                serialized_push.acquire(dir_b, key_b, "main-b", str(lane_b), name=pl.LOCK_NAME)
+        finally:
+            serialized_push.release(dir_a, key_a, "main-a", name=pl.LOCK_NAME)
+        self.assertEqual(git(self.target, "rev-parse", "HEAD").strip(), self.base)
+
+    def test_environment_override_is_preserved(self) -> None:
+        override = self.tmp / "env-locks"
+        self.assertEqual(self.cli_lock_dir(self.target, env_dir=str(override)), override)
+
+    def test_cli_override_wins_over_environment(self) -> None:
+        override = self.tmp / "cli-locks"
+        self.assertEqual(self.cli_lock_dir(self.target, "--lock-dir", str(override),
+                                           env_dir=str(self.tmp / "env-locks")), override)
 
 
 if __name__ == "__main__":
