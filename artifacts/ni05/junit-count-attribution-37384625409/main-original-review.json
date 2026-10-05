@@ -1,0 +1,48 @@
+{
+  "schema": "ni05.main_review.v1",
+  "run_id": 37384625409,
+  "artifact_zip_count": 6,
+  "zip_members_byte_compared": 182,
+  "records": [
+    {
+      "phase": "whole-six-expected-null",
+      "receipt_file_sha256": "e6eeab2896dfd87e37f0f928e9c5aafb364bfdfcb2cb6b79586aaaafda977b44",
+      "embedded_self_hash": "9a897384624a26bbea3fcfd207f4e141e23520881e6d061729be2efbc0d63fd6",
+      "native_outcome": null,
+      "suite_tests": 12,
+      "testcase_nodes": 6,
+      "git_inputs": 13,
+      "external_inputs": 7,
+      "grade": null,
+      "postchecks": {
+        "app_source_unchanged": true,
+        "lock_unchanged": true,
+        "kernel_paths_absent": true,
+        "host_paths_absent": true
+      }
+    },
+    {
+      "phase": "four-method-control",
+      "receipt_file_sha256": "056d2487f3cc21d02f37c5133c53ee9f25e686313b7d138a15c06b03a230719d",
+      "embedded_self_hash": "cd7210826fb7ca2fb8daa2f33ada29c30681fcc9387f8b551c5d75c016ab7d21",
+      "native_outcome": true,
+      "suite_tests": 4,
+      "testcase_nodes": 4,
+      "git_inputs": 13,
+      "external_inputs": 7,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "postchecks": {
+        "app_source_unchanged": true,
+        "lock_unchanged": true,
+        "kernel_paths_absent": true,
+        "host_paths_absent": true
+      }
+    }
+  ],
+  "review_is_derivative": true,
+  "historical_xml_unchanged": true,
+  "strict_count_grammar_unchanged": true
+}

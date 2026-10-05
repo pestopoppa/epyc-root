@@ -1,0 +1,210 @@
+name: NI67 unchanged native JUnit attribution and four-method control
+on:
+  push:
+    branches: [codex/ni67-native-count-attribution-20261005]
+    paths: [.github/workflows/ni67-native-count-attribution.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ni67-native-count-attribution-20261005
+  cancel-in-progress: false
+env:
+  ROOT_SHA: 61453ea335028acba69536d680023d5ef59ef47e
+  APP_SHA: f884406e76d12a98254372a819e1fa6248c9223c
+  LOCK_SHA: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        phase: [whole-six-expected-null, four-method-control]
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PHASE: ${{ matrix.phase }}
+    steps:
+      - name: Checkout immutable recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout exact unchanged APP
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: f884406e76d12a98254372a819e1fa6248c9223c
+          path: app
+          persist-credentials: false
+      - name: Checkout immutable native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 61453ea335028acba69536d680023d5ef59ef47e
+          path: producer
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+      - name: Set up reviewed uv version
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+      - name: Establish private scope and source custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          scope="$RUNNER_TEMP/ni67-$PHASE-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$scope" && test ! -L "$scope"
+          mkdir -m 700 "$scope"
+          mkdir -m 700 "$scope/originals" "$scope/cache" "$scope/tmp" "$scope/cache/install-tmp"
+          printf 'NI67_SCOPE=%s\nUV_PROJECT_ENVIRONMENT=%s/venv\nUV_CACHE_DIR=%s/cache\nTMPDIR=%s/tmp\n' "$scope" "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do
+            test ! -e "$scope/$leaf" && test ! -L "$scope/$leaf"
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/unavailable-cpu\nORCHESTRATOR_PATHS_LLAMA_MTMD=%s/unavailable-mtmd\nORCHESTRATOR_PATHS_LLAMA_SERVER=%s/unavailable-server\n' "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = .github/workflows/ni67-native-count-attribution.yml
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          printf '%s\n' "$HOME" > "$scope/originals/home-before.txt"
+          cp .github/workflows/ni67-native-count-attribution.yml "$scope/originals/workflow.yml"
+          git -C app ls-tree -r --full-tree HEAD > "$scope/originals/app-ls-tree.txt"
+          sha256sum app/uv.lock > "$scope/originals/lock-before.sha256"
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          python - "$scope/originals/context.json" <<'PYCONTEXT'
+          import json, os, pathlib, sys
+          facts=dict(line.split(':',1) for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if ':' in line)
+          scope=pathlib.Path(os.environ['RUNNER_TEMP']) / ('ni67-'+os.environ['PHASE']+'-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({'phase':os.environ['PHASE'],'app_sha':os.environ['APP_SHA'],'root_sha':os.environ['ROOT_SHA'],'scope':str(scope),'scope_mode':oct(scope.stat().st_mode & 0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'synthetic_RAM_override':False,'source_changes':False,'kernel_overrides':'three absent paths; no execution','HOME':os.environ['HOME'],'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'selected_methods':(['tests/unit/test_makefile_gate_contract.py'] if os.environ['PHASE']=='whole-six-expected-null' else ['test_configured_markdown_failure_is_not_retried_without_config','test_dead_numerics_targets_are_removed','test_explicit_reindex_fails_when_service_is_unavailable','test_gates_check_without_mutating_or_contacting_service'])},sort_keys=True)+'\n')
+          PYCONTEXT
+      - name: Install frozen dependencies off-host
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          cd app
+          set +e
+          TMPDIR="$NI67_SCOPE/cache/install-tmp" timeout --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev --no-install-project > "$NI67_SCOPE/originals/install.stdout" 2> "$NI67_SCOPE/originals/install.stderr"
+          install_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$install_rc" > "$NI67_SCOPE/originals/install-status.json"
+          test "$install_rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" -c 'import pytest; assert pytest.__version__ == "9.0.3"; print(pytest.__version__)' > "$NI67_SCOPE/originals/pytest-version.txt"
+      - name: Retain install originals before native phase
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni67-${{ matrix.phase }}-install-${{ github.run_id }}
+          path: ${{ env.NI67_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Capture native originals using unchanged producer CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          selections=(tests/unit/test_makefile_gate_contract.py)
+          if [ "$PHASE" = four-method-control ]; then
+            prefix='tests/unit/test_makefile_gate_contract.py::MakefileGateContractTests::'
+            selections=("${prefix}test_configured_markdown_failure_is_not_retried_without_config" "${prefix}test_dead_numerics_targets_are_removed" "${prefix}test_explicit_reindex_fails_when_service_is_unavailable" "${prefix}test_gates_check_without_mutating_or_contacting_service")
+          fi
+          arguments=()
+          for selection in "${selections[@]}"; do arguments+=(--select "$selection"); done
+          reads=()
+          for file in "$GITHUB_WORKSPACE/.github/workflows/ni67-native-count-attribution.yml" "$NI67_SCOPE/originals/context.json" "$NI67_SCOPE/originals/install.stdout" "$NI67_SCOPE/originals/install.stderr" "$NI67_SCOPE/originals/install-status.json" "$NI67_SCOPE/originals/pytest-version.txt" "$NI67_SCOPE/originals/app-ls-tree.txt" "$NI67_SCOPE/originals/lock-before.sha256" "$GITHUB_WORKSPACE/producer/scripts/ci/native_conformance.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/adapters/__init__.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/adapters/ci_conformance.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/claim_tuple.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/canonical.py" "$GITHUB_WORKSPACE/producer/scripts/vidya/frames.py" "$GITHUB_WORKSPACE/app/tests/unit/test_makefile_gate_contract.py" "$GITHUB_WORKSPACE/app/Makefile" "$GITHUB_WORKSPACE/app/uv.lock" "$GITHUB_WORKSPACE/app/pyproject.toml" "$GITHUB_WORKSPACE/app/tests/conftest.py" "$GITHUB_WORKSPACE/app/tests/unit/conftest.py"; do reads+=(--read-path "$file"); done
+          set +e
+          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$GITHUB_WORKSPACE/app" --junit "$NI67_SCOPE/originals/generated.xml" --output "$NI67_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" "${arguments[@]}" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI67_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$GITHUB_WORKSPACE/app" --junit-prefix=ni67 "${selections[@]}" --junitxml="$NI67_SCOPE/originals/generated.xml" > "$NI67_SCOPE/originals/producer.stdout" 2> "$NI67_SCOPE/originals/producer.stderr"
+          producer_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$producer_rc" > "$NI67_SCOPE/originals/producer-status.json"
+          NI67_PRODUCER_RC="$producer_rc" "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYVERIFY'
+          import json, os, pathlib, sys, xml.etree.ElementTree as ET
+          source=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'producer'
+          sys.path.insert(0,str(source))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          base=pathlib.Path(os.environ['NI67_SCOPE'])/'originals'; receipt=base/'native/receipt.json'
+          r, receipt_digest=read_receipt(receipt); rows=native_rows(receipt)
+          assert r['repositories']=={'app':os.environ['APP_SHA'],'producer':os.environ['ROOT_SHA'],'recipe':os.environ['GITHUB_SHA']}
+          prefix='tests/unit/test_makefile_gate_contract.py::MakefileGateContractTests::'
+          methods=['test_configured_markdown_failure_is_not_retried_without_config','test_dead_numerics_targets_are_removed','test_explicit_reindex_fails_when_service_is_unavailable','test_gates_check_without_mutating_or_contacting_service']
+          expected_selections=['tests/unit/test_makefile_gate_contract.py'] if os.environ['PHASE']=='whole-six-expected-null' else [prefix+n for n in methods]
+          assert r['selections']==expected_selections
+          assert r['argv'].count('env')==1 and '-i' in r['argv'] and 'HOME='+os.environ['HOME'] in r['argv']
+          assert not any(arg.startswith('PYTHONPATH=') for arg in r['argv'])
+          x=ET.fromstring((base/'native/original-junit.xml').read_bytes()); suite=next(x.iter('testsuite')); cases=list(x.iter('testcase'))
+          assert r['exit_code']==0
+          assert all(not list(c) for c in cases)
+          if os.environ['PHASE']=='whole-six-expected-null':
+              assert int(os.environ['NI67_PRODUCER_RC'])==1
+              assert r['fixture_execution_conformant'] is None and r['summary'] is None
+              assert r['diagnostic']=='inconsistent JUnit suite counts'
+              assert rows==()
+              assert suite.attrib['tests']=='12' and len(cases)==6
+          else:
+              assert int(os.environ['NI67_PRODUCER_RC'])==0
+              assert r['fixture_execution_conformant'] is True and r['diagnostic']==''
+              assert r['summary']['counts']=={'passed':4,'failure':0,'error':0,'skipped':0,'collected':4,'executed':4}
+              assert suite.attrib['tests']=='4' and len(cases)==4
+              assert {c.attrib['name'] for c in cases}==set(methods)
+              assert len(rows)==1
+              tup=project_ci_conformance(rows[0]); q,t,reasons=grade(tup)
+              assert (q,t)==('Judged','Located')
+              (base/'shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_rows':len(rows),'receipt_digest':receipt_digest})+'\n')
+          (base/'prospective-expectation-check.json').write_text(json.dumps({'phase':os.environ['PHASE'],'expected_original_shape_observed':True,'producer_outcome':r['fixture_execution_conformant'],'suite_tests':int(suite.attrib['tests']),'testcase_nodes':len(cases),'historical_xml_modified':False})+'\n')
+          PYVERIFY
+      - name: Retain phase native originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni67-${{ matrix.phase }}-native-${{ github.run_id }}
+          path: ${{ env.NI67_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Independently retain absent-path and unchanged-source postchecks
+        if: always() && env.NI67_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          git -C app status --porcelain=v1 --untracked-files=all > "$NI67_SCOPE/originals/app-poststatus.txt"
+          git -C producer status --porcelain=v1 --untracked-files=all > "$NI67_SCOPE/originals/producer-poststatus.txt"
+          test ! -s "$NI67_SCOPE/originals/app-poststatus.txt"
+          test ! -s "$NI67_SCOPE/originals/producer-poststatus.txt"
+          test "$HOME" = "$(cat "$NI67_SCOPE/originals/home-before.txt")"
+          python - <<'PYMODES'
+          import os, pathlib, stat
+          root=pathlib.Path(os.environ['NI67_SCOPE'])/'originals'; uid=os.getuid()
+          for p in (root,*root.rglob('*')):
+              info=p.lstat()
+              assert info.st_uid==uid and not p.is_symlink()
+              assert stat.S_IMODE(info.st_mode)==(0o700 if p.is_dir() else 0o600), (str(p),oct(info.st_mode))
+          PYMODES
+          git -C app diff --exit-code HEAD > "$NI67_SCOPE/originals/app-postdiff.stdout"
+          git -C producer diff --exit-code HEAD > "$NI67_SCOPE/originals/producer-postdiff.stdout"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do test ! -e "$NI67_SCOPE/$leaf" && test ! -L "$NI67_SCOPE/$leaf"; done
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test "$(stat -c '%a' "$NI67_SCOPE")" = 700
+          test "$(stat -c '%u' "$NI67_SCOPE")" = "$(id -u)"
+          printf '{"app_source_unchanged":true,"lock_unchanged":true,"kernel_paths_absent":true,"host_paths_absent":true}\n' > "$NI67_SCOPE/originals/postchecks.json"
+      - name: Retain independent postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni67-${{ matrix.phase }}-postcheck-${{ github.run_id }}
+          path: ${{ env.NI67_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
