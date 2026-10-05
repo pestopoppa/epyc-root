@@ -1,0 +1,251 @@
+name: NI41 optional evaluation-scoring lock preparation
+
+on:
+  push:
+    branches:
+      - codex/ni41-eval-scoring-lock-prep-20261005
+
+permissions:
+  contents: read
+
+env:
+  APP_SOURCE_SHA: 2273373b2b7d157ef1462897656bd385227ddb59
+  RUN_ROOT: artifacts/ni41-eval-scoring-lock/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  prepare-lock:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout immutable recipe source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+
+      - name: Checkout exact orchestrator candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 2
+          path: app
+
+      - name: Verify source pins and approved one-file delta
+        run: |
+          python - <<'PY'
+          import subprocess
+          import tomllib
+          from pathlib import Path
+
+          app = Path("app")
+          def git(*args):
+              return subprocess.check_output(["git", "-C", str(app), *args])
+
+          assert subprocess.check_output(["git", "-C", "recipe", "rev-parse", "HEAD"], text=True).strip() == __import__("os").environ["GITHUB_SHA"]
+          assert git("rev-parse", "HEAD").decode().strip() == __import__("os").environ["APP_SOURCE_SHA"]
+          assert git("rev-parse", "HEAD^").decode().strip() == "db38737d63363a059212820aaac40b4026f82b51"
+          paths = git("diff-tree", "--no-commit-id", "--name-only", "-r", "HEAD").decode().splitlines()
+          assert paths == ["pyproject.toml"], paths
+          parent = git("show", "HEAD^:pyproject.toml")
+          marker = b']\ntoon = ['
+          insertion = b']\neval-scoring = [\n    "math-verify[antlr4_13_2]==0.9.0",\n]\ntoon = ['
+          assert parent.count(marker) == 1, "expected unique optional-extra insertion point"
+          assert (app / "pyproject.toml").read_bytes() == parent.replace(marker, insertion, 1), "pyproject delta differs from approved one-hunk edit"
+          parsed = tomllib.loads((app / "pyproject.toml").read_text())
+          assert parsed["project"]["optional-dependencies"]["eval-scoring"] == ["math-verify[antlr4_13_2]==0.9.0"]
+          subprocess.check_call(["git", "-C", str(app), "diff", "--check", "HEAD^", "HEAD"])
+          PY
+
+      - name: Set up locked resolver runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up pinned uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Preserve original lock inputs and source context
+        id: snapshot
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUN_ROOT"
+          cp app/pyproject.toml "$RUN_ROOT/pyproject.before.toml"
+          cp app/uv.lock "$RUN_ROOT/uv.before.lock"
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import platform
+          import subprocess
+          from pathlib import Path
+
+          root = Path(os.environ["RUN_ROOT"])
+          def digest(path: Path) -> str:
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+
+          python_version = platform.python_version()
+          uv_version = subprocess.check_output(["uv", "--version"], text=True).strip()
+          if python_version != "3.11.14" or uv_version != "uv 0.8.15":
+              raise SystemExit(f"resolver runtime mismatch: Python {python_version}; {uv_version}")
+          context = {
+              "schema": "ni41.optional_eval_scoring_lock_prep.v1",
+              "recipe_sha": os.environ["GITHUB_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_parent_sha": "db38737d63363a059212820aaac40b4026f82b51",
+              "python_observed": python_version,
+              "uv_observed": uv_version,
+              "resolver_command": "timeout --signal=TERM --kill-after=15s 600s uv lock --verbose (no --upgrade, no uv sync/install, no tests/imports)",
+              "requested_extra": "eval-scoring = math-verify[antlr4_13_2]==0.9.0",
+              "expected_math_verify_wheel_sha256": "3703e7c4885354027fa84409d762a596a2906d1fd4deb78361876bd905a76194",
+              "input_sha256": {
+                  "pyproject.toml": digest(root / "pyproject.before.toml"),
+                  "uv.lock": digest(root / "uv.before.lock"),
+              },
+              "scope": "dependency resolution only; no package installation, application import, test, service, or inference",
+          }
+          (root / "context.json").write_text(json.dumps(context, sort_keys=True, indent=2) + "\n")
+          PY
+          python --version | tee "$RUN_ROOT/python-version.txt"
+          uv --version | tee "$RUN_ROOT/uv-version.txt"
+
+      - name: Resolve only the declared optional dependency
+        id: resolve
+        working-directory: app
+        run: |
+          set +e
+          timeout --signal=TERM --kill-after=15s 600s uv lock --verbose > "$GITHUB_WORKSPACE/$RUN_ROOT/resolver.log" 2>&1
+          rc=$?
+          set -e
+          printf 'resolver_exit_code=%s\n' "$rc" > "$GITHUB_WORKSPACE/$RUN_ROOT/resolver-status.txt"
+          exit "$rc"
+
+      - name: Verify lock delta and pinned package metadata
+        if: ${{ always() && steps.resolve.outcome == 'success' }}
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import re
+          import tomllib
+          from pathlib import Path
+
+          app = Path("app")
+          artifact = Path(os.environ["RUN_ROOT"])
+          old = tomllib.loads((artifact / "uv.before.lock").read_text())
+          new = tomllib.loads((app / "uv.lock").read_text())
+          def norm(name):
+              return re.sub(r"[-_.]+", "-", name).lower()
+
+          def versions(lock):
+              out = {}
+              for package in lock.get("package", []):
+                  name = norm(package["name"])
+                  source = json.dumps(package.get("source", {}), sort_keys=True)
+                  out.setdefault(name, set()).add((package["version"], source))
+              return out
+
+          old_versions, new_versions = versions(old), versions(new)
+          changed = {
+              name: {"before": sorted(oldset), "after": sorted(new_versions.get(name, set()))}
+              for name, oldset in old_versions.items()
+              if not oldset.issubset(new_versions.get(name, set()))
+          }
+          if changed:
+              raise SystemExit("existing locked package versions/source changed: " + json.dumps(changed, sort_keys=True))
+
+          root_package = next(p for p in new["package"] if norm(p["name"]) == "epyc-orchestrator")
+          requested = root_package.get("optional-dependencies", {}).get("eval-scoring", [])
+          if requested != [{"name": "math-verify", "extra": ["antlr4-13-2"]}]:
+              raise SystemExit("lock does not encode the requested extra exactly: " + repr(requested))
+
+          packages = {}
+          for package in new.get("package", []):
+              packages.setdefault(norm(package["name"]), []).append(package)
+          reachable = set()
+          pending = [(norm(item["name"]), {norm(extra) for extra in item.get("extra", [])}) for item in requested]
+          traversed = set()
+          while pending:
+              name, selected_extras = pending.pop()
+              state = (name, tuple(sorted(selected_extras)))
+              if state in traversed:
+                  continue
+              traversed.add(state)
+              reachable.add(name)
+              for package in packages.get(name, []):
+                  edges = list(package.get("dependencies", []))
+                  for extra in selected_extras:
+                      edges.extend(package.get("optional-dependencies", {}).get(extra, []))
+                  for dependency in edges:
+                      child = norm(dependency["name"])
+                      reachable.add(child)
+                      pending.append((child, {norm(extra) for extra in dependency.get("extra", [])}))
+          added = sorted(set(new_versions) - set(old_versions))
+          unrelated_additions = sorted(set(added) - reachable)
+          if unrelated_additions:
+              raise SystemExit("unrelated new distributions appeared: " + repr(unrelated_additions))
+          unrelated_alternates = {
+              name: sorted(new_versions[name] - old_versions[name])
+              for name in set(old_versions) & set(new_versions)
+              if (new_versions[name] - old_versions[name]) and name not in reachable
+          }
+          if unrelated_alternates:
+              raise SystemExit("unrelated alternate locked identities appeared: " + json.dumps(unrelated_alternates, sort_keys=True))
+
+          mv = [p for p in packages.get("math-verify", []) if p["version"] == "0.9.0"]
+          latex = [p for p in packages.get("latex2sympy2-extended", []) if p["version"] == "1.11.0"]
+          antlr = [p for p in packages.get("antlr4-python3-runtime", []) if p["version"] == "4.13.2"]
+          if not (mv and latex and antlr):
+              raise SystemExit("required math-verify 0.9.0 / latex2sympy2_extended 1.11.0 / antlr 4.13.2 lock entries absent")
+          expected_hash = "sha256:3703e7c4885354027fa84409d762a596a2906d1fd4deb78361876bd905a76194"
+          wheel_hashes = {wheel.get("hash") for package in mv for wheel in package.get("wheels", [])}
+          if expected_hash not in wheel_hashes:
+              raise SystemExit("math-verify 0.9.0 wheel hash differs from reviewed PyPI artifact metadata")
+
+          report = {
+              "schema": "ni41.lock_delta_audit.v1",
+              "old_locked_distribution_identities_preserved": True,
+              "changed_existing_distributions": changed,
+              "added_distribution_names": added,
+              "new_dependency_closure": sorted(reachable),
+              "math_verify_version": mv[0]["version"],
+              "math_verify_wheel_sha256": expected_hash.removeprefix("sha256:"),
+              "latex2sympy2_extended_version": latex[0]["version"],
+              "antlr4_python3_runtime_version": antlr[0]["version"],
+              "pyproject_after_sha256": hashlib.sha256((app / "pyproject.toml").read_bytes()).hexdigest(),
+              "uv_lock_after_sha256": hashlib.sha256((app / "uv.lock").read_bytes()).hexdigest(),
+          }
+          (artifact / "lock-audit.json").write_text(json.dumps(report, sort_keys=True, indent=2) + "\n")
+          PY
+
+      - name: Preserve resolver outputs
+        if: always()
+        run: |
+          set -euo pipefail
+          if test -f app/pyproject.toml; then cp app/pyproject.toml "$RUN_ROOT/pyproject.after.toml"; fi
+          if test -f app/uv.lock; then cp app/uv.lock "$RUN_ROOT/uv.after.lock"; fi
+          if test -f "$RUN_ROOT/pyproject.after.toml"; then sha256sum "$RUN_ROOT/pyproject.after.toml" > "$RUN_ROOT/after-sha256.txt"; fi
+          if test -f "$RUN_ROOT/uv.after.lock"; then sha256sum "$RUN_ROOT/uv.after.lock" >> "$RUN_ROOT/after-sha256.txt"; fi
+
+      - name: Upload immutable dependency-preparation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni41-eval-scoring-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ env.RUN_ROOT }}/context.json
+            ${{ env.RUN_ROOT }}/pyproject.before.toml
+            ${{ env.RUN_ROOT }}/uv.before.lock
+            ${{ env.RUN_ROOT }}/pyproject.after.toml
+            ${{ env.RUN_ROOT }}/uv.after.lock
+            ${{ env.RUN_ROOT }}/uv-version.txt
+            ${{ env.RUN_ROOT }}/python-version.txt
+            ${{ env.RUN_ROOT }}/resolver.log
+            ${{ env.RUN_ROOT }}/resolver-status.txt
+            ${{ env.RUN_ROOT }}/lock-audit.json
+            ${{ env.RUN_ROOT }}/after-sha256.txt
+          if-no-files-found: warn
