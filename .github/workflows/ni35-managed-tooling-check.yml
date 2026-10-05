@@ -1,0 +1,185 @@
+name: NI35 managed-tooling receipt fixtures
+
+on:
+  push:
+    branches:
+      - codex/ni35-managed-tooling-wire-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  managed-tooling-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE_CANDIDATE: ${{ github.workspace }}/source-candidate
+      RECIPE_CHECKOUT: ${{ github.workspace }}/recipe
+      NI35_RUN_ROOT: ${{ github.workspace }}/.ni35-run-${{ github.run_id }}-${{ github.run_attempt }}
+      NI35_FIXTURE_ARTIFACT_ROOT: ${{ github.workspace }}/.ni35-run-${{ github.run_id }}-${{ github.run_attempt }}/managed-tooling-fixtures
+    steps:
+      - name: Checkout immutable source candidate
+        uses: actions/checkout@v4
+        with:
+          ref: 6a273b153d9d31e2c773f13789d44f7b0a994b39
+          path: source-candidate
+          fetch-depth: 1
+
+      - name: Checkout pinned fixture recipe and native carrier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.workflow_sha }}
+          path: recipe
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned fixture runner
+        run: python -m pip install pytest==9.1.1
+
+      - name: Capture native fixture execution and run selected tests
+        run: |
+          set -euo pipefail
+          umask 077
+          mkdir -m 700 "$NI35_RUN_ROOT"
+          runner_python="$(python3 --version 2>&1)"
+          cat > "$NI35_RUN_ROOT/fixture-context.md" <<EOF
+          Context: this is an off-host GitHub Actions fixture run using ${runner_python} selected by setup-python. The named import checks execute against synthetic module fixtures; timeout cases create synthetic child processes. It makes no host-health, installation, production-kernel, inference, or performance claim.
+          EOF
+          chmod 600 "$NI35_RUN_ROOT/fixture-context.md"
+          mkdir -m 700 "$NI35_FIXTURE_ARTIFACT_ROOT"
+          output="$NI35_RUN_ROOT/native-receipt"
+          junit="$SOURCE_CANDIDATE/ni35-managed-tooling.junit.xml"
+          timeout --signal=TERM --kill-after=30s 240s \
+            python3 "$RECIPE_CHECKOUT/scripts/ci/native_conformance.py" \
+              --cwd "$SOURCE_CANDIDATE" \
+              --junit "$junit" \
+              --output "$output" \
+              --repo "source=$SOURCE_CANDIDATE" \
+              --repo "recipe=$RECIPE_CHECKOUT" \
+              --read-path "$SOURCE_CANDIDATE/scripts/session/managed_tooling_check.py" \
+              --read-path "$SOURCE_CANDIDATE/scripts/session/health_check.sh" \
+              --read-path "$SOURCE_CANDIDATE/scripts/vidya/adapters/managed_tooling_check.py" \
+              --read-path "$SOURCE_CANDIDATE/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$SOURCE_CANDIDATE/scripts/vidya/claim_tuple.py" \
+              --read-path "$SOURCE_CANDIDATE/scripts/vidya/cli.py" \
+              --read-path "$SOURCE_CANDIDATE/scripts/vidya/ingest_sources.py" \
+              --read-path "$SOURCE_CANDIDATE/tests/vidya/test_managed_tooling_check.py" \
+              --read-path "$SOURCE_CANDIDATE/tests/vidya/test_ingest_sources.py" \
+              --read-path "$NI35_RUN_ROOT/fixture-context.md" \
+              --read-path "$RECIPE_CHECKOUT/.github/workflows/ni35-managed-tooling-check.yml" \
+              --read-path "$RECIPE_CHECKOUT/scripts/ci/native_conformance.py" \
+              --select tests/vidya/test_managed_tooling_check.py \
+              --select tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift \
+              --select tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption \
+              --generated-output ni35-managed-tooling.junit.xml \
+              --generated-output ni35-managed-tooling.pytest.log \
+              -- timeout --signal=TERM --kill-after=30s 180s \
+                python3 -m pytest -q \
+                  tests/vidya/test_managed_tooling_check.py \
+                  tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift \
+                  tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption \
+                  --junitxml=ni35-managed-tooling.junit.xml \
+                  --log-file=ni35-managed-tooling.pytest.log \
+                  --log-file-level=INFO
+
+      - name: Reopen outer and synthetic import receipts through the reader and grade
+        if: success()
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$SOURCE_CANDIDATE/scripts/vidya:$RECIPE_CHECKOUT/scripts/ci" \
+            SOURCE_CANDIDATE="$SOURCE_CANDIDATE" \
+            NI35_FIXTURE_ARTIFACT_ROOT="$NI35_FIXTURE_ARTIFACT_ROOT" \
+            python3 - <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          source = Path(os.environ["SOURCE_CANDIDATE"])
+          sys.path.insert(0, str(source / "scripts" / "vidya"))
+          sys.path.insert(0, str(Path(os.environ["RECIPE_CHECKOUT"]) / "scripts" / "ci"))
+          from adapters import ci_conformance, managed_tooling_check as adapter
+          from claim_tuple import grade
+
+          root = Path(os.environ["NI35_FIXTURE_ARTIFACT_ROOT"])
+          native_receipt = Path(os.environ["NI35_RUN_ROOT"]) / "native-receipt" / "receipt.json"
+          outer_rows = ci_conformance.native_rows(native_receipt)
+          assert len(outer_rows) == 1
+          outer_claim = ci_conformance.project_ci_conformance(outer_rows[0])
+          outer = outer_rows[0]["record"]
+          assert outer_claim.value is True and grade(outer_claim)[:2] == ("Judged", "Located")
+          assert outer["fixture_execution_conformant"] is True, outer["diagnostic"]
+          assert outer["summary"]["counts"] == {
+              "passed": 11, "failure": 0, "error": 0, "skipped": 0,
+              "collected": 11, "executed": 11,
+          }, outer["summary"]
+
+          def captured(name):
+              candidates = sorted((root / name / "capture").glob("*/receipt.json"))
+              assert len(candidates) == 1, (name, candidates)
+              return candidates[0]
+
+          expected = {
+              "positive": (True, "Judged", "Located"),
+              "missing-module": (False, "Judged", "Located"),
+          }
+          for name, (value, status, location) in expected.items():
+              rows = adapter.native_rows(captured(name))
+              assert len(rows) == 1, (name, rows)
+              claim = adapter.project_managed_tooling_check(rows[0])
+              assert claim.value is value and grade(claim)[:2] == (status, location)
+
+          for name in ("missing-interpreter", "missing-check-source", "source-drift", "timeout"):
+              assert adapter.native_rows(captured(name)) == (), name
+
+          for name in ("wrong-interpreter", "metadata-contradiction", "capture-status-contradiction"):
+              receipt = root / "reseal-controls" / "capture" / name / "receipt.json"
+              try:
+                  adapter.native_rows(receipt)
+              except adapter.ProjectionError:
+                  pass
+              else:
+                  raise AssertionError(f"mutated reseal fixture was accepted: {name}")
+
+          collision = captured("seal-failure")
+          try:
+              adapter.native_rows(collision)
+          except adapter.ProjectionError:
+              pass
+          else:
+              raise AssertionError("receipt seal-collision fixture was accepted")
+          print("outer receipt and TRUE/FALSE/NULL/refusal capsules reopened and graded")
+          PY
+
+      - name: Archive synthetic receipts, original JUnit, and pytest log
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          members=()
+          for member in \
+            ".ni35-run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/fixture-context.md" \
+            ".ni35-run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/native-receipt" \
+            ".ni35-run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}/managed-tooling-fixtures" \
+            "source-candidate/ni35-managed-tooling.junit.xml" \
+            "source-candidate/ni35-managed-tooling.pytest.log"; do
+            if [[ -e "$GITHUB_WORKSPACE/$member" ]]; then
+              members+=("$member")
+            fi
+          done
+          if ((${#members[@]})); then
+            tar --format=posix --numeric-owner -cf \
+              "$GITHUB_WORKSPACE/ni35-synthetic-managed-tooling-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.tar" \
+              -C "$GITHUB_WORKSPACE" "${members[@]}"
+          fi
+
+      - name: Upload synthetic native receipt archive
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni35-synthetic-managed-tooling-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ni35-synthetic-managed-tooling-${{ github.run_id }}-${{ github.run_attempt }}.tar
+          if-no-files-found: warn
+          retention-days: 30
