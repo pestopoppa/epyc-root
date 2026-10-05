@@ -10,7 +10,7 @@ from claim_tuple import ClaimTuple, ProjectionError, register
 ADAPTER_ID = 'vidya.adapters.evidence_durability/v1'
 AUTHORITY = 'diagnostic_no_promotion'
 SCHEMA = 'epyc.evidence_durability_scan.v1'
-PRODUCER_SHA256 = '47846292cdb2a9e5e3d4ab81dc49f6bebdd90db137a4805debec1b76e5489067'
+PRODUCER_SHA256 = 'c46aa7f76064782f03b0db388bef220f301f6ff6d7d397c2e2274eac84eadc10'
 DETERMINATE = {'OK': True, 'EPHEMERAL': False, 'MISSING': False, 'UNREADABLE': False}
 QUALIFIED = {'WITHHELD', 'PRESENT_IN_MAIN_CLONE', 'WAIVED_LOST'}
 
@@ -49,12 +49,14 @@ def native_rows(path):
         for row in rows:
             _require(sources.get(row['source']) == row['source_sha256'], 'source/readset binding')
             _require(type(row['line']) is int and row['line'] > 0 and bool(row['target']), 'target locator')
-            proposition = (f"The evidence reference {row['target']!r} from {row['source']!r}:{row['line']} "
-                           "resolves on this host through the checker's declared "
+            verdict = row['verdict']
+            outcome = 'true' if verdict == 'OK' else ('false' if verdict in DETERMINATE else 'unknown')
+            proposition = (f"The declared durable-resolution criterion for evidence reference {row['target']!r} "
+                           f"from {row['source']!r}:{row['line']} evaluated {outcome} with native verdict {verdict}; "
+                           "the criterion is resolution on this host through the checker's declared "
                            "repo/main-clone resolution rules to a readable artifact outside "
                            "the checker's configured scratch roots.")
             _require(row['decided_proposition'] == proposition, 'producer proposition binding')
-            verdict = row['verdict']
             _require(verdict in DETERMINATE or verdict in QUALIFIED, 'unknown verdict')
             _require((type(row['result']) is bool and row['result'] == DETERMINATE[verdict])
                      if verdict in DETERMINATE else row['result'] is None, 'verdict/result binding')
