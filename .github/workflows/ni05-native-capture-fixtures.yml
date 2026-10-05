@@ -1,0 +1,33 @@
+name: NI05 native capture fixtures
+on:
+  push:
+    branches: ['codex/ni-ci-capture-*']
+permissions:
+  contents: read
+jobs:
+  native-capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -m pip install pytest==9.1.1
+      - name: Original execution and hostile receipt fixtures (no inference)
+        run: |
+          python scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE" --junit native-capture.xml --output native-receipt \
+            --repo "root=$GITHUB_WORKSPACE" \
+            --read-path tests/vidya/test_ci_conformance.py \
+            --read-path scripts/vidya/adapters/ci_conformance.py \
+            --read-path .github/workflows/ni05-native-capture-fixtures.yml \
+            --select tests/vidya/test_ci_conformance.py \
+            -- python -m pytest -q tests/vidya/test_ci_conformance.py --junitxml=native-capture.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-capture-fixture-results
+          path: |
+            native-capture.xml
+            native-receipt/
