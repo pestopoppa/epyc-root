@@ -1,0 +1,117 @@
+name: NI28 kernel-store receipt fixture
+
+on:
+  push:
+    branches:
+      - codex/ni28-kernel-store-receipt-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  selected-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Checkout pinned parity baseline
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: 3872413fbcf0c945f44b8ca46df48f82adbb1c5e
+          path: baseline-root
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install selected-test dependency
+        run: python -m pip install pytest==9.1.1
+
+      - name: Capture selected native fixture command
+        id: capture
+        env:
+          NI28_BASELINE_CHECKOUT: ${{ github.workspace }}/baseline-root
+        run: |
+          set -euo pipefail
+          capture_dir="$RUNNER_TEMP/ni28-kernel-store-capture"
+          junit_path="$RUNNER_TEMP/ni28-kernel-store-junit.xml"
+          python3 scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE" \
+            --junit "$junit_path" \
+            --output "$capture_dir" \
+            --repo "candidate=$GITHUB_WORKSPACE" \
+            --repo "baseline=$NI28_BASELINE_CHECKOUT" \
+            --read-path "$GITHUB_WORKSPACE/.github/workflows/ni28-kernel-store-receipt.yml" \
+            --read-path "$GITHUB_WORKSPACE/tests/conftest.py" \
+            --read-path "$GITHUB_WORKSPACE/pytest.ini" \
+            --read-path "$GITHUB_WORKSPACE/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/session/verify_kernel_store.sh" \
+            --read-path "$GITHUB_WORKSPACE/scripts/session/kernel_store_receipt.py" \
+            --read-path "$GITHUB_WORKSPACE/tests/test_kernel_store_receipt.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/vidya/cli.py" \
+            --read-path "$GITHUB_WORKSPACE/.claude/dependency-map.json" \
+            --read-path "$NI28_BASELINE_CHECKOUT/scripts/session/verify_kernel_store.sh" \
+            --select tests/test_kernel_store_receipt.py \
+            --generated-output ni28-kernel-store.pytest.log \
+            -- /usr/bin/timeout --signal=TERM --kill-after=30s 120s \
+              python3 -m pytest -q -p no:cacheprovider \
+              tests/test_kernel_store_receipt.py \
+              --log-file ni28-kernel-store.pytest.log --log-file-mode w \
+              --junitxml "$junit_path"
+
+      - name: Upload captured request, source readset, log and original JUnit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni28-kernel-store-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni28-kernel-store-capture/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Verify retained native receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          capture_dir="$RUNNER_TEMP/ni28-kernel-store-capture"
+          validation_log="$RUNNER_TEMP/ni28-kernel-store-validation.log"
+          receipt="$capture_dir/receipt.json"
+          if [ ! -f "$receipt" ]; then
+            echo "REFUSED: native capture did not leave receipt.json" | tee "$validation_log"
+            exit 1
+          fi
+          python3 - "$receipt" >"$validation_log" 2>&1 <<'PY'
+          import sys
+          from pathlib import Path
+          from scripts.ci.native_conformance import read_receipt
+
+          record, receipt_sha256 = read_receipt(Path(sys.argv[1]))
+          counts = record["summary"]["counts"]
+          if record["fixture_execution_conformant"] is not True:
+              raise SystemExit(f"fixture command did not pass: {record['diagnostic']}")
+          if counts["failure"] or counts["error"] or counts["skipped"]:
+              raise SystemExit(f"selected fixture cases were not all passing: {counts}")
+          print(f"VALID receipt_sha256={receipt_sha256}")
+          print(f"argv={record['argv']}")
+          print(f"repositories={record['repositories']}")
+          print(f"readset={record['readset']}")
+          print(f"counts={counts}")
+          PY
+
+      - name: Upload receipt-validation log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni28-kernel-store-validation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni28-kernel-store-validation.log
+          if-no-files-found: warn
+          retention-days: 14

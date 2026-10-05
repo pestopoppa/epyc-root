@@ -41,18 +41,31 @@ set -euo pipefail
 KERNEL_ROOT="${KERNEL_STORE_ROOT:-/mnt/raid0/llm/kernels}"
 PRODUCTION_ROOT="$KERNEL_ROOT/production"
 ARCHIVE_ROOT="$KERNEL_ROOT/archive"
+CAPTURE_MODE=""
+if [ "${1:-}" = "--capture-v1" ]; then
+    CAPTURE_MODE=1
+    shift
+fi
 
 # The authoritative backend -> binary map lives with the resolver that the
 # orchestrator actually uses. Hardcoding a copy here would drift silently the
 # first time a backend is added, and a verifier that checks a stale list reports
 # PASS over the one backend nobody verified.
-KERNEL_PATHS_PY=/mnt/raid0/llm/epyc-orchestrator/src/registry/kernel_paths.py
+if [ "$CAPTURE_MODE" = "1" ]; then
+    KERNEL_PATHS_PY="${KERNEL_STORE_CAPTURE_RESOLVER:-/mnt/raid0/llm/epyc-orchestrator/src/registry/kernel_paths.py}"
+else
+    KERNEL_PATHS_PY=/mnt/raid0/llm/epyc-orchestrator/src/registry/kernel_paths.py
+fi
 
 # The sanctioned ggml linkage verifier. Same absolute spelling as
 # verify_llama_cpp.sh, verify_speech_kernels.sh and orchestrator_stack.py's
 # _VERIFY_GGML_LINKAGE_SCRIPT, so all four enforce one file rather than four
 # drifting copies. It lives in the RESEARCH repo, not this one.
-LINKAGE=/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
+if [ "$CAPTURE_MODE" = "1" ]; then
+    LINKAGE="${KERNEL_STORE_CAPTURE_LINKAGE_VERIFIER:-/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh}"
+else
+    LINKAGE=/mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh
+fi
 
 RC=0
 
@@ -258,10 +271,18 @@ linkage() {
         ldpath="${LD_LIBRARY_PATH:-}"
     fi
 
-    set +e
-    out=$(LD_LIBRARY_PATH="$ldpath" bash "$LINKAGE" "$binary" "$target" 2>&1)
-    st=$?
-    set -e
+    if [ "$CAPTURE_MODE" = "1" ]; then
+        capture_verifier_output "$ldpath" "$binary" "$target"
+        capture_linkage "$key" launch "$st" "$binary" "$target" "$ldpath" "$out"
+    else
+        # Preserve the established ordinary-mode command substitution, status,
+        # and LD_LIBRARY_PATH assignment semantics byte-for-byte. Raw sentinel
+        # capture exists only for the explicit receipt producer.
+        set +e
+        out=$(LD_LIBRARY_PATH="$ldpath" bash "$LINKAGE" "$binary" "$target" 2>&1)
+        st=$?
+        set -e
+    fi
 
     # Non-vacuity, counted here as well as inside the verifier. The verifier gained
     # an intrinsic gate (exit 2) on 2026-08-12; counting anyway keeps this script's
@@ -297,16 +318,57 @@ linkage() {
     # orchestrator always prepends, so a poisoned ambient path only bites a
     # hand-run binary or a harness that forgets — worth knowing, not worth red.
     if [ "$needs_prepend" = "1" ]; then
-        set +e
-        out=$(bash "$LINKAGE" "$binary" "$target" 2>&1)
-        st=$?
-        set -e
+        ambient_ldpath="${LD_LIBRARY_PATH:-}"
+        if [ "$CAPTURE_MODE" = "1" ]; then
+            capture_verifier_output "$ambient_ldpath" "$binary" "$target"
+            capture_linkage "$key" ambient "$st" "$binary" "$target" "$ambient_ldpath" "$out"
+        else
+            set +e
+            out=$(bash "$LINKAGE" "$binary" "$target" 2>&1)
+            st=$?
+            set -e
+        fi
         if [ "$st" -ne 0 ]; then
             echo "  WARN $key: ambient LD_LIBRARY_PATH mis-resolves this kernel (rc=$st)."
             echo "         Harmless for orchestrator launches, which prepend; NOT harmless"
             echo "         for anything hand-run from such a shell."
         fi
     fi
+}
+
+# Capture stdout+stderr and the child status without command substitution
+# trimming the verifier's trailing newline bytes. The sentinel is stripped
+# after substitution and never reaches either ordinary output or the receipt.
+capture_verifier_output() {
+    local ldpath="$1" binary="$2" target="$3" captured
+    set +e
+    captured=$(LD_LIBRARY_PATH="$ldpath" bash "$LINKAGE" "$binary" "$target" 2>&1; \
+        local_rc=$?; printf '\034NI28_RC:%s' "$local_rc")
+    set -e
+    case "$captured" in
+        *$'\034NI28_RC:'*)
+            st="${captured##*$'\034NI28_RC:'}"
+            out="${captured%$'\034NI28_RC:'*}"
+            ;;
+        *)
+            st=125
+            out="$captured"
+            ;;
+    esac
+}
+
+# Receipt-only raw child capture. The marker is ignored by the normal caller and
+# is emitted only when the explicit leaf producer sets CAPTURE_MODE=1.
+capture_linkage() {
+    [ "$CAPTURE_MODE" = "1" ] || return 0
+    local backend="$1" phase="$2" status="$3" binary="$4" target="$5" ldpath="$6" output="$7"
+    local b64_binary b64_target b64_ldpath b64_output
+    b64_binary=$(printf '%s' "$binary" | base64 | tr -d '\n')
+    b64_target=$(printf '%s' "$target" | base64 | tr -d '\n')
+    b64_ldpath=$(printf '%s' "$ldpath" | base64 | tr -d '\n')
+    b64_output=$(printf '%s' "$output" | base64 | tr -d '\n')
+    printf '__NI28_LINKAGE_CAPTURE_V1__\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n' \
+        "$backend" "$phase" "$status" "$b64_binary" "$b64_target" "$b64_ldpath" "$b64_output"
 }
 
 echo "=== kernel store: $PRODUCTION_ROOT ==="
