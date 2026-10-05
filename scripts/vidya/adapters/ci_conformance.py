@@ -9,6 +9,7 @@ from scripts.ci.native_conformance import read_receipt
 from claim_tuple import ClaimTuple, ProjectionError, register
 
 ADAPTER_ID = "vidya.adapters.ci_conformance/v1"
+AUTHORITY = "ci_fixture_observation_no_inference_no_promotion"
 
 
 def native_rows(path):
