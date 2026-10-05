@@ -174,7 +174,9 @@ def test_changed_original_score_bytes_are_refused(tmp_path):
     output.chmod(0o600)
     output.write_bytes(output.read_bytes() + b" ")
     output.chmod(0o400)
-    with pytest.raises(adapter.ProjectionError, match="original digest"):
+    with pytest.raises(ValueError, match="bytes differ from their original digest"):
+        adapter.read_receipt(receipt)
+    with pytest.raises(adapter.ProjectionError, match="custody refused"):
         adapter.native_rows(receipt)
 
 
@@ -193,7 +195,9 @@ def test_resealed_metric_that_contradicts_per_task_rows_is_refused(tmp_path):
     record["scored_output"]["sha256"] = hashlib.sha256(output_bytes).hexdigest()
     record["scored_output"]["size"] = len(output_bytes)
     _reseal_receipt(receipt, record)
-    with pytest.raises(adapter.ProjectionError, match="aggregate metric differs"):
+    with pytest.raises(ValueError, match="aggregate metric differs from per-task macro values"):
+        adapter.read_receipt(receipt)
+    with pytest.raises(adapter.ProjectionError, match="custody refused"):
         adapter.native_rows(receipt)
 
 
@@ -202,7 +206,9 @@ def test_resealed_integrity_proposition_that_contradicts_request_is_refused(tmp_
     record = json.loads(receipt.read_bytes())
     record["integrity_proposition"] = "A resealed, invented proposition."
     _reseal_receipt(receipt, record)
-    with pytest.raises(adapter.ProjectionError, match="integrity result or proposition differs"):
+    with pytest.raises(ValueError, match="receipt integrity result or proposition differs"):
+        adapter.read_receipt(receipt)
+    with pytest.raises(adapter.ProjectionError, match="custody refused"):
         adapter.native_rows(receipt)
 
 
