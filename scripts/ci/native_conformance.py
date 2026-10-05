@@ -7,7 +7,7 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import platform
 import stat
 import subprocess
@@ -125,14 +125,60 @@ def artifact(directory, name, data):
     return {"name": name, "sha256": digest(data)}
 
 
-def capture_fixture_execution(*, argv, cwd, junit, output, repositories, read_paths, selections):
+def _generated_output_paths(paths):
+    if paths is not None and not isinstance(paths, (list, tuple)):
+        raise ValueError("generated output paths must be a list of normalized relative paths")
+    normalized = []
+    for value in paths or ():
+        if (not isinstance(value, str) or not value or "\\" in value or "\x00" in value
+                or (len(value) > 1 and value[1] == ":")):
+            raise ValueError("generated output paths must be nonempty normalized relative paths")
+        parsed = PurePosixPath(value)
+        if (parsed.is_absolute() or not parsed.parts or parsed.as_posix() != value
+                or any(part in {"", ".", ".."} for part in parsed.parts)):
+            raise ValueError("generated output paths must be nonempty normalized relative paths")
+        normalized.append(value)
+    if len(set(normalized)) != len(normalized):
+        raise ValueError("duplicate generated output path")
+    return normalized
+
+
+def _inside(path, root):
+    try:
+        path.relative_to(root)
+        return True
+    except ValueError:
+        return False
+
+
+def _generated_target(cwd, relative):
+    target = cwd.joinpath(*PurePosixPath(relative).parts)
+    if not _inside(target.parent.resolve(), cwd):
+        raise ValueError("generated output parent escapes execution cwd")
+    return target
+
+
+def capture_fixture_execution(*, argv, cwd, junit, output, repositories, read_paths, selections,
+                               generated_output_paths=None):
     if not argv or not selections or not repositories or not read_paths:
         raise ValueError("argv, explicit selections, repositories and readset required")
     producer = Path(__file__).resolve()
     read_paths = list(dict.fromkeys([producer, *[Path(path).resolve() for path in read_paths]]))
-    cwd, junit, output = Path(cwd).resolve(), Path(junit), Path(output)
+    cwd, junit, output = Path(cwd).resolve(), Path(junit), Path(output).resolve()
     if not junit.is_absolute():
         junit = cwd / junit
+    generated_output_paths = _generated_output_paths(generated_output_paths)
+    generated_targets = [_generated_target(cwd, name) for name in generated_output_paths]
+    resolved_junit = junit.parent.resolve() / junit.name
+    resolved_read_paths = {source.resolve() for source in read_paths}
+    for target in generated_targets:
+        resolved_target = target.parent.resolve() / target.name
+        if resolved_target == resolved_junit or resolved_target in resolved_read_paths:
+            raise ValueError("generated output collides with JUnit or declared readset")
+        if _inside(resolved_target, output) or _inside(output, resolved_target):
+            raise ValueError("generated output collides with capture artifacts")
+        if os.path.lexists(target):
+            raise ValueError("generated output already exists; no old-run capture")
     if os.path.lexists(junit):
         raise ValueError("JUnit output already exists; no old-run capture")
     output.mkdir(parents=True, exist_ok=False)
@@ -153,6 +199,8 @@ def capture_fixture_execution(*, argv, cwd, junit, output, repositories, read_pa
               "repositories": identities, "readset": readset, "exclusions": EXCLUSIONS,
               "metric": "fixture_execution_conformant", "metric_direction": "higher_better",
               "category": "CANDIDATE", "protocol_id": ""}
+    if generated_output_paths:
+        record["generated_output_paths"] = generated_output_paths
     # Persist the original recipe before launch; later readers never author its identity.
     record["request"] = artifact(output, "execution-request.json", canonical(record))
     # Exclusive log creation happens before the command. No ambient environment is persisted.
@@ -178,6 +226,19 @@ def capture_fixture_execution(*, argv, cwd, junit, output, repositories, read_pa
     except (OSError, ValueError, ET.ParseError) as exc:
         record["fixture_execution_conformant"] = None
         record["diagnostic"] = str(exc)
+    if generated_output_paths:
+        attachments = []
+        try:
+            for index, relative in enumerate(generated_output_paths):
+                target = _generated_target(cwd, relative)
+                data = regular_bytes(target)
+                pin = artifact(output, f"generated-output-{index:03d}.bin", data)
+                attachments.append({"path": relative, "artifact": pin})
+        except (OSError, ValueError) as exc:
+            record["fixture_execution_conformant"] = None
+            output_diagnostic = f"generated output capture failed: {exc}"
+            record["diagnostic"] = "; ".join(filter(None, (record["diagnostic"], output_diagnostic)))
+        record["generated_outputs"] = attachments
     record["decided_proposition"] = (proposition(record)
                                      if record["fixture_execution_conformant"] is not None else "")
     record["receipt_sha256"] = digest(canonical(record))
@@ -218,9 +279,42 @@ def read_receipt(path):
         if digest(regular_bytes(path.parent / name)) != pin["sha256"]:
             raise ValueError("original artifact digest mismatch")
     request = json.loads(regular_bytes(path.parent / record["request"]["name"]))
+    if not isinstance(request, dict):
+        raise ValueError("invalid original execution request")
     expected_fields = {"schema", "started_utc", "runner", "argv", "cwd", "selections",
                        "repositories", "readset", "exclusions", "metric", "metric_direction",
                        "category", "protocol_id"}
+    declared_outputs = request.get("generated_output_paths", [])
+    if "generated_output_paths" in request:
+        if not isinstance(declared_outputs, list) or _generated_output_paths(declared_outputs) != declared_outputs:
+            raise ValueError("invalid generated output declaration")
+        expected_fields.add("generated_output_paths")
+    if ("generated_output_paths" in record
+            and ("generated_output_paths" not in request or record["generated_output_paths"] != declared_outputs)):
+        raise ValueError("receipt generated output declarations differ from original request")
+    receipt_outputs = record.get("generated_outputs", [])
+    if not isinstance(receipt_outputs, list) or any(
+            not isinstance(item, dict) or set(item) != {"path", "artifact"} for item in receipt_outputs):
+        raise ValueError("invalid generated output attachments")
+    if declared_outputs and "generated_outputs" not in record:
+        raise ValueError("generated output extension is missing attachment records")
+    attached_paths = [item["path"] for item in receipt_outputs]
+    if (any(not isinstance(name, str) or name not in declared_outputs for name in attached_paths)
+            or attached_paths != declared_outputs[:len(attached_paths)]
+            or len(set(attached_paths)) != len(attached_paths)):
+        raise ValueError("generated output attachments differ from declaration order")
+    if record.get("fixture_execution_conformant") is not None and attached_paths != declared_outputs:
+        raise ValueError("conformant receipt is missing generated output attachments")
+    for index, item in enumerate(receipt_outputs):
+        pin = item["artifact"]
+        name = pin.get("name") if isinstance(pin, dict) else None
+        if (name != f"generated-output-{index:03d}.bin"
+                or digest(regular_bytes(path.parent / name)) != pin.get("sha256")):
+            raise ValueError("generated output artifact digest mismatch")
+    if bool(declared_outputs) != ("generated_output_paths" in request):
+        raise ValueError("empty generated output extension must be omitted")
+    if "generated_outputs" in record and not declared_outputs:
+        raise ValueError("generated output attachments lack an original declaration")
     if set(request) != expected_fields or any(record[key] != value for key, value in request.items()):
         raise ValueError("receipt differs from original pre-execution request")
     if not record["argv"] or not record["selections"] or not record["repositories"] or not record["readset"]:
@@ -252,12 +346,15 @@ def main():
     parser.add_argument("--repo", action="append", required=True, help="label=path")
     parser.add_argument("--read-path", action="append", required=True)
     parser.add_argument("--select", action="append", required=True)
+    parser.add_argument("--generated-output", action="append", default=None,
+                        help="relative generated output path to capture and pin")
     parser.add_argument("argv", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     argv = args.argv[1:] if args.argv[:1] == ["--"] else args.argv
     repos = dict(item.split("=", 1) for item in args.repo)
     record = capture_fixture_execution(argv=argv, cwd=args.cwd, junit=args.junit,
-        output=args.output, repositories=repos, read_paths=args.read_path, selections=args.select)
+        output=args.output, repositories=repos, read_paths=args.read_path, selections=args.select,
+        generated_output_paths=args.generated_output)
     print(json.dumps({"receipt": str(Path(args.output) / "receipt.json"),
                       "conformant": record["fixture_execution_conformant"],
                       "diagnostic": record["diagnostic"]}))
