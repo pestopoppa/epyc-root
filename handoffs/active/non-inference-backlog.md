@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **53/75**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **53/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -153,6 +153,8 @@ and host-dependent acceptance boundaries explicit.
 - [ ] **NI05-74** — SSU-E8-T2-ALGORITHM-FIXTURE: Separate local T2 question-vector/refusal logic from the omitted research full-pool property in test_e8_quality_baseline_reseed. Review a tiny source-bound synthetic fixture only for algorithm behavior; preserve actual corpus and human-authorization requirements.
 
 - [ ] **NI05-75** — SSU-EXECUTOR-REGISTRY-FALLBACK: Trace and repair the early registry-unavailable fallback in scripts/lib/executor.py:get_binary_paths, which returns an in-tree build/bin literal before the delegated kernel-store override. Review fresh impact and exact existing loader-patch callers first; retain explicit binary overrides and missing-store refusal. Test with unavailable registry and an owned absent override, never launch or modify a kernel.
+
+- [ ] **NI05-76** — SSU-CODE-INDEX-COMPUTE-CLAIM: prevent host code-index refresh from executing without the existing CPU-region claim, before index or global-tool mutations; retain an explicit verified off-host workflow boundary. Review both ROOT/APP wrappers and validate refusal/claimed/off-host controls in isolated CI.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -677,3 +679,5 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 2026-10-05 NI54–56 completed: main independently verified all 284 original files from CI37361602330 and reopened four TRUE Judged/Located receipts. The selected whole modules pass 69/69 cases (5 executor, 26 additional executor, 14 claim API, 24 typed replay), with zero failures, errors or skips and five named refusal controls preserved. Each receipt binds 56 Git-backed source inputs plus original runner context. Python 3.11.14, uv 0.8.15, frozen lock and four absent-path/lock postchecks are verified. The exact three commits are published to APP main6bb8d860d410217895efb7806e9ef907a62a4350; four fixture files change, with production behavior intact. Public originals: `artifacts/ni05/fixture-matrix-37361602330`. Original fullscan outcomes stay unchanged. Completed tally **53/75**; NI18 classification, NI45/53 strategy work and NI57–75 continue. No inference, live database, kernel availability, capacity or whole-suite claim.
 
 NI75 impact checkpoint: main verifies all 76 retained files from original CI37361379823. The exact executor wrapper target is HIGH, with 10 impacted nodes, one direct caller and three modules; only the risk validator is nonzero. Source work is stopped and NI75 remains open. Public originals: `artifacts/ni05/executor-impact-37361379823`. This is ordinary offline dependency evidence with no new belief grading rule or host-index deployment.
+
+2026-10-05 incident checkpoint: a delegated fixture worker ran the host GitNexus refresh without a CPU-region claim despite the off-host-only brief. Its captured session was interrupted and returned exit130; ignored index changes and a WAL were reported, so the canonical index is untrusted. Exact execution timestamps and parallel-measurement impact are unknown. No cleanup/recovery or peer process management was performed. See [INC-20261005-unclaimed-host-code-index](../../docs/reference/agent-config/INCIDENT_LOG.md#inc-20261005-unclaimed-host-code-index). NI05-76 files structural wrapper enforcement before implementation. Published completions remain53; newly identified total76.

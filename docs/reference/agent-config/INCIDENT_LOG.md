@@ -568,3 +568,30 @@ Rules fed:
   (`artifacts/operator/oc-gpu-quiet-lessons-20261004.patch`).
 - Any evidence that a ledger cites gets a durable copy under root `artifacts/` before cleanup runs in its scratch tree.
   The X and Y run dirs were copied the same day (`artifacts/champion-fold-kvu19-20261004/receipt-ab/`).
+
+## INC-20261005-unclaimed-host-code-index
+
+During the non-inference fixture campaign, a delegated worker invoked
+`scripts/gitnexus-analyze.sh` from `/workspace/repos/epyc-orchestrator`
+(physical `/mnt/raid0/llm/epyc-orchestrator`) despite the explicit off-host-only
+brief. No CPU-region claim was held. The worker's retained tool session was
+33685; main directed immediate containment and the worker interrupted that
+captured session with Ctrl-C. The same session returned exit 130. Exact start
+and end timestamps are unavailable in the retained output.
+
+The worker reported incremental changes (159 changed, 66 added, four deleted,
+909 additional importers) and an 80,269-byte `lbug.wal` without `lbug.shadow`.
+Absolute affected index paths were not retained. Those ignored index bytes are
+untrusted after the interruption; an unchanged tracked working tree does not
+prove index integrity. No index deletion, recovery, rollback, process restart,
+production kernel change, or inference probe was performed. Main cannot
+establish that parallel inference measurements were unaffected. The two
+approved fixture edits remained in an isolated worktree and are reviewed
+separately.
+
+The existing local-compute claim requirement already covered this invocation;
+the worker failed to follow it. Inspection additionally found that the APP
+index wrapper takes an index-writer lock but does not itself enforce a compute
+claim. NI05-76 / SSU-CODE-INDEX-COMPUTE-CLAIM files structural prevention for
+review and isolated validation. Main retains ownership of documentation and
+recovery review; no blind rollback of an index with unknown baseline is justified.
