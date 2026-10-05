@@ -82,7 +82,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.sha }}
-          fetch-depth: 5
+          fetch-depth: 6
           path: ci-control
           persist-credentials: false
 
@@ -141,7 +141,8 @@ jobs:
           test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA:tests/unit/conftest.py")" = 67752e81242ba51847cfae462b42f21981b9a5ad
           test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA:pyproject.toml")" = b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1
           test "$(git -C app-fixtures rev-parse "$APP_SOURCE_SHA:uv.lock")" = ef2306018773ff9a1e80389970d92f66fcf8d5b7
-          test "$(git -C ci-control rev-parse HEAD^)" = "$ROOT_RECIPE_PARENT_SHA"
+          test "$(git -C ci-control rev-parse HEAD^)" = 41623a3559cef157a08609d020295447f5b99148
+          test "$(git -C ci-control rev-parse HEAD^^)" = "$ROOT_RECIPE_PARENT_SHA"
           test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^")" = "$ROOT_RECIPE_PREVIOUS_SHA"
           test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^^")" = "$ROOT_RECIPE_PREVIOUS2_SHA"
           test "$(git -C ci-control rev-parse "$ROOT_RECIPE_PARENT_SHA^^^")" = "$ROOT_RECIPE_BASE_SHA"
@@ -681,6 +682,16 @@ jobs:
               and stat.S_IMODE(path.lstat().st_mode) == 0o700
               and path.lstat().st_uid == os.getuid() and path.lstat().st_gid == os.getgid()
               for path in private_paths)
+          # Inventory real directories once; never follow a link to validate its target.
+          import re
+          captured_owned_directories = {}
+          for captured_path in result_dir.rglob("*"):
+              captured_metadata = captured_path.lstat()
+              if (stat.S_ISDIR(captured_metadata.st_mode)
+                  and stat.S_IMODE(captured_metadata.st_mode) == 0o700
+                  and captured_metadata.st_uid == os.getuid()
+                  and captured_metadata.st_gid == os.getgid()):
+                  captured_owned_directories[str(captured_path)] = captured_metadata
           private_capture_paths = []
           private_capture_ok = True
           for path in result_dir.rglob("*"):
@@ -689,16 +700,29 @@ jobs:
                   continue
               metadata = path.lstat()
               if stat.S_ISLNK(metadata.st_mode):
-                  private_capture_ok = False
                   link_target = os.readlink(path)
-                  relative_parent = relative.parent.as_posix()
-                  candidate = os.path.normpath(os.path.join(relative_parent, link_target))
-                  if os.path.isabs(candidate):
+                  candidate = os.path.normpath(link_target)
+                  try:
+                      target_relative = Path(candidate).relative_to(result_dir)
+                      target_inside = not any(part == ".." for part in target_relative.parts)
+                  except ValueError:
+                      target_relative = None
                       target_inside = False
-                      safe_target = None
-                  else:
-                      target_inside = candidate != ".." and not candidate.startswith("../")
-                      safe_target = candidate if target_inside else None
+                  safe_target = target_relative.as_posix() if target_inside else None
+                  prefix = path.name.removesuffix("current")
+                  # Only pytest's direct *current aliases to their captured numbered sibling.
+                  accepted_pytest_current = (
+                      len(relative.parts) == 2 and relative.parts[0] == "pytest-tmp"
+                      and path.name.endswith("current") and bool(prefix)
+                      and metadata.st_uid == os.getuid() and metadata.st_gid == os.getgid()
+                      and os.path.isabs(link_target) and candidate == link_target
+                      and target_inside and target_relative is not None
+                      and target_relative.parent == relative.parent
+                      and re.fullmatch(re.escape(prefix) + r"[0-9]+", target_relative.name) is not None
+                      and candidate in captured_owned_directories
+                      and str(result_dir / "pytest-tmp") in captured_owned_directories
+                  )
+                  private_capture_ok = private_capture_ok and accepted_pytest_current
                   private_capture_paths.append({"path": relative.as_posix(),
                       "type": "symlink", "mode": oct(stat.S_IMODE(metadata.st_mode)),
                       "uid": metadata.st_uid, "gid": metadata.st_gid,
@@ -706,7 +730,9 @@ jobs:
                       "link_target_length": len(os.fsencode(link_target)),
                       "link_target_is_absolute": os.path.isabs(link_target),
                       "link_target_within_result_dir_lexically": target_inside,
-                      "link_target_relative_if_contained": safe_target})
+                      "link_target_relative_if_contained": safe_target,
+                      "pytest_current_alias_accepted": accepted_pytest_current,
+                      "target_validation": "captured_nonsymlink_owned_0700_directory_inventory"})
                   continue
               expected_mode = 0o700 if stat.S_ISDIR(metadata.st_mode) else 0o600
               owned_mode = (stat.S_IMODE(metadata.st_mode) == expected_mode
