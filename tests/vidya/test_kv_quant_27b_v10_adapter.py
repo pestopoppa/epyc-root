@@ -99,7 +99,11 @@ def test_any_bad_row_voids_whole_sidecar(tmp_path, monkeypatch, mutation):
             stats["median"] = float("inf")
         else:
             stats.pop("median")
-        rows[5]["row_sha256"] = producer.row_digest(rows[5])
+        # Deliberately serialize nonfinite JSON as an untrusted input. The
+        # producer's canonical digest correctly refuses it before the reader
+        # can be exercised, so retain the original digest for these two cases.
+        if mutation not in {"median-nan", "median-inf"}:
+            rows[5]["row_sha256"] = producer.row_digest(rows[5])
     elif mutation == "duplicate":
         rows[5] = rows[4]
     else:
