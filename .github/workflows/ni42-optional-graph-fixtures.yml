@@ -1,0 +1,223 @@
+name: NI42 optional Kuzu graph fixture validation
+
+on:
+  push:
+    branches:
+      - codex/ni42-graph-optional-validation-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: fccbb76350f91e428f9f19c731b588eca5f5df01
+  APP_SOURCE_SHA: db38737d63363a059212820aaac40b4026f82b51
+  RUN_ROOT: artifacts/ni42-graph-fixtures/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  graph-module:
+    name: graph module (${{ matrix.module_id }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        include:
+          - module_id: failure-graph
+            module_path: tests/unit/test_failure_graph.py
+          - module_id: hypothesis-graph
+            module_path: tests/unit/test_hypothesis_graph.py
+          - module_id: graph-integration
+            module_path: tests/unit/test_graph_integration.py
+          - module_id: routing-graph
+            module_path: tests/unit/test_routing_graph.py
+          - module_id: graph-router-cold-start
+            module_path: tests/unit/test_graph_router_cold_start.py
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+    steps:
+      - name: Set isolated locked environment path
+        run: printf 'UV_PROJECT_ENVIRONMENT=%s/ni42-graph-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout pinned orchestrator source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 1
+          path: app
+
+      - name: Verify immutable source pins
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app rev-parse HEAD)" = "$APP_SOURCE_SHA"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install frozen optional graph test dependencies
+        id: dependencies
+        working-directory: app
+        run: uv sync --frozen --extra dev --extra graph
+
+      - name: Write pre-execution context
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app
+        run: |
+          mkdir -p ni42_context
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          context = {
+              "schema": "ni42.optional_graph_fixture_context.v1",
+              "phase": "optional_graph_module",
+              "module_id": os.environ["MODULE_ID"],
+              "selection": os.environ["MODULE_PATH"],
+              "root_source_sha": os.environ["ROOT_SOURCE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "locked_extras": ["dev", "graph"],
+              "kuzu": "pyproject optional graph extra, exact lock entry",
+              "synthetic_capacity": False,
+              "serving_capacity_guard_path": (
+                  "tests/conftest.py imports src.api.state, which imports "
+                  "src.api.admission; its FALLBACK_LIMITS initializer attempts "
+                  "scripts.server.stack_manifest and catches guard/import exceptions"
+              ),
+              "capacity_guard_bootstrap": "none; use actual GitHub runner memory",
+              "storage": "pytest temporary directories only; no production Kuzu path",
+              "embeddings": "mocked or deterministic test providers; no model/API calls",
+              "performance_assertion": (
+                  "graph_integration includes test_retrieval_under_100ms; report its "
+                  "test outcome only, not a performance claim"
+              ),
+              "exclusions": [
+                  "production graph database or live corpus",
+                  "live inference or embedding service",
+                  "serving capacity or kernel availability",
+                  "unselected tests and modules",
+              ],
+          }
+          path = Path("ni42_context/context.json")
+          path.write_text(json.dumps(context, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture exact graph module execution
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
+        working-directory: app
+        run: |
+          mkdir -p "ni42_junit/$MODULE_ID"
+          common_read_paths=(
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni42-optional-graph-fixtures.yml"
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py"
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py"
+            --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py"
+            --read-path tests/conftest.py
+            --read-path tests/unit/conftest.py
+            --read-path src/api/state.py
+            --read-path src/api/admission.py
+            --read-path src/api/health_tracker.py
+            --read-path src/registry/stack_priors.py
+            --read-path scripts/server/stack_manifest.py
+            --read-path scripts/server/stack_numa.py
+            --read-path scripts/server/stack_paths.py
+            --read-path orchestration/launch_manifest.yaml
+            --read-path orchestration/model_registry.yaml
+            --read-path orchestration/derived/stack_priors.yaml
+            --read-path pyproject.toml
+            --read-path uv.lock
+            --read-path "$MODULE_PATH"
+            --read-path ni42_context/context.json
+          )
+          case "$MODULE_ID" in
+            failure-graph)
+              source_paths=(--read-path orchestration/repl_memory/failure_graph.py)
+              ;;
+            hypothesis-graph)
+              source_paths=(--read-path orchestration/repl_memory/hypothesis_graph.py)
+              ;;
+            graph-integration)
+              source_paths=(
+                --read-path orchestration/repl_memory/episodic_store.py
+                --read-path orchestration/repl_memory/failure_graph.py
+                --read-path orchestration/repl_memory/hypothesis_graph.py
+                --read-path orchestration/repl_memory/retriever.py
+                --read-path orchestration/repl_memory/faiss_store.py
+                --read-path orchestration/repl_memory/indexed_memory_policy.py
+                --read-path orchestration/repl_memory/retrieval_config.py
+                --read-path orchestration/repl_memory/routing_fast_path.py
+                --read-path orchestration/repl_memory/routing_risk.py
+                --read-path orchestration/repl_memory/hybrid_router.py
+              )
+              ;;
+            routing-graph)
+              source_paths=(--read-path orchestration/repl_memory/routing_graph.py)
+              ;;
+            graph-router-cold-start)
+              source_paths=(
+                --read-path orchestration/repl_memory/routing_graph.py
+                --read-path orchestration/repl_memory/lightweight_gat.py
+                --read-path orchestration/repl_memory/graph_router_predictor.py
+              )
+              ;;
+            *)
+              echo "undeclared module id: $MODULE_ID" >&2
+              exit 2
+              ;;
+          esac
+          timeout --verbose --signal=TERM --kill-after=15s 900s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "ni42_junit/$MODULE_ID/original-pytest.xml" \
+              --output "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator=$PWD" \
+              "${common_read_paths[@]}" "${source_paths[@]}" \
+              --generated-output "ni42_junit/$MODULE_ID/pytest.log" \
+              --select "$MODULE_PATH" \
+              -- timeout --verbose --signal=TERM --kill-after=10s 720s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q \
+                  --rootdir="$PWD" \
+                  --junit-prefix="ni42_graph_$MODULE_ID" \
+                  "$MODULE_PATH" \
+                  --junitxml="ni42_junit/$MODULE_ID/original-pytest.xml" \
+                  --log-file="ni42_junit/$MODULE_ID/pytest.log"
+
+      - name: Upload original module prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni42-graph-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+          path: |
+            artifacts/ni42-graph-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/native/
+            app/ni42_junit/${{ matrix.module_id }}/
+            app/ni42_context/context.json
+          if-no-files-found: warn
