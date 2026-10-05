@@ -1,0 +1,101 @@
+name: NI05 actual devcontainer gates
+
+on:
+  push:
+    branches: ['codex/ni05-validation-container-*']
+
+permissions:
+  contents: read
+
+jobs:
+  devcontainer-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      # Immutable reviewed sources: image recipe, native producer, and tested repos.
+      IMAGE_ROOT_SHA: 7b48473d2a80b5ff1ddf58251d692ab7f50fc4ea
+      CI_SOURCE_SHA: c35f35ce2ad825b5f49efc8391d41d9766fde593
+      ORCHESTRATOR_SHA: 96f6e2b2b0c699eec599383ec38e5decafaa618b
+      RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+    steps:
+      - name: Checkout validation workflow and fixture
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: control
+
+      - name: Checkout pinned devcontainer source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.IMAGE_ROOT_SHA }}
+          path: image-root
+
+      - name: Checkout pinned CI producer source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.CI_SOURCE_SHA }}
+          path: ci-source
+
+      - name: Checkout pinned orchestrator candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.ORCHESTRATOR_SHA }}
+          path: orchestrator
+
+      - name: Checkout pinned research registry
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: ${{ env.RESEARCH_SHA }}
+          path: research
+
+      - name: Set up Python for the selected pytest fixture
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pytest runner
+        run: python -m pip install --disable-pip-version-check pytest==9.1.1
+
+      - name: Set up Docker BuildKit
+        uses: docker/setup-buildx-action@v3
+
+      - name: Capture actual devcontainer validation as native JUnit
+        env:
+          EPYC_RUN_DEVCONTAINER_GATES: '1'
+          NI05_IMAGE_ROOT: ${{ github.workspace }}/image-root
+          NI05_ORCHESTRATOR: ${{ github.workspace }}/orchestrator
+          NI05_RESEARCH: ${{ github.workspace }}/research
+          ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/llama-server
+          ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
+          ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
+        run: |
+          python ci-source/scripts/ci/native_conformance.py \
+            --cwd "$GITHUB_WORKSPACE/control" \
+            --junit "$GITHUB_WORKSPACE/ni05-junit.xml" \
+            --output "$GITHUB_WORKSPACE/ni05-capture" \
+            --repo control="$GITHUB_WORKSPACE/control" \
+            --repo image-root="$GITHUB_WORKSPACE/image-root" \
+            --repo ci-source="$GITHUB_WORKSPACE/ci-source" \
+            --repo orchestrator="$GITHUB_WORKSPACE/orchestrator" \
+            --repo research="$GITHUB_WORKSPACE/research" \
+            --read-path "$GITHUB_WORKSPACE/control/.github/workflows/ni05-devcontainer-validation.yml" \
+            --read-path "$GITHUB_WORKSPACE/control/tests/ci/test_devcontainer_gate_contract.py" \
+            --read-path "$GITHUB_WORKSPACE/image-root/.devcontainer/Dockerfile" \
+            --read-path "$GITHUB_WORKSPACE/orchestrator/Makefile" \
+            --select tests/ci/test_devcontainer_gate_contract.py \
+            -- python -m pytest -q -s tests/ci/test_devcontainer_gate_contract.py \
+              --junitxml "$GITHUB_WORKSPACE/ni05-junit.xml"
+
+      - name: Retain original CI15 receipt and command logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni05-devcontainer-native-validation
+          path: |
+            ni05-capture/
+            ni05-junit.xml
+          if-no-files-found: ignore
