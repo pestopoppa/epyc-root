@@ -1,0 +1,356 @@
+name: NI18 complete tests-unit fixture custody
+
+on:
+  push:
+    branches:
+      - codex/ni18-unit-sweep-validation-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: 56236b13d6ffe6820e2a33453e1094ca217a365d
+  APP_BASE_SHA: 6714c72ff42cd7b4216182bbf3431444b0a91846
+  APP_SYNTHETIC_SHA: bd89cf0de087e885a7ca4e23bdcf605b62a27e73
+  EXPECTED_UNIT_MODULES: '895'
+  NI18_SHARD_COUNT: '32'
+  NI18_RUN_ROOT: artifacts/ni18-unit-sweep/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  actual-runner-capacity-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - name: Define runner-local isolated paths
+        run: |
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni18-unit-sweep-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni18-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni18-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni18-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout ordinary app source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_BASE_SHA }}
+          fetch-depth: 1
+          path: app-ordinary
+
+      - name: Verify immutable source pins and absent overrides
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app-ordinary rev-parse HEAD)" = "$APP_BASE_SHA"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install locked ordinary app test environment
+        id: dependencies
+        working-directory: app-ordinary
+        run: uv sync --frozen --extra dev
+
+      - name: Write actual-runner capacity guard fixture and context
+        id: guard_fixture
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          mkdir -p ni18_capacity_guard
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import textwrap
+          from pathlib import Path
+
+          paths = {key: Path(os.environ[key]) for key in (
+              "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+              "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+          )}
+          for key, path in paths.items():
+              if path.exists():
+                  raise RuntimeError(f"actual capacity fixture override must remain absent: {key}={path}")
+          test_path = Path("tests/unit/test_ni18_actual_capacity_guard.py")
+          if test_path.exists():
+              raise RuntimeError(f"refusing to overwrite capacity test: {test_path}")
+          test_path.parent.mkdir(parents=True, exist_ok=True)
+          test_path.write_text(textwrap.dedent('''\
+            from pathlib import Path
+            import subprocess
+            import sys
+
+
+            APP_ROOT = Path(__file__).resolve().parents[2]
+
+
+            def test_actual_runner_capacity_guard_refuses_import_before_serving():
+                result = subprocess.run(
+                    [sys.executable, "-c", "import scripts.server.stack_manifest"],
+                    cwd=APP_ROOT,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                    check=False,
+                )
+                output = result.stdout + result.stderr
+                assert result.returncode != 0, "actual runner unexpectedly passed serving-capacity import"
+                assert "Declared serving_shape lineup does not fit the hardware" in output, output
+                assert "device host (CPU RAM) OVERSUBSCRIBED" in output, output
+          '''), encoding="utf-8")
+          context = {
+              "schema": "ni18.actual_runner_capacity_context.v1",
+              "app_sha": os.environ["APP_BASE_SHA"],
+              "phase": "ordinary_actual_runner_capacity_guard",
+              "synthetic_ram": False,
+              "runner_meminfo": "actual /proc/meminfo through fresh stack_manifest import",
+              "path_overrides": {key: {"value": str(path), "must_remain_absent": True}
+                                 for key, path in paths.items()},
+              "pytest_rootdir": str(Path.cwd()),
+              "pytest_junit_prefix": "ni18_actual_capacity_guard",
+              "scope": "one expected refusal before app import or serving",
+              "inference": "none; no kernel availability, linkage, or runtime claim",
+              "test_sha256": hashlib.sha256(test_path.read_bytes()).hexdigest(),
+          }
+          test_path.parent.mkdir(parents=True, exist_ok=True)
+          context_path = Path("ni18_capacity_guard/context.json")
+          context_path.write_text(json.dumps(context, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture ordinary actual-runner capacity guard
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.guard_fixture.outcome == 'success' }}
+        working-directory: app-ordinary
+        run: |
+          timeout --verbose --signal=TERM --kill-after=15s 150s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit ni18_capacity_guard/original-pytest.xml \
+              --output "$GITHUB_WORKSPACE/$NI18_RUN_ROOT/capacity/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator_ordinary=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni18-unit-sweep.yml" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/scripts/ci/ni18_unit_sweep.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path ni18_capacity_guard/context.json \
+              --read-path tests/unit/test_ni18_actual_capacity_guard.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/config/models.py \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/stack_topology.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output ni18_capacity_guard/pytest.log \
+              --select tests/unit/test_ni18_actual_capacity_guard.py::test_actual_runner_capacity_guard_refuses_import_before_serving \
+              -- timeout --verbose --signal=TERM --kill-after=10s 90s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --noconftest \
+                  --rootdir="$PWD" --junit-prefix=ni18_actual_capacity_guard \
+                  tests/unit/test_ni18_actual_capacity_guard.py \
+                  --junitxml=ni18_capacity_guard/original-pytest.xml \
+                  --log-file=ni18_capacity_guard/pytest.log
+
+      - name: Upload immutable actual-capacity prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-unit-sweep-${{ github.run_id }}-${{ github.run_attempt }}-capacity
+          path: |
+            artifacts/ni18-unit-sweep/${{ github.run_id }}/${{ github.run_attempt }}/capacity/native/
+            app-ordinary/ni18_capacity_guard/
+            app-ordinary/tests/unit/test_ni18_actual_capacity_guard.py
+          if-no-files-found: warn
+
+  unit-module-shard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      max-parallel: 16
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      SHARD_ID: ${{ matrix.shard }}
+    steps:
+      - name: Define runner-local isolated paths
+        run: |
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni18-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni18-unit-sweep-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni18-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni18-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni18-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout synthetic-only app fixture candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SYNTHETIC_SHA }}
+          fetch-depth: 2
+          path: app-synthetic
+
+      - name: Verify immutable pins, one-file fixture delta, and absent paths
+        run: |
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD)" = "$APP_SYNTHETIC_SHA"
+          test "$(git -C app-synthetic rev-parse HEAD^)" = "$APP_BASE_SHA"
+          changed="$(git -C app-synthetic diff --name-only "$APP_BASE_SHA" "$APP_SYNTHETIC_SHA")"
+          test "$changed" = "tests/fixtures/offhost_unit_bootstrap.py"
+          test "$(sha256sum app-synthetic/tests/fixtures/offhost_unit_bootstrap.py | cut -d' ' -f1)" = \
+            9b1758788336d7d42d55171dbd463762f0a160a0efeb382db701194a3e0d7cda
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install locked synthetic app test environment
+        id: dependencies
+        working-directory: app-synthetic
+        run: uv sync --frozen --extra dev
+
+      - name: Prepare complete deterministic module manifest
+        id: manifest
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        run: |
+          app_root="$GITHUB_WORKSPACE/app-synthetic"
+          shard_root="$app_root/$NI18_RUN_ROOT/shard-$SHARD_ID"
+          python3 ci-control/scripts/ci/ni18_unit_sweep.py prepare \
+            --app "$app_root" \
+            --app-synthetic-sha "$APP_SYNTHETIC_SHA" \
+            --root-producer-sha "$ROOT_SOURCE_SHA" \
+            --root-workflow-sha "$GITHUB_SHA" \
+            --shard "$SHARD_ID" \
+            --shard-count "$NI18_SHARD_COUNT" \
+            --manifest "$shard_root/module-manifest.json" \
+            --context "$shard_root/module-context.json" \
+            --comparison "$shard_root/source-comparison.json" \
+            --path-override "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+            --path-override "ORCHESTRATOR_PATHS_LLAMA_MTMD=$ORCHESTRATOR_PATHS_LLAMA_MTMD" \
+            --path-override "ORCHESTRATOR_PATHS_LLAMA_SERVER=$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+
+      - name: Capture each assigned unit module independently
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.manifest.outcome == 'success' }}
+        continue-on-error: true
+        run: |
+          app_root="$GITHUB_WORKSPACE/app-synthetic"
+          shard_root="$app_root/$NI18_RUN_ROOT/shard-$SHARD_ID"
+          python3 ci-control/scripts/ci/ni18_unit_sweep.py run-shard \
+            --app "$app_root" \
+            --control "$GITHUB_WORKSPACE/ci-control" \
+            --producer-checkout "$GITHUB_WORKSPACE/root-producer" \
+            --app-synthetic-sha "$APP_SYNTHETIC_SHA" \
+            --shard "$SHARD_ID" \
+            --manifest "$shard_root/module-manifest.json" \
+            --context "$shard_root/module-context.json" \
+            --comparison "$shard_root/source-comparison.json" \
+            --output-root "$shard_root" \
+            --local-output-root "$NI18_RUN_ROOT"
+
+      - name: Upload immutable unit-module shard prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni18-unit-sweep-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
+          path: app-synthetic/${{ env.NI18_RUN_ROOT }}/shard-${{ matrix.shard }}/
+          if-no-files-found: warn
+
+      - name: Preserve command failure after prefix upload
+        if: always()
+        env:
+          CAPTURE_OUTCOME: ${{ steps.capture.outcome }}
+        run: test "$CAPTURE_OUTCOME" = success
+
+  verify-module-accounting:
+    if: always()
+    needs: [unit-module-shard]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Download all completed shard prefixes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: ni18-unit-sweep-${{ github.run_id }}-${{ github.run_attempt }}-shard-*
+          path: downloaded-shards
+
+      - name: Verify every selected module has exactly one native receipt
+        run: |
+          python3 ci-control/scripts/ci/ni18_unit_sweep.py audit \
+            --artifacts-dir downloaded-shards \
+            --producer-checkout "$GITHUB_WORKSPACE/root-producer"
