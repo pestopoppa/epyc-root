@@ -1,0 +1,284 @@
+{
+  "attempt": 1,
+  "custody_manifest_sha256": "ac1227195a6b32c018c5a318591ae00c0d6a39e3eb2de60fffdbfd00fcf0e11d",
+  "modules": [
+    {
+      "counts": {
+        "collected": 53,
+        "error": 0,
+        "executed": 53,
+        "failure": 0,
+        "passed": 53,
+        "skipped": 0
+      },
+      "digest": "0c93df06aa9d27c83bb2ae6575dc3ed95b860b919204a9abc7ed6172a529862a",
+      "external_bound_inputs": [
+        "/home/runner/work/_temp/ni60-37372187218-1-creativity/install.log",
+        "/home/runner/work/_temp/ni60-37372187218-1-creativity/install-status.json",
+        "/home/runner/work/_temp/ni60-37372187218-1-creativity/context.json"
+      ],
+      "git_source_inputs_verified": [
+        {
+          "path": "scripts/ci/native_conformance.py",
+          "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+          "tree": "root-producer"
+        },
+        {
+          "path": ".github/workflows/ni60-local-embedding-fixtures.yml",
+          "sha256": "55cd4eda4bd8ffc4b55d7e74181c20ec1ef05859e3fbcd96a674c878295360e0",
+          "tree": "ci-control"
+        },
+        {
+          "path": "scripts/vidya/adapters/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/adapters/ci_conformance.py",
+          "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/claim_tuple.py",
+          "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/canonical.py",
+          "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/frames.py",
+          "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+          "tree": "root-producer"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/test_autopilot_creativity.py",
+          "sha256": "8c38dcb63cad7972f8e08980c66e6deeeb0def04ce466e1c5184bbdb578c37f3",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/test_seed_operator_strategies.py",
+          "sha256": "c4b53f21de43f1ed1c6ee9f4c7b0432fe2225f0e9a950d1143bb26feae19d64e",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/autopilot.py",
+          "sha256": "e91af75538c04f7f0bbd85e5d889bd57deeae317bbc40ec0c514da9e9d6ead04",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/experiment_journal.py",
+          "sha256": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/pareto_archive.py",
+          "sha256": "838d8bc9c74f80a4b08c01c5765056b212f3d1875787f0c6010b6ecfed933518",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/seed_operator_strategies.py",
+          "sha256": "a592c352375a186ff5185b2bcc672acad4a6acaa6a749a234fa5f382d4454ed3",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/controller_io.py",
+          "sha256": "f492350c97131b1cab1bcdfabaef72381a54e8ef95dffc4f2aed0e785600d650",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/__init__.py",
+          "sha256": "c17fce700487390e9ccaaf207015549eeab198841d53c934e9574d3d4ea2af3d",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/strategy_store.py",
+          "sha256": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/embedder.py",
+          "sha256": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/faiss_store.py",
+          "sha256": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-fixtures"
+        }
+      ],
+      "grade": [
+        "Judged",
+        "Located",
+        [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      ],
+      "original_postchecks_all_true": 17,
+      "receipt": "downloaded/ni60-37372187218-1-creativity-native/native/receipt.json"
+    },
+    {
+      "counts": {
+        "collected": 5,
+        "error": 0,
+        "executed": 5,
+        "failure": 0,
+        "passed": 5,
+        "skipped": 0
+      },
+      "digest": "d11c55ac45884b394c657cf14f2aca0a8ab2f984258fd23c4422d3b3f32a9fc2",
+      "external_bound_inputs": [
+        "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/install.log",
+        "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/install-status.json",
+        "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/context.json"
+      ],
+      "git_source_inputs_verified": [
+        {
+          "path": "scripts/ci/native_conformance.py",
+          "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+          "tree": "root-producer"
+        },
+        {
+          "path": ".github/workflows/ni60-local-embedding-fixtures.yml",
+          "sha256": "55cd4eda4bd8ffc4b55d7e74181c20ec1ef05859e3fbcd96a674c878295360e0",
+          "tree": "ci-control"
+        },
+        {
+          "path": "scripts/vidya/adapters/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/adapters/ci_conformance.py",
+          "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/claim_tuple.py",
+          "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/canonical.py",
+          "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/frames.py",
+          "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+          "tree": "root-producer"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/test_autopilot_creativity.py",
+          "sha256": "8c38dcb63cad7972f8e08980c66e6deeeb0def04ce466e1c5184bbdb578c37f3",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "tests/unit/test_seed_operator_strategies.py",
+          "sha256": "c4b53f21de43f1ed1c6ee9f4c7b0432fe2225f0e9a950d1143bb26feae19d64e",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/autopilot.py",
+          "sha256": "e91af75538c04f7f0bbd85e5d889bd57deeae317bbc40ec0c514da9e9d6ead04",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/experiment_journal.py",
+          "sha256": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/pareto_archive.py",
+          "sha256": "838d8bc9c74f80a4b08c01c5765056b212f3d1875787f0c6010b6ecfed933518",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/seed_operator_strategies.py",
+          "sha256": "a592c352375a186ff5185b2bcc672acad4a6acaa6a749a234fa5f382d4454ed3",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "scripts/autopilot/controller_io.py",
+          "sha256": "f492350c97131b1cab1bcdfabaef72381a54e8ef95dffc4f2aed0e785600d650",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/__init__.py",
+          "sha256": "c17fce700487390e9ccaaf207015549eeab198841d53c934e9574d3d4ea2af3d",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/strategy_store.py",
+          "sha256": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/embedder.py",
+          "sha256": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "orchestration/repl_memory/faiss_store.py",
+          "sha256": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-fixtures"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-fixtures"
+        }
+      ],
+      "grade": [
+        "Judged",
+        "Located",
+        [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      ],
+      "original_postchecks_all_true": 17,
+      "receipt": "downloaded/ni60-37372187218-1-strategy-seed-native/native/receipt.json"
+    }
+  ],
+  "run_id": 37372187218,
+  "schema": "ni05.main-original-review.v1"
+}

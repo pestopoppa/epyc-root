@@ -1,0 +1,5 @@
+# NI05-60 local embedding fixture originals
+
+CI37372187218 attempt1 passes both whole modules:53 creativity and5 seed-strategy cases, zero failures/errors/skips. Main independently verifies all21 private original metadata files and76 downloaded artifacts, then reopens both native TRUE Judged/Located receipts,22 Git-backed and3 context/install inputs each and17 postchecks each. All76 exact downloaded originals are described by relative paths/hashes in the public manifest; API metadata remains private. Main review is derivative rather than a new native claim.
+
+The test-only source injects normalized deterministic1024-dimensional vectors into owned temporary SQLite/FAISS stores through existing seams. Actual store persistence assertions and default semantic/degraded ownership guards remain, and named fixture cases trap default TaskEmbedder construction. These tests assert fixture behavior, not semantic quality or live model inference. Only the two reviewed tests are promoted to APP mainec711a7c100a26e183c8e9341e4a3122d21907df;13 other APP readset inputs match the integration base. Runtime source is unchanged.

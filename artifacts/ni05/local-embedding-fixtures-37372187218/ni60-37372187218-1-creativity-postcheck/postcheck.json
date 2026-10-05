@@ -1,0 +1,127 @@
+{
+  "checks": {
+    "all_source_checkouts_clean": true,
+    "exact_full_module_counts": true,
+    "frozen_lock_pinned": true,
+    "install_log_and_status_bound_to_context": true,
+    "kernel_override_absences_hold": true,
+    "native_exit_zero": true,
+    "native_readset_complete": true,
+    "native_true": true,
+    "original_stdout_stderr_present": true,
+    "private_owned_mode_0700_uid_gid": true,
+    "pyproject_pinned": true,
+    "python_pin": true,
+    "refusal_and_embedder_controls_pass": true,
+    "repo_pins_exact": true,
+    "selection_exact": true,
+    "shared_grade_judged_located": true,
+    "uv_pin": true
+  },
+  "expected_counts": {
+    "collected": 53,
+    "error": 0,
+    "executed": 53,
+    "failure": 0,
+    "passed": 53,
+    "skipped": 0
+  },
+  "install_log_sha256": "e2e82f541430cf18b95acbcf924d6f875d43b8f793a844423e4168f0c717ef5b",
+  "install_status_sha256": "9a80de2a8f366a65a4176b841967f47f1b71c7be098d8fd4a6fd520479de85af",
+  "module_id": "creativity",
+  "native_exit_code": 0,
+  "native_readset_names": [
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/context.json",
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/install-status.json",
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/install.log",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/embedder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/faiss_store.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/strategy_store.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/pyproject.toml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/autopilot.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/controller_io.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/experiment_journal.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/pareto_archive.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/seed_operator_strategies.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_autopilot_creativity.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_seed_operator_strategies.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/uv.lock",
+    "/home/runner/work/epyc-root/epyc-root/ci-control/.github/workflows/ni60-local-embedding-fixtures.yml",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/ci/native_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/ci_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/canonical.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/claim_tuple.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/frames.py"
+  ],
+  "observed_counts": {
+    "collected": 53,
+    "error": 0,
+    "executed": 53,
+    "failure": 0,
+    "passed": 53,
+    "skipped": 0
+  },
+  "passing_controls": [
+    "test_planner_strategy_hints_default_off_does_not_read_store",
+    "test_planner_strategy_hints_see_external_store_writes_without_restart",
+    "test_planner_strategy_hints_surface_search_index_degradation"
+  ],
+  "private_path_facts": {
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/cache": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/cache/uv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-creativity/venv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    }
+  },
+  "pytest_stdout_stderr_sha256": {
+    "pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout": "07ea72ba64bda99dc4fcf467f4b2b216f9945bb45bebddb601dcc93e4b46ab3c"
+  },
+  "receipt_sha256": "0c93df06aa9d27c83bb2ae6575dc3ed95b860b919204a9abc7ed6172a529862a",
+  "repositories": {
+    "orchestrator_candidate": "f0ba99002ad69911292ea729d17d9516bdf2923f",
+    "root_producer": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+    "root_workflow": "b790bed94a2b4eebe43db1fb3640cac7cbf2548f"
+  },
+  "schema": "ni60.postcheck.v1",
+  "selections": [
+    "tests/unit/test_autopilot_creativity.py"
+  ],
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "source_clean_by_repo": {
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures": true,
+    "/home/runner/work/epyc-root/epyc-root/ci-control": true,
+    "/home/runner/work/epyc-root/epyc-root/root-producer": true
+  }
+}

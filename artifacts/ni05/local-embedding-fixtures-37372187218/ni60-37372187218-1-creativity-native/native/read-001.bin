@@ -1,0 +1,558 @@
+name: NI60 local embedding fixture custody
+
+on:
+  push:
+    branches:
+      - codex/ni60-local-embedding-ci-20261005
+    paths:
+      - .github/workflows/ni60-local-embedding-fixtures.yml
+
+concurrency:
+  group: ni60-local-embedding-fixtures-20261005
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  APP_BASE_SHA: 6bb8d860d410217895efb7806e9ef907a62a4350
+  APP_SOURCE_SHA: f0ba99002ad69911292ea729d17d9516bdf2923f
+  APP_SOURCE_PARENT_SHA: 6bb8d860d410217895efb7806e9ef907a62a4350
+  APP_LOCK_SHA256: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+  ROOT_PRODUCER_SHA: cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f
+  ROOT_RECIPE_BASE_SHA: cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f
+
+jobs:
+  fixture-module:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      EXPECTED_CASES: ${{ matrix.expected_cases }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module_id: creativity
+            module_path: tests/unit/test_autopilot_creativity.py
+            expected_cases: 53
+          - module_id: strategy-seed
+            module_path: tests/unit/test_seed_operator_strategies.py
+            expected_cases: 5
+    steps:
+      - name: Define checkouts and absent kernel overrides
+        shell: bash
+        run: |
+          set -euo pipefail
+          for target in \
+            "$RUNNER_TEMP/ni60-absent-llama-cpp-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$MODULE_ID" \
+            "$RUNNER_TEMP/ni60-absent-llama-mtmd-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$MODULE_ID" \
+            "$RUNNER_TEMP/ni60-absent-llama-server-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$MODULE_ID"; do
+            if [[ -e "$target" || -L "$target" ]]; then
+              echo "refusing preexisting kernel override: $target" >&2
+              exit 1
+            fi
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni60-absent-llama-cpp-%s-%s-%s\n' "$RUNNER_TEMP" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$MODULE_ID" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni60-absent-llama-mtmd-%s-%s-%s\n' "$RUNNER_TEMP" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$MODULE_ID" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni60-absent-llama-server-%s-%s-%s\n' "$RUNNER_TEMP" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT" "$MODULE_ID" >> "$GITHUB_ENV"
+          printf 'APP_CHECKOUT=%s/app-fixtures\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'ROOT_CHECKOUT=%s/root-producer\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+          printf 'CONTROL_CHECKOUT=%s/ci-control\n' "$GITHUB_WORKSPACE" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          path: ci-control
+          persist-credentials: false
+
+      - name: Checkout accepted native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+          persist-credentials: false
+
+      - name: Checkout exact application candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 4
+          path: app-fixtures
+          persist-credentials: false
+
+      - name: Verify ancestry, exact two-file delta, and literal source pins
+        shell: bash
+        working-directory: app-fixtures
+        run: |
+          set -euo pipefail
+          test "$(git -C "$CONTROL_CHECKOUT" rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse HEAD)" = "$ROOT_PRODUCER_SHA"
+          test "$(git -C "$APP_CHECKOUT" rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test -z "$(git -C "$CONTROL_CHECKOUT" status --porcelain)"
+          test -z "$(git -C "$ROOT_CHECKOUT" status --porcelain)"
+          test -z "$(git -C "$APP_CHECKOUT" status --porcelain)"
+          git -C "$APP_CHECKOUT" merge-base --is-ancestor "$APP_BASE_SHA" "$APP_SOURCE_SHA"
+          test "$(git -C "$APP_CHECKOUT" rev-parse "$APP_SOURCE_SHA^" )" = "$APP_SOURCE_PARENT_SHA"
+          test "$(git -C "$APP_CHECKOUT" rev-list --count "$APP_BASE_SHA..$APP_SOURCE_SHA")" = 1
+          expected_paths="$(printf '%s\n' tests/unit/test_autopilot_creativity.py tests/unit/test_seed_operator_strategies.py | LC_ALL=C sort)"
+          actual_paths="$(git -C "$APP_CHECKOUT" diff --name-only "$APP_BASE_SHA" "$APP_SOURCE_SHA" | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          test "$(sha256sum uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          declare -A expected_blobs=(
+            [tests/unit/test_autopilot_creativity.py]=e032734bab04247a09607ba61cdc7326cc142fc2
+            [tests/unit/test_seed_operator_strategies.py]=e5b763d031e56bda29c596969315f8c4ea66a4bc
+            [scripts/autopilot/autopilot.py]=1d62a213e6e7f3f4b8dc998a8ecb404d485e6dc2
+            [scripts/autopilot/experiment_journal.py]=e5c901dd5113d51fcb534b71888610d20d5e40ad
+            [scripts/autopilot/pareto_archive.py]=4ff3f53fb9b9bb744f4bcfdc5f926ac9a4dce228
+            [scripts/autopilot/seed_operator_strategies.py]=ce4dcd7131fad5937b4151e55546ce27213cab33
+            [scripts/autopilot/controller_io.py]=2aa79c29160b0968de0bb155e58662a8fd6f7de5
+            [orchestration/repl_memory/__init__.py]=79559be464c8d9c994c8018b89a5178efa2e1d3f
+            [orchestration/repl_memory/strategy_store.py]=50b6704a13293b8e9a8e261bdba0910fa48a1e1f
+            [orchestration/repl_memory/embedder.py]=37386ebd037d2ed0d10d7db2289ea1be6c277c07
+            [orchestration/repl_memory/faiss_store.py]=0ac80dd00ab061fe4e68faf0040d0e6214db479a
+            [tests/conftest.py]=3b87111c6bc4ec1f8c8840d204e337e12ae00851
+            [tests/unit/conftest.py]=67752e81242ba51847cfae462b42f21981b9a5ad
+            [pyproject.toml]=b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1
+            [uv.lock]=ef2306018773ff9a1e80389970d92f66fcf8d5b7
+          )
+          declare -A expected_sha256=(
+            [tests/unit/test_autopilot_creativity.py]=8c38dcb63cad7972f8e08980c66e6deeeb0def04ce466e1c5184bbdb578c37f3
+            [tests/unit/test_seed_operator_strategies.py]=c4b53f21de43f1ed1c6ee9f4c7b0432fe2225f0e9a950d1143bb26feae19d64e
+            [scripts/autopilot/autopilot.py]=e91af75538c04f7f0bbd85e5d889bd57deeae317bbc40ec0c514da9e9d6ead04
+            [scripts/autopilot/experiment_journal.py]=f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756
+            [scripts/autopilot/pareto_archive.py]=838d8bc9c74f80a4b08c01c5765056b212f3d1875787f0c6010b6ecfed933518
+            [scripts/autopilot/seed_operator_strategies.py]=a592c352375a186ff5185b2bcc672acad4a6acaa6a749a234fa5f382d4454ed3
+            [scripts/autopilot/controller_io.py]=f492350c97131b1cab1bcdfabaef72381a54e8ef95dffc4f2aed0e785600d650
+            [orchestration/repl_memory/__init__.py]=c17fce700487390e9ccaaf207015549eeab198841d53c934e9574d3d4ea2af3d
+            [orchestration/repl_memory/strategy_store.py]=8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64
+            [orchestration/repl_memory/embedder.py]=4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75
+            [orchestration/repl_memory/faiss_store.py]=ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d
+            [tests/conftest.py]=48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524
+            [tests/unit/conftest.py]=56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb
+            [pyproject.toml]=1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b
+            [uv.lock]=7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+          )
+          for path in "${!expected_blobs[@]}"; do
+            test "$(git -C "$APP_CHECKOUT" rev-parse "$APP_SOURCE_SHA:$path")" = "${expected_blobs[$path]}"
+            test "$(sha256sum "$path" | cut -d ' ' -f1)" = "${expected_sha256[$path]}"
+          done
+          test "$(git -C "$CONTROL_CHECKOUT" rev-parse HEAD^)" = "$ROOT_RECIPE_BASE_SHA"
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:scripts/ci/native_conformance.py")" = d2d7bd90f86cffa23c51db803288641c5c6fe461
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/adapters/ci_conformance.py")" = b5a521ef4debe7ad105830f5fa27bbf9c2168dcd
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/claim_tuple.py")" = 309af769e45245fd1452482eb2e0592a86a4a79f
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/canonical.py")" = e7c93a39804c3e1cf8107f7801c8c32a23f0b45b
+          test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:scripts/vidya/frames.py")" = 47e485d913271b72c9aaf1d9dfb526294ef0fd14
+          declare -A root_blobs=(
+            [scripts/ci/native_conformance.py]=d2d7bd90f86cffa23c51db803288641c5c6fe461
+            [scripts/vidya/adapters/__init__.py]=e69de29bb2d1d6434b8b29ae775ad8c2e48c5391
+            [scripts/vidya/adapters/ci_conformance.py]=b5a521ef4debe7ad105830f5fa27bbf9c2168dcd
+            [scripts/vidya/claim_tuple.py]=309af769e45245fd1452482eb2e0592a86a4a79f
+            [scripts/vidya/canonical.py]=e7c93a39804c3e1cf8107f7801c8c32a23f0b45b
+            [scripts/vidya/frames.py]=47e485d913271b72c9aaf1d9dfb526294ef0fd14
+          )
+          declare -A root_sha256=(
+            [scripts/ci/native_conformance.py]=2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e
+            [scripts/vidya/adapters/__init__.py]=e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+            [scripts/vidya/adapters/ci_conformance.py]=aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c
+            [scripts/vidya/claim_tuple.py]=058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe
+            [scripts/vidya/canonical.py]=cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434
+            [scripts/vidya/frames.py]=f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749
+          )
+          for path in "${!root_blobs[@]}"; do
+            test "$(git -C "$ROOT_CHECKOUT" rev-parse "$ROOT_PRODUCER_SHA:$path")" = "${root_blobs[$path]}"
+            test "$(git -C "$ROOT_CHECKOUT" show "$ROOT_PRODUCER_SHA:$path" | sha256sum | cut -d ' ' -f1)" = "${root_sha256[$path]}"
+          done
+          for target in "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" "$ORCHESTRATOR_PATHS_LLAMA_MTMD" "$ORCHESTRATOR_PATHS_LLAMA_SERVER"; do
+            test ! -e "$target" && test ! -L "$target"
+          done
+
+      - name: Set up Python 3.11.14
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv 0.8.15
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Create private result, cache, and venv directories
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          result_dir="$RUNNER_TEMP/ni60-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT-$MODULE_ID"
+          test ! -e "$result_dir" && test ! -L "$result_dir"
+          mkdir -m 700 "$result_dir"
+          mkdir -m 700 "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/venv"
+          for path in "$result_dir" "$result_dir/tmp" "$result_dir/cache" "$result_dir/cache/uv" "$result_dir/venv"; do
+            test ! -L "$path"
+            test "$(stat -c '%a' "$path")" = 700
+            test "$(stat -c '%u' "$path")" = "$(id -u)"
+            test "$(stat -c '%g' "$path")" = "$(id -g)"
+          done
+          printf 'RESULT_DIR=%s\n' "$result_dir" >> "$GITHUB_ENV"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/venv\n' "$result_dir" >> "$GITHUB_ENV"
+          printf 'RUNNER_PRIVATE_TMP=%s/tmp\n' "$result_dir" >> "$GITHUB_ENV"
+          printf 'RUNNER_PRIVATE_CACHE=%s/cache\n' "$result_dir" >> "$GITHUB_ENV"
+          printf 'UV_CACHE_DIR=%s/cache/uv\n' "$result_dir" >> "$GITHUB_ENV"
+
+      - name: Install frozen application development dependencies
+        id: dependencies
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(sha256sum uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          python --version | grep -Fx 'Python 3.11.14'
+          uv --version | grep -Fx 'uv 0.8.15'
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 900s env \
+            TMPDIR="$RUNNER_PRIVATE_TMP" XDG_CACHE_HOME="$RUNNER_PRIVATE_CACHE" \
+            uv sync --frozen --extra dev --no-install-project \
+            2>&1 | tee "$RESULT_DIR/install.log"
+          result=${PIPESTATUS[0]}
+          set -e
+          python - "$RESULT_DIR/install-status.json" "$result" <<'PY'
+          import json, subprocess, sys
+          from pathlib import Path
+          Path(sys.argv[1]).write_text(json.dumps({
+              "schema": "ni60.install_status.v1",
+              "exit_code": int(sys.argv[2]),
+              "python": sys.version,
+              "uv": subprocess.check_output(["uv", "--version"], text=True).strip(),
+              "lock_sha256": subprocess.check_output(["sha256sum", "uv.lock"], text=True).split()[0],
+          }, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+          exit "$result"
+
+      - name: Upload original dependency installation status immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-install
+          path: |
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/install.log
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/install-status.json
+          if-no-files-found: warn
+
+      - name: Capture immutable context before tests
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os, stat, subprocess, sys
+          from datetime import datetime, timezone
+          from pathlib import Path
+          result = Path(os.environ["RESULT_DIR"])
+          meminfo = Path("/proc/meminfo").read_bytes()
+          fields = {}
+          for line in meminfo.decode().splitlines():
+              key, sep, value = line.partition(":")
+              if sep and key in {"MemTotal", "MemAvailable", "SwapTotal", "SwapFree"}:
+                  fields[key] = value.strip()
+          if "MemTotal" not in fields:
+              raise SystemExit("runner /proc/meminfo missing MemTotal")
+          lock_after = hashlib.sha256(Path("uv.lock").read_bytes()).hexdigest()
+          if lock_after != os.environ["APP_LOCK_SHA256"]:
+              raise SystemExit("frozen uv sync changed lock bytes")
+          private = [result, result / "tmp", result / "cache", result / "cache" / "uv",
+                     Path(os.environ["UV_PROJECT_ENVIRONMENT"])]
+          path_facts = {}
+          for path in private:
+              st = path.lstat()
+              valid = stat.S_ISDIR(st.st_mode) and not stat.S_ISLNK(st.st_mode) and \
+                  stat.S_IMODE(st.st_mode) == 0o700 and st.st_uid == os.getuid() and st.st_gid == os.getgid()
+              path_facts[str(path)] = {"mode": oct(stat.S_IMODE(st.st_mode)), "uid": st.st_uid,
+                                       "gid": st.st_gid, "owned_private_0700": valid}
+              if not valid:
+                  raise SystemExit(f"runner capture path not private/owned: {path}")
+          context = {
+              "schema": "ni60.fixture_context.v1",
+              "module_id": os.environ["MODULE_ID"],
+              "module_path": os.environ["MODULE_PATH"],
+              "expected_case_count": int(os.environ["EXPECTED_CASES"]),
+              "app_base_sha": os.environ["APP_BASE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_source_parent_sha": os.environ["APP_SOURCE_PARENT_SHA"],
+              "root_producer_sha": os.environ["ROOT_PRODUCER_SHA"],
+              "workflow_candidate_sha": os.environ["GITHUB_SHA"],
+              "lock_sha256_before_install": os.environ["APP_LOCK_SHA256"],
+              "lock_sha256_after_install": lock_after,
+              "install_log_sha256": hashlib.sha256((result / "install.log").read_bytes()).hexdigest(),
+              "install_status_sha256": hashlib.sha256((result / "install-status.json").read_bytes()).hexdigest(),
+              "python": sys.version,
+              "uv": subprocess.check_output(["uv", "--version"], text=True).strip(),
+              "runner_meminfo": {"path": "/proc/meminfo", "raw_sha256": hashlib.sha256(meminfo).hexdigest(),
+                  "raw_text": meminfo.decode(), "selected_fields": fields,
+                  "captured_utc_before_pytest": datetime.now(timezone.utc).isoformat(),
+                  "claim_scope": "ephemeral runner description only; no capacity claim"},
+              "private_path_facts": path_facts,
+              "execution": {"CI": os.environ["CI"], "ORCHESTRATOR_MOCK_MODE": os.environ["ORCHESTRATOR_MOCK_MODE"],
+                  "whole_module_only": True, "network_model_endpoint": "not configured or inherited",
+                  "semantic_opt_in": "EPISODIC_ALLOW_DEGRADED_EMBEDDINGS removed inside named fixtures; not enabled"},
+              "test_process_environment": {"construction": "env -i explicit allowlist",
+                  "home_override": False,
+                  "allowlist": ["HOME", "PATH", "TMPDIR", "XDG_CACHE_HOME", "CI",
+                      "ORCHESTRATOR_MOCK_MODE", "MODULE_ID", "MODULE_PATH", "EXPECTED_CASES",
+                      "RESULT_DIR", "UV_PROJECT_ENVIRONMENT", "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD", "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                      "PYTHONUNBUFFERED", "PYTHONNOUSERSITE"],
+                  "provider_secrets": "not inherited by child pytest process"},
+              "pytest_guard": {"CI": "true", "ORCHESTRATOR_MOCK_MODE": "true",
+                  "tests_conftest_100GiB_guard": "bypassed by declared CI/mock fixture mode",
+                  "capacity_proof": "none; no synthetic RAM or host capacity claim"},
+              "test_fixtures": {"temporary_store": "pytest tmp_path SQLite and FAISS",
+                  "embedder": "fixed normalized finite float32 1024-vector, no semantic-quality claim",
+                  "default_embedder_constructor": "Mock side_effect AssertionError; asserted not called in injected tests"},
+              "historical_original_module_counts": {"test_autopilot_creativity.py": {"passed": 52, "collected": 53},
+                  "test_seed_operator_strategies.py": {"passed": 4, "collected": 5}},
+              "source_blobs": {
+                  "tests/unit/test_autopilot_creativity.py": "e032734bab04247a09607ba61cdc7326cc142fc2",
+                  "tests/unit/test_seed_operator_strategies.py": "e5b763d031e56bda29c596969315f8c4ea66a4bc",
+                  "scripts/autopilot/autopilot.py": "1d62a213e6e7f3f4b8dc998a8ecb404d485e6dc2",
+                  "scripts/autopilot/experiment_journal.py": "e5c901dd5113d51fcb534b71888610d20d5e40ad",
+                  "scripts/autopilot/pareto_archive.py": "4ff3f53fb9b9bb744f4bcfdc5f926ac9a4dce228",
+                  "scripts/autopilot/seed_operator_strategies.py": "ce4dcd7131fad5937b4151e55546ce27213cab33",
+                  "scripts/autopilot/controller_io.py": "2aa79c29160b0968de0bb155e58662a8fd6f7de5",
+                  "orchestration/repl_memory/__init__.py": "79559be464c8d9c994c8018b89a5178efa2e1d3f",
+                  "orchestration/repl_memory/strategy_store.py": "50b6704a13293b8e9a8e261bdba0910fa48a1e1f",
+                  "orchestration/repl_memory/embedder.py": "37386ebd037d2ed0d10d7db2289ea1be6c277c07",
+                  "orchestration/repl_memory/faiss_store.py": "0ac80dd00ab061fe4e68faf0040d0e6214db479a",
+                  "tests/conftest.py": "3b87111c6bc4ec1f8c8840d204e337e12ae00851",
+                  "tests/unit/conftest.py": "67752e81242ba51847cfae462b42f21981b9a5ad",
+                  "pyproject.toml": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+                  "uv.lock": "ef2306018773ff9a1e80389970d92f66fcf8d5b7"},
+              "root_producer_blobs": {
+                  "scripts/ci/native_conformance.py": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+                  "scripts/vidya/adapters/__init__.py": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+                  "scripts/vidya/adapters/ci_conformance.py": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+                  "scripts/vidya/claim_tuple.py": "309af769e45245fd1452482eb2e0592a86a4a79f",
+                  "scripts/vidya/canonical.py": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+                  "scripts/vidya/frames.py": "47e485d913271b72c9aaf1d9dfb526294ef0fd14"},
+              "baseline": "original full-module results remain unchanged; this is prospective fixture evidence only",
+          }
+          (result / "context.json").write_text(json.dumps(context, sort_keys=True) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture whole module with native conformance producer
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout --verbose --signal=TERM --kill-after=20s 600s \
+            python "$ROOT_CHECKOUT/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" --junit "$RESULT_DIR/original-pytest.xml" --output "$RESULT_DIR/native" \
+              --repo "root_workflow=$CONTROL_CHECKOUT" --repo "root_producer=$ROOT_CHECKOUT" \
+              --repo "orchestrator_candidate=$PWD" \
+              --read-path "$CONTROL_CHECKOUT/.github/workflows/ni60-local-embedding-fixtures.yml" \
+              --read-path "$ROOT_CHECKOUT/scripts/ci/native_conformance.py" \
+              --read-path "$ROOT_CHECKOUT/scripts/vidya/adapters/__init__.py" \
+              --read-path "$ROOT_CHECKOUT/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$ROOT_CHECKOUT/scripts/vidya/claim_tuple.py" \
+              --read-path "$ROOT_CHECKOUT/scripts/vidya/canonical.py" \
+              --read-path "$ROOT_CHECKOUT/scripts/vidya/frames.py" \
+              --read-path "$RESULT_DIR/install.log" --read-path "$RESULT_DIR/install-status.json" \
+              --read-path "$RESULT_DIR/context.json" \
+              --read-path tests/conftest.py --read-path tests/unit/conftest.py \
+              --read-path tests/unit/test_autopilot_creativity.py \
+              --read-path tests/unit/test_seed_operator_strategies.py \
+              --read-path scripts/autopilot/autopilot.py \
+              --read-path scripts/autopilot/experiment_journal.py \
+              --read-path scripts/autopilot/pareto_archive.py \
+              --read-path scripts/autopilot/seed_operator_strategies.py \
+              --read-path scripts/autopilot/controller_io.py \
+              --read-path orchestration/repl_memory/__init__.py \
+              --read-path orchestration/repl_memory/strategy_store.py \
+              --read-path orchestration/repl_memory/embedder.py \
+              --read-path orchestration/repl_memory/faiss_store.py \
+              --read-path pyproject.toml --read-path uv.lock \
+              --select "$MODULE_PATH" -- bash -c '
+                set -euo pipefail
+                timeout --verbose --signal=TERM --kill-after=15s 240s env -i \
+                  HOME="$HOME" PATH="$UV_PROJECT_ENVIRONMENT/bin:/usr/local/bin:/usr/bin:/bin" \
+                  TMPDIR="$RUNNER_PRIVATE_TMP" XDG_CACHE_HOME="$RUNNER_PRIVATE_CACHE" \
+                  CI=true ORCHESTRATOR_MOCK_MODE=true MODULE_ID="$MODULE_ID" \
+                  MODULE_PATH="$MODULE_PATH" EXPECTED_CASES="$EXPECTED_CASES" \
+                  RESULT_DIR="$RESULT_DIR" UV_PROJECT_ENVIRONMENT="$UV_PROJECT_ENVIRONMENT" \
+                  ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+                  ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" \
+                  ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+                  PYTHONUNBUFFERED=1 PYTHONNOUSERSITE=1 \
+                  "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q -p no:cacheprovider \
+                    --basetemp="$RESULT_DIR/pytest-tmp" --rootdir="$PWD" \
+                    "$MODULE_PATH" --junitxml="$RESULT_DIR/original-pytest.xml" \
+                    > "$RESULT_DIR/pytest.stdout" 2> "$RESULT_DIR/pytest.stderr"
+              '
+
+      - name: Upload original native module prefix
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-native
+          path: |
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/context.json
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/original-pytest.xml
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/pytest.stdout
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/pytest.stderr
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/native/
+          if-no-files-found: warn
+
+      - name: Verify trusted receipt, whole-module counts, and custody
+        if: always()
+        working-directory: app-fixtures
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          python - "$RESULT_DIR/native/receipt.json" "$RESULT_DIR/postcheck.json" \
+            > "$RESULT_DIR/postcheck.stdout" 2> "$RESULT_DIR/postcheck.stderr" <<'PY'
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import stat
+          import subprocess
+          import sys
+          root = Path(os.environ["ROOT_CHECKOUT"])
+          sys.path.insert(0, str(root))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          receipt_path, post_path = map(Path, sys.argv[1:])
+          if not receipt_path.is_file():
+              post_path.write_text(json.dumps({"schema": "ni60.postcheck.v1",
+                  "diagnostic": "native receipt missing"}, sort_keys=True, indent=2) + "\n")
+              raise SystemExit("native receipt missing")
+          record, receipt_digest = read_receipt(receipt_path)
+          rows = native_rows(receipt_path)
+          if len(rows) != 1:
+              raise SystemExit("trusted adapter did not produce exactly one row")
+          claim = project_ci_conformance(rows[0])
+          grade_q, grade_t, grade_reasons = grade(claim)
+          expected = int(os.environ["EXPECTED_CASES"])
+          counts = (record.get("summary") or {}).get("counts", {})
+          exact_counts = counts == {"collected": expected, "executed": expected,
+              "passed": expected, "failure": 0, "error": 0, "skipped": 0}
+          if os.environ["MODULE_ID"] == "creativity":
+              expected_controls = {"test_planner_strategy_hints_see_external_store_writes_without_restart",
+                  "test_planner_strategy_hints_default_off_does_not_read_store",
+                  "test_planner_strategy_hints_surface_search_index_degradation"}
+          else:
+              expected_controls = {"test_seed_rows_preserves_empty_operator_evidence",
+                  "test_parse_args_rejects_apply_with_dry_run",
+                  "test_audit_identifiers_blocks_implicit_missing_live_binding"}
+          cases = (record.get("summary") or {}).get("cases", [])
+          passing_controls = {item["name"] for item in cases if item.get("status") == "passed"}
+          controls_present_and_passing = expected_controls <= passing_controls
+          expected_repos = {"root_workflow": os.environ["GITHUB_SHA"],
+              "root_producer": os.environ["ROOT_PRODUCER_SHA"],
+              "orchestrator_candidate": os.environ["APP_SOURCE_SHA"]}
+          repo_pins_exact = record.get("repositories") == expected_repos
+          selection_exact = record.get("selections") == [os.environ["MODULE_PATH"]]
+          readset_names = {item.get("name") for item in record.get("readset", [])}
+          result_dir = Path(os.environ["RESULT_DIR"])
+          required_readset = {str(result_dir / name) for name in
+              ("install.log", "install-status.json", "context.json")}
+          app = Path(os.environ["APP_CHECKOUT"])
+          app_paths = ("tests/conftest.py", "tests/unit/conftest.py", "pyproject.toml", "uv.lock",
+              "tests/unit/test_autopilot_creativity.py", "tests/unit/test_seed_operator_strategies.py",
+              "scripts/autopilot/autopilot.py", "scripts/autopilot/experiment_journal.py",
+              "scripts/autopilot/pareto_archive.py", "scripts/autopilot/seed_operator_strategies.py",
+              "scripts/autopilot/controller_io.py", "orchestration/repl_memory/__init__.py",
+              "orchestration/repl_memory/strategy_store.py", "orchestration/repl_memory/embedder.py",
+              "orchestration/repl_memory/faiss_store.py")
+          required_readset |= {str(app / name) for name in app_paths}
+          producer = Path(os.environ["ROOT_CHECKOUT"])
+          root_paths = ("scripts/ci/native_conformance.py", "scripts/vidya/adapters/__init__.py",
+              "scripts/vidya/adapters/ci_conformance.py", "scripts/vidya/claim_tuple.py",
+              "scripts/vidya/canonical.py", "scripts/vidya/frames.py")
+          required_readset |= {str(producer / name) for name in root_paths}
+          readset_complete = required_readset <= readset_names
+          private_paths = [result_dir, result_dir / "tmp", result_dir / "cache",
+              result_dir / "cache" / "uv", Path(os.environ["UV_PROJECT_ENVIRONMENT"])]
+          private_facts = {}
+          for path in private_paths:
+              info = path.lstat()
+              private_facts[str(path)] = {"mode": oct(stat.S_IMODE(info.st_mode)),
+                  "uid": info.st_uid, "gid": info.st_gid}
+          private = all(path.is_dir() and not path.is_symlink()
+              and stat.S_IMODE(path.lstat().st_mode) == 0o700
+              and path.lstat().st_uid == os.getuid() and path.lstat().st_gid == os.getgid()
+              for path in private_paths)
+          absent_keys = ("ORCHESTRATOR_PATHS_LLAMA_CPP_BIN", "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+              "ORCHESTRATOR_PATHS_LLAMA_SERVER")
+          absent = all(not Path(os.environ[key]).exists() and not Path(os.environ[key]).is_symlink()
+              for key in absent_keys)
+          install_status = json.loads((result_dir / "install-status.json").read_text(encoding="utf-8"))
+          install_log_sha = hashlib.sha256((result_dir / "install.log").read_bytes()).hexdigest()
+          install_status_sha = hashlib.sha256((result_dir / "install-status.json").read_bytes()).hexdigest()
+          context = json.loads((result_dir / "context.json").read_text(encoding="utf-8"))
+          install_bound = (install_status.get("exit_code") == 0
+              and install_status_sha == context["install_status_sha256"]
+              and install_log_sha == context["install_log_sha256"])
+          lock_sha = hashlib.sha256((app / "uv.lock").read_bytes()).hexdigest()
+          pyproject_sha = hashlib.sha256((app / "pyproject.toml").read_bytes()).hexdigest()
+          locks_pinned = lock_sha == os.environ["APP_LOCK_SHA256"]
+          pyproject_pinned = pyproject_sha == "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+          python_version = subprocess.check_output(["python", "--version"], text=True).strip()
+          uv_version = subprocess.check_output(["uv", "--version"], text=True).strip()
+          source_repos = (os.environ["APP_CHECKOUT"], os.environ["ROOT_CHECKOUT"], os.environ["CONTROL_CHECKOUT"])
+          clean = {name: not subprocess.check_output(["git", "-C", name, "status", "--porcelain"],
+              text=True).strip() for name in source_repos}
+          stdout_stderr = [result_dir / "pytest.stdout", result_dir / "pytest.stderr"]
+          logs_present = all(path.is_file() and not path.is_symlink() for path in stdout_stderr)
+          log_hashes = {path.name: hashlib.sha256(path.read_bytes()).hexdigest()
+              for path in stdout_stderr} if logs_present else {}
+          checks = {"native_true": record.get("fixture_execution_conformant") is True,
+              "native_exit_zero": record.get("exit_code") == 0,
+              "exact_full_module_counts": exact_counts,
+              "selection_exact": selection_exact, "repo_pins_exact": repo_pins_exact,
+              "shared_grade_judged_located": (grade_q, grade_t) == ("Judged", "Located"),
+              "refusal_and_embedder_controls_pass": controls_present_and_passing,
+              "native_readset_complete": readset_complete,
+              "private_owned_mode_0700_uid_gid": private, "kernel_override_absences_hold": absent,
+              "install_log_and_status_bound_to_context": install_bound,
+              "frozen_lock_pinned": locks_pinned, "pyproject_pinned": pyproject_pinned,
+              "all_source_checkouts_clean": all(clean.values()), "original_stdout_stderr_present": logs_present,
+              "python_pin": python_version == "Python 3.11.14", "uv_pin": uv_version == "uv 0.8.15"}
+          result = {"schema": "ni60.postcheck.v1", "module_id": os.environ["MODULE_ID"],
+              "receipt_sha256": receipt_digest, "native_exit_code": record.get("exit_code"),
+              "observed_counts": counts, "expected_counts": {"collected": expected,
+                  "executed": expected, "passed": expected, "failure": 0, "error": 0, "skipped": 0},
+              "selections": record.get("selections"), "repositories": record.get("repositories"),
+              "shared_grade": {"Q": grade_q, "T": grade_t, "reasons": grade_reasons},
+              "passing_controls": sorted(expected_controls & passing_controls),
+              "native_readset_names": sorted(name for name in readset_names if name),
+              "private_path_facts": private_facts, "install_log_sha256": install_log_sha,
+              "install_status_sha256": install_status_sha, "pytest_stdout_stderr_sha256": log_hashes,
+              "source_clean_by_repo": clean, "checks": checks}
+          post_path.write_text(json.dumps(result, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          if not all(checks.values()):
+              raise SystemExit("native receipt or a post-run custody check failed")
+          PY
+      - name: Upload post-capture custody checks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-postcheck
+          path: |
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/postcheck.json
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/postcheck.stdout
+            ${{ runner.temp }}/ni60-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}/postcheck.stderr
+          if-no-files-found: warn

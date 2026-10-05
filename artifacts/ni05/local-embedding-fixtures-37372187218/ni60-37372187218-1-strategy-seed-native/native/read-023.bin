@@ -1,0 +1,203 @@
+[project]
+name = "epyc-orchestrator"
+version = "0.1.0"
+description = "Hierarchical multi-model orchestration for local LLM inference"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+
+dependencies = [
+    # Core API
+    "fastapi>=0.109.0",
+    "uvicorn>=0.27.0",
+    "httpx>=0.27.0",  # Connection pooling for latency reduction
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.0.0",  # Type-safe configuration from env vars
+    "sse-starlette>=2.0.0",  # Proper SSE streaming
+
+    # Parsing
+    "markdown-it-py>=3.0.0",  # Proper markdown parsing for code extraction
+
+    # Configuration
+    "pyyaml>=6.0",
+    "jsonschema>=4.20",
+
+    # ML / Numerical
+    "scikit-learn>=1.4.0",
+    "numpy>=1.26.0",
+
+    # Vector search (episodic memory)
+    "faiss-cpu>=1.7.4",
+
+    # CPU retrieval encoders (ONNX). Direct runtime imports in
+    # src/retrieval/colbert_encoder.py (first-stage KB-RAG MaxSim),
+    # src/retrieval/cross_encoder.py (K9 rerank) and
+    # src/tools/web/colbert_reranker.py (web-research snippet rerank).
+    # Used-but-undeclared before 2026-08-12: `onnxruntime` appeared only inside the
+    # optional `colbert-export` extra, was absent from the orchestrator .venv, and every
+    # loader swallowed the ImportError as a logger.warning + `return False` — so the KB-RAG
+    # encoder and both rerank stages degraded to un-reranked order with nothing asserting
+    # otherwise. src/retrieval/federation.py grew a three-tier site-packages search
+    # (`ensure_encoder_importable`) purely to work around this absence. `tokenizers` is
+    # likewise imported directly but arrived only transitively via dspy -> litellm.
+    "onnxruntime>=1.20.0",
+    "tokenizers>=0.22.2",
+
+    # Vision pipeline (src/vision/, image handling)
+    "Pillow>=10.0.0",
+
+    # MCP server scaffold (src/mcp_server.py) — standalone FastMCP v3 (superset of the
+    # FastMCP 1.0 fork vendored inside the official `mcp` SDK).
+    "fastmcp>=3,<4",
+    # Official MCP SDK — used directly by src/mcp_client.py (ClientSession,
+    # StdioServerParameters, stdio_client, mcp.types.*). fastmcp depends on it
+    # transitively, but pin it explicitly so a future fastmcp release can't drop us.
+    "mcp>=1.0.0",
+
+    # Orchestration graph (escalation flow)
+    "pydantic-graph>=1.80.0,<2",
+
+    # LangGraph migration (Phase 1: hybrid bridge alongside pydantic-graph)
+    "langgraph>=0.2.0",
+    "langgraph-checkpoint-sqlite>=2.0.0",
+
+    # Utilities
+    "psutil>=5.9.0",  # Memory monitoring
+    "requests>=2.31.0",
+    "rich>=13.7.0",
+
+    # DSPy (AP-18: routing prompt optimization via GEPA)
+    "dspy>=2.5.0",
+    # GEPA — imported directly by scripts/autopilot/species/gepa_optimizer.py:247
+    # (`import gepa`) but was used-but-undeclared before 2026-08-23, arriving only
+    # transitively via dspy. Pinned, not floated: the VERSION choice (0.0.26 vs 0.1.4
+    # vs main) is gated behind AP-19b/AP-29c, and 0.1.4 lacks the optimize_anything
+    # engine layer. Declaring the already-resolved version changes no resolution.
+    "gepa==0.0.26",
+
+    # Plotting (autopilot progress/Pareto dashboard panels — scripts/autopilot/progress_plots.py).
+    # Used-but-undeclared before 2026-06-04: a venv rebuild silently dropped it and the
+    # plot subprocess swallowed the ImportError, freezing the dashboard panels.
+    "matplotlib>=3.10.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.8.0",
+    "mypy>=1.8.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-timeout>=2.2.0",
+    "pytest-cov>=4.1.0",
+    "pytest-xdist>=3.5.0",
+    "hypothesis>=6.0.0",
+    "pandas>=2.0.0",  # Required for canvas export tests
+]
+eval-scoring = [
+    "math-verify[antlr4_13_2]==0.9.0",
+]
+toon = [
+    # Token-Oriented Object Notation - 55% token reduction on structured data
+    # Install from git until official PyPI release
+    "toon-format @ git+https://github.com/toon-format/toon-python.git",
+]
+sandbox = [
+    # Python sandboxing for REPL code execution
+    "RestrictedPython>=7.0",
+]
+graph = [
+    # Kuzu embedded graph DB for FailureGraph / HypothesisGraph / BipartiteRoutingGraph
+    # (orchestration/repl_memory/*_graph.py) -> GraphEnhancedRetriever under
+    # specialist_routing, the GNN graph_router, canvas export and seed_graphs.py.
+    # Used-but-undeclared before 2026-09-17 (NIB2-78): absent from the API venv, so the
+    # graph layer never ran in production and each worker logged a fallback traceback.
+    # Pinned exactly: upstream kuzudb/kuzu was ARCHIVED 2025-10-10 and 0.11.3 is its final
+    # release; it opens the on-disk orchestration/repl_memory/kuzu_db files (storage
+    # version 39). Kuzu holds an exclusive per-file lock, so only one API worker can own
+    # a graph file (the others degrade with a one-line warning). Not installed by default.
+    "kuzu==0.11.3",
+]
+colbert-export = [
+    # One-off ColBERT/LateOn ONNX export + parity validation (NIB2-47).
+    # Not needed at runtime — onnxruntime + tokenizers alone handle inference.
+    "transformers>=4.45.0",
+    "torch>=2.2.0",
+    "optimum[onnxruntime]>=1.21.0",
+    "pylate>=1.2.0",
+]
+
+[project.scripts]
+orch = "src.cli_orch:main"
+orch-sessions = "src.cli_sessions:main"
+validate-ir = "orchestration.validate_ir:main"
+registry-loader = "src.registry_loader:main"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+exclude = ["scripts/benchmark/deprecated/"]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "W",      # pycodestyle warnings
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+    "E402",   # module import not at top (intentional delayed imports)
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["src", "orchestration"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["src", "scripts/benchmark", "scripts/lib"]
+omit = [
+    "src/gradio_ui.py",        # UI module, not testable in CI
+    "src/cli_*.py",            # CLI entrypoints
+    "src/vision/*",            # Requires model files
+    "src/__pycache__/*",
+]
+
+[tool.coverage.report]
+fail_under = 30
+show_missing = true
+skip_empty = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ ==",
+    "raise NotImplementedError",
+]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+check_untyped_defs = true
+disallow_untyped_defs = false
+no_implicit_optional = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.10",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true  # For toon-format git install
+
+[tool.hatch.build.targets.wheel]
+packages = ["src", "orchestration"]

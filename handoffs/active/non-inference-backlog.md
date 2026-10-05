@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-45/53 strategy validation, NI05-58–60 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-45/53 strategy validation, NI05-58/59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **56/76**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **57/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -124,7 +124,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [ ] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup.
 
-- [ ] **NI05-60** — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
+- [x] **NI05-60** ✅ 2026-10-05 — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
 
 - [x] **NI05-61** ✅ 2026-10-05 — SSU-ONNX-THREAD-CONTRACT: Resolve topology-dependent thread defaults against actual source/configuration, then bind deterministic small-host and production-shaped fixture controls; do not change expected values solely to pass.
 
@@ -689,3 +689,5 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 NI05-57 completed: the path-bound routing fixture preserves its stale-module trap and SystemExit1 refusal; the complete module passes72/72 with zero skips, failures or errors. Main independently verifies78 extracted originals,62 Git-backed source inputs plus three context/install inputs, native TRUE Judged/Located and19 postchecks from CI37369215336 attempt1. Only the routing test delta is promoted to APP main198ee59d54750d23b211e80856b913d07357bfbe. Public originals and derivative review: `artifacts/ni05/routing-pool-37369215336`. NI05-58 prompt validation remains open; its original unacquired runner produced no fixture outcome. Existing CI belief carrier applies without a new grading rule. Published scoped completion tally55/76,21 open; the full unit suite remains mixed.
 
 2026-10-05 NI05-61 completed: reviewed topology fixtures enforce the existing8/16 ONNX intra-op defaults and inter_op1, retain positive explicit overrides/refusals, and cover visibleCPU1/8/16/192. Original CI37369039306 attempt2 passes47 ColBERT+13 encoder cases, zero skips/failures/errors; main reopens both TRUE Judged/Located receipts,21 Git-backed+19 context/install inputs each,17 postchecks each and190 ZIP-member comparisons. Two test files are published to APP main33d9de564e3090516780a8889f4ca4e77a779bb7. Public originals: `artifacts/ni05/onnx-fixtures-37369039306`. Earlier setup/acquisition failures remain unchanged, with no invented result. Scoped completion tally56/76,20 open; no live ONNX model, inference, performance or full-suite claim.
+
+2026-10-05 NI05-60 completed: deterministic normalized1024-D embeddings use existing injection seams and temporary SQLite/FAISS stores; real persistence assertions, semantic/degraded ownership guards and default-embedder traps remain. Original CI37372187218 attempt1 passes53 creativity+5 seed cases with zero skips/failures/errors. Main independently reopens both TRUE Judged/Located receipts,22 Git-backed+3 context/install inputs each and17 postchecks each; verifies21 private original metadata and76 downloaded original files. Two test files are published to APP mainec711a7c100a26e183c8e9341e4a3122d21907df. Public originals: `artifacts/ni05/local-embedding-fixtures-37372187218`. Scoped completion tally57/76,19 open; no live store, model inference, semantic quality or full-suite claim.

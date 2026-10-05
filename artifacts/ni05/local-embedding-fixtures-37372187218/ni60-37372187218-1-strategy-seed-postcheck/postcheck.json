@@ -1,0 +1,127 @@
+{
+  "checks": {
+    "all_source_checkouts_clean": true,
+    "exact_full_module_counts": true,
+    "frozen_lock_pinned": true,
+    "install_log_and_status_bound_to_context": true,
+    "kernel_override_absences_hold": true,
+    "native_exit_zero": true,
+    "native_readset_complete": true,
+    "native_true": true,
+    "original_stdout_stderr_present": true,
+    "private_owned_mode_0700_uid_gid": true,
+    "pyproject_pinned": true,
+    "python_pin": true,
+    "refusal_and_embedder_controls_pass": true,
+    "repo_pins_exact": true,
+    "selection_exact": true,
+    "shared_grade_judged_located": true,
+    "uv_pin": true
+  },
+  "expected_counts": {
+    "collected": 5,
+    "error": 0,
+    "executed": 5,
+    "failure": 0,
+    "passed": 5,
+    "skipped": 0
+  },
+  "install_log_sha256": "3f9d8e0bdcd1f21b32e9f51dd38e41bfd805ca190e05dd463b1653b93da1eed3",
+  "install_status_sha256": "9a80de2a8f366a65a4176b841967f47f1b71c7be098d8fd4a6fd520479de85af",
+  "module_id": "strategy-seed",
+  "native_exit_code": 0,
+  "native_readset_names": [
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/context.json",
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/install-status.json",
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/install.log",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/embedder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/faiss_store.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/strategy_store.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/pyproject.toml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/autopilot.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/controller_io.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/experiment_journal.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/pareto_archive.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/seed_operator_strategies.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_autopilot_creativity.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_seed_operator_strategies.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/uv.lock",
+    "/home/runner/work/epyc-root/epyc-root/ci-control/.github/workflows/ni60-local-embedding-fixtures.yml",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/ci/native_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/ci_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/canonical.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/claim_tuple.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/frames.py"
+  ],
+  "observed_counts": {
+    "collected": 5,
+    "error": 0,
+    "executed": 5,
+    "failure": 0,
+    "passed": 5,
+    "skipped": 0
+  },
+  "passing_controls": [
+    "test_audit_identifiers_blocks_implicit_missing_live_binding",
+    "test_parse_args_rejects_apply_with_dry_run",
+    "test_seed_rows_preserves_empty_operator_evidence"
+  ],
+  "private_path_facts": {
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/cache": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/cache/uv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni60-37372187218-1-strategy-seed/venv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    }
+  },
+  "pytest_stdout_stderr_sha256": {
+    "pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout": "8cb4da4c1c4ab6bc33a0c831025aec99086117ea048fdc92060c7dd029169c9b"
+  },
+  "receipt_sha256": "d11c55ac45884b394c657cf14f2aca0a8ab2f984258fd23c4422d3b3f32a9fc2",
+  "repositories": {
+    "orchestrator_candidate": "f0ba99002ad69911292ea729d17d9516bdf2923f",
+    "root_producer": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+    "root_workflow": "b790bed94a2b4eebe43db1fb3640cac7cbf2548f"
+  },
+  "schema": "ni60.postcheck.v1",
+  "selections": [
+    "tests/unit/test_seed_operator_strategies.py"
+  ],
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "source_clean_by_repo": {
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures": true,
+    "/home/runner/work/epyc-root/epyc-root/ci-control": true,
+    "/home/runner/work/epyc-root/epyc-root/root-producer": true
+  }
+}
