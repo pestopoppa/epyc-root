@@ -309,3 +309,28 @@ credentials and a public book ISBN. Main retains every original byte and files N
 narrow source/request/readset-bound fixture correction with genuine-secret negative controls.
 No gate bypass, blanket artifact exemption, fixture relocation exception, redaction or reseal
 is used. Full public native recovery custody remains partial pending that correction.
+
+
+## NI30 accepted; outstanding gate and host boundaries
+
+Main independently reopened all four original capacity/focused prefix and combined receipts
+from `37303383753`: 1/1 and 36/36 passed, all declared inputs/outputs match. Existing CI
+projection gives Judged/Located observations only. App `631220f7b05a` publishes the five
+reviewed source/test files, byte-identical to tested `b2d38066`. Original combined bundle
+is copied unchanged to `artifacts/ni05/early-abort-cycle-37303383753/`. NI30/NIB2-80a close;
+tally **24/31**. Workflow remains a pinned candidate recipe; no reload or live request.
+
+NI12's former retained launcher PID `1014878` was absent with no script artifact directory
+or output log: no dependency installation is established. Main requeued the unchanged
+script once at 11:30 UTC; captured PID `4021026`, retained exec `92317`, tag
+`ni12-pytest-install-requeued-20261005`. SHA-256
+`7dec7e571bd2a5e0d6fdc9a25234455fb6600ec4e1b30c9c880fd787a7bbc737`.
+It is still acquiring the 0-95 build claim. The disappearance's cause is not proved.
+NI10 remains independently queued and worker-watched; neither queue authorizes unclaimed work.
+
+NI28 receipt review returns normal-mode environment/parity and timeout-cleanup issues for
+correction before off-host testing. NI31's actual staged-index findings are a distinct
+write-side wiring gap: source-table row and VB-PII-STAGED-WIRE are filed immediately.
+Prospective NI31 fixture execution uses the existing CI command source and sole shared ladder.
+The 67 broad-run observed failures remain hypotheses without surviving tracebacks; two
+bounded native repro batches are being prepared before source changes.

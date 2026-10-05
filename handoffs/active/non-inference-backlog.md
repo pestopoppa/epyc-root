@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **23/31**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **24/31**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -66,7 +66,7 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
 - [ ] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
 - [ ] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
-- [ ] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
+- [x] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
 - [ ] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
@@ -480,7 +480,7 @@ Canonical sources (always verify status in these files first):
   **Not fixed here: it changes graph control flow on a path evals traverse, so it wants its own
   before/after test and the owning session's judgement on which reading is right.** Zero inference
   to verify (unit tests with a fake backend); zero compute.
-  - [ ] **NIB2-80a** (LOW) — the budget-bounded early-abort escalation still skips `_detect_role_cycle_impl` (A→B→A bouncing), which `_should_escalate` applies to every other site. Add the cycle check to the early-abort branch with a test.
+  - [x] **NIB2-80a** (LOW) — the budget-bounded early-abort escalation still skips `_detect_role_cycle_impl` (A→B→A bouncing), which `_should_escalate` applies to every other site. Add the cycle check to the early-abort branch with a test.
 - [x] **NIB2-82** (LOW) — `scripts/autopilot/baseline_authority_seed.py::_autopilot_running_pids` detects AutoPilot with `pgrep -af "autopilot.py start"` — a name-pattern read CLAUDE.md forbids. Replace with the read-only /proc cmdline scan used by the 2026-09-23 ratify script.
   ✅ 2026-10-05 — app `9887da8fbb87` scans exact process argv positions; unavailable observation
   refuses baseline append with a distinct status and exit two. Original CI `37297449498` passes
@@ -553,3 +553,8 @@ controls. This is offline source/fixture work; no route activation, live request
   never redact or reseal native records, bypass hooks, exempt whole artifact trees, relocate
   fixtures to hide from scanning, or widen vendor-placeholder authority. Original native
   bundles remain on RAID0 and immutable phase artifacts; public custody is partial until fixed.
+
+NI05-30 accepted 2026-10-05: app `631220f7b05a` adds the same pure budget/cycle admission
+predicate to all ten immediate branches. Original CI `37303383753` passes 36 focused cases
+and one separate actual-runner capacity guard. [Original native bundle](../../artifacts/ni05/early-abort-cycle-37303383753/README.md)
+binds exact tested source and original bytes. No production activation or reload.

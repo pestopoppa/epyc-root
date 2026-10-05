@@ -2491,3 +2491,12 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   has no ClaimTuple carrier class or standalone evidence_supports_claim until its warrant is
   ratified; no adapter or new ladder, historical backfill, dlopen/runtime-residency, performance
   or promotion claim. Source-table row filed before execution; no kernel modification.
+
+- [ ] **VB-PII-STAGED-WIRE — capture actual staged-index privacy findings at the write boundary.**
+  Filed with NI31 before new gate validation: the pre-commit gate produces verified findings,
+  but its current stdout/exit is not a native gate-result receipt. Bind the actual staged Git
+  objects and original policy/provenance identities, exact bounded verdict and emitted UTC
+  before any result is relied on outside its commit boundary. Preserve sensitive original
+  inputs privately; no public secret material, historical reconstruction or new grading ladder.
+  NI31's prospective CI hook fixtures use the existing selected-command receipt/class; they
+  cannot stand in for arbitrary production-index findings. Source-table row filed now.

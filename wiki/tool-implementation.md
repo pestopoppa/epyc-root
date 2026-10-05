@@ -1342,3 +1342,13 @@ Research `2c5d60f515ef` adds actual `/bin/true` rejection to the four canonical-
 fixtures. All five pass in original `37299711542`; [original bundle](../artifacts/ni05/ggml-linkage-37299711542/README.md)
 retains their custody. Actual production-store linkage acceptance remains a separate read-only
 dependency receipt and CPU-claim boundary; static linkage cannot establish dlopen residency.
+
+
+### Immediate early-abort admission (2026-10-05)
+
+App `631220f7b05a` applies a shared pure escalation-budget and role-cycle predicate to
+all five legacy and five LangGraph immediate early-abort routes. First-strike escalation
+still bypasses the retry threshold; refused admission follows the existing failure path.
+Original CI `37303383753` passes four legacy, 23 LangGraph and nine ordinary escalation
+fixtures, plus one separate actual-runner capacity guard. [Original native bundle](../artifacts/ni05/early-abort-cycle-37303383753/README.md)
+retains exact tested sources and artifacts. Publication does not activate or reload the API.

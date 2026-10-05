@@ -1,0 +1,3 @@
+WARNING  src.graph.decision_gates:decision_gates.py:116 Escalation cycle detected, refusing escalation: ['frontdoor', 'worker_math', 'frontdoor', 'worker_math']
+WARNING  src.graph.decision_gates:decision_gates.py:116 Escalation cycle detected, refusing escalation: ['frontdoor', 'worker_math', 'frontdoor', 'worker_math']
+WARNING  src.graph.decision_gates:decision_gates.py:116 Escalation cycle detected, refusing escalation: ['worker']

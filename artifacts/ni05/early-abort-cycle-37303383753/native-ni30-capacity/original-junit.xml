@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="1" time="1.689" timestamp="2026-10-05T11:32:25.839886+00:00" hostname="runnervm8df0l"><testcase classname="tests.unit.test_runtime_flags" name="test_fresh_launcher_import_keeps_real_host_capacity_guard" time="0.657" /></testsuite></testsuites>
