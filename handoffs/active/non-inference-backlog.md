@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 exception classification, NI05-38 scoring custody and NI05-41/43/44 offline follow-ons.
+- **Next:** NI05-18 exception classification and NI05-41/43/44 offline follow-ons.
 - **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **39/44**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **40/44**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -78,7 +78,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
 
-- [ ] **NI05-38** — DCP-10-SCORE-PREP: deterministic offline macro/path/span/post-pack scorer plus prospective immutable scored-report custody; full ContextBench benchmark remains separate.
+- [x] **NI05-38** ✅ 2026-10-05 — DCP-10-SCORE-PREP: deterministic offline macro/path/span/post-pack scorer plus prospective immutable scored-report custody; full ContextBench benchmark remains separate.
 
 - [x] **NI05-39** ✅ 2026-10-05 — SSU-FIXTURE-KVSLOTS: targeted pure launch-command fixtures with runner-only owned cache-directory preparation; preserve original failures and independent native captures.
 
@@ -594,3 +594,5 @@ NI18 scratch-fixture phase independently accepted from original CI37331885023: a
 NI39 accepted 2026-10-05: main reopened all three original CI37334324990 receipts through the trusted reader/shared verifier grade. The two unchanged command-construction modules pass74/74 and11/11 with zero skips/failures/errors; the distinct ordinary expected capacity refusal passes1/1. Both original source hashes match the fullscan; runner contexts attest an absent-before-setup, empty, owned0700 cache fixture without override or live KV data. Original fullscan outcomes remain unchanged. Source-only follow-ons NI40 scratch-dependent spill output, NI41 optional scorer dependency and NI42 temporary-DB graph fixtures are filed for concrete review. Published tally **36/42**; NI18 stays open.
 
 NI40/NI42 accepted 2026-10-05: main independently reopened original CI37339651393 (13/13 spill cases) and CI37339553198 (five graph modules,65/65 cases), all TRUE Judged/Located with zero skips/failures/errors. Declared source snapshots match pinned appdb38737d and exact workflow/producer originals. Independent postchecks prove all three binary targets absent/non-symlink; graph uses temporary databases and mocked embeddings. Spill scratch ownership/emptiness is attested before execution only, with no separate original post-run scratch check. Original fullscan failures/skips and first graph diagnostic NULL records remain unchanged. Public originals are preserved at artifacts/ni05/repl-spill-37339651393 and artifacts/ni05/graph-fixtures-37339553198. Accepted tally **39/44**; NI18/38/41/43/44 continue.
+
+NI38 bounded offline score preparation accepted 2026-10-05: original CI37345306976 passes12/12 scorer and67/67 reader/ingestion cases, zero skips/failures/errors. Main independently reopens both CI receipts TRUE Judged/Located and the bound original synthetic scored-report archive in owned0700 custody: one TRUE report and two diagnostic NULL/zero-row originals, preserving original UUIDs/modes/bytes. Descriptive macro file/span metrics retain failure/empty denominators and caller-declared dispositions/costs; no official dataset denominator or quality claim. Reviewed app sourcec8851695 and root sourcecab789885 are promoted unchanged; recipe remains separate. Original public prefixes: artifacts/ni05/contextbench-score-37345306976. Full DCP-10 benchmark stays open; tally **40/44**, NI18/41/43/44 continue.

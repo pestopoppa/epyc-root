@@ -1,0 +1,13 @@
+schema=ni38.synthetic-offhost-context.v1
+root_source_sha=d3929aa0b0736152557f5dff73fb005d26f89cd2
+app_source_sha=80ab3a74c6191381ef769fc44afc50f091cbbb4c
+applicability=synthetic_fixture
+dataset_acquisition=none
+repository_checkouts_by_test=none
+search_or_index_build=none
+model_or_inference_execution=none
+official_dataset_provenance=not_asserted
+runner=python3.11;pytest==9.1.1;PyYAML==6.0.3;app-uv.lock-PyYAML==6.0.3
+ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=/home/runner/work/_temp/ni38-unavailable-llama-cpp-bin present=false
+ORCHESTRATOR_PATHS_LLAMA_MTMD=/home/runner/work/_temp/ni38-unavailable-llama-mtmd present=false
+ORCHESTRATOR_PATHS_LLAMA_SERVER=/home/runner/work/_temp/ni38-unavailable-llama-server present=false

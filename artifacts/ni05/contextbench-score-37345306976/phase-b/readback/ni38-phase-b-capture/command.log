@@ -1,0 +1,12 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/runner/work/epyc-root/epyc-root/source-root
+configfile: pytest.ini
+collected 67 items
+
+source-root/tests/vidya/test_contextbench_score_capture.py .........     [ 13%]
+source-root/tests/vidya/test_ingest_sources.py ......................... [ 50%]
+.................................                                        [100%]
+
+------ generated xml file: /home/runner/work/_temp/ni38-phase-b.junit.xml ------
+============================== 67 passed in 0.86s ==============================

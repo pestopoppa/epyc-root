@@ -1,0 +1,584 @@
+name: NI38 offline ContextBench scorer custody
+
+on:
+  push:
+    branches:
+      - codex/ni38-dcp10-score-ci-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  scorer-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Checkout immutable root source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: d3929aa0b0736152557f5dff73fb005d26f89cd2
+          path: source-root
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Checkout immutable app source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          path: app-source
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Assert pinned source checkouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source-root rev-parse HEAD)" = d3929aa0b0736152557f5dff73fb005d26f89cd2
+          test "$(git -C app-source rev-parse HEAD)" = 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          test -z "$(git -C source-root status --porcelain --untracked-files=no)"
+          test -z "$(git -C app-source status --porcelain --untracked-files=no)"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned fixture runner
+        run: |
+          python -m pip install pytest==9.1.1 PyYAML==6.0.3
+          python -c 'import pytest, yaml; assert pytest.__version__ == "9.1.1"; assert yaml.__version__ == "6.0.3"'
+          python -c 'from pathlib import Path; assert "name = \"pyyaml\"\nversion = \"6.0.3\"" in Path("app-source/uv.lock").read_text()'
+
+      - name: Bind explicit synthetic-only context and absent backend paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          cpp="$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          mtmd="$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          server="$RUNNER_TEMP/ni38-unavailable-llama-server"
+          for pair in "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$cpp" \
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD=$mtmd" \
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER=$server"; do
+            key="${pair%%=*}"
+            value="${pair#*=}"
+            test ! -L "$value"
+            test ! -e "$value"
+            printf '%s=%s\n' "$key" "$value" >> "$GITHUB_ENV"
+            printf '%s=%s\n' "$key" "$value"
+          done
+          printf 'SOURCE_ROOT=%s\n' "$GITHUB_WORKSPACE/source-root" >> "$GITHUB_ENV"
+          printf 'APP_SOURCE=%s\n' "$GITHUB_WORKSPACE/app-source" >> "$GITHUB_ENV"
+          printf 'NI38_APP_SOURCE_ROOT=%s\n' "$GITHUB_WORKSPACE/app-source" >> "$GITHUB_ENV"
+          cat > "$GITHUB_WORKSPACE/.ni38-fixture-context.txt" <<EOF
+          schema=ni38.synthetic-offhost-context.v1
+          root_source_sha=d3929aa0b0736152557f5dff73fb005d26f89cd2
+          app_source_sha=80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          applicability=synthetic_fixture
+          dataset_acquisition=none
+          repository_checkouts_by_test=none
+          search_or_index_build=none
+          model_or_inference_execution=none
+          official_dataset_provenance=not_asserted
+          runner=python3.11;pytest==9.1.1;PyYAML==6.0.3;app-uv.lock-PyYAML==6.0.3
+          ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$cpp present=false
+          ORCHESTRATOR_PATHS_LLAMA_MTMD=$mtmd present=false
+          ORCHESTRATOR_PATHS_LLAMA_SERVER=$server present=false
+          EOF
+          chmod 0400 "$GITHUB_WORKSPACE/.ni38-fixture-context.txt"
+
+      - name: Capture pure scorer fixture suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$NI38_APP_SOURCE_ROOT" = "$APP_SOURCE"
+          test "$(git -C "$SOURCE_ROOT" rev-parse HEAD)" = d3929aa0b0736152557f5dff73fb005d26f89cd2
+          test "$(git -C "$APP_SOURCE" rev-parse HEAD)" = 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          test ! -e "$RUNNER_TEMP/ni38-phase-a.junit.xml"
+          selectors=(
+            test_safe_posix_path_normalization_preserves_dotfiles_and_refuses_escape
+            test_duplicate_json_members_in_every_input_layer_are_refused
+            test_scoring_deduplicates_overlapping_inclusive_spans_and_macro_averages_tasks
+            test_empty_predictions_and_failures_are_zero_and_remain_in_macro_denominator
+            test_pack_scopes_are_deterministic_and_map_full_slice_codemap_to_spans
+            test_error_row_partial_outputs_are_preserved_but_score_zero_in_denominator
+            test_error_row_malformed_partial_output_is_still_refused
+            test_missing_prediction_or_duplicate_task_arm_is_refused
+            test_safe_unresolvable_disposition_requires_exact_caller_audited_gold_paths
+            test_disposition_manifest_must_cover_exact_rows_and_match_empty_gold
+            test_candidate_rows_reject_duplicate_paths_invalid_ranges_and_bad_costs
+            test_byte_entrypoint_refuses_blank_malformed_and_duplicate_rows
+          )
+          args=()
+          for name in "${selectors[@]}"; do
+            args+=(--select "tests/unit/test_contextbench_score.py::$name")
+          done
+          timeout --signal=TERM --kill-after=45s 360s \
+            python "$SOURCE_ROOT/scripts/ci/native_conformance.py" \
+              --cwd "$APP_SOURCE" \
+              --junit "$RUNNER_TEMP/ni38-phase-a.junit.xml" \
+              --output "$RUNNER_TEMP/ni38-phase-a-capture" \
+              --repo "recipe=$GITHUB_WORKSPACE" \
+              --repo "root=$SOURCE_ROOT" \
+              --repo "app=$APP_SOURCE" \
+              --read-path "$GITHUB_WORKSPACE/.github/workflows/ni38-contextbench-score.yml" \
+              --read-path "$GITHUB_WORKSPACE/.ni38-fixture-context.txt" \
+              --read-path "$APP_SOURCE/pyproject.toml" \
+              --read-path "$APP_SOURCE/uv.lock" \
+              --read-path "$APP_SOURCE/src/contextbench_score.py" \
+              --read-path "$APP_SOURCE/src/context_assembly.py" \
+              --read-path "$APP_SOURCE/src/__init__.py" \
+              --read-path "$APP_SOURCE/tests/unit/test_contextbench_score.py" \
+              "${args[@]}" -- \
+              timeout --signal=INT --kill-after=30s 180s python -m pytest \
+                --noconftest --rootdir="$APP_SOURCE" \
+                --junit-prefix=ni38_scorer --junitxml="$RUNNER_TEMP/ni38-phase-a.junit.xml" \
+                "$APP_SOURCE/tests/unit/test_contextbench_score.py"
+
+      - name: Preserve phase A original receipt prefix
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -d "$RUNNER_TEMP/ni38-phase-a-capture"; then
+            tar --numeric-owner -cf ni38-phase-a-prefix.tar \
+              -C "$RUNNER_TEMP" ni38-phase-a-capture
+            chmod 0600 ni38-phase-a-prefix.tar
+          fi
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-server"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-server"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni38-phase-a-original-prefix
+          path: ni38-phase-a-prefix.tar
+          if-no-files-found: warn
+          retention-days: 30
+
+  native-capture-readback:
+    needs: scorer-fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Checkout immutable root source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: d3929aa0b0736152557f5dff73fb005d26f89cd2
+          path: source-root
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Checkout immutable app source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          path: app-source
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Assert pinned source checkouts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C source-root rev-parse HEAD)" = d3929aa0b0736152557f5dff73fb005d26f89cd2
+          test "$(git -C app-source rev-parse HEAD)" = 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          test -z "$(git -C source-root status --porcelain --untracked-files=no)"
+          test -z "$(git -C app-source status --porcelain --untracked-files=no)"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install pinned fixture runner
+        run: |
+          python -m pip install pytest==9.1.1 PyYAML==6.0.3
+          python -c 'import pytest, yaml; assert pytest.__version__ == "9.1.1"; assert yaml.__version__ == "6.0.3"'
+          python -c 'from pathlib import Path; assert "name = \"pyyaml\"\nversion = \"6.0.3\"" in Path("app-source/uv.lock").read_text()'
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ni38-phase-a-original-prefix
+          path: ni38-phase-a-download
+
+      - name: Bind context and read phase A original receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          cpp="$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          mtmd="$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          server="$RUNNER_TEMP/ni38-unavailable-llama-server"
+          test ! -L "$cpp"
+          test ! -L "$mtmd"
+          test ! -L "$server"
+          test ! -e "$cpp"
+          test ! -e "$mtmd"
+          test ! -e "$server"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s\n' "$cpp" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s\n' "$mtmd" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s\n' "$server" >> "$GITHUB_ENV"
+          printf 'SOURCE_ROOT=%s\n' "$GITHUB_WORKSPACE/source-root" >> "$GITHUB_ENV"
+          printf 'APP_SOURCE=%s\n' "$GITHUB_WORKSPACE/app-source" >> "$GITHUB_ENV"
+          printf 'NI38_APP_SOURCE_ROOT=%s\n' "$GITHUB_WORKSPACE/app-source" >> "$GITHUB_ENV"
+          cat > "$GITHUB_WORKSPACE/.ni38-fixture-context.txt" <<EOF
+          schema=ni38.synthetic-offhost-context.v1
+          root_source_sha=d3929aa0b0736152557f5dff73fb005d26f89cd2
+          app_source_sha=80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          applicability=synthetic_fixture
+          dataset_acquisition=none
+          repository_checkouts_by_test=none
+          search_or_index_build=none
+          model_or_inference_execution=none
+          official_dataset_provenance=not_asserted
+          runner=python3.11;pytest==9.1.1;PyYAML==6.0.3;app-uv.lock-PyYAML==6.0.3
+          ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=$cpp present=false
+          ORCHESTRATOR_PATHS_LLAMA_MTMD=$mtmd present=false
+          ORCHESTRATOR_PATHS_LLAMA_SERVER=$server present=false
+          EOF
+          chmod 0400 "$GITHUB_WORKSPACE/.ni38-fixture-context.txt"
+          mkdir -m 0700 "$RUNNER_TEMP/ni38-phase-a-readback"
+          tar --extract --file ni38-phase-a-download/ni38-phase-a-prefix.tar \
+            --directory "$RUNNER_TEMP/ni38-phase-a-readback" --no-same-owner
+          SOURCE_ROOT="$GITHUB_WORKSPACE/source-root" python - <<'PY'
+          import os
+          from pathlib import Path
+          import sys
+
+          root = Path(os.environ["SOURCE_ROOT"])
+          sys.path.insert(0, str(root))
+          sys.path.insert(0, str(root / "scripts" / "vidya"))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters import ci_conformance
+          from claim_tuple import grade
+
+          receipt = Path(os.environ["RUNNER_TEMP"]) / "ni38-phase-a-readback" / "ni38-phase-a-capture" / "receipt.json"
+          record, _ = read_receipt(receipt)
+          assert record["fixture_execution_conformant"] is True
+          assert record["summary"]["counts"] == {
+              "passed": 12, "failure": 0, "error": 0, "skipped": 0,
+              "collected": 12, "executed": 12,
+          }
+          rows = ci_conformance.native_rows(receipt)
+          assert len(rows) == 1
+          assert grade(ci_conformance.project_ci_conformance(rows[0]))[:2] == ("Judged", "Located")
+          print("phase A original native receipt reopened and graded; 12/12, zero skips")
+          PY
+
+      - name: Write bounded phase B command
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$GITHUB_WORKSPACE/.ni38-phase-b-command.sh" <<'SH'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          set +e
+          timeout --signal=INT --kill-after=30s 180s python -m pytest --noconftest --rootdir="$SOURCE_ROOT" \
+            --basetemp="$RUNNER_TEMP/ni38-pytest-temp" \
+            --junit-prefix=ni38_native --junitxml="$RUNNER_TEMP/ni38-phase-b.junit.xml" \
+            "$SOURCE_ROOT/tests/vidya/test_contextbench_score_capture.py" \
+            "$SOURCE_ROOT/tests/vidya/test_ingest_sources.py"
+          pytest_rc=$?
+          set -e
+          PYTEST_RC="$pytest_rc" python - "$RUNNER_TEMP/ni38-pytest-temp" "$GITHUB_WORKSPACE/ni38-score-capsules.tar" <<'PY'
+          import io
+          import json
+          import hashlib
+          import os
+          from pathlib import Path
+          import sys
+          import tarfile
+          import uuid
+
+          base = Path(sys.argv[1])
+          destination = Path(sys.argv[2])
+          cases = [
+              ("integrity-true", "test_synthetic_native_score_projects_descriptive_shared_grade_and_cli_row"),
+              ("integrity-null-malformed", "test_malformed_capture_is_private_diagnostic_and_projects_zero_rows"),
+              ("integrity-null-stale-module", "test_stale_scorer_module_cache_is_diagnostic_without_execution"),
+          ]
+          included = []
+          capture_ids = {}
+
+          def strict_object(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError("duplicate JSON member in synthetic capsule metadata")
+                  result[key] = value
+              return result
+
+          def strict_json(path):
+              return json.loads(path.read_bytes(), object_pairs_hook=strict_object)
+
+          refusal_controls = [
+              "test_capture_refuses_unsafe_output_root_without_normalizing_it",
+              "test_moved_capture_directory_is_refused_and_report_locator_stays_private",
+              "test_changed_original_score_bytes_are_refused",
+              "test_resealed_metric_that_contradicts_per_task_rows_is_refused",
+              "test_resealed_integrity_proposition_that_contradicts_request_is_refused",
+          ]
+          prefixes = [test_name[:30] for _, test_name in cases]
+          if len(set(prefixes)) != len(prefixes):
+              raise SystemExit("fixture temp prefixes are not unique")
+          with tarfile.open(destination, "w", format=tarfile.PAX_FORMAT) as archive:
+              for label, test_name in cases:
+                  prefix = test_name[:30]
+                  matches = sorted(path for path in base.iterdir()
+                                   if path.is_dir() and not path.is_symlink()
+                                   and path.name.startswith(prefix))
+                  if len(matches) != 1:
+                      raise SystemExit(f"expected one actual bounded pytest temp prefix for {label}")
+                  test_root = matches[0]
+                  if test_root.is_symlink() or not test_root.is_dir():
+                      raise SystemExit(f"pytest temp prefix is not an actual directory for {label}")
+                  owned_root = test_root / "owned-private-run"
+                  if owned_root.is_symlink() or not owned_root.is_dir():
+                      raise SystemExit(f"owned run root missing for {label}")
+                  runs = sorted(path for path in owned_root.iterdir()
+                                if path.is_dir() and not path.is_symlink())
+                  if len(runs) != 1:
+                      raise SystemExit(f"expected one owned run for {label}")
+                  run = runs[0]
+                  if run.is_symlink() or not run.is_dir():
+                      raise SystemExit(f"owned run is not an actual directory for {label}")
+                  try:
+                      parsed_capture_id = uuid.UUID(hex=run.name)
+                  except ValueError as exc:
+                      raise SystemExit(f"original run directory is not a UUID for {label}") from exc
+                  if parsed_capture_id.version != 4 or parsed_capture_id.hex != run.name:
+                      raise SystemExit(f"original run directory is not a canonical UUIDv4 for {label}")
+                  receipt_path = run / "receipt.json"
+                  if not receipt_path.is_file() or receipt_path.is_symlink():
+                      raise SystemExit(f"original receipt missing for {label}")
+                  native_receipt = strict_json(receipt_path)
+                  request_ref = native_receipt.get("request")
+                  if (not isinstance(request_ref, dict)
+                          or request_ref.get("name") != "execution-request.json"):
+                      raise SystemExit(f"original request reference missing for {label}")
+                  request_path = run / request_ref["name"]
+                  if not request_path.is_file() or request_path.is_symlink():
+                      raise SystemExit(f"original request artifact missing for {label}")
+                  request_bytes = request_path.read_bytes()
+                  if (request_ref.get("size") != len(request_bytes)
+                          or request_ref.get("sha256") != hashlib.sha256(request_bytes).hexdigest()):
+                      raise SystemExit(f"original request artifact digest differs for {label}")
+                  original_request = json.loads(request_bytes, object_pairs_hook=strict_object)
+                  if original_request.get("capture_id") != run.name:
+                      raise SystemExit(f"original request UUID differs from its directory for {label}")
+                  for path in (run, *sorted(run.rglob("*"))):
+                      if path.is_symlink():
+                          raise SystemExit("synthetic capsule unexpectedly contains a symlink")
+                      relative = path.relative_to(run)
+                      arcname = (Path(label) / run.name / relative if str(relative) != "."
+                                 else Path(label) / run.name)
+                      archive.add(path, arcname=arcname.as_posix(), recursive=False)
+                  included.append(label)
+                  capture_ids[label] = run.name
+              manifest = {
+                  "schema": "ni38.synthetic-score-capsules.v1",
+                  "expected": [label for label, _ in cases],
+                  "included": included,
+                  "capture_ids": capture_ids,
+                  "refusal_controls": refusal_controls,
+                  "context": "synthetic fixtures only; refusal and reseal controls are named JUnit cases, not archived as valid receipts",
+              }
+              raw = (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode()
+              info = tarfile.TarInfo("fixture-manifest.json")
+              info.size = len(raw)
+              info.mode = 0o400
+              archive.addfile(info, io.BytesIO(raw))
+          os.chmod(destination, 0o600)
+          raise SystemExit(int(os.environ["PYTEST_RC"]))
+          PY
+          SH
+          chmod 0500 "$GITHUB_WORKSPACE/.ni38-phase-b-command.sh"
+
+      - name: Capture synthetic native producer and selected source tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$NI38_APP_SOURCE_ROOT" = "$APP_SOURCE"
+          test "$(git -C "$SOURCE_ROOT" rev-parse HEAD)" = d3929aa0b0736152557f5dff73fb005d26f89cd2
+          test "$(git -C "$APP_SOURCE" rev-parse HEAD)" = 80ab3a74c6191381ef769fc44afc50f091cbbb4c
+          test ! -e "$RUNNER_TEMP/ni38-phase-b.junit.xml"
+          test ! -e "$GITHUB_WORKSPACE/ni38-score-capsules.tar"
+          selectors=(
+            tests/vidya/test_contextbench_score_capture.py
+            tests/vidya/test_ingest_sources.py
+          )
+          args=()
+          for name in "${selectors[@]}"; do args+=(--select "$name"); done
+          timeout --signal=TERM --kill-after=45s 360s \
+            python "$SOURCE_ROOT/scripts/ci/native_conformance.py" \
+              --cwd "$GITHUB_WORKSPACE" \
+              --junit "$RUNNER_TEMP/ni38-phase-b.junit.xml" \
+              --output "$RUNNER_TEMP/ni38-phase-b-capture" \
+              --repo "recipe=$GITHUB_WORKSPACE" \
+              --repo "root=$SOURCE_ROOT" \
+              --repo "app=$APP_SOURCE" \
+              --read-path "$GITHUB_WORKSPACE/.github/workflows/ni38-contextbench-score.yml" \
+              --read-path "$GITHUB_WORKSPACE/.ni38-fixture-context.txt" \
+              --read-path "$GITHUB_WORKSPACE/.ni38-phase-b-command.sh" \
+              --read-path "$SOURCE_ROOT/scripts/harness/contextbench_score_capture.py" \
+              --read-path "$SOURCE_ROOT/scripts/vidya/adapters/contextbench_score.py" \
+              --read-path "$SOURCE_ROOT/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$SOURCE_ROOT/scripts/vidya/claim_tuple.py" \
+              --read-path "$SOURCE_ROOT/scripts/vidya/cli.py" \
+              --read-path "$SOURCE_ROOT/scripts/vidya/ingest_sources.py" \
+              --read-path "$SOURCE_ROOT/tests/vidya/test_contextbench_score_capture.py" \
+              --read-path "$SOURCE_ROOT/tests/vidya/test_ingest_sources.py" \
+              --read-path "$APP_SOURCE/pyproject.toml" \
+              --read-path "$APP_SOURCE/uv.lock" \
+              --read-path "$APP_SOURCE/src/contextbench_score.py" \
+              --read-path "$APP_SOURCE/src/context_assembly.py" \
+              --read-path "$APP_SOURCE/src/__init__.py" \
+              --generated-output ni38-score-capsules.tar \
+              "${args[@]}" -- \
+              bash "$GITHUB_WORKSPACE/.ni38-phase-b-command.sh"
+
+      - name: Preserve phase B original receipt prefix
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -d "$RUNNER_TEMP/ni38-phase-b-capture"; then
+            tar --numeric-owner -cf ni38-phase-b-prefix.tar \
+              -C "$RUNNER_TEMP" ni38-phase-b-capture
+            chmod 0600 ni38-phase-b-prefix.tar
+          fi
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-cpp-bin"
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-mtmd"
+          test ! -L "$RUNNER_TEMP/ni38-unavailable-llama-server"
+          test ! -e "$RUNNER_TEMP/ni38-unavailable-llama-server"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ni38-phase-b-original-prefix
+          path: ni38-phase-b-prefix.tar
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Independently reopen original CI and score capsules
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_ROOT="$SOURCE_ROOT" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import shutil
+          import sys
+          import tarfile
+
+          root = Path(os.environ["SOURCE_ROOT"])
+          sys.path.insert(0, str(root))
+          sys.path.insert(0, str(root / "scripts" / "vidya"))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters import ci_conformance, contextbench_score
+          from claim_tuple import grade
+
+          prefix = Path(os.environ["RUNNER_TEMP"]) / "ni38-phase-b-prefix-readback"
+          prefix.mkdir(mode=0o700)
+          import subprocess
+          subprocess.run(["tar", "--extract", "--file", "ni38-phase-b-prefix.tar",
+                          "--directory", str(prefix), "--no-same-owner"], check=True)
+          capture = prefix / "ni38-phase-b-capture"
+          outer = capture / "receipt.json"
+          record, _ = read_receipt(outer)
+          assert record["fixture_execution_conformant"] is True
+          counts = record["summary"]["counts"]
+          assert counts["failure"] == counts["error"] == counts["skipped"] == 0
+          cases = record["summary"]["cases"]
+          assert len(cases) == counts["collected"] == counts["executed"]
+          assert all(case["status"] == "passed" for case in cases)
+          capture_cases = [case for case in cases if case["classname"].endswith("test_contextbench_score_capture")]
+          ingest_cases = [case for case in cases if case["classname"].endswith("test_ingest_sources")]
+          assert len(capture_cases) == 9
+          assert ingest_cases and len(capture_cases) + len(ingest_cases) == len(cases)
+          assert sum(case["status"] == "passed" for case in capture_cases) == 9
+          assert sum(case["status"] == "passed" for case in ingest_cases) == len(ingest_cases)
+          rows = ci_conformance.native_rows(outer)
+          assert len(rows) == 1
+          assert grade(ci_conformance.project_ci_conformance(rows[0]))[:2] == ("Judged", "Located")
+
+          generated = record["generated_outputs"]
+          assert len(generated) == 1 and generated[0]["path"] == "ni38-score-capsules.tar"
+          capsule_tar = capture / generated[0]["artifact"]["name"]
+          extracted = Path(os.environ["RUNNER_TEMP"]) / "ni38-score-capsule-readback"
+          extracted.mkdir(mode=0o700)
+          with tarfile.open(capsule_tar, "r:") as archive:
+              members = archive.getmembers()
+              for member in members:
+                  parts = PurePosixPath(member.name).parts
+                  if (PurePosixPath(member.name).is_absolute() or not parts
+                          or any(part in {"", ".", ".."} for part in parts)
+                          or member.issym() or member.islnk() or not (member.isdir() or member.isfile())):
+                      raise ValueError("synthetic capsule archive member refused")
+                  target = extracted.joinpath(*parts)
+                  if member.isdir():
+                      target.mkdir(mode=0o700, parents=True, exist_ok=True)
+                  else:
+                      target.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+                      stream = archive.extractfile(member)
+                      if stream is None:
+                          raise ValueError("synthetic capsule archive member has no bytes")
+                      with target.open("xb") as output:
+                          shutil.copyfileobj(stream, output)
+                      target.chmod(member.mode & 0o777)
+          manifest = json.loads((extracted / "fixture-manifest.json").read_bytes())
+          expected = ["integrity-true", "integrity-null-malformed", "integrity-null-stale-module"]
+          assert manifest["expected"] == expected and manifest["included"] == expected
+          refused = {
+              "test_capture_refuses_unsafe_output_root_without_normalizing_it",
+              "test_moved_capture_directory_is_refused_and_report_locator_stays_private",
+              "test_changed_original_score_bytes_are_refused",
+              "test_resealed_metric_that_contradicts_per_task_rows_is_refused",
+              "test_resealed_integrity_proposition_that_contradicts_request_is_refused",
+          }
+          assert set(manifest["refusal_controls"]) == refused
+          assert refused <= {case["name"] for case in capture_cases if case["status"] == "passed"}
+          for label in expected:
+              capture_id = manifest["capture_ids"][label]
+              capsule = extracted / label / capture_id
+              assert capsule.name == capture_id
+              receipt = capsule / "receipt.json"
+              record, _ = contextbench_score.read_receipt(receipt)
+              request_bytes = (capsule / record["request"]["name"]).read_bytes()
+              request = contextbench_score._read_json(request_bytes, "original pre-score request")
+              assert request["capture_id"] == capture_id
+          positive_id = manifest["capture_ids"]["integrity-true"]
+          positive_dir = extracted / "integrity-true" / positive_id
+          positive, _ = contextbench_score.read_receipt(positive_dir / "receipt.json")
+          assert positive["status"] == "scored" and positive["integrity_result"] is True
+          positive_rows = contextbench_score.native_rows(positive_dir / "receipt.json")
+          assert len(positive_rows) == 1
+          assert grade(contextbench_score.project(positive_rows[0]))[:2] == ("Judged", "Located")
+          for label in expected[1:]:
+              capsule = extracted / label / manifest["capture_ids"][label]
+              diagnostic, _ = contextbench_score.read_receipt(capsule / "receipt.json")
+              assert diagnostic["status"] == "diagnostic" and diagnostic["integrity_result"] is None
+              assert contextbench_score.native_rows(capsule / "receipt.json") == ()
+          print("phase B original CI receipt and intact synthetic TRUE/NULL capsules reopened; shared-grade projections verified")
+          PY

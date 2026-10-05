@@ -1,0 +1,121 @@
+#!/usr/bin/env bash
+set -euo pipefail
+set +e
+timeout --signal=INT --kill-after=30s 180s python -m pytest --noconftest --rootdir="$SOURCE_ROOT" \
+  --basetemp="$RUNNER_TEMP/ni38-pytest-temp" \
+  --junit-prefix=ni38_native --junitxml="$RUNNER_TEMP/ni38-phase-b.junit.xml" \
+  "$SOURCE_ROOT/tests/vidya/test_contextbench_score_capture.py" \
+  "$SOURCE_ROOT/tests/vidya/test_ingest_sources.py"
+pytest_rc=$?
+set -e
+PYTEST_RC="$pytest_rc" python - "$RUNNER_TEMP/ni38-pytest-temp" "$GITHUB_WORKSPACE/ni38-score-capsules.tar" <<'PY'
+import io
+import json
+import hashlib
+import os
+from pathlib import Path
+import sys
+import tarfile
+import uuid
+
+base = Path(sys.argv[1])
+destination = Path(sys.argv[2])
+cases = [
+    ("integrity-true", "test_synthetic_native_score_projects_descriptive_shared_grade_and_cli_row"),
+    ("integrity-null-malformed", "test_malformed_capture_is_private_diagnostic_and_projects_zero_rows"),
+    ("integrity-null-stale-module", "test_stale_scorer_module_cache_is_diagnostic_without_execution"),
+]
+included = []
+capture_ids = {}
+
+def strict_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON member in synthetic capsule metadata")
+        result[key] = value
+    return result
+
+def strict_json(path):
+    return json.loads(path.read_bytes(), object_pairs_hook=strict_object)
+
+refusal_controls = [
+    "test_capture_refuses_unsafe_output_root_without_normalizing_it",
+    "test_moved_capture_directory_is_refused_and_report_locator_stays_private",
+    "test_changed_original_score_bytes_are_refused",
+    "test_resealed_metric_that_contradicts_per_task_rows_is_refused",
+    "test_resealed_integrity_proposition_that_contradicts_request_is_refused",
+]
+prefixes = [test_name[:30] for _, test_name in cases]
+if len(set(prefixes)) != len(prefixes):
+    raise SystemExit("fixture temp prefixes are not unique")
+with tarfile.open(destination, "w", format=tarfile.PAX_FORMAT) as archive:
+    for label, test_name in cases:
+        prefix = test_name[:30]
+        matches = sorted(path for path in base.iterdir()
+                         if path.is_dir() and not path.is_symlink()
+                         and path.name.startswith(prefix))
+        if len(matches) != 1:
+            raise SystemExit(f"expected one actual bounded pytest temp prefix for {label}")
+        test_root = matches[0]
+        if test_root.is_symlink() or not test_root.is_dir():
+            raise SystemExit(f"pytest temp prefix is not an actual directory for {label}")
+        owned_root = test_root / "owned-private-run"
+        if owned_root.is_symlink() or not owned_root.is_dir():
+            raise SystemExit(f"owned run root missing for {label}")
+        runs = sorted(path for path in owned_root.iterdir()
+                      if path.is_dir() and not path.is_symlink())
+        if len(runs) != 1:
+            raise SystemExit(f"expected one owned run for {label}")
+        run = runs[0]
+        if run.is_symlink() or not run.is_dir():
+            raise SystemExit(f"owned run is not an actual directory for {label}")
+        try:
+            parsed_capture_id = uuid.UUID(hex=run.name)
+        except ValueError as exc:
+            raise SystemExit(f"original run directory is not a UUID for {label}") from exc
+        if parsed_capture_id.version != 4 or parsed_capture_id.hex != run.name:
+            raise SystemExit(f"original run directory is not a canonical UUIDv4 for {label}")
+        receipt_path = run / "receipt.json"
+        if not receipt_path.is_file() or receipt_path.is_symlink():
+            raise SystemExit(f"original receipt missing for {label}")
+        native_receipt = strict_json(receipt_path)
+        request_ref = native_receipt.get("request")
+        if (not isinstance(request_ref, dict)
+                or request_ref.get("name") != "execution-request.json"):
+            raise SystemExit(f"original request reference missing for {label}")
+        request_path = run / request_ref["name"]
+        if not request_path.is_file() or request_path.is_symlink():
+            raise SystemExit(f"original request artifact missing for {label}")
+        request_bytes = request_path.read_bytes()
+        if (request_ref.get("size") != len(request_bytes)
+                or request_ref.get("sha256") != hashlib.sha256(request_bytes).hexdigest()):
+            raise SystemExit(f"original request artifact digest differs for {label}")
+        original_request = json.loads(request_bytes, object_pairs_hook=strict_object)
+        if original_request.get("capture_id") != run.name:
+            raise SystemExit(f"original request UUID differs from its directory for {label}")
+        for path in (run, *sorted(run.rglob("*"))):
+            if path.is_symlink():
+                raise SystemExit("synthetic capsule unexpectedly contains a symlink")
+            relative = path.relative_to(run)
+            arcname = (Path(label) / run.name / relative if str(relative) != "."
+                       else Path(label) / run.name)
+            archive.add(path, arcname=arcname.as_posix(), recursive=False)
+        included.append(label)
+        capture_ids[label] = run.name
+    manifest = {
+        "schema": "ni38.synthetic-score-capsules.v1",
+        "expected": [label for label, _ in cases],
+        "included": included,
+        "capture_ids": capture_ids,
+        "refusal_controls": refusal_controls,
+        "context": "synthetic fixtures only; refusal and reseal controls are named JUnit cases, not archived as valid receipts",
+    }
+    raw = (json.dumps(manifest, sort_keys=True, separators=(",", ":")) + "\n").encode()
+    info = tarfile.TarInfo("fixture-manifest.json")
+    info.size = len(raw)
+    info.mode = 0o400
+    archive.addfile(info, io.BytesIO(raw))
+os.chmod(destination, 0o600)
+raise SystemExit(int(os.environ["PYTEST_RC"]))
+PY
