@@ -1,0 +1,265 @@
+name: NI40 REPL spill-output fixture validation
+
+on:
+  push:
+    branches:
+      - codex/ni40-repl-spill-validation-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: 0f21c19cf2769d6faa42ed8332f47aef7cd48c5f
+  APP_SOURCE_SHA: db38737d63363a059212820aaac40b4026f82b51
+  RUN_ROOT: artifacts/ni40-repl-spill/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  repl-spill-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+    steps:
+      - name: Create and attest disposable spill scratch root
+        run: |
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0700 /mnt/raid0/llm/tmp
+          test -d /mnt/raid0/llm/tmp
+          test ! -L /mnt/raid0/llm/tmp
+          test "$(stat -c '%a' /mnt/raid0/llm/tmp)" = 700
+          test "$(stat -c '%u' /mnt/raid0/llm/tmp)" = "$(id -u)"
+          test "$(stat -c '%g' /mnt/raid0/llm/tmp)" = "$(id -g)"
+          test -z "$(find /mnt/raid0/llm/tmp -mindepth 1 -maxdepth 1 -print -quit)"
+          test ! -e "$RUNNER_TEMP/ni40-unavailable-llama-cpp-bin"
+          test ! -L "$RUNNER_TEMP/ni40-unavailable-llama-cpp-bin"
+          test ! -e "$RUNNER_TEMP/ni40-unavailable-mtmd-bin"
+          test ! -L "$RUNNER_TEMP/ni40-unavailable-mtmd-bin"
+          test ! -e "$RUNNER_TEMP/ni40-unavailable-llama-server"
+          test ! -L "$RUNNER_TEMP/ni40-unavailable-llama-server"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni40-repl-spill-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni40-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni40-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni40-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout pinned orchestrator source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 1
+          path: app
+
+      - name: Verify immutable pins and spill-path contract
+        working-directory: app
+        run: |
+          test "$(git -C ../ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C ../root-producer rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test -z "${ORCHESTRATOR_PATHS_LLM_ROOT:-}"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test "$(stat -c '%a' /mnt/raid0/llm/tmp)" = 700
+          test "$(stat -c '%u' /mnt/raid0/llm/tmp)" = "$(id -u)"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Install frozen unit-test dependencies
+        id: dependencies
+        working-directory: app
+        run: uv sync --frozen --extra dev
+
+      - name: Write pre-execution scratch and scope context
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        working-directory: app
+        run: |
+          mkdir -p ni40_context
+          python - <<'PY'
+          import json
+          import os
+          import stat
+          from pathlib import Path
+
+          scratch = Path("/mnt/raid0/llm/tmp")
+          st = scratch.lstat()
+          if not stat.S_ISDIR(st.st_mode) or stat.S_ISLNK(st.st_mode):
+              raise RuntimeError("spill scratch root must be a real directory")
+          if stat.S_IMODE(st.st_mode) != 0o700 or st.st_uid != os.getuid() or st.st_gid != os.getgid():
+              raise RuntimeError("spill scratch root must be runner-owned mode 0700")
+          if any(scratch.iterdir()):
+              raise RuntimeError("spill scratch root must be empty before test launch")
+          if os.environ.get("ORCHESTRATOR_PATHS_LLM_ROOT"):
+              raise RuntimeError("REPL allowed-root override must be absent")
+          context = {
+              "schema": "ni40.repl_spill_fixture_context.v1",
+              "phase": "single_module_filesystem_fixture",
+              "root_source_sha": os.environ["ROOT_SOURCE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "selection": "tests/unit/test_repl_spill_output.py (whole module)",
+              "locked_extras": ["dev"],
+              "scratch_root": str(scratch),
+              "scratch_mode": format(stat.S_IMODE(st.st_mode), "04o"),
+              "scratch_uid": st.st_uid,
+              "scratch_gid": st.st_gid,
+              "absent_runtime_path_overrides": {
+                  key: {"value": os.environ[key], "must_remain_absent": True}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+              "override_field_semantics": {
+                  "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "PathsConfig.llama_cpp_bin and stack_paths._PATHS.llama_cpp_bin",
+                  "ORCHESTRATOR_PATHS_LLAMA_MTMD": "VisionConfig.llama_mtmd_cli",
+                  "ORCHESTRATOR_PATHS_LLAMA_SERVER": "WorkerPoolPathsConfig.llama_server_path",
+              },
+              "synthetic_capacity": False,
+              "capacity_guard_path": (
+                  "tests/conftest.py imports src.api.state -> src.api.admission; "
+                  "FALLBACK_LIMITS attempts stack_manifest import; config/path code "
+                  "uses the explicit absent runtime-path overrides above, and admission "
+                  "catches a later capacity/import error if raised; CI flags disable "
+                  "the pytest memory guard"
+              ),
+              "inference": "none; llm_primitives is None or a per-test MagicMock",
+              "scope_exclusions": [
+                  "live LLM/API/backend calls",
+                  "inference, serving capacity, or latency claims",
+                  "other REPL modules or production filesystem paths",
+              ],
+          }
+          Path("ni40_context/context.json").write_text(
+              json.dumps(context, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Capture complete spill-output module
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
+        working-directory: app
+        run: |
+          mkdir -p ni40_junit
+          timeout --verbose --signal=TERM --kill-after=15s 480s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit ni40_junit/original-pytest.xml \
+              --output "$GITHUB_WORKSPACE/$RUN_ROOT/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni40-repl-spill-fixtures.yml" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path ni40_context/context.json \
+              --read-path tests/conftest.py \
+              --read-path tests/unit/conftest.py \
+              --read-path tests/unit/test_repl_spill_output.py \
+              --read-path src/repl_environment/__init__.py \
+              --read-path src/repl_environment/environment.py \
+              --read-path src/repl_environment/types.py \
+              --read-path src/repl_environment/parallel_dispatch.py \
+              --read-path src/repl_environment/security.py \
+              --read-path src/repl_environment/unicode_sanitizer.py \
+              --read-path src/repl_environment/combined_ops.py \
+              --read-path src/repl_environment/suggestions.py \
+              --read-path src/repl_environment/file_tools.py \
+              --read-path src/repl_environment/document_tools.py \
+              --read-path src/repl_environment/routing.py \
+              --read-path src/repl_environment/code_search.py \
+              --read-path src/repl_environment/procedure_tools.py \
+              --read-path src/repl_environment/context.py \
+              --read-path src/repl_environment/state.py \
+              --read-path src/research_context.py \
+              --read-path src/config/__init__.py \
+              --read-path src/config/models.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/api/state.py \
+              --read-path src/api/admission.py \
+              --read-path src/api/health_tracker.py \
+              --read-path src/registry/stack_priors.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_numa.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path orchestration/launch_manifest.yaml \
+              --read-path orchestration/model_registry.yaml \
+              --read-path orchestration/derived/stack_priors.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output ni40_junit/pytest.log \
+              --select tests/unit/test_repl_spill_output.py \
+              -- timeout --verbose --signal=TERM --kill-after=10s 300s \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q \
+                  --rootdir="$PWD" \
+                  --junit-prefix=ni40_repl_spill \
+                  tests/unit/test_repl_spill_output.py \
+                  --junitxml=ni40_junit/original-pytest.xml \
+                  --log-file=ni40_junit/pytest.log
+
+      - name: Verify runtime override targets remain absent
+        if: always()
+        run: |
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          state = {
+              "schema": "ni40.absent_runtime_paths_postcheck.v1",
+              "all_absent": True,
+              "targets": {
+                  key: {"value": os.environ[key], "exists": False, "is_symlink": False}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+          }
+          Path("app/ni40_context/runtime-path-postcheck.json").write_text(
+              json.dumps(state, sort_keys=True) + "\n", encoding="utf-8"
+          )
+          PY
+
+      - name: Upload original spill-output prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni40-repl-spill-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/ni40-repl-spill/${{ github.run_id }}/${{ github.run_attempt }}/native/
+            app/ni40_context/context.json
+            app/ni40_context/runtime-path-postcheck.json
+            app/ni40_junit/
+          if-no-files-found: warn
