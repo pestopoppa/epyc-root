@@ -117,6 +117,8 @@ def test_offhost_shfmt_patch_preserves_shell_ast(devcontainer_image: str, tmp_pa
             "docker",
             "run",
             "--rm",
+            "--user",
+            f"{os.getuid()}:{os.getgid()}",
             "--volume",
             f"{copied}:/work:rw",
             "--workdir",
