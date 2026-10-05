@@ -312,6 +312,9 @@ for VENV_PY in \
   check "$VENV_NAME venv interpreter resolves" \
     "\"$VENV_PY\" -c 'import sys' >/dev/null 2>&1" \
     "interpreter is a dangling symlink ($(readlink -f "$VENV_PY" 2>/dev/null || echo unresolved)) — venv-backed gates (validate_intake.sh, kb-search) are DISABLED; repair with: uv python install \$(grep '^version_info' \"$(dirname "$(dirname "$VENV_PY")")/pyvenv.cfg\" | cut -d= -f2 | xargs | cut -d. -f1,2)"
+  check "$VENV_NAME pytest import" \
+    "\"$VENV_PY\" -c 'import pytest' >/dev/null 2>&1" \
+    "pytest is missing from this venv — install additively with: uv pip install --python \"$VENV_PY\" pytest==9.1.1"
 done
 
 # The repair path needs its own check: the same rebuild left ~/.cache/uv root-owned,
