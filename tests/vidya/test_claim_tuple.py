@@ -230,3 +230,87 @@ def test_frame_ids_derive_from_the_measurement_id():
     b = ct.to_frames(tup(measurement_id="m2"), as_of="t", adapter_id="p")
     ids = {f["assertion"].get("claim_id") for f in a + b} - {None}
     assert len(ids) == 2
+
+
+def test_absent_applicability_preserves_legacy_frame_bytes():
+    from canonical import canonical_bytes
+    from frames import make_frame
+
+    legacy = tup()
+    frames = ct.to_frames(legacy, as_of="t", adapter_id="probe/v1")
+    expected_source = make_frame(
+        frame_type="epyc.vidya/frame/source_observed/v1",
+        assertion={"source_id": "src_m1", "locator": "measurement:m1",
+                   "source_kind": "measurement", "title": "decode_tps",
+                   "revision_observed": "2026-08-12"},
+        provenance={"method": "probe/v1", "about": "m1", "retrofit": False},
+        actor="probe/v1", authority_scope="measurement", created_at="t")
+    q, t, reasons = ct.grade(legacy)
+    expected = [expected_source, make_frame(
+        frame_type="epyc.vidya/frame/claim_proposed/v1",
+        assertion={"claim_id": "clm_m1", "display_text": "c", "source_id": "src_m1"},
+        provenance={"method": "probe/v1", "derived_from": "src_m1", "about": "m1"},
+        actor="probe/v1", authority_scope="measurement", created_at="t"), make_frame(
+        frame_type="epyc.vidya/frame/evidence_supports_claim/v1",
+        assertion={"claim_id": "clm_m1", "evidence_id": "evd_m1", "grade": {"Q": q, "T": t},
+                   "source_id": "src_m1", "protocol_id": "", "reps": None,
+                   "category": "CANDIDATE", "metric_direction": "higher_better"},
+        provenance={"evidence": "evd_m1", "about": "clm_m1", "method": "probe/v1",
+                    "grade_reasons": reasons, "reps_basis": ""},
+        actor="probe/v1", authority_scope="measurement", created_at="t")]
+    assert canonical_bytes(frames) == canonical_bytes(expected)
+    assert canonical_bytes(frames) == canonical_bytes(ct.to_frames(
+        tup(applicability={}), as_of="t", adapter_id="probe/v1"))
+    assert all("applicability" not in frame["assertion"] for frame in frames)
+
+
+def test_applicability_roundtrips_in_source_without_changing_grade_or_fold():
+    from frames import validate_frame
+    from fold import fold
+
+    scope = {"model_file": "/models/m.gguf", "quant": "Q8_0", "backend": "hip",
+             "device": "ROCm0", "context_tokens": 8192,
+             "kernel": {"commit": "native-commit"}, "run_id": "run-1",
+             "run_expected_keys": ["arm-a:decode", "arm-b:decode"]}
+    plain = ct.to_frames(tup(), as_of="t", adapter_id="probe/v1")
+    scoped = ct.to_frames(tup(applicability=scope), as_of="t", adapter_id="probe/v1")
+    assert scoped[0]["assertion"]["applicability"] == scope
+    assert scoped[1:] == plain[1:]
+    for frame in scoped:
+        validate_frame(frame)
+    assert ct.grade(tup(applicability=scope)) == ct.grade(tup())
+    assert fold(scoped, as_of="t").state_hash() == fold(plain, as_of="t").state_hash()
+
+
+@pytest.mark.parametrize("scope", [None, [], {"unexpected": "value"},
+    {"model_file": None}, {"quant": ""}, {"backend": 0}, {"device": []},
+    {"context_tokens": True}, {"context_tokens": 0}, {"kernel": {}},
+    {"run_id": " "}, {"run_expected_keys": []}, {"run_expected_keys": [1]},
+    {"run_expected_keys": ["a", "a"]}])
+def test_malformed_native_applicability_is_refused(scope):
+    with pytest.raises(ct.ProjectionError, match="applicability"):
+        tup(applicability=scope)
+
+
+@pytest.mark.parametrize("kernel", [{"bad": float("nan")}, {"bad": object()}, {1: "bad"}])
+def test_applicability_kernel_must_be_canonical_json(kernel):
+    with pytest.raises(ct.ProjectionError, match="applicability is not canonical JSON"):
+        tup(applicability={"kernel": kernel})
+
+
+@pytest.mark.parametrize("scope", ["{}", "{'kernel': {'commit': 'native'}}"])
+def test_packaged_constructor_preserves_legacy_dependency_graph(scope):
+    import subprocess
+    code = f"""
+import sys
+sys.path.insert(0, {str(ROOT)!r})
+from scripts.vidya.claim_tuple import ClaimTuple
+assert 'canonical' not in sys.modules and 'scripts.vidya.canonical' not in sys.modules
+ClaimTuple(measurement_id='m', metric='m', value=1, date='d', category='CANDIDATE',
+           claim='c', applicability={scope})
+if {scope} == {{}}:
+    assert 'canonical' not in sys.modules and 'scripts.vidya.canonical' not in sys.modules
+    assert 'frames' not in sys.modules and 'scripts.vidya.frames' not in sys.modules
+"""
+    result = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr

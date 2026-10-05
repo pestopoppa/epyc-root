@@ -151,6 +151,21 @@ def project(native: Any) -> ClaimTuple:
     artifact = _scored_path(row)
     present = artifact.is_file()
     verified = present and _sha256(artifact) == row["scored_sha256"]
+    extra = row["extra"]
+    scope = {"context_tokens": extra["arm"]["context"],
+             "kernel": extra["kernel"], "run_id": row["run_id"]}
+    # The reviewed producer stores these declarations, but old/minimal rows may
+    # omit them. Never infer model quant, backend, or expected keys from a pin.
+    for native_key, key in (("model", "model_file"), ("recipe", "device")):
+        declaration = extra.get(native_key)
+        if declaration is not None:
+            if not isinstance(declaration, dict):
+                raise ProjectionError(f"KV-quant {native_key} declaration must be a mapping")
+            value_key = "path" if native_key == "model" else "device"
+            if value_key in declaration:
+                scope[key] = declaration[value_key]
+    if "run_expected_keys" in row:
+        scope["run_expected_keys"] = row["run_expected_keys"]
     return ClaimTuple(
         measurement_id=row["measurement_id"], metric=row["metric"],
         value=row["value"], date=row["date"], category=row["category"],
@@ -164,7 +179,7 @@ def project(native: Any) -> ClaimTuple:
         attestation_locator=(f"{row['extra']['locator']}|{row['scored_path']}"
                              f"#sha256={row['scored_sha256']}"),
         attestation_present=present, attestation_verified=True if verified else None,
-        source_kind=SOURCE_KIND,
+        source_kind=SOURCE_KIND, applicability=scope,
         extra={"schema": row["schema"], "producer": row["producer"],
                "emitted_at": row["emitted_at"], "row_sha256": row["row_sha256"],
                "sidecar_path": native.get("sidecar_path", ""),

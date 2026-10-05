@@ -174,8 +174,42 @@ class ClaimTuple:
     # exists). Required when, and only when, `binding_kind == "attested"`.
     binding_ref: str = ""
     extra: dict[str, Any] = field(default_factory=dict)
+    # VB-APPLICABILITY: native declarations only, inert with respect to grading.
+    # Run identity and expected keys, when declared, live in this same scope.
+    # Last field preserves existing positional constructors.
+    applicability: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
+        if not isinstance(self.applicability, dict):
+            raise ProjectionError("applicability must be a mapping")
+        allowed = {"model_file", "quant", "backend", "device", "context_tokens",
+                   "kernel", "run_id", "run_expected_keys"}
+        if set(self.applicability) - allowed:
+            raise ProjectionError("applicability contains unknown fields")
+        for name, value in self.applicability.items():
+            if name == "context_tokens":
+                valid = type(value) is int and value > 0
+            elif name == "kernel":
+                valid = (isinstance(value, str) and bool(value.strip())) or (
+                    isinstance(value, dict) and bool(value))
+            elif name == "run_expected_keys":
+                valid = isinstance(value, list) and bool(value) and all(
+                    isinstance(key, str) and key.strip() for key in value)
+                if valid:
+                    valid = len(value) == len(set(value))
+            else:
+                valid = isinstance(value, str) and bool(value.strip())
+            if not valid:
+                raise ProjectionError(f"applicability.{name} is malformed")
+        if self.applicability:
+            if __package__:
+                from .canonical import CanonicalizationError, canonical_bytes
+            else:
+                from canonical import CanonicalizationError, canonical_bytes
+            try:
+                canonical_bytes(self.applicability)
+            except CanonicalizationError as exc:
+                raise ProjectionError(f"applicability is not canonical JSON: {exc}") from exc
         # Only IDENTITY and LABELS are structural. `date`, `protocol_id`, `reps` and the
         # attestation are gradable elements: a measurement missing them is a real measurement with
         # a low grade, and refusing to represent it would delete the very thing the ladder exists
@@ -656,13 +690,16 @@ def to_frames(tup: ClaimTuple, *, as_of: str, adapter_id: str,
         claim_assertion["binding_kind"] = tup.binding_kind
     if tup.binding_ref:
         claim_assertion["binding_ref"] = tup.binding_ref
+    source_assertion = {"source_id": source_id,
+                        "locator": tup.attestation_locator or tup.attestation_path or f"measurement:{ident}",
+                        "source_kind": tup.source_kind, "title": tup.metric,
+                        "revision_observed": tup.date}
+    if tup.applicability:
+        source_assertion["applicability"] = dict(tup.applicability)
     return [
         make_frame(
             frame_type="epyc.vidya/frame/source_observed/v1",
-            assertion={"source_id": source_id,
-                       "locator": tup.attestation_locator or tup.attestation_path or f"measurement:{ident}",
-                       "source_kind": tup.source_kind, "title": tup.metric,
-                       "revision_observed": tup.date},
+            assertion=source_assertion,
             provenance={"method": adapter_id, "about": ident, "retrofit": False},
             actor=adapter_id, authority_scope=authority, created_at=as_of),
         make_frame(
