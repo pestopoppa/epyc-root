@@ -1,0 +1,201 @@
+name: NI77 isolated staged-hook controls
+on:
+  push:
+    branches: [codex/ni77-meminfo-validation-20261005]
+    paths: [.github/workflows/ni77-staged-controls.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ni77-staged-controls-20261005
+  cancel-in-progress: false
+jobs:
+  staged-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+      SOURCE_SHA: e3bdedc62b424ecbca4f66d7fe18984d094a26a5
+      SOURCE_PARENT: 61453ea335028acba69536d680023d5ef59ef47e
+      PRODUCER_SHA: 61453ea335028acba69536d680023d5ef59ef47e
+    steps:
+      - name: Checkout isolated recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          path: ci-control
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Checkout reviewed source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: candidate
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Checkout immutable native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ env.PRODUCER_SHA }}
+          path: root-producer
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Pin Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+      - name: Freeze private execution context and input bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          RESULT_DIR="$RUNNER_TEMP/ni77-staged-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$RESULT_DIR" && test ! -L "$RESULT_DIR"
+          mkdir -m 700 "$RESULT_DIR"
+          mkdir -m 700 "$RESULT_DIR/tmp" "$RESULT_DIR/cache" "$RESULT_DIR/venv"
+          printf 'RESULT_DIR=%s\n' "$RESULT_DIR" >> "$GITHUB_ENV"
+          printf 'TMPDIR=%s/tmp\nPIP_CACHE_DIR=%s/cache\n' "$RESULT_DIR" "$RESULT_DIR" >> "$GITHUB_ENV"
+          test "$(git -C candidate rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git -C candidate rev-parse HEAD^)" = "$SOURCE_PARENT"
+          test "$(git -C root-producer rev-parse HEAD)" = "$PRODUCER_SHA"
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C ci-control rev-parse HEAD^)" = "$SOURCE_PARENT"
+          test "$(git -C ci-control diff-tree --no-commit-id --name-only -r HEAD)" = .github/workflows/ni77-staged-controls.yml
+          git -C ci-control diff --exit-code "$SOURCE_PARENT" HEAD -- . ':(exclude).github/workflows/ni77-staged-controls.yml' > "$RESULT_DIR/recipe-only-diff.stdout"
+          test -z "$(git -C candidate status --porcelain)"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          git -C candidate ls-tree -r HEAD > "$RESULT_DIR/source-readset.txt"
+          git -C candidate diff --name-only HEAD^ HEAD > "$RESULT_DIR/source-diff-paths.txt"
+          printf '%s\n' research/fixtures/pii_ni77_meminfo_controls.jsonl scripts/hooks/pii_precommit.sh scripts/hooks/tests/test_ni77_meminfo_controls.py > "$RESULT_DIR/expected-source-diff-paths.txt"
+          cmp "$RESULT_DIR/source-diff-paths.txt" "$RESULT_DIR/expected-source-diff-paths.txt"
+          sha256sum candidate/scripts/hooks/pii_precommit.sh candidate/research/fixtures/pii_ni77_meminfo_controls.jsonl candidate/scripts/hooks/tests/test_ni77_meminfo_controls.py > "$RESULT_DIR/source-files.sha256"
+          test "$(sha256sum candidate/scripts/hooks/pii_precommit.sh | cut -d' ' -f1)" = 7c379778864639f8d7f4c4d6c5d1dec6cb75f208670f14c480cef8540b473df3
+          test "$(sha256sum candidate/research/fixtures/pii_ni77_meminfo_controls.jsonl | cut -d' ' -f1)" = a36221567dc491cf7754bbcc75eab38b3da7c7d93a6810561eea39e803ad31ec
+          test "$(sha256sum candidate/scripts/hooks/tests/test_ni77_meminfo_controls.py | cut -d' ' -f1)" = c294159283cace7b2e1e3b5ee76efd2387075565ed4348047a3c4fe797b065ef
+          cp ci-control/.github/workflows/ni77-staged-controls.yml "$RESULT_DIR/workflow.original.yml"
+          cat > "$RESULT_DIR/requirements.txt" <<'EOF'
+          pytest==9.0.3 --hash=sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9
+          iniconfig==2.3.0 --hash=sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12
+          packaging==26.0 --hash=sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529
+          pluggy==1.6.0 --hash=sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746
+          pygments==2.20.0 --hash=sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176
+          EOF
+          python --version > "$RESULT_DIR/python-version.txt"
+          test "$(cat "$RESULT_DIR/python-version.txt")" = 'Python 3.11.14'
+          printf '%s\n' "$HOME" > "$RESULT_DIR/home-before.txt"
+          git -C candidate status --porcelain > "$RESULT_DIR/source-status-before.txt"
+      - name: Install hash-pinned pytest graph in private venv
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          timeout --signal=TERM --kill-after=5s 60s python -m venv "$RESULT_DIR/venv"
+          set +e
+          timeout --signal=TERM --kill-after=15s 240s "$RESULT_DIR/venv/bin/python" -m pip install --disable-pip-version-check --no-deps --only-binary=:all: --require-hashes -r "$RESULT_DIR/requirements.txt" > "$RESULT_DIR/install.stdout" 2> "$RESULT_DIR/install.stderr"
+          rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$rc" > "$RESULT_DIR/install-status.json"
+          test "$rc" -eq 0
+          "$RESULT_DIR/venv/bin/python" -m pip freeze > "$RESULT_DIR/installed-packages.txt"
+      - name: Capture real staged controls with immutable native producer
+        working-directory: candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          source_root="$GITHUB_WORKSPACE/candidate"
+          producer_root="$GITHUB_WORKSPACE/root-producer"
+          args=("$RESULT_DIR/venv/bin/python" "$producer_root/scripts/ci/native_conformance.py"
+            --cwd "$source_root" --junit "$RESULT_DIR/original-pytest.xml" --output "$RESULT_DIR/native"
+            --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" --repo "root_producer=$producer_root" --repo "root_candidate=$source_root"
+            --read-path "$RESULT_DIR/install-status.json" --read-path "$RESULT_DIR/install.stdout" --read-path "$RESULT_DIR/install.stderr"
+            --read-path "$RESULT_DIR/installed-packages.txt" --read-path "$RESULT_DIR/requirements.txt"
+            --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni77-staged-controls.yml")
+          while IFS= read -r rel; do args+=(--read-path "$source_root/$rel"); done < <(git ls-tree -r --name-only HEAD -- scripts/hooks scripts/validate/pii_fixture_eval.py research/fixtures/pii_hygiene_eval.jsonl research/fixtures/pii_ni77_meminfo_controls.jsonl)
+          for rel in scripts/ci/native_conformance.py scripts/vidya/adapters/__init__.py scripts/vidya/adapters/ci_conformance.py scripts/vidya/claim_tuple.py scripts/vidya/canonical.py scripts/vidya/frames.py; do args+=(--read-path "$producer_root/$rel"); done
+          args+=(--select scripts/hooks/tests/test_ni77_meminfo_controls.py -- bash -c '
+            set -euo pipefail
+            timeout --signal=TERM --kill-after=15s 600s env -i PATH="$RESULT_DIR/venv/bin:/usr/local/bin:/usr/bin:/bin" HOME="$HOME" TMPDIR="$RESULT_DIR/tmp" PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 RESULT_DIR="$RESULT_DIR" "$RESULT_DIR/venv/bin/python" -m pytest -q -p no:cacheprovider --confcutdir=scripts/hooks/tests --rootdir="$PWD" --basetemp="$RESULT_DIR/pytest-tmp" scripts/hooks/tests/test_ni77_meminfo_controls.py --junitxml="$RESULT_DIR/original-pytest.xml" > "$RESULT_DIR/pytest.stdout" 2> "$RESULT_DIR/pytest.stderr"
+          ')
+          timeout --signal=TERM --kill-after=15s 660s "${args[@]}" > "$RESULT_DIR/native-launch.stdout" 2> "$RESULT_DIR/native-launch.stderr"
+      - name: Preserve originals before postcheck
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni77-staged-originals-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.txt
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.json
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.stdout
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.stderr
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.xml
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.sha256
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/*.yml
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/native/
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/pytest-tmp/ni77-private-originals0/
+          include-hidden-files: true
+          if-no-files-found: error
+      - name: Verify immutable native receipt and staged results
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          timeout --signal=TERM --kill-after=5s 60s python - <<'PY'
+          import hashlib, json, os, pathlib, stat, subprocess, sys
+          root = pathlib.Path(os.environ["GITHUB_WORKSPACE"]) / "root-producer"
+          sys.path.insert(0, str(root))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          scope = pathlib.Path(os.environ["RESULT_DIR"])
+          path = scope / "native/receipt.json"
+          record, digest = read_receipt(path)
+          rows = native_rows(path)
+          assert len(rows) == 1
+          q, t, reasons = grade(project_ci_conformance(rows[0]))
+          baseline_path = scope / "pytest-tmp/ni77-private-originals0/baseline-report.json"
+          baseline = json.loads(baseline_path.read_bytes())
+          source = pathlib.Path(os.environ["GITHUB_WORKSPACE"]) / "candidate"
+          statuses = [subprocess.check_output(["git", "-C", str(source), "status", "--porcelain"], timeout=10),
+                      subprocess.check_output(["git", "-C", str(source), "status", "--porcelain"], timeout=10)]
+          for index, value in enumerate(statuses):
+              (scope / f"source-status-after-{index}.txt").write_bytes(value)
+          uid, gid = os.getuid(), os.getgid()
+          def private_owned(path, directory):
+              info = path.lstat()
+              return (stat.S_ISDIR(info.st_mode) if directory else stat.S_ISREG(info.st_mode)) and stat.S_IMODE(info.st_mode) == (0o700 if directory else 0o600) and info.st_uid == uid and info.st_gid == gid
+          payload_roots = [scope, scope / "tmp", scope / "native", scope / "pytest-tmp", baseline_path.parent]
+          payload_files = [p for p in scope.iterdir() if p.is_file()]
+          original_inventory = list(baseline_path.parent.rglob("*")) + list((scope / "native").rglob("*"))
+          private_inventory = [{"path":str(p),"mode":oct(stat.S_IMODE(p.lstat().st_mode)),"uid":p.lstat().st_uid,"gid":p.lstat().st_gid} for p in payload_roots + payload_files + original_inventory]
+          expected_repos = {"root_workflow":os.environ["GITHUB_SHA"],"root_producer":os.environ["PRODUCER_SHA"],"root_candidate":os.environ["SOURCE_SHA"]}
+          baseline_rows = [json.loads(line) for line in (source / "research/fixtures/pii_hygiene_eval.jsonl").read_text().splitlines() if line.strip()]
+          baseline_observation = {"scope":"descriptive internal fixture observations; not a new claim tuple or field quality estimate", "false_accept":{"errors":baseline["false_accept"],"must_block_denominator":sum(bool(row["expected_match"]) for row in baseline_rows)}, "false_reject":{"errors":baseline["false_reject"],"must_not_block_denominator":sum(not bool(row["expected_match"]) for row in baseline_rows)}}
+          checks = {
+              "native_true": record.get("fixture_execution_conformant") is True,
+              "native_exit_zero": record.get("exit_code") == 0,
+              "exact_repo_sha_map": record.get("repositories") == expected_repos,
+              "exact_19_cases": record["summary"]["counts"] == {"collected":19,"executed":19,"passed":19,"failure":0,"error":0,"skipped":0},
+              "shared_grade": (q,t) == ("Judged","Located"),
+              "selection_exact": record.get("selections") == ["scripts/hooks/tests/test_ni77_meminfo_controls.py"],
+              "baseline_51_regressions": baseline == {"rows":51,"false_accept":0,"false_reject":0},
+              "baseline_fixture_unchanged": hashlib.sha256((source / "research/fixtures/pii_hygiene_eval.jsonl").read_bytes()).hexdigest() == "b3d491fe299ce3a54530c709c186dfd82172e803dcc44c1ce35d27109a69bca2",
+              "source_clean_twice": not any(statuses),
+              "HOME_unchanged": (scope / "home-before.txt").read_text().strip() == os.environ["HOME"],
+              "host_paths_absent": all(not p.exists() and not p.is_symlink() for p in [pathlib.Path("/mnt/raid0/llm"),pathlib.Path("/workspace/repos")]),
+              "private_owned_payload_roots": all(private_owned(p, True) for p in payload_roots),
+              "private_owned_root_files": all(private_owned(p, False) for p in payload_files),
+              "private_owned_original_inventory": all(private_owned(p, stat.S_ISDIR(p.lstat().st_mode)) for p in original_inventory),
+          }
+          (scope / "postcheck.json").write_text(json.dumps({"checks":checks,"counts":record["summary"]["counts"],"grade":{"Q":q,"T":t,"reasons":reasons},"receipt_sha256":digest,"baseline":baseline,"baseline_descriptive_observation":baseline_observation,"private_inventory":private_inventory},indent=2)+"\n")
+          if not all(checks.values()): raise SystemExit("native conformance or custody refusal retained")
+          PY
+      - name: Preserve postcheck originals
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni77-staged-postcheck-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/postcheck.json
+            ${{ runner.temp }}/ni77-staged-${{ github.run_id }}-${{ github.run_attempt }}/source-status-after-*.txt
+          if-no-files-found: error
