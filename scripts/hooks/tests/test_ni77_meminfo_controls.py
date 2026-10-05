@@ -88,3 +88,6 @@ def test_ni77_staged_meminfo_control(staged_evaluator, row):
     if row["expected_match"]:
         for label in evaluator.row_labels(row):
             assert re.search(rf"^BLOCKED: case_01\.txt:\d+: \[{label}\]", hook_call["stderr"], re.M)
+
+if __name__ == "__main__":
+    raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/hooks/tests/test_ni77_meminfo_controls.py -q")
