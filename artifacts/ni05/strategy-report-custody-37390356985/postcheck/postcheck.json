@@ -1,0 +1,99 @@
+{
+  "actual_exit_code": 0,
+  "actual_selections": [
+    "tests/vidya/test_strategy_projection_report.py",
+    "tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+  ],
+  "dependency_app_clean": true,
+  "expected_exact_counts": {
+    "collected": 10,
+    "error": 0,
+    "executed": 10,
+    "failure": 0,
+    "passed": 10,
+    "skipped": 0
+  },
+  "expected_repo_shas": {
+    "native_root": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+    "recipe": "91d97575493daf7541f1b421e89395a1f3090baf",
+    "tested": "69c368204e8e582a10ed163574c8c08583eef7cd",
+    "trusted_app": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a"
+  },
+  "expected_selections": [
+    "tests/vidya/test_strategy_projection_report.py",
+    "tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+  ],
+  "fixture_execution_conformant": true,
+  "observed_counts": {
+    "collected": 10,
+    "error": 0,
+    "executed": 10,
+    "failure": 0,
+    "passed": 10,
+    "skipped": 0
+  },
+  "phase": "ni53-root",
+  "pyproject_unchanged": true,
+  "receipt_sha256": "c5512b32c704be00ecc1ab07dc1b3b623f44d15040c52eb37fd8ab0772daf223",
+  "repo_pins_exact": true,
+  "repo_shas": {
+    "native_root": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+    "recipe": "91d97575493daf7541f1b421e89395a1f3090baf",
+    "tested": "69c368204e8e582a10ed163574c8c08583eef7cd",
+    "trusted_app": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a"
+  },
+  "result_dir_private_owned_0700": true,
+  "runtime_path_overrides": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-cpp-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-mtmd"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": {
+      "exists": false,
+      "symlink": false,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-server"
+    }
+  },
+  "runtime_path_overrides_absent_nonlinks": true,
+  "schema": "epyc.ni53_postcheck.v1",
+  "selection_exact": true,
+  "tested_argv": [
+    "timeout",
+    "--verbose",
+    "--signal=TERM",
+    "--kill-after=15s",
+    "240s",
+    "env",
+    "-i",
+    "PATH=/home/runner/work/_temp/ni53-sourcefix-37390356985-1-ni53-root/venv/bin:/usr/local/bin:/usr/bin:/bin",
+    "TMPDIR=/home/runner/work/_temp/ni53-sourcefix-37390356985-1-ni53-root/tmp",
+    "XDG_CACHE_HOME=/home/runner/work/_temp/ni53-sourcefix-37390356985-1-ni53-root/cache",
+    "CI=true",
+    "ORCHESTRATOR_MOCK_MODE=true",
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-cpp-bin",
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD=/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-mtmd",
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER=/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-server",
+    "NI53_APP_SOURCE_ROOT=/home/runner/work/epyc-root/epyc-root/app",
+    "PYTHONUNBUFFERED=1",
+    "/home/runner/work/_temp/ni53-sourcefix-37390356985-1-ni53-root/venv/bin/python",
+    "-m",
+    "pytest",
+    "-q",
+    "-p",
+    "no:cacheprovider",
+    "--junitxml=/home/runner/work/_temp/ni53-sourcefix-37390356985-1-ni53-root/original-junit.xml",
+    "tests/vidya/test_strategy_projection_report.py",
+    "tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+  ],
+  "tested_source_clean": true,
+  "trusted_app_clean": true,
+  "uv_lock_expected_sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+  "uv_lock_sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+  "uv_lock_unchanged": true
+}

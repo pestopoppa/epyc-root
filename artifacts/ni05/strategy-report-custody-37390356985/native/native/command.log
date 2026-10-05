@@ -1,0 +1,13 @@
+..........                                                               [100%]
+=============================== warnings summary ===============================
+tests/vidya/test_strategy_projection_report.py::test_explicit_wrapper_captures_one_offhost_dry_run_and_restores_import_state
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/vidya/test_strategy_projection_report.py::test_explicit_wrapper_captures_one_offhost_dry_run_and_restores_import_state
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+tests/vidya/test_strategy_projection_report.py::test_explicit_wrapper_captures_one_offhost_dry_run_and_restores_import_state
+  <frozen importlib._bootstrap>:241: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+10 passed, 3 warnings in 1.33s

@@ -1,0 +1,26 @@
+{
+  "schema": "ni53.main_review.v1",
+  "run": 37390356985,
+  "api_digest_ZIPs": 3,
+  "ZIP_members_byte_compared": 50,
+  "git_inputs": 30,
+  "external_context_install_inputs": 6,
+  "receipt_file_sha256": "c5512b32c704be00ecc1ab07dc1b3b623f44d15040c52eb37fd8ab0772daf223",
+  "receipt_embedded_self_hash": "10dcde30c0b4f4ae55155a8fd4f3b3cc720c1986a6625649951bf068c4279ed8",
+  "strict_native_outcome": true,
+  "counts": {
+    "collected": 10,
+    "executed": 10,
+    "passed": 10,
+    "failure": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "true_boolean_postchecks": 10,
+  "original_receipts_unchanged": true,
+  "derivative_review_only": true
+}

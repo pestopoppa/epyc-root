@@ -1,0 +1,263 @@
+{
+  "schema": "ni05.public_original_subset.v1",
+  "task": "NI05-53",
+  "run": 37390356985,
+  "files": [
+    {
+      "path": "install/dependency-status.json",
+      "bytes": 750,
+      "sha256": "d77326521c35ae9443d0ef2ba264d8c740a59a253acb4d3452452c0268c43b69"
+    },
+    {
+      "path": "install/python-version.txt",
+      "bytes": 15,
+      "sha256": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7"
+    },
+    {
+      "path": "install/source-preflight.json",
+      "bytes": 2940,
+      "sha256": "70df5ec0ffb33abe3c9296fe3d0d663242386fbfffaeb2daf663bd0c8ba4166c"
+    },
+    {
+      "path": "install/uv-sync.log",
+      "bytes": 5048,
+      "sha256": "bd3acda79da1a2bd7bd999d4b6ecdaafae7fc5e3a934cf6a7e43f5c4876045f2"
+    },
+    {
+      "path": "install/uv-version.txt",
+      "bytes": 10,
+      "sha256": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051"
+    },
+    {
+      "path": "native/dependency-status.json",
+      "bytes": 750,
+      "sha256": "d77326521c35ae9443d0ef2ba264d8c740a59a253acb4d3452452c0268c43b69"
+    },
+    {
+      "path": "native/native/command.log",
+      "bytes": 974,
+      "sha256": "5c660ba27ebe00a9ca1cafa2e6710c5e106a288b21ac964633a01fb6894255c0"
+    },
+    {
+      "path": "native/native/execution-request.json",
+      "bytes": 10182,
+      "sha256": "88e24298724bab05cff37ef5797a3e929079e6522b02df590b76065fab0a1e30"
+    },
+    {
+      "path": "native/native/original-junit.xml",
+      "bytes": 1800,
+      "sha256": "39f7c8f3bc2d66c8a127f62ed55da2827140f445894bd08dd54b49bb90250cfc"
+    },
+    {
+      "path": "native/native/receipt.json",
+      "bytes": 16030,
+      "sha256": "c5512b32c704be00ecc1ab07dc1b3b623f44d15040c52eb37fd8ab0772daf223"
+    },
+    {
+      "path": "native/original-junit.xml",
+      "bytes": 1800,
+      "sha256": "39f7c8f3bc2d66c8a127f62ed55da2827140f445894bd08dd54b49bb90250cfc"
+    },
+    {
+      "path": "native/source-preflight.json",
+      "bytes": 2940,
+      "sha256": "70df5ec0ffb33abe3c9296fe3d0d663242386fbfffaeb2daf663bd0c8ba4166c"
+    },
+    {
+      "path": "postcheck/postcheck.json",
+      "bytes": 3748,
+      "sha256": "b0a2e581c3b1b549ecc07380b7aefd6910a523266df06d2739af1493be72ab1f"
+    }
+  ],
+  "excluded_private_originals": [
+    {
+      "path": "native/execution-context.json",
+      "bytes": 2185,
+      "sha256": "8fbb0de9c01acfbd13d77e0953dc49c125f5d4d58774b4b773652d1c8ba630ea"
+    },
+    {
+      "path": "native/native/read-000.bin",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "path": "native/native/read-001.bin",
+      "bytes": 31874,
+      "sha256": "c313ccac344ddcd483526528402c554300651162f970d5fc2335bf3583ae9808"
+    },
+    {
+      "path": "native/native/read-002.bin",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "path": "native/native/read-003.bin",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "path": "native/native/read-004.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/native/read-005.bin",
+      "bytes": 2940,
+      "sha256": "70df5ec0ffb33abe3c9296fe3d0d663242386fbfffaeb2daf663bd0c8ba4166c"
+    },
+    {
+      "path": "native/native/read-006.bin",
+      "bytes": 750,
+      "sha256": "d77326521c35ae9443d0ef2ba264d8c740a59a253acb4d3452452c0268c43b69"
+    },
+    {
+      "path": "native/native/read-007.bin",
+      "bytes": 2185,
+      "sha256": "8fbb0de9c01acfbd13d77e0953dc49c125f5d4d58774b4b773652d1c8ba630ea"
+    },
+    {
+      "path": "native/native/read-008.bin",
+      "bytes": 15,
+      "sha256": "8fa6fee68fb4ca8eda41d4db888f6a2a6b039d072f18375fa9df13d8912037d7"
+    },
+    {
+      "path": "native/native/read-009.bin",
+      "bytes": 10,
+      "sha256": "0b53857e6cf3d49441152aff0bfa024d90e4505d6b598bb5258a11f87d361051"
+    },
+    {
+      "path": "native/native/read-010.bin",
+      "bytes": 5048,
+      "sha256": "bd3acda79da1a2bd7bd999d4b6ecdaafae7fc5e3a934cf6a7e43f5c4876045f2"
+    },
+    {
+      "path": "native/native/read-011.bin",
+      "bytes": 6774,
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501"
+    },
+    {
+      "path": "native/native/read-012.bin",
+      "bytes": 1096854,
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+    },
+    {
+      "path": "native/native/read-013.bin",
+      "bytes": 13851,
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524"
+    },
+    {
+      "path": "native/native/read-014.bin",
+      "bytes": 8353,
+      "sha256": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b"
+    },
+    {
+      "path": "native/native/read-015.bin",
+      "bytes": 89273,
+      "sha256": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756"
+    },
+    {
+      "path": "native/native/read-016.bin",
+      "bytes": 4019,
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "path": "native/native/read-017.bin",
+      "bytes": 84131,
+      "sha256": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64"
+    },
+    {
+      "path": "native/native/read-018.bin",
+      "bytes": 25631,
+      "sha256": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d"
+    },
+    {
+      "path": "native/native/read-019.bin",
+      "bytes": 21770,
+      "sha256": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75"
+    },
+    {
+      "path": "native/native/read-020.bin",
+      "bytes": 20938,
+      "sha256": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b"
+    },
+    {
+      "path": "native/native/read-021.bin",
+      "bytes": 4047,
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "path": "native/native/read-022.bin",
+      "bytes": 1773,
+      "sha256": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0"
+    },
+    {
+      "path": "native/native/read-023.bin",
+      "bytes": 19552,
+      "sha256": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36"
+    },
+    {
+      "path": "native/native/read-024.bin",
+      "bytes": 30706,
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+    },
+    {
+      "path": "native/native/read-025.bin",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "path": "native/native/read-026.bin",
+      "bytes": 5909,
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "path": "native/native/read-027.bin",
+      "bytes": 10240,
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "path": "native/native/read-028.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native/native/read-029.bin",
+      "bytes": 26970,
+      "sha256": "ef8e6c3234a66a4cd7d29d6711b4da41a1bb93095ced65e8e1dbd089b693c6e1"
+    },
+    {
+      "path": "native/native/read-030.bin",
+      "bytes": 24116,
+      "sha256": "343fd5b7e8b6f22fa97cfad361848fbf3a690328775a5ec4214d80ad0eb7c750"
+    },
+    {
+      "path": "native/native/read-031.bin",
+      "bytes": 38893,
+      "sha256": "6c31bbc332a6d289f11587bc41992e57c07b21d50abf51b2d479e0116f964ca7"
+    },
+    {
+      "path": "native/native/read-032.bin",
+      "bytes": 999,
+      "sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+    },
+    {
+      "path": "native/native/read-033.bin",
+      "bytes": 25802,
+      "sha256": "c379d8ed152085ece779b78943ca06d6e55db3e106e162d1349fd25590721d4c"
+    },
+    {
+      "path": "native/native/read-034.bin",
+      "bytes": 26065,
+      "sha256": "3d76b23cea1f279584ec988b871bee147167c0f9b8d6ab669523429d3c771c4a"
+    },
+    {
+      "path": "native/native/read-035.bin",
+      "bytes": 14675,
+      "sha256": "06d3adb717f830cac87468bf04eff364aedca5896d872002f7267c1733dad4fa"
+    }
+  ],
+  "original_private_custody": "/mnt/raid0/llm/tmp/codex-ni53-producer-pin-run-37390356985",
+  "source_prefixes_complete": false,
+  "public_prefix_independently_reopenable": false,
+  "API_ZIPs_retained_privately": true
+}

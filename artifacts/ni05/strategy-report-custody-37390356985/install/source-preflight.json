@@ -1,0 +1,51 @@
+{
+  "dependency_application_sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a",
+  "dependency_lock_sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+  "native_conformance_sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+  "native_root_sha": "cb28a3bfa7655a37a0b1fd00a6d2ec1c49fb433f",
+  "phase": "ni53-root",
+  "recipe_root_sha": "91d97575493daf7541f1b421e89395a1f3090baf",
+  "runtime_path_overrides": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-cpp-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-mtmd"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni53-sourcefix-unavailable-llama-server"
+    }
+  },
+  "schema": "epyc.ni53_source_preflight.v1",
+  "test_environment": {
+    "CI": "true",
+    "ORCHESTRATOR_MOCK_MODE": "true",
+    "inference_http_or_model_calls": "none; explicit test mocks and empty private temporary roots",
+    "synthetic_capacity": false
+  },
+  "tested_repository_parent": "55e99297e99de0a36131b6751ce7a8dee6773b0e",
+  "tested_repository_paths": [
+    "scripts/vidya/adapters/strategy_projection_report.py"
+  ],
+  "tested_repository_sha": "69c368204e8e582a10ed163574c8c08583eef7cd",
+  "tested_repository_sha256": {
+    "scripts/vidya/adapters/strategy_projection_report.py": "ef8e6c3234a66a4cd7d29d6711b4da41a1bb93095ced65e8e1dbd089b693c6e1"
+  },
+  "trusted_app_source_sha": "1a1f2c1260c7662235f1ed39e0cc0c0c9e16e74a",
+  "trusted_app_source_sha256": {
+    "orchestration/repl_memory/embedder.py": "4697fd6f877fd1a1d9792c78300319c4bae96b75309e5a71b9f921354bb4bf75",
+    "orchestration/repl_memory/faiss_store.py": "ac73aade178f0a13430c3ea01cd50d7c971e6059817673d3976fd13347f6f39d",
+    "orchestration/repl_memory/memory_record.py": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
+    "orchestration/repl_memory/strategy_store.py": "8a5cd857d9723827ec2f5346057aa89d5ec358a2fdceeaf7a4566e2ae7889f64",
+    "scripts/autopilot/experiment_journal.py": "f5f29d0d99311e45b4f0aa50f812622993fe714f7652218e86c2906c1135d756",
+    "scripts/autopilot/journal_shards.py": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda",
+    "scripts/autopilot/strategy_projection_report.py": "08286a31d98404758b7d09eecc5a2ab90181bf63484f66566361906c0e7d1f1b",
+    "src/__init__.py": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
+    "src/autopilot_core/tier_specs.py": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
+    "src/inference_lock.py": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+    "src/runtime/inference_lock.py": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36"
+  }
+}

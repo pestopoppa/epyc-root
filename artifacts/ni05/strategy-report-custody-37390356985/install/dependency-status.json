@@ -1,0 +1,17 @@
+{
+  "extras": [
+    "dev"
+  ],
+  "install": "uv sync --frozen --extra dev --no-install-project",
+  "install_project": false,
+  "phase": "ni53-root",
+  "pyproject_sha256_after": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+  "pyproject_sha256_before": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+  "python": "Python 3.11.14",
+  "schema": "epyc.ni53_dependency_install.v1",
+  "sync_exit_code": 0,
+  "uv": "uv 0.8.15",
+  "uv_lock_expected_sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+  "uv_lock_sha256_after": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+  "uv_lock_sha256_before": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61"
+}
