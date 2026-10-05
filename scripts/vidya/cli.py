@@ -547,6 +547,7 @@ INF70_CORPUS_ROOT = Path("/mnt/raid0/llm/tmp/inf70")
 # equal to ingest_sources.SOURCES.
 _FILE_SOURCES = (
     "ci-fixture-conformance",
+    "session-intercall-gap",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
     "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",

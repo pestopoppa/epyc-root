@@ -181,6 +181,7 @@ def _ak_actor_seat(tmp: Path) -> Path:
 
 
 BUILDERS = {
+    "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
     "research-screen": _research_screen,
     "kb-rag-qlen": _kb_rag,
     "inf70-arms": _inf70_arms,
