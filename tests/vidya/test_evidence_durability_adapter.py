@@ -11,7 +11,7 @@ import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'scripts/vidya'))
 from adapters import evidence_durability as adapter
-from claim_tuple import ProjectionError, grade, registered
+from claim_tuple import ProjectionError, grade, registered, to_frames
 from ingest_sources import ingest
 
 
@@ -24,8 +24,9 @@ class DurabilityAdapterTests(unittest.TestCase):
         source = '/original/handoffs/task.md'
         target = 'artifacts/control.json'
         sha = hashlib.sha256(b'original document bytes').hexdigest()
-        proposition = (f"The evidence reference {target!r} from {source!r}:3 "
-                       "resolves on this host through the checker's declared "
+        proposition = (f"The declared durable-resolution criterion for evidence reference {target!r} "
+                       f"from {source!r}:3 evaluated true with native verdict OK; "
+                       "the criterion is resolution on this host through the checker's declared "
                        "repo/main-clone resolution rules to a readable artifact outside "
                        "the checker's configured scratch roots.")
         row = dict(source=source, source_sha256=sha, line=3, target=target,
@@ -61,6 +62,8 @@ class DurabilityAdapterTests(unittest.TestCase):
         receipt = self.receipt()
         for verdict in adapter.QUALIFIED:
             caveat = copy.deepcopy(receipt['target_verdicts'][0]); caveat.update(verdict=verdict, result=None)
+            caveat['decided_proposition'] = caveat['decided_proposition'].replace(
+                'evaluated true with native verdict OK;', f'evaluated unknown with native verdict {verdict};')
             receipt['target_verdicts'].append(caveat)
         rows = adapter.native_rows(self.archive(receipt))
         self.assertEqual(len(rows), 1)
@@ -118,8 +121,33 @@ class DurabilityAdapterTests(unittest.TestCase):
 
     def test_negative_native_boolean_is_preserved(self):
         receipt = self.receipt(); receipt['target_verdicts'][0].update(verdict='MISSING', result=False)
+        receipt['target_verdicts'][0]['decided_proposition'] = receipt['target_verdicts'][0]['decided_proposition'].replace(
+            'evaluated true with native verdict OK;', 'evaluated false with native verdict MISSING;')
         claim = adapter.project(adapter.native_rows(self.archive(receipt))[0])
         self.assertFalse(claim.value)
+
+    def test_actual_missing_writer_finding_cannot_support_positive_durability(self):
+        producer = Path(os.environ.get('EVIDENCE_DURABILITY_PRODUCER',
+                        '/workspace/repos/epyc-inference-research/scripts/validate/check_evidence_durability.py'))
+        fixture = self.directory / 'missing-repo'; (fixture / 'docs').mkdir(parents=True)
+        document = fixture / 'docs/missing.md'
+        document.write_text('Evidence: artifacts/missing.json\n')
+        registry = fixture / 'registry.yaml'; registry.write_text('models: {}\n')
+        sidecar = self.directory / 'missing-scan.json'
+        run = subprocess.run([sys.executable, str(producer), str(registry), '--repo', str(fixture),
+                              '--scan-docs', '--scan-receipt', str(sidecar)], capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        path = next(Path(str(sidecar) + '.d').glob('*.json'))
+        row = adapter.native_rows(path)[0]
+        self.assertEqual(row['verdict'], 'MISSING'); self.assertFalse(row['result'])
+        claim = adapter.project(row)
+        frames = to_frames(claim, as_of=row['receipt']['emitted_at_utc'], adapter_id=adapter.ADAPTER_ID)
+        proposed = next(frame for frame in frames if frame['frame_type'].endswith('claim_proposed/v1'))
+        self.assertEqual(proposed['assertion']['display_text'], row['decided_proposition'])
+        self.assertIn('evaluated false with native verdict MISSING;', proposed['assertion']['display_text'])
+        self.assertNotIn('evaluated true', proposed['assertion']['display_text'])
+        support = next(frame for frame in frames if frame['frame_type'].endswith('evidence_supports_claim/v1'))
+        self.assertEqual(support['assertion']['claim_id'], proposed['assertion']['claim_id'])
 
 
 if __name__ == '__main__': unittest.main()
