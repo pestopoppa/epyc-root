@@ -111,6 +111,11 @@ class DurabilityAdapterTests(unittest.TestCase):
         self.assertEqual(claim.attestation_locator, str(archive[0]))
         self.assertEqual(rows[0]['source_sha256'], hashlib.sha256((fixture / 'docs/control.md').read_bytes()).hexdigest())
 
+    def test_projection_rechecks_immutable_custody(self):
+        row = adapter.native_rows(self.archive(self.receipt()))[0]
+        row['result'] = False
+        with self.assertRaises(ProjectionError): adapter.project(row)
+
     def test_negative_native_boolean_is_preserved(self):
         receipt = self.receipt(); receipt['target_verdicts'][0].update(verdict='MISSING', result=False)
         claim = adapter.project(adapter.native_rows(self.archive(receipt))[0])

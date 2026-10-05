@@ -68,6 +68,8 @@ def native_rows(path):
 
 @register('evidence_durability', source_class='verifier', decided_proposition_field='decided_proposition')
 def project(row):
+    originals = native_rows(row.get('receipt_path', ''))
+    _require(any(original == row for original in originals), 'projection differs from immutable native row')
     receipt = row['receipt']
     _require(type(row.get('result')) is bool, 'qualified caveat is not a boolean')
     # CANDIDATE is the unqualified diagnostic carrier category, never a baseline.
