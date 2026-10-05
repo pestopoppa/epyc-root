@@ -1,0 +1,21 @@
+# Non-inference CI review checkpoint — 2026-10-05
+
+Main verified the published queue contains 76 distinct NI05 tasks: 54 completed and 22 open. “Accepted 50/75” referred to completed scoped deliverables, not selected work. Selection, source approval, publishing a candidate, and queued CI are never completion. Audits and validation can close their own deliverable while a larger program remains open; the original 895-module sweep remains mixed.
+
+As of 20:33 UTC, three reviewed recipe runs were queued, with no executed fixture evidence:
+
+| Scope | Immutable recipe commit | Run |
+|---|---|---|
+| NI45/53 strategy leaf and original report custody | `5cb3b17ad4e333d14f4e18368552e05ebb3d65e1` | [37369387698](https://github.com/pestopoppa/epyc-root/actions/runs/37369387698) |
+| NI57/58 routing pool and prompt vocabulary fixtures | `45de432b29390dd48a850f68265dcf93b3d950b3` | [37369215336](https://github.com/pestopoppa/epyc-root/actions/runs/37369215336) |
+| NI61 deterministic ONNX thread fixtures | `8be6945ea5645dd1b4ff3b4d26e9cd84402f6fb2` | [37369039306](https://github.com/pestopoppa/epyc-root/actions/runs/37369039306) |
+
+Main supplied an invalid setup-uv action commit in earlier recipes. NI45/53 run37366029595 attempt1 failed hosted-runner acquisition; attempt2 acquired runners but failed action resolution before install or tests. Separate immutable private custodies preserve both attempts and annotations; no fixture FALSE/NULL or case counts are invented. NI61 run37367921829 failed before jobs, producing no native receipt. Its originals remain unchanged. Corrected recipes use vendor-verified setup-uv commit `22695119d769bdb6f7032ad67b9bca0ef8c4a174`; NI61 also removes an unsupported job-level runner context ([GitHub context availability](https://docs.github.com/en/actions/reference/workflows-and-actions/contexts#context-availability)). NI57/58 workflow checkout fetches its parent before the ancestry check.
+
+NI59 source candidate `8024ad80440a6f1bf6e9f0abc2ff9ee9a8c091cd` changes only two fixture modules: private scorer scratch including the fresh child interpreter, explicit REPL spill storage, and a missing-root refusal. Runtime source remains unchanged. NI60 candidate `f0ba99002ad69911292ea729d17d9516bdf2923f` changes only creativity/seed tests, injecting finite local vectors into real temporary SQLite/FAISS stores and adding assertions that default TaskEmbedder construction is absent. Neither candidate has accepted execution evidence or main integration; both remain open while recipes are prepared/reviewed. Main rejected a proposed NI59 runtime refactor and an incorrect NI60 shared-grade predicate before publication.
+
+NI76 guard design remains proposed: verify actual full q0–q3 exclusive locks held by one live ancestor before host wrapper or direct patcher mutation, with no CI flag bypass and no scheduler/CLI extension. Existing direct isolated off-host indexing remains separate. Fresh exact-entry-point impact is required before source edits. The source table and `VB-CODE-INDEX-CLAIM-CONTROLS` now file the prospective native write-side controls before capture. The canonical host index remains untrusted after the recorded incident; no repair or recovery is attempted.
+
+NI75's reviewed external patch remains unapplied after exact HIGH impact (10 nodes, three modules). Main requested a bounded isolated implementation/validation decision under the explicit AGENTS.md stop rule. Without that decision the item stays stopped, independently of the continuing queue. No inference, serving reload, production kernel mutation, new ratification, historical resealing, or whole-suite claim occurs at this checkpoint.
+
+At20:40UTC main reopened job-level API and annotations: strategy and ONNX runs failed runner acquisition with zero runners/steps. The fixture matrix is mixed: routing-pool ran successfully (22 workflow steps), while prompt-forge never acquired a runner. Routing artifact acceptance remains pending; a successful job alone does not close NI57. Main authorizes one immutable retry for the unexecuted strategy/ONNX scopes after first-attempt custody is sealed; prompt-forge retry waits for preservation of the original mixed attempt and will exclude the successful routing job. No repeated retry loop or completion increment occurs.

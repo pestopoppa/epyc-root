@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-57–60 independent fixture repairs alongside NI05-45 strategy flag, NI05-53 report custody plus NI05-75 registry fallback review.
+- **Next:** NI05-45/53 strategy validation, NI05-57–61 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -36,6 +36,8 @@ Local test/build execution acquires the existing CPU-region claim and may queue 
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
 host-dependent checks remain explicitly separate. Published completion tally: **54/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
+
+**Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
 - [x] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
