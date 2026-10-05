@@ -136,6 +136,8 @@
       "type": "local",
       "command": ["{env:EPYC_ORCHESTRATOR_MCP_PYTHON}", "-m", "src.mcp_server"],
       "cwd": "{env:EPYC_ORCHESTRATOR_REPO}",
+      // Matches the MCP chat's 120 s request budget plus 5 s response grace.
+      "timeout": 125000,
       "enabled": false
     }
   }
