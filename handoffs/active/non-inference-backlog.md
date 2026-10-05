@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-18 exception classification and NI05-41/43/44 offline follow-ons.
+- **Next:** NI05-18 exception classification and NI05-41/45–50 offline follow-ons plus NI05-52 code-index refresh.
 - **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **40/44**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **43/52**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -88,9 +88,25 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-42** ✅ 2026-10-05 — SSU-GRAPH-FIXTURES: validate named temporary-DB graph modules with the existing locked optional graph extra; no live graph, model or dataset access.
 
-- [ ] **NI05-43** — SSU-FIXTURE-REPL-FILESYSTEM: named optional captures of two otherwise skipped pure filesystem modules with disposable owned roots; source default skip guards remain.
+- [x] **NI05-43** ✅ 2026-10-05 — SSU-FIXTURE-REPL-FILESYSTEM: named optional captures of two otherwise skipped pure filesystem modules with disposable owned roots; source default skip guards remain.
 
-- [ ] **NI05-44** — OBS-9: require qualified existing authoritative probe evidence in three surviving leaf idle prefilters; unknown/read failures/drift suppress action, no text-derived idle authority or liveness-core mutation.
+- [x] **NI05-44** ✅ 2026-10-05 — OBS-9: require qualified existing authoritative probe evidence in three surviving leaf idle prefilters; unknown/read failures/drift suppress action, no text-derived idle authority or liveness-core mutation.
+
+- [ ] **NI05-45** — SSU-STRATEGY-PROJECTION-FLAG: Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
+
+- [ ] **NI05-46** — SSU-VL-REPAIR-TEMP-CACHE: Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
+
+- [ ] **NI05-47** — SSU-QUIESCENCE-TEMP-HOLDS: Replace the OAB3 fixture hardcoded /mnt hold directory with pytest-owned temporary storage via the existing HOLD_DIR_ENV seam. Original6/10passed. Preserve quiescence/scoring guards, witness semantics and meaningful local-process fixtures; no host holds or live scorer.
+
+- [ ] **NI05-48** — SSU-OPENAI-REPL-SCOPE-DESCRIPTION: Reconcile the x_disable_repl public description with actual vision/client route branches. Original47/48schema cases passed; one description-scope assertion fails. Confirm current request rejection semantics and add only accurate description clauses; no route behavior or serving reload.
+
+- [ ] **NI05-49** — SSU-PAIRWISE-PROMPT-FIXTURES: Make two offline pairwise planner fixtures use an explicit temporary instruction_precision prompt-source mapping with tiny synthetic YAML prompts. Original11/13passed; configured production prompt source is absent offhost. Preserve planner/reference-source policy and assert deterministic counts; no real corpus acquisition or collection.
+
+- [ ] **NI05-50** — SSU-PARKED-ROLE-HERMETIC-PROBES: Complete the parked-role fake StackOps fixture with deterministic kfd_pids and gpu_quiet_exclusive injection. Original21/22passed; restore refuses real offhost KFD observation. Preserve all production safety probes and final restore guards; no GPU query, stack action or live process.
+
+- [x] **NI05-51** ✅ 2026-10-05 — OBS-10 current-consumer audit: existing OP-19 retires the E8 transaction; historical human-only ratifiers remain unchanged, with no surviving autonomous consumer to repair.
+
+- [ ] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -200,7 +216,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
     `wiki/agent-architecture.md:2254` and `wiki/tool-implementation.md:278,321` still point at
     `../handoffs/active/security-review-skill.md`, which moved to `completed/` in `9804fec9`.
     `wiki/` is written by the serialized wrap-up, so fix it in the next compile.
-- [ ] **OBS-9** (LOW): **`"esc to interrupt"` is a liveness oracle in FOUR files with no shared
+- [x] **OBS-9** ✅ 2026-10-05 (current-source leaf scope accepted; no live reload) (LOW): **`"esc to interrupt"` is a liveness oracle in FOUR files with no shared
   constant** — `scripts/coordination/idle_supervisor.sh`, `scripts/coordination/idle_watch.sh`,
   `scripts/coordination/session_bus_coordinator.py`, and (added 2026-08-12)
   `scripts/coordination/fleet_watch.sh`. It is **vendor TUI text**: a Claude Code or
@@ -217,7 +233,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   the guard turns the suite red). Generalising it is what closes this row.
 2026-10-05 current-source correction (NI05-44): the fleet pane classifiers/canary above were removed in2026-08-16; do not restore them. Three surviving leaf prefilters (idle_watch, idle_supervisor, coordinator) must require existing authoritative probe JSON with runtime_decided=true, runtime_state=idle and nudge_ok=true. Marker absence, unknown vocabulary, unreadable/malformed/timeout/refused probes and active/compacting contradictions cannot provide idle authority. Keep tmux_adapter runtime/probe, fleet_watch and peer ownership unchanged; final nudge still rechecks its existing guard. Uninstrumented Claude state remains UNKNOWN. New helper/consumer changes require exact source and off-host fixture review.
 
-- [ ] **OBS-10** (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
+- [x] **OBS-10** ✅ 2026-10-05 (active-consumer scope retired by existing OP-19; historical artifacts unchanged) (LOW): **Two E8 operator ratifiers gate on an argv pattern.**
   *Note 2026-09-16: the E8 chain these ratifiers served is retired by operator ruling [`ruling_op19_e8_chain_20260827.json`](../../artifacts/operator/ruling_op19_e8_chain_20260827.json) (root `1ee8bd7c`). The ruling re-anchors the reseed gate to the current eras; the gate binds only at promotion.*
   `artifacts/operator/ratify_e8_autopilot_quality_fence_20260726.sh` and
   `ratify_e8_empty_frontier_bootstrap_20260726.sh` both use
@@ -225,6 +241,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   `ratify_v9_cpu_bench_era_advance_20260811.sh` already migrated ("no process-pattern probe — host
   rule: never pgrep by name"); backport that. Deliberately OUT of the observer-registry discovery
   scope (one-shot scripts a human runs and reads once), recorded here so the finding is not lost.
+  Current-source audit2026-10-05 (NI05-51): existing OP-19 explicitly retires the unsatisfiable E8 transaction and anchors current obligations at promotion. No current autonomous/in-process consumer was found. The two ratifiers and related retired rearm script retain their historical process-pattern probes; no backport, operator artifact mutation or new ratification was performed. The newer v9 ratifier uses flock. This closes stale active-consumer work only, preserving the historical finding and exempt observer-registry entry.
 
 ---
 
@@ -596,3 +613,5 @@ NI39 accepted 2026-10-05: main reopened all three original CI37334324990 receipt
 NI40/NI42 accepted 2026-10-05: main independently reopened original CI37339651393 (13/13 spill cases) and CI37339553198 (five graph modules,65/65 cases), all TRUE Judged/Located with zero skips/failures/errors. Declared source snapshots match pinned appdb38737d and exact workflow/producer originals. Independent postchecks prove all three binary targets absent/non-symlink; graph uses temporary databases and mocked embeddings. Spill scratch ownership/emptiness is attested before execution only, with no separate original post-run scratch check. Original fullscan failures/skips and first graph diagnostic NULL records remain unchanged. Public originals are preserved at artifacts/ni05/repl-spill-37339651393 and artifacts/ni05/graph-fixtures-37339553198. Accepted tally **39/44**; NI18/38/41/43/44 continue.
 
 NI38 bounded offline score preparation accepted 2026-10-05: original CI37345306976 passes12/12 scorer and67/67 reader/ingestion cases, zero skips/failures/errors. Main independently reopens both CI receipts TRUE Judged/Located and the bound original synthetic scored-report archive in owned0700 custody: one TRUE report and two diagnostic NULL/zero-row originals, preserving original UUIDs/modes/bytes. Descriptive macro file/span metrics retain failure/empty denominators and caller-declared dispositions/costs; no official dataset denominator or quality claim. Reviewed app sourcec8851695 and root sourcecab789885 are promoted unchanged; recipe remains separate. Original public prefixes: artifacts/ni05/contextbench-score-37345306976. Full DCP-10 benchmark stays open; tally **40/44**, NI18/41/43/44 continue.
+
+2026-10-05 accepted boundary: NI43 retryCI37347669248 passes24/24 exploration plus19/19 mutation cases on unchanged appdb387; main independently verifies both TRUE Judged/Located receipts, every declared source byte, private checkout/empty fixture roots and scratch, and absent binary postchecks. First failed mutation original remains unchanged. NI44 CI37348970500 passes36/36 offline observer cases; main verifies TRUE Judged/Located, pinned source/recipe bytes and isolated bus absence, then integrates exact five source/test files as d4999a170. Qualified authoritative probe evidence replaces marker-derived leaf idle authority; uninstrumented Claude remains UNKNOWN and live processes are not restarted. Public originals: artifacts/ni05/repl-filesystem-37347669248 and artifacts/ni05/observer-leaf-37348970500. NI51 closes only retired E8 active-consumer scope under existing OP-19. Tally **43/52**; NI18/41/45–50/52 remain open, with no inference or live-stack change.

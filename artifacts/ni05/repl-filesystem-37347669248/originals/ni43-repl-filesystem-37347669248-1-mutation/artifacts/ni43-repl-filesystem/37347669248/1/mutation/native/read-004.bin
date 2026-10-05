@@ -1,0 +1,53 @@
+{
+  "absent_runtime_path_overrides": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni43-unavailable-llama-cpp-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni43-unavailable-mtmd-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": {
+      "must_remain_absent": true,
+      "value": "/home/runner/work/_temp/ni43-unavailable-llama-server"
+    }
+  },
+  "app_source_checkout": "/mnt/raid0/llm/ni43-app-37347669248-1-mutation",
+  "app_source_checkout_gid": 1001,
+  "app_source_checkout_mode": "0700",
+  "app_source_checkout_uid": 1001,
+  "app_source_sha": "db38737d63363a059212820aaac40b4026f82b51",
+  "inference_and_network": "none; direct REPLEnvironment with llm_primitives=None; subprocess.run is mocked in patch-tool tests",
+  "locked_extras": [
+    "dev"
+  ],
+  "override_field_semantics": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "PathsConfig.llama_cpp_bin and stack_paths._PATHS.llama_cpp_bin",
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": "VisionConfig.llama_mtmd_cli",
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": "WorkerPoolPathsConfig.llama_server_path"
+  },
+  "recipe_sha": "bebb15905b090cdab25d52e63f495913541111a8",
+  "root_source_sha": "6643ea4e2806477f7c968e05004b191650a3d887",
+  "schema": "ni43.repl_filesystem_fixture_context.v1",
+  "scope_exclusions": [
+    "pytest conftest hooks, including memory guard",
+    "real backend/server",
+    "external API",
+    "production filesystem",
+    "capacity or serving",
+    "other REPL modules"
+  ],
+  "scratch_mode": "0700",
+  "scratch_root": "/mnt/raid0/llm/tmp",
+  "selection": "tests/unit/test_repl_file_mutation.py",
+  "test_process_environment": {
+    "CI": "unset for child pytest to exercise the otherwise module-skipped filesystem tests",
+    "ORCHESTRATOR_MOCK_MODE": "unset for child pytest; llm_primitives remains None",
+    "pytest_conftest": "--noconftest excludes repository conftest hooks and their 100 GiB guard; no capacity or serving claim"
+  },
+  "writable_checkout_fixture_roots": [
+    "/mnt/raid0/llm/ni43-app-37347669248-1-mutation/logs",
+    "/mnt/raid0/llm/ni43-app-37347669248-1-mutation/orchestration/patches"
+  ]
+}

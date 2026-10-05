@@ -1,0 +1,5 @@
+# Original observer-leaf offline validation
+
+[CI37348970500](https://github.com/pestopoppa/epyc-root/actions/runs/37348970500) preserves the original native receipts and declared source snapshots. Main independently reopened each receipt through the trusted reader and existing shared grade: TRUE Judged/Located. Every declared Git source snapshot matches its pinned original; all public artifact bytes are unchanged and hashed in the custody manifest.
+
+Reviewed source3faca4aa86b58ec861f3f1c7524d8e37089f0b64 passes36/36 offline shim fixture cases, zero skips/failures/errors. Main integrates those five exact source/test files as d4999a170. Every action now requires existing authoritative runtime_decided=true, runtime_state=idle, nudge_ok=true JSON; unknown/refused/malformed/active/compacting signals suppress action. The existing final nudge guard remains. Original independent bus postcheck proves isolated bus absence/non-symlink. First invalid-context workflow run37348189925 started zero jobs and remains ordinary diagnostic metadata. No live observer restart, bus deployment, pane-derived runtime claim or core-liveness mutation.

@@ -1,0 +1,281 @@
+"""Application state container for the orchestrator API.
+
+This module provides the global application state and thread-safe operations
+for statistics tracking and MemRL component management.
+"""
+
+from __future__ import annotations
+
+import logging
+import threading
+from dataclasses import dataclass, field
+from typing import Any, TYPE_CHECKING
+
+from src.api.admission import AdmissionController
+from src.api.health_tracker import BackendHealthTracker
+
+if TYPE_CHECKING:
+    from src.llm_primitives import LLMPrimitives
+    from src.gate_runner import GateRunner
+    from src.api.protocols import (
+        QScorerProtocol,
+        EpisodicStoreProtocol,
+        HybridRouterProtocol,
+        ProgressLoggerProtocol,
+        ToolRegistryProtocol,
+        ScriptRegistryProtocol,
+        RegistryLoaderProtocol,
+        FailureGraphProtocol,
+    )
+
+logger = logging.getLogger(__name__)
+
+
+@dataclass
+class AppState:
+    """Application state container.
+
+    Thread-safe statistics tracking using locks for concurrent request handling.
+
+    Attributes:
+        llm_primitives: LLM abstraction layer for inference.
+        gate_runner: Quality gate execution engine.
+        progress_logger: MemRL progress logger (optional).
+        q_scorer: Q-value scorer for MemRL (optional).
+        episodic_store: Episodic memory store for MemRL (optional).
+        hybrid_router: Learned + rule-based routing (optional).
+        tool_registry: Tool permissions registry (optional).
+        script_registry: Script registry (optional).
+        registry: Model registry loader (optional).
+    """
+
+    llm_primitives: LLMPrimitives | None = None
+    gate_runner: GateRunner | None = None
+    progress_logger: ProgressLoggerProtocol | None = None
+
+    # Q-scorer components (for idle-time scoring)
+    q_scorer: QScorerProtocol | None = None
+    episodic_store: EpisodicStoreProtocol | None = None
+
+    # Hybrid routing (learned + rule-based)
+    hybrid_router: HybridRouterProtocol | None = None
+
+    # Graph-enhanced memory (Phase 3: specialist routing)
+    failure_graph: FailureGraphProtocol | None = None
+    hypothesis_graph: Any | None = None  # No protocol accesses found
+
+    # SkillBank experience distillation (SkillRL §3.1)
+    skill_bank: Any | None = None  # SkillBank (avoid circular import)
+    skill_retriever: Any | None = None  # SkillRetriever (avoid circular import)
+
+    # Tool and script registries for REPL
+    tool_registry: ToolRegistryProtocol | None = None
+    script_registry: ScriptRegistryProtocol | None = None
+
+    # Registry loader (for role defaults)
+    registry: RegistryLoaderProtocol | None = None
+
+    # Document preprocessor (for OCR and chunking)
+    document_preprocessor: Any | None = None  # DocumentPreprocessor (avoid circular import)
+
+    # Vision pipeline components
+    vision_pipeline: Any | None = None  # VisionPipeline (avoid circular import)
+    vision_batch_processor: Any | None = None  # BatchProcessor (avoid circular import)
+    vision_search: Any | None = None  # VisionSearch (avoid circular import)
+    vision_video_processor: Any | None = None  # VideoProcessor (avoid circular import)
+
+    # Session store (persistent SQLite storage)
+    session_store: Any | None = None  # SQLiteSessionStore (avoid circular import)
+
+    # Backend health tracking (circuit breaker)
+    health_tracker: BackendHealthTracker = field(default_factory=BackendHealthTracker)
+
+    # Per-backend admission control (concurrency limiter)
+    admission: AdmissionController = field(default_factory=AdmissionController.from_defaults)
+
+    # Binding-based routing (OpenClaw pattern, Phase 4B)
+    binding_router: Any | None = None  # RoutingBindings.BindingRouter
+
+    # Plan review state (architect-in-the-loop)
+    plan_review_phase: str = "A"  # "A" (bootstrap), "B" (supervised fade), "C" (spot-check)
+    _plan_review_stats: dict = field(
+        default_factory=lambda: {
+            "total_reviews": 0,
+            "approved": 0,
+            "corrected": 0,
+            "task_class_q_values": {},
+        }
+    )
+
+    # Stats tracking (protected by _stats_lock)
+    total_requests: int = 0
+    total_turns: int = 0
+    mock_requests: int = 0
+    real_requests: int = 0
+
+    # DS-2: Escalation rate telemetry (protected by _stats_lock)
+    total_escalations: int = 0
+    escalations_by_path: dict = field(default_factory=dict)  # "from→to": count
+
+    # Idle scoring control (protected by _stats_lock)
+    active_requests: int = 0
+    q_scorer_enabled: bool = True
+    _q_scorer_task: Any = None  # asyncio.Task
+
+    # Lazy initialization flag for MemRL components
+    # These are only loaded when real inference or Q-scoring is needed
+    _memrl_initialized: bool = False
+
+    # Thread safety lock for statistics
+    _stats_lock: threading.Lock = field(default_factory=threading.Lock)
+
+    def update_plan_review_stats(
+        self,
+        approved: bool,
+        task_class: str = "",
+        q_value: float | None = None,
+    ) -> dict:
+        """Update plan review statistics (thread-safe).
+
+        Args:
+            approved: Whether the plan was approved without corrections.
+            task_class: Optional task class for Q-value tracking.
+            q_value: Optional Q-value for the task class.
+
+        Returns:
+            Current plan review stats snapshot.
+        """
+        with self._stats_lock:
+            self._plan_review_stats["total_reviews"] = (
+                self._plan_review_stats.get("total_reviews", 0) + 1
+            )
+            if approved:
+                self._plan_review_stats["approved"] = self._plan_review_stats.get("approved", 0) + 1
+            else:
+                self._plan_review_stats["corrected"] = (
+                    self._plan_review_stats.get("corrected", 0) + 1
+                )
+            if task_class and q_value is not None:
+                self._plan_review_stats.setdefault("task_class_q_values", {})[task_class] = q_value
+            return dict(self._plan_review_stats)
+
+    def get_plan_review_stats(self) -> dict:
+        """Get plan review statistics (thread-safe snapshot).
+
+        Returns:
+            Copy of plan review stats.
+        """
+        with self._stats_lock:
+            return dict(self._plan_review_stats)
+
+    def increment_request(self, mock_mode: bool, turns: int) -> None:
+        """Track a completed request (thread-safe).
+
+        Args:
+            mock_mode: Whether the request used mock mode.
+            turns: Number of orchestration turns used.
+        """
+        with self._stats_lock:
+            self.total_requests += 1
+            self.total_turns += turns
+            if mock_mode:
+                self.mock_requests += 1
+            else:
+                self.real_requests += 1
+
+    def record_escalation(self, from_role: str, to_role: str) -> None:
+        """Record an escalation event (thread-safe). DS-2 telemetry."""
+        with self._stats_lock:
+            self.total_escalations += 1
+            path_key = f"{from_role}→{to_role}"
+            self.escalations_by_path[path_key] = (
+                self.escalations_by_path.get(path_key, 0) + 1
+            )
+
+    def increment_active(self) -> None:
+        """Increment active request counter (thread-safe)."""
+        with self._stats_lock:
+            self.active_requests += 1
+
+    def decrement_active(self) -> None:
+        """Decrement active request counter (thread-safe)."""
+        with self._stats_lock:
+            self.active_requests -= 1
+
+    def get_stats(self) -> dict[str, Any]:
+        """Get current statistics (thread-safe snapshot).
+
+        Returns:
+            Dictionary with statistics.
+        """
+        with self._stats_lock:
+            return {
+                "total_requests": self.total_requests,
+                "total_turns": self.total_turns,
+                "average_turns_per_request": (
+                    self.total_turns / self.total_requests if self.total_requests > 0 else 0.0
+                ),
+                "mock_requests": self.mock_requests,
+                "real_requests": self.real_requests,
+                "active_requests": self.active_requests,
+                # DS-2: Escalation rate telemetry
+                "total_escalations": self.total_escalations,
+                "escalation_rate": (
+                    self.total_escalations / self.total_requests
+                    if self.total_requests > 0 else 0.0
+                ),
+                "escalations_by_path": dict(self.escalations_by_path),
+            }
+
+    def reset_stats(self) -> None:
+        """Reset all statistics (thread-safe)."""
+        with self._stats_lock:
+            self.total_requests = 0
+            self.total_turns = 0
+            self.mock_requests = 0
+            self.real_requests = 0
+            self.total_escalations = 0
+            self.escalations_by_path = {}
+
+
+# Global application state singleton
+_state: AppState | None = None
+_state_lock = threading.Lock()
+
+
+def get_state() -> AppState:
+    """Get the global application state (thread-safe).
+
+    Creates a new AppState if one doesn't exist, using double-checked
+    locking to prevent race conditions during initialization.
+
+    Returns:
+        The global AppState instance.
+    """
+    global _state
+    if _state is None:
+        with _state_lock:
+            if _state is None:
+                _state = AppState()
+    return _state
+
+
+def set_state(state: AppState) -> None:
+    """Set the global application state.
+
+    Primarily used for testing.
+
+    Args:
+        state: The AppState instance to use.
+    """
+    global _state
+    _state = state
+
+
+def reset_state() -> None:
+    """Reset the global application state.
+
+    Primarily used for testing.
+    """
+    global _state
+    _state = None

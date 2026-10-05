@@ -1,0 +1,352 @@
+name: NI43 REPL local-filesystem fixture validation
+
+on:
+  push:
+    branches:
+      - codex/ni43-repl-filesystem-validation-20261005
+
+permissions:
+  contents: read
+
+env:
+  ROOT_SOURCE_SHA: 6643ea4e2806477f7c968e05004b191650a3d887
+  APP_SOURCE_SHA: db38737d63363a059212820aaac40b4026f82b51
+  RUN_ROOT: artifacts/ni43-repl-filesystem/${{ github.run_id }}/${{ github.run_attempt }}
+
+jobs:
+  repl-filesystem:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module_id: exploration
+            module_path: tests/unit/test_repl_file_exploration.py
+          - module_id: mutation
+            module_path: tests/unit/test_repl_file_mutation.py
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      APP_CHECKOUT: /mnt/raid0/llm/ni43-app-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+    steps:
+      - name: Create and attest disposable filesystem roots
+        run: |
+          set -euo pipefail
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0700 /mnt/raid0/llm/tmp
+          test -d /mnt/raid0/llm/tmp
+          test ! -L /mnt/raid0/llm/tmp
+          test "$(stat -c '%a' /mnt/raid0/llm/tmp)" = 700
+          test "$(stat -c '%u' /mnt/raid0/llm/tmp)" = "$(id -u)"
+          test "$(stat -c '%g' /mnt/raid0/llm/tmp)" = "$(id -g)"
+          test -z "$(find /mnt/raid0/llm/tmp -mindepth 1 -maxdepth 1 -print -quit)"
+          test -d /mnt/raid0/llm
+          test ! -L /mnt/raid0/llm
+          test ! -e "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          sudo install -d -o "$(id -u)" -g "$(id -g)" -m 0700 "$APP_CHECKOUT"
+          test -d "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+          test -z "$(find "$APP_CHECKOUT" -mindepth 1 -maxdepth 1 -print -quit)"
+          for leaf in test_peek test_grep test_listdir test_listdir_sort test_file_mutation test_deep; do
+            test ! -e "/mnt/raid0/llm/tmp/$leaf"
+            test ! -L "/mnt/raid0/llm/tmp/$leaf"
+          done
+          for name in llama-cpp-bin mtmd-bin llama-server; do
+            test ! -e "$RUNNER_TEMP/ni43-unavailable-$name"
+            test ! -L "$RUNNER_TEMP/ni43-unavailable-$name"
+          done
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni43-repl-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni43-unavailable-llama-cpp-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni43-unavailable-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni43-unavailable-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_SOURCE_SHA }}
+          path: root-producer
+
+      - name: Checkout pinned orchestrator source seed
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 1
+          path: app-source
+
+      - name: Create real pinned source checkout under allowed filesystem root
+        run: |
+          set -euo pipefail
+          test -d "$APP_CHECKOUT"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+          git clone --no-hardlinks --no-checkout "$GITHUB_WORKSPACE/app-source" "$APP_CHECKOUT"
+          git -C "$APP_CHECKOUT" checkout --detach "$APP_SOURCE_SHA"
+          test "$(git -C "$APP_CHECKOUT" rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test -z "$(git -C "$APP_CHECKOUT" status --porcelain=v1)"
+          test ! -L "$APP_CHECKOUT"
+          test "$(stat -c '%a' "$APP_CHECKOUT")" = 700
+          test "$(stat -c '%u' "$APP_CHECKOUT")" = "$(id -u)"
+          test "$(stat -c '%g' "$APP_CHECKOUT")" = "$(id -g)"
+
+      - name: Verify immutable pins and module-level opt-in scope
+        run: |
+          set -euo pipefail
+          cd "$APP_CHECKOUT"
+          test "$(git -C "$GITHUB_WORKSPACE/ci-control" rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$GITHUB_WORKSPACE/root-producer" rev-parse HEAD)" = "$ROOT_SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          expected = {
+              "exploration": ("tests/unit/test_repl_file_exploration.py", b"REPL file exploration tests require local paths"),
+              "mutation": ("tests/unit/test_repl_file_mutation.py", b"REPL file mutation tests require local paths"),
+          }
+          module_id = os.environ["MODULE_ID"]
+          if module_id not in expected:
+              raise SystemExit(f"unexpected module id: {module_id!r}")
+          expected_path, marker = expected[module_id]
+          if os.environ["MODULE_PATH"] != expected_path:
+              raise SystemExit("matrix module id/path pair does not match the reviewed selection")
+          if marker not in Path(expected_path).read_bytes():
+              raise SystemExit("module-level opt-in skip marker is absent from pinned test source")
+          PY
+          test -z "${ORCHESTRATOR_PATHS_LLM_ROOT:-}"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_MTMD"
+          test ! -e "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test ! -L "$ORCHESTRATOR_PATHS_LLAMA_SERVER"
+          test "$(stat -c '%a' /mnt/raid0/llm/tmp)" = 700
+          for root in logs orchestration/patches; do
+            test ! -e "$root"
+            test ! -L "$root"
+          done
+          mkdir -m 0700 logs
+          test -d logs
+          test ! -L logs
+          test "$(stat -c '%a' logs)" = 700
+          test -z "$(find logs -mindepth 1 -maxdepth 1 -print -quit)"
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Install frozen unit-test dependencies
+        id: dependencies
+        run: |
+          set -euo pipefail
+          cd "$APP_CHECKOUT"
+          uv sync --frozen --extra dev
+
+      - name: Write pre-execution scope context
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        run: |
+          cd "$APP_CHECKOUT"
+          mkdir -p ni43_context
+          python - <<'PY'
+          import json
+          import os
+          import stat
+          from pathlib import Path
+
+          scratch = Path("/mnt/raid0/llm/tmp")
+          st = scratch.lstat()
+          if not stat.S_ISDIR(st.st_mode) or stat.S_ISLNK(st.st_mode):
+              raise RuntimeError("scratch root must be a real directory")
+          if stat.S_IMODE(st.st_mode) != 0o700 or st.st_uid != os.getuid() or st.st_gid != os.getgid():
+              raise RuntimeError("scratch root must be runner-owned mode 0700")
+          if any(scratch.iterdir()):
+              raise RuntimeError("scratch root must be empty before module capture")
+          if os.environ.get("ORCHESTRATOR_PATHS_LLM_ROOT"):
+              raise RuntimeError("REPL allowed-root override must be absent")
+          context = {
+              "schema": "ni43.repl_filesystem_fixture_context.v1",
+              "recipe_sha": os.environ["GITHUB_SHA"],
+              "root_source_sha": os.environ["ROOT_SOURCE_SHA"],
+              "app_source_sha": os.environ["APP_SOURCE_SHA"],
+              "app_source_checkout": str(Path(os.environ["APP_CHECKOUT"]).resolve()),
+              "app_source_checkout_mode": format(stat.S_IMODE(Path(os.environ["APP_CHECKOUT"]).lstat().st_mode), "04o"),
+              "app_source_checkout_uid": Path(os.environ["APP_CHECKOUT"]).lstat().st_uid,
+              "app_source_checkout_gid": Path(os.environ["APP_CHECKOUT"]).lstat().st_gid,
+              "selection": os.environ["MODULE_PATH"],
+              "locked_extras": ["dev"],
+              "test_process_environment": {
+                  "CI": "unset for child pytest to exercise the otherwise module-skipped filesystem tests",
+                  "ORCHESTRATOR_MOCK_MODE": "unset for child pytest; llm_primitives remains None",
+                  "pytest_conftest": "--noconftest excludes repository conftest hooks and their 100 GiB guard; no capacity or serving claim",
+              },
+              "absent_runtime_path_overrides": {
+                  key: {"value": os.environ[key], "must_remain_absent": True}
+                  for key in (
+                      "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                      "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                      "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+                  )
+              },
+              "override_field_semantics": {
+                  "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": "PathsConfig.llama_cpp_bin and stack_paths._PATHS.llama_cpp_bin",
+                  "ORCHESTRATOR_PATHS_LLAMA_MTMD": "VisionConfig.llama_mtmd_cli",
+                  "ORCHESTRATOR_PATHS_LLAMA_SERVER": "WorkerPoolPathsConfig.llama_server_path",
+              },
+              "scratch_root": str(scratch),
+              "scratch_mode": format(stat.S_IMODE(st.st_mode), "04o"),
+              "writable_checkout_fixture_roots": [str(Path(os.environ["APP_CHECKOUT"]) / "logs"), str(Path(os.environ["APP_CHECKOUT"]) / "orchestration/patches")],
+              "inference_and_network": "none; direct REPLEnvironment with llm_primitives=None; subprocess.run is mocked in patch-tool tests",
+              "scope_exclusions": ["pytest conftest hooks, including memory guard", "real backend/server", "external API", "production filesystem", "capacity or serving", "other REPL modules"],
+          }
+          Path("ni43_context/context.json").write_text(json.dumps(context, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Capture complete filesystem module with skip flags removed only for pytest
+        id: capture
+        if: ${{ always() && steps.dependencies.outcome == 'success' && steps.context.outcome == 'success' }}
+        run: |
+          cd "$APP_CHECKOUT"
+          mkdir -p "ni43_junit/$MODULE_ID"
+          timeout --verbose --signal=TERM --kill-after=15s 360s \
+            python "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --cwd "$PWD" \
+              --junit "ni43_junit/$MODULE_ID/original-pytest.xml" \
+              --output "$GITHUB_WORKSPACE/$RUN_ROOT/$MODULE_ID/native" \
+              --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+              --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+              --repo "orchestrator=$PWD" \
+              --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni43-repl-filesystem-fixtures.yml" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+              --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+              --read-path "ni43_context/context.json" \
+              --read-path tests/conftest.py \
+              --read-path tests/unit/conftest.py \
+              --read-path tests/unit/test_repl_file_exploration.py \
+              --read-path tests/unit/test_repl_file_mutation.py \
+              --read-path src/repl_environment/environment.py \
+              --read-path src/repl_environment/__init__.py \
+              --read-path src/repl_environment/file_tools.py \
+              --read-path src/repl_environment/file_exploration.py \
+              --read-path src/repl_environment/file_mutation.py \
+              --read-path src/repl_environment/security.py \
+              --read-path src/repl_environment/types.py \
+              --read-path src/repl_environment/task_root.py \
+              --read-path src/config/__init__.py \
+              --read-path src/config/models.py \
+              --read-path src/registry/kernel_paths.py \
+              --read-path src/api/state.py \
+              --read-path src/api/admission.py \
+              --read-path src/api/health_tracker.py \
+              --read-path src/registry/stack_priors.py \
+              --read-path scripts/server/stack_manifest.py \
+              --read-path scripts/server/stack_numa.py \
+              --read-path scripts/server/stack_paths.py \
+              --read-path orchestration/launch_manifest.yaml \
+              --read-path orchestration/model_registry.yaml \
+              --read-path pyproject.toml --read-path uv.lock \
+              --generated-output "ni43_junit/$MODULE_ID/pytest.log" \
+              --select "$MODULE_PATH" \
+              -- timeout --verbose --signal=TERM --kill-after=10s 240s \
+                env -u CI -u ORCHESTRATOR_MOCK_MODE \
+                "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q \
+                  --noconftest \
+                  --rootdir="$PWD" \
+                  --junit-prefix="ni43_$MODULE_ID" \
+                  "$MODULE_PATH" \
+                  --junitxml="ni43_junit/$MODULE_ID/original-pytest.xml" \
+                  --log-file="ni43_junit/$MODULE_ID/pytest.log"
+
+      - name: Record post-capture filesystem custody
+        if: always()
+        run: |
+          cd "$APP_CHECKOUT"
+          mkdir -p ni43_context
+          python - <<'PY'
+          import json
+          import os
+          import stat
+          from pathlib import Path
+
+          scratch = Path("/mnt/raid0/llm/tmp")
+          checkout = Path(os.environ["APP_CHECKOUT"])
+          checkout_stat = checkout.lstat()
+          targets = {
+              key: {"value": os.environ[key], "exists": Path(os.environ[key]).exists(), "is_symlink": Path(os.environ[key]).is_symlink()}
+              for key in (
+                  "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                  "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                  "ORCHESTRATOR_PATHS_LLAMA_SERVER",
+              )
+          }
+          checkout_roots = [Path("logs"), Path("orchestration/patches")]
+          leftover_files = [str(path) for root in checkout_roots if root.exists() for path in root.rglob("*") if path.is_file()]
+          state = {
+              "schema": "ni43.repl_filesystem_postcheck.v1",
+              "module_id": os.environ["MODULE_ID"],
+              "scratch_root_empty": scratch.exists() and not any(scratch.iterdir()),
+              "app_source_checkout_private": checkout.is_dir() and not checkout.is_symlink() and stat.S_IMODE(checkout_stat.st_mode) == 0o700 and checkout_stat.st_uid == os.getuid() and checkout_stat.st_gid == os.getgid(),
+              "runtime_override_targets_absent": all(not item["exists"] and not item["is_symlink"] for item in targets.values()),
+              "runtime_override_targets": targets,
+              "checkout_fixture_leftover_files": leftover_files,
+          }
+          Path(f"ni43_context/{os.environ['MODULE_ID']}-postcheck.json").write_text(
+              json.dumps(state, sort_keys=True, indent=2) + "\n", encoding="utf-8"
+          )
+          if not state["scratch_root_empty"] or not state["app_source_checkout_private"] or not state["runtime_override_targets_absent"]:
+              raise SystemExit("scratch, source checkout, or absent runtime-path custody failed; see postcheck JSON")
+          if leftover_files:
+              raise SystemExit("checkout fixture roots retained files; see postcheck JSON")
+          PY
+
+      - name: Stage original checkout-side evidence for upload
+        if: always()
+        run: |
+          set -euo pipefail
+          destination="$GITHUB_WORKSPACE/ni43-app-evidence/$MODULE_ID"
+          mkdir -p "$destination"
+          for path in \
+            "$APP_CHECKOUT/ni43_context/context.json" \
+            "$APP_CHECKOUT/ni43_context/$MODULE_ID-postcheck.json" \
+            "$APP_CHECKOUT/ni43_junit/$MODULE_ID/original-pytest.xml" \
+            "$APP_CHECKOUT/ni43_junit/$MODULE_ID/pytest.log"; do
+            if [ -f "$path" ]; then
+              relative="${path#"$APP_CHECKOUT"/}"
+              mkdir -p "$destination/$(dirname "$relative")"
+              cp -- "$path" "$destination/$relative"
+              cmp -- "$path" "$destination/$relative"
+            fi
+          done
+
+      - name: Upload original filesystem-module prefix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni43-repl-filesystem-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}
+          path: |
+            ${{ env.RUN_ROOT }}/${{ matrix.module_id }}/native/
+            ni43-app-evidence/${{ matrix.module_id }}/
+          if-no-files-found: warn

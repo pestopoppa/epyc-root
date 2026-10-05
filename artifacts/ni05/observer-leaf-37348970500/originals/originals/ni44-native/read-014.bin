@@ -1,0 +1,219 @@
+name: NI44 observer leaf validation
+
+on:
+  push:
+    branches:
+      - codex/ni44-observer-recipe-20261005
+    paths:
+      - .github/workflows/ni44-observer-leaf-validation.yml
+
+permissions:
+  contents: read
+
+jobs:
+  observer-leaf-fixtures:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      NI44_RECIPE_SHA: ${{ github.sha }}
+    steps:
+      - name: Initialize isolated runner paths
+        run: |
+          {
+            printf 'EPYC_BUS_ROOT=%s\n' "$RUNNER_TEMP/ni44-session-bus"
+            printf 'NI44_CONTEXT=%s\n' "$RUNNER_TEMP/ni44-preflight-context.json"
+            printf 'NI44_JUNIT=%s\n' "$RUNNER_TEMP/ni44-original-pytest.xml"
+            printf 'NI44_CAPTURE=%s\n' "$RUNNER_TEMP/ni44-native"
+            printf 'NI44_POSTCHECK=%s\n' "$RUNNER_TEMP/ni44-bus-postcheck.json"
+          } >> "$GITHUB_ENV"
+
+      - name: Checkout immutable recipe revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+
+      - name: Checkout reviewed source commit
+        uses: actions/checkout@v4
+        with:
+          ref: 3faca4aa86b58ec861f3f1c7524d8e37089f0b64
+          path: source
+
+      - name: Verify exact pins, clean tracked trees, and isolated outputs
+        env:
+          NI44_SOURCE_SHA: 3faca4aa86b58ec861f3f1c7524d8e37089f0b64
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+
+          recipe = Path("recipe")
+          source = Path("source")
+          expected = {
+              "source": os.environ["NI44_SOURCE_SHA"],
+              "recipe": os.environ["NI44_RECIPE_SHA"],
+          }
+          actual = {}
+          for name, path in (("source", source), ("recipe", recipe)):
+              sha = subprocess.check_output(
+                  ["git", "-C", str(path), "rev-parse", "HEAD"], text=True
+              ).strip()
+              status = subprocess.check_output(
+                  ["git", "-C", str(path), "status", "--porcelain", "--untracked-files=no"],
+                  text=True,
+              )
+              if sha != expected[name] or status:
+                  raise SystemExit(f"{name} checkout pin/cleanliness mismatch")
+              actual[name] = sha
+
+          bus = Path(os.environ["EPYC_BUS_ROOT"])
+          outputs = [
+              bus,
+              Path(os.environ["NI44_CONTEXT"]),
+              Path(os.environ["NI44_JUNIT"]),
+              Path(os.environ["NI44_CAPTURE"]),
+              Path(os.environ["NI44_POSTCHECK"]),
+          ]
+          existing = [str(path) for path in outputs if os.path.lexists(path)]
+          if existing:
+              raise SystemExit("preexisting or symlink isolation path: " + ", ".join(existing))
+
+          context = {
+              "schema": "ni44.observer_leaf_offline_preflight.v1",
+              "source_sha": actual["source"],
+              "recipe_sha": actual["recipe"],
+              "live_bus_access": False,
+              "shim_only_fixture_execution": True,
+              "python_version": "3.13",
+              "dependencies": ["pytest==9.1.1", "PyYAML==6.0.2"],
+              "native_conformance_readset": [
+                  "scripts/ci/native_conformance.py",
+                  "scripts/coordination/qualified_idle_probe.py",
+                  "scripts/coordination/idle_watch.sh",
+                  "scripts/coordination/idle_supervisor.sh",
+                  "scripts/coordination/session_bus_coordinator.py",
+                  "scripts/coordination/tmux_adapter.py",
+                  "scripts/coordination/session_bus.py",
+                  "scripts/coordination/row_intake.py",
+                  "scripts/lib/env.sh",
+                  "tests/conftest.py",
+                  "pytest.ini",
+                  "scripts/coordination/tests/test_qualified_idle_probe.py",
+                  "scripts/vidya/adapters/ci_conformance.py",
+                  "scripts/vidya/claim_tuple.py",
+                  ".github/workflows/ni44-observer-leaf-validation.yml",
+                  "ni44-preflight-context.json",
+              ],
+              "outputs": {
+                  "bus_root": str(bus),
+                  "junit": str(outputs[2]),
+                  "capture": str(outputs[3]),
+                  "postcheck": str(outputs[4]),
+              },
+              "bounds_seconds": {
+                  "native_conformance_outer_term": 180,
+                  "native_conformance_outer_kill_after": 15,
+                  "pytest_inner_int": 120,
+                  "pytest_inner_kill_after": 15,
+              },
+          }
+          Path(os.environ["NI44_CONTEXT"]).write_text(
+              json.dumps(context, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Set up pinned Python minor
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned fixture runner
+        run: python -m pip install 'pytest==9.1.1' 'PyYAML==6.0.2'
+
+      - name: Check shell syntax only
+        working-directory: source
+        run: bash -n scripts/coordination/idle_watch.sh scripts/coordination/idle_supervisor.sh
+
+      - name: Capture bounded offline observer fixtures
+        working-directory: source
+        run: |
+          timeout --signal=TERM --kill-after=15s 180s \
+            python scripts/ci/native_conformance.py \
+              --cwd "$GITHUB_WORKSPACE/source" \
+              --junit "$NI44_JUNIT" \
+              --output "$NI44_CAPTURE" \
+              --repo "root_source=$GITHUB_WORKSPACE/source" \
+              --repo "recipe=$GITHUB_WORKSPACE/recipe" \
+              --read-path scripts/coordination/qualified_idle_probe.py \
+              --read-path scripts/coordination/idle_watch.sh \
+              --read-path scripts/coordination/idle_supervisor.sh \
+              --read-path scripts/coordination/session_bus_coordinator.py \
+              --read-path scripts/coordination/tmux_adapter.py \
+              --read-path scripts/coordination/session_bus.py \
+              --read-path scripts/coordination/row_intake.py \
+              --read-path scripts/lib/env.sh \
+              --read-path tests/conftest.py \
+              --read-path pytest.ini \
+              --read-path scripts/coordination/tests/test_qualified_idle_probe.py \
+              --read-path scripts/vidya/adapters/ci_conformance.py \
+              --read-path scripts/vidya/claim_tuple.py \
+              --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/ni44-observer-leaf-validation.yml" \
+              --read-path "$NI44_CONTEXT" \
+              --select NI05-44 \
+              --select scripts/coordination/tests/test_qualified_idle_probe.py \
+              -- timeout --signal=INT --kill-after=15s 120s \
+                 python -m pytest -q scripts/coordination/tests/test_qualified_idle_probe.py \
+                   --junitxml="$NI44_JUNIT"
+
+      - name: Upload original native capture immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni44-observer-leaf-originals-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/ni44-native/**
+            ${{ runner.temp }}/ni44-original-pytest.xml
+            ${{ runner.temp }}/ni44-preflight-context.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Record isolated bus postcheck
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          bus = Path(os.environ["EPYC_BUS_ROOT"])
+          postcheck = Path(os.environ["NI44_POSTCHECK"])
+          if os.path.lexists(postcheck):
+              raise SystemExit("postcheck output unexpectedly preexists")
+          exists = os.path.lexists(bus)
+          is_symlink = bus.is_symlink()
+          result = {
+              "schema": "ni44.observer_leaf_bus_postcheck.v1",
+              "bus_path": str(bus),
+              "bus_absent": not exists,
+              "bus_not_symlink": not is_symlink,
+              "passed": not exists and not is_symlink,
+          }
+          postcheck.write_text(
+              json.dumps(result, sort_keys=True, separators=(",", ":")) + "\n",
+              encoding="utf-8",
+          )
+          if not result["passed"]:
+              raise SystemExit("isolated bus path was created or became a symlink")
+          PY
+
+      - name: Upload isolated bus postcheck
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni44-observer-leaf-postcheck-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni44-bus-postcheck.json
+          if-no-files-found: error
+          retention-days: 90

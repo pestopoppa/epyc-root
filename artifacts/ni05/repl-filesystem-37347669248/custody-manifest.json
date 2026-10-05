@@ -1,0 +1,408 @@
+{
+  "copied_unchanged": true,
+  "files": [
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/command.log",
+      "sha256": "6742c0836bafcd5d2a0dbda8ad7101e4295fc8c5242a5017ec92bee7a8aa5fa1",
+      "size_bytes": 1312
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/execution-request.json",
+      "sha256": "0cf9047cf0ad9fb3e1e12c0a55d02c1acca34fe21a588dd35bea35bf04a8557d",
+      "size_bytes": 8279
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/generated-output-000.bin",
+      "sha256": "d0bd00b1af71fdfd9a74ade7a353e9726b0b2cff3817ec56bf2b050e10eeb8fe",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/original-junit.xml",
+      "sha256": "065bcb8f609859fbdb307c5b7fbabb33a51debca3b3f6b4ad0005da3776b9df3",
+      "size_bytes": 3706
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-001.bin",
+      "sha256": "5456c6a22f104d74fbd53c6ad53adf9b2e5b0ca37611246a1030fa0a17260de9",
+      "size_bytes": 17422
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-004.bin",
+      "sha256": "4b434e6680e8c4368cf9f4b217150ae126f50d68ea0ad17a8d7c05b3863c1847",
+      "size_bytes": 2249
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-005.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-006.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-007.bin",
+      "sha256": "6cfe0b7d35e05d3e1737508f5cc3fb96d37d1158e8a3df3655954d13b05cf4d5",
+      "size_bytes": 14389
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-008.bin",
+      "sha256": "242100acf7ca808a3281b10f446e20a2ed84cec3b2a3177479482f9ff41010b1",
+      "size_bytes": 11503
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-009.bin",
+      "sha256": "d3b3e2bfddc15af836c5c23db8eaea8a6364ad52e3943d32406bb28a779ac2e8",
+      "size_bytes": 68966
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-010.bin",
+      "sha256": "6d37d473407c0b0c05de0763a32fc25e24f963655353aec158f7a3409f3f054b",
+      "size_bytes": 1567
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-011.bin",
+      "sha256": "049d004689084f8ef988bf01bb08850d28a7a7c1e7cc0512e1cdb08c854f9f43",
+      "size_bytes": 2029
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-012.bin",
+      "sha256": "1466c7cfec0934e8ffbad21f6d4fc51317d864adc29fd76041b7e1b82816ffbf",
+      "size_bytes": 15662
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-013.bin",
+      "sha256": "7be07289fee54e558ab7de1ce18b39e2f3cc8dfdf7bdc844be32275d010ad976",
+      "size_bytes": 15908
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-014.bin",
+      "sha256": "94bd84f8d18c8a51abb88ae5f75893dc3cb62f09e7c5913c179e231544ef3d1a",
+      "size_bytes": 11655
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-015.bin",
+      "sha256": "710a906c4a153999fb390a1a06fa461f4534bed29f78c0cbe72670c85181afbc",
+      "size_bytes": 8144
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-016.bin",
+      "sha256": "45b034e37a0a7724aad693e3d0330e9dcbc37fd9da45a397f8910461ff8431d8",
+      "size_bytes": 21857
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-017.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-018.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-019.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-020.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size_bytes": 9719
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-021.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size_bytes": 9630
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-022.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size_bytes": 9382
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-023.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size_bytes": 133311
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-024.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-025.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size_bytes": 31762
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-026.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-027.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size_bytes": 55282
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-028.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-029.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/read-030.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/artifacts/ni43-repl-filesystem/37347669248/1/exploration/native/receipt.json",
+      "sha256": "b434c4992ed974edb8e88a0cb87697cf515c70400b8bc8db2513a99f623753a0",
+      "size_bytes": 17587
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/ni43-app-evidence/exploration/ni43_context/context.json",
+      "sha256": "4b434e6680e8c4368cf9f4b217150ae126f50d68ea0ad17a8d7c05b3863c1847",
+      "size_bytes": 2249
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/ni43-app-evidence/exploration/ni43_context/exploration-postcheck.json",
+      "sha256": "a29a7c715689e7be0960837dd7283d609ddb65da4c74c7870b1c4d5dcf81d82c",
+      "size_bytes": 774
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/ni43-app-evidence/exploration/ni43_junit/exploration/original-pytest.xml",
+      "sha256": "065bcb8f609859fbdb307c5b7fbabb33a51debca3b3f6b4ad0005da3776b9df3",
+      "size_bytes": 3706
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-exploration/ni43-app-evidence/exploration/ni43_junit/exploration/pytest.log",
+      "sha256": "d0bd00b1af71fdfd9a74ade7a353e9726b0b2cff3817ec56bf2b050e10eeb8fe",
+      "size_bytes": 204
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/command.log",
+      "sha256": "a6c4211d2b2d4a22d0f53e9240ac4c0bca88baa39b896bc196499c16db0ef439",
+      "size_bytes": 1303
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/execution-request.json",
+      "sha256": "ae0979faad633183ea1eae7ebdac968cdf4067bd0184dbc8030d6a8f16a345e6",
+      "size_bytes": 8174
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/generated-output-000.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/original-junit.xml",
+      "sha256": "8c0553b6d5c49119827d656250cb09ce9fc4f150cae306e6fc9918db23cdf536",
+      "size_bytes": 2914
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-001.bin",
+      "sha256": "5456c6a22f104d74fbd53c6ad53adf9b2e5b0ca37611246a1030fa0a17260de9",
+      "size_bytes": 17422
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-002.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-003.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-004.bin",
+      "sha256": "2cabe127f9d0422d2d8db0a31b0076f04f913923a2f75dad8c84d1ffe3bf96d2",
+      "size_bytes": 2237
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-005.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-006.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-007.bin",
+      "sha256": "6cfe0b7d35e05d3e1737508f5cc3fb96d37d1158e8a3df3655954d13b05cf4d5",
+      "size_bytes": 14389
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-008.bin",
+      "sha256": "242100acf7ca808a3281b10f446e20a2ed84cec3b2a3177479482f9ff41010b1",
+      "size_bytes": 11503
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-009.bin",
+      "sha256": "d3b3e2bfddc15af836c5c23db8eaea8a6364ad52e3943d32406bb28a779ac2e8",
+      "size_bytes": 68966
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-010.bin",
+      "sha256": "6d37d473407c0b0c05de0763a32fc25e24f963655353aec158f7a3409f3f054b",
+      "size_bytes": 1567
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-011.bin",
+      "sha256": "049d004689084f8ef988bf01bb08850d28a7a7c1e7cc0512e1cdb08c854f9f43",
+      "size_bytes": 2029
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-012.bin",
+      "sha256": "1466c7cfec0934e8ffbad21f6d4fc51317d864adc29fd76041b7e1b82816ffbf",
+      "size_bytes": 15662
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-013.bin",
+      "sha256": "7be07289fee54e558ab7de1ce18b39e2f3cc8dfdf7bdc844be32275d010ad976",
+      "size_bytes": 15908
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-014.bin",
+      "sha256": "94bd84f8d18c8a51abb88ae5f75893dc3cb62f09e7c5913c179e231544ef3d1a",
+      "size_bytes": 11655
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-015.bin",
+      "sha256": "710a906c4a153999fb390a1a06fa461f4534bed29f78c0cbe72670c85181afbc",
+      "size_bytes": 8144
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-016.bin",
+      "sha256": "45b034e37a0a7724aad693e3d0330e9dcbc37fd9da45a397f8910461ff8431d8",
+      "size_bytes": 21857
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-017.bin",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "size_bytes": 45964
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-018.bin",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "size_bytes": 69648
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-019.bin",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066",
+      "size_bytes": 6472
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-020.bin",
+      "sha256": "ad56d7b810bbf1e527825d2c4d0e47ee91e172b1662bc3fd7f2fd9fe2881835b",
+      "size_bytes": 9719
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-021.bin",
+      "sha256": "b149ebdccd460fe79d27e3c6a8dddd79b8aa36695f7a443c2055d27163af494f",
+      "size_bytes": 9630
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-022.bin",
+      "sha256": "7bed0734cc3d4694f030a770241e8cd1b44ce263368528f5b25150d901a4d241",
+      "size_bytes": 9382
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-023.bin",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f",
+      "size_bytes": 133311
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-024.bin",
+      "sha256": "5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610",
+      "size_bytes": 92602
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-025.bin",
+      "sha256": "edfdb41035ec638d3eab60631024ebece56a5e2d9b577851bf02e05a446e0c32",
+      "size_bytes": 31762
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-026.bin",
+      "sha256": "85291c79110d3ab7683b0acbffb9158f320c138ad61f8acbdde269ee7a47abd5",
+      "size_bytes": 4774
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-027.bin",
+      "sha256": "9fbb6b6c899b9812f71ae5f1d4faaccd1db7d9fe44e63194da9c538faf5e0e83",
+      "size_bytes": 55282
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-028.bin",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "size_bytes": 149161
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-029.bin",
+      "sha256": "e57a5b798f1cd087ad1810798ca7fdaca69fcd4a5514358ae0d4128d316c3501",
+      "size_bytes": 6774
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/read-030.bin",
+      "sha256": "5ac120ae124d54635bd68941effd2707103dc132187a90a06fe0c241b8098e61",
+      "size_bytes": 1096854
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/artifacts/ni43-repl-filesystem/37347669248/1/mutation/native/receipt.json",
+      "sha256": "5e8d6b159032d8025bed954124192f4faa5e617a74086fd8de775456e19b3308",
+      "size_bytes": 15800
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/ni43-app-evidence/mutation/ni43_context/context.json",
+      "sha256": "2cabe127f9d0422d2d8db0a31b0076f04f913923a2f75dad8c84d1ffe3bf96d2",
+      "size_bytes": 2237
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/ni43-app-evidence/mutation/ni43_context/mutation-postcheck.json",
+      "sha256": "b24231254f4d9d4f57dd258a544f025c957fa0c2f27a74962a94436a7ad17c44",
+      "size_bytes": 771
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/ni43-app-evidence/mutation/ni43_junit/mutation/original-pytest.xml",
+      "sha256": "8c0553b6d5c49119827d656250cb09ce9fc4f150cae306e6fc9918db23cdf536",
+      "size_bytes": 2914
+    },
+    {
+      "path": "originals/ni43-repl-filesystem-37347669248-1-mutation/ni43-app-evidence/mutation/ni43_junit/mutation/pytest.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    }
+  ],
+  "run_id": "37347669248",
+  "schema": "epyc.ni05.original_custody.v1",
+  "source_custody": "/mnt/raid0/llm/artifacts/ci/ni43-repl-filesystem-37347669248-original-download"
+}

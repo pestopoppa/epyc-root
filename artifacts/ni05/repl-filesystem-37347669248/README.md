@@ -1,0 +1,5 @@
+# Original repl-filesystem offline validation
+
+[CI37347669248](https://github.com/pestopoppa/epyc-root/actions/runs/37347669248) preserves the original native receipts and declared source snapshots. Main independently reopened each receipt through the trusted reader and existing shared grade: TRUE Judged/Located. Every declared Git source snapshot matches its pinned original; all public artifact bytes are unchanged and hashed in the custody manifest.
+
+Existing modules pass exploration24/24 and mutation19/19, zero skips/failures/errors. App source remains db38737d63363a059212820aaac40b4026f82b51. The disposable checkout uses the already-allowed /mnt/raid0/llm prefix; conftest memory hooks are explicitly excluded. Original postchecks prove private checkout, empty logs/patch fixture roots and scratch, and three absent non-symlink binary targets. First run37344775293 mutation18/19 remains unchanged in prior custody. No application or filesystem-policy change, capacity, serving or whole-suite claim.

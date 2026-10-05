@@ -1,0 +1,25 @@
+{
+  "app_source_checkout_private": true,
+  "checkout_fixture_leftover_files": [],
+  "module_id": "mutation",
+  "runtime_override_targets": {
+    "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN": {
+      "exists": false,
+      "is_symlink": false,
+      "value": "/home/runner/work/_temp/ni43-unavailable-llama-cpp-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_MTMD": {
+      "exists": false,
+      "is_symlink": false,
+      "value": "/home/runner/work/_temp/ni43-unavailable-mtmd-bin"
+    },
+    "ORCHESTRATOR_PATHS_LLAMA_SERVER": {
+      "exists": false,
+      "is_symlink": false,
+      "value": "/home/runner/work/_temp/ni43-unavailable-llama-server"
+    }
+  },
+  "runtime_override_targets_absent": true,
+  "schema": "ni43.repl_filesystem_postcheck.v1",
+  "scratch_root_empty": true
+}
