@@ -12,6 +12,8 @@ schema_version: session_bus.config.v1
 # key whose directory is missing REFUSES to spawn rather than silently using the shared
 # clone: `scripts/coordination/setup_main_worktrees.sh <agent>` recreates it.
 roster:
+  # Operator-authorized non-inference campaign, 2026-10-05; no fleet dispatch or compute authority.
+  - {id: codex-ni-main, role: service, lanes: [none], endpoint: "monitor:file", drain: boundary, schedulable: false}
   # Window renamed to `codex-inference` by the operator 2026-07-28 to disambiguate it from
   # codex-bus-tests. The bare `tmux:agent` endpoint then resolved to nothing — the adapter
   # correctly REFUSED to guess a pane rather than typing into the wrong one — so the window

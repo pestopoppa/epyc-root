@@ -20,6 +20,44 @@
 - **Leak robustness (2026-10-04 supplement):** LR-6a is operator-held (LR-9a ratified 2026-10-04, `ae06680f`). LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
+
+## Codex session queue — 2026-10-05
+
+Operator scope: finish the available non-inference work identified in the 2026-10-05 overview,
+starting with the first twelve items and extending the queue as dependencies clear. Canonical task
+bodies remain authoritative; this queue records the session's bounded deliverables. Implementation
+is delegated, acceptance and publishing belong to Codex main. Each completed item receives its own
+progress record and source-handoff checkbox update after review. Shared indices, wiki integration
+and promotion are serialized by main. No inference grants, production mutations or ratifications.
+
+**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`; integration lane:
+`/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
+Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
+
+- [ ] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
+- [ ] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
+- [ ] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
+- [ ] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
+- [ ] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
+- [ ] **NI05-06** — HS-17: MCP timeout and progress contract.
+- [ ] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
+- [ ] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
+- [ ] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
+- [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
+- [ ] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
+- [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
+
+Follow-on pool: DCP-13a/b; DCP-10 offline scoring; HS-16; HS-OD-4/5/6; tool-use grader
+isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
+NIB2-80a/83; bounded static kernel preparation; KB fixture/pin preparation; existing-trace UTM
+integration; harness pin/card/source audit; typed-decision offline adapters and workflow plans.
+Claim these only after checking their current canonical task and peer ownership. OAB-29–32 and
+AutoKernel/KV-prefix producers remain with the active Claude owner until an explicit task boundary
+allows division. RTG-58, UFH14-B4/LR-10, STACKCHG8083 deployment and the coordination audit are
+already owned by the two Claude sessions. Frozen routing changes remain frozen. Harness transcripts
+and history are never cleanup candidates. Newly unlocked tasks are filed in their owning handoff,
+linked through its single domain index, then added here for dispatch.
+
 ## Purpose
 
 Cross-cutting catalogue of work that does **not** require:
