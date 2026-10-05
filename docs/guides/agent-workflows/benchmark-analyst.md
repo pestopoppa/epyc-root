@@ -130,3 +130,7 @@ bullets below are the working detail.
 - **A status claim that something was handed off must be backed by the actual send.** "Relayed to X" or "handed to
   the coordinator" is a claim about an event, not a description of intent — verify the message, file or bus entry
   that constitutes the handoff actually exists before writing the claim down. (origin: 2026-10-05 wrap-up review)
+- **To make room on a shared host, PAUSE an AutoKernel serial loop (takes effect at the batch boundary); never DRAIN it.** Drain is terminal for that serial state generation and forces a re-anchor. (origin: 2026-10-05 Q38FN incident, DS41-C126)
+- **Never wrap a child script in a timeout shorter than its own internal wait.** A subprocess timeout in an outer wrapper that is shorter than the child's own liveness check (both 120 s in this case) will kill a healthy child. (origin: 2026-10-05 Q38FN relaunch attempt 1)
+- **Liveness must read the store's loop-status.json, not the per-launch state dir's.** The per-launch state dir holds a snapshot; reads from it miss progress that happened after launch. (origin: 2026-10-05 monitoring defect, `lane_change_watch.py`)
+- **Never hand-write build provenance/identity receipts; derive them from the build's own records.** A hand-written provenance attempt was rejected in review. Use evidence-derived provenance (kernel store image metadata, commit identity from the build system). (origin: 2026-10-05 Q38FN re-anchor, DS41-C126)
