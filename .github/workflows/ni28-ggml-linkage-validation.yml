@@ -1,0 +1,78 @@
+name: NI28 real vacuity guard fixture
+
+on:
+  push:
+    branches:
+      - codex/ni28-ggml-linkage-validation-20261005
+
+permissions:
+  contents: read
+
+jobs:
+  ggml-linkage-fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ROOT_WRITER_SHA256: 2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e
+      RESEARCH_SOURCE_SHA: 79ca2477a890f5ac9ab1b3a26aa771c8244dff27
+      RESEARCH_DIR: ${{ github.workspace }}/research-revision
+      CAPTURE_ROOT: ${{ github.workspace }}/research-revision/artifacts/ni28-ggml-linkage-validation
+      PYTEST_JUNIT: ${{ github.workspace }}/research-revision/artifacts/ni28-ggml-linkage-validation/original-pytest.xml
+      PYTEST_LOG: ${{ github.workspace }}/research-revision/artifacts/ni28-ggml-linkage-validation/generated-pytest.log
+
+    steps:
+      - name: Checkout immutable root workflow revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Checkout immutable research source candidate
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 79ca2477a890f5ac9ab1b3a26aa771c8244dff27
+          path: research-revision
+
+      - name: Verify immutable source identities and writer control
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C "$RESEARCH_DIR" rev-parse HEAD)" = "$RESEARCH_SOURCE_SHA"
+          test "$(sha256sum scripts/ci/native_conformance.py | cut -d ' ' -f 1)" = "$ROOT_WRITER_SHA256"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install fixture dependency
+        run: python -m pip install --disable-pip-version-check 'pytest==9.1.1'
+
+      - name: Capture named real vacuity fixture execution
+        run: |
+          mkdir -p "$CAPTURE_ROOT"
+          python scripts/ci/native_conformance.py \
+            --cwd "$RESEARCH_DIR" \
+            --junit "$PYTEST_JUNIT" \
+            --output "$CAPTURE_ROOT/native" \
+            --repo "root=$GITHUB_WORKSPACE" \
+            --repo "research=$RESEARCH_DIR" \
+            --read-path "$GITHUB_WORKSPACE/scripts/ci/native_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/vidya/adapters/ci_conformance.py" \
+            --read-path "$GITHUB_WORKSPACE/scripts/vidya/claim_tuple.py" \
+            --read-path "$GITHUB_WORKSPACE/.github/workflows/ni28-ggml-linkage-validation.yml" \
+            --read-path "$GITHUB_WORKSPACE/.github/workflows/ni28-fixture-context.json" \
+            --read-path "$RESEARCH_DIR/scripts/utils/verify_ggml_linkage.sh" \
+            --read-path "$RESEARCH_DIR/scripts/utils/test_verify_ggml_linkage.py" \
+            --select scripts/utils/test_verify_ggml_linkage.py \
+            --generated-output "artifacts/ni28-ggml-linkage-validation/generated-pytest.log" \
+            -- python -m pytest -q scripts/utils/test_verify_ggml_linkage.py \
+              --junitxml="$PYTEST_JUNIT" \
+              --log-file="$PYTEST_LOG"
+
+      - name: Preserve original fixture custody artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni28-ggml-linkage-validation-${{ github.run_id }}
+          path: research-revision/artifacts/ni28-ggml-linkage-validation/
+          if-no-files-found: warn
