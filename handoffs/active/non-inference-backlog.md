@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **24/31**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **28/35**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -48,7 +48,7 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
 - [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
 - [x] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
-- [ ] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
+- [x] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
 - [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
 - [x] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
 - [x] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
@@ -61,13 +61,19 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
 - [x] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
 - [x] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
-- [ ] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
+- [x] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
 - [x] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
 - [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
 - [ ] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
-- [ ] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
+- [x] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
 - [x] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
-- [ ] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
+- [x] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
+
+- [ ] **NI05-32** — HSF-3 schema boundaries: synthetic tap/progress/checkpoint coverage controls without inferred enqueue/class joins.
+- [ ] **NI05-33** — OBS-12a: remove active explicit system-Python bus invocations; honor the existing managed-venv shebang.
+- [ ] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
+
+- [ ] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
 isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
@@ -172,17 +178,7 @@ migration landing. Reference adoption: `scripts/coordination/backfill_supervisor
   - **`research-intake/references/taxonomy.md`** now points at `validate_intake.sh`.
   - **Guard:** `tests/skills/test_skill_interpreters.py`, 18 cases; 16 fail before the fix.
   - **Verification:** each fixed invocation was run under the venv, and none failed on an import.
-  - [ ] **OBS-12a** (LOW, filed 2026-09-17): **the same shape outside `.claude/skills`.**
-    CLAUDE.md's bus drain (`scripts/coordination/session_bus.py drain ...`) and heartbeat `append`
-    run through the `#!/usr/bin/env python3` shebang. Both call `_require_roster_id`, which needs
-    PyYAML (`session_bus.py:235-252`), so after a rebuild that wipes `~/.local` every session's
-    drain would fail.
-    - **Options:**
-      - (a) point the CLAUDE.md, BUS_PROTOCOL and SESSION_LIFECYCLE commands at the venv;
-      - (b) have `session_bus.py` read the roster without PyYAML;
-      - (c) add a system-interpreter PyYAML check to `health_check.sh` next to the OBS-11 checks.
-    - **Recommendation:** (c) now, plus (a). Editing CLAUDE.md is a fleet-doctrine change, so the
-      owning session makes it.
+  - [ ] **OBS-12a** (LOW; NI05-33): active explicit `python3 session_bus.py` invocations bypass the existing absolute managed-orchestrator-venv shebang. Current CLAUDE/AGENTS direct commands already honor it. Correct BUS_PROTOCOL, STANDING-MAIN-RULES and live `idle_supervisor.sh` calls to direct script execution; preserve YAML roster semantics and historical instructions. Main owns shared task updates; isolated source/fixture preparation is delegated. No bus daemon restart.
   - [x] **OBS-12b** ✅ 2026-09-17 (already fixed by the wrap-up pass-2 wiki compile; all three links now point at `../handoffs/completed/security-review-skill.md`, verified by the main session) (LOW, filed 2026-09-17): `lint_wiki.py` reports two dangling links:
     `wiki/agent-architecture.md:2254` and `wiki/tool-implementation.md:278,321` still point at
     `../handoffs/active/security-review-skill.md`, which moved to `completed/` in `9804fec9`.
@@ -308,7 +304,7 @@ Filed by that session's final wrap-up (progress note `progress/2026-09/2026-09-2
       either way: install the linters (devcontainer), make each gate fail loudly when its tool is missing rather than
       skip, and implement or delete the numerics targets. Then decide whether `nextplaid-reindex` belongs in `gates`.
   ✅ 2026-10-05 — six Makefile fixtures and the actual pinned devcontainer tool/version fixture pass; static gates fail loudly on nine existing formatting defects, and independent markdownlint passes. Source is published in orchestrator main `41ab07fc` and root `b07a992e`; the formatting repair remains NI05-21. See [gate evidence](../../progress/2026-10/2026-10-05-codex-ni-gates.md).
-- [ ] **NIB2-87** (LOW; filed 2026-09-26 as NIB2-81 and renumbered 2026-09-27, because NIB2-81 is also the closed daemon-staleness item): **the research repo `.venv` has no pytest**, although `pyproject.toml` declares
+- [x] **NIB2-87** (LOW; filed 2026-09-26 as NIB2-81 and renumbered 2026-09-27, because NIB2-81 is also the closed daemon-staleness item): **the research repo `.venv` has no pytest**, although `pyproject.toml` declares
       `pytest==9.1.1` in the `test` extra (the venv was synced without it). On 2026-09-26 research tests had to run with
       the orchestrator venv. Add the extra additively, `uv pip install --python .venv/bin/python pytest==9.1.1`
       (not a bare `uv sync`, which would prune packages outside the requested extras), and extend `health_check.sh`'s
@@ -525,7 +521,7 @@ Canonical sources (always verify status in these files first):
 
 ## 2026-10-05 supplement — durable CI phase prefixes
 
-- [ ] **NI-CI-PREFIX-DURABILITY — preserve completed native validation before later phases can time out.**
+- [x] **NI-CI-PREFIX-DURABILITY — preserve completed native validation before later phases can time out.**
   NI05-29 / VB-CI-PREFIX-DURABILITY: original ninth run `37295291738` timed out before its final
   artifact step, losing all original native receipts/JUnit. Ordinary GitHub logs survive; they
   are not reopened receipts or reconstructed tuples. Upload immutable named phase bundles
@@ -546,15 +542,18 @@ controls. This is offline source/fixture work; no route activation, live request
 
 ## 2026-10-05 supplement — native source-fixture custody
 
-- [ ] **NI-CI-FIXTURE-CUSTODY — retain original synthetic source fixtures through the privacy gate.**
+- [x] **NI-CI-FIXTURE-CUSTODY — retain original synthetic source fixtures through the privacy gate.**
   NI05-31: recovery snapshots include unchanged public redactor fake-credential fixtures and
   search fixtures carrying a book ISBN. The gate blocks those copied inputs. Prepare a narrow
   exact-byte/source/request/readset-bound correction with genuine-secret/edit negative controls;
   never redact or reseal native records, bypass hooks, exempt whole artifact trees, relocate
   fixtures to hide from scanning, or widen vendor-placeholder authority. Original native
-  bundles remain on RAID0 and immutable phase artifacts; public custody is partial until fixed.
+  bundles remain on RAID0 and immutable phase artifacts; exact provenance correction and complete public custody are accepted 2026-10-05.
 
 NI05-30 accepted 2026-10-05: app `631220f7b05a` adds the same pure budget/cycle admission
 predicate to all ten immediate branches. Original CI `37303383753` passes 36 focused cases
 and one separate actual-runner capacity guard. [Original native bundle](../../artifacts/ni05/early-abort-cycle-37303383753/README.md)
 binds exact tested source and original bytes. No production activation or reload.
+
+
+2026-10-05 reviewed boundary: NI12/NIB2-87 installs research pytest 9.1.1 additively and verifies both managed imports; root health source checks both. NI25 captures both API orders (376/376 each) plus the explicitly synthetic broad attempt. NI29 retains all five original phases before the broad timeout; the broad result is diagnostic/null, never a whole-unit pass. NI31 passes 17 actual-index controls, 8 caller cases, privacy fixture denominators 0/21 false accepts and 0/30 false rejects, and six installed-wrapper assertions. Full unchanged native custody is published in [recovery bundle](../../artifacts/ni05/recovery-37299780302/README.md) and [NI31 bundle](../../artifacts/ni05/fixture-custody-37307260869/README.md). NI10 remains open: one bounded journal census and the source-schema map do not establish HSF-3's requested distribution. Newly unlocked NI32–34 are filed here and in their existing canonical handoffs; no duplicate domain ownership.

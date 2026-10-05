@@ -2006,7 +2006,7 @@ VB-NPD-1) are activation records in the durable-triggers list above.
   - One launch = one locator, with GGUF/binary digests, argv hash, page-cache fraction, phase timings and outcome class.
   - Cold/partial-cache launches project with their label and never merge into hot C.
 - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n, date, VRAM-during-run witness, failure reason when failed) into the PF1 run dir; no read-side reconstruction.
-- [ ] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
+- [x] **VB-GAP-DIST — wire the write side of the session inter-call gap measurement** (`heterogeneous-slot-fabric-residency.md` HSF-3) before its first extraction: one row per gap (session hash, role, client class, t_done, t_next, gap_s, source), with the log-manifest digest, extractor revision and window. Locator = window × class; W1 and W2 never pool. Observation-grade.
   2026-10-05 checkpoint: native extractor/reader and CLI source are on root main `d61ae218`;
   original CI `37294486291` passes 21 cases (19 gap fixtures, two registration/CLI cases).
   Existing grader only. Passive admission-enqueue field is on app main `b01ab993`, with no
@@ -2466,7 +2466,7 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   omitted extensions retain their shape. Original bounded capture is retained at
   `artifacts/ni05/custody-validation-37291798409/`; no historic receipt was resealed.
 
-- [ ] **VB-CI-CONFORMANCE-API-WIRING — capture subsequent named API and off-host unit commands prospectively.**
+- [x] **VB-CI-CONFORMANCE-API-WIRING — capture subsequent named API and off-host unit commands prospectively.**
   NI05-25: use the existing producer/reader and sole grading ladder before each command runs.
   Keep distinct phase receipts, source readsets and exact argv; identify the entire synthetic-RAM
   pytest process as mocked host capacity, with a separate ordinary actual-host refusal fixture.
@@ -2475,7 +2475,7 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   validation evidence without retrospective tuples. Owner: Codex CI worker, main integration.
 
 
-- [ ] **VB-CI-PREFIX-DURABILITY — retain each original prospective phase before a later timeout.**
+- [x] **VB-CI-PREFIX-DURABILITY — retain each original prospective phase before a later timeout.**
   NI05-29: original ninth `37295291738` loses all runner receipts before final upload. Preserve
   every completed phase independently, with unique immutable artifact names; declare the
   broad attempt timeout before execution and capture its actual interrupt/result. Original
@@ -2500,3 +2500,11 @@ extensions, not amendments to the completed decision-tools checkpoint or applica
   inputs privately; no public secret material, historical reconstruction or new grading ladder.
   NI31's prospective CI hook fixtures use the existing selected-command receipt/class; they
   cannot stand in for arbitrary production-index findings. Source-table row filed now.
+
+
+2026-10-05 NI25/NI29 acceptance: recovery `37299780302` binds ordinary guards (2/2), CPU leaves (13/13), API forward and reverse orders (376/376 each), and the declared synthetic-capacity broad attempt. Four true observations project through the existing sole verifier carrier; the timed-out broad phase has no JUnit, a null native proposition and no tuple. All five original prefixes are unchanged and reopenable at `artifacts/ni05/recovery-37299780302/`. This closes prospective command wiring and prefix durability, not SSU-F13 wider-unit acceptance.
+
+VB-GAP-DIST write-side wiring is complete at the named fixture/native-custody boundary. The claimed 2026-10-05 private census source snapshot has 19 records, all missing session keys, zero pairs and zero emitted tuples; no distribution or TTL is established. HSF-3 remains open. NI32 adds synthetic source-schema refusal/coverage controls; tap/progress/checkpoints cannot independently supply the current exact enqueue/class contract. [Schema finding](../../progress/2026-10/2026-10-05-hsf3-source-map-ni32-proposal.md). VB-PII-STAGED-WIRE implementation preparation continues as NI34 after review of frozen worktree-index/private original-byte custody; no actual gate-result tuple is currently claimed.
+
+
+- [ ] **VB-MANAGED-TOOLING-WIRE (NI05-35)** — capture prospective named managed-interpreter import results at the write boundary, with actual interpreter/module/check-source hashes, argv, original stdout/exit and UTC. Narrow import-check scope only; existing verifier carrier/shared grade, no second ladder or full-host-health claim. Preserve refusals and missing inputs as false/diagnostic rather than imported success. NI12's original plain stdout stays ordinary evidence; source table row filed when the additional health producer gap was identified.

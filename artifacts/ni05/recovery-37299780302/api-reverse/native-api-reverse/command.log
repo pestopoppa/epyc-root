@@ -1,0 +1,33 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.15, pytest-9.1.1, pluggy-1.6.0
+rootdir: /home/runner/work/epyc-root/epyc-root
+configfile: pyproject.toml
+plugins: asyncio-1.4.0, langsmith-0.14.4, timeout-2.4.0, hypothesis-6.168.4, platformdirs-4.12.3, cov-7.1.0, xdist-3.8.0, anyio-4.15.1
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 378 items / 2 deselected / 376 selected
+
+tests/unit/test_openai_semantic_field_refusal.py ....................... [  6%]
+.......                                                                  [  7%]
+tests/unit/test_openai_role_override_contract.py ....................... [ 14%]
+........................................................................ [ 33%]
+..............................................................           [ 49%]
+tests/unit/test_openai_models_route.py ............                      [ 52%]
+tests/unit/test_openai_direct_prompt_contract.py .............           [ 56%]
+tests/unit/test_openai_compat_roles.py ................                  [ 60%]
+tests/unit/test_openai_compat_default_golden.py ..............           [ 64%]
+tests/unit/test_openai_compat_compression_fallback.py ....               [ 65%]
+tests/unit/test_openai_compat_bare_name_final.py .......                 [ 67%]
+tests/unit/test_openai_compat_backend_failure_status.py ................ [ 71%]
+.....                                                                    [ 72%]
+tests/unit/test_openai_client_tool_mode.py ............................. [ 80%]
+.........................................................                [ 95%]
+tests/unit/test_openai_backend.py ................                       [100%]
+
+=============================== warnings summary ===============================
+src/graph/graph.py:10
+  /home/runner/work/epyc-root/epyc-root/src/graph/graph.py:10: PydanticGraphDeprecationWarning: Importing `Graph` from `pydantic_graph` is deprecated. The `BaseNode`-based `Graph` runner and its persistence machinery are deprecated and will be removed (or repurposed) in v2; use the builder-based `GraphBuilder` API instead, or pin to `pydantic_graph<2` to keep using them.
+    from pydantic_graph import Graph
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-- generated xml file: /home/runner/work/epyc-root/epyc-root/api-reverse.xml ---
+=========== 376 passed, 2 deselected, 1 warning in 288.77s (0:04:48) ===========

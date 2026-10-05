@@ -1335,8 +1335,8 @@ App `4244e72b2aa8` defers two CPU leaf defaults until no explicit path was suppl
 CLI/configuration and help now work without a production store; missing defaults still fail
 strictly. Thirteen original CPU fixtures plus two separate ordinary guards pass in recovery
 `37299780302`; [custody note](../artifacts/ni05/recovery-37299780302/README.md) identifies the unchanged native
-originals on RAID0 and immutable phase artifacts. Full public snapshot custody awaits NI31
-privacy-gate fixture correction. No shared kernel-path provider changed.
+originals on RAID0 and immutable phase artifacts. All five unchanged native prefixes are now publicly reopenable after NI31
+exact source/request/readset-bound fixture provenance checks passed. No shared kernel-path provider changed.
 
 Research `2c5d60f515ef` adds actual `/bin/true` rejection to the four canonical-linkage
 fixtures. All five pass in original `37299711542`; [original bundle](../artifacts/ni05/ggml-linkage-37299711542/README.md)
@@ -1352,3 +1352,12 @@ still bypasses the retry threshold; refused admission follows the existing failu
 Original CI `37303383753` passes four legacy, 23 LangGraph and nine ordinary escalation
 fixtures, plus one separate actual-runner capacity guard. [Original native bundle](../artifacts/ni05/early-abort-cycle-37303383753/README.md)
 retains exact tested sources and artifacts. Publication does not activate or reload the API.
+
+
+### Staged fixture provenance and durable command prefixes (2026-10-05)
+
+NI31 accepts only the two exact reviewed source/hash pairs from complete original staged CI capsules. Changed, missing, corrupt or mismatched proof returns to ordinary scanning. Seventeen provenance fixtures, eight caller cases, six actual installed-wrapper assertions and the existing 21/30 privacy fixture denominators pass without new blanket exemptions. [Original NI31 custody](../artifacts/ni05/fixture-custody-37307260869/README.md). Restored [recovery prefixes](../artifacts/ni05/recovery-37299780302/README.md) retain both 376-case API orders and the original timed-out synthetic broad attempt; the latter is null and cannot warrant a complete-unit pass. Actual arbitrary-index privacy findings still need prospective private capture (VB-PII-STAGED-WIRE).
+
+Research pytest 9.1.1 is installed additively; orchestrator pytest 9.0.3 remains importable. Health checks now test both managed imports. The bounded serving-call census found 19 records without session keys and no eligible pairs. Tap/progress/checkpoint schemas independently lack the exact enqueue/class contract; no TTL or gap percentile follows. [Census](../progress/2026-10/2026-10-05-ni10-gap-census.md), [schema map](../progress/2026-10/2026-10-05-hsf3-source-map-ni32-proposal.md).
+
+The policy-copy publication leaf requires the exact original public policy SHA plus its independent ROOT source revision. App snapshots keep their own app-revision namespace. Eight additional controls bring provenance coverage to 25 cases; the original policy comments/patterns remain unchanged. [Policy custody](../artifacts/ni05/policy-custody-37311864189/README.md).

@@ -1,0 +1,29 @@
+# epyc-root pre-commit extras — sourced by the generated .git/hooks/pre-commit.
+#
+# CONTRACT (from the wrapper): accumulate into $status, never `exit` directly, so
+# every check runs and one failure cannot hide another.
+#
+# Installed to .git/hooks/pre-commit.extras by scripts/hooks/install_git_hooks.sh.
+# Versioned here because .git/ reaches no clone.
+
+# Observation contract: no new name-pattern watchdog without a registry row, and no
+# silently-dropped deferral for an existing one. See the header of
+# scripts/hooks/observer_census_precommit.sh for why this is a hook and not a rule.
+"${HOOK_SRC_DIR}/observer_census_precommit.sh" "$@" || status=1
+
+# Vacuous-pass guard: a test file that can report success while executing nothing.
+# CHANGED FILES ONLY, deliberately -- the legacy count is large (2026-08-20: 18
+# epyc-root / 127 research / 26 orchestrator blocking) and gating the whole tree
+# would block every commit until a repo-wide cleanup lands. Grandfathering the
+# backlog while refusing NEW instances is what makes this adoptable today; the
+# backlog is tracked as its own handoff.
+# BOTH pytest globs: '*test_*.py' alone does not match e.g. legacy_test.py, so a
+# *_test.py file could ship unlinted while the full-repo walk would flag it —
+# the gate and the walk must see the same universe (found by VT-2, 2026-08-21).
+_vac_staged=$(git diff --cached --name-only --diff-filter=ACM -- '*test_*.py' '*_test.py' 2>/dev/null || true)
+if [ -n "$_vac_staged" ]; then
+    # shellcheck disable=SC2086
+    python3 "${HOOK_SRC_DIR}/check_test_collectability.py" \
+        "$(git rev-parse --show-toplevel)" $_vac_staged || status=1
+fi
+unset _vac_staged

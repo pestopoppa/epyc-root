@@ -1,0 +1,58 @@
+NI12/NIB2-87 start_utc=2026-10-05T11:57:21Z
+stdout_log=/mnt/raid0/llm/artifacts/ni12-research-pytest-install/ni12-pytest-install-20261005T115721Z-4073999.log
+healthc97_root=/mnt/raid0/llm/worktrees/codex-ni12-healthc97-20261005
+research_root=/mnt/raid0/llm/epyc-inference-research
+orchestrator_root=/mnt/raid0/llm/epyc-orchestrator
+UV_CACHE_DIR=/mnt/raid0/llm/cache/codex-ni12-uv
+TMPDIR=/mnt/raid0/llm/tmp/codex-ni12
+healthc97_source_sha=c97cc9793547f0f7e0905d680445049ba62bc974
+
+== Add pytest 9.1.1 to research venv without pruning ==
+Resolved 5 packages in 168ms
+Prepared 3 packages in 53ms
+Installed 3 packages in 29ms
+ + iniconfig==2.3.0
+ + pluggy==1.6.0
+ + pytest==9.1.1
+
+== Verify actual imports in both managed venvs; exact pin applies to research ==
+research_python=/mnt/raid0/llm/epyc-inference-research/.venv/bin/python pytest=9.1.1 module=/mnt/raid0/llm/epyc-inference-research/.venv/lib/python3.13/site-packages/pytest/__init__.py
+orchestrator_python=/mnt/raid0/llm/epyc-orchestrator/.venv/bin/python pytest=9.0.3 module=/mnt/raid0/llm/epyc-orchestrator/.venv/lib/python3.11/site-packages/pytest/__init__.py
+
+== Bash syntax check and focused source-guard smoke ==
+bash -n passed: /mnt/raid0/llm/worktrees/codex-ni12-healthc97-20261005/scripts/session/health_check.sh
+bash -n passed: /mnt/raid0/llm/worktrees/codex-ni12-healthc97-20261005/scripts/session/tests/test_health_check.sh
+== sysfs_value: a genuinely missing node is __UNREADABLE__, not a guessed string ==
+  PASS  sysfs_value on a missing path
+
+== sysfs_value: a node that exists but is unreadable (chmod 000) ==
+  PASS  sysfs_value on a chmod-000 node
+
+== sysfs_bracketed: unreadable node propagates the sentinel, not a parsed 'unknown' ==
+  PASS  sysfs_bracketed on a chmod-000 node
+
+== sysfs_bracketed: a readable node still parses the [selected] token ==
+  PASS  sysfs_bracketed on a readable node
+
+== check_sysfs_eq: UNREADABLE is UNKNOWN — never PASS, never FAIL ==
+  PASS  unreadable value -> UNKNOWN=1, PASS=0, FAIL=0
+  PASS  the UNKNOWN glyph/label is printed
+  PASS  an unreadable node is never reported as FAIL
+
+== check_sysfs_eq: a readable, correct value still PASSes ==
+  PASS  readable + matching value -> PASS=1
+
+== check_sysfs_eq: a readable, WRONG value still FAILs (the fix must not soften real drift) ==
+  PASS  readable + wrong value -> FAIL=1
+
+== the pgrep-by-name process checks are gone; UNKNOWN is reported instead ==
+  PASS  the self-matching claude pgrep probe is no longer executed
+  PASS  the monitor_storage pgrep probe is no longer executed
+  PASS  both process checks now report UNKNOWN with their reasons
+
+== Tooling Interpreters section (OBS-11) is untouched ==
+  PASS  the OBS-11 section is intact
+
+  ---- 13 passed, 0 failed
+NI12/NIB2-87 end_utc=2026-10-05T11:57:22Z exit_code=0
+stdout_log=/mnt/raid0/llm/artifacts/ni12-research-pytest-install/ni12-pytest-install-20261005T115721Z-4073999.log

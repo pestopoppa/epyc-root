@@ -334,3 +334,14 @@ write-side wiring gap: source-table row and VB-PII-STAGED-WIRE are filed immedia
 Prospective NI31 fixture execution uses the existing CI command source and sole shared ladder.
 The 67 broad-run observed failures remain hypotheses without surviving tracebacks; two
 bounded native repro batches are being prepared before source changes.
+
+
+## Original custody restored; four bounded deliveries complete
+
+NI12 additive host dependency/import checks and 13 focused health assertions pass. NI31 original 17+8 cases, six installed-wrapper assertions and 21/30 PII denominators pass. Reviewed source is byte-identical to its tested candidate. The enabled normal hook now admits only exact reviewed original fixture snapshots with complete native staged custody. All five recovery prefixes and both NI31 native captures are copied unchanged and independently reopened. NI25/29 close at prospective command/prefix durability boundaries; both API orders pass 376/376, while the synthetic broad timeout remains null with no tuple or complete-unit claim. Published delivery tally becomes **28/35** after four closures and filing NI32 schema controls, NI33 active bus interpreter commands, and NI34 private actual-index gate custody. Shared indices/wiki are owned by main.
+
+NI10's claimed journal census completes with 19 missing-session-key records, zero pairs/tuples; HSF-3's distribution remains open. Source mapping prices schema insufficiency without raw tap/SQLite reads. NI28's 12 original fixture cases pass and reopen through the existing CI carrier; actual production-store capture remains separate and requires a reviewed prospective script/CPU claim. SSU-F13 followups retain false/null outcomes and identify ordinary-host fixture assumptions; no production Landlock bypass or whole-unit pass is asserted.
+
+Managed-import verified findings expose a separate prospective write-side gap. VB-MANAGED-TOOLING-WIRE/NI35 and its source row are filed immediately; no import-result tuple is retrofitted to the completed NI12 stdout.
+
+Normal publication first refused only the captured PII policy comments, leaving originals intact. Reviewed `6092fa88` adds a third exact source/path/hash with independent ROOT revision binding; original `37311864189` passes 25 provenance cases, 8 callers, six installed-wrapper assertions and unchanged 21/30 denominators. Main reopens both seals and integrates the two tested source files byte-identically. [Policy-leaf progress](2026-10-05-ni31-original-policy-custody.md).

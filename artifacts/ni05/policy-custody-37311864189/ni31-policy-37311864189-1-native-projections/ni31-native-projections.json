@@ -1,0 +1,46 @@
+[
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 8,
+      "error": 0,
+      "executed": 8,
+      "failure": 0,
+      "passed": 8,
+      "skipped": 0
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "receipt": "native-ni31-policy-callers/receipt.json",
+    "sha256": "b2e48cfceee4fc46fd4ed65bac4480517845f200320131cc3d02aca00cbea4fb"
+  },
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 25,
+      "error": 0,
+      "executed": 25,
+      "failure": 0,
+      "passed": 25,
+      "skipped": 0
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "receipt": "native-ni31-policy-fixtures/receipt.json",
+    "sha256": "27d47d04963dfe72e9c70f08ac6dc5eb8bc1b684acad6f18187b1cda4a0b1de8"
+  }
+]

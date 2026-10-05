@@ -1,0 +1,5 @@
+# NI12/NIB2-87 — additive managed pytest dependency
+
+The claimed unchanged command completed 2026-10-05 11:57:21–22 UTC with exit 0. It added only iniconfig 2.3.0, pluggy 1.6.0 and pytest 9.1.1 to research; no pruning/sync occurred. Actual research Python 3.13 imports pytest 9.1.1; actual orchestrator Python 3.11 imports its existing pytest 9.0.3. Exact pin applies to research. Root source `c97cc9793547f0f7e0905d680445049ba62bc974` adds three managed-import check lines in health_check.sh. Shell syntax and existing focused health smoke pass (13 assertions, zero failures). No full host health run is claimed.
+
+[Original stdout](../../artifacts/ni05/research-pytest-20261005/original-host-command.log) SHA-256 `1d799cb51175b267448d9c903dc868e55a8fb121e8414fae902acae17b867393`. Original script SHA-256 `7dec7e571bd2a5e0d6fdc9a25234455fb6600ec4e1b30c9c880fd787a7bbc737`. The earlier absent launcher establishes no installation and its disappearance remains unexplained; this successful captured requeue supplies the acceptance evidence.

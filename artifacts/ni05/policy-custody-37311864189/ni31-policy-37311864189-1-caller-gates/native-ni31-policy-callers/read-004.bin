@@ -1,0 +1,244 @@
+name: NI31 original policy custody validation
+on:
+  push:
+    branches: ['codex/ni31-policy-custody-validation-20261005']
+permissions:
+  contents: read
+  actions: read
+env:
+  SOURCE_SHA: 6092fa889d9c3053c8bde6894686848f3824d8af
+jobs:
+  staged-fixture-custody:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          path: source
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install exact fixture runner
+        run: |
+          python -m pip install pytest==9.1.1
+          python -c 'from importlib.metadata import version; print("pytest=" + version("pytest"))'
+      - name: Download unchanged original decided and diagnostic prefixes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 37299780302 --repo pestopoppa/epyc-root \
+            --name ni05-37299780302-1-ordinary-guards --dir source/ni31-originals/ordinary-guards
+          gh run download 37299780302 --repo pestopoppa/epyc-root \
+            --name ni05-37299780302-1-unit-synthetic --dir source/ni31-originals/unit-synthetic
+      - name: Download unchanged original ROOT policy prefixes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 37307260869 --repo pestopoppa/epyc-root \
+            --name ni31-37307260869-1-fixture-custody --dir source/ni31-policy-originals/fixture-custody
+          gh run download 37307260869 --repo pestopoppa/epyc-root \
+            --name ni31-37307260869-1-caller-gates --dir source/ni31-policy-originals/caller-gates
+      - name: Bind only disposable hosted Git wrapper fixtures
+        run: |
+          sudo ln -s "$GITHUB_WORKSPACE/source" /workspace
+          sudo mkdir -p /mnt/raid0/llm
+          sudo chown "$(id -u):$(id -g)" /mnt/raid0/llm
+          test ! -e /mnt/raid0/llm/epyc-root
+          ln -s "$GITHUB_WORKSPACE/source" /mnt/raid0/llm/epyc-root
+          for repo in /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research; do
+            test ! -e "$repo"
+            git init -q "$repo"
+          done
+          bash source/scripts/hooks/install_git_hooks.sh
+          bash source/scripts/hooks/install_git_hooks.sh --check
+          for repo in /workspace /mnt/raid0/llm/epyc-orchestrator /mnt/raid0/llm/epyc-inference-research; do
+            test -x "$repo/.git/hooks/pre-commit"
+          done
+          echo 'Wrapper context: /workspace is the pinned source checkout; both named sibling repos are empty disposable Git fixture repos, without application code or kernel/store paths.'
+      - name: Declare all original input digests before execution
+        working-directory: source
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          expected = {
+              "ordinary-guards": "fce35db0cd2395eb3472e06ab491c102428e316314fb34fcae003be95f593c4e",
+              "unit-synthetic": "3cec1d9ecb545a0112047d8213b2a434f4fcf346b4cec9794380bb3c6f187d8d",
+          }
+          files = []
+          for phase, receipt_sha in expected.items():
+              base = Path("ni31-originals") / phase
+              receipt = base / ("native-" + phase) / "receipt.json"
+              if hashlib.sha256(receipt.read_bytes()).hexdigest() != receipt_sha:
+                  raise ValueError("original receipt bytes differ from the reviewed prefix")
+              for path in sorted(base.rglob("*")):
+                  if path.is_symlink():
+                      raise ValueError("original inputs must be regular files")
+                  if path.is_file():
+                      files.append({"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+          root_expected = {
+              "fixture-custody": "912b0cca071bcbc831918053db73d68aeb263e395b50c555f2cdb601d244c204",
+              "caller-gates": "325dfa959c68f9935a40daaaf40bbe0ed0531f96ba90d521973080fcee52ae40",
+          }
+          for phase, receipt_sha in root_expected.items():
+              base = Path("ni31-policy-originals") / phase
+              receipt = base / ("native-ni31-" + phase) / "receipt.json"
+              if hashlib.sha256(receipt.read_bytes()).hexdigest() != receipt_sha:
+                  raise ValueError("original ROOT receipt bytes differ from the reviewed prefix")
+              for path in sorted(base.rglob("*")):
+                  if path.is_symlink():
+                      raise ValueError("original ROOT inputs must be regular files")
+                  if path.is_file():
+                      files.append({"path": str(path), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
+          policy = Path("scripts/hooks/pii_precommit.sh")
+          policy_sha = hashlib.sha256(policy.read_bytes()).hexdigest()
+          if policy_sha != "5cafb5e16ed0e14d51b4e151bc2748709018f45d68db650c9d8ce34764d26c88":
+              raise ValueError("policy bytes differ from the unchanged reviewed source")
+          files.append({"path": str(policy), "sha256": policy_sha})
+          fixture = Path("research/fixtures/pii_hygiene_eval.jsonl")
+          files.append({"path": str(fixture), "sha256": hashlib.sha256(fixture.read_bytes()).hexdigest()})
+          record = {"kind": "declared-input-digests", "original_run_id": 37299780302,
+                    "artifact_names": ["ni05-37299780302-1-ordinary-guards", "ni05-37299780302-1-unit-synthetic",
+                                       "ni31-37307260869-1-fixture-custody", "ni31-37307260869-1-caller-gates"],
+                    "original_receipt_sha256": expected, "root_original_receipt_sha256": root_expected, "root_original_run_id": 37307260869, "files": files,
+                    "policy_source_custody": "unchanged policy bytes already captured in original run 37307260869 at ROOT 4cc170; their current digest is declared here, no redundant new outer body copy or new-root revision allowlist",
+                    "scope": "original input bytes stay in their original capsules; source/recipe and this digest manifest are the declared new readscope; dependency completeness is excluded"}
+          with open("ni31-input-manifest.json", "x") as output:
+              json.dump(record, output, indent=2, sort_keys=True)
+              output.write("\n")
+          PY
+      - name: Prepare prospective source command capture
+        working-directory: source
+        run: |
+          cat > ni31-capture-phase.sh <<'CAPTURE'
+          #!/bin/bash
+          set -uo pipefail
+          phase="$1"; junit="$2"; limit="$3"; shift 3
+          python - "$phase" "$limit" <<'PY'
+          import json, os, sys
+          phase, limit = sys.argv[1:]
+          context = {"phase": phase, "scope": "offline root hook fixture command",
+                     "command_time_limit_s": int(limit), "termination_policy": "SIGINT then SIGKILL after 15 seconds",
+                     "configuration": {"NI31_NATIVE_ORIGINALS": os.environ.get("NI31_NATIVE_ORIGINALS", ""),
+                                       "NI31_POLICY_ORIGINALS": os.environ.get("NI31_POLICY_ORIGINALS", "")},
+                     "exclusions": ["inference", "live providers", "production kernel/store mutation", "API/unit replay", "new index warrant", "dependency completeness"],
+                     "wrapper_context": "/workspace symlink to pinned root source; root /mnt/raid0/llm/epyc-root alias to the same source for the real Hermes checker; two empty disposable sibling Git repos; real generated installed wrappers and tracked root extras",
+                     "input_custody": "unchanged original runs 37299780302 and 37307260869 prefixes; complete digest manifest, no resealing or new historical tuples"}
+          with open(phase + "-context.json", "x") as output:
+              json.dump(context, output, indent=2, sort_keys=True)
+              output.write("\n")
+          PY
+          read_args=(--read-path ni31-capture-phase.sh --read-path "$phase-context.json"
+            --read-path ni31-input-manifest.json
+            --read-path "$GITHUB_WORKSPACE/recipe/.github/workflows/ni31-policy-custody-validation.yml"
+            --read-path scripts/ci/native_conformance.py
+            --read-path scripts/vidya/adapters/ci_conformance.py --read-path scripts/vidya/claim_tuple.py
+            --read-path scripts/hooks/fixture_snapshot_provenance.py
+            --read-path scripts/hooks/install_git_hooks.sh --read-path scripts/hooks/pre-commit.extras
+            --read-path scripts/hooks/hermes_drift_precommit.sh --read-path scripts/hooks/observer_census_precommit.sh
+            --read-path scripts/hooks/check_test_collectability.py
+            --read-path scripts/hermes/skills/check_drift.py
+            --read-path scripts/coordination/observer_census.py
+            --read-path scripts/coordination/observer_registry.json
+            --read-path .git/hooks/pre-commit --read-path .git/hooks/pre-commit.extras
+            --read-path scripts/hooks/tests/test_fixture_snapshot_provenance.py
+            --read-path scripts/hooks/tests/test_policy_snapshot_provenance.py
+            --read-path scripts/hooks/tests/test_hook_worktree_resolution.py
+            --read-path scripts/hooks/tests/test_precommit_wrapper.sh
+            --read-path scripts/validate/pii_fixture_eval.py
+            --read-path ni31-originals/ordinary-guards/native-ordinary-guards/receipt.json
+            --read-path ni31-originals/ordinary-guards/native-ordinary-guards/execution-request.json
+            --read-path ni31-originals/unit-synthetic/native-unit-synthetic/receipt.json
+            --read-path ni31-originals/unit-synthetic/native-unit-synthetic/execution-request.json
+            --read-path ni31-policy-originals/fixture-custody/native-ni31-fixture-custody/receipt.json
+            --read-path ni31-policy-originals/fixture-custody/native-ni31-fixture-custody/execution-request.json
+            --read-path ni31-policy-originals/caller-gates/native-ni31-caller-gates/receipt.json
+            --read-path ni31-policy-originals/caller-gates/native-ni31-caller-gates/execution-request.json)
+          select_args=(--select NI31 --select "$phase")
+          if test "$phase" = ni31-policy-fixtures; then
+            select_args+=(--select scripts/hooks/tests/test_fixture_snapshot_provenance.py
+              --select scripts/hooks/tests/test_policy_snapshot_provenance.py)
+          else
+            select_args+=(--select scripts/validate/pii_fixture_eval.py
+              --select scripts/hooks/tests/test_precommit_wrapper.sh
+              --select scripts/hooks/tests/test_hook_worktree_resolution.py)
+          fi
+          python scripts/ci/native_conformance.py --cwd "$PWD" --junit "$junit" --output "native-$phase" \
+            --repo "root_source=$PWD" --repo "recipe=$GITHUB_WORKSPACE/recipe" \
+            "${read_args[@]}" "${select_args[@]}" -- \
+            timeout --signal=INT --kill-after=15s "${limit}s" "$@"
+          status=$?
+          if test -f "native-$phase/command.log"; then cat "native-$phase/command.log"; fi
+          exit "$status"
+          CAPTURE
+      - name: Prospective actual staged-index fixture cases
+        working-directory: source
+        env:
+          NI31_NATIVE_ORIGINALS: ${{ github.workspace }}/source/ni31-originals
+          NI31_POLICY_ORIGINALS: ${{ github.workspace }}/source/ni31-policy-originals
+        run: |
+          bash ni31-capture-phase.sh ni31-policy-fixtures ni31-policy-fixtures.xml 480 \
+            python -m pytest -q scripts/hooks/tests/test_fixture_snapshot_provenance.py scripts/hooks/tests/test_policy_snapshot_provenance.py --junitxml=ni31-policy-fixtures.xml
+      - name: Preserve first immutable execution prefix immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni31-policy-${{ github.run_id }}-${{ github.run_attempt }}-fixture-custody
+          path: |
+            source/ni31-policy-fixtures.xml
+            source/native-ni31-policy-fixtures/
+            source/ni31-policy-fixtures-context.json
+            source/ni31-input-manifest.json
+            source/ni31-capture-phase.sh
+      - name: Prospective existing PII evaluation and caller gates
+        if: always()
+        working-directory: source
+        run: |
+          bash ni31-capture-phase.sh ni31-policy-callers ni31-policy-callers.xml 240 \
+            bash -c 'python scripts/validate/pii_fixture_eval.py && bash scripts/hooks/tests/test_precommit_wrapper.sh && python -m pytest -q scripts/hooks/tests/test_hook_worktree_resolution.py --junitxml=ni31-policy-callers.xml'
+      - name: Preserve second immutable execution prefix immediately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni31-policy-${{ github.run_id }}-${{ github.run_attempt }}-caller-gates
+          path: |
+            source/ni31-policy-callers.xml
+            source/native-ni31-policy-callers/
+            source/ni31-policy-callers-context.json
+            source/ni31-input-manifest.json
+            source/ni31-capture-phase.sh
+      - name: Reopen original receipts with sole shared projection and grader
+        if: always()
+        working-directory: source
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          findings = []
+          for path in sorted(Path('.').glob('native-ni31-*/receipt.json')):
+              record, digest = read_receipt(path)
+              rows = native_rows(path)
+              findings.append({"receipt": str(path), "sha256": digest,
+                  "conformant": record["fixture_execution_conformant"], "diagnostic": record["diagnostic"],
+                  "counts": record["summary"]["counts"] if record["summary"] else None,
+                  "grade": list(grade(project_ci_conformance(rows[0]))) if rows else None})
+          if len(findings) != 2:
+              raise ValueError("missing original execution receipt; no replacement or backfill")
+          with open("ni31-native-projections.json", "x") as output:
+              json.dump(findings, output, indent=2, sort_keys=True)
+          print(json.dumps(findings, sort_keys=True))
+          PY
+      - name: Preserve original native projections
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni31-policy-${{ github.run_id }}-${{ github.run_attempt }}-native-projections
+          path: source/ni31-native-projections.json

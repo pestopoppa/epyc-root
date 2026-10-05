@@ -1,0 +1,19 @@
+{
+  "command_time_limit_s": 240,
+  "configuration": {
+    "NI31_NATIVE_ORIGINALS": ""
+  },
+  "exclusions": [
+    "inference",
+    "live providers",
+    "production kernel/store mutation",
+    "API/unit replay",
+    "new index warrant",
+    "dependency completeness"
+  ],
+  "input_custody": "unchanged original run 37299780302 prefixes; complete digest manifest, no resealing or new historical tuples",
+  "phase": "ni31-caller-gates",
+  "scope": "offline root hook fixture command",
+  "termination_policy": "SIGINT then SIGKILL after 15 seconds",
+  "wrapper_context": "/workspace symlink to pinned root source; root /mnt/raid0/llm/epyc-root alias to the same source for the real Hermes checker; two empty disposable sibling Git repos; real generated installed wrappers and tracked root extras"
+}

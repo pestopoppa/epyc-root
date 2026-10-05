@@ -1,0 +1,283 @@
+# np_ceiling policy table for the GPU-resident shadow lane (gpu_shadow_lane).
+#
+# POLICY AS DATA (gpu-serving-tie-in-program P0-7 / P2-3): this file is the
+# single source for "how many parallel slots (-np) may the lane run at a given
+# per-slot context depth, under a given dynamic-VRAM budget, in a given launch
+# mode". The loader lives in scripts/server/gpu_shadow_lane.py behind the
+# default-off ORCHESTRATOR_FEATURE_GPU_SHADOW_LANE flag. Nothing in the
+# production launch or routing path reads this file.
+#
+# Evidence: measured v8 np x context grids,
+#   /mnt/raid0/llm/epyc-inference-research/artifacts/np_context_study_v8_20260727/
+# read via the study's own read-only aggregator (driver/aggregate_np_context_v8.py,
+# surfaces terminal/publishable). Production HIP binary (build 10107 @ 67a433bf4),
+# single-tenant on ROCm0, taskset 184-191, -t 8 -tb 8, -fa on, -ctk/-ctv f16.
+#
+# MEASUREMENT discipline: these grids are observation-grade throughput surfaces
+# (no protocol-id attestation for promotion decisions). They inform lane np
+# admission; they never gate keep/revert/deploy/promote decisions on their own.
+# Phase-2 co-resident rows are VRAM arithmetic over the measured solo anchors
+# (the grids ran single-tenant); re-certify before any co-resident duty relies
+# on them (P2-3 recert, tracked in docs/gpu-shadow-lane.md §7 Step 4).
+#
+# ── 2026-07-28 P2-3 hardening (what changed and why) ─────────────────────────
+# 1. ARM RE-ATTRIBUTION. The measured grid is the FABLE-FUSION (FF) merge, not
+#    stock. P0-7 filed those cells under a single `qwen36_27b_q8` tenant whose
+#    model_vram_gib was stock's 26.70 GiB. The FF GGUF is 29,787,701,792 B =
+#    27.74 GiB — 1.04 GiB LARGER (P2-4 finding P1-4). The measurements now live
+#    on `qwen36_27b_ff_q8`, where they were actually taken.
+# 2. STOCK IS A DERIVED ROW, MARKED AS SUCH. `qwen36_27b_stock_q8` carries NO
+#    measured throughput table — attributing FF's cells to stock would be a
+#    measurement-attribution error. Its ceilings are a conservative transfer:
+#    identical architecture and KV geometry, 1.04 GiB SMALLER resident
+#    footprint, therefore strictly more dynamic headroom than the arm that
+#    demonstrably fit. Transfer direction is safe; the reverse would not be.
+# 3. MODE AWARENESS. MTP is a launch property (D6) and it MOVES THE FRONTIER:
+#    with MTP ON the FF np16 x L32768 cell is a capacity skip, while with MTP
+#    OFF the same cell measured fine. A single mode-blind table would have
+#    authorised an np16/32k launch that only ever fit in non-MTP. Ceilings are
+#    therefore per-mode; `budgets` is the mtp_off default and `mode_overrides`
+#    carries mtp_on. A mode with no rows is a refusal, not a fallback.
+# 4. THE A4 BRIDGE GRID RAN WITH MTP ON (n_max=4), not off. Verified in the
+#    study driver's own invocation (queue_after_thinkingcap.sh:87 passes mtp
+#    depth 4; run_model_block.sh:306 turns that into
+#    `--spec-type draft-mtp --spec-draft-n-max 4`). P0-7 filed the bridge's
+#    ceilings under the implicit default mode, i.e. as if they were MTP-off
+#    evidence. They are not, and they are now under mode_overrides.mtp_on with
+#    NO mtp_off rows — the bridge has no MTP-off measurement, so planning it
+#    MTP-off correctly refuses.
+# 5. FF-MTP IS A DIFFERENT ARTIFACT, NOT A FLAG. The MTP arm ran a SEPARATE
+#    GGUF (30,239,022,560 B, 866 tensors = 851 base + 15 MTP) — not the non-MTP
+#    file with a launch flag. Modelling it as a mode override of the non-MTP
+#    tenant would have inherited the wrong model size (27.74 vs 28.16 GiB) into
+#    every VRAM budget. It is its own tenant.
+# 6. SATURATION IS ENFORCED, NOT ANNOTATED. The loader rejects any ceiling
+#    above `np_throughput_saturation`; the cap can no longer drift out of sync
+#    with the table it is supposed to bound.
+#
+# Model identity (bytes + sha256) for every arm below is the study's own
+# pre-launch identity contract, run_model_block.sh:89-98, which refused to
+# launch a cell whose GGUF did not match. It is provenance, not a re-hash.
+#
+# Ceiling semantics (implemented by scripts/server/gpu_shadow_lane.py::np_ceiling):
+#   - Pick the budget row with the LARGEST dynamic_budget_gib <= the budget you
+#     actually have (rows are evidence "safe at >= this budget"). No row fits
+#     -> no validated ceiling -> refuse (null).
+#   - Within a row, pick the smallest context bucket >= the requested per-slot
+#     context. Requested context above the largest bucket -> null (unmeasured).
+#   - A null ceiling means "no validated operating point" — callers must
+#     refuse, never guess upward.
+
+version: 1
+lane: gpu_shadow_lane
+device: ROCm0
+vram_total_gib: 64
+
+# ══════════════════════════════════════════════════════════════════════════
+# WHISPER'S ~1.6 GB IN EVERY `phase2_resident_set` ROW IS A RESERVATION FOR A
+# TENANT THAT MAY NEVER ARRIVE — AND THE ERROR IS FAIL-SAFE. Measured
+# 2026-07-29 (claude-gpu-lane, P2-2d): the deployed whisper is faster-whisper
+# large-v3-turbo on **CTranslate2 4.7.2, which has no ROCm/HIP backend** — it
+# exposes only `Device` + `get_cuda_device_count`, reports `cuda_devices 0`,
+# and `whisper_server.py:61-62` is hard-coded `device="cpu"`. whisper.cpp (the
+# ggml sibling that DOES build against HIP) is not on this host. D2's
+# "~1.6 GB" is the CTranslate2 DIRECTORY's disk footprint — the size of a
+# model that cannot execute on the device — never a measured MI210 VRAM
+# figure.
+#
+# DO NOT "correct" these budgets upward on the strength of that. If whisper
+# never lands, every `phase2_resident_set` row is CONSERVATIVE by ~1.6 GiB:
+# it UNDER-states available dynamic VRAM, so no ceiling over-authorises and
+# no (np, ctx) cell needs withdrawing. Reclaiming the 1.6 GiB is a ceiling
+# amendment that is downstream of the P2-5j placement sweep by the same gate
+# as every carve variant — and it is gated on the operator's still-open W1
+# (whisper stays CPU, amend D2) vs W2 (port to whisper.cpp on HIP) choice.
+# Operator chose W3 on 2026-07-29 — DEFER: land the two verified tenants, file
+# whisper downstream of the bake-off. W3 decides nothing about these numbers.
+# Record: epyc-root docs/reference/p2-2-tenant-landing-readiness-20260729.md §3.
+# ══════════════════════════════════════════════════════════════════════════
+policy_source:
+  instrument: np_context_study_v8_20260727
+  aggregator: driver/aggregate_np_context_v8.py (read-only; surfaces terminal)
+  root: /mnt/raid0/llm/epyc-inference-research/artifacts/np_context_study_v8_20260727
+  measured_at: "2026-07-27"
+  grade: observation  # informs np admission; never a promotion gate alone
+  reverified_at: "2026-07-28"  # P2-3: every cell below re-read from the aggregator
+
+# ── Default lane serving shape (P0-1c: DATA, not launcher defaults) ──────────
+# Consumed by scripts/server/gpu_shadow_lane.py::load_serving_shape ->
+# src/registry/stack_priors.py (gpu_shadow_lane launch mode) -> the compiled
+# launcher-tenant record's runtime.cache {slots, context_tokens} -> the
+# orchestrator_stack gpu_shadow_lane builder's -np/-c. The CPU-mode launcher
+# defaults (SERIAL_ROLES -> 2 slots, 32768-token context) are WRONG for the
+# lane and must never be its fallback. This is the phase2_resident_set default
+# operating point: -np 8 x 8192-token slots => total -c 65536. Changing the
+# planned shape = edit here + rerun the Step-2 pipeline gates; the preflight
+# probe independently validates whatever shape is planned against the ceiling
+# table above/below.
+serving_shape:
+  np_slots: 8
+  slot_context_tokens: 8192
+
+tenants:
+  # ── Bake-off arm 1: FF merge. THE MEASURED ARM. ───────────────────────────
+  qwen36_27b_ff_q8:
+    evidence_arm: A3_ff_fable_non_mtp_q8
+    evidence_basis: measured  # these cells were taken on THIS model
+    model_path: /mnt/raid0/llm/models/Qwen3.6-27B-Fable-Fusion-711-GGUF/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-Q8_0.gguf
+    model_bytes: 29787701792
+    model_sha256: 2fff409d4a22e0cb11fb0ecfafed1c669b9808f7e6bc499036c6e85297f14f4d
+    model_vram_gib: 27.74
+    # GGUF header (arch qwen35, hybrid gated-delta-net): 64 blocks with
+    # full_attention_interval 4 -> 16 full-attention layers; head_count_kv 4,
+    # key/value length 256. f16 KV per token = 16 * 2(K+V) * 4 * 256 * 2B.
+    kv_bytes_per_token_f16: 65536
+    # Recurrent (delta-net) per-sequence state + slot bookkeeping, estimated
+    # conservatively from the np32/L16384 allocation failure vs the np16/L32768
+    # measured fit at identical total ctx (524288 tokens).
+    per_seq_overhead_gib: 0.15
+    compute_reserve_gib: 2.0  # -b/-ub 2048 graph + scratch, conservative
+    # Aggregate decode saturates at np16; np32 regresses -20% at L2048
+    # (81.5 vs 102.0 t/s) and is noise-level at L8192 (+2.5%) while doubling
+    # per-request latency. Enforced as a hard cap by the loader.
+    np_throughput_saturation: 16
+    measured_aggregate_decode_tok_s:
+      "2048":  {"1": 26.5, "2": 29.8, "4": 51.4, "8": 79.7, "16": 102.0, "32": 81.5}
+      "8192":  {"1": 25.1, "2": 29.6, "4": 45.2, "8": 47.2, "16": 52.5, "32": 53.8}
+      "16384": {"1": 26.0, "2": 29.6, "4": 44.6, "8": 52.8, "16": 60.0, "32": null}  # np32: capacity skip
+      "32768": {"1": 26.3, "2": 28.2, "4": 50.7, "8": 52.5, "16": 57.2, "32": null}  # np32: capacity skip
+    # Default mode = MTP OFF (program decision D6; the arm above is non_mtp).
+    budgets:
+      # Solo residency (bench windows; the shape the grid actually measured).
+      # Anchors: np16 x L32768 (ctx 524288, f16 KV = 32 GiB) MEASURED FIT with
+      # this 27.74 GiB model resident; np32 x L16384 (same total ctx, +16 seq
+      # states + larger graph) allocation_failure -> np16 is the frontier.
+      # NOTE: the KV estimator is ~0.14 GiB MORE conservative than this row's
+      # nominal headroom at np16 x L32768 (32 + 2.4 + 2.0 = 36.4 vs 36.26), so a
+      # preflight VRAM check on that exact cell fails closed even though the
+      # cell measured fine. That is deliberate: refuse, never guess upward.
+      - name: solo_resident
+        dynamic_budget_gib: 36.26  # 64 - 27.74 model
+        ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 16}
+      # Phase-2 resident set (program D2): 27B tenant + MiniCPM-o (~7 GB) +
+      # whisper (~1.6 GB). With FF that is 27.74 + 8.6 = 36.34 GB resident,
+      # leaving ~27.66 GiB dynamic; bound conservatively at 27.0. Derived by KV
+      # arithmetic from the solo anchors (NOT re-measured co-resident):
+      #   np16 x L16384: 16 GiB KV + 2.4 state + 2.0 reserve = 20.4 <= 27  OK
+      #   np16 x L32768: 32 GiB KV alone > 27                             NO
+      #   np8  x L32768: 16 GiB KV + 1.2 state + 2.0 reserve = 19.2 <= 27 OK
+      - name: phase2_resident_set
+        dynamic_budget_gib: 27.0
+        ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 8}
+  # ── The FF MTP build. A SEPARATE GGUF, therefore a separate tenant. ───────
+  # 866 tensors = the non-MTP build's 851 base + 15 MTP tensors (the study's
+  # paired_provenance.txt records `model_tensor_contract=851-base-plus-15-mtp`).
+  # Launched at draft depth n_max=1 — the depth is part of the measured
+  # identity, so a different depth is a different (unmeasured) operating point.
+  qwen36_27b_ff_mtp_q8:
+    evidence_arm: A3_ff_fable_mtp_q8
+    evidence_basis: measured
+    paired_with: qwen36_27b_ff_q8  # same base weights; the D6 mode comparison
+    model_path: /mnt/raid0/llm/models/Qwen3.6-27B-Fable-Fusion-711-GGUF/Qwen3.6-27B-Fable-Fus-711-UnHeretic-NM-DAU-NEO-MAX-NEO-MTP-Q8_0.gguf
+    model_bytes: 30239022560
+    model_sha256: 041c175f03b76adb70077ba470258f6b916ec4f5f066077377ef96396c3dd1d0
+    model_vram_gib: 28.16
+    kv_bytes_per_token_f16: 65536
+    per_seq_overhead_gib: 0.15
+    compute_reserve_gib: 2.0
+    np_throughput_saturation: 16  # np32 regresses at every depth (114.0 vs 135.1 at L2048)
+    draft_n_max: 1
+    measured_aggregate_decode_tok_s:
+      "2048":  {"1": 27.3, "2": 49.1, "4": 82.9, "8": 116.2, "16": 135.1, "32": 114.0}
+      "8192":  {"1": 26.7, "2": 41.5, "4": 65.8, "8": 84.1, "16": 75.5, "32": 66.7}
+      "16384": {"1": 26.5, "2": 39.3, "4": 52.4, "8": 59.3, "16": 58.3, "32": null}  # np32: capacity skip
+      "32768": {"1": 26.6, "2": 39.5, "4": 63.2, "8": 45.2, "16": null, "32": null}  # np16/32: capacity skip
+    # This tenant has NO mtp_off rows: you cannot run the MTP build with the
+    # draft head off and claim the non-MTP arm's evidence. Planning it mtp_off
+    # refuses, which is correct — use qwen36_27b_ff_q8 for that.
+    budgets: []
+    mode_overrides:
+      mtp_on:
+        evidence_arm: A3_ff_fable_mtp_q8
+        evidence_basis: measured
+        budgets:
+          # np16 x L32768 is a CAPACITY SKIP here where the non-MTP arm measured
+          # fine — the draft head's extra state costs real VRAM. np8 x L32768
+          # measured (45.2 t/s), so 8 is the validated depth ceiling at 32k.
+          - name: solo_resident
+            dynamic_budget_gib: 35.84  # 64 - 28.16 model
+            ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 8}
+          - name: phase2_resident_set
+            dynamic_budget_gib: 27.0
+            ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 8}
+
+  # ── Bake-off arm 2: stock. DERIVED ROW — no measurements of its own. ──────
+  qwen36_27b_stock_q8:
+    evidence_arm: A3_ff_fable_non_mtp_q8
+    evidence_basis: derived_conservative_transfer
+    evidence_note: >-
+      No np x context grid was ever run on the stock GGUF. These ceilings are
+      transferred from the FF arm, which shares the architecture, the KV
+      geometry (16 full-attn layers, 64 KiB/token f16) and the launch shape, and
+      whose model is 1.04 GiB LARGER. A model that fit with less headroom
+      necessarily fits with more, so the transfer is safe in this direction ONLY.
+      Do not transfer stock -> FF, and do not cite these cells as stock
+      throughput measurements: throughput is NOT transferable, only capacity.
+    registry_catalogue_id: qwen36_27b_q8  # the master-registry model id
+    model_path: /mnt/raid0/llm/models/Qwen_Qwen3.6-27B-Q8_0.gguf
+    model_bytes: 28665067072
+    # P2-1: sha256 pin for the preflight's streamed tenant-identity check.
+    # Same hash the registry PROPOSAL block pins (P4 precondition, docs/
+    # proposals/gpu-shadow-lane-registry-proposal.md §1).
+    model_sha256: 5927dc06c2b19f732fb6e2a6546dff4c130b552f2ab5f91feb3daafe43897b2a
+    model_vram_gib: 26.7
+    kv_bytes_per_token_f16: 65536
+    per_seq_overhead_gib: 0.15
+    compute_reserve_gib: 2.0
+    np_throughput_saturation: 16
+    measured_aggregate_decode_tok_s: null  # deliberately absent — see evidence_note
+    budgets:
+      - name: solo_resident
+        dynamic_budget_gib: 37.3  # 64 - 26.7 model
+        ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 16}
+      - name: phase2_resident_set
+        dynamic_budget_gib: 27.0
+        ceilings: {"2048": 16, "8192": 16, "16384": 16, "32768": 8}
+    # No mtp_on rows: the stock artifact is a non-MTP GGUF. A separate
+    # Qwen3.6-27B-MTP-Q8_0.gguf exists on disk but no grid was ever run on it,
+    # so there is nothing to transfer from. Planning stock mtp_on refuses.
+
+  # ── Control arm: A4 bridge. Measured cells only; sequential windows only. ──
+  # Qwen3.6-35B-A3B Q8 (the frontdoor/coder_escalation MoE) on MI210 — the
+  # sequential control arm for the P3-1 bake-off. No KV arithmetic derived
+  # (different MoE geometry, not needed yet). Phase-2 co-residency row
+  # deliberately ABSENT: 35.2 GiB model + the D2 resident set cannot co-fit in
+  # 64 GiB, so there is no budget at which a co-resident ceiling would be valid.
+  qwen36_35b_a3b_q8_bridge:
+    evidence_arm: A4_35b_a3b_v8_bridge
+    evidence_basis: measured
+    model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    model_bytes: 37801097504
+    model_sha256: c1283d8b80c3e38b2735ddbc9766d3b3126f44d6c484be419d4e101d09a76131
+    model_vram_gib: 35.2
+    kv_bytes_per_token_f16: null  # not derived; ceilings rest on measured cells only
+    per_seq_overhead_gib: null
+    compute_reserve_gib: 2.0
+    np_throughput_saturation: 16  # np32 regresses at L2048 (231.6 vs 269.8 t/s)
+    draft_n_max: 4
+    measured_aggregate_decode_tok_s:
+      "2048": {"1": 97.6, "2": 123.1, "4": 173.2, "8": 226.0, "16": 269.8, "32": 231.6}
+      "8192": {"1": 98.1, "2": 119.1, "4": 158.4, "8": 183.7, "16": 191.6}
+    # NO mtp_off rows. The bridge grid ran MTP ON at n_max=4 (this is an MTP
+    # GGUF and the driver was invoked with depth 4). The incumbent A4 also runs
+    # MTP on CPU, so mtp_on is the duty-relevant mode anyway; an MTP-off bridge
+    # number simply does not exist and must not be invented by fallback.
+    budgets: []
+    mode_overrides:
+      mtp_on:
+        evidence_arm: A4_35b_a3b_v8_bridge
+        evidence_basis: measured
+        budgets:
+          - name: solo_resident
+            dynamic_budget_gib: 28.8  # 64 - 35.2 model
+            ceilings: {"2048": 16, "8192": 16, "16384": null, "32768": null}  # deeper cells unmeasured in the bridge grid
