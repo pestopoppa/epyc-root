@@ -74,6 +74,8 @@ class Source:
     note: str = ""
     task: str = ""
     extra: dict = field(default_factory=dict)
+    #: optional safe public locator for a source whose native custody is private.
+    report_path: str = ""
 
     def load(self):
         return importlib.import_module(f"adapters.{self.module}")
@@ -90,6 +92,10 @@ INF70_AGENT_RUNS = Path("/mnt/raid0/llm/tmp/inf70/agents")
 ORCHESTRATOR = Path("/mnt/raid0/llm/epyc-orchestrator")
 
 SOURCES: dict[str, Source] = {s.name: s for s in (
+    Source("dtap-timeout-report", "dtap_timeout_report", _files("receipt.json"),
+           project="project_dtap_timeout_report", task="VB-DTAP-TIMEOUT-REPORT-WIRE",
+           report_path="public_locator",
+           note="explicit private original timeout-component integrity receipt; no default/body export"),
     Source("pii-staged-gate", "pii_staged_gate", _files("receipt.json"),
            task="VB-PII-STAGED-WIRE",
            note="explicit private original PII sub-gate receipt only; no default or public body export"),
@@ -339,15 +345,16 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
         raise ValueError(f"adapter {src.module} declares no AUTHORITY")
 
     frames: list[dict] = []
+    report_path = getattr(mod, src.report_path) if src.report_path else str
     report: dict[str, Any] = {
         "source": name, "adapter": f"adapters/{src.module}.py", "adapter_id": adapter_id,
-        "paths": [str(r) for r in roots], "units_matched": 0, "units_projected": 0,
+        "paths": [report_path(r) for r in roots], "units_matched": 0, "units_projected": 0,
         "declined": [], "refused": [], "missing": [], "rows_projected": 0,
         "frames_emitted": 0, "dry_run": dry_run,
     }
     for root in roots:
         if not root.exists():
-            report["missing"].append(str(root))
+            report["missing"].append(report_path(root))
             continue
         for unit in src.units(root):
             remaining = None if limit is None else limit - report["rows_projected"]
@@ -374,10 +381,10 @@ def ingest(ledger, name: str, paths: Iterable[Path] | None, *, as_of: str,
                                              adapter_id=adapter_id, authority=authority))
                         rows += 1
             except ProjectionError as exc:
-                report["refused"].append({"unit": str(unit), "reason": str(exc)})
+                report["refused"].append({"unit": report_path(unit), "reason": str(exc)})
                 continue
             if not got:
-                report["declined"].append(str(unit))
+                report["declined"].append(report_path(unit))
                 continue
             frames.extend(got)
             report["units_projected"] += 1

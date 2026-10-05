@@ -230,6 +230,8 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
     # KVQ's exact producer pin and external-repo artifact path are exercised by
     # test_kv_quant_27b_v10_adapter.py, including its CLI source and ledger fold.
     assert set(ingest_sources.SOURCES) == set(BUILDERS) | {
+        # Actual prospective DTAP producer/private CLI: test_dtap_timeout_report.py.
+        "dtap-timeout-report",
         # Actual private native gate/frames and CLI dry-run privacy roundtrip:
         # scripts/hooks/tests/test_pii_staged_capture.py.
         "pii-staged-gate",
