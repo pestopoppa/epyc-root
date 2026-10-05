@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 env:
-  SOURCE_SHA: 2500ea31ddc31a184ea2eeabf6e5fe801e05d651
+  SOURCE_SHA: 59e21608997009f2aa432f227ab09f46aebf9beb
   APP_CONTRACT_SHA: 300cf5817edccc4f82089f0faa477828496068b6
 jobs:
   schema-boundaries:
