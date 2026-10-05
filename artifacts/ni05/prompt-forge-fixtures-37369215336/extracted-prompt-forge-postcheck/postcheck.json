@@ -1,0 +1,165 @@
+{
+  "checks": {
+    "all_declared_absences_hold": true,
+    "exact_full_module_counts": true,
+    "install_status_and_log_bound": true,
+    "lock_pinned": true,
+    "native_exit_zero": true,
+    "native_readset_includes_install_and_test_inputs": true,
+    "native_true": true,
+    "original_stdout_stderr_present": true,
+    "private_owned_0700_paths": true,
+    "producer_clean": true,
+    "pyproject_pinned": true,
+    "python_pin": true,
+    "recipe_clean": true,
+    "refusal_controls_collected_passing": true,
+    "repo_pins_exact": true,
+    "selection_exact": true,
+    "shared_grade_judged_located": true,
+    "tested_source_clean": true,
+    "uv_pin": true
+  },
+  "expected_counts": {
+    "collected": 9,
+    "error": 0,
+    "executed": 9,
+    "failure": 0,
+    "passed": 9,
+    "skipped": 0
+  },
+  "install_log_sha256": "982b1861da28372bc2906654363df5af0175ed4be292bba64f23bb8824ef6ce0",
+  "install_status_sha256": "afad83fb325b467b24746a2cd9f4ff2c52960b6de3414656f113ab582e120c56",
+  "module_id": "prompt-forge",
+  "native_exit_code": 0,
+  "native_readset_names": [
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/context.json",
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/install-status.json",
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/install.log",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/model_registry.yaml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/embedder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/episodic_store.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/memory_record.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/progress_logger.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/q_scorer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/orchestration/repl_memory/retriever.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/pyproject.toml",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/boundary_contract.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/etd_agent.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/eval_integration.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/gap_diagnosis.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/mcp_tool_registry.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/species.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/task_synthesizer.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/env_synth/verifier_builder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/evolution_manager.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/numeric_swarm.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/prompt_forge.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/seeder.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/autopilot/species/structural_lab.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seed_specialist_routing.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seed_specialist_routing_v2.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_checkpoint.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_cli_config.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_eval.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_infra.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_injection.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_legacy.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_orchestrator.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_rewards.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_sampling.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_scoring.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_telemetry.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/scripts/benchmark/seeding_types.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/action_identity.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/journal_reconstruction.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/learning_exclusions.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/measurement_guards.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/multitier_decision.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/pareto_math.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/rlvr_tiers.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/sequential_verdict.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/autopilot_core/tier_specs.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/src/roles.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/conftest.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_seed_specialist_routing_main_and_retry.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/tests/unit/test_td21_27_prompt_forge_extraction.py",
+    "/home/runner/work/epyc-root/epyc-root/app-fixtures/uv.lock",
+    "/home/runner/work/epyc-root/epyc-root/ci-control/.github/workflows/ni57-58-fixture-matrix.yml",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/ci/native_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/__init__.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/adapters/ci_conformance.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/canonical.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/claim_tuple.py",
+    "/home/runner/work/epyc-root/epyc-root/root-producer/scripts/vidya/frames.py"
+  ],
+  "observed_counts": {
+    "collected": 9,
+    "error": 0,
+    "executed": 9,
+    "failure": 0,
+    "passed": 9,
+    "skipped": 0
+  },
+  "passing_refusal_controls": [
+    "test_no_fence_at_all_is_a_typed_failure_not_silent",
+    "test_propose_code_mutation_marks_extraction_failure_explicitly",
+    "test_propose_mutation_marks_extraction_failure_explicitly"
+  ],
+  "private_path_facts": {
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/cache": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/cache/uv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/tmp": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    },
+    "/home/runner/work/_temp/ni57-58-37369215336-2-prompt-forge/venv": {
+      "gid": 1001,
+      "mode": "0o700",
+      "uid": 1001
+    }
+  },
+  "receipt_sha256": "f049b1446b0b4f17ce27791f66a6c8b817d010ddba7aa1b92062b7380d4de3d2",
+  "repositories": {
+    "orchestrator_candidate": "774fed8f0894482b5f48004a4ef9a5fdab0bf21f",
+    "root_producer": "ff8a6baa7e4bc86fc7318055d3fe1050f31422c7",
+    "root_workflow": "45de432b29390dd48a850f68265dcf93b3d950b3"
+  },
+  "schema": "ni57_58.postcheck.v1",
+  "selections": [
+    "tests/unit/test_td21_27_prompt_forge_extraction.py"
+  ],
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "stdout_stderr_sha256": {
+    "pytest.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "pytest.stdout": "cf4a7eb21126e9ddd1cd32d65e70874152d3cfc86e3739221b56e88026b1260b"
+  },
+  "tested_source_clean": true
+}

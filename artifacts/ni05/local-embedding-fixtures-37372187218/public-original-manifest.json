@@ -383,7 +383,7 @@
     }
   ],
   "original_extracted_file_count": 76,
-  "private_custody_manifest_sha256": "ac1227195a6b32c018c5a318591ae00c0d6a39e3eb2de60fffdbfd00fcf0e11d2",
+  "private_custody_manifest_sha256": "ac1227195a6b32c018c5a318591ae00c0d6a39e3eb2de60fffdbfd00fcf0e11d",
   "run_id": 37372187218,
   "schema": "ni05.public-original-subset.v1"
 }

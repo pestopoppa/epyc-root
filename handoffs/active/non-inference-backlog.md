@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-45/53 strategy validation, NI05-58/59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-45/53 strategy validation, NI05-59 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **57/76**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **58/77**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -120,7 +120,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-57** ✅ 2026-10-05 — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
 
-- [ ] **NI05-58** — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
+- [x] **NI05-58** ✅ 2026-10-05 — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
 
 - [ ] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup.
 
@@ -168,6 +168,8 @@ allows division. RTG-58, UFH14-B4/LR-10, STACKCHG8083 deployment and the coordin
 already owned by the two Claude sessions. Frozen routing changes remain frozen. Harness transcripts
 and history are never cleanup candidates. Newly unlocked tasks are filed in their owning handoff,
 linked through its single domain index, then added here for dispatch.
+
+- [ ] **NI05-77** — NI-MEMINFO-PRIVACY: review the raw Linux VmallocTotal counter false positive in the existing precommit privacy gate; prepare a narrowly typed, source-bound fix with genuine account/secret refusal controls. Preserve unchanged private originals and full native readset custody; no named-file wildcard exemption, original rewriting, hook bypass or grading-rule change.
 
 ## Purpose
 
@@ -691,3 +693,7 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 NI05-61 completed: reviewed topology fixtures enforce the existing8/16 ONNX intra-op defaults and inter_op1, retain positive explicit overrides/refusals, and cover visibleCPU1/8/16/192. Original CI37369039306 attempt2 passes47 ColBERT+13 encoder cases, zero skips/failures/errors; main reopens both TRUE Judged/Located receipts,21 Git-backed+19 context/install inputs each,17 postchecks each and190 ZIP-member comparisons. Two test files are published to APP main33d9de564e3090516780a8889f4ca4e77a779bb7. Public originals: `artifacts/ni05/onnx-fixtures-37369039306`. Earlier setup/acquisition failures remain unchanged, with no invented result. Scoped completion tally56/76,20 open; no live ONNX model, inference, performance or full-suite claim.
 
 2026-10-05 NI05-60 completed: deterministic normalized1024-D embeddings use existing injection seams and temporary SQLite/FAISS stores; real persistence assertions, semantic/degraded ownership guards and default-embedder traps remain. Original CI37372187218 attempt1 passes53 creativity+5 seed cases with zero skips/failures/errors. Main independently reopens both TRUE Judged/Located receipts,22 Git-backed+3 context/install inputs each and17 postchecks each; verifies21 private original metadata and76 downloaded original files. Two test files are published to APP mainec711a7c100a26e183c8e9341e4a3122d21907df. Public originals: `artifacts/ni05/local-embedding-fixtures-37372187218`. Scoped completion tally57/76,19 open; no live store, model inference, semantic quality or full-suite claim.
+
+2026-10-05 NI05-58 completed: the prompt happy-path fixture injects a tiny synthetic EvalIdVocabulary through the existing seam, preserving real leakage validation and mocked generation. The prompt-only retry in original CI37369215336 attempt2 passes9/9, zero skips/failures/errors; routing remains its original successful attempt1 job and was not rerun. Main independently verifies93 private custody files,78 ZIP-member comparisons,62 Git-backed+3 context/install inputs, native TRUE Judged/Located,19 postchecks and three refusal controls. Only the prompt test is published to APP main392afbfc9ce72b4521daa21f6075ccc0ac4b256f. Public originals: `artifacts/ni05/prompt-forge-fixtures-37369215336`. Scoped completion tally58/76,18 open; original unexecuted prompt metadata remains unchanged. No corpus, inference, semantic-quality, capacity or whole-suite claim.
+
+2026-10-05 NI77 newly unlocked: the enabled privacy hook rejected three unchanged encoder meminfo carriers because Linux VmallocTotal has a long numeric value. They remain private in complete original custody; the187/190 public subset and its inability to reopen the encoder prefix independently are documented. A narrowly typed gate repair is now queued before further capture, retaining genuine secret/account refusals. No exemption or source change is approved by this filing. Identified tally77, completed58, open19 after the prompt checkpoint; earlier scope totals remain historical.
