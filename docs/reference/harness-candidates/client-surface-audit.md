@@ -32,7 +32,12 @@ The Hermes-specific results are in [`hermes-evaluation-20260916.md`](hermes-eval
 - The API reads two request headers: the `x-task-id` observability tag and `User-Agent` (the HS-4 P0.2 session guard). HS-16 adds session-id headers as an identity fallback, not as overrides. There is **no header path
   to an override**. A client that can only add headers (for example OpenHands `LLM.extra_headers`, or
   OpenCode's `chat.headers` hook) needs a new orchestrator-side header reader. Body injection works
-  today.
+  today. At the audited OpenCode 1.18.31 pin (`350c726aa8b6b11eb9242040bc5eb7ae837fbf8a`, release
+  tag `014614d35b39`), the plugin event hook supports status, idle and deleted events, but has no
+  separate end event. It sends one minimal, five-second-bounded `x_session_final` request only for
+  `session.deleted`; ordinary idle events are ignored. The orchestrator releases only an existing,
+  unexpired session on that signal; otherwise the declared TTL expires it. It records
+  `session_end_source=signal|ttl`, and finalization returns before model dispatch.
 - **Design rule: client UX stays in the client.** Slash commands, prompts and conversation memory
   live in the client. The orchestrator exposes typed overrides, and each client maps its UX onto
   them. Do not add orchestrator policy to serve one client's UX.
