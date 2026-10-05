@@ -5,18 +5,25 @@ on:
 permissions:
   contents: read
 env:
-  ROOT_SHA: 33d90cf2811942fe6c3f6a02c9a507f104b35b05
-  RESEARCH_SHA: 1d5550fff05347498aae63ef03082d99052f370b
-  ORCH_SHA: 2f3adb9eb73758e371836cb3ee6fbd7802e67274
+  ROOT_SHA: 36c191832bd58f175f0a7b90e733f2ea14a5169b
+  RESEARCH_SHA: e98909009f5dd2d148ad0e93029ea9fb85ba031f
+  ORCH_SHA: 2d24b1cb5157f91fd305f2d95b33c152297e088e
 jobs:
   root:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.ROOT_SHA }}
           path: root
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
       - uses: actions/checkout@v4
         with:
           repository: pestopoppa/epyc-inference-research
@@ -40,12 +47,38 @@ jobs:
           sudo ln -s "$GITHUB_WORKSPACE/orchestrator" /mnt/raid0/llm/epyc-orchestrator
           ln -s research epyc-inference-research
           ln -s orchestrator epyc-orchestrator
-          echo '47846292cdb2a9e5e3d4ab81dc49f6bebdd90db137a4805debec1b76e5489067  research/scripts/validate/check_evidence_durability.py' | sha256sum -c -
+          echo 'c46aa7f76064782f03b0db388bef220f301f6ff6d7d397c2e2274eac84eadc10  research/scripts/validate/check_evidence_durability.py' | sha256sum -c -
           echo '8caeb33dbb12986fadc385afe25d22bd791b036253c736f9527e67a55f85e268  research/scripts/kernel_rnd/exl3/evidence.py' | sha256sum -c -
       - name: Promotion fixture (no real promotion)
         working-directory: root
         run: python scripts/coordination/tests/test_promote_lane.py DefaultLockDirectoryTests
+      - name: Focused native adapter and carrier acceptance
+        working-directory: root
+        env:
+          EPYC_RESEARCH_ROOT: ${{ github.workspace }}/research
+          VIDYA_ORCH_WRITER_ROOT: ${{ github.workspace }}/orchestrator
+        run: |
+          python scripts/ci/native_conformance.py --cwd "$PWD" --junit focused.xml --output native-focused \
+            --repo "root=$PWD" --repo "research=$GITHUB_WORKSPACE/research" \
+            --repo "orchestrator=$GITHUB_WORKSPACE/orchestrator" --repo "ci-control=$GITHUB_WORKSPACE/ci-control" \
+            --read-path ../ci-control/.github/workflows/ni05-candidate-validation.yml \
+            --read-path tests/vidya/test_kv_quant_27b_v10_adapter.py \
+            --read-path tests/vidya/test_evidence_durability_adapter.py \
+            --read-path tests/vidya/test_ci_conformance.py \
+            --read-path tests/vidya/test_ingest_sources.py --read-path tests/vidya/test_claim_tuple.py \
+            --read-path scripts/vidya/adapters/evidence_durability.py \
+            --read-path scripts/vidya/adapters/ci_conformance.py \
+            --read-path ../research/scripts/validate/check_evidence_durability.py \
+            --read-path scripts/vidya/claim_tuple.py --read-path scripts/vidya/ingest_sources.py \
+            --read-path scripts/vidya/cli.py \
+            --select tests/vidya/test_kv_quant_27b_v10_adapter.py \
+            --select tests/vidya/test_evidence_durability_adapter.py --select tests/vidya/test_ci_conformance.py \
+            --select tests/vidya/test_ingest_sources.py --select tests/vidya/test_claim_tuple.py \
+            -- python -m pytest -q tests/vidya/test_kv_quant_27b_v10_adapter.py \
+               tests/vidya/test_evidence_durability_adapter.py tests/vidya/test_ci_conformance.py \
+               tests/vidya/test_ingest_sources.py tests/vidya/test_claim_tuple.py --junitxml=focused.xml
       - name: Vidya including actual writer archive roundtrip
+        if: always()
         working-directory: root
         env:
           EPYC_RESEARCH_ROOT: ${{ github.workspace }}/research
@@ -55,7 +88,10 @@ jobs:
         if: always()
         with:
           name: root-results
-          path: root/vidya.xml
+          path: |
+            root/vidya.xml
+            root/focused.xml
+            root/native-focused/
   research:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -64,6 +100,14 @@ jobs:
         with:
           repository: pestopoppa/epyc-inference-research
           ref: ${{ env.RESEARCH_SHA }}
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ROOT_SHA }}
+          path: ci-source
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -74,15 +118,30 @@ jobs:
           path: orchestrator-binding
       - name: Bind authoritative scoring sibling in ephemeral runner
         run: |
-          sudo mkdir -p /mnt/raid0/llm
+          sudo mkdir -p /mnt/raid0/llm /workspace/repos
           sudo ln -s "$GITHUB_WORKSPACE/orchestrator-binding" /mnt/raid0/llm/epyc-orchestrator
           sudo ln -s "$GITHUB_WORKSPACE" /mnt/raid0/llm/epyc-inference-research
+          sudo ln -s "$GITHUB_WORKSPACE" /workspace/repos/epyc-inference-research
       - name: Install pinned test extra and declared benchmark dependencies
         run: python -m pip install '.[benchmark,test]'
       - name: Durability strict and optional fixture contracts
         run: |
           echo 'NOT RUN off-host: test_the_real_registry_has_no_durability_errors requires the live raw evidence corpus; retained host validator job covers this separately.'
           python -m pytest -q scripts/validate/test_check_evidence_durability.py -k 'not test_the_real_registry_has_no_durability_errors' --junitxml=durability.xml
+      - name: Native KVQ summary ingest and fail-closed median fixtures
+        if: always()
+        env:
+          EPYC_ROOT_REPO: ${{ github.workspace }}/ci-source
+        run: |
+          python ci-source/scripts/ci/native_conformance.py --cwd "$PWD" --junit kvq.xml --output native-kvq \
+            --repo "research=$PWD" --repo "root=$GITHUB_WORKSPACE/ci-source" \
+            --repo "ci-control=$GITHUB_WORKSPACE/ci-control" \
+            --read-path ci-control/.github/workflows/ni05-candidate-validation.yml \
+            --read-path scripts/benchmark/test_kv_quant_27b_v10_ingest.py \
+            --read-path scripts/benchmark/kv_quant_27b_v10_sweep.py \
+            --read-path ci-source/scripts/vidya/adapters/kv_quant_27b_v10.py \
+            --select scripts/benchmark/test_kv_quant_27b_v10_ingest.py \
+            -- python -m pytest -q scripts/benchmark/test_kv_quant_27b_v10_ingest.py --junitxml=kvq.xml
       - name: Benchmark collection reproduction
         if: always()
         env:
@@ -99,12 +158,16 @@ jobs:
           path: |
             durability.xml
             collection.txt
+            kvq.xml
+            native-kvq/
   orchestrator:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       CI: 'true'
       ORCHESTRATOR_MOCK_MODE: 'true'
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /tmp/ni05-unused-cpu-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /tmp/ni05-unused-mtmd
     steps:
       - uses: actions/checkout@v4
         with:
@@ -127,6 +190,14 @@ jobs:
         run: python tests/unit/test_makefile_gate_contract.py
       - name: Install declared dev dependencies
         run: python -m pip install '.[dev]'
+      - name: Kernel override and reviewed topology fixture contracts
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          python -m pytest -q tests/unit/test_kernel_path_env_overrides.py \
+            tests/unit/test_default_template_topology_parity.py \
+            tests/unit/test_stack_templates_v2.py::TestDefaultYamlRoundTrip::test_default_yaml_loads_and_validates \
+            tests/unit/test_fleet_layer_dispatch.py tests/unit/test_v1_subagent_link.py --junitxml=topology.xml
       - name: Flags MCP and v1 mock isolation
         env:
           PYTHONPATH: ${{ github.workspace }}
@@ -144,6 +215,11 @@ jobs:
         run: |
           mapfile -t files < <(printf '%s\n' tests/unit/test_openai* | sort -r)
           python -m pytest -q "${files[@]}" --junitxml=orchestrator-reverse.xml
+      - name: Broad unit fixture sweep after focused success
+        if: success()
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: python -m pytest -q tests/unit --junitxml=unit-broad.xml
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -152,6 +228,8 @@ jobs:
             orchestrator.xml
             orchestrator-reverse.xml
             enqueue-timing.xml
+            topology.xml
+            unit-broad.xml
   node-harness:
     runs-on: ubuntu-latest
     timeout-minutes: 20
