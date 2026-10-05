@@ -140,3 +140,39 @@ def test_planner_keeps_separate_kv_figures_when_claim_is_long(tmp_path, monkeypa
     ingest(Ledger(ledger_path), "kv-quant-27b-v10-measurement", [sidecar], as_of=AS_OF)
     output = render(ledger_path, as_of=AS_OF)
     assert "K buffer 100.0 MiB; V buffer 200.0 MiB" in output
+
+
+def test_applicability_projects_only_recorded_native_fields(tmp_path, monkeypatch):
+    sidecar, rows, _, producer = write_capture(tmp_path, monkeypatch)
+    row = rows[0]
+    row["extra"]["model"] = {"path": "/models/native.gguf"}
+    row["extra"]["recipe"] = {"device": "ROCm0"}
+    row["run_expected_keys"] = ["native-declared-key"]
+    row["row_sha256"] = producer.row_digest(row)
+    projected = reader.project({"row": row})
+    scope = projected.applicability
+    assert scope == {"model_file": "/models/native.gguf", "device": "ROCm0",
+                     "context_tokens": row["extra"]["arm"]["context"],
+                     "kernel": row["extra"]["kernel"], "run_id": row["run_id"],
+                     "run_expected_keys": ["native-declared-key"]}
+    frames = ct.to_frames(projected, as_of=AS_OF, adapter_id=reader.ADAPTER_ID)
+    assert frames[0]["assertion"]["applicability"] == scope
+    assert "backend" not in scope and "quant" not in scope
+
+
+def test_applicability_does_not_invent_missing_native_values(tmp_path, monkeypatch):
+    _, rows, _, _ = write_capture(tmp_path, monkeypatch)
+    scope = reader.project({"row": rows[0]}).applicability
+    assert set(scope) == {"context_tokens", "kernel", "run_id"}
+
+
+@pytest.mark.parametrize("field,value", [("model", "invented-model"),
+                                           ("model", {"path": None}),
+                                           ("recipe", {"device": 1})])
+def test_applicability_refuses_malformed_native_declarations(tmp_path, monkeypatch, field, value):
+    _, rows, _, producer = write_capture(tmp_path, monkeypatch)
+    row = rows[0]
+    row["extra"][field] = value
+    row["row_sha256"] = producer.row_digest(row)
+    with pytest.raises(ct.ProjectionError, match="declaration|applicability"):
+        reader.project({"row": row})
