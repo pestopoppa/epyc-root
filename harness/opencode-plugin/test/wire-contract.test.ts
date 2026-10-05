@@ -183,7 +183,7 @@ function loadPinnedRetry(): any {
   })
   // Execute the pinned functions, with only external error-family guards stubbed.
   // No retry thresholds, patterns or delay math are copied into this test.
-  const isolated = source.replace(/^import .*$/gm, "").replace(/^export /gm, "")
+  const isolated = source.replace(/^import .*$/gm, "").replace(/^export \* .*$/gm, "").replace(/^export /gm, "")
   const code = stripTypeScriptTypes(isolated, { mode: "transform" })
   return runInNewContext(`${code}; ({ delay, retryable })`, {
     SessionV1: {
