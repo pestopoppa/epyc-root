@@ -37,6 +37,7 @@ TRUSTED_APP_SOURCES = {
     "memory-record-source.bin": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
     "src-package-source.bin": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
     "lock-source.bin": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+    "lock-runtime-source.bin": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
     "tier-spec-source.bin": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
 }
 APP_ARTIFACTS = set(TRUSTED_APP_SOURCES)

@@ -41,6 +41,7 @@ SOURCE_FILES = {
     "memory-record-source.bin": "orchestration/repl_memory/memory_record.py",
     "src-package-source.bin": "src/__init__.py",
     "lock-source.bin": "src/inference_lock.py",
+    "lock-runtime-source.bin": "src/runtime/inference_lock.py",
     "tier-spec-source.bin": "src/autopilot_core/tier_specs.py",
 }
 TRUSTED_APP_SOURCES = {
@@ -53,6 +54,7 @@ TRUSTED_APP_SOURCES = {
     "memory-record-source.bin": "7a41ca1bc46febe0efbaaa1a6b96f84e40b4338d6a690dae0ca09b9e7d85fe2b",
     "src-package-source.bin": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8",
     "lock-source.bin": "642b6a902a8c45949402d23aaf3237327619d338ee80f27f141ecb0dbb49f2c0",
+    "lock-runtime-source.bin": "659a51c1f1bd1c8db0e07d4092c5e9ddbf05f989be0ac84cb251a23be0ca9a36",
     "tier-spec-source.bin": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095",
 }
 ARTIFACT_LIMITS = {
@@ -442,7 +444,7 @@ def _verify_runtime_sources(app_root: Path, source_bytes: dict[str, bytes], *,
                 "orchestration.repl_memory.embedder": ("embedder-source.bin", "orchestration/repl_memory/embedder.py"),
                 "orchestration.repl_memory.memory_record": ("memory-record-source.bin", "orchestration/repl_memory/memory_record.py"),
                 "src": ("src-package-source.bin", "src/__init__.py"),
-                "src.inference_lock": ("lock-source.bin", "src/inference_lock.py"),
+                "src.inference_lock": ("lock-runtime-source.bin", "src/runtime/inference_lock.py"),
                 "src.autopilot_core.tier_specs": ("tier-spec-source.bin", "src/autopilot_core/tier_specs.py")}
     lazy_store_modules = {
         "orchestration.repl_memory.strategy_store",

@@ -164,7 +164,13 @@ def test_explicit_wrapper_captures_one_offhost_dry_run_and_restores_import_state
     assert tuple(sys.meta_path) == before_meta_path
     record, _ = adapter.read_receipt(receipt)
     assert record["applicability"] == "captured_cli"
-    assert record["execution_started"] is True and record["capture_complete"] is True
+    terminal_raw = adapter._artifact(receipt.parent, record["terminal"])
+    terminal = json.loads(terminal_raw.rstrip(b"\n"))
+    stderr_raw = adapter._artifact(receipt.parent, record["stderr"])
+    stderr_sha256 = hashlib.sha256(stderr_raw).hexdigest()
+    assert record["execution_started"] is True and record["capture_complete"] is True, (
+        f"capture incomplete; terminal={terminal!r}; stderr_sha256={stderr_sha256}"
+    )
     assert record["report_ok"] is True and record["exit_code"] == 0
     request = adapter._request_for_native(receipt)[0]
     assert request["started_utc"] == record["started_utc"]
