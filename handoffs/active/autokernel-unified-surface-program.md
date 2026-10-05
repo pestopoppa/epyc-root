@@ -3896,6 +3896,15 @@ submitting a completed package, and no unreviewed draft becomes a published chec
 Per-task handoff/progress/checklist/publication follows the wrap-up workflow. Index pruning, handoff
 compaction and wiki compilation are not part of this implementation request's routine checkpoints.
 
+## FIFO region-lock queue (2026-10-05)
+
+Landed orchestrator `11e6d86` (commit `11e6d867890952c01bcad367e931f86f5520df02`), gated by `EPYC_LOCK_FIFO` (default OFF). Ticket queue over role and GLOBAL per-region locks plus gpu-quiet writer preference. Reviewed by ak-ds41-main and workspace-ec. All tests passed (125 passed, 3 xfailed), validated against origin/main.
+
+- [ ] Deterministic FIFO-off control (barrier or fake-poll harness: the releaser re-requests while the waiter is provably parked), so the 3 starvation/barging xfails become strict. Required before default ON.
+- [ ] Flip `EPYC_LOCK_FIFO` default ON only after both live AK loops (DS41, Q38FN) have restarted on the new code (old clients barge).
+
+**Starvation evidence**: a region-lock build claim on cpu 0-3 waited 3872 s behind a live AK loop on 2026-10-05.
+
 - [ ] **AKU-RED-LOOP — triage the red research AutoKernel loop suites** (filed 2026-09-17; handed over by
   `sub-redtests`, see `progress/2026-09/2026-09-16-sub-redtests.md` → *Handover*). Under python3,
   `scripts/kernel_rnd/autokernel/loop` shows 30 failed and 30 errors. Clusters: the `test_serial_run.py`
