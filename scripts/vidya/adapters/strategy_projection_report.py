@@ -195,7 +195,7 @@ def _validate_inputs(rows: Any, roots: list[dict]) -> None:
     shard_pattern = re.compile(r"^autopilot_journal(?:_(\d+))?\.jsonl$")
     batch_ids = []
     for shard in shard_paths:
-        match = shard_pattern.fullmatch(shard.name)
+        match = shard_pattern.fullmatch(Path(shard).name)
         if match is None:
             raise ValueError("journal input has a noncanonical shard filename")
         batch = 0 if match.group(1) is None else int(match.group(1))
