@@ -1,0 +1,22 @@
+PII fixture eval -- false-accept and false-reject reported SEPARATELY (RC-11).
+  false-accept (PII the hook let through): 0/21 must-block rows = 0.0%
+    cause histogram (missed label kind): (none)
+  false-reject (clean text the hook blocked): 0/30 must-not-block rows = 0.0%
+    cause histogram (context_type of over-block): (none)
+  NOT COMPUTABLE HERE: the FIELD false-accept rate. The must-block rows are hand-written
+    and are the only labelled PII in this repo, so the rate above estimates the hook's
+    behaviour on secrets someone already thought of and nothing else. The negative-side
+    label coverage below is reported in its place -- a label kind with no reachable
+    must-not-block row has an untested false-reject direction.
+    negative-side label coverage: <no-pii-span>=20, account_number=9, secret=1
+  Provenance: fixture and hook share an origin commit and the fixture has been edited to
+    agree with the hook, so these are same-sample observations, not independent estimates.
+  ok   workspace blocks a staged secret (exit 1)
+  ok   workspace allows a clean staged set
+  ok   epyc-inference-research blocks a staged secret (exit 1)
+  ok   epyc-inference-research allows a clean staged set
+  ok   epyc-orchestrator blocks a staged secret (exit 1)
+  ok   epyc-orchestrator allows a clean staged set
+All assertions passed.
+..........                                                               [100%]
+10 passed in 13.28s

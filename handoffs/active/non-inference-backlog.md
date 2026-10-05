@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** OBS-12a.
+- **Next:** NI05-18 complete unit sweep and NI05-36 report fidelity; then re-audit the follow-on pool below.
 - **Then:** NIB2-85, NIB2-86 (`make gates`; filed as NIB2-80), NIB2-73e, NIB2-77, NIB2-83.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **30/36**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **34/36**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 - [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
@@ -46,7 +46,7 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
 - [x] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
 - [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
-- [ ] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
+- [x] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
 - [x] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
 - [x] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
 - [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
@@ -69,11 +69,11 @@ and host-dependent acceptance boundaries explicit.
 - [x] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
 - [x] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
 
-- [ ] **NI05-32** — HSF-3 schema boundaries: synthetic tap/progress/checkpoint coverage controls without inferred enqueue/class joins.
+- [x] **NI05-32** — HSF-3 schema boundaries: synthetic tap/progress/checkpoint coverage controls without inferred enqueue/class joins.
 - [x] **NI05-33** — OBS-12a: remove active explicit system-Python bus invocations; honor the existing managed-venv shebang.
-- [ ] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
+- [x] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
 
-- [ ] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
+- [x] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
 - [ ] **NI05-36** — DCP-13a/b: remove unreachable report-fetch instructions and return full reports on delegation-cache hits; retain separate inference-dependent DCP-13 arms.
 
 Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
@@ -560,4 +560,9 @@ binds exact tested source and original bytes. No production activation or reload
 
 2026-10-05 reviewed boundary: NI12/NIB2-87 installs research pytest 9.1.1 additively and verifies both managed imports; root health source checks both. NI25 captures both API orders (376/376 each) plus the explicitly synthetic broad attempt. NI29 retains all five original phases before the broad timeout; the broad result is diagnostic/null, never a whole-unit pass. NI31 passes 17 actual-index controls, 8 caller cases, privacy fixture denominators 0/21 false accepts and 0/30 false rejects, and six installed-wrapper assertions. Full unchanged native custody is published in [recovery bundle](../../artifacts/ni05/recovery-37299780302/README.md) and [NI31 bundle](../../artifacts/ni05/fixture-custody-37307260869/README.md). NI10 remains open: one bounded journal census and the source-schema map do not establish HSF-3's requested distribution. Newly unlocked NI32–34 are filed here and in their existing canonical handoffs; no duplicate domain ownership.
 
-NI33/OBS-12a complete 2026-10-05: exact five active command substitutions preserve arguments and honor executable managed-venv shebang. [Unique caller review](../../progress/2026-10/2026-10-05-obs12a-session-bus-interpreter.md). No daemon restart or historical instruction rewrite. NI28 standalone dependency capture source is accepted through 12 named fixtures; actual claimed store capture remains pending, measurement-producer digest bindings stay distinct.
+NI33/OBS-12a complete 2026-10-05: exact five active command substitutions preserve arguments and honor executable managed-venv shebang. [Unique caller review](../../progress/2026-10/2026-10-05-obs12a-session-bus-interpreter.md). No daemon restart or historical instruction rewrite. NI28 standalone dependency capture source is accepted through 12 named fixtures; actual claimed store capture is independently verified; prospective measurement attachment remains open, measurement-producer digest bindings stay distinct.
+
+
+NI34/NI35 complete 2026-10-05: prospective private actual-index and named managed-import producers/readers use the existing verifier carrier and shared grade. Original hosted suites pass 84 and 11 cases respectively without skips/failures/errors. An actual two-path PII sub-gate finding independently reopens; earlier setgid custody is refused unchanged. The managed-import positives/negatives remain synthetic CI fixtures, not actual host health. Main integrates source, original public custody, source enrollment and wiki; [privacy progress](../../progress/2026-10/2026-10-05-ni34-staged-pii-native-capture.md), [managed progress](../../progress/2026-10/2026-10-05-ni35-managed-tooling-check.md).
+
+2026-10-05 reviewed source boundary: NI10 explicit optional `x_client_class` validates and forwards self-reported metadata with `caller_supplied:x_client_class` provenance; omitted fields remain absent. App source is published at `099dc1af69cf`. Original CI 37325396069 verifies 1/1 ordinary capacity refusal and 17/17 synthetic request-to-record controls. NI32 source59e adds 12/12 native/exact/proxy and tap/progress/checkpoint schema controls; original CI37326107920 is TRUE Judged/Located. The preceding 8/12 failed fixture expectation remains FALSE unchanged; missing-ledger custody correctly refuses to report OK (SC73). Neither fixture result supplies live gap data. HSF-3 remains open pending ≥50 properly keyed/classed sessions per reported basis in each independent window; no percentile, client brand, TTL or inferred enqueue. Delivery tally **34/36**.

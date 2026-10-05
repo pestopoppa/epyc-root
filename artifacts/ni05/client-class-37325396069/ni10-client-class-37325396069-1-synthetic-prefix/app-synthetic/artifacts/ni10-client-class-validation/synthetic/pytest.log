@@ -1,0 +1,17 @@
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+WARNING  src.api.routes.openai_compat:openai_compat.py:663 client tool mode: backend reported no prompt token count; usage reports 0
+ERROR    src.api:__init__.py:62 Could not publish API worker config attestation: [Errno 13] Permission denied: '/mnt/raid0'
+WARNING  src.api.routes.openai_compat:openai_compat.py:663 client tool mode: backend reported no prompt token count; usage reports 0

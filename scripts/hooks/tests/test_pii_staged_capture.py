@@ -532,3 +532,7 @@ def test_unsafe_existing_ancestor_is_not_migrated(repo, permission):
     with pytest.raises(ValueError, match="parent is not owner-only"):
         capture.begin(repo)
     assert ancestor.stat().st_mode & 0o7777 == permission
+
+
+if __name__ == "__main__":
+    raise SystemExit("REFUSING: pytest-fixture suite; run: python -m pytest scripts/hooks/tests/test_pii_staged_capture.py -q")

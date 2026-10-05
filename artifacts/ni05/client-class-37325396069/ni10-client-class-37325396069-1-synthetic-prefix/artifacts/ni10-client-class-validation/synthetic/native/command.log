@@ -1,0 +1,20 @@
+{"fixture": "offhost_synthetic_host_ram", "gpu_capacity_provider": "unchanged", "host_ram_gib": 1024.0, "production_capacity_validator": "unchanged", "pytest_argv": ["-q", "tests/unit/test_openai_client_tool_mode.py::test_bad_request_key_values_are_422", "tests/unit/test_openai_client_tool_mode.py::test_explicit_client_class_is_echoed_and_bound_to_trace_keys", "tests/unit/test_openai_client_tool_mode.py::test_keys_are_echoed_in_nonstream_metadata_and_trace", "tests/unit/test_serving_calls.py::test_explicit_client_class_reaches_native_record_without_inference", "--junitxml=artifacts/ni10-client-class-validation/synthetic/original-pytest.xml", "--log-file=artifacts/ni10-client-class-validation/synthetic/pytest.log"], "scope": "entire pytest invocation in this process"}
+============================= test session starts ==============================
+platform linux -- Python 3.11.16, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/runner/work/epyc-root/epyc-root/app-synthetic
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, langsmith-0.7.30, timeout-2.4.0, anyio-4.13.0, hypothesis-6.151.13, cov-7.1.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 17 items
+
+tests/unit/test_openai_client_tool_mode.py ...............               [ 88%]
+tests/unit/test_serving_calls.py ..                                      [100%]
+
+=============================== warnings summary ===============================
+../../../_temp/ni10-client-class-venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /home/runner/work/_temp/ni10-client-class-venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+- generated xml file: /home/runner/work/epyc-root/epyc-root/app-synthetic/artifacts/ni10-client-class-validation/synthetic/original-pytest.xml -
+======================== 17 passed, 1 warning in 8.02s =========================

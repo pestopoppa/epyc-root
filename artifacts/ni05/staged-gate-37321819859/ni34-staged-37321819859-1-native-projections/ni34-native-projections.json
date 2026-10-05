@@ -1,0 +1,46 @@
+[
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 10,
+      "error": 0,
+      "executed": 10,
+      "failure": 0,
+      "passed": 10,
+      "skipped": 0
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "receipt": "native-ni34-staged-callers/receipt.json",
+    "sha256": "53bd8dddc440f96627fea6c36fdb38a30acf3e61fd72efb0f6126b49968f8569"
+  },
+  {
+    "conformant": true,
+    "counts": {
+      "collected": 74,
+      "error": 0,
+      "executed": 74,
+      "failure": 0,
+      "passed": 74,
+      "skipped": 0
+    },
+    "diagnostic": "",
+    "grade": [
+      "Judged",
+      "Located",
+      [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    ],
+    "receipt": "native-ni34-staged-fixtures/receipt.json",
+    "sha256": "5536c6b8bd0032b5d4940536426aa04e7c872bd5b58477617b9337872fd7a60a"
+  }
+]

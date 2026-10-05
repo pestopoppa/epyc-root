@@ -1,0 +1,22 @@
+{
+  "conformant": true,
+  "counts": {
+    "collected": 12,
+    "error": 0,
+    "executed": 12,
+    "failure": 0,
+    "passed": 12,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "grade": [
+    "Judged",
+    "Located",
+    [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  ],
+  "receipt": "native-ni32-schema-boundaries/receipt.json",
+  "sha256": "6a0ac7c4d67f136a61ecaf7041c967fbe0f12e4638b08cc52e05f55f1292ca4f"
+}

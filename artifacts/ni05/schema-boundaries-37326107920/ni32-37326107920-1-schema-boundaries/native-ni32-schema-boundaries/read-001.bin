@@ -1,0 +1,25 @@
+{
+  "app_contract_sha": "300cf5817edccc4f82089f0faa477828496068b6",
+  "command_time_limit_s": 180,
+  "exclusions": [
+    "live tap/DB/checkpoint reads",
+    "inference",
+    "production/provider access",
+    "inferred joins or enqueues",
+    "client brand inference",
+    "fixture distribution or percentiles",
+    "TTL claims",
+    "promotion authority",
+    "dependency completeness"
+  ],
+  "native_scope": "existing serving_call.v1 producer and sole session gap integrity verifier/grader; exact and staging_proxy remain distinct",
+  "outer_capture_time_limit_s": 240,
+  "outer_termination_policy": "native producer SIGTERM then SIGKILL after 15 seconds; incomplete originals remain diagnostic, never backfilled",
+  "scope": "12 synthetic source-shaped schema refusal/native integrity controls; no application modules executed",
+  "source_shapes": {
+    "checkpoint": "src/session/models.py:Checkpoint.to_dict plus src/session/sqlite_store.py persistence",
+    "progress": "orchestration/repl_memory/progress_logger.py:ProgressEntry.to_json",
+    "tap": "src/runtime/inference_tap.py:TapWriter._emit_event plus src/llm_primitives/inference.py caller metadata"
+  },
+  "termination_policy": "inner command SIGINT then SIGKILL after 15 seconds"
+}
