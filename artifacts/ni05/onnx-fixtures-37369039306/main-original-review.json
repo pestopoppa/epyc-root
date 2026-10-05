@@ -1,0 +1,306 @@
+{
+  "attempt": 2,
+  "custody_manifest_sha256": "5c62f74268bada4e42d1b629bc9a03fdc54e318da3cc0056804d8a291194f045",
+  "modules": [
+    {
+      "counts": {
+        "collected": 13,
+        "error": 0,
+        "executed": 13,
+        "failure": 0,
+        "passed": 13,
+        "skipped": 0
+      },
+      "digest": "3f2f359e7488012eacb0bffa833b8ffacd7cd256905a29961bfb31805c0e615a",
+      "external_bound_inputs": [
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/context.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/capture-ownership.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/runner-meminfo.raw.txt",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/runner-visible-cpus.raw.txt",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/install.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/install.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/install-status.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/app-source-before-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/app-baseline-before-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/app-project-lock-after-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/collect_module.py",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/baseline-collection.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/baseline-collection.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/baseline-collection.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/candidate-collection.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/candidate-collection.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/candidate-collection.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/collection-comparison.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/encoder-session-options/collection-status.json"
+      ],
+      "git_source_inputs_verified": [
+        {
+          "path": "scripts/ci/native_conformance.py",
+          "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+          "tree": "root-producer"
+        },
+        {
+          "path": ".github/workflows/ni61-onnx-thread-fixtures.yml",
+          "sha256": "1adfa3d8a10b745a6559c3bd7a15fa3622f514d4ca4c2579378697be5ccdeb92",
+          "tree": "ci-control"
+        },
+        {
+          "path": "scripts/vidya/adapters/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/adapters/ci_conformance.py",
+          "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/claim_tuple.py",
+          "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/canonical.py",
+          "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/frames.py",
+          "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+          "tree": "root-producer"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/test_colbert_reranker.py",
+          "sha256": "0ea5374898817c86c95aee8757649c98bb202e221697796eecd2f211b4019219",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/test_retrieval_encoder_onnx_threads.py",
+          "sha256": "1b3b999a1466a29ff83f1206f8450fb8641a78ec4370d77f5428ae10e5983c94",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "tests/unit/test_retrieval_encoder_onnx_threads.py",
+          "sha256": "ad2a92c91fbc4d414923c3fbad4eef0f668ddc08073ba37de4ddc11aff46e902",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/retrieval/colbert_encoder.py",
+          "sha256": "271477b9a17ce7715baf49fd26a3256464ccc37c03b0767570502c9e815116a5",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/retrieval/cross_encoder.py",
+          "sha256": "fcad12d71fa89eb7c64fd7dc5affa01568723a03cad55a56a168273a259f7e2d",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/tools/web/colbert_reranker.py",
+          "sha256": "f3d235320fcd8d95c44c90ac2bea42c51f8ee737b053a95c040cd063b6456dec",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-candidate"
+        }
+      ],
+      "grade": [
+        "Judged",
+        "Located",
+        [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      ],
+      "original_postchecks_all_true": 17,
+      "receipt": "ni61-37369039306-2-encoder-session-options-native-originals/native/receipt.json"
+    },
+    {
+      "counts": {
+        "collected": 47,
+        "error": 0,
+        "executed": 47,
+        "failure": 0,
+        "passed": 47,
+        "skipped": 0
+      },
+      "digest": "ef07a2301e12a2b756c13802413d9643296a3f2e5443a0823a9c6d54c0b01709",
+      "external_bound_inputs": [
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/context.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/capture-ownership.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/runner-meminfo.raw.txt",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/runner-visible-cpus.raw.txt",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/install.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/install.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/install-status.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/app-source-before-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/app-baseline-before-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/app-project-lock-after-install.sha256",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/collect_module.py",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/baseline-collection.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/baseline-collection.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/baseline-collection.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/candidate-collection.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/candidate-collection.stdout",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/candidate-collection.stderr",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/collection-comparison.json",
+        "/home/runner/work/_temp/ni61-fixtures/37369039306/2/colbert-reranker/collection-status.json"
+      ],
+      "git_source_inputs_verified": [
+        {
+          "path": "scripts/ci/native_conformance.py",
+          "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+          "tree": "root-producer"
+        },
+        {
+          "path": ".github/workflows/ni61-onnx-thread-fixtures.yml",
+          "sha256": "1adfa3d8a10b745a6559c3bd7a15fa3622f514d4ca4c2579378697be5ccdeb92",
+          "tree": "ci-control"
+        },
+        {
+          "path": "scripts/vidya/adapters/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/adapters/ci_conformance.py",
+          "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/claim_tuple.py",
+          "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/canonical.py",
+          "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+          "tree": "root-producer"
+        },
+        {
+          "path": "scripts/vidya/frames.py",
+          "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+          "tree": "root-producer"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/test_colbert_reranker.py",
+          "sha256": "0ea5374898817c86c95aee8757649c98bb202e221697796eecd2f211b4019219",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/unit/test_retrieval_encoder_onnx_threads.py",
+          "sha256": "1b3b999a1466a29ff83f1206f8450fb8641a78ec4370d77f5428ae10e5983c94",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-baseline"
+        },
+        {
+          "path": "tests/conftest.py",
+          "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "tests/unit/conftest.py",
+          "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "tests/unit/test_colbert_reranker.py",
+          "sha256": "c26ff31a314d6921007e554977ae9f52491da456285168402f87e903d5f4991e",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/retrieval/colbert_encoder.py",
+          "sha256": "271477b9a17ce7715baf49fd26a3256464ccc37c03b0767570502c9e815116a5",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/retrieval/cross_encoder.py",
+          "sha256": "fcad12d71fa89eb7c64fd7dc5affa01568723a03cad55a56a168273a259f7e2d",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "src/tools/web/colbert_reranker.py",
+          "sha256": "f3d235320fcd8d95c44c90ac2bea42c51f8ee737b053a95c040cd063b6456dec",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "pyproject.toml",
+          "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+          "tree": "app-candidate"
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+          "tree": "app-candidate"
+        }
+      ],
+      "grade": [
+        "Judged",
+        "Located",
+        [
+          "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+          "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+        ]
+      ],
+      "original_postchecks_all_true": 17,
+      "receipt": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/receipt.json"
+    }
+  ],
+  "run_id": 37369039306,
+  "schema": "ni05.main-original-review.v1"
+}

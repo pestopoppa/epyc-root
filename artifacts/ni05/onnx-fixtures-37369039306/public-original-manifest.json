@@ -1,0 +1,962 @@
+{
+  "attempt": 2,
+  "files": [
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/baseline-collection.json",
+      "sha256": "9ef277a8f1a334fb4a1e36444fc14e0a33f6c2edb56bf902537028ff17d9eb8c",
+      "size_bytes": 4649
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/baseline-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/baseline-collection.stdout",
+      "sha256": "ef4a248a275f49d46d49080dfce579a2efd0601715f14b08c70dca2a83296e6c",
+      "size_bytes": 4362
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/candidate-collection.json",
+      "sha256": "4b7d8f4163c147d26ceef73f9261ac8c3800ad9cbe1339f4c8f98f72593882d5",
+      "size_bytes": 5068
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/candidate-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/candidate-collection.stdout",
+      "sha256": "a8679f5360485dc3bbe32d1de6ab60e61a324ab7837c73d03b82fa3254d8da2f",
+      "size_bytes": 4663
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/capture-ownership.json",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/collect_module.py",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/collection-comparison.json",
+      "sha256": "51db0e6f19049e23e14d0a1b1eb3d26ae4aaa4011b96b14684651ecfb4d2f3c6",
+      "size_bytes": 996
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/collection-status.json",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/context.json",
+      "sha256": "c5f807ea5105ff42505fa5e667ba12c12bda8b04479f8b9bee181c9200562f6f",
+      "size_bytes": 2522
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/install.stderr",
+      "sha256": "0c46d5e3525e8be18db2a6dc2ae52802482b086652207900f7e6d6571fdc4308",
+      "size_bytes": 5029
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/runner-meminfo.raw.txt",
+      "sha256": "fbc97d25c9e804f29e4445a0ec96fab2900a5a9427772a0837250c6359e50af3",
+      "size_bytes": 1615
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-collection-originals/runner-visible-cpus.raw.txt",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/install.stderr",
+      "sha256": "0c46d5e3525e8be18db2a6dc2ae52802482b086652207900f7e6d6571fdc4308",
+      "size_bytes": 5029
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-install-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/baseline-collection.json",
+      "sha256": "9ef277a8f1a334fb4a1e36444fc14e0a33f6c2edb56bf902537028ff17d9eb8c",
+      "size_bytes": 4649
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/baseline-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/baseline-collection.stdout",
+      "sha256": "ef4a248a275f49d46d49080dfce579a2efd0601715f14b08c70dca2a83296e6c",
+      "size_bytes": 4362
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/candidate-collection.json",
+      "sha256": "4b7d8f4163c147d26ceef73f9261ac8c3800ad9cbe1339f4c8f98f72593882d5",
+      "size_bytes": 5068
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/candidate-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/candidate-collection.stdout",
+      "sha256": "a8679f5360485dc3bbe32d1de6ab60e61a324ab7837c73d03b82fa3254d8da2f",
+      "size_bytes": 4663
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/capture-ownership.json",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/collect_module.py",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/collection-comparison.json",
+      "sha256": "51db0e6f19049e23e14d0a1b1eb3d26ae4aaa4011b96b14684651ecfb4d2f3c6",
+      "size_bytes": 996
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/collection-status.json",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/context.json",
+      "sha256": "c5f807ea5105ff42505fa5e667ba12c12bda8b04479f8b9bee181c9200562f6f",
+      "size_bytes": 2522
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/install.stderr",
+      "sha256": "0c46d5e3525e8be18db2a6dc2ae52802482b086652207900f7e6d6571fdc4308",
+      "size_bytes": 5029
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/command.log",
+      "sha256": "6429d24678371b63dc6db45b9de31560c9006bdcdc3502d0ee2efd93f89d9b42",
+      "size_bytes": 1390
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/execution-request.json",
+      "sha256": "9ae5617b8db0334ea7606b42894a4ec3516c3aa2651eb312e0ffc13cc4923a7c",
+      "size_bytes": 11707
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/original-junit.xml",
+      "sha256": "fa82889facc6dc105d4dd9263a4197bb7561588c7eb323e53485c0a8879bfe5c",
+      "size_bytes": 7924
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-001.bin",
+      "sha256": "1adfa3d8a10b745a6559c3bd7a15fa3622f514d4ca4c2579378697be5ccdeb92",
+      "size_bytes": 39295
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-002.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-003.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-004.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-005.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size_bytes": 5909
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-006.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size_bytes": 10240
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-007.bin",
+      "sha256": "c5f807ea5105ff42505fa5e667ba12c12bda8b04479f8b9bee181c9200562f6f",
+      "size_bytes": 2522
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-008.bin",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-009.bin",
+      "sha256": "fbc97d25c9e804f29e4445a0ec96fab2900a5a9427772a0837250c6359e50af3",
+      "size_bytes": 1615
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-010.bin",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-011.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-012.bin",
+      "sha256": "0c46d5e3525e8be18db2a6dc2ae52802482b086652207900f7e6d6571fdc4308",
+      "size_bytes": 5029
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-013.bin",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-014.bin",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-015.bin",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-016.bin",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-017.bin",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-018.bin",
+      "sha256": "9ef277a8f1a334fb4a1e36444fc14e0a33f6c2edb56bf902537028ff17d9eb8c",
+      "size_bytes": 4649
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-019.bin",
+      "sha256": "ef4a248a275f49d46d49080dfce579a2efd0601715f14b08c70dca2a83296e6c",
+      "size_bytes": 4362
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-020.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-021.bin",
+      "sha256": "4b7d8f4163c147d26ceef73f9261ac8c3800ad9cbe1339f4c8f98f72593882d5",
+      "size_bytes": 5068
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-022.bin",
+      "sha256": "a8679f5360485dc3bbe32d1de6ab60e61a324ab7837c73d03b82fa3254d8da2f",
+      "size_bytes": 4663
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-023.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-024.bin",
+      "sha256": "51db0e6f19049e23e14d0a1b1eb3d26ae4aaa4011b96b14684651ecfb4d2f3c6",
+      "size_bytes": 996
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-025.bin",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-026.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-027.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-028.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-029.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-030.bin",
+      "sha256": "0ea5374898817c86c95aee8757649c98bb202e221697796eecd2f211b4019219",
+      "size_bytes": 24855
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-031.bin",
+      "sha256": "1b3b999a1466a29ff83f1206f8450fb8641a78ec4370d77f5428ae10e5983c94",
+      "size_bytes": 7327
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-032.bin",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+      "size_bytes": 6832
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-033.bin",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "size_bytes": 1099589
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-034.bin",
+      "sha256": "c26ff31a314d6921007e554977ae9f52491da456285168402f87e903d5f4991e",
+      "size_bytes": 25034
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-035.bin",
+      "sha256": "271477b9a17ce7715baf49fd26a3256464ccc37c03b0767570502c9e815116a5",
+      "size_bytes": 26145
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-036.bin",
+      "sha256": "fcad12d71fa89eb7c64fd7dc5affa01568723a03cad55a56a168273a259f7e2d",
+      "size_bytes": 8838
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-037.bin",
+      "sha256": "f3d235320fcd8d95c44c90ac2bea42c51f8ee737b053a95c040cd063b6456dec",
+      "size_bytes": 9211
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-038.bin",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+      "size_bytes": 6832
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/read-039.bin",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "size_bytes": 1099589
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native/receipt.json",
+      "sha256": "ef07a2301e12a2b756c13802413d9643296a3f2e5443a0823a9c6d54c0b01709",
+      "size_bytes": 30892
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native-driver-status.json",
+      "sha256": "b1998d0da7204c0ab2837ef9e18a66358edf415c35399b908663303e118f6211",
+      "size_bytes": 108
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native-producer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/original-pytest.xml",
+      "sha256": "fa82889facc6dc105d4dd9263a4197bb7561588c7eb323e53485c0a8879bfe5c",
+      "size_bytes": 7924
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/native-producer.stdout",
+      "sha256": "4e2d2b9ac5582024ea2451ec422c61731a0ba05dda8b283c3296f6602050b1e8",
+      "size_bytes": 142
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/pytest.log",
+      "sha256": "a91c302cf46b9bd6061aa10f7fb75ac3105b93f7d647b7d4e530a2da4f270d6e",
+      "size_bytes": 5061
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/runner-meminfo.raw.txt",
+      "sha256": "fbc97d25c9e804f29e4445a0ec96fab2900a5a9427772a0837250c6359e50af3",
+      "size_bytes": 1615
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-native-originals/runner-visible-cpus.raw.txt",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-postcheck/postcheck.json",
+      "sha256": "c6fa7ff8bbc9b6b71706e262441096c7ca741c4db3593524997d574b6c7b6941",
+      "size_bytes": 1297
+    },
+    {
+      "path": "colbert-job-custody/ni61-37369039306-2-colbert-reranker-postcheck/postcheck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/baseline-collection.json",
+      "sha256": "dcf5b027f68f7c846285bcae8c8d964426fcc967d00a67ff9316349252b18f31",
+      "size_bytes": 1178
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/baseline-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/baseline-collection.stdout",
+      "sha256": "95bb5ad111537bb559a52c13d432339ea250354dea5a39b539840bf467ac48b7",
+      "size_bytes": 2025
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/candidate-collection.json",
+      "sha256": "1dd954a22a81eaa93d67ea9d66738e78d06da7a3bada61e95c550d36bcb6c6a6",
+      "size_bytes": 2201
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/candidate-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/candidate-collection.stdout",
+      "sha256": "a8e8f6be28574b06fd97e6dbf3f7ccce3bdb20b52d85ee32c971ea7d9528bac5",
+      "size_bytes": 2840
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/capture-ownership.json",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/collect_module.py",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/collection-comparison.json",
+      "sha256": "6efe555cb55c66ac199fa0571800079030b68ba515b6a553a4229fe8d9d6f755",
+      "size_bytes": 2029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/collection-status.json",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/context.json",
+      "sha256": "a65e3b475acbb7635fe15af800bfbeb23fbdb0494e6372f227e7621cd9d5a627",
+      "size_bytes": 2543
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/install.stderr",
+      "sha256": "a40ba3ac37b22498ae0782eb2b597269550ed36637c06a75c482ca1bffa56991",
+      "size_bytes": 5029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/runner-visible-cpus.raw.txt",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/install.stderr",
+      "sha256": "a40ba3ac37b22498ae0782eb2b597269550ed36637c06a75c482ca1bffa56991",
+      "size_bytes": 5029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-install-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/app-baseline-before-install.sha256",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/app-source-before-install.sha256",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/app-project-lock-after-install.sha256",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/baseline-collection.json",
+      "sha256": "dcf5b027f68f7c846285bcae8c8d964426fcc967d00a67ff9316349252b18f31",
+      "size_bytes": 1178
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/baseline-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/baseline-collection.stdout",
+      "sha256": "95bb5ad111537bb559a52c13d432339ea250354dea5a39b539840bf467ac48b7",
+      "size_bytes": 2025
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/candidate-collection.json",
+      "sha256": "1dd954a22a81eaa93d67ea9d66738e78d06da7a3bada61e95c550d36bcb6c6a6",
+      "size_bytes": 2201
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/candidate-collection.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/candidate-collection.stdout",
+      "sha256": "a8e8f6be28574b06fd97e6dbf3f7ccce3bdb20b52d85ee32c971ea7d9528bac5",
+      "size_bytes": 2840
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/capture-ownership.json",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/collect_module.py",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/collection-comparison.json",
+      "sha256": "6efe555cb55c66ac199fa0571800079030b68ba515b6a553a4229fe8d9d6f755",
+      "size_bytes": 2029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/collection-status.json",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/context.json",
+      "sha256": "a65e3b475acbb7635fe15af800bfbeb23fbdb0494e6372f227e7621cd9d5a627",
+      "size_bytes": 2543
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/install-status.json",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/install.stderr",
+      "sha256": "a40ba3ac37b22498ae0782eb2b597269550ed36637c06a75c482ca1bffa56991",
+      "size_bytes": 5029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/install.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/command.log",
+      "sha256": "c55eb48d59b924ed247c4f6372fa736c4d69406e9592448bd9513b60b2bcff9d",
+      "size_bytes": 1317
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/execution-request.json",
+      "sha256": "96179884845ed8ea65335c5d4f572f2fae34b1aa5f42bc6f826643ad63f38e62",
+      "size_bytes": 11903
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/original-junit.xml",
+      "sha256": "7a84d2427eaf4e8752cca2b77d021416fbb5d5ffe787b6ebbb2294e2ca396fdd",
+      "size_bytes": 3175
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-000.bin",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "size_bytes": 19249
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-001.bin",
+      "sha256": "1adfa3d8a10b745a6559c3bd7a15fa3622f514d4ca4c2579378697be5ccdeb92",
+      "size_bytes": 39295
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-002.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-003.bin",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "size_bytes": 2260
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-004.bin",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "size_bytes": 40447
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-005.bin",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "size_bytes": 5909
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-006.bin",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+      "size_bytes": 10240
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-007.bin",
+      "sha256": "a65e3b475acbb7635fe15af800bfbeb23fbdb0494e6372f227e7621cd9d5a627",
+      "size_bytes": 2543
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-008.bin",
+      "sha256": "8d7e3fc50b7c47c757b094bb61ea924b9969b1ed7bec2a8175f9f237acc41611",
+      "size_bytes": 82
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-010.bin",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-011.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-012.bin",
+      "sha256": "a40ba3ac37b22498ae0782eb2b597269550ed36637c06a75c482ca1bffa56991",
+      "size_bytes": 5029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-013.bin",
+      "sha256": "df1be464d66c1cb7dd095d427b62ddaeae77b5ce8e88f22cc17cdc165f84e5c2",
+      "size_bytes": 395
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-014.bin",
+      "sha256": "5b154334bdd38197bba5890c13ae51eb8d0d1d414b34b0f5d1faa3a0ba7aac48",
+      "size_bytes": 767
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-015.bin",
+      "sha256": "5251b9ba0507101288946736ecbc16912b14dfdb5d951382b435a4b1ae81d1bf",
+      "size_bytes": 425
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-016.bin",
+      "sha256": "eceff2f3838670a3ad923a359b33ce618b0ac9f6b91cfc780603cbb677caac33",
+      "size_bytes": 155
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-017.bin",
+      "sha256": "5868ecc165583a33eb030dac55abfc6987d19d180a9932017f974d62ead45137",
+      "size_bytes": 562
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-018.bin",
+      "sha256": "dcf5b027f68f7c846285bcae8c8d964426fcc967d00a67ff9316349252b18f31",
+      "size_bytes": 1178
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-019.bin",
+      "sha256": "95bb5ad111537bb559a52c13d432339ea250354dea5a39b539840bf467ac48b7",
+      "size_bytes": 2025
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-020.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-021.bin",
+      "sha256": "1dd954a22a81eaa93d67ea9d66738e78d06da7a3bada61e95c550d36bcb6c6a6",
+      "size_bytes": 2201
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-022.bin",
+      "sha256": "a8e8f6be28574b06fd97e6dbf3f7ccce3bdb20b52d85ee32c971ea7d9528bac5",
+      "size_bytes": 2840
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-023.bin",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-024.bin",
+      "sha256": "6efe555cb55c66ac199fa0571800079030b68ba515b6a553a4229fe8d9d6f755",
+      "size_bytes": 2029
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-025.bin",
+      "sha256": "63a376f124aec4f1e5fea494966db3640f65ab298809f834a74c0aa2edbba527",
+      "size_bytes": 111
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-026.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-027.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-028.bin",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524",
+      "size_bytes": 13851
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-029.bin",
+      "sha256": "56cdbb92652bee7155f44a834693281ec364b85abf9210dc6f37b5afa38dddfb",
+      "size_bytes": 9681
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-030.bin",
+      "sha256": "0ea5374898817c86c95aee8757649c98bb202e221697796eecd2f211b4019219",
+      "size_bytes": 24855
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-031.bin",
+      "sha256": "1b3b999a1466a29ff83f1206f8450fb8641a78ec4370d77f5428ae10e5983c94",
+      "size_bytes": 7327
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-032.bin",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+      "size_bytes": 6832
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-033.bin",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "size_bytes": 1099589
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-034.bin",
+      "sha256": "ad2a92c91fbc4d414923c3fbad4eef0f668ddc08073ba37de4ddc11aff46e902",
+      "size_bytes": 7486
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-035.bin",
+      "sha256": "271477b9a17ce7715baf49fd26a3256464ccc37c03b0767570502c9e815116a5",
+      "size_bytes": 26145
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-036.bin",
+      "sha256": "fcad12d71fa89eb7c64fd7dc5affa01568723a03cad55a56a168273a259f7e2d",
+      "size_bytes": 8838
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-037.bin",
+      "sha256": "f3d235320fcd8d95c44c90ac2bea42c51f8ee737b053a95c040cd063b6456dec",
+      "size_bytes": 9211
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-038.bin",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b",
+      "size_bytes": 6832
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-039.bin",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+      "size_bytes": 1099589
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/receipt.json",
+      "sha256": "3f2f359e7488012eacb0bffa833b8ffacd7cd256905a29961bfb31805c0e615a",
+      "size_bytes": 21081
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native-driver-status.json",
+      "sha256": "22b3988b7a3ada11939c07199f25165eba19d0770593af46bd4efbad88853e0e",
+      "size_bytes": 122
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native-producer.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native-producer.stdout",
+      "sha256": "b6bf7407f10a79dac855b8d01658821f7b9eca236ac2ba6a2380e2ff6a3356d0",
+      "size_bytes": 149
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/original-pytest.xml",
+      "sha256": "7a84d2427eaf4e8752cca2b77d021416fbb5d5ffe787b6ebbb2294e2ca396fdd",
+      "size_bytes": 3175
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/pytest.log",
+      "sha256": "2c3a4cb5da501736cf2b42e17c698d6d6a76d366afca4029dfb0f08de0380486",
+      "size_bytes": 6793
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/runner-visible-cpus.raw.txt",
+      "sha256": "7de1555df0c2700329e815b93b32c571c3ea54dc967b89e81ab73b9972b72d1d",
+      "size_bytes": 2
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-postcheck/postcheck.json",
+      "sha256": "14306c2ffabc6f7b2596fe2b25f19b8cb23c49391bf1f62281b4c26ec08a335e",
+      "size_bytes": 1303
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-postcheck/postcheck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    }
+  ],
+  "original_extracted_file_count": 187,
+  "private_custody_manifest_sha256": "47316f3f6b8c59d905aefea865a40ea50df9732940e3a09e8c5f82b7e9982b3d",
+  "public_native_prefix_limitation": "Encoder native read-009.bin remains private; this public prefix cannot independently reopen. Fetch the unchanged original CI artifacts or use verified private custody. Main review reopened complete private originals.",
+  "retained_private_originals_excluded_from_public_subset": [
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-collection-originals/runner-meminfo.raw.txt",
+      "sha256": "4c4192660d2b2a761d2b5e9ebfe8a3eedaf69164dfb9e885be54621c041d8b06",
+      "size_bytes": 1618
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/native/read-009.bin",
+      "sha256": "4c4192660d2b2a761d2b5e9ebfe8a3eedaf69164dfb9e885be54621c041d8b06",
+      "size_bytes": 1618
+    },
+    {
+      "path": "ni61-37369039306-2-encoder-session-options-native-originals/runner-meminfo.raw.txt",
+      "sha256": "4c4192660d2b2a761d2b5e9ebfe8a3eedaf69164dfb9e885be54621c041d8b06",
+      "size_bytes": 1618
+    }
+  ],
+  "run_id": 37369039306,
+  "schema": "ni05.public-original-subset.v1"
+}

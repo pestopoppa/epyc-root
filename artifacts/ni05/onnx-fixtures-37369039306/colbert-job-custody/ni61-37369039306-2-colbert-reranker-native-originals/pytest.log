@@ -1,0 +1,29 @@
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.tools.web.colbert_reranker:colbert_reranker.py:139 ColBERT rerank: /home/runner/work/_temp/ni61-absent-lateon-model has no trained [Q]/[D] prefix tokens; scoring prefix-free (off-distribution, ~25x the perturbation of INT8). Any A/B run in this state measures the encoder, not the model.
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/ni61-absent-lateon-model declares no usable document_length; using fallback 256
+WARNING  src.tools.web.colbert_reranker:colbert_reranker.py:103 COLBERT_RERANK_MAX_DOC_TOKENS='not-a-number' is not an integer; using 64
+WARNING  src.tools.web.colbert_reranker:colbert_reranker.py:109 COLBERT_RERANK_MAX_DOC_TOKENS=0 must be positive; using 64
+WARNING  src.tools.web.colbert_reranker:colbert_reranker.py:109 COLBERT_RERANK_MAX_DOC_TOKENS=-4 must be positive; using 64
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/pytest-of-runner/pytest-0/test_unreadable_config_falls_b0 declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:380 ColBERT: /home/runner/work/_temp/pytest-of-runner/pytest-0/test_unreadable_config_falls_b0 declares no usable document_length; using fallback 256
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:368 ColBERT: /home/runner/work/_temp/pytest-of-runner/pytest-0/test_absurdly_small_declared_c0 declares no usable query_length; using fallback 48
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:311 ColBERT encoder re-pointed from /mnt/raid0/llm/models/gte-moderncolbert-v1-onnx to /mnt/raid0/llm/models/lateon-onnx-int8 (slot lateon); dropping the loaded session so the next encode uses the model now configured.
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:147 COLBERT_ENCODE_ONNX_THREADS='not-a-number' is not an integer; using 8
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:153 COLBERT_ENCODE_ONNX_THREADS=0 must be positive; using 8
+WARNING  src.retrieval.colbert_encoder:colbert_encoder.py:153 COLBERT_ENCODE_ONNX_THREADS=-4 must be positive; using 8

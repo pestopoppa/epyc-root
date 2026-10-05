@@ -1,0 +1,593 @@
+name: NI61 deterministic ONNX thread fixtures
+
+on:
+  push:
+    branches:
+      - codex/ni61-onnx-thread-ci-20261005
+    paths:
+      - .github/workflows/ni61-onnx-thread-fixtures.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ni61-onnx-thread-fixtures-20261005
+  cancel-in-progress: false
+
+env:
+  APP_BASE_SHA: 6bb8d860d410217895efb7806e9ef907a62a4350
+  APP_SOURCE_PARENT_SHA: b08ddaff9de3b84f70a15485b048a68b933042fd
+  APP_SOURCE_SHA: 4ccebf8dcbc7cab6ea97af2d0d13cfbee0100ff8
+  APP_LOCK_SHA256: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+  APP_BASE_COLBERT_BLOB: 079dd3af8af9686c6b12512dfa6aa8bbe10dee69
+  APP_BASE_ENCODER_BLOB: f254542d47c74aa49dddb6776c2529aa07ab64e7
+  APP_SOURCE_COLBERT_BLOB: e63c188abaf7d142078bc4f7c74d6dc23350d0c1
+  APP_SOURCE_ENCODER_BLOB: 8daeca1ad57831bcc5d4b62d8210c96d368f0af0
+  ROOT_PRODUCER_SHA: ff8a6baa7e4bc86fc7318055d3fe1050f31422c7
+
+jobs:
+  fixture-module:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      MODULE_ID: ${{ matrix.module_id }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      EXPECTED_DELTA: ${{ matrix.expected_delta }}
+      EXPECTED_REMOVED: ${{ matrix.expected_removed }}
+      EXPECTED_ADDED: ${{ matrix.expected_added }}
+      OLD_TEST_FUNCTION: ${{ matrix.old_test_function }}
+      NEW_TEST_FUNCTION: ${{ matrix.new_test_function }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module_id: colbert-reranker
+            module_path: tests/unit/test_colbert_reranker.py
+            expected_delta: 3
+            expected_removed: 1
+            expected_added: 4
+            old_test_function: test_shared_default_is_bounded
+            new_test_function: test_shared_default_is_deterministic_across_visible_cpu_counts
+          - module_id: encoder-session-options
+            module_path: tests/unit/test_retrieval_encoder_onnx_threads.py
+            expected_delta: 6
+            expected_removed: 2
+            expected_added: 8
+            old_test_function: test_encoder_bounds_the_intra_op_pool
+            new_test_function: test_encoder_uses_deterministic_intra_op_default
+    steps:
+      - name: Establish private capture area and absent model/kernel targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          result_dir="$RUNNER_TEMP/ni61-fixtures/$GITHUB_RUN_ID/$GITHUB_RUN_ATTEMPT/$MODULE_ID"
+          if [[ -e "$result_dir" || -L "$result_dir" ]]; then
+            echo "refusing preexisting capture directory: $result_dir" >&2
+            exit 1
+          fi
+          install -d -m 700 "${result_dir%/*}"
+          install -d -m 700 "$result_dir"
+          test ! -L "$result_dir"
+          test "$(stat -c '%a' "$result_dir")" = 700
+          test "$(stat -c '%u' "$result_dir")" = "$(id -u)"
+          python3 - "$result_dir/capture-ownership.json" <<'PY'
+          import json, os, stat, sys
+          from pathlib import Path
+          path=Path(sys.argv[1]); st=path.parent.lstat()
+          if stat.S_ISLNK(st.st_mode) or not stat.S_ISDIR(st.st_mode): raise SystemExit("capture dir is not a real directory")
+          if stat.S_IMODE(st.st_mode)!=0o700 or st.st_uid!=os.getuid(): raise SystemExit("capture dir owner/mode mismatch")
+          path.write_text(json.dumps({"schema":"ni61.capture_ownership.v1","mode":format(stat.S_IMODE(st.st_mode),"04o"),"uid":st.st_uid,"gid":st.st_gid},sort_keys=True)+"\n",encoding="utf-8")
+          PY
+          printf 'RESULT_DIR=%s\n' "$result_dir" >> "$GITHUB_ENV"
+          printf 'UV_PROJECT_ENVIRONMENT=%s/ni61-thread-fixture-venv\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          for target in \
+            "$RUNNER_TEMP/ni61-absent-kernel-bin" \
+            "$RUNNER_TEMP/ni61-absent-mtmd-bin" \
+            "$RUNNER_TEMP/ni61-absent-llama-server" \
+            "$RUNNER_TEMP/ni61-absent-lateon-model" \
+            "$RUNNER_TEMP/ni61-absent-reason-model" \
+            "$RUNNER_TEMP/ni61-absent-cross-encoder-model"; do
+            if [[ -e "$target" || -L "$target" ]]; then
+              echo "refusing preexisting target: $target" >&2
+              exit 1
+            fi
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/ni61-absent-kernel-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_MTMD=%s/ni61-absent-mtmd-bin\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'ORCHESTRATOR_PATHS_LLAMA_SERVER=%s/ni61-absent-llama-server\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'LATEON_MODEL_PATH=%s/ni61-absent-lateon-model\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'REASON_MXBAI_MODEL_PATH=%s/ni61-absent-reason-model\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+          printf 'KB_RAG_CROSS_ENCODER_PATH=%s/ni61-absent-cross-encoder-model\n' "$RUNNER_TEMP" >> "$GITHUB_ENV"
+
+      - name: Checkout immutable workflow candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          ref: ${{ github.sha }}
+          path: ci-control
+          persist-credentials: false
+
+      - name: Checkout pinned native receipt producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PRODUCER_SHA }}
+          path: root-producer
+          persist-credentials: false
+
+      - name: Checkout exact app candidate and baseline
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_SOURCE_SHA }}
+          fetch-depth: 0
+          path: app-candidate
+          persist-credentials: false
+
+      - name: Checkout exact baseline source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_BASE_SHA }}
+          fetch-depth: 0
+          path: app-baseline
+          persist-credentials: false
+
+      - name: Verify immutable source, exact ancestry, readset paths, and absent targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C ci-control rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git -C root-producer rev-parse HEAD)" = "$ROOT_PRODUCER_SHA"
+          test "$(git -C app-candidate rev-parse HEAD)" = "$APP_SOURCE_SHA"
+          test "$(git -C app-baseline rev-parse HEAD)" = "$APP_BASE_SHA"
+          test "$(git -C app-candidate rev-parse "$APP_SOURCE_SHA^")" = "$APP_SOURCE_PARENT_SHA"
+          test "$(git -C app-candidate rev-parse "$APP_SOURCE_PARENT_SHA^")" = "$APP_BASE_SHA"
+          test "$(git -C app-candidate rev-list --count "$APP_BASE_SHA..$APP_SOURCE_SHA")" = 2
+          expected_paths="$(printf '%s\n' \
+            tests/unit/test_colbert_reranker.py \
+            tests/unit/test_retrieval_encoder_onnx_threads.py | LC_ALL=C sort)"
+          actual_paths="$(git -C app-candidate diff --name-only "$APP_BASE_SHA" "$APP_SOURCE_SHA" | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          test "$(git -C app-baseline rev-parse "$APP_BASE_SHA:tests/unit/test_colbert_reranker.py")" = "$APP_BASE_COLBERT_BLOB"
+          test "$(git -C app-baseline rev-parse "$APP_BASE_SHA:tests/unit/test_retrieval_encoder_onnx_threads.py")" = "$APP_BASE_ENCODER_BLOB"
+          test "$(git -C app-candidate rev-parse "$APP_SOURCE_SHA:tests/unit/test_colbert_reranker.py")" = "$APP_SOURCE_COLBERT_BLOB"
+          test "$(git -C app-candidate rev-parse "$APP_SOURCE_SHA:tests/unit/test_retrieval_encoder_onnx_threads.py")" = "$APP_SOURCE_ENCODER_BLOB"
+          test "$(sha256sum app-candidate/uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          test "$(sha256sum app-baseline/uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          test -z "$(git -C ci-control status --porcelain --untracked-files=all)"
+          test -z "$(git -C root-producer status --porcelain --untracked-files=all)"
+          test -z "$(git -C app-candidate status --porcelain --untracked-files=all)"
+          test -z "$(git -C app-baseline status --porcelain --untracked-files=all)"
+          for target in \
+            "$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+            "$ORCHESTRATOR_PATHS_LLAMA_MTMD" \
+            "$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+            "$LATEON_MODEL_PATH" \
+            "$REASON_MXBAI_MODEL_PATH" \
+            "$KB_RAG_CROSS_ENCODER_PATH"; do
+            test ! -e "$target" && test ! -L "$target"
+          done
+          read_paths=(
+            .github/workflows/ni61-onnx-thread-fixtures.yml
+            scripts/ci/native_conformance.py
+            scripts/vidya/adapters/__init__.py
+            scripts/vidya/adapters/ci_conformance.py
+            scripts/vidya/claim_tuple.py
+            scripts/vidya/canonical.py
+            scripts/vidya/frames.py
+            tests/conftest.py
+            tests/unit/conftest.py
+            tests/unit/test_colbert_reranker.py
+            tests/unit/test_retrieval_encoder_onnx_threads.py
+            src/retrieval/colbert_encoder.py
+            src/retrieval/cross_encoder.py
+            src/tools/web/colbert_reranker.py
+            pyproject.toml
+            uv.lock
+          )
+          for path in "${read_paths[@]}"; do
+            test -f "root-producer/$path" || test -f "ci-control/$path" || test -f "app-candidate/$path"
+          done
+          for path in tests/conftest.py tests/unit/conftest.py tests/unit/test_colbert_reranker.py tests/unit/test_retrieval_encoder_onnx_threads.py pyproject.toml uv.lock; do
+            test -f "app-baseline/$path"
+          done
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11.14'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174 # v5.4.0
+        with:
+          version: '0.8.15'
+          enable-cache: false
+
+      - name: Record actual runner and source baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat /proc/meminfo > "$RESULT_DIR/runner-meminfo.raw.txt"
+          getconf _NPROCESSORS_ONLN > "$RESULT_DIR/runner-visible-cpus.raw.txt"
+          sha256sum app-candidate/pyproject.toml app-candidate/uv.lock \
+            app-candidate/tests/unit/test_colbert_reranker.py \
+            app-candidate/tests/unit/test_retrieval_encoder_onnx_threads.py \
+            app-candidate/src/retrieval/colbert_encoder.py \
+            app-candidate/src/retrieval/cross_encoder.py \
+            app-candidate/src/tools/web/colbert_reranker.py \
+            > "$RESULT_DIR/app-source-before-install.sha256"
+          sha256sum app-baseline/pyproject.toml app-baseline/uv.lock \
+            app-baseline/tests/unit/test_colbert_reranker.py \
+            app-baseline/tests/unit/test_retrieval_encoder_onnx_threads.py \
+            > "$RESULT_DIR/app-baseline-before-install.sha256"
+
+      - name: Install frozen development dependencies
+        id: dependencies
+        working-directory: app-candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          python --version | grep -Fx 'Python 3.11.14'
+          uv --version | grep -Fx 'uv 0.8.15'
+          set +e
+          timeout --verbose --signal=TERM --kill-after=15s 900s \
+            env -i PATH="$PATH" HOME="$HOME" CI=true ORCHESTRATOR_MOCK_MODE=true \
+              UV_PROJECT_ENVIRONMENT="$UV_PROJECT_ENVIRONMENT" \
+              uv sync --frozen --extra dev --no-install-project \
+              > "$RESULT_DIR/install.stdout" 2> "$RESULT_DIR/install.stderr"
+          install_rc=$?
+          set -e
+          python - "$RESULT_DIR/install-status.json" "$install_rc" <<'PY'
+          import hashlib, json, os, subprocess, sys
+          from pathlib import Path
+          target=Path(sys.argv[1])
+          source=Path("pyproject.toml").read_bytes()
+          lock=Path("uv.lock").read_bytes()
+          target.write_text(json.dumps({
+              "schema":"ni61.locked_install_status.v2",
+              "exit_code":int(sys.argv[2]),
+              "python":sys.version,
+              "uv":subprocess.check_output(["uv","--version"],text=True).strip(),
+              "pyproject_sha256":hashlib.sha256(source).hexdigest(),
+              "uv_lock_sha256":hashlib.sha256(lock).hexdigest(),
+              "uv_project_environment":os.environ["UV_PROJECT_ENVIRONMENT"],
+          },sort_keys=True)+"\n",encoding="utf-8")
+          PY
+          sha256sum pyproject.toml uv.lock > "$RESULT_DIR/app-project-lock-after-install.sha256"
+          test "$(sha256sum pyproject.toml | cut -d ' ' -f1)" = "$(awk '$2=="app-candidate/pyproject.toml"{print $1}' "$RESULT_DIR/app-source-before-install.sha256")"
+          test "$(sha256sum uv.lock | cut -d ' ' -f1)" = "$APP_LOCK_SHA256"
+          exit "$install_rc"
+
+      - name: Upload original locked-install prefix immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni61-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-install-originals
+          path: |
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/install.stdout
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/install.stderr
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/install-status.json
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/app-source-before-install.sha256
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/app-baseline-before-install.sha256
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/app-project-lock-after-install.sha256
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 14
+
+      - name: Write immutable source and environment context
+        id: context
+        if: ${{ always() && steps.dependencies.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - "$RESULT_DIR/context.json" <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          context={
+              "schema":"ni61.onnx_thread_fixture_context.v2",
+              "phase":"whole_module_test_and_original_classification",
+              "workflow_sha":os.environ["GITHUB_SHA"],
+              "app_base_sha":os.environ["APP_BASE_SHA"],
+              "app_source_parent_sha":os.environ["APP_SOURCE_PARENT_SHA"],
+              "app_source_sha":os.environ["APP_SOURCE_SHA"],
+              "root_producer_sha":os.environ["ROOT_PRODUCER_SHA"],
+              "module_id":os.environ["MODULE_ID"],
+              "module_path":os.environ["MODULE_PATH"],
+              "expected_delta":int(os.environ["EXPECTED_DELTA"]),
+              "expected_removed":int(os.environ["EXPECTED_REMOVED"]),
+              "expected_added":int(os.environ["EXPECTED_ADDED"]),
+              "app_lock_sha256":os.environ["APP_LOCK_SHA256"],
+              "python":subprocess.check_output(["python","--version"],text=True).strip(),
+              "uv":subprocess.check_output(["uv","--version"],text=True).strip(),
+              "ci_mock_mode":{"CI":os.environ["CI"],"ORCHESTRATOR_MOCK_MODE":os.environ["ORCHESTRATOR_MOCK_MODE"]},
+              "runner_observations":{"ram":"raw /proc/meminfo capture only","visible_cpu":"raw online CPU count only"},
+              "visible_cpu_test_inputs":[1,8,16,192],
+              "visible_cpu_test_inputs_are":"monkeypatch values; not host observations",
+              "named_refusal_controls":{
+                  key:{"value":os.environ[key],"target_must_be_absent_nonlink":True}
+                  for key in ("ORCHESTRATOR_PATHS_LLAMA_CPP_BIN","ORCHESTRATOR_PATHS_LLAMA_MTMD","ORCHESTRATOR_PATHS_LLAMA_SERVER","LATEON_MODEL_PATH","REASON_MXBAI_MODEL_PATH","KB_RAG_CROSS_ENCODER_PATH")
+              },
+              "sanitized_child_environment":["PATH","HOME","TMPDIR","CI","ORCHESTRATOR_MOCK_MODE","PYTHONDONTWRITEBYTECODE","PYTHONPATH","ORCHESTRATOR_PATHS_LLAMA_CPP_BIN","ORCHESTRATOR_PATHS_LLAMA_MTMD","ORCHESTRATOR_PATHS_LLAMA_SERVER","LATEON_MODEL_PATH","REASON_MXBAI_MODEL_PATH","KB_RAG_CROSS_ENCODER_PATH"],
+              "ambient_provider_secrets":"not passed to collection/test child processes",
+              "home_policy":"the runner-provided HOME value is inherited unchanged; no synthetic HOME isolation is claimed",
+              "inference":"none; ONNX session constructors are stubbed by selected tests",
+              "scope":"two complete pytest modules; no model inference, serving, performance, capacity, or production claims",
+          }
+          Path(os.environ["RESULT_DIR"],"context.json").write_text(json.dumps(context,sort_keys=True)+"\n",encoding="utf-8")
+          PY
+
+      - name: Write bounded collector helper
+        id: collector
+        if: ${{ always() && steps.context.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > "$RESULT_DIR/collect_module.py" <<'PY'
+          import json, sys
+          from pathlib import Path
+          import pytest
+          output,module_path,rootdir=Path(sys.argv[1]),sys.argv[2],Path(sys.argv[3]).resolve()
+          class Capture:
+              def pytest_collection_finish(self,session):
+                  output.write_text(json.dumps({"schema":"ni61.pytest_collection.v1","module_path":module_path,"count":len(session.items),"nodeids":[item.nodeid for item in session.items]},sort_keys=True)+"\n",encoding="utf-8")
+          rc=pytest.main(["--collect-only","-q","-p","no:cacheprovider",f"--rootdir={rootdir}",module_path],plugins=[Capture()])
+          raise SystemExit(rc)
+          PY
+
+      - name: Collect and compare full baseline and candidate module classifications
+        id: collection
+        if: ${{ always() && steps.collector.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -uo pipefail
+          collection_env=(PATH="$PATH" HOME="$HOME" TMPDIR="$RUNNER_TEMP" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1)
+          base_rc=0
+          (cd app-baseline && timeout --verbose --signal=TERM --kill-after=15s 240s \
+            env -i "${collection_env[@]}" PYTHONPATH="$PWD" \
+              ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+              ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+              LATEON_MODEL_PATH="$LATEON_MODEL_PATH" REASON_MXBAI_MODEL_PATH="$REASON_MXBAI_MODEL_PATH" \
+              KB_RAG_CROSS_ENCODER_PATH="$KB_RAG_CROSS_ENCODER_PATH" \
+              "$UV_PROJECT_ENVIRONMENT/bin/python" "$RESULT_DIR/collect_module.py" \
+              "$RESULT_DIR/baseline-collection.json" "$MODULE_PATH" "$PWD") \
+              > "$RESULT_DIR/baseline-collection.stdout" 2> "$RESULT_DIR/baseline-collection.stderr" || base_rc=$?
+          candidate_rc=0
+          (cd app-candidate && timeout --verbose --signal=TERM --kill-after=15s 240s \
+            env -i "${collection_env[@]}" PYTHONPATH="$PWD" \
+              ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+              ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+              LATEON_MODEL_PATH="$LATEON_MODEL_PATH" REASON_MXBAI_MODEL_PATH="$REASON_MXBAI_MODEL_PATH" \
+              KB_RAG_CROSS_ENCODER_PATH="$KB_RAG_CROSS_ENCODER_PATH" \
+              "$UV_PROJECT_ENVIRONMENT/bin/python" "$RESULT_DIR/collect_module.py" \
+              "$RESULT_DIR/candidate-collection.json" "$MODULE_PATH" "$PWD") \
+              > "$RESULT_DIR/candidate-collection.stdout" 2> "$RESULT_DIR/candidate-collection.stderr" || candidate_rc=$?
+          python - "$RESULT_DIR" "$MODULE_ID" "$OLD_TEST_FUNCTION" "$NEW_TEST_FUNCTION" \
+            "$EXPECTED_DELTA" "$EXPECTED_REMOVED" "$EXPECTED_ADDED" "$base_rc" "$candidate_rc" <<'PY'
+          import json,os,sys
+          from pathlib import Path
+          root=Path(sys.argv[1]); module,old,new=sys.argv[2:5]
+          delta,removed_expected,added_expected,base_rc,candidate_rc=map(int,sys.argv[5:])
+          result={"schema":"ni61.collection_comparison.v2","module_id":module,
+                  "baseline_exit_code":base_rc,"candidate_exit_code":candidate_rc,"checks":{}}
+          try:
+              base=json.loads((root/"baseline-collection.json").read_text())
+              candidate=json.loads((root/"candidate-collection.json").read_text())
+              before=set(base["nodeids"]); after=set(candidate["nodeids"])
+              removed=sorted(before-after); added=sorted(after-before)
+              old_removed=[n for n in removed if f"::{old}" in n]
+              new_added=[n for n in added if f"::{new}" in n]
+              result.update({"baseline_case_count":base["count"],"candidate_case_count":candidate["count"],
+                             "case_delta":candidate["count"]-base["count"],"removed_nodeids":removed,"added_nodeids":added})
+              result["checks"]={
+                  "both_collectors_passed":base_rc==0 and candidate_rc==0,
+                  "only_expected_test_function_changed":len(removed)==removed_expected and len(added)==added_expected and len(old_removed)==removed_expected and len(new_added)==added_expected and len(removed)==len(old_removed) and len(added)==len(new_added),
+                  "whole_module_delta_matches":candidate["count"]-base["count"]==delta,
+                  "module_paths_match":base["module_path"]==candidate["module_path"]==os.environ.get("MODULE_PATH",base["module_path"]),
+              }
+          except Exception as exc:
+              result["error"]=f"{type(exc).__name__}: {exc}"
+              result["checks"]={"collection_comparison_completed":False}
+          (root/"collection-comparison.json").write_text(json.dumps(result,sort_keys=True)+"\n")
+          print(json.dumps(result,sort_keys=True))
+          if not all(result["checks"].values()): raise SystemExit(1)
+          PY
+          compare_rc=$?
+          printf '{"schema":"ni61.collection_status.v2","baseline_exit_code":%s,"candidate_exit_code":%s,"comparison_exit_code":%s}\n' \
+            "$base_rc" "$candidate_rc" "$compare_rc" > "$RESULT_DIR/collection-status.json"
+          exit "$compare_rc"
+
+      - name: Upload original baseline and candidate classifications immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni61-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-collection-originals
+          path: ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 14
+
+      - name: Capture complete candidate module with native conformance producer
+        id: capture
+        if: ${{ always() && steps.collection.outcome == 'success' }}
+        working-directory: app-candidate
+        shell: bash
+        run: |
+          set -uo pipefail
+          junit="$RESULT_DIR/original-pytest.xml"
+          pytest_log="$RESULT_DIR/pytest.log"
+          native="$RESULT_DIR/native"
+          native_rc=0
+          timeout --verbose --signal=TERM --kill-after=20s 600s \
+            env -i PATH="$PATH" HOME="$HOME" TMPDIR="$RUNNER_TEMP" \
+              CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 \
+              GITHUB_RUN_ID="$GITHUB_RUN_ID" GITHUB_JOB="$GITHUB_JOB" GITHUB_RUN_ATTEMPT="$GITHUB_RUN_ATTEMPT" \
+              "$UV_PROJECT_ENVIRONMENT/bin/python" "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+                --cwd "$PWD" --junit "$junit" --output "$native" \
+                --repo "root_workflow=$GITHUB_WORKSPACE/ci-control" \
+                --repo "root_producer=$GITHUB_WORKSPACE/root-producer" \
+                --repo "orchestrator_candidate=$GITHUB_WORKSPACE/app-candidate" \
+                --repo "orchestrator_baseline=$GITHUB_WORKSPACE/app-baseline" \
+                --read-path "$GITHUB_WORKSPACE/ci-control/.github/workflows/ni61-onnx-thread-fixtures.yml" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/ci/native_conformance.py" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/__init__.py" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/adapters/ci_conformance.py" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/claim_tuple.py" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/canonical.py" \
+                --read-path "$GITHUB_WORKSPACE/root-producer/scripts/vidya/frames.py" \
+                --read-path "$RESULT_DIR/context.json" \
+                --read-path "$RESULT_DIR/capture-ownership.json" \
+                --read-path "$RESULT_DIR/runner-meminfo.raw.txt" \
+                --read-path "$RESULT_DIR/runner-visible-cpus.raw.txt" \
+                --read-path "$RESULT_DIR/install.stdout" \
+                --read-path "$RESULT_DIR/install.stderr" \
+                --read-path "$RESULT_DIR/install-status.json" \
+                --read-path "$RESULT_DIR/app-source-before-install.sha256" \
+                --read-path "$RESULT_DIR/app-baseline-before-install.sha256" \
+                --read-path "$RESULT_DIR/app-project-lock-after-install.sha256" \
+                --read-path "$RESULT_DIR/collect_module.py" \
+                --read-path "$RESULT_DIR/baseline-collection.json" \
+                --read-path "$RESULT_DIR/baseline-collection.stdout" \
+                --read-path "$RESULT_DIR/baseline-collection.stderr" \
+                --read-path "$RESULT_DIR/candidate-collection.json" \
+                --read-path "$RESULT_DIR/candidate-collection.stdout" \
+                --read-path "$RESULT_DIR/candidate-collection.stderr" \
+                --read-path "$RESULT_DIR/collection-comparison.json" \
+                --read-path "$RESULT_DIR/collection-status.json" \
+                --read-path tests/conftest.py \
+                --read-path tests/unit/conftest.py \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/tests/conftest.py" \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/tests/unit/conftest.py" \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/tests/unit/test_colbert_reranker.py" \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/tests/unit/test_retrieval_encoder_onnx_threads.py" \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/pyproject.toml" \
+                --read-path "$GITHUB_WORKSPACE/app-baseline/uv.lock" \
+                --read-path "$MODULE_PATH" \
+                --read-path src/retrieval/colbert_encoder.py \
+                --read-path src/retrieval/cross_encoder.py \
+                --read-path src/tools/web/colbert_reranker.py \
+                --read-path pyproject.toml --read-path uv.lock \
+                --select "$MODULE_PATH" \
+                -- timeout --verbose --signal=TERM --kill-after=15s 240s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$RUNNER_TEMP" \
+                  CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 \
+                  PYTHONPATH="$PWD" \
+                  ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+                  ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+                  LATEON_MODEL_PATH="$LATEON_MODEL_PATH" REASON_MXBAI_MODEL_PATH="$REASON_MXBAI_MODEL_PATH" \
+                  KB_RAG_CROSS_ENCODER_PATH="$KB_RAG_CROSS_ENCODER_PATH" \
+                  "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q -p no:cacheprovider \
+                    --rootdir="$PWD" --junit-prefix="ni61_${MODULE_ID//-/_}" \
+                    "$MODULE_PATH" --junitxml="$junit" --log-file="$pytest_log" \
+            > "$RESULT_DIR/native-producer.stdout" 2> "$RESULT_DIR/native-producer.stderr" || native_rc=$?
+          printf '{"schema":"ni61.native_driver_status.v1","exit_code":%s,"module_path":"%s"}\n' \
+            "$native_rc" "$MODULE_PATH" > "$RESULT_DIR/native-driver-status.json"
+          exit "$native_rc"
+
+      - name: Upload untouched native test and producer originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni61-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-native-originals
+          path: ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 14
+
+      - name: Reopen receipt, native projection, shared grade, source, and refusal checks
+        if: always()
+        shell: bash
+        run: |
+          set +e
+          env -i PATH="$PATH" HOME="$HOME" TMPDIR="$RUNNER_TEMP" \
+            RESULT_DIR="$RESULT_DIR" MODULE_ID="$MODULE_ID" MODULE_PATH="$MODULE_PATH" \
+            UV_PROJECT_ENVIRONMENT="$UV_PROJECT_ENVIRONMENT" EXPECTED_DELTA="$EXPECTED_DELTA" APP_SOURCE_SHA="$APP_SOURCE_SHA" \
+            APP_BASE_SHA="$APP_BASE_SHA" APP_LOCK_SHA256="$APP_LOCK_SHA256" \
+            APP_SOURCE_COLBERT_BLOB="$APP_SOURCE_COLBERT_BLOB" APP_SOURCE_ENCODER_BLOB="$APP_SOURCE_ENCODER_BLOB" \
+            APP_BASE_COLBERT_BLOB="$APP_BASE_COLBERT_BLOB" APP_BASE_ENCODER_BLOB="$APP_BASE_ENCODER_BLOB" \
+            ROOT_PRODUCER_SHA="$ROOT_PRODUCER_SHA" GITHUB_SHA="$GITHUB_SHA" \
+            ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" \
+            ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" \
+            LATEON_MODEL_PATH="$LATEON_MODEL_PATH" REASON_MXBAI_MODEL_PATH="$REASON_MXBAI_MODEL_PATH" \
+            KB_RAG_CROSS_ENCODER_PATH="$KB_RAG_CROSS_ENCODER_PATH" \
+            PYTHONDONTWRITEBYTECODE=1 PYTHONPATH="$GITHUB_WORKSPACE/root-producer" \
+            "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PY' \
+            > "$RESULT_DIR/postcheck.json" 2> "$RESULT_DIR/postcheck.stderr"
+          import hashlib,json,os,subprocess
+          from pathlib import Path
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows,project_ci_conformance
+          from scripts.vidya.claim_tuple import grade
+          root=Path(os.environ["RESULT_DIR"]); module=os.environ["MODULE_ID"]; module_path=os.environ["MODULE_PATH"]
+          checks={}; result={"schema":"ni61.postcheck.v2","module_id":module,"checks":checks}
+          try:
+              comparison=json.loads((root/"collection-comparison.json").read_text())
+              collection_status=json.loads((root/"collection-status.json").read_text())
+              driver=json.loads((root/"native-driver-status.json").read_text())
+              receipt_path=root/"native"/"receipt.json"
+              record,receipt_sha=read_receipt(receipt_path)
+              rows=native_rows(receipt_path)
+              checks["trusted_native_row_count"] = len(rows)==1
+              native=rows[0]
+              tup=project_ci_conformance(native)
+              q,t,reasons=grade(tup)
+              checks["shared_grade_exact"]=(q,t)==("Judged","Located") and bool(reasons)
+              checks["native_true_and_zero"]=(record["fixture_execution_conformant"] is True and record["exit_code"]==0 and driver["exit_code"]==0)
+              counts=record["summary"]["counts"]
+              checks["native_counts_exact"]=(counts["collected"]==comparison["candidate_case_count"] and counts["executed"]==counts["collected"] and counts["passed"]==counts["collected"] and counts["failure"]==0 and counts["error"]==0 and counts["skipped"]==0)
+              checks["native_selection_exact"]=record["selections"]==[module_path]
+              expected_env=[f"PATH={os.environ['PATH']}",f"HOME={os.environ['HOME']}",f"TMPDIR={os.environ['TMPDIR']}","CI=true","ORCHESTRATOR_MOCK_MODE=true","PYTHONDONTWRITEBYTECODE=1",f"PYTHONPATH={Path('app-candidate').resolve()}",f"ORCHESTRATOR_PATHS_LLAMA_CPP_BIN={os.environ['ORCHESTRATOR_PATHS_LLAMA_CPP_BIN']}",f"ORCHESTRATOR_PATHS_LLAMA_MTMD={os.environ['ORCHESTRATOR_PATHS_LLAMA_MTMD']}",f"ORCHESTRATOR_PATHS_LLAMA_SERVER={os.environ['ORCHESTRATOR_PATHS_LLAMA_SERVER']}",f"LATEON_MODEL_PATH={os.environ['LATEON_MODEL_PATH']}",f"REASON_MXBAI_MODEL_PATH={os.environ['REASON_MXBAI_MODEL_PATH']}",f"KB_RAG_CROSS_ENCODER_PATH={os.environ['KB_RAG_CROSS_ENCODER_PATH']}"]
+              argv=record["argv"]
+              timeout_prefix=["timeout","--verbose","--signal=TERM","--kill-after=15s","240s","env","-i"]
+              env_start=len(timeout_prefix)
+              checks["native_test_timeout_exact"]=argv[:len(timeout_prefix)]==timeout_prefix
+              checks["sanitized_test_environment_exact"]=(argv[env_start-len(["env","-i"]):env_start-len(["env","-i"])+2]==["env","-i"] and argv[env_start:env_start+len(expected_env)]==expected_env)
+              expected_test_argv=[str(Path(os.environ["UV_PROJECT_ENVIRONMENT"])/"bin/python"),"-m","pytest","-q","-p","no:cacheprovider",f"--rootdir={Path('app-candidate').resolve()}",f"--junit-prefix=ni61_{module.replace('-', '_')}",module_path,f"--junitxml={root/'original-pytest.xml'}",f"--log-file={root/'pytest.log'}"]
+              checks["pytest_command_exact"]=argv[env_start+len(expected_env):]==expected_test_argv
+              checks["collection_delta_exact"]=(comparison["case_delta"]==int(os.environ["EXPECTED_DELTA"]) and collection_status["comparison_exit_code"]==0 and collection_status["baseline_exit_code"]==0 and collection_status["candidate_exit_code"]==0)
+              expected_repos={"root_workflow":os.environ["GITHUB_SHA"],"root_producer":os.environ["ROOT_PRODUCER_SHA"],"orchestrator_candidate":os.environ["APP_SOURCE_SHA"],"orchestrator_baseline":os.environ["APP_BASE_SHA"]}
+              checks["repository_pins_exact"]=record["repositories"]==expected_repos
+              checks["source_blobs_exact"]=(subprocess.check_output(["git","-C","app-candidate","rev-parse",f"{os.environ['APP_SOURCE_SHA']}:tests/unit/test_colbert_reranker.py"],text=True).strip()==os.environ["APP_SOURCE_COLBERT_BLOB"] and subprocess.check_output(["git","-C","app-candidate","rev-parse",f"{os.environ['APP_SOURCE_SHA']}:tests/unit/test_retrieval_encoder_onnx_threads.py"],text=True).strip()==os.environ["APP_SOURCE_ENCODER_BLOB"] and subprocess.check_output(["git","-C","app-baseline","rev-parse",f"{os.environ['APP_BASE_SHA']}:tests/unit/test_colbert_reranker.py"],text=True).strip()==os.environ["APP_BASE_COLBERT_BLOB"] and subprocess.check_output(["git","-C","app-baseline","rev-parse",f"{os.environ['APP_BASE_SHA']}:tests/unit/test_retrieval_encoder_onnx_threads.py"],text=True).strip()==os.environ["APP_BASE_ENCODER_BLOB"])
+              def manifest(path):
+                  rows={}
+                  for line in Path(path).read_text().splitlines():
+                      digest,name=line.split(maxsplit=1); rows[name.strip()] = digest
+                  return rows
+              candidate_before=manifest(root/"app-source-before-install.sha256")
+              baseline_before=manifest(root/"app-baseline-before-install.sha256")
+              candidate_after=manifest(root/"app-project-lock-after-install.sha256")
+              checks["project_lock_before_after_exact"]=(candidate_before["app-candidate/pyproject.toml"]==candidate_after["pyproject.toml"]==baseline_before["app-baseline/pyproject.toml"] and candidate_before["app-candidate/uv.lock"]==candidate_after["uv.lock"]==baseline_before["app-baseline/uv.lock"]==os.environ["APP_LOCK_SHA256"])
+              checks["lock_and_project_unchanged"]=(hashlib.sha256(Path("app-candidate/uv.lock").read_bytes()).hexdigest()==os.environ["APP_LOCK_SHA256"] and Path("app-candidate/pyproject.toml").read_bytes()==Path("app-baseline/pyproject.toml").read_bytes())
+              checks["source_repositories_clean"]=(subprocess.check_output(["git","-C","app-candidate","status","--porcelain","--untracked-files=all"],text=True)=="" and subprocess.check_output(["git","-C","app-baseline","status","--porcelain","--untracked-files=all"],text=True)=="")
+              targets=[Path(os.environ[key]) for key in ("ORCHESTRATOR_PATHS_LLAMA_CPP_BIN","ORCHESTRATOR_PATHS_LLAMA_MTMD","ORCHESTRATOR_PATHS_LLAMA_SERVER","LATEON_MODEL_PATH","REASON_MXBAI_MODEL_PATH","KB_RAG_CROSS_ENCODER_PATH")]
+              checks["all_model_kernel_targets_absent_nonlink"]=all(not p.exists() and not p.is_symlink() for p in targets)
+              owner=json.loads((root/"capture-ownership.json").read_text())
+              capture=root.lstat()
+              import stat
+              checks["capture_directory_owner_mode_exact"]=(not stat.S_ISLNK(capture.st_mode) and stat.S_ISDIR(capture.st_mode) and stat.S_IMODE(capture.st_mode)==0o700 and capture.st_uid==owner["uid"]==os.getuid() and capture.st_gid==owner["gid"] and owner["mode"]=="0700")
+              checks["junit_and_log_outside_source"]=((root/"original-pytest.xml").is_file() and (root/"pytest.log").is_file() and (root/"native-producer.stdout").is_file() and (root/"native-producer.stderr").is_file() and (root/"native"/"command.log").is_file())
+              result.update({"receipt_sha256":receipt_sha,"native_counts":counts,"baseline_case_count":comparison["baseline_case_count"],"candidate_case_count":comparison["candidate_case_count"],"grade":[q,t],"grade_reasons":reasons})
+          except Exception as exc:
+              result["error"]=f"{type(exc).__name__}: {exc}"
+              checks["receipt_reopen_and_projection_completed"]=False
+          (root/"postcheck.json").write_text(json.dumps(result,sort_keys=True)+"\n",encoding="utf-8")
+          print(json.dumps(result,sort_keys=True))
+          if not all(checks.values()): raise SystemExit(1)
+          PY
+          check_rc=$?
+          cat "$RESULT_DIR/postcheck.json" 2>/dev/null || true
+          cat "$RESULT_DIR/postcheck.stderr" 2>/dev/null || true
+          exit "$check_rc"
+
+      - name: Upload independent receipt and source postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ni61-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.module_id }}-postcheck
+          path: |
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/postcheck.json
+            ${{ runner.temp }}/ni61-fixtures/${{ github.run_id }}/${{ github.run_attempt }}/${{ matrix.module_id }}/postcheck.stderr
+          if-no-files-found: warn
+          compression-level: 0
+          retention-days: 14

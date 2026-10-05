@@ -12,7 +12,7 @@
 
 ## Start here
 
-- **Next:** NI05-45/53 strategy validation, NI05-58–61 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
+- **Next:** NI05-45/53 strategy validation, NI05-58–60 fixture validation, and NI05-76 code-index claim enforcement; then the independent NI05-62–74 scopes. NI05-75 retains its HIGH-impact source stop pending the requested operator decision.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -34,7 +34,7 @@ and promotion are serialized by main. No inference grants, production mutations 
 `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
 Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
 Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **55/76**. The remaining items keep their narrower source, fixture,
+host-dependent checks remain explicitly separate. Published completion tally: **56/76**. The remaining items keep their narrower source, fixture,
 and host-dependent acceptance boundaries explicit.
 
 **Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
@@ -126,7 +126,7 @@ and host-dependent acceptance boundaries explicit.
 
 - [ ] **NI05-60** — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
 
-- [ ] **NI05-61** — SSU-ONNX-THREAD-CONTRACT: Resolve topology-dependent thread defaults against actual source/configuration, then bind deterministic small-host and production-shaped fixture controls; do not change expected values solely to pass.
+- [x] **NI05-61** ✅ 2026-10-05 — SSU-ONNX-THREAD-CONTRACT: Resolve topology-dependent thread defaults against actual source/configuration, then bind deterministic small-host and production-shaped fixture controls; do not change expected values solely to pass.
 
 - [ ] **NI05-62** — SSU-KV-PURE-ARITHMETIC: Review a pure KV formula boundary for the two modules refused by import-time capacity validation. Require fresh impact/manual callers before production refactoring; keep actual serving-capacity refusal and avoid synthetic RAM.
 
@@ -687,3 +687,5 @@ NI75 impact checkpoint: main verifies all 76 retained files from original CI3736
 2026-10-05 NI18 completed in its bounded topology/classification scope. Main independently reopened the original topology modules: 35 default-template cases, nine fleet-dispatch cases and 17 stack-template cases, all TRUE Judged/Located with zero failures/errors/skips and current-source parity. The complete original sweep accounted for all895 tracked modules:826TRUE/57FALSE/12NULL. Main reviewed all69 exception routes against the immutable source-correlated action map, preserved every original outcome and bound current APP6bb8 source bytes (61 unchanged modules/eight reviewed fixture deltas). [Main routing review](../../artifacts/ni05/unit-sweep-37327810408/main-routing-review.json) records31 reviewed child scopes,23 independent queued tasks and15 program-owner/live/historical boundaries. Three missing program routes are now explicit GPU-NI18-FIXTURES, OAB-NI18-FIXTURES and SCG-NI18-FIXTURES checkboxes in their existing canonical handoffs. Parent completion means the original topology verification and wider-sweep classification/routing are done; it does not mean the895-module suite passes or all child repairs are complete. The named NI45/53/57–76 work continues. Completed tally54/76.
 
 2026-10-05 NI05-57 completed: the path-bound routing fixture preserves its stale-module trap and SystemExit1 refusal; the complete module passes72/72 with zero skips, failures or errors. Main independently verifies78 extracted originals,62 Git-backed source inputs plus three context/install inputs, native TRUE Judged/Located and19 postchecks from CI37369215336 attempt1. Only the routing test delta is promoted to APP main198ee59d54750d23b211e80856b913d07357bfbe. Public originals and derivative review: `artifacts/ni05/routing-pool-37369215336`. NI05-58 prompt validation remains open; its original unacquired runner produced no fixture outcome. Existing CI belief carrier applies without a new grading rule. Published scoped completion tally55/76,21 open; the full unit suite remains mixed.
+
+2026-10-05 NI05-61 completed: reviewed topology fixtures enforce the existing8/16 ONNX intra-op defaults and inter_op1, retain positive explicit overrides/refusals, and cover visibleCPU1/8/16/192. Original CI37369039306 attempt2 passes47 ColBERT+13 encoder cases, zero skips/failures/errors; main reopens both TRUE Judged/Located receipts,21 Git-backed+19 context/install inputs each,17 postchecks each and190 ZIP-member comparisons. Two test files are published to APP main33d9de564e3090516780a8889f4ca4e77a779bb7. Public originals: `artifacts/ni05/onnx-fixtures-37369039306`. Earlier setup/acquisition failures remain unchanged, with no invented result. Scoped completion tally56/76,20 open; no live ONNX model, inference, performance or full-suite claim.

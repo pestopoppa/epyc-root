@@ -1,0 +1,72 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.14, pytest-9.0.3, pluggy-1.6.0
+rootdir: /home/runner/work/epyc-root/epyc-root/app-baseline
+configfile: pyproject.toml
+plugins: asyncio-1.3.0, langsmith-0.7.30, timeout-2.4.0, anyio-4.13.0, hypothesis-6.151.13, cov-7.1.0, xdist-3.8.0
+asyncio: mode=Mode.AUTO, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 44 items
+
+<Dir app-baseline>
+  <Package tests>
+    <Package unit>
+      <Module test_colbert_reranker.py>
+        <Class TestMaxSim>
+          <Function test_identical_embeddings_score_one>
+          <Function test_orthogonal_embeddings_score_zero>
+          <Function test_partial_overlap_intermediate_score>
+          <Function test_multiple_doc_tokens_max_per_query>
+          <Function test_delegates_to_the_shared_implementation>
+        <Class TestRerankSnippets>
+          <Function test_empty_snippets_returns_empty>
+          <Function test_model_unavailable_returns_original_order>
+          <Function test_reranks_by_maxsim>
+          <Function test_ranking_follows_a_fake_score_matrix_exactly>
+          <Function test_top_k_limits_output>
+          <Function test_empty_snippet_text_scores_zero>
+          <Function test_encode_failure_returns_original>
+        <Class TestRoleContract>
+          <Function test_query_is_encoded_with_role_query>
+          <Function test_every_candidate_is_encoded_with_role_document>
+          <Function test_roles_never_mix_conventions>
+          <Function test_missing_prefix_tokens_degrade_both_sides_to_role_none>
+        <Class TestTokenCaps>
+          <Function test_query_cap_is_the_model_declared_value>
+          <Function test_query_cap_tracks_a_different_checkpoint>
+          <Function test_doc_cap_never_exceeds_the_declared_document_length>
+          <Function test_doc_budget_may_spend_fewer_tokens_than_declared>
+          <Function test_doc_budget_env_override_is_still_clamped>
+          <Function test_invalid_doc_budget_override_falls_back[not-a-number]>
+          <Function test_invalid_doc_budget_override_falls_back[0]>
+          <Function test_invalid_doc_budget_override_falls_back[-4]>
+          <Function test_invalid_doc_budget_override_falls_back[]>
+          <Function test_unreadable_config_falls_back_without_raising>
+          <Function test_absurdly_small_declared_cap_is_treated_as_unstated>
+        <Class TestNoDuplicatedEncoder>
+          <Function test_module_defines_no_private_encode>
+          <Function test_module_hardcodes_no_query_token_cap>
+          <Function test_module_does_not_import_onnxruntime_or_tokenizers>
+        <Class TestIsAvailable>
+          <Function test_is_available_delegates_to_the_shared_encoder>
+        <Class TestModelPathOverride>
+          <Function test_default_points_to_gte_moderncolbert>
+          <Function test_env_var_overrides_to_lateon>
+          <Function test_reason_mxbai_env_var_selects_fallback_slot>
+          <Function test_lateon_precedes_reason_mxbai_when_both_are_set>
+          <Function test_reranker_import_repoints_the_shared_encoder_too>
+          <Function test_repointing_drops_a_session_loaded_for_another_model>
+        <Class TestOnnxThreadBound>
+          <Function test_shared_default_is_bounded>
+          <Function test_rerank_env_knob_is_honoured_as_an_alias>
+          <Function test_encode_knob_wins_over_the_alias>
+          <Function test_invalid_override_falls_back_to_default[not-a-number]>
+          <Function test_invalid_override_falls_back_to_default[0]>
+          <Function test_invalid_override_falls_back_to_default[-4]>
+          <Function test_invalid_override_falls_back_to_default[]>
+
+=============================== warnings summary ===============================
+../../../_temp/ni61-thread-fixture-venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32
+  /home/runner/work/_temp/ni61-thread-fixture-venv/lib/python3.11/site-packages/opentelemetry/util/_importlib_metadata.py:32: DeprecationWarning: SelectableGroups dict interface is deprecated. Use select.
+    return EntryPoints(ep for group_eps in eps.values() for ep in group_eps)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 44 tests collected in 0.82s ==========================
