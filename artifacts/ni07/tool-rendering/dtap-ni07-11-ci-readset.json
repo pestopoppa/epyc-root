@@ -1,5 +1,5 @@
 {
-  "app_pin": "4c86bd611848ffa6aeca99843f0b964d59f7b5e0",
+  "app_pin": "8fbbb6a2348a2f234da418239ea4216068500220",
   "app_published_base": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
   "app_python_config_closure": [
     {
@@ -1023,9 +1023,9 @@
       "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5"
     },
     {
-      "git_blob": "e4f16a9c20a7ae56b832780acf6d24a131777911",
+      "git_blob": "71b3dd2b5be07dd45b915bc8bece3522c3420999",
       "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
-      "sha256": "aaf67a008f8526e0df9b679ccfa510aa53b8c159d77204aeb5794bc7891412df"
+      "sha256": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf"
     },
     {
       "git_blob": "9ab0ecf5a763068dc3610c5caa6d04c22d3a135e",
@@ -10791,9 +10791,9 @@
       "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5"
     },
     {
-      "git_blob": "e4f16a9c20a7ae56b832780acf6d24a131777911",
+      "git_blob": "71b3dd2b5be07dd45b915bc8bece3522c3420999",
       "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
-      "sha256": "aaf67a008f8526e0df9b679ccfa510aa53b8c159d77204aeb5794bc7891412df"
+      "sha256": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf"
     }
   ],
   "recipe_files": [
