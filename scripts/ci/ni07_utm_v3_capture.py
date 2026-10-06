@@ -49,9 +49,10 @@ def main() -> int:
             ).strip(),
             "install_command": os.environ["NI07_UTM_INSTALL_COMMAND"],
             "declared_dependencies": [
-                "pytest==8.4.2", "numpy==2.3.2", "PyYAML==6.0.2", "jsonschema==4.25.1"
+                "pytest==8.4.2", "numpy==2.3.2", "PyYAML==6.0.2",
+                "jsonschema==4.25.1", "httpx==0.28.1"
             ],
-            "dependency_basis": "static import closure: pytest for execution; numpy, PyYAML from existing REPL-memory package imports; jsonschema from the existing typed-decision runner",
+            "dependency_basis": "static import closure: pytest for execution; numpy and PyYAML from existing REPL-memory package imports; jsonschema from the typed-decision runner; httpx from typed_decisions package initialization. httpx==0.28.1 is also pinned in APP uv.lock.",
             "selected_test": SELECTION,
             "generated_output": GENERATED_OUTPUT,
             "environment": {key: os.environ.get(key) for key in (
@@ -77,6 +78,7 @@ def main() -> int:
             "tests/unit/test_utm_v3_conformance.py",
             "tests/unit/fixtures/utm_v3/synthetic_cases.json",
             "tests/unit/fixtures/utm_v3/rubric.json",
+            "uv.lock",
         ):
             path = app / name
             if not path.is_file():
