@@ -38,10 +38,17 @@ def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
     inp.parent.mkdir(parents=True, exist_ok=True)
     input_bytes = b'{"qid":"q1","correct":true,"error":false}\n'
     inp.write_bytes(input_bytes)
-    input_snapshot = root / "data" / "source.snapshot.raw"
+    report = tmp_path / "report.json"
+    snapshot_dir = tmp_path / "report.json.native" / ("a" * 64)
+    snapshot_dir.mkdir(parents=True, mode=0o700)
+    (snapshot_dir.parent).chmod(0o700)
+    snapshot_dir.chmod(0o700)
+    input_snapshot = snapshot_dir / "input-0000.raw"
     input_snapshot.write_bytes(input_bytes)
-    producer_snapshot = root / "producer.snapshot.py"
+    input_snapshot.chmod(0o600)
+    producer_snapshot = snapshot_dir / "producer.snapshot.py"
     producer_snapshot.write_bytes(src.read_bytes())
+    producer_snapshot.chmod(0o600)
     provenance = {
         "schema": schema,
         "producer_path": producer,
@@ -59,7 +66,6 @@ def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
     provenance["record_id"] = _canonical_sha(provenance)
     body["native_provenance"] = provenance
     provenance["report_sha256"] = _canonical_sha(body)
-    report = tmp_path / "report.json"
     report.write_text(json.dumps(body, sort_keys=True))
     return report
 
@@ -133,7 +139,7 @@ def _eval_report(tmp_path: Path) -> Path:
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
 ])
-def test_report_bytes_and_original_inputs_are_reverified_at_projection(tmp_path, monkeypatch,
+def test_report_bytes_and_retained_inputs_are_reverified_at_projection(tmp_path, monkeypatch,
                                                                        adapter, factory):
     root = tmp_path / "repo"
     monkeypatch.setattr(adapter, "ORCHESTRATOR", root)
@@ -146,8 +152,7 @@ def test_report_bytes_and_original_inputs_are_reverified_at_projection(tmp_path,
 
     input_path = root / "data" / "source.jsonl"
     input_path.write_bytes(input_path.read_bytes() + b"\n")
-    with pytest.raises(ProjectionError, match="bound input bytes changed"):
-        adapter.project(native[0])
+    assert adapter.project(native[0]).attestation_verified is True
 
 
 def test_immutable_input_snapshot_is_required_and_rechecked(tmp_path, monkeypatch):
@@ -156,7 +161,7 @@ def test_immutable_input_snapshot_is_required_and_rechecked(tmp_path, monkeypatc
     path = _vbs_report(tmp_path)
     native = vbs_adapter.native_rows(path)
     assert native
-    snapshot = root / "data" / "source.snapshot.raw"
+    snapshot = tmp_path / "report.json.native" / ("a" * 64) / "input-0000.raw"
     snapshot.write_bytes(snapshot.read_bytes() + b"tamper")
     with pytest.raises(ProjectionError, match="immutable input snapshot differs"):
         vbs_adapter.project(native[0])
@@ -203,8 +208,8 @@ def test_unknown_native_fields_are_refused(tmp_path, monkeypatch, adapter, facto
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
 ])
-def test_producer_source_changes_refuse_previously_discovered_rows(tmp_path, monkeypatch,
-                                                                  adapter, factory):
+def test_producer_source_changes_preserve_snapshot_bound_historical_rows(tmp_path, monkeypatch,
+                                                                        adapter, factory):
     root = tmp_path / "repo"
     monkeypatch.setattr(adapter, "ORCHESTRATOR", root)
     path = factory(tmp_path)
@@ -212,8 +217,43 @@ def test_producer_source_changes_refuse_previously_discovered_rows(tmp_path, mon
     assert native
     producer = root / adapter.PRODUCER
     producer.write_bytes(producer.read_bytes() + b"# source changed after capture\n")
-    with pytest.raises(ProjectionError, match="producer source bytes differ"):
-        adapter.project(native[0])
+    assert adapter.project(native[0]).attestation_verified is True
+
+
+def test_snapshot_path_escape_is_refused(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
+    path = _vbs_report(tmp_path)
+    report = json.loads(path.read_text())
+    report["native_provenance"]["inputs"][0]["snapshot_path"] = str(tmp_path / "outside.raw")
+    report["native_provenance"]["record_id"] = _canonical_sha({k: v for k, v in
+        report["native_provenance"].items() if k not in {"record_id", "report_sha256"}})
+    report["native_provenance"].pop("report_sha256")
+    report["native_provenance"]["report_sha256"] = _canonical_sha(report)
+    path.write_text(json.dumps(report))
+    with pytest.raises(ProjectionError, match="escapes the report-adjacent"):
+        vbs_adapter.native_rows(path)
+
+
+def test_zero_denominator_rate_is_omitted_while_defined_rates_remain(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
+    path = _vbs_report(tmp_path)
+    report = json.loads(path.read_text())
+    rate = report["rates"]["failure_over_edited_voluntary_stops"]
+    rate.update(numerator=0, denominator=0, point=None,
+                wilson_95ci_lo=None, wilson_95ci_hi=None)
+    provenance = report["native_provenance"]
+    provenance["report_body_sha256"] = _canonical_sha({k: v for k, v in report.items()
+                                                        if k != "native_provenance"})
+    provenance["record_id"] = _canonical_sha({k: v for k, v in provenance.items()
+                                               if k not in {"record_id", "report_sha256"}})
+    provenance.pop("report_sha256")
+    provenance["report_sha256"] = _canonical_sha(report)
+    path.write_text(json.dumps(report))
+    rows = vbs_adapter.native_rows(path)
+    assert rows
+    assert "failure_over_edited_voluntary_stops" not in {row["metric_key"] for row in rows}
 
 
 def test_eval_cached_suite_and_metric_must_match_bound_report(tmp_path, monkeypatch):

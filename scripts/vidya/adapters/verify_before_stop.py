@@ -100,11 +100,30 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
         raise ProjectionError("MF-VBS-1 corpus trajectory count must be a nonnegative integer")
     if trajectory_count == 0:
         return ()
-    return tuple({"document": document, "provenance": provenance,
+    rows = []
+    for key in _RATES:
+        rate = document["rates"][key]
+        numerator, denominator = rate.get("numerator"), rate.get("denominator")
+        if type(numerator) is not int or numerator < 0 or type(denominator) is not int or denominator < 0:
+            raise ProjectionError(f"MF-VBS-1 {key} numerator/denominator must be nonnegative integers")
+        if numerator > denominator:
+            raise ProjectionError(f"MF-VBS-1 {key} numerator exceeds denominator")
+        # A zero denominator is a native unknown, not a malformed report and not a ClaimTuple.
+        if denominator == 0:
+            if numerator != 0 or any(rate.get(name) is not None for name in
+                                      ("point", "wilson_95ci_lo", "wilson_95ci_hi",
+                                       "wilson_95ci_lo_of_never_executed",
+                                       "wilson_95ci_hi_of_never_executed")):
+                raise ProjectionError(f"MF-VBS-1 {key} zero-denominator fields are inconsistent")
+            continue
+        point = _finite_number(rate.get("point"), f"{key}.point")
+        if not math.isclose(point, numerator / denominator, rel_tol=0, abs_tol=1e-12):
+            raise ProjectionError(f"MF-VBS-1 {key} point does not match numerator/denominator")
+        rows.append({"document": document, "provenance": provenance,
                   "report_path": str(report_path), "report_sha256": report_digest,
                   "metric_key": key,
-                  "selection_sha256": _selection_sha256(key, document["rates"][key])}
-                 for key in _RATES if key in document["rates"])
+                  "selection_sha256": _selection_sha256(key, rate)})
+    return tuple(rows)
 
 
 def _selection_sha256(key: str, rate: dict[str, Any]) -> str:

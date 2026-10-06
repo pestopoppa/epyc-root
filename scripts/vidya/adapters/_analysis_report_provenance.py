@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import stat
 from pathlib import Path
 from typing import Any
 
@@ -22,11 +23,48 @@ def _read(path: Path, label: str) -> bytes:
         raise ProjectionError(f"{label} unavailable: {path}") from exc
 
 
+def _read_snapshot(path_text: str, *, report_path: Path, label: str,
+                   expected_directory: Path | None = None) -> bytes:
+    """Read only a regular, non-symlink file under this report's native sidecar."""
+    path = Path(path_text)
+    if not path.is_absolute() or ".." in path.parts:
+        raise ProjectionError(f"{label} path must be absolute and traversal-free")
+    sidecar = report_path.absolute().with_name(report_path.name + ".native")
+    try:
+        if not path.is_relative_to(sidecar):
+            raise ProjectionError(f"{label} escapes the report-adjacent snapshot directory")
+        sidecar_info = sidecar.lstat()
+        if not stat.S_ISDIR(sidecar_info.st_mode) or sidecar_info.st_mode & 0o077:
+            raise ProjectionError("report snapshot root must be a private 0700 directory")
+        relative = path.relative_to(sidecar)
+        if len(relative.parts) != 2:
+            raise ProjectionError(f"{label} must be in one report snapshot-key directory")
+        if expected_directory is not None and path.parent != expected_directory:
+            raise ProjectionError("all report snapshots must share one snapshot-key directory")
+        cursor = Path(path.anchor)
+        for component in path.parts[1:]:
+            cursor /= component
+            info = cursor.lstat()
+            if stat.S_ISLNK(info.st_mode):
+                raise ProjectionError(f"{label} path traverses a symlink")
+        if not stat.S_ISREG(path.lstat().st_mode):
+            raise ProjectionError(f"{label} is not a regular file")
+        if path.parent.stat().st_mode & 0o077:
+            raise ProjectionError(f"{label} directory permissions are broader than 0700")
+        # A snapshot is a historical byte binding. Mode checks catch accidental exposure,
+        # but create-once + fsync does not make the underlying file immutable.
+        if path.lstat().st_mode & 0o077:
+            raise ProjectionError(f"{label} permissions are broader than 0600")
+        return path.read_bytes()
+    except OSError as exc:
+        raise ProjectionError(f"{label} unavailable: {path}") from exc
+
+
 def validate_provenance(document: dict[str, Any], *, report_path: Path,
                         schema: str, producer_root: Path,
                         producer_path: str, report_bytes: bytes | None = None
                         ) -> tuple[dict[str, Any], str]:
-    """Verify closed envelope, self hash, current producer, and every bound input snapshot."""
+    """Verify the report envelope and retained source/input snapshots for historical projection."""
     provenance = document.get("native_provenance")
     if not isinstance(provenance, dict):
         raise ProjectionError("legacy analysis JSON has no native provenance; it is descriptive only")
@@ -37,19 +75,24 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
         raise ProjectionError("native_provenance has missing or unknown fields")
     if provenance.get("schema") != schema or provenance.get("producer_path") != producer_path:
         raise ProjectionError("native provenance schema or producer path is foreign")
-    source = producer_root / producer_path
-    producer_bytes = _read(source, "producer source")
-    producer_sha = hashlib.sha256(producer_bytes).hexdigest()
-    if provenance.get("producer_sha256") != producer_sha:
-        raise ProjectionError("producer source bytes differ from the report-bound revision")
+    producer_sha = provenance.get("producer_sha256")
+    if (not isinstance(producer_sha, str) or len(producer_sha) != 64
+            or any(c not in "0123456789abcdef" for c in producer_sha)):
+        raise ProjectionError("producer digest must be lowercase SHA-256")
     producer_snapshot_path = provenance.get("producer_snapshot_path")
     if not isinstance(producer_snapshot_path, str) or not producer_snapshot_path:
         raise ProjectionError("producer source snapshot path is missing")
+    sidecar = report_path.absolute().with_name(report_path.name + ".native")
+    producer_bytes = _read_snapshot(producer_snapshot_path, report_path=report_path,
+                                    label="producer source snapshot")
     producer_snapshot = Path(producer_snapshot_path)
-    if not producer_snapshot.is_absolute():
-        producer_snapshot = producer_root / producer_snapshot
-    if _read(producer_snapshot, "producer source snapshot") != producer_bytes:
-        raise ProjectionError("immutable producer snapshot differs from current producer source")
+    snapshot_directory = producer_snapshot.parent
+    if (snapshot_directory.parent != sidecar
+            or len(snapshot_directory.name) != 64
+            or any(c not in "0123456789abcdef" for c in snapshot_directory.name)):
+        raise ProjectionError("producer snapshot must be under a canonical report snapshot key")
+    if hashlib.sha256(producer_bytes).hexdigest() != producer_sha:
+        raise ProjectionError("retained producer snapshot differs from its report-bound digest")
     if not isinstance(provenance.get("inputs"), list) or not provenance["inputs"]:
         raise ProjectionError("a measurement report must bind at least one parsed input file")
     if (not isinstance(provenance.get("missing_inputs"), list)
@@ -86,21 +129,16 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
             raise ProjectionError("input manifest normalized_row_count is invalid")
         source_path = Path(path_text)
         if source_path.is_absolute():
-            resolved = source_path
-        else:
-            resolved = (producer_root / source_path).resolve()
-            if not resolved.is_relative_to(producer_root.resolve()):
-                raise ProjectionError("relative input path escapes the named repository root")
-        raw = _read(resolved, "bound input")
-        if len(raw) != item["byte_count"] or hashlib.sha256(raw).hexdigest() != digest:
-            raise ProjectionError(f"bound input bytes changed: {path_text}")
+            if not source_path.is_relative_to(producer_root.resolve()):
+                raise ProjectionError("absolute input path escapes the named repository root")
+        elif ".." in source_path.parts:
+            raise ProjectionError("relative input path may not traverse outside its repository root")
         snapshot_text = item.get("snapshot_path")
         if not isinstance(snapshot_text, str) or not snapshot_text:
             raise ProjectionError("immutable input snapshot path is missing")
-        snapshot_path = Path(snapshot_text)
-        if not snapshot_path.is_absolute():
-            snapshot_path = producer_root / snapshot_path
-        snapshot_bytes = _read(snapshot_path, "immutable input snapshot")
+        snapshot_bytes = _read_snapshot(snapshot_text, report_path=report_path,
+                                        label="input snapshot",
+                                        expected_directory=snapshot_directory)
         if len(snapshot_bytes) != item["byte_count"] or hashlib.sha256(snapshot_bytes).hexdigest() != digest:
             raise ProjectionError(f"immutable input snapshot differs from its parsed-byte digest: {path_text}")
     id_body = dict(provenance)
