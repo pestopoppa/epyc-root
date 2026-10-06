@@ -1442,3 +1442,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 ## 2026-10-06 staged ED25519 header recognition
 
 [Staged ED25519 header contract](../docs/reference/staged-ed25519-header-check.md) closes the missing staged-blob PEM header match while preserving OPENSSH/RSA handling. [Native capture](../artifacts/ni07/run-37474797195/README.md) passes 9/9 synthetic cases with one outer CI observation. This is structural fixture evidence, not a privacy or whole-repository coverage claim. The separate whole-file credential-fixture allowlist choice remains open under TOC-RD-1a; UFH-07 retains the trajectory-artifact prerequisite and TOC-SP-3 priority.
+
+## 2026-10-06 standalone guard declared NUMA mode
+
+[Standalone guard contract](../docs/reference/standalone-numa-guard.md) makes explicit mode or the running checkout’s declaration determine standalone CLI admission, with unresolved input refused before validation. [Native capture](../artifacts/ni07/run-37476312545/README.md) passes 20/20 selected cases; synthetic 1 TiB import scaffolding and empty backend directories establish no live capacity, deployment or serving warrant. The lower-level diagnostic fallback and pipeline update/compile paths retain their prior contract.

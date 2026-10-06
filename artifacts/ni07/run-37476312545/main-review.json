@@ -1,0 +1,71 @@
+{
+  "run": 37476312545,
+  "attempt": 1,
+  "artifact_id": 11419181861,
+  "independent_git_bindings": 3375,
+  "source_counts": {
+    "app": 2098,
+    "carrier": 626,
+    "recipe": 651
+  },
+  "contexts": 2,
+  "zip_sha256": "3c1649ab3747fb95c82d1a74348071aa6f10eac8a33cb702857aa201149808bb",
+  "zip_size": 17030549,
+  "zip_extracted_members": 3385,
+  "receipt_file_sha256": "0d0f25f093950a388aca35094ab99cf546bade4d17411bb8a2c5ca0dd7f88678",
+  "receipt_self_sha256": "5a5cf1ff1ee5d7799fe5bb9782115a1918e9e27712ec55e5952afa24f9ec673c",
+  "repositories": {
+    "app": "82e398da2478bfd9c3baaddbd0c6fb742d09dafa",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "a7f9677cd590d5e937d48bcbf723b7e97b7b985d"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_stack_change_guard.py::test_standalone_guard_uses_declared_mode_despite_ambient_and_fleet",
+    "tests/unit/test_stack_change_guard.py::test_standalone_guard_explicit_mode_overrides_declared_topology",
+    "tests/unit/test_stack_change_guard.py::test_standalone_guard_fails_closed_on_unresolvable_declared_mode",
+    "tests/unit/test_stack_change_guard.py::test_standalone_guard_rejects_invalid_explicit_mode_before_validation",
+    "tests/unit/test_stack_change_guard.py::test_special_cli_commands_bypass_standalone_numa_admission",
+    "tests/unit/test_stack_change_guard.py::test_launch_view_rejects_invalid_explicit_numa_mode_as_could_not_check",
+    "tests/unit/test_stack_change_guard.py::test_explicit_launch_numa_mode_bypasses_realized_fleet_probe",
+    "tests/unit/test_stack_change_guard.py::test_in_repo_source_pins_are_repo_relative_and_external_ones_absolute",
+    "tests/unit/test_stack_change_guard.py::test_relative_source_pin_resolves_against_guard_checkout_not_priors_dir",
+    "tests/unit/test_stack_change_guard.py::test_shipped_priors_and_descriptors_carry_no_checkout_absolute_pins",
+    "tests/unit/test_stack_change_pipeline.py::test_resolution_uses_declared_topology_and_ignores_ambient_env",
+    "tests/unit/test_stack_change_pipeline.py::test_resolution_explicit_mode_wins_and_says_it_is_not_production",
+    "tests/unit/test_stack_change_pipeline.py::test_resolution_rejects_invalid_explicit_mode",
+    "tests/unit/test_stack_change_pipeline.py::test_resolution_without_declaration_fails_check_but_not_update",
+    "--junitxml=/home/runner/work/_temp/ni07-30-standalone-numa-capture/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 20,
+    "error": 0,
+    "executed": 20,
+    "failure": 0,
+    "passed": 20,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "app_main": "48a546e90fbc202a0c2ae103203621ba29175915",
+  "root_main": "4f025e350646c0c715e0c131622136c4570d4f2d",
+  "context_recipe_assertions_checked": true
+}

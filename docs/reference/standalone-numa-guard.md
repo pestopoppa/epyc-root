@@ -1,0 +1,9 @@
+# Standalone stack guard NUMA admission (NI07-30)
+
+The standalone `scripts/validate/stack_change_guard.py` CLI accepts an explicit closed-set `--numa-mode` override; absent an override it resolves the declared topology from the running checkout's `orchestration/stack_topology.yaml`. Missing, unreadable, malformed, absent, or invalid mode input fails closed as `COULD_NOT_CHECK` before validation. The list-rules and stale-source-only early returns remain ahead of mode admission, and `--repo-root` remains scoped to scanner inputs.
+
+The lower-level legacy launch-manifest diagnostic fallback and direct `validate_stack_priors(..., launch_numa_mode=None)` behavior are unchanged. Pipeline resolution and update/compile behavior are unchanged. Portable source-pin behavior is covered by existing focused controls: checkout-relative in-repository paths and absolute external paths.
+
+Original native CI evidence is run 37476312545, 14 selected node IDs / 20 cases, all passed with zero failures, errors, or skips. The synthetic fixture additionally uses a temporary fake MemTotal only during static module import for two legacy helper controls and empty temporary backend directories; it does not exercise production capacity policy against real hardware, execute a kernel/server, load a model, or establish live fleet/production behavior. The real runner MemTotal is separately recorded in its runtime context. This is deterministic source/fixture evidence, not deployment or live acceptance.
+
+Tested APP source `82e398da2478bfd9c3baaddbd0c6fb742d09dafa` promoted to APP main `48a546e90fbc202a0c2ae103203621ba29175915`; capture recipe `a7f9677cd590d5e937d48bcbf723b7e97b7b985d` promoted to ROOT main `4f025e350646c0c715e0c131622136c4570d4f2d`. MAIN verified tested-path byte equality at both merges. [Original evidence and MAIN review](../../artifacts/ni07/run-37476312545/README.md).
