@@ -102,6 +102,54 @@
    "disposition": "planned",
    "plan_ref": null,
    "note": "digest reads are not dives; redo against full sources"
+  },
+  {
+   "seq": 7,
+   "stage": 3,
+   "verbatim": "YaRN shouldn't regress performance at context lengths within the model's default supported context window",
+   "disposition": "planned",
+   "plan_ref": "CTX-1, CTX-3b, CTX-4 G1-G3, decline of static YaRN in-window",
+   "note": "operator 2026-10-05, pre-intake"
+  },
+  {
+   "seq": 8,
+   "stage": 3,
+   "verbatim": "we could even first test it on the CPU models where RAM is abundant",
+   "disposition": "planned",
+   "plan_ref": "CTX-5",
+   "note": "operator 2026-10-04, pre-intake (1M on CPU first)"
+  },
+  {
+   "seq": 9,
+   "stage": 3,
+   "verbatim": "this sounds sensible",
+   "disposition": "planned",
+   "plan_ref": "CTX-4 G1 (F leads if CTX-1 passes)",
+   "note": "operator 2026-10-06 on option F, pre-Stage-3"
+  },
+  {
+   "seq": 10,
+   "stage": 3,
+   "verbatim": "I don't know how i feel about this. Doesn't it imply that we would be swapping weights and kv cache dynamically between RAM and gpu? That sounds slow. But also... Why the extra copy of the weights? Don't they remain the same?",
+   "disposition": "planned",
+   "plan_ref": "CTX-4 step 1 (D RAM as a number incl. second private weights copy under --no-mmap --mlock)",
+   "note": "operator 2026-10-06 on option D"
+  },
+  {
+   "seq": 11,
+   "stage": 3,
+   "verbatim": "this sounds very promising if true",
+   "disposition": "context-only",
+   "plan_ref": "CTX-3",
+   "note": "operator 2026-10-06 on the Jet-Long cached-variant gate; not approval"
+  },
+  {
+   "seq": 12,
+   "stage": 3,
+   "verbatim": "make sure these aren't accidentally dropped",
+   "disposition": "planned",
+   "plan_ref": "this ledger append (rows above)",
+   "note": "operator 2026-10-06"
   }
  ],
  "prior_sessions": [
