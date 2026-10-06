@@ -20,7 +20,13 @@
   "wiki_lint_warnings": 96,
   "no_new_native_measurement_warrant": true,
   "final_source_delta_sha256": "6a5a4d08fd7b35a95f2cf4100dda70a9e3714722c199538afcc649d2bca7c81a",
-  "coverage_csv_sha256": "0eb00f3d899f8274da58d215d82fb43e74b1b7fd7127da71500ff8d74570d02e",
+  "coverage_csv_sha256": "575a17ac2a59cb42a0dc3ab2d5e3bf5aedb4535d53fbe50c31b4816ccf7165f8",
   "manifest_check_exit": 0,
-  "post_touch_uncompiled_sources": 0
+  "post_touch_uncompiled_sources": 0,
+  "cleanup_worktrees_removed": 28,
+  "cleanup_worktrees_retained": 18,
+  "cleanup_preparation_entries_trashed": 9,
+  "cleanup_promotion_worktree_removed": true,
+  "private_original_capture_roots_retained": 3,
+  "post_publication_report_update": "scoped source-manifest touch only"
 }

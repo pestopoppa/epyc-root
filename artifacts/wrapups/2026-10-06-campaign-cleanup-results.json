@@ -1,0 +1,324 @@
+[
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-applicability-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "2 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-backpressure-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-backpressure-20261005 (branch codex/ni-backpressure-20261005 kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-backpressure-root-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-backpressure-root-20261005 (branch codex/ni-backpressure-root-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-ci-capture-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "5 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-collection-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.93 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-collection-20261005 (branch codex/ni-collection-20261005 kept; clean, landed in origin/main, idle 0.93 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-config-override-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.85 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-config-override-20261005 (branch codex/ni16-config-override kept; clean, landed in origin/main, idle 0.85 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-durability-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.91 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-durability-20261005 (branch codex/ni-durability-20261005 kept; clean, landed in origin/main, idle 0.91 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-durability-adapter-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-durability-adapter-20261005 (branch codex/ni-durability-adapter-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-durability-truth-research-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.87 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-durability-truth-research-20261005 (branch codex/ni-durability-truth-research-20261005 kept; clean, landed in origin/main, idle 0.87 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-durability-truth-root-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "2 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-flagexpiry-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.91 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-flagexpiry-20261005 (branch codex/ni-flagexpiry-20261005 kept; clean, landed in origin/main, idle 0.91 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-gap-timing-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-gap-timing-20261005 (branch codex/ni-gap-timing-20261005 kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-gaps-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "1 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-gates-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "1 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-hs16-orch-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.88 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-hs16-orch-20261005 (branch codex/ni-hs16-orch-20261005 kept; clean, landed in origin/main, idle 0.88 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-hs16-root-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-hs16-root-20261005 (branch codex/ni-hs16-root-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-ingest-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "2 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-kvq-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-kvq-20261005 (branch codex/ni-kvq-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-kvq-fixture-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-kvq-fixture-20261005 (branch codex/ni-kvq-fixture-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-mcp-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.91 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-mcp-20261005 (branch codex/ni-mcp-20261005 kept; clean, landed in origin/main, idle 0.91 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-promote-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-promote-20261005 (branch codex/ni-promote-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-pytest-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.59 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-pytest-20261005 (branch codex/ni-pytest-20261005 kept; clean, landed in origin/main, idle 0.59 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-test-isolation-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni-test-isolation-20261005 (branch codex/ni-test-isolation-20261005 kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni-validation-ci-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "92 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-accepted-orch-main-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-REFERENCED",
+    "reason": "named by /mnt/raid0/llm/tmp/codex-main-owned-wrap.sh",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-astfix-candidate-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "5 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-config-attestation-fixture-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.8 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-config-attestation-fixture-20261005 (branch codex/ni05-config-attestation-fixture-20261005 kept; clean, landed in origin/main, idle 0.8 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-container-sixth-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "6 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-dependency-fixture-contract-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-dependency-fixture-contract-20261005 (branch codex/ni05-dependency-fixture-contract-20261005 kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-expiry-cache-callsite-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.82 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-expiry-cache-callsite-20261005 (branch codex/ni05-expiry-cache-callsite-20261005 kept; clean, landed in origin/main, idle 0.82 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-offhost-bootstrap-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "2 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-research-main-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.73 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-research-main-20261005 (branch codex/ni05-research-main-20261005 kept; clean, landed in origin/main, idle 0.73 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-20261005 (branch codex/ni05-validation-orch kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-eighth-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.78 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-eighth-20261005 (branch codex/ni05-validation-orch-eighth-20261005 kept; clean, landed in origin/main, idle 0.78 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-format-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.8 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-format-20261005 (branch codex/ni05-validation-orch-format-20261005 kept; clean, landed in origin/main, idle 0.8 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-fresh-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.84 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-fresh-20261005 (branch codex/ni05-validation-orch-fresh-20261005 kept; clean, landed in origin/main, idle 0.84 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-ninth-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "2 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-recovery-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "2 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-seventh-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.81 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-seventh-20261005 (branch codex/ni05-validation-orch-seventh-20261005 kept; clean, landed in origin/main, idle 0.81 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-orch-sixth-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.83 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-orch-sixth-20261005 (branch codex/ni05-validation-orch-sixth-20261005 kept; clean, landed in origin/main, idle 0.83 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-research-20261005",
+    "kind": "worktree",
+    "verdict": "REMOVE",
+    "reason": "clean, landed in origin/main, idle 0.9 d",
+    "result": "REMOVED /mnt/raid0/llm/worktrees/codex-ni05-validation-research-20261005 (branch codex/ni05-validation-research kept; clean, landed in origin/main, idle 0.9 d)"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-root-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-UNLANDED",
+    "reason": "4 patch(es) not in origin/main",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-root-ninth-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "3 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-root-recovery-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "6 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-ni05-validation-root-third-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-DIRTY",
+    "reason": "33 modified/untracked path(s)",
+    "result": "kept"
+  },
+  {
+    "path": "/mnt/raid0/llm/worktrees/codex-noninf-session-20261005",
+    "kind": "worktree",
+    "verdict": "KEEP-REFERENCED",
+    "reason": "named by /mnt/raid0/llm/tmp/codex-main-owned-wrap.sh",
+    "result": "kept"
+  }
+]

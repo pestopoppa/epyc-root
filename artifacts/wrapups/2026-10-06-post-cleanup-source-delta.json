@@ -1,0 +1,42 @@
+{
+  "baseline_manifest": "wiki/source_manifest.json",
+  "baseline_source_set_hash": "758e852923e71b307b96f1bee02f110b4441a13768f3f00c18a28e709ad3b39d",
+  "by_type": {
+    "progress": 1
+  },
+  "current_source_set_hash": "14eec6deb1685ba3d853951b94c68d29cd477fc8308a57c95df978ab823c74e3",
+  "drift": {
+    "added_count": 0,
+    "changed_count": 1,
+    "has_drift": true,
+    "removed_count": 0
+  },
+  "kind": "project-wiki-source-manifest",
+  "last_compile": "2026-10-06T04:24:42Z",
+  "mode": "changed-since-manifest:/mnt/raid0/llm/worktrees/codex-noninf-session-20261005/wiki/source_manifest.json",
+  "removed_count": 0,
+  "removed_sources": [],
+  "scan_time": "2026-10-06T04:33:18Z",
+  "schema_version": 1,
+  "source_set_hash": "a02544bbb1f62a9ad04dd1234f2854aadcdaefcd1df0bf3d563c563159804572",
+  "sources": [
+    {
+      "content_hash": "6f41ec462df389c1d82f54fb66bd01a361aa87f54e95944e27436fc4765763df",
+      "modified": "2026-10-06T04:32:32Z",
+      "path": "progress/2026-10/2026-10-06-codex-ni-final-wrap.md",
+      "size": 15598,
+      "title": "Codex non-inference final wrap \u2014 2026-10-06",
+      "type": "progress"
+    }
+  ],
+  "total_new": 1,
+  "writer_evidence_policy": {
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "policy_version": 1,
+    "requires_human_or_measured_review": true,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true
+  }
+}
