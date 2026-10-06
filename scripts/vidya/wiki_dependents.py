@@ -164,12 +164,13 @@ def live_entry_ids() -> set[str]:
     return ids
 
 
-def key_claim_counts(index_path: Path = INDEX) -> dict[str, int | None]:
+def key_claim_counts(index_path: Path | None = None) -> dict[str, int | None]:
     """Return exact `key_claims` list lengths; malformed or duplicate rows stay unknown.
 
     PyYAML is optional for callers that only use the stdlib wiki/citation helpers. Without it,
     precise claim-index bounds remain unknown and citation behavior stays backward compatible.
     """
+    index_path = INDEX if index_path is None else index_path
     try:
         import yaml
     except ImportError:

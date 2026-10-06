@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 import citation_gate as cg  # noqa: E402
+import cli  # noqa: E402
+import wiki_dependents  # noqa: E402
 from fold import fold  # noqa: E402
 from frames import make_frame  # noqa: E402
 from gate import UsePolicy  # noqa: E402
@@ -164,6 +166,28 @@ def test_unhashable_yaml_mapping_key_preserves_unknown_counts(tmp_path):
     index = tmp_path / "intake_index.yaml"
     index.write_text("- id: intake-110\n  key_claims: [first]\n  ? [bad, key]\n  : value\n")
     assert cg.key_claim_counts(index) == {}
+
+
+@pytest.mark.parametrize(("claim_index", "expected_rc", "expected_status"), [
+    ("00", 0, "unknown"),
+    ("01", 3, "dangling"),
+])
+def test_cite_check_cli_uses_yaml_bounds_and_exit_code(tmp_path, monkeypatch, capsys,
+                                                      claim_index, expected_rc,
+                                                      expected_status):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [the claim]\n")
+    monkeypatch.setattr(wiki_dependents, "INDEX", index)
+    document = tmp_path / "consumer.md"
+    document.write_text(f"See intake-110#{claim_index}.\n")
+    ledger = tmp_path / "disposable-ledger.jsonl"
+    ledger.write_bytes(b"")
+
+    rc = cli.main(["--ledger", str(ledger), "--json", "cite-check", "--as-of", AT,
+                   str(document)])
+    report = json.loads(capsys.readouterr().out)
+    assert rc == expected_rc
+    assert report["verdicts"][0]["status"] == expected_status
 
 
 # --- the states a citer can act on ------------------------------------------------------
