@@ -1,15 +1,16 @@
 name: NI75 exact executor registry-failure native conformance
 on:
   push:
-    branches: [codex/ni75-fallback-ci-20261006]
+    branches: [codex/ni75-fallback-ci-r2-20261006]
     paths: [.github/workflows/ni75-executor-fallback-validation.yml]
 permissions:
   contents: read
 concurrency:
-  group: ni75-fallback-validation-20261006
+  group: ni75-fallback-validation-r2-20261006
   cancel-in-progress: false
 env:
   ROOT_SHA: 2dff56e6c9263fe982b12b91eab0552e50610635
+  RECIPE_PARENT: 45660107ffa880c2b97f08f5c775a5cf4aeb943c
   APP_SHA: fa1eb43a2c4431d695e5c4339373ecbf3b96aed6
   APP_PARENT_SHA: 405a5e7c162480c6cbc5919ecfa626850c08c7e0
   LOCK_SHA: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
@@ -60,8 +61,10 @@ jobs:
           mkdir -m 700 "$scope"
           mkdir -m 700 "$scope/originals" "$scope/cache" "$scope/tmp" "$scope/cache/install-tmp"
           printf 'NI75_SCOPE=%s\nUV_PROJECT_ENVIRONMENT=%s/venv\nUV_CACHE_DIR=%s/cache\nTMPDIR=%s/tmp\n' "$scope" "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do test ! -e "$scope/$leaf" && test ! -L "$scope/$leaf"; done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/unavailable-cpu\nORCHESTRATOR_PATHS_LLAMA_MTMD=%s/unavailable-mtmd\nORCHESTRATOR_PATHS_LLAMA_SERVER=%s/unavailable-server\n' "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git rev-parse HEAD^)" = "$RECIPE_PARENT"
           test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
           test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
           test "$(git -C app rev-parse HEAD^)" = "$APP_PARENT_SHA"
@@ -85,7 +88,7 @@ jobs:
           mounts=pathlib.Path('/proc/self/mountinfo').read_text()
           assert not any('/mnt/raid0/llm' in line or '/workspace/repos' in line for line in mounts.splitlines())
           (scope/'originals/mountinfo-before.txt').write_text(mounts)
-          pathlib.Path(sys.argv[1]).write_text(json.dumps({'app_sha':os.environ['APP_SHA'],'app_parent':os.environ['APP_PARENT_SHA'],'root_sha':os.environ['ROOT_SHA'],'scope_path':str(scope),'scope_mode':oct(scope.stat().st_mode&0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'production_mounts_absent':True,'synthetic_RAM_override':False,'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'HOME':os.environ['HOME'],'synthetic_owned_declarations':'Mock return paths only; no directories, models, kernels, symlinks or binaries materialized','expected_cases':6,'scope':'Exact six new failure/success unit cases; no production capacity, serving, linkage or deployment claim'},sort_keys=True)+'\n')
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({'app_sha':os.environ['APP_SHA'],'app_parent':os.environ['APP_PARENT_SHA'],'root_sha':os.environ['ROOT_SHA'],'recipe_parent':os.environ['RECIPE_PARENT'],'import_only_absent_overrides':{'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN':str(scope/'unavailable-cpu'),'ORCHESTRATOR_PATHS_LLAMA_MTMD':str(scope/'unavailable-mtmd'),'ORCHESTRATOR_PATHS_LLAMA_SERVER':str(scope/'unavailable-server')},'scope_path':str(scope),'scope_mode':oct(scope.stat().st_mode&0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'production_mounts_absent':True,'synthetic_RAM_override':False,'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'HOME':os.environ['HOME'],'synthetic_owned_declarations':'Three absent import-only override paths plus mocked per-case paths; no directories, models, kernels, symlinks or binaries materialized','expected_cases':6,'scope':'Exact six new failure/success unit cases; no production capacity, serving, linkage or deployment claim'},sort_keys=True)+'\n')
           PYCONTEXT
       - name: Install frozen dependencies off-host
         shell: bash
@@ -142,7 +145,7 @@ jobs:
           for p in "${paths[@]}"; do reads+=(--read-path "$p"); done
           selection=tests/unit/test_executor_registry_failure_paths.py
           set +e
-          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$GITHUB_WORKSPACE/app" --junit "$NI75_SCOPE/originals/generated.xml" --output "$NI75_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" --select "$selection" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI75_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$GITHUB_WORKSPACE/app" -o cache_dir="$NI75_SCOPE/cache/pytest" --basetemp="$NI75_SCOPE/tmp/pytest" --junit-prefix=ni75 "$selection" --junitxml="$NI75_SCOPE/originals/generated.xml" > "$NI75_SCOPE/originals/producer.stdout" 2> "$NI75_SCOPE/originals/producer.stderr"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$GITHUB_WORKSPACE/app" --junit "$NI75_SCOPE/originals/generated.xml" --output "$NI75_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" --select "$selection" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI75_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$GITHUB_WORKSPACE/app" -o cache_dir="$NI75_SCOPE/cache/pytest" --basetemp="$NI75_SCOPE/tmp/pytest" --junit-prefix=ni75 "$selection" --junitxml="$NI75_SCOPE/originals/generated.xml" > "$NI75_SCOPE/originals/producer.stdout" 2> "$NI75_SCOPE/originals/producer.stderr"
           rc=$?
           set -e
           printf '{"exit_code":%s}\n' "$rc" > "$NI75_SCOPE/originals/producer-status.json"
@@ -190,6 +193,7 @@ jobs:
           test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
           test ! -e /workspace/repos && test ! -L /workspace/repos
           test ! -e /owned-declaration && test ! -L /owned-declaration
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do test ! -e "$NI75_SCOPE/$leaf" && test ! -L "$NI75_SCOPE/$leaf"; done
           python - <<'PYPOST'
           import json,os,pathlib,stat
           s=pathlib.Path(os.environ['NI75_SCOPE']);mounts=pathlib.Path('/proc/self/mountinfo').read_text()
