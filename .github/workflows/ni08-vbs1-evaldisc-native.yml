@@ -2,14 +2,6 @@ name: NI08 VBS1 and EvalDisc native fixture capture
 on:
   push:
     branches: [codex/ni08-vbs1-evaldisc-wire-root-20261006]
-    paths:
-      - .github/workflows/ni08-vbs1-evaldisc-native.yml
-      - scripts/ci/ni08_run_hosted_capture.py
-      - scripts/ci/ni08_source_context.py
-      - scripts/ci/ni08-hosted-requirements.txt
-      - scripts/vidya/**
-      - tests/vidya/**
-      - docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md
 permissions:
   contents: read
 jobs:

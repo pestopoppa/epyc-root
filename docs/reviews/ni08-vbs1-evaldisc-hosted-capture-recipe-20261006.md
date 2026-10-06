@@ -38,7 +38,7 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
 | `scripts/ci/ni08_run_hosted_capture.py` | `c6e4a32cd557a89a5bdb3c6bbd466402cf4b83a8c15f1164d6125e746497c1cb` |
 | `scripts/ci/ni08-hosted-expected-cases.json` | `a44a0a89e2486f7e285d170ba39051581cdcaef3a4ee8caa162c7cc76142bc15` |
-| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
+| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `316da11d254a3b8f236bd8b79ce4892a28f8cb9bd60d57db49c3eec28cb5f626` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
 | `scripts/vidya/adapters/_analysis_report_provenance.py` | `15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e` |
@@ -182,7 +182,10 @@ selected tests need no conftest fixture, backend, model, or runtime path.
 
 ## Capture and grade boundary
 
-The exact-branch workflow `.github/workflows/ni08-vbs1-evaldisc-native.yml` checks out its own
+The exact-branch workflow `.github/workflows/ni08-vbs1-evaldisc-native.yml` is triggered by a push
+to its declared proposal branch without a path filter. This allows a workflow-only successor commit
+to produce the capture event; the job body, APP pin, runner, selected tests, readset and artifact
+retention are unchanged. It checks out its own
 commit and the pinned APP source, initializes a retained status artifact before setup, creates a
 Python 3.13.15 virtual environment, and uploads the result directory even after a failed capture.
 The driver installs the hashlocked minimal dependency file and records package versions/install-log
