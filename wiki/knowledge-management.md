@@ -3552,3 +3552,9 @@ The audit snapshot classified 352 of 889 dived entries as *at risk* under a heur
 - [Intake schema](../.claude/skills/research-intake/references/intake-schema.md) — optional/required schema transition.
 - [Intake validator](../.claude/skills/research-intake/scripts/validate_intake.py) — enforcement boundary and grandfathering.
 - [At-risk list generator](../.claude/skills/research-intake/scripts/at_risk_list.py) — reproducible heuristic flags; its output is not a verdict.
+
+## Incremental synthesis — 2026-10-06: JEV-aware handoff audit
+
+**Confidence: process result, verified by a validator that reopens original Git blobs.** The 2026-10-06 audit reviewed all 528 live and historical handoff files (3,558 original unchecked keys, 15 batches) against current JEV tooling. Three inexpensive reviewers proposed; the main session accepted or rejected every suggestion and applied 13 refinements to 10 live handoffs, rejecting keyword-only gate classification. A normalized comparison found 92 live-open/historical-open pairs (all AutoPilot ledger carry-forward) and no exact live-open/historical-checked pairs. This is handoff review plus targeted code-premise verification, not implementation or a dispatch approval.
+
+Sources: [JEV-aware handoff audit](../handoffs/completed/jev-aware-handoff-audit-2026-10-06.md), [audit progress note](../progress/2026-10/2026-10-06-jev-handoff-audit.md).
