@@ -1,0 +1,126 @@
+{
+  "schema": "ni05.main_original_review.v1",
+  "run": 37392512279,
+  "archive_count": 6,
+  "archives": [
+    {
+      "name": "ni62-kv-quant-widths-postcheck-37392512279",
+      "sha256": "dbe0eb79755d49b06cd1fcd01cefa6136e670e196410724c6cb25433f3a4dd1c",
+      "bytes": 74444855
+    },
+    {
+      "name": "ni62-kv-per-token-native-37392512279",
+      "sha256": "77a317b69997e9ef6f5f7fdac58aef039a304a63a5a2b9930f9db76b359b71cf",
+      "bytes": 74426842
+    },
+    {
+      "name": "ni62-kv-quant-widths-install-37392512279",
+      "sha256": "4733378b2b8d7e6b3ff5e89f41bc499abbebe7f44ae39cf1edac1156b5a4e680",
+      "bytes": 1050312
+    },
+    {
+      "name": "ni62-kv-per-token-install-37392512279",
+      "sha256": "6169e0536ab65c03c9f4b0c1a804c82b4f76882db9a3329882f03c0cffd97910",
+      "bytes": 1050301
+    },
+    {
+      "name": "ni62-kv-quant-widths-native-37392512279",
+      "sha256": "2c57d62eaa93eba02b7e83598c2846bfe3726a0c5bc7fc1ee65c80fba27776ff",
+      "bytes": 74443957
+    },
+    {
+      "name": "ni62-kv-per-token-postcheck-37392512279",
+      "sha256": "67b3252f36cb70b584b6af9899c1730882983e4bcbad33916429f005e8504a11",
+      "bytes": 74427740
+    }
+  ],
+  "original_members_compared": 16846,
+  "modules": [
+    {
+      "phase": "kv-per-token",
+      "counts": {
+        "collected": 10,
+        "error": 0,
+        "executed": 10,
+        "failure": 0,
+        "passed": 10,
+        "skipped": 0
+      },
+      "FILE_sha256": "2488fe3891a20fb498bf53469e8bd7837288e0c44910e3e7d7b40f0d6a7138b4",
+      "self_sha256": "c0bac31e6418210b08c80c867fa130669f810b038b231a15e350b810591a4f7f",
+      "readset_count": 4176,
+      "Git_Python_copies": {
+        "canonical": 2069,
+        "fixture": 2069
+      },
+      "root_inputs": 13,
+      "other_declared_inputs": 25,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "repositories": {
+        "app": "45607fda456b6cc26796136a661e2e7f41cbbcdc",
+        "fixture": "6fbf0c7d02c8db54305ee465a1ed66cafcb138a9",
+        "producer": "e8d223ad47629e90d74c84bc5f8c6b8385096e1f",
+        "recipe": "a291322bfc9cdb678aa2081ca786a16c057f41f3"
+      },
+      "capacity": {
+        "MemAvailable_kB": 14971676,
+        "MemTotal_kB": 16373452,
+        "actual_available_headroom": true,
+        "fixture_reserve_gib": 1.0,
+        "host_capacity_gib": 15.6149,
+        "host_required_gib": 0.0506,
+        "no_production_capacity_claim": true,
+        "synthetic_owned_declarations": true,
+        "unchanged_guard_executed": true
+      },
+      "true_postchecks": 4
+    },
+    {
+      "phase": "kv-quant-widths",
+      "counts": {
+        "collected": 8,
+        "error": 0,
+        "executed": 8,
+        "failure": 0,
+        "passed": 8,
+        "skipped": 0
+      },
+      "FILE_sha256": "ff13b77160f4cbd24d30593538f68981a1f2209b838010bfdfc26c05d4cee38a",
+      "self_sha256": "cd1de0a42bc191c88f44525895e3ebad5d72197d84db98c2d42c83533f4ebee0",
+      "readset_count": 4176,
+      "Git_Python_copies": {
+        "canonical": 2069,
+        "fixture": 2069
+      },
+      "root_inputs": 13,
+      "other_declared_inputs": 25,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "repositories": {
+        "app": "45607fda456b6cc26796136a661e2e7f41cbbcdc",
+        "fixture": "1b4073d31487ee5dee77d84dfa641d424563f636",
+        "producer": "e8d223ad47629e90d74c84bc5f8c6b8385096e1f",
+        "recipe": "a291322bfc9cdb678aa2081ca786a16c057f41f3"
+      },
+      "capacity": {
+        "MemAvailable_kB": 14911476,
+        "MemTotal_kB": 16373452,
+        "actual_available_headroom": true,
+        "fixture_reserve_gib": 1.0,
+        "host_capacity_gib": 15.6149,
+        "host_required_gib": 0.0506,
+        "no_production_capacity_claim": true,
+        "synthetic_owned_declarations": true,
+        "unchanged_guard_executed": true
+      },
+      "true_postchecks": 4
+    }
+  ],
+  "originals_unchanged": true,
+  "scope": "Selected owned synthetic declaration assertions; no production capacity, kernel or whole-suite warrant"
+}

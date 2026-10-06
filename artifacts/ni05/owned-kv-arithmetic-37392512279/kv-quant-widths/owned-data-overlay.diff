@@ -1,0 +1,104 @@
+diff --git a/orchestration/launch_manifest.yaml b/orchestration/launch_manifest.yaml
+index 4bf11b8..8937a2f 100644
+--- a/orchestration/launch_manifest.yaml
++++ b/orchestration/launch_manifest.yaml
+@@ -609,9 +609,7 @@ capacity:
+   # of weights + ~244 GiB of KV = ~578 GiB, so this reserve is not the binding
+   # constraint today and is not tuned to make anything fit. It exists so the
+   # gate fails BEFORE the machine starts swapping, not at the moment it does.
+-  host_os_reserve_gib: 64
+-
+-
++  host_os_reserve_gib: 1
+ # =============================================================================
+ # GPU shadow lane launch constants (docs/gpu-shadow-lane.md; gpu-serving-tie-in
+ # P2-6/P0-2). Tenancy is registry data: the launcher borrows priors from the
+diff --git a/orchestration/model_registry.yaml b/orchestration/model_registry.yaml
+index 4a6987b..f291a83 100644
+--- a/orchestration/model_registry.yaml
++++ b/orchestration/model_registry.yaml
+@@ -1691,7 +1691,7 @@ server_mode:
+       kv_quant:
+         k: q8_0
+         v: q8_0
+-      kv_kib_per_token_f16: 20.0
++      kv_kib_per_token_f16: 0.001
+     chat_template_kwargs:
+       enable_thinking: false
+     chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+@@ -1716,7 +1716,7 @@ server_mode:
+     model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+     model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+     draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+-    memory_gb: 37
++    memory_gb: 0.01
+     tier: hot
+     numa_instances: 2
+     numa_ports:
+@@ -1750,7 +1750,7 @@ server_mode:
+     kv_quant:
+       k: q8_0
+       v: q8_0
+-    memory_gb: 27
++    memory_gb: 0.01
+     vram_gib: 36.7
+     tier: hot
+     acceleration:
+@@ -1808,8 +1808,8 @@ server_mode:
+       kv_quant:
+         k: q8_0
+         v: q8_0
+-      kv_kib_per_token_f16: 96.0
+-      vram_non_kv_gib: 19.26
++      kv_kib_per_token_f16: 0.001
++      vram_non_kv_gib: 0.01
+     shared_with:
+     - vision_escalation
+     description: Vision — Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210 (MMMU-250 63.6% vs Qwen2.5-VL-7B 52.4%, +11.2 pp, paired exact McNemar p=0.0011)
+@@ -1822,7 +1822,7 @@ server_mode:
+       architecture: qwen3vlmoe
+       ctx_max: 262144
+     previous_model: Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf
+-    memory_gb: 18.3
++    memory_gb: 0.01
+     vram_mb: 21049
+     tier: warm
+     device: none
+@@ -1844,8 +1844,8 @@ server_mode:
+       kv_quant:
+         k: q8_0
+         v: q8_0
+-      kv_kib_per_token_f16: 64.0
+-      vram_non_kv_gib: 38.03
++      kv_kib_per_token_f16: 0.001
++      vram_non_kv_gib: 0.01
+       vram_non_kv_drafter: dflash2
+       vram_non_kv_ubatch: 512
+     chat_template_kwargs:
+@@ -1868,7 +1868,7 @@ server_mode:
+     - ingest_long_context
+     agent_file_compression_operating_point: none
+     model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+-    memory_gb: 27
++    memory_gb: 0.01
+     vram_gib: 36.7
+     tier: hot
+     acceleration:
+@@ -1906,7 +1906,7 @@ server_mode:
+       kv_quant:
+         k: f16
+         v: f16
+-      kv_kib_per_token_f16: 96.0
++      kv_kib_per_token_f16: 0.001
+       kv_kib_per_token_f16_measured: 24.0
+       kv_kib_per_token_f16_mtp_head_observed: 9.0
+     chat_template_kwargs:
+@@ -1920,7 +1920,7 @@ server_mode:
+     agent_file_compression_operating_point: aggressive
+     model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+     draft_model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+-    memory_gb: 90
++    memory_gb: 0.01
+     tier: hot
+     acceleration:
+       type: speculative_decoding
