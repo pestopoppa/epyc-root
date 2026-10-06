@@ -1,0 +1,61 @@
+{
+  "run": 37461044899,
+  "attempt": 1,
+  "artifact_id": 11413052151,
+  "independent_git_bindings": 1452,
+  "source_counts": {
+    "root_candidate": 725,
+    "recipe": 0,
+    "carrier": 723,
+    "research": 4
+  },
+  "contexts": 2,
+  "zip_sha256": "77a6023b0956813dd7066fd577f100f0f1f34767059404a5a607167a186eecf2",
+  "zip_size": 19827895,
+  "zip_extracted_members": 1462,
+  "receipt_file_sha256": "dd577c164466e7cee7cb2f07427c780a5708a5890b7d681e450d8e7632d8081f",
+  "receipt_self_sha256": "b1a8d2bdd39f9968873f4b4f9aab28b013706beb621967145eb6dbee8eaa18cd",
+  "repositories": {
+    "carrier": "02f12d02ef40b28a141fb7ceaedba3897000a328",
+    "recipe": "e5ade5a80d6b15048d4ef4937e82b0cb61c4b7fb",
+    "research": "bed81e59f5a4d9f9cdb246b4b1eebe1d3e400762",
+    "root_candidate": "e5ade5a80d6b15048d4ef4937e82b0cb61c4b7fb"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/vidya/test_kv_quant_27b_v10_adapter.py",
+    "tests/vidya/test_exl3_adapter.py",
+    "tests/vidya/test_evidence_durability_adapter.py",
+    "--junitxml=/home/runner/work/_temp/ni07-22-kv-adapter/result/adapter-modules.junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/root",
+  "counts": {
+    "collected": 29,
+    "error": 0,
+    "executed": 29,
+    "failure": 0,
+    "passed": 29,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "root_main": "f01aea743259eedf4ed7ff48cb54ff9e88fa9766",
+  "context_recipe_assertions_checked": true
+}

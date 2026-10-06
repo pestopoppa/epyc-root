@@ -1,0 +1,18 @@
+{
+  "final_run": 37461044908,
+  "final_head": "e5ade5a80d6b15048d4ef4937e82b0cb61c4b7fb",
+  "final_conclusion": "success",
+  "passed": 1720,
+  "skipped": 165,
+  "failures": 0,
+  "all_job_steps_success": true,
+  "final_original_log_sha256": "0c980c79c27a6159fe5798ef8c16f6c2be3d7fd9c99c115e33101f09a25e9b1a",
+  "prior_run": 37459950999,
+  "prior_conclusion": "failure",
+  "prior_passed": 1718,
+  "prior_failed": 2,
+  "prior_skipped": 165,
+  "prior_log_sha256": "69fb7d9a0a46a045344dbb40636c7c47e6c4055c8a919f02183a640316b6dd46",
+  "fresh_api_reviewed": true,
+  "generic_has_no_native_receipt": true
+}

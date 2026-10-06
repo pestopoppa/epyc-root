@@ -1,0 +1,59 @@
+{
+  "run": 37459951101,
+  "attempt": 1,
+  "artifact_id": 11412265612,
+  "independent_git_bindings": 1452,
+  "source_counts": {
+    "root_candidate": 725,
+    "recipe": 0,
+    "carrier": 723,
+    "research": 4
+  },
+  "contexts": 2,
+  "zip_sha256": "94fe168c7837d1b48e5b5e0fad3d0e18d42f114e9642880d2e3e4e5fcd7620a7",
+  "zip_size": 19827306,
+  "zip_extracted_members": 1462,
+  "receipt_file_sha256": "4090f235c276c503797e7e3f089815383d15e0f59e626efaa10ae80767672488",
+  "receipt_self_sha256": "67d3f33d519e6c9ec9e887df88678839f6b4d1c87d16479bad00edc9bb5d9ce3",
+  "repositories": {
+    "carrier": "02f12d02ef40b28a141fb7ceaedba3897000a328",
+    "recipe": "5dbca02a0fd6d300c637eaa7a9166fb45266bf13",
+    "research": "bed81e59f5a4d9f9cdb246b4b1eebe1d3e400762",
+    "root_candidate": "5dbca02a0fd6d300c637eaa7a9166fb45266bf13"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/vidya/test_kv_quant_27b_v10_adapter.py",
+    "tests/vidya/test_exl3_adapter.py",
+    "tests/vidya/test_evidence_durability_adapter.py",
+    "--junitxml=/home/runner/work/_temp/ni07-22-kv-adapter/result/adapter-modules.junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/root",
+  "counts": {
+    "collected": 29,
+    "error": 0,
+    "executed": 29,
+    "failure": 0,
+    "passed": 29,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true
+}

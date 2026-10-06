@@ -490,12 +490,12 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
-| Hermetic research producer-backed tests (prospective NI07-22) | existing native CI verifier | Pinned three producer families/29full-module synthetic cases (24 prior failures plus5 passing controls) and unchanged generic suite; no production hash/ladder/skip relaxation | tests.yml/KV test helper, VB-CI-RESEARCH-PRODUCERS / NI07-22 |
+| Hermetic research producer-backed tests (accepted NI07-22) | existing native CI verifier | Pinned three producer families/29full-module synthetic cases (24 prior failures plus5 passing controls) and unchanged generic suite; no production hash/ladder/skip relaxation | Finalnative37461044899 TRUE29/29 through existing carrier; isolated tests.yml/KV test helper, VB-CI-RESEARCH-PRODUCERS / NI07-22 |
 | DCP hit-span-preserving policy candidate (accepted NI07-23) | existing native CI verifier | Pure budget-mode/source/range facts only; no AST-complete context/live quality/activation | OriginalCI37458830138 TRUE33/33 accepted through existing native carrier; context_assembly.py, VB-DCP-HIT-SPAN-POLICY / NI07-23 |
 
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
 | Signed REPL checkpoint transport (prospective NI07-24) | native CI verifier | Two producer/SQLite/restore/tamper fixtures; existing signed boundary/caps/fencing, no live state | Checkpoint producers, VB-REPL-PICKLE-PASS / D-RI-PICKLE-PASS |
 | Question sidecar status (prospective NI07-25) | native CI verifier | Writer initialization/appends/completion and fake failure counts; in-memory grade unchanged | eval_tower writer, VB-EVAL-CAPTURE-STATUS / EV-RI-CAPTURE-STATUS |
-| Outer eval reconnect cost (prospective NI07-26) | native CI verifier | Fake transport/clock return metadata; inner retries distinct | call_orchestrator_forced, VB-EVAL-RECONNECT-COST / EV-RI-RECONNECT-COST |
+| Outer eval reconnect cost (prospective NI07-26) | native CI verifier | Fake transport/clock return and QuestionResult/compact-row metadata; inner retries distinct | call_orchestrator_forced, VB-EVAL-RECONNECT-COST / EV-RI-RECONNECT-COST |
 | Terminal REPL timeout state (prospective NI07-27) | native CI verifier | Bounded late-worker reuse/checkpoint refusal; no termination or host-effect isolation | REPL await/execute/persistence, VB-REPL-TIMEOUT-STATE / D-RI-TIMEOUT-STATE |

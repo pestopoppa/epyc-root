@@ -1509,3 +1509,7 @@ The [render identity guard](../docs/reference/dcp-render-content-identity-contra
 ## 2026-10-06 DCP hit-span policy candidate
 
 The [prepared policy](../docs/reference/dcp-hit-span-policy-preparation.md) prevents signature-only downgrade for ColGREP candidates with hit ranges: existing FULL/SLICES mode ceilings are retained or the manifest records missing-evidence exclusion. [OriginalCI37458830138](../artifacts/ni07/run-37458830138/README.md) passes33/33 after complete MAIN original custody review. Spanless/other-source behavior and feature defaults remain; DCP-11 awaits DCP-12 then DCP-6 validation, with no AST-complete context or quality warrant.
+
+## 2026-10-06 hermetic producer CI repair
+
+The [pinned research checkout/test seams](../docs/reference/hermetic-research-producer-ci-contract.md) repair the24missing-source failures without changing production guards or skipping tests. The isolated destination also preserves ROOT's tracked intake tree. [Final native](../artifacts/ni07/run-37461044899/README.md) passes29/29 and separate generic CI reports1720pass/165standing skips, with index and ratification checks green. Original checkout-collision failure and MAIN review miss are preserved explicitly; no model/benchmark/kernel or live execution warrant.
