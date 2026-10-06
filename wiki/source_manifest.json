@@ -12,20 +12,21 @@
   "last_touch": {
     "advanced": {
       "added": 0,
-      "changed": 2,
+      "changed": 3,
       "removed": 0
     },
-    "at": "2026-10-06T17:14:37Z",
+    "at": "2026-10-06T18:31:17Z",
     "scope_paths": [
-      "docs/reference/intake-reverification-20261006.md",
-      "progress/2026-10/2026-10-06-intake-reverify-main.md"
+      "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "handoffs/active/yarn-context-extension-research.md",
+      "progress/2026-10/2026-10-06-workspace-ec.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-06T17:14:37Z",
+  "scan_time": "2026-10-06T18:31:17Z",
   "schema_version": 1,
-  "source_set_hash": "4c53b7591394bd4888cbf2495c9474c7557c36318dc78a8ad8462f0bfc67967e",
+  "source_set_hash": "c7f78fa8fdf9311168e24af7ccdf91a170f2f33b8289de1629aaacd53bd7acfc",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -1268,10 +1269,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "03b34597b4de0d9032c02095fe9a1228c3644327828a12e1a210269d5db06a2c",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "0fc4be9f830fab7e1e03ae4dc38d4f196608e3d09c4de26cf6bcfdaf89c116e1",
+      "modified": "2026-10-06T18:26:18Z",
       "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
-      "size": 87699,
+      "size": 72194,
       "title": "Speculative-Decoding / MTP Refresh",
       "type": "handoff-active"
     },
@@ -1452,10 +1453,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "225656b0ec7a4285aa461a2f6650f6e1b19944f70645d73002fe3d88334bd6fd",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "91c640254209b1e6bfcda29b7f847e9dcb1f9e7d049ce2d05ecf39e543d9450c",
+      "modified": "2026-10-06T18:26:18Z",
       "path": "handoffs/active/yarn-context-extension-research.md",
-      "size": 37620,
+      "size": 32868,
       "title": "YaRN Context Extension Research",
       "type": "handoff-active"
     },
@@ -9284,10 +9285,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "19f39eb33f3aae647cabb8ee00eb34f53fef372fd8ae38e7c03aac9d9fd88b0b",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "d990d159327309e317c0e53f859613fda633b4fe31911b9e6da84537fd1e23e8",
+      "modified": "2026-10-06T18:26:18Z",
       "path": "progress/2026-10/2026-10-06-workspace-ec.md",
-      "size": 2426,
+      "size": 12987,
       "title": "2026-10-06 Wrap-up \u2014 workspace-ec",
       "type": "progress"
     },

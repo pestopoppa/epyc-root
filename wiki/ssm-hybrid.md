@@ -647,3 +647,13 @@ The correct output of this paper is this record, not an investigation.
   owner of the ρ = 4 record; carries the same rider.
 - The 2026-08-23 (wave-2 addendum) section above — where ρ = L/L_FA and production ρ = 4 are established;
   not restated here.
+
+## Compiled Update — 2026-10-06 (evening): on a hybrid model a context checkpoint is reusable only at or before the common prefix, and under Jet-Long it has never been seen to be reused
+
+**Confidence: verified as observed in server logs (Qwen3.6-35B-A3B-MTP, CPU); the rule is read from the log lines, not from source; Jet-Long checkpoint reuse is a never-observed state, not a negative result.**
+
+- **Rule.** Qwen3.6-35B-A3B is a gated-delta-net hybrid, whose recurrent state cannot be rewound token by token. The server keeps whole-state context checkpoints and, on a new request, tests each one against the common prefix: in the gate A logs a request sharing 157 tokens rejected the checkpoint at position 304 ("checking checkpoint with [304, 304] against 157") and restored the one at 153 (`n_past` 154, 63.1 MiB). A checkpoint beyond the common prefix is useless and is erased ("erased invalidated context checkpoint": 1881 lines across the logs searched, against 3 "restored" lines, one per gate A server). Practical consequence: prefix reuse on this family needs a checkpoint at or before the divergence point, and checkpoint spacing (`min spacing = 8192` in the Jet-Long test, 32 checkpoints by default) bounds how much prefill a restart saves. Do not plan prefix-cache savings for hybrids from the attention-only mental model.
+- **Never observed under Jet-Long.** The save/restore test for the Jet-Long side cache (which `state_read` invalidates and rebuilds) was stopped at its first failure, so a checkpoint restore or slot restore with Jet-Long ON was never exercised; the crash is the small-ubatch abort recorded in [context-extension](context-extension.md). Treat "Jet-Long is safe with checkpoints and slot save" as unmeasured.
+- **Spec-dec link.** The `n_rs_seq` setting selects between per-position recurrent snapshots (`n_rs_seq=4`, MTP and ngram+MTP arms) and checkpoint restore plus re-decode (`n_rs_seq=0`, the ngram-only arm: 220 restore lines against 0), which is also two different numerical paths; see [speculative-decoding](speculative-decoding.md).
+
+Sources: [SAVE_RESTORE_TEST](../artifacts/yarn-ctx-20261006/jetlong/SAVE_RESTORE_TEST.md), [GATE_A](../artifacts/yarn-ctx-20261006/jetlong/GATE_A.md), [NO_DIVERGENCE](../artifacts/copyspec-20261006/NO_DIVERGENCE.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).

@@ -706,3 +706,9 @@ The only third-party numbers for KT on EPYC compare different precisions and dif
 - [Fable5 window-2 findings 02 — OD-A rider](../handoffs/active/fable5-window2-findings-02-heterogeneous-gpu.md) — R-A10 (corrected premises, options, the operator decision), F7 and F6.
 - [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P3-4 and the P3-OD-A-ROCm fill.
 - [2026-09-26 orch-design progress](../progress/2026-09/2026-09-26-orch-design.md) — the OD-A outcome.
+
+## Compiled Update — 2026-10-06 (evening): the cafe-llama CUDA MoE expert cache is unbuilt on HIP and unmeasured for skew
+
+**Confidence: source-read only (cafe-llama.cpp `0ae77ef49`, intake-1925 dive); nothing built or run.** The fork's hook-based MoE expert cache registers for HIP in source although its document says CUDA only; six CUDA symbols have no HIP mapping; the only comparable number is +18.3% on a single GPU on an unstated host, and no expert-skew statistic is published. It is therefore a conditional rebuild (CAFE-7, trigger: measured routing skew of at least 60%, RT-5) rather than a candidate, and `moe-direct` CPU-fraction knobs are a hypothesis with no data (CAFE-8, only after CAFE-7). MoE-Spec expert budgeting was declined (lossy, GPU trees, ceiling already in-house).
+
+Sources: [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [MI210 roadmap handoff](../handoffs/active/mi210-big-model-and-acceleration-roadmap.md), [MoE routing tap handoff](../handoffs/active/moe-routing-tap-and-locality-measurement.md), [speculative-decoding wiki update](speculative-decoding.md).
