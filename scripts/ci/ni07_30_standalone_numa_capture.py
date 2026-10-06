@@ -11,7 +11,7 @@ import tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "e8e163d7d9d10c257fc59a46cc0a662557125c57"
+APP_PIN = "82e398da2478bfd9c3baaddbd0c6fb742d09dafa"
 SELECTIONS = (
     (
         "tests/unit/test_stack_change_guard.py::"
@@ -282,6 +282,9 @@ def main() -> int:
                         "during module import with synthetic 1 TiB MemTotal; other path reads "
                         "delegate unchanged, and the fixture removes the imported module and "
                         "package attribute at teardown while restoring any prior cache. The "
+                        "same two tests redirect kernel_paths.PRODUCTION_ROOT to empty "
+                        "tmp_path backend directories; real backend_dir validation runs, but "
+                        "no executable is created, resolved, or invoked. "
                         "runner's physical /proc/meminfo is read separately "
                         "and recorded below as context, not substituted or asserted as a claim. "
                         "No LLMPrimitives instance/backend execution method, "
