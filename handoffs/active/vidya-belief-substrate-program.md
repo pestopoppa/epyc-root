@@ -2069,7 +2069,7 @@ Filed at design time, before any producer exists, per the CLAUDE.md belief-kerne
   - Progress 2026-09-27: research `2b59bebe` writes the sidecar — `run_thesis.py score` emits
     `belief_measurements.jsonl` (`ufh13-thesis-belief/v1`) with per-arm and run-level rows; per-item rows live in the
     attestation `records.jsonl`. No run yet.
-- [ ] **VB-THESIS-2 — write the `ufh13-thesis-measurement` adapter (read side for VB-THESIS-1).** Project research
+- [x] **VB-THESIS-2 — write the `ufh13-thesis-measurement` adapter (read side for VB-THESIS-1).** Project research
   `scripts/benchmark/thesis_ufh13/run_thesis.py score`'s `belief_measurements.jsonl` (`ufh13-thesis-belief/v1`) into
   `ClaimTuple`, re-hashing the attestation `records.jsonl` against `attestation_sha256` and refusing on mismatch.
   Register it as class `measurement`, add a `cli.py ingest` verb, and update the source-table row. Why now: the
@@ -2792,10 +2792,21 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 ## NI08 thesis reader prospective verification
 
-- [ ] **VB-THESIS-CONFORMANCE — bind the prospective UFH-13 thesis reader source controls before capture.** Use the existing native CI carrier and shared grade, with exact ROOT adapter/CLI/dispatcher/test/recipe/import sources, pinned Research producer helper/constants and explicit checkout, hash-locked runtime dependencies and expanded case identities. Preserve original JUnit/receipt/readset/context and failures. Synthetic producer-native pooled rows only; verify manifest/source identity, sibling records digest and native dates/reps/verdict/preregistration consistency, omission/refusal/no-raw-answer controls. Empty native protocol remains empty; no scored thesis run, inference, rescoring, historical tuples or new grading ladder. VB-THESIS-1 first scored-run boundary remains separate.
+- [x] **VB-THESIS-CONFORMANCE — bind the prospective UFH-13 thesis reader source controls before capture.** Use the existing native CI carrier and shared grade, with exact ROOT adapter/CLI/dispatcher/test/recipe/import sources, pinned Research producer helper/constants and explicit checkout, hash-locked runtime dependencies and expanded case identities. Preserve original JUnit/receipt/readset/context and failures. Synthetic producer-native pooled rows only; verify manifest/source identity, sibling records digest and native dates/reps/verdict/preregistration consistency, omission/refusal/no-raw-answer controls. Empty native protocol remains empty; no scored thesis run, inference, rescoring, historical tuples or new grading ladder. VB-THESIS-1 first scored-run boundary remains separate.
 
 
 C5 source conformance accepted2026-10-06: [original27/27, MAIN32-Git input binding and all43 original members](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md). Existing shared Judged/Located observation only; no missing historical policy reconstruction or production run.
 
 
 - [ ] **VB-AP60-CONFORMANCE — bind per-instance QScorer environment source verification before capture.** Exact reviewed APP constructor/write/retrieval paths and full115 changed-plus-compatibility identities, actual exercised import/dependency closure, recipe and existing native carrier/shared grade. Synthetic temporary-store controls only; preserve originals and refusal/failures. No model/embedding/ONNX startup, production retrieval/write, runtime deployment or scoring-quality claim.
+
+
+UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody review](../../artifacts/ni08/thesis-reader-source-20261006/README.md), exact30Git+4contexts/all45members. VB-THESIS-2 projection and conformance are complete; VB-THESIS-1 actual first scored run remains open, protocol empty, existing observation grade only.
+
+
+## Prospective remaining source verification — 2026-10-06
+
+- [ ] **VB-AP62-CONFORMANCE — Bind the exact reviewed invocation-ring locking and full current request-scope/route-guard module before hosted synthetic capture. Verify append/clear serialization with real locks, paused readers and writer-specific acquisition signals; preserve source/readset/case identities and originals through existing carrier/shared grade. No serving reload, request-quality claim or host project execution.**
+- [ ] **VB-RTG02-CONFORMANCE — Bind the exact programmatic input-echo probe, existing deterministic scorer and explicit unsafe-method refusal controls before hosted capture. Synthetic rows only; unchanged scorer/metric semantics, exact source/import closure, expanded cases and original readset/JUnit/carrier output. No actual pool rebuild, model/code-execution/math/LLM scorer calls, replay or new ladder.**
+- [ ] **VB-RAW-ANCHOR-CONFORMANCE — Bind the reviewed prospective retained-RAW store, versioned source resolution and shared literature proof verifier before hosted synthetic capture. Exact bytes/private identity/revision/extractor controls, missing/changed/FIFO/hardlink refusal, original source/readset/case/carrier output; no live fetch, historical anchor reconstruction, canonical intake/ledger write or new semantic grading rule.**
+- [ ] **VB-TUADV-CONFORMANCE — Bind the exact DTAP synthetic invalid-capability/repeated-payload fixture controls and unchanged runner/catalog/judge/trace closure before hosted capture. Preserve typed failure chains, positive benign/attack verdict and immutable originals through existing carrier/shared grade. No live endpoint, attack search, new scoring or global skill-store claim.**

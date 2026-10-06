@@ -176,3 +176,8 @@ MAIN accepts exact Research7aaf/ROOTrecipef43 source and independently preserved
 
 
 MAIN independently recovers exact90723-byte historical policy Git blobf17f from commit97674 in pool/lane0: SHA c8cec matches corpus original pin. Earlier unavailable finding is superseded; no policy replacement or ratification needed. Versioned source-repo-relative path restoration and new actual default-verifier controls are authorized private preparation. Public metadata represents GitHub job identity with an explicit `github_job_` namespace to avoid PII scanner false positives, retaining original private review bytes; no hook bypass or scanner relaxation.
+
+
+## Thesis reader completed source boundary
+
+MAIN applies six exact accepted9891 source files and four exact589bbCIPE files after independent original37542886917 TRUE29/29 review:30Git+4contexts/all45members, exact JUnitcase multiset/readset/seals and unchanged existing Judged/Located grade. Source-table/CLI/dispatcher now expose ufh13-thesis-measurement; pooled native rows project only after strictschema/manifest/sibling-record digest checks, absentmetrics/protocol notinvented. Two checked scopes close VB-THESIS-2+new conformancecompanion:50NI08scopedcompletions(38existingflips+12new). Actual VB-THESIS-1firstscoredrun remains open. Report firstattempt37544337444 failed APP checkout because sourcecfc proposalobject was not yet onpublicref; retainoriginal setupartifact, publishapprovedprivate sourcebranch and reviewnormalrecipe successor beforecapture. No hostprojectexecution or runtimechange. C5exacthistoricalpolicy restoration is newlyunlockedsourcework, notoperatorauthoritydecision.

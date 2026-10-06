@@ -5111,3 +5111,6 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [C5 persisted provider joins](../artifacts/ni08/c5-seed-provider-join-20261006/README.md) make the existing eight-way mapping explicit, preserving193 workloads/dtypes. Hosted27/27 metadata and refusal controls pass; historical policy bytes are recovered and versioned path restoration remains separate source work.
+
+
+2026-10-06: [UFH-13 thesis reader source acceptance](../artifacts/ni08/thesis-reader-source-20261006/README.md) wires strict producer-native pooled measurements and records-byte attestations into CLI/dispatcher before the first scored run. Hosted29/29 synthetic controls pass; empty protocol remains an observation and actual thesis measurement is separate.

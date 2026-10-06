@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **48 completed scoped tasks: 37 existing checkbox flips and 11 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **50 completed scoped tasks: 38 existing checkbox flips and 12 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -109,3 +109,11 @@ MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final na
 ## C5 persisted join — MAIN acceptance
 
 [C5 source/native acceptance](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md) closes C5-5 and its pre-enrolled VB companion: **48 scoped completions (37 existing flips +11 additions)**. Exact eight provider joins and193 workload partition remain intact. Failed NULL original retained; successor27/27 independently reviewed. Exact historical policy bytes are now recovered; versioned path restoration and native default-load verification remain separate engineering; no SOL or kernel execution.
+
+
+## Thesis reader — MAIN acceptance
+
+[Strict prospective UFH-13 reader and original29/29](../../artifacts/ni08/thesis-reader-source-20261006/README.md) close VB-THESIS-2 and its pre-enrolled conformance companion: **50 scoped completions (38 existing flips +12 additions)**. Source/CLI/dispatcher wired before the first actual scored run; native missing metrics/protocol retained, no raw answers or inferred warrants. Report, AP60/AP62, RAW-anchor and other source queues continue; whole-backlog exhaustion remains unproved.
+
+
+Remaining verified source queues are prospectively enrolled: VB-AP60-CONFORMANCE, VB-AP62-CONFORMANCE, VB-RTG02-CONFORMANCE, VB-RAW-ANCHOR-CONFORMANCE and VB-TUADV-CONFORMANCE. Enrollment adds no completion. Recovered C5 historical policy bytes unlock narrow versioned verifier-path restoration; its source/capture scope will be enrolled before dispatch.

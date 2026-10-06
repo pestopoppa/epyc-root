@@ -564,6 +564,7 @@ _FILE_SOURCES = (
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
+    "ufh13-thesis-measurement",
     "ak-actor-seat",
 )
 
