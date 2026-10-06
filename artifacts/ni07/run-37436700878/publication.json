@@ -1,0 +1,10 @@
+{
+  "app_source": "ac668b9c2f08fbfac05b33822899a8083fa5855c",
+  "app_main": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+  "root_recipe": "acc1628e958ea76b6b1b882a9c1ef4e89d9a6751",
+  "root_recipe_main": "c2acdfb5a83299abee79b744caad9813fe47eecf",
+  "main_owner": "codex-ni-main",
+  "native_ci_run": 37436700878,
+  "canonical_observation_frames": 3,
+  "live_deployment_verified": false
+}

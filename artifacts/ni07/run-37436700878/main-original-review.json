@@ -1,0 +1,61 @@
+{
+  "run_id": 37436700878,
+  "attempt": 1,
+  "repositories": {
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "acc1628e958ea76b6b1b882a9c1ef4e89d9a6751",
+    "orchestrator": "ac668b9c2f08fbfac05b33822899a8083fa5855c"
+  },
+  "native_conformant": true,
+  "exit_code": 0,
+  "counts": {
+    "collected": 54,
+    "error": 0,
+    "executed": 54,
+    "failure": 0,
+    "passed": 54,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "readset_count": 3332,
+  "independent_git_bindings": 3330,
+  "source_binding_counts": {
+    "root": 625,
+    "recipe": 627,
+    "orchestrator": 2078
+  },
+  "runner_contexts": {
+    "environment.json": "ed81960f2a291ce3f12f33d76b8889a3286f4310370c2d47810f7d90b176bf8b",
+    "pip-freeze.txt": "9af52daad9f061f84374a35f64b2e57f2effd239d10cf0a528bd42e5281996e7"
+  },
+  "context_limit": "runner asserted; not independent package installation proof",
+  "original_zip_seals": [
+    {
+      "artifact_id": 11398793560,
+      "name": "ni07-k2-37436700878-1",
+      "sha256": "bc916c237c9e1944129577be29b7898f7da7320eb2446172de651a41817ddaf4",
+      "size": 16451221
+    }
+  ],
+  "receipt_file_sha256": "e1cf349bfeab78aec7fe991956b060fd0aaff7399cfa62d8db3f504d9e2c317d",
+  "receipt_self_sha256": "7fe41a3f990f05aade70a7e724cbf1124a278e168716c2af6522ecf6d2f61d0a",
+  "projected_rows": 1,
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "originals_preserved": true,
+  "fixture_hashes": {
+    "tests/unit/test_kb_rag_caps.py": "704695356aaa85a5f986adfe4dccfd147b934067de745c0d2150055a7bc64f77",
+    "tests/unit/test_kb_rag_tokenizer_identity.py": "7bdae8510493684108cd34fe5242b679a9204e4b2459271b884cf25541c64f78"
+  },
+  "zip_members_independently_reopened": 3340,
+  "api_published_zip_digest_matches": true,
+  "main_accepted": true
+}

@@ -1,5 +1,7 @@
 # Internal Knowledge-Base RAG
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-k2-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`; owned ROOT publication worktree `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006/`.
+
 **Status**: K1-K7 CERTIFIED 2026-06-13 — `epyc-orchestrator/src/retrieval/` (additive shared `colbert_encoder.py`, `markdown_chunker.py`, `kb_rag.py` build/update/query) + CLI + `.claude/hooks/post_commit_kb_rag_update.sh` + `.claude/skills/kb-search/SKILL.md` + unit tests. **Fresh K7 build**: 577 files / 18,010 chunks / 1,227.6 MiB embeddings, max corpus mtime `2026-06-13T00:26:51Z`. **K7 certification sweep complete** over the final 70-case pool (50 HotpotQA-template + 20 LoCoMo-template): best aggregate recall@10 is `recency_w0.1_s90_rerank_w0.3` at 0.6298, but `recency_w0.3_s90` is within the 2pp noise band at 0.6167 and is the only config with 0 missed-all-evidence cases. Decision: validate the temporal recency signal; do not promote cross-encoder rerank as a default without a consumer that explicitly prefers first-rank/recall@3 over miss-risk. K8 wikilink scorer remains deferred; the next concrete no-inference slice is doc maintenance only, not a retrieval-code change. K11 FTS5 lexical signal is implemented default-off in `epyc-orchestrator` `74120be`; the 2026-07-21 batch sweep found no recall uplift from lexical weights 0.1-0.3, so ColBERT-only `lexical_weight=0` remains the default.
 **Created**: 2026-04-25 (from local-RAG architecture review of friend's stack)
 **Categories**: search_retrieval, knowledge_management, document_processing
@@ -795,7 +797,7 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       **text only**, never to the prefix, which is a literal added token). Neither tokenizer carries
       a `Lowercase` normalizer and mxbai applies lower-casing *outside* the tokenizer, so before this
       change loading mxbai-32m fed cased text to a lower-case-trained model with no error anywhere.
-      **Remaining scope, narrowed**: the declared `query_length`, `document_length`, `embedding_dim`,
+      **Historical remaining scope (internal-KB caps closed by NI07-02 below; other capability flags remain open)**: the declared `query_length`, `document_length`, `embedding_dim`,
       `uses_token_type_ids` and `do_query_expansion` are now readable but are **not yet acted on**,
       and the fail-loud check is not implemented — `_QUERY_MAX_TOKENS = 48` (`kb_rag.py:66`) and
       `_MAX_QUERY_TOKENS = 48` (`src/tools/web/colbert_reranker.py:66`) remain hard-coded on both
@@ -815,6 +817,7 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       Carry forward as a known no-op: PyLate sets `pad_token_id` to the MASK id (103), so a K2
       completion that blindly honours a declared pad id would change behaviour. Harmless today, since
       our loader pads with the tokenizer's own `[PAD]` and slices by `attention_mask`.
+  - [x] **K2 remaining internal-KB cap plumbing** ✅ 2026-10-06 — MAIN accepted source `ac668b9c`, promoted APP main `7d3b840a`, original native CI37436700878 TRUE54/54 (39 cap fixtures and 15 unchanged tokenizer regressions). Stored positive caps remain authoritative; absent legacy keys keep historical defaults; malformed metadata refuses before mutation. Only fresh catalogs adopt declared helpers; telemetry and parallel parent/workers use matching caps/convention. [Original custody and MAIN review](../../artifacts/ni07/run-37436700878/README.md), three canonical observation frames. No OP-24 transition, re-embedding, live pool/model call, quality/performance or deployment claim. Broader K2 capability-flag scope remains open.
 - [x] **K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** ✅ 2026-10-06 — remaining tokenizer scope owned/accepted by `codex-ni-main` as NI06-03: source `9d3a338a`, APP main `2a98c6f0`, original synthetic native CI37424571462 TRUE15/15. **HALF LANDED 2026-08-23**,
       `epyc-orchestrator` `4e5e84c0` — deliberately **not ticked**, because only the `embedding_dim`
       half shipped.
@@ -1009,6 +1012,8 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
 ### S04-F2 — Narrow K2 to the remaining hard-coded internal KB caps
 
 **JEV-aware source narrowing (2026-10-06):** `_load_declared_config()` and `max_query_tokens()` / `max_document_tokens()` now exist; `src/tools/web/colbert_reranker.py` already uses the helper. Remaining fixed values are in `src/retrieval/kb_rag.py` (`_QUERY_MAX_TOKENS=48`, `_DOC_MAX_TOKENS=256`) and its encode call sites. Close only this KB-RAG cap plumbing with synthetic declared/absent/invalid-config fixtures and preserve index metadata/stamp semantics. Do not re-embed or claim retrieval improvement; any stored-index cap transition stays under OP-24.
+
+**Completed bounded cap implementation:** NI07-02 above closes this source-corrected scope. Existing/partially stamped catalogs are not silently restamped; stored caps win and orphan vector files require catalog identity. Original synthetic acceptance is an observation only.
 
 ### S04-F3 — Complete the missing tokenizer identity half of K3
 
