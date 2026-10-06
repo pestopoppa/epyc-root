@@ -160,8 +160,8 @@ def main() -> int:
     cases_path = ROOT / "scripts/ci/rtg02-expected-cases.json"
     expected_document = json.loads(cases_path.read_bytes())
     expected = expected_document.get("root") if expected_document.get("schema") == "epyc.rtg02.expected_cases/v1" else None
-    if not isinstance(expected, list) or len(expected) != 20:
-        raise RuntimeError("expected-case manifest must contain the exact 20 reviewed identities")
+    if not isinstance(expected, list) or len(expected) != 23:
+        raise RuntimeError("expected-case manifest must contain all 23 reviewed identities")
     nodeids = [item["nodeid"] for item in expected]
     if any(not isinstance(nodeid, str) or not nodeid.startswith("tests/unit/") for nodeid in nodeids):
         raise RuntimeError("expected-case node IDs must be bounded APP unit tests")
@@ -177,8 +177,12 @@ def main() -> int:
              + [manifest, install_log, environment])
     junit = run_dir / "app-original-junit.xml"
     native_output = run_dir / "app-native"
+    venv = (Path(os.environ["RUNNER_TEMP"]) / "rtg02-native" / "venv").resolve()
+    if Path(sys.prefix).resolve() != venv:
+        raise RuntimeError("pytest must run from the isolated RTG02 capture virtualenv")
     argv = [sys.executable, "-m", "pytest", "-q", "--noconftest",
-            f"--junitxml={junit}", *nodeids]
+            "-c", "/dev/null", f"--rootdir={app_root}", "-o", "addopts=",
+            "-p", "no:cacheprovider", f"--junitxml={junit}", *nodeids]
     carrier = _load_carrier()
     record = carrier.capture_fixture_execution(
         argv=argv, cwd=app_root, junit=junit, output=native_output,
