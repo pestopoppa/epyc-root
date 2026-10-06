@@ -1,0 +1,109 @@
+{
+  "schema": "ni06.scratch.source_custody_review.v1",
+  "outcomes": [
+    {
+      "job": "root-graph",
+      "receipt_file_sha256": "05a21dae792377a9e15e0fdb3e9b9a25e291d70972305543e185fc1d5309430e",
+      "receipt_self_sha256": "24170a50bb15eb7fb80af1b68de211ab29e2ba95f64b3c34d305fccc59edb35b",
+      "conformant": true,
+      "exit_code": 0,
+      "counts": {
+        "collected": 66,
+        "error": 0,
+        "executed": 64,
+        "failure": 0,
+        "passed": 64,
+        "skipped": 2
+      },
+      "diagnostic": "",
+      "source_binding_counts": {
+        "root": 623,
+        "recipe": 625
+      },
+      "exact_readset_count": 1250,
+      "independent_git_source_count": 1248,
+      "context": {
+        "pip-freeze.txt": {
+          "sha256": "da162d254730fa87aeae0711956b1a88fcc0ac8745dad800aac278a0e79493bb",
+          "size": 90
+        },
+        "environment.json": {
+          "sha256": "d0601ba865678b983487265232881abcaa17a1f6060b5b2a9eecaa34a76ef144",
+          "size": 505
+        }
+      },
+      "context_limit": "runner asserted, not independent package installation proof",
+      "projected_rows": 1,
+      "shared_grade": [
+        {
+          "Q": "Judged",
+          "T": "Located",
+          "reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+            "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+          ]
+        }
+      ],
+      "selected_fixture": {
+        "sha256": "f28a7ae1c3e3c42936dce250160867d62b52cb97e4b671dad158541d579aec05",
+        "source_pin": "ec513cbefa937bbe382ea502a88ab96c27022863",
+        "source_path": "tests/test_index_state_prune.py",
+        "source_label": "root"
+      }
+    },
+    {
+      "job": "cj13",
+      "receipt_file_sha256": "8b68e179649c9c4b4aa7f689bd73a46e1afb1034e54c980a24cb8a987cdf14e4",
+      "receipt_self_sha256": "4860824ed1b5284a4d00f7747cd9d6d79dc36fb818feafb3b7237407cc1e62b5",
+      "conformant": true,
+      "exit_code": 0,
+      "counts": {
+        "collected": 44,
+        "error": 0,
+        "executed": 44,
+        "failure": 0,
+        "passed": 44,
+        "skipped": 0
+      },
+      "diagnostic": "",
+      "source_binding_counts": {
+        "root": 623,
+        "recipe": 625,
+        "cj13": 2076
+      },
+      "exact_readset_count": 3326,
+      "independent_git_source_count": 3324,
+      "context": {
+        "environment.json": {
+          "sha256": "e0ec48ecf85599d1bc8909976fbb1e03b7fc68e8183362f40ca246f16c500a5a",
+          "size": 614
+        },
+        "pip-freeze.txt": {
+          "sha256": "64c90b4fd5ee33ddb25472acd0b4108435a838b7964bae0ebac2eeb6ca417382",
+          "size": 197
+        }
+      },
+      "context_limit": "runner asserted, not independent package installation proof",
+      "projected_rows": 1,
+      "shared_grade": [
+        {
+          "Q": "Judged",
+          "T": "Located",
+          "reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+            "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+          ]
+        }
+      ],
+      "selected_fixture": {
+        "sha256": "105a0e422d7e7127069850f5374d7543f84fd00d219d32e8b1d56cbc4dc361e4",
+        "source_pin": "1721cc208d756506b7d31e315436f1edf8cb343b",
+        "source_path": "tests/unit/test_typed_decisions_judge_redundancy.py",
+        "source_label": "cj13"
+      }
+    }
+  ],
+  "originals_preserved": true,
+  "pin_checks_before_after": true,
+  "expectation_method": "git ls-tree at exact pins + Git archive blobs; clean lane/head stability before-after; capture constants AST only"
+}
