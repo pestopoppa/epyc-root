@@ -1501,3 +1501,7 @@ The [DTAP additive failure ledger](../docs/reference/dtap-native-failure-ledger-
 ## 2026-10-06 tool repair helper logs
 
 [Repair helper logs](../docs/reference/tool-repair-log-content-contract.md) now retain outcome, content digest and honest UTF8-surrogatepass byte count instead of malformed raw payload. Parser/counters and visible refusal remain. [OriginalCI37456098288](../artifacts/ni07/run-37456098288/README.md) passes149/149 after MAIN full source/API review; initial NULL preflight has no invented JUnit/receipt. This applies to the helper, without claiming global payload-free logging or live tool behavior.
+
+## 2026-10-06 DCP rendered source identity
+
+The [render identity guard](../docs/reference/dcp-render-content-identity-contract.md) rejects changed bound file bodies before any included rendering mode returns a bundle, preserving advisory fallback and matching/unbound/unreadable compatibility. [OriginalCI37457222213](../artifacts/ni07/run-37457222213/README.md) passes17/17 after MAIN independent source-first complete original custody verification. This does not establish an absolute rendered-prompt budget, discovery quality or live activation; parent DCP evaluation gates remain.

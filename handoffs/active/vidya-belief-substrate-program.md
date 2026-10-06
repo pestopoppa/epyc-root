@@ -2689,7 +2689,7 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 - [x] **VB-K2-QUERY-EXPANSION-REFUSAL — bind optional config capability refusal prospectively.** ✅ 2026-10-06 — [OriginalCI37456357367](../../artifacts/ni07/run-37456357367/README.md) TRUE24/24 after MAIN3359Git+2contexts/all3369API review; existing native carrier/shared grade, no new class/ladder/expansion/model/live claim.
 
-- [ ] **VB-DCP-RENDER-IDENTITY — bind render-time DCP source-identity refusal prospectively.** NI07-21/DCP-RENDER-IDENTITY; existing native CI/shared grading, fake old/new body and valid bound/legacy unbound controls before rendered context consumption. No new source class/ladder, DCP quality/discovery/live activation claim.
+- [x] **VB-DCP-RENDER-IDENTITY — bind render-time DCP source-identity refusal prospectively.** ✅ 2026-10-06 — [OriginalCI37457222213](../../artifacts/ni07/run-37457222213/README.md) TRUE17/17, MAIN3357Git+2contexts/all3367original API verification through existing carrier/shared grader. No new source class/ladder, discovery/quality/live claim; worker review-order deviation explicitly retained and MAIN source-first review independently completed.
 
 - [x] **VB-NI07-CI-TOOL-REPAIR-LOG — ingest original repair-log synthetic controls.** ✅ 2026-10-06 — [OriginalCI37456098288](../../artifacts/ni07/run-37456098288/README.md) TRUE149/149, one existing Judged/Located observation and3canonical frames, full MAIN source/API review; no fabricated native claim for NULL original.
 
@@ -2698,3 +2698,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 - [ ] **VB-CI-RESEARCH-PRODUCERS — supply exact reviewed research source to hermetic producer-backed tests.** NI07-22 source-confirmed24generic failures across18KV/4EXL3/2durability; pinned checkout/test-only path seams, original native capture all3modules and full generic result. Preserve existing production source hashes, regular-file checks/graders/selection/skips; no production overrides, benchmark/model/kernel execution or synthetic measurement ingestion into canonical ledger.
 
 - [ ] **VB-DCP-HIT-SPAN-POLICY — prospectively bind deterministic DCP policy preparation.** NI07-23/DCP-11-PREP existing native carrier/shared grading, budget-fit FULL/SLICES and missing-evidence exclusion plus unchanged source/spanless controls. No new source class/ladder/AST-complete context or live quality/activation claim; parent DCP-11 gate retained.
+
+- [x] **VB-NI07-CI-DCP-RENDER — ingest deterministic DCP render identity fixtures.** ✅ 2026-10-06 — [OriginalCI37457222213](../../artifacts/ni07/run-37457222213/README.md) TRUE17/17, one Judged/Located observation and3canonical frames after MAIN source-first full custody verification. Bound old/new body, three rendering modes and unbound/unreadable controls only; no gate or measured quality claim.

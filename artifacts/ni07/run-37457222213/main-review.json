@@ -1,0 +1,59 @@
+{
+  "run": 37457222213,
+  "attempt": 1,
+  "artifact_id": 11410295331,
+  "independent_git_bindings": 3357,
+  "source_counts": {
+    "app": 2092,
+    "carrier": 625,
+    "recipe": 640
+  },
+  "contexts": 2,
+  "zip_sha256": "f8b01aaf6dd018fd5c86c2044671a83a766f07f3ce17114d9580b7b886474a81",
+  "zip_size": 16868358,
+  "zip_extracted_members": 3367,
+  "receipt_file_sha256": "dac417facdd32e86bbf1950dfcff6702a775d9f3da7eeaaf63f94b57d2617fb4",
+  "receipt_self_sha256": "6332a73a25a86c49d7278d1df1b7069cf58070b6c6b86af5f4df04fbf2b6e1a4",
+  "repositories": {
+    "app": "762dadb3cbb433a6f02ef21c5820270b26e756c3",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "a1a1e7891fc8807a7fcdd0e640725099d4f2970c"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_context_discovery.py",
+    "--junitxml=/home/runner/work/_temp/ni07-21-dcp-render-identity/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 17,
+    "error": 0,
+    "executed": 17,
+    "failure": 0,
+    "passed": 17,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "049ecf5af3f762afc6c3683570794cac3f52e3bf",
+  "recipe_main": "1b838f008947f2bfa3a8975b8205063cfdd1bee4",
+  "context_recipe_assertions_checked": true,
+  "worker_review_order_deviation": "Worker read a summary before independent Git derivation; MAIN derived its own Git union before opening the receipt and independently verified all original bytes."
+}
