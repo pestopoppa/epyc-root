@@ -6,7 +6,7 @@ control. It does not assert corpus behavior, evaluator quality, inference, perfo
 ## Exact source proposals
 
 The APP source is based on current published APP `81663c30177fb567b91df3ef9615060c8d018ab6`.
-The prepared APP proposal tip is `5caebd5f0a30b336a62114cd9c41b765392b07ea`; its source/test
+The prepared APP proposal tip is `cfcf3768716de888a971bf66489397f5b91241df`; its source/test
 changes are private. The APP producer and package source hashes are:
 
 | APP tracked path | SHA-256 |
@@ -36,8 +36,8 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `0629e87e4f5cb568bbb5e0e60e6abb7881ed0ec15f235f01f4c2c62064e0da4d` |
-| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `223c87c0416ef11575b0a2eb13ac588d111feadf40f5450dfef6605c73a59454` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `2bcf79d901f25076376b566f78770d48f33865274734117be9b6eae2e463efda` |
+| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
 | `scripts/vidya/adapters/_analysis_report_provenance.py` | `15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e` |
