@@ -102,6 +102,7 @@ APP_READS = (
     "tests/test_analysis_report_snapshot_sealing.py",
     "tests/test_eval_suite_discriminability.py",
     "tests/unit/test_stat_tests.py",
+    "tests/conftest.py",
 )
 
 
@@ -183,7 +184,8 @@ def main() -> int:
 
     app_junit = capture_root / "app-original-junit.xml"
     app_native_output = capture_root / "app-native"
-    app_argv = [sys.executable, "-m", "pytest", "-q", f"--junitxml={app_junit}", *APP_NODEIDS]
+    app_argv = [sys.executable, "-m", "pytest", "-q", "--noconftest",
+                f"--junitxml={app_junit}", *APP_NODEIDS]
     app_record = carrier.capture_fixture_execution(
         argv=app_argv, cwd=app_root, junit=app_junit, output=app_native_output,
         repositories={"root": str(ROOT), "app": str(app_root)},

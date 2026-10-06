@@ -36,7 +36,7 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `4284fe4306c190e5c4c0d98545752ae83e8b6989811c62fdb60c888a22a4c77d` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `91ef11008b36297b4c3953a084e2d6c0f93607de243c1d064e466a7a382ddc24` |
 | `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
@@ -161,7 +161,12 @@ unknown denominators; it also exercises private snapshots, duplicate-path idempo
 bytes, retained snapshot mismatch and symlink refusal for both producers. Error-row filtering,
 one-run unknown stability and existing confidence-interval regressions remain covered. Require
 exactly 20 APP cases collected, executed and passed, with zero skips, failures or errors. The APP
-JUnit identity includes pytest's exact `_seal_eval` and `_seal_mf` parameter IDs.
+JUnit identity includes pytest's exact `_seal_eval` and `_seal_mf` parameter IDs. The APP invocation
+uses `--noconftest`: source inspection shows these selected leaf tests need only pytest's built-in
+`tmp_path` and local helpers, while APP `tests/conftest.py` eagerly imports API/backend state and
+autouse fixtures unrelated to these pure producer/statistics controls. Its exact bytes are included
+in the native readset to bind this deliberate exclusion. Plugin autoload remains disabled; the
+selected tests need no conftest fixture, backend, model, or runtime path.
 
 ## Capture and grade boundary
 
