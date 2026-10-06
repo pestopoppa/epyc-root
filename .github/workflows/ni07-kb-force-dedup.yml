@@ -1,7 +1,7 @@
 name: NI07 KB force-dedup pinned fixture conformance
 on:
   push:
-    branches: [codex/ni07-kb-force-dedup-ci]
+    branches: [codex/ni07-vector-staged-publish-ci]
     paths:
       - .github/workflows/ni07-kb-force-dedup.yml
       - scripts/ci/ni07_kb_force_dedup_capture.py
@@ -14,7 +14,7 @@ jobs:
     timeout-minutes: 15
     env:
       ROOT_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
-      APP_PIN: 2860624a17c08f6d14e15babc6c41af74285b572
+      APP_PIN: dffaffd165dd82b29d3c09699502f7e055507cbc
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       ORCHESTRATOR_MOCK_MODE: '1'
