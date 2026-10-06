@@ -527,3 +527,8 @@ such, not a new measurement.
 - [progress 2026-07-05 — MI210 residency + CoT reframe](../progress/2026-07/2026-07-05-mi210-residency-and-cot-reframe.md) -- the operator rescue-rate reframe (metric/distribution/deployment corrections) that re-scoped the experiment before the close.
 - [progress 2026-07-04 daily](../progress/2026-07/2026-07-04.md) -- lane opening: Fable-5 distillation intake (773-778, incl. Qwable-v1 MTP-head-dropped GGUF finding), reasoning-economics cluster framing (MD-9 == G1 shared gate), seed-corpus cache with Groq-key redaction.
 - [Reasoning Compression handoff — 2026-07-02 update](../handoffs/active/reasoning-compression.md) -- SPIRAL / recursive self-aggregation training-free pattern (intake-732/746/747) with the mandatory same-compute self-consistency control; diverse-exploration RL objectives filed as Tier-3 HW-gated forward pointers.
+
+
+## 2026-10-06 confidence arithmetic preparation
+
+The [supplied-score expectation helper](../docs/reference/confidence-expectation-preparation.md) preserves exact synthetic coverage, existing grading φ maps and explicit missing/unresolved dispositions. [Original off-host CI37446388954](../artifacts/ni07/run-37446388954/README.md) passes26/26 after MAIN source/API custody review. Candidate-normalized native probabilities and JSON-reported probabilities do not establish parity with the historical T1 score-token instrument. No reviewer threshold, route, native writer or calibration result changed; RC-10 and SC43 live work remain open.

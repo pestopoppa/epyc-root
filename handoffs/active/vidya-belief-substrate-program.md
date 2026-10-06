@@ -2656,3 +2656,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
   - [x] **VB-NI07-CI-UTM — ingest original synthetic memory conformance fixtures.** ✅ 2026-10-06 — Original CI37444684189 TRUE2/2;3336Git bindings plus2contexts,3347original API members reopened. Existing Judged/Located observation emits3canonical frames. Initial collection NULL unchanged; no memory semantic accuracy or protocol warrant.
 
   - [x] **VB-NI07-CI-DTAP — ingest accepted original native tool-contract fixtures.** ✅ 2026-10-06 — Original CI37444164809 TRUE127/127;2745Git bindings plus2contexts,2755original API ZIP members reopened by MAIN. One existing shared Judged/Located observation emits3canonical frames; original FALSE124/127 unchanged. No live service/model/judge-quality warrant.
+
+  - [x] **VB-NI07-CI-RC — ingest original supplied-score expectation fixtures.** ✅ 2026-10-06 — [Original CI37446388954](../../artifacts/ni07/run-37446388954/README.md) TRUE26/26;3338Git inputs plus2contexts,3348API ZIP members independently reopened. One existing shared Judged/Located observation emits3canonical frames; no native probability or calibration warrant.
