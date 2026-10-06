@@ -1,0 +1,9 @@
+# NIB2-77 current lane ownership metadata audit — 2026-10-06
+
+MAIN accepted this read-only snapshot after independently rechecking the approved manifest, historical design hash, current frozen clone HEAD, exact current registration bytes and33 distinct lane rows. The current design adds the2026-10-04 harness-state never-reclaim rule; the audit respects it. Kernel remains frozen v10 `ffc1bac82eeca6f9099e1ccd9ba49703c460a115`; no tree/ref/worktree/process was modified.
+
+The historical design counted187 lanes, but its approved manifest has **no187-path roster**: nested lanes were KEEP-unverifiable and left to their frozen clone. Today that clone has79 registrations and33 `/laneN` paths:20 tracked-dirty,13 tracked-clean;6 have untracked entries, none locked/prunable. Nineteen have campaign manifests;14 do not. Sixteen have loop/serial status. Campaign/request IDs describe campaign scope and status files describe state. **None identifies an accountable human/session owner.** Clean/old is not retirement authorization; metadata does not establish active/inactive process state.
+
+[Captured metadata](ownership-metadata.json) preserves timestamp, source identities and native file hashes/selected fields; original current registrations are separate. These are ungraded dependency metadata, not a ClaimTuple/support frame, scientific measurement, retrospective owner assertion or witness. No154 historical retirements are inferred. This closes only a current-metadata audit subtask; parent NIB2-77 owner migration/retirement and next completed acceptance-cleanup evidence remain open.
+
+Missing write-side owner identity is filed prospectively as VB-AK-LANE-OWNERSHIP. Future lane creation must record an accountable session and source/common-dir identity at the AutoKernel owning session's source boundary; read-side directory/status guesses cannot repair historical owners. No frozen-kernel edit or autonomous cleanup is authorized.

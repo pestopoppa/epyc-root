@@ -1,0 +1,18 @@
+{
+  "reviewed_at": "2026-10-06T19:13:14.524119+00:00",
+  "worker_record_sha256": "eee6874b2fc1c01f9a6f7952865fc9ac912a7109af14e86e60ed91679ad0f798",
+  "historical_design_sha256": "dc5e672cf59836666e7f0939a75e1c6759309f663378c739de8e51f5e08a982e",
+  "current_design_sha256": "de79232f72bd78e68be4cab68504c3468ae55d9df9be62f827a37732aa25784d",
+  "current_design_delta": "Adds operator2026-10-04 harness-state never-reclaim rule; readonlyaudit respects it",
+  "current_worktree_list_independently_matched": true,
+  "current_lane_rows": 33,
+  "tracked_dirty": 20,
+  "tracked_clean": 13,
+  "all_registrations": 79,
+  "historical_187_roster_unavailable": true,
+  "accepted": true,
+  "owner_attestation": false,
+  "any_kernel_or_worktree_mutation": false,
+  "any_retirement_claim": false,
+  "dependency_metadata_only": true
+}

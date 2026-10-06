@@ -3577,3 +3577,7 @@ The [accepted source audit](../artifacts/ni08/source-audits-20261006/kb-consumer
 ### NI08 inactive event-duty source boundary (2026-10-06)
 
 LR-8 source is inactive by default and has MAIN-reviewed hosted native88/88 conformance with exact source/API artifact bindings. [Acceptance](../artifacts/ni08/lr8-source-acceptance-20261006/README.md) records accepted off-host shared-grade analysis Judged/Located on the unchanged original receipt and separates source verification from actual daemon handover. Parent runtime work stays open; the original OP73 installation records and current daemon/registry are unchanged.
+
+### Current AutoKernel lane metadata is not owner identity
+
+The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-20261006/README.md) binds33 current lane registrations. Campaign IDs and loop status do not identify a session owner. The historical187-count manifest has no lane roster, so current registrations cannot establish154 retirements. Record ownership at future lane creation; clean/old paths and read-side guesses cannot authorize cleanup.

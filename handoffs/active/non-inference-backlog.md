@@ -15,7 +15,7 @@
 ## Start here
 
 - **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): two source audits accepted, LR-8 source integration and prospective host native receipt wiring in progress. Preserve the running daemon until a reviewed handover.
-- **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
+- **Then:** NIB2-71 rescue disposition; NIB2-77 owner migration/retirement; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
 - **Leak robustness:** LR-6a accepted 2026-10-06 with a post-install heartbeat; LR-8 is now available for bounded source preparation. LR-9a was ratified 2026-10-04 (`ae06680f`). LR-10 belongs to workspace-ec.
@@ -219,9 +219,10 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       content-addressed archive preserved all 224 reviewed dirty acceptance worktrees before their exact-path
       retirement; 224/224 have removal receipts. Free space rose by 359,176,167,424 bytes (about 334.5 GiB).
       Prospective acceptance cleanup and serial disk fail-close are published (`b65138a0` root;
-      `142fd1e3` research). The **187 lane worktrees registered against the frozen clone remain untouched**;
+      `142fd1e3` research). The **historical2026-09-15 count was187 lane worktrees registered against the frozen clone**; current audit does not establish disposition of the difference.
       audit their ownership and migrate/retire only through an individually reviewed procedure. Verify the
       prospective cleanup during the next completed acceptance run, rather than inferring it from unit tests.
+  - [x] **NIB2-77-AUDIT — resolve the exact frozen-clone population and audit current lane ownership metadata.** ✅ 2026-10-06 — MAIN accepted [33-row current snapshot](../../artifacts/ni08/nib77-ownership-audit-20261006/README.md):79 registrations/33 lane paths,20 tracked-dirty/13 clean, no accountable session owner. Historical187 roster is absent; no154-retirement or whole-parent completion claim. Parent migration/retirement remains open.
 - [ ] **NIB2-78c** (OPTIONAL, conditional; dormant since NIB2-78b was ruled A = do not install): take this up only if
       the graph layer is revived, and re-open the install decision together with it. Give the Kuzu graphs a single owner (one process owns
       `kuzu_db/*`; the others reach it over IPC) so graph scoring does not vary by which worker serves a

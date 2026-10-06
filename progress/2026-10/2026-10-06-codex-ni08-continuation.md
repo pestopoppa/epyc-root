@@ -19,3 +19,8 @@ Receipt core repair now includes same-opened-state FD and parent fsync before el
 ## Existing shared-grade boundary
 
 Off-host analysis37515763800 recipea15a9e7 reopened the originalAPI ZIP only and ran unchanged existingadapter/claim_tuple.grade; Judged/Located. MAIN derived8 source inputs before its own artifact access and verified analysisAPI ZIP SHA571a359d5b937a782de7b2a8f437ef4a045f59eac480efdb0e2a53ebcbca8998, all3,100members and3,087native originals unchanged. No88-case rerun/new native receipt/localprojectimport. VB-LR8-EVENT-DUTY closes; fourth actualNI08 checkbox flip. ParentLR8runtime and hostreceipt wiring remain open. Sourceboundary was pushed/promoted30be4b9d0.
+
+
+## Worktree metadata boundary and new ready work
+
+MAIN accepted NIB2-77-AUDIT after matching originalmanifest/historicaldesign/currentfrozenHEAD/registrationbytes. Currentdesign delta is the operator2026-10-04 harness-state protection; audit respects it.79total/33lane,20tracked-dirty/13clean,6untracked;19manifest/14none;16status/17none; no sessionowner/historical187roster. No154retirement claim. Added scopedcheckedsubtask (no parentflip), fifth NI08completion. ProspectiveVB-AK-LANE-OWNERSHIP nativecreationtask/source row filed immediately; AutoKernel source boundary protected; no ownerbackfill. Freshsix-index178rows/20readytask source screen selected HIL1..5 design and APME4signaturecounter; preparations not completions/exhaustion.

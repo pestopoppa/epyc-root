@@ -1,0 +1,317 @@
+worktree /mnt/raid0/llm/llama.cpp
+HEAD ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+branch refs/heads/production-consolidated-v10
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/targets/b7b7868ffd944285c8d3dfa0b984cc20960184a1c0c35a10c52d68d4e7700e2a/workers/lane0
+HEAD 9a3f1392a74d22f50e093791d14ea207a6170368
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/targets/b7b7868ffd944285c8d3dfa0b984cc20960184a1c0c35a10c52d68d4e7700e2a/workers/lane1
+HEAD 9a3f1392a74d22f50e093791d14ea207a6170368
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10d/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane1
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane2
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane3
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane4
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane5
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane6
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10h/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0
+HEAD 00d118d44876d69f7a9e6503d1f7b8d5255799ca
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0
+HEAD dd6c9cdbdf858519731e0fc69e64230aa91e40cc
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane1
+HEAD dd6c9cdbdf858519731e0fc69e64230aa91e40cc
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run3/targets/b60bc314c21004925dd786a158481454e6a289e46bbfff0489e3882b2850854f/workers/lane0
+HEAD ebb68dc55d5f6af4a4a5dccdd2a013fa76c63bee
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9c/targets/674cc00c0a4ae9f9a241195fda2adb00c208ef3a9fff980c0b2740162ccfe13d/workers/lane0
+HEAD 5a60152ae3b84455f0bbb16264e6b6b8c99d8138
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9d/targets/674cc00c0a4ae9f9a241195fda2adb00c208ef3a9fff980c0b2740162ccfe13d/workers/lane0
+HEAD 5a60152ae3b84455f0bbb16264e6b6b8c99d8138
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/targets-b0ba1d427/2fdf639c6c6293672a2ba56171fae5f95f7348e0a9be802108117dc20a85ede4/workers/lane0
+HEAD c40c7d18c7e0dd8f6780763b81f86a8518d31923
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/targets-802bf9ac6/8dce0fa4e7f678651650aab4cec058cf76f83dc0a3aa5db9db08692ee48eb50b/workers/lane0
+HEAD 0b982f1d56b968470b521d6d6d7be1fc311c7471
+detached
+
+worktree /mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/targets-b0ba1d427/47780f85117868a53da3e8591e48b0c11c78ba13468d4cfe3e0906113895e48a/workers/lane0
+HEAD 802bf9ac63972fc40672db79b07e4f04f741d38b
+detached
+
+worktree /mnt/raid0/llm/autokernel/worktrees/inf37-fancy-simd-v9-20260811
+HEAD 0db32c06e3e550065b78311a6031ef3dd2c4f27c
+branch refs/heads/experimental-v9-inf37-fancy-simd-20260811
+
+worktree /mnt/raid0/llm/llama.cpp-ak-wgm-20260811
+HEAD 0db32c06e3e550065b78311a6031ef3dd2c4f27c
+branch refs/heads/experimental-v9-autokernel-wgm-20260811
+
+worktree /mnt/raid0/llm/llama.cpp-dflash
+HEAD 1ba2140c518128d87d194dfcb598397fa59db0c6
+branch refs/heads/feature/dflash-speculation
+
+worktree /mnt/raid0/llm/llama.cpp-dflash2-qwen38-20260820
+HEAD 2046c64e9948671c7557428b198acebc6f416575
+branch refs/heads/ak/dflash2-qwen38-20260820
+
+worktree /mnt/raid0/llm/llama.cpp-experimental
+HEAD 0db32c06e3e550065b78311a6031ef3dd2c4f27c
+branch refs/heads/experimental-v9-autokernel-t1-integrity-v2
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-27bgpu-1bceceb05-20261004
+HEAD 1bceceb0514d423ad220888313eafcddc30e485e
+branch refs/heads/experimental/27b-gpu-verify-1bceceb05-20261004
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-27bgpu-9a3f1392a-20261004
+HEAD 9a3f1392a74d22f50e093791d14ea207a6170368
+branch refs/heads/experimental/27b-gpu-verify-9a3f1392a-20261004
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-champref-4348de400-20261006
+HEAD 4348de400191c0b4c5127047037bf9ad83da19b6
+detached
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-cor-b0ba1d427-20261005
+HEAD b0ba1d42783585e15b0a0464715fd1fb6a808888
+detached
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260923
+HEAD ebb68dc55d5f6af4a4a5dccdd2a013fa76c63bee
+branch refs/heads/experimental/deepseek41-port-20260923
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-deepseek41-20260924
+HEAD 5a60152ae3b84455f0bbb16264e6b6b8c99d8138
+branch refs/heads/experimental/deepseek41-port-20260924
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-ds41-20261005
+HEAD c40c7d18c7e0dd8f6780763b81f86a8518d31923
+branch refs/heads/experimental/ds41-ak-20261005
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-fastload-20260925
+HEAD 90c12df4247e417053ffc59e2188294826d04ca2
+branch refs/heads/experimental/fastload-20260925
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-fastload-ds41-20260925
+HEAD dd6c9cdbdf858519731e0fc69e64230aa91e40cc
+branch refs/heads/experimental/fastload-ds41-20260925
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-mmq-jcap-20260927
+HEAD 36e83c0f22c7431183a4f33ace3095263c4d6d1b
+branch refs/heads/experimental/mmq-jcap-20260927
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-preserved-20260724T135832Z
+HEAD 8bb53c52058da97a71a504f41e4bc9886bd73f3a
+branch refs/heads/experimental-v7-refresh-20260716
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-q38fn-20261004
+HEAD dd6c9cdbdf858519731e0fc69e64230aa91e40cc
+branch refs/heads/experimental/q38fn-ak-20261004
+locked load-bearing: Q38FN AK lane run1 experimental tree (branch experimental/q38fn-ak-20261004; ak-ds41-main 2026-10-04)
+
+worktree /mnt/raid0/llm/llama.cpp-experimental-q38fn-20261005
+HEAD 0b982f1d56b968470b521d6d6d7be1fc311c7471
+branch refs/heads/experimental/q38fn-ak-20261005
+
+worktree /mnt/raid0/llm/llama.cpp-k28-prototype-20260720
+HEAD 8bb53c52058da97a71a504f41e4bc9886bd73f3a
+branch refs/heads/k28/prototype-20260720
+
+worktree /mnt/raid0/llm/tmp/ak-lanes/lane0
+HEAD fe881991f4652fdcd97b825583730e263fa7de0e
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-lanes/lane2
+HEAD fe881991f4652fdcd97b825583730e263fa7de0e
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-lanes/lane5
+HEAD fe881991f4652fdcd97b825583730e263fa7de0e
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-lanes/lane6
+HEAD fe881991f4652fdcd97b825583730e263fa7de0e
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane0
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane1
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane2
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane3
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane4
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane5
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-lanes/lane6
+HEAD bff30cebee0de4440dd7a6ef3607e59b970268ce
+detached
+
+worktree /mnt/raid0/llm/tmp/ak-loop-tree
+HEAD 4348de400191c0b4c5127047037bf9ad83da19b6
+branch refs/heads/ak/champion/llama-cpp-ffc1bac82eec
+
+worktree /mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260910-v4/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers/lane0
+HEAD c463f601bd39d0e313b744c214b8c22f9455bcd3
+detached
+
+worktree /mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260911-v6/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers/lane0
+HEAD c463f601bd39d0e313b744c214b8c22f9455bcd3
+detached
+
+worktree /mnt/raid0/llm/tmp/aku-gpu-original-verification-20260910/fresh-workers/lane0
+HEAD ef81196d5bdd4190b46dff4ae7eecc333a46c8ce
+detached
+
+worktree /mnt/raid0/llm/tmp/champ2
+HEAD ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+branch refs/heads/ak/champion/llama-cpp-0db32c06e3e5
+
+worktree /mnt/raid0/llm/tmp/champion-fold-kvu19-20261004/src
+HEAD 1bceceb0514d423ad220888313eafcddc30e485e
+branch refs/heads/fold/champion-kvu19-20261004
+
+worktree /mnt/raid0/llm/tmp/fold-ef81196d5-src
+HEAD ef81196d5bdd4190b46dff4ae7eecc333a46c8ce
+detached
+
+worktree /mnt/raid0/llm/worktrees/c112-bisect
+HEAD ad897994322ecebc1b6045b7f4c2641ce8fa375b
+detached
+
+worktree /mnt/raid0/llm/worktrees/fa-sansA-scratch-20261004
+HEAD a99e5330a57a05d2b0569b2465a2ca5ad07b136f
+detached
+
+worktree /mnt/raid0/llm/worktrees/fold-W-20261004
+HEAD b0ba1d42783585e15b0a0464715fd1fb6a808888
+branch refs/heads/fold/champion-W-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-X-20261004
+HEAD cf23279ae8e0ef031ac05ac615dc8028bc12c9b6
+branch refs/heads/fold/champion-X-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-Y-20261004
+HEAD 61bdb185c5f270d2c06c6a7bfb2f49c0facf3d91
+branch refs/heads/fold/champion-Y-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-Yfa-20261004
+HEAD 9a3f1392a74d22f50e093791d14ea207a6170368
+branch refs/heads/fold/champion-Yfa-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-Z-20261004
+HEAD 9c60b28675747319ee9dcbadf062d47e134cc069
+branch refs/heads/fold/champion-Z-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-Zp-20261004
+HEAD 70e7133a18944eab22a0809426567f01617e08f5
+branch refs/heads/fold/champion-Zp-20261004
+
+worktree /mnt/raid0/llm/worktrees/fold-allkeeps-20261004
+HEAD 2c4a1f2d2a1a1a8f3128d7835c137473616a461e
+branch refs/heads/fold/champion-allkeeps-20261004
+
+worktree /mnt/raid0/llm/worktrees/kv-prefix-fork-p1
+HEAD 857d7ec1f92eb2d23ec08483cf30d12039167e6e
+branch refs/heads/experimental/kv-prefix-fork-p1-20261004
+
+worktree /mnt/raid0/llm/worktrees/llama-champ-specwidth-20261006
+HEAD 8e597b7016c79cccb68cb429ece9e5715a0d38fc
+branch refs/heads/llama.cpp-experimental-champion-specwidth-20261006
+
+worktree /mnt/raid0/llm/worktrees/llama-exl3-cpu-20261003
+HEAD 20192b81da1df690753e0b96295efb4ee2316ffb
+branch refs/heads/experimental/exl3-cpu-20261003
+
+worktree /mnt/raid0/llm/worktrees/llama-iqk-allow-20261003
+HEAD 8c4b282ae9ed04ea4201387c7c1f6fad755033e4
+branch refs/heads/experimental/iqk-iq4nl-mxfp4-allow-20261003
+
+worktree /mnt/raid0/llm/worktrees/llama-jetlong-hip-20261006
+HEAD ebbf9ad0c6fb8821b89bf5d597568d2f2d36352c
+branch refs/heads/llama.cpp-experimental-jetlong-hip-20261006
+
+worktree /mnt/raid0/llm/worktrees/llama-jetlong-proto-20261006
+HEAD f06123436c1385cc43b3fd510b8c6593c093aac7
+branch refs/heads/llama.cpp-experimental-jetlong-proto-20261006
+
+worktree /mnt/raid0/llm/worktrees/llama-kq-route-20261003
+HEAD 289cbafa30df1a5eaf81e1ddef17392b57f61b77
+branch refs/heads/experimental/kq-mmvq-route-m5-8-20261003
+
+worktree /mnt/raid0/llm/worktrees/llama-kshift-probe-20261006
+HEAD f9cb7cd3201c90e4376534820ef57e8cc18b8c9a
+branch refs/heads/llama.cpp-experimental-kshift-probe-20261006
+
+worktree /mnt/raid0/llm/worktrees/llama-loader-team-20260927
+HEAD e665242f09e4a938e889123c7bce039b26b58ca3
+branch refs/heads/experimental/loader-team-follows-threads-20260927
+
+worktree /mnt/raid0/llm/worktrees/llama-specwidth-20261006
+HEAD defa269af2398c297c2ffe550ca751d3d597697e
+branch refs/heads/llama.cpp-experimental-specwidth-20261006
+
+worktree /mnt/raid0/llm/worktrees/llama-yarn-mscale-20261006
+HEAD 720a98e2acd498cf4f7436f7328a1384d353bcea
+branch refs/heads/llama.cpp-experimental-yarn-mscale-20261006
+
+worktree /mnt/raid0/llm/worktrees/mmvq-graph-cache-pool-20261004
+HEAD 656c9a66b6434c15bf15a8703da0890015867124
+branch refs/heads/experimental/mmvq-graph-cache-pool-20261004
+
+worktree /mnt/raid0/llm/worktrees/vgpr-compiler-ab-20260915
+HEAD 0db32c06e3e550065b78311a6031ef3dd2c4f27c
+detached
+

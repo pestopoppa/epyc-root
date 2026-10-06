@@ -1,0 +1,885 @@
+{
+  "audit": "NIB2-77 exact frozen-clone lane ownership metadata; read-only subtask",
+  "generated_at_utc": "2026-10-06T19:02:33.889942+00:00",
+  "source_pins": {
+    "approved_manifest_path": "/mnt/raid0/llm/tmp/sub-aksweep/autokernel-disk-sweep-manifest-20260915T223834Z.json",
+    "approved_manifest_sha256": "a49053c273ee55d26e7d43e73fbb52735aa75d0cf3ad1c61f752a122c8e309e5",
+    "approved_manifest_matches_approval": true,
+    "manifest_schema": "autokernel-disk-sweep-manifest/v1",
+    "manifest_generated_at": "2026-09-15T22:38:34+00:00",
+    "manifest_source_file": "/mnt/raid0/llm/epyc-root/docs/design/autokernel-disk-hygiene-20260915.md",
+    "design_sha256": "dc5e672cf59836666e7f0939a75e1c6759309f663378c739de8e51f5e08a982e",
+    "design_section": "\u00a72.3, \u00a73.5"
+  },
+  "frozen_clone_identity": {
+    "path": "/mnt/raid0/llm/llama.cpp",
+    "resolved_path": "/mnt/raid0/llm/llama.cpp",
+    "head": "ffc1bac82eeca6f9099e1ccd9ba49703c460a115",
+    "branch": "production-consolidated-v10",
+    "git_dir": ".git",
+    "git_common_dir": ".git",
+    "git_metadata_inode": 96206859,
+    "tracked_tree_dirty_count": 0,
+    "untracked_status_count": 2
+  },
+  "worktree_list_sha256": "b806d7057e6f2089f73dc1c610045b9ee1291181ba6beaf3a93ffa665fb15f5d",
+  "worktree_list_bytes": 13160,
+  "current_population_summary": {
+    "locked_count": 0,
+    "prunable_count": 0,
+    "lane_registrations": 33,
+    "tracked_dirty_rows": 20,
+    "tracked_clean_rows": 13,
+    "untracked_status_rows": 6
+  },
+  "current_lane_worktrees": [
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/targets/b7b7868ffd944285c8d3dfa0b984cc20960184a1c0c35a10c52d68d4e7700e2a/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "9a3f1392a74d22f50e093791d14ea207a6170368",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/inputs/campaign-manifest.json",
+          "sha256": "992a4f8cee14700c2ab1e5e7f227798fabd101ea1f8d4a3478d0355cfd71e4e4",
+          "fields": {
+            "campaign_id": "ak-27b-gpu-verify-20261004",
+            "request_id": "ak-27b-gpu-verify-20261004-r1",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/targets/b7b7868ffd944285c8d3dfa0b984cc20960184a1c0c35a10c52d68d4e7700e2a/workers/lane1",
+      "exists": true,
+      "branch": "detached",
+      "head": "9a3f1392a74d22f50e093791d14ea207a6170368",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-27b-gpu-verify-20261004/inputs/campaign-manifest.json",
+          "sha256": "992a4f8cee14700c2ab1e5e7f227798fabd101ea1f8d4a3478d0355cfd71e4e4",
+          "fields": {
+            "campaign_id": "ak-27b-gpu-verify-20261004",
+            "request_id": "ak-27b-gpu-verify-20261004-r1",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10d/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 1,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10d/loop-status.json",
+          "sha256": "b119c180ecb1669fd8ab5df0fa23d36836682cab8e50fc447fec381c4632e82a",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "running",
+            "generated_at": "2026-09-25T22:52:31.770963Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10d/serial-state.json",
+          "sha256": "e431a7c261543015af02b78efa22c592bdb266488070704dfed6ad8d809affbb",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane1",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane2",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane3",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane4",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane5",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane6",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/loop-status.json",
+          "sha256": "13408a01e2bd3f098391b7d680250cfd03cdb270d40b0885c4cba28acc205504",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T10:54:52.303755Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10g/serial-state.json",
+          "sha256": "d0576dc41d2ac74f263359f2977d13b8aa3d592d3d983485fcee83d7e45d444e",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10h/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "00d118d44876d69f7a9e6503d1f7b8d5255799ca",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10h/loop-status.json",
+          "sha256": "c635a4a945973d33134bca5f2422ef75a5b7fe9a378d28e60484c4b2ef490703",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-26T13:54:53.593059Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10h/serial-state.json",
+          "sha256": "04d05eb15687f16e30222e4a6acd5e53f34d721d68b31443aa17c170d7426963",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "dd6c9cdbdf858519731e0fc69e64230aa91e40cc",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/loop-status.json",
+          "sha256": "ae0476b96615e3b76f9f19d43b89abcc2c29d58093a608213099e2b4487e6949",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "failed",
+            "generated_at": "2026-09-26T17:51:21.855285Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/serial-state.json",
+          "sha256": "af9f0aed459e7238237628f5d729864f4239c4371ae67a5e0e23863e3d79d554",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/targets/9816ea2726c4219abe1e6d2079365768818e1ae2fc3f4c7121a0ae5c82ce8868/workers/lane1",
+      "exists": true,
+      "branch": "detached",
+      "head": "dd6c9cdbdf858519731e0fc69e64230aa91e40cc",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/loop-status.json",
+          "sha256": "ae0476b96615e3b76f9f19d43b89abcc2c29d58093a608213099e2b4487e6949",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "failed",
+            "generated_at": "2026-09-26T17:51:21.855285Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run10i/serial-state.json",
+          "sha256": "af9f0aed459e7238237628f5d729864f4239c4371ae67a5e0e23863e3d79d554",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run3/targets/b60bc314c21004925dd786a158481454e6a289e46bbfff0489e3882b2850854f/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "ebb68dc55d5f6af4a4a5dccdd2a013fa76c63bee",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 1,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run3/loop-status.json",
+          "sha256": "2f26fa69faa317411881796fa00f1dc07d480eaec7e9bec01039fcb655cc0aee",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "running",
+            "generated_at": "2026-09-24T01:14:03.710548Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run3/serial-state.json",
+          "sha256": "bce03c1f3677c76b79a9c062e7b367c304d59d08c4a961e990edaf5a65386185",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9c/targets/674cc00c0a4ae9f9a241195fda2adb00c208ef3a9fff980c0b2740162ccfe13d/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "5a60152ae3b84455f0bbb16264e6b6b8c99d8138",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9c/loop-status.json",
+          "sha256": "e1b994c295d4b14993271f1de9cdb60c5c6b16e6a3b5261782012223f6032376",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-25T08:53:59.244297Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9c/serial-state.json",
+          "sha256": "bb76f0b9bd48263d5da25a73875ad2bc7ae3e16e2446ddffa9e234162ea48628",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9d/targets/674cc00c0a4ae9f9a241195fda2adb00c208ef3a9fff980c0b2740162ccfe13d/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "5a60152ae3b84455f0bbb16264e6b6b8c99d8138",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9d/loop-status.json",
+          "sha256": "4af1116fbf221fac6a82167ae01d85e20271599635264eb639cc90c51e367687",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "running",
+            "generated_at": "2026-09-25T14:39:59.439147Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/state-run9d/serial-state.json",
+          "sha256": "10e11aa57ccbc928cc731c55cb6cb3a43005ddada52531e5a6c495bcb26d402a",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/targets-b0ba1d427/2fdf639c6c6293672a2ba56171fae5f95f7348e0a9be802108117dc20a85ede4/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "c40c7d18c7e0dd8f6780763b81f86a8518d31923",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-ds41-cpu-decode-20260923/inputs/campaign-manifest.json",
+          "sha256": "e9b6dfce766200fbee97403170abb8e92d7576b303a4a93e80bbd093f78bf178",
+          "fields": {
+            "campaign_id": "ak-ds41-cpu-decode-20260923",
+            "request_id": "ak-ds41-cpu-decode-20260923-r5",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/targets-802bf9ac6/8dce0fa4e7f678651650aab4cec058cf76f83dc0a3aa5db9db08692ee48eb50b/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "0b982f1d56b968470b521d6d6d7be1fc311c7471",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/inputs/campaign-manifest.json",
+          "sha256": "e29e3a78b72a7153dbf37bf3a1cde660a73eb2a60e338b6b764cc1c332bde51d",
+          "fields": {
+            "campaign_id": "ak-q38fn-cpu-decode-20261003",
+            "request_id": "ak-q38fn-cpu-decode-20261003-r1",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/targets-b0ba1d427/47780f85117868a53da3e8591e48b0c11c78ba13468d4cfe3e0906113895e48a/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "802bf9ac63972fc40672db79b07e4f04f741d38b",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": [
+        {
+          "path": "/mnt/raid0/llm/autokernel/campaigns/ak-q38fn-cpu-decode-20261003/inputs/campaign-manifest.json",
+          "sha256": "e29e3a78b72a7153dbf37bf3a1cde660a73eb2a60e338b6b764cc1c332bde51d",
+          "fields": {
+            "campaign_id": "ak-q38fn-cpu-decode-20261003",
+            "request_id": "ak-q38fn-cpu-decode-20261003-r1",
+            "schema": "epyc.autokernel.campaign_manifest.v1"
+          }
+        }
+      ]
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-lanes/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "fe881991f4652fdcd97b825583730e263fa7de0e",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 2,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-lanes/lane2",
+      "exists": true,
+      "branch": "detached",
+      "head": "fe881991f4652fdcd97b825583730e263fa7de0e",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 1,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-lanes/lane5",
+      "exists": true,
+      "branch": "detached",
+      "head": "fe881991f4652fdcd97b825583730e263fa7de0e",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 1,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-lanes/lane6",
+      "exists": true,
+      "branch": "detached",
+      "head": "fe881991f4652fdcd97b825583730e263fa7de0e",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 0,
+      "untracked_status_count": 4,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane1",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane2",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane3",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane4",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane5",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ak-loop-lanes/lane6",
+      "exists": true,
+      "branch": "detached",
+      "head": "bff30cebee0de4440dd7a6ef3607e59b970268ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260910-v4/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260910-v4/loop-status.json",
+          "sha256": "58dafc7085b97ceba9e4c19e67d4fab3b64725bd29ae754f7c2a3694d214c27a",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "failed",
+            "generated_at": "2026-09-10T15:53:46.384470Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260910-v4/serial-state.json",
+          "sha256": "543d8e05accfe3e04d14568da58ab51ed33d39ec1fbd4f5a60f4831093783ec3",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260911-v6/targets/d4aa7739d4f137c67dd8772b99bf57ca355760cf9cc965c4153d4139f9d5f265/workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "c463f601bd39d0e313b744c214b8c22f9455bcd3",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [
+        {
+          "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260911-v6/loop-status.json",
+          "sha256": "c89403ece5060760077ecc197fceee63f59dc50857899839bd41a15adb25a9a8",
+          "fields": {
+            "campaign_id": "legacy-serial",
+            "state": "complete",
+            "generated_at": "2026-09-11T02:05:43.360906Z"
+          }
+        },
+        {
+          "path": "/mnt/raid0/llm/tmp/aku-final-glm-gpu-state-20260911-v6/serial-state.json",
+          "sha256": "40a1fa32ccf75ffef9e7f2056ef1d676df445b5acd2f12b042b6b81c26475265",
+          "fields": {}
+        }
+      ],
+      "native_campaign_scope_evidence": []
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/aku-gpu-original-verification-20260910/fresh-workers/lane0",
+      "exists": true,
+      "branch": "detached",
+      "head": "ef81196d5bdd4190b46dff4ae7eecc333a46c8ce",
+      "locked": null,
+      "prunable": null,
+      "tracked_dirty_count": 1,
+      "untracked_status_count": 0,
+      "native_owner_state_evidence": [],
+      "native_campaign_scope_evidence": []
+    }
+  ],
+  "historical_population_reconciliation": {
+    "design_count_187": 187,
+    "current_lane_registration_count": 33,
+    "current_all_worktree_registration_count": 79,
+    "historical_individual_187_path_roster_in_approved_manifest": false,
+    "do_not_infer_retirement_of_difference": true,
+    "approved_manifest_nested_repo_observation": "KEEP-unverifiable for /mnt/raid0/llm/tmp/aku12a-glm53-five-loop-workers because nested git worktree(s) are owned by /mnt/raid0/llm/llama.cpp; manifest does not enumerate those nested lane registrations individually.",
+    "owner_identity_caveat": "campaign_id/request_id identify campaign scope; loop-status and serial-state identify state only. None of those fields names a human/session owner; registration and path ancestry alone are not ownership proof."
+  },
+  "summary": {
+    "all_registered_worktrees": 79,
+    "current_lane_registrations": 33,
+    "lane_paths_with_native_campaign_manifest": 19,
+    "lane_paths_without_native_campaign_manifest": 14,
+    "tracked_dirty_rows": 20,
+    "tracked_clean_rows": 13,
+    "rows_with_untracked_items": 6,
+    "locked_rows": 0,
+    "prunable_rows": 0,
+    "rows_with_loop_status_or_serial_state": 16,
+    "rows_without_loop_status_or_serial_state": 17
+  }
+}

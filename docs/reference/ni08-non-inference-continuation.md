@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **four completed tasks (two source audits, one source implementation and its native/shared-grade wiring), with host receipt source wiring in progress**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **five completed scoped tasks (three source/metadata audits, one source implementation and its native/shared-grade wiring), with host receipt wiring and newly confirmed design/source work in progress**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -17,3 +17,5 @@ Existing named gates are maintained in the canonical tasks: NIB2-18/46 await liv
 NIB2-77 still permits a read-only worktree ownership audit before any individually reviewed migration/retirement. Fresh screening must resolve its historical187-worktree population to the actual clone; a different117-entry research clone is not coverage. Broader canonical ready-row source screening continues.
 
 VB-LR8-EVENT-DUTY is accepted: off-host existing shared-grade analysis returned Judged/Located for the same native88/88 receipt, with all originals unchanged. This adds the fourth actual NI08 checkbox closure; it is neither a new fixture run nor an inference/runtime warrant.
+
+NIB2-77-AUDIT is accepted: [33-row snapshot](../../artifacts/ni08/nib77-ownership-audit-20261006/README.md), no owner/historical154-retirement inference; parent stays open. This adds a scoped checked subtask, not a parent checkbox flip. Fresh178-row/six-index and20-ready-task screening selected HIL1..5 zero-inference design and AP-ME4 signature/counter work; preparations are not completions. VB-AK-LANE-OWNERSHIP surfaces missing native creation identity immediately at the protected AutoKernel source boundary.
