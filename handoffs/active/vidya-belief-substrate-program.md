@@ -2712,8 +2712,10 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 - [x] **VB-NI07-EVAL-CAPTURE-STATUS — ingest sidecar status conformance.** ✅ 2026-10-06 — [Original37463260425](../../artifacts/ni07/run-37463260425/README.md) TRUE9/9 after complete source-first MAIN custody review, one Judged/Located observation and three canonical frames, no live/quality/physical-storage gate.
 
-- [ ] **VB-TD-OPTION-DESCRIPTIONS — bind candidate-description structural conformance.** NI07-28/TD-14-NI-PREP existing native CI carrier and shared ClaimTuple grade: empty-default byte identity, strict description shape, JSON/native render and layout-reader original-label/key alignment. No second ladder, model/candidate quality or live-adoption warrant.
+- [x] **VB-TD-OPTION-DESCRIPTIONS — bind candidate-description structural conformance.** ✅ 2026-10-06 — [Contract](../../docs/reference/typed-candidate-description-preparation.md), original37468262427 TRUE14/14 after MAIN3367Git+2contexts/all3377member review; APPa6883d04/ROOT4a46ac2f. Empty-default compatibility, strict descriptions, original-label/key and ordered layout/reader controls accepted. PriorFALSE13/14 preserved; parentTD14/TD16 live no-harm remains open.
 
 - [x] **VB-NI07-CHECKPOINT-TRANSPORT — ingest signed payload transport conformance.** ✅ 2026-10-06 — [Original37465024500](../../artifacts/ni07/run-37465024500/README.md) TRUE116/116 after source-first MAIN/API custody review, one Judged/Located observation and three canonical frames; real restricted boundary with synthetic SQLite state, no live persistence/quality gate.
 
 - [x] **VB-NI07-RECONNECT-COST — ingest outer reconnect conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37466167911/README.md) TRUE57/57, one Judged/Located observation and three shared-grade frames, no live/quality warrant.
+
+- [x] **VB-NI07-CANDIDATE-DESCRIPTIONS — ingest structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37468262427/README.md) TRUE14/14, one Judged/Located observation and three canonical frames; no live/adoption/quality gate.

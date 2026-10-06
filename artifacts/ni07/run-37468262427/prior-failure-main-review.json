@@ -1,0 +1,63 @@
+{
+  "run": 37466999348,
+  "attempt": 1,
+  "artifact_id": 11414554731,
+  "independent_git_bindings": 3367,
+  "source_counts": {
+    "app": 2093,
+    "carrier": 626,
+    "recipe": 648
+  },
+  "contexts": 2,
+  "zip_sha256": "33d98b6ac7af4f1c0dac667fe4384561b043939db81eac6d205a750384fd4b0d",
+  "zip_size": 16954535,
+  "zip_extracted_members": 3377,
+  "receipt_file_sha256": "e243a4a272fd3ab81cf7c3ebe3424cc9270b5bb006eb6ef9419a4253f9833c23",
+  "receipt_self_sha256": "11b4a44904c42bda5b450e9cd8c8180daf7a329652c55dd189564874e635ed1d",
+  "repositories": {
+    "app": "0b1408c51a10cb7a0527b9206c415df9dd9a9a71",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "035d5f1eff1bb0862d2ab80c8c89f8a0b11c3372"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_are_optional_ordered_choice_metadata",
+    "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_reject_text_as_the_outer_sequence",
+    "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_reject_unordered_outer_containers",
+    "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_validate_kind_arity_and_content",
+    "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_descriptions_do_not_change_resolved_choice_labels",
+    "tests/unit/test_typed_decisions_measure.py::test_question_json_loader_preserves_optional_descriptions_and_legacy_default",
+    "tests/unit/test_typed_decisions_measure.py::test_question_json_loader_rejects_string_as_description_sequence",
+    "tests/unit/test_typed_decisions_native.py::TestPromptCueing::test_descriptions_are_label_bound_and_native_layout_roundtrips",
+    "tests/unit/test_typed_decisions_native.py::TestPromptCueing::test_legacy_native_prompt_and_layout_omit_descriptions",
+    "--junitxml=/home/runner/work/_temp/ni07-28-td14-capture/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 14,
+    "error": 0,
+    "executed": 14,
+    "failure": 1,
+    "passed": 13,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": false,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true
+}

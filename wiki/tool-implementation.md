@@ -1525,3 +1525,7 @@ The [pinned research checkout/test seams](../docs/reference/hermetic-research-pr
 ## 2026-10-06 outer reconnect cost
 
 [Reconnect carrier](../docs/reference/eval-outer-reconnect-cost.md) retains outer attempts, backoff and closed reasons independently of inner retries, through the original question row. [Native evidence](../artifacts/ni07/run-37466167911/README.md) passes57/57 fake transport/clock and persistence controls; no grading change.
+
+## 2026-10-06 typed candidate descriptions
+
+[Descriptions preparation](../docs/reference/typed-candidate-description-preparation.md) adds strict optional aligned text to both renderers and readers while keeping legacy bytes and original label/key authority. [Native evidence](../artifacts/ni07/run-37468262427/README.md) passes14/14; prior wrong-order fixtureFALSE preserved. Live no-harm/adoption remains TD14/TD16.

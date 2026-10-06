@@ -441,3 +441,9 @@ No-inference preparation can define the shared policy/adapter and fixtures for d
 
 
 - [x] **TU-TC-1b — remove raw malformed tool-call payloads from repair logs.** ✅ 2026-10-06 — [Helper-specific contract](../../docs/reference/tool-repair-log-content-contract.md) promoted APPmaincfdb4cbf; originalCI37456098288 TRUE149/149 independently accepted by MAIN. Outcome/counters/parser and visible refusal unchanged; digest/explicit encoding/correct byte count instead of helper raw payload. Initial NULL original retained; no live tool/global privacy claim.
+
+## MAIN-reviewed AP-54 isolation distinction — 2026-10-06
+
+At orchestrator main726084a8, `ChatRequest.eval_fence` explicitly preserves absent-field legacy behavior and false record-only control. AP-54 kernel enforcement reports landlock, mountns or hook-only; hook-only is a declared fallback, not a physical-isolation warrant. The [completed AP-54 owner record](../completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md) and [AP-54b armed/control comparison](autopilot-continuous-optimization.md) preserve these arms. Existing question rows and summaries already propagate fence state/enforcement; source review found no new propagation defect.
+
+TU-GR-1 remains the requested separate-UID/container grader/reference isolation plus transcript tripwire, coordinated with scoring infrastructure 2a-iv. Do not substitute fence telemetry for that boundary or reclassify absent/malformed/hook-only results as infra/scoring failures: that would change quality admission and the planned comparison population, requiring an explicit policy decision. Existing completed TU-GR-1a source preparation remains completed; no additional isolation implementation or acceptance is claimed.
