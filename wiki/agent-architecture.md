@@ -5126,3 +5126,7 @@ The recovered historical C5 policy is now carried byte-exactly in Research and v
 ### Programmatic input-echo source guard — 2026-10-06
 
 [RTG02 source acceptance](../artifacts/ni08/rtg02-echo-source-20261006/README.md) reuses the existing pure-text verifier behind an explicit programmatic-method gate, preserving unresolved failures and clean module-cache refusal. Original23/23 includes unsafe-method no-load controls. Actual pool rebuild and live quality evidence remain distinct.
+
+### Bounded adversarial contract controls — 2026-10-06
+
+[DTAP source fixtures and original6/6](../artifacts/ni08/tuadv-contract-source-20261006/README.md) verify bounded repeated-invalid termination and undeclared privileged/skill-call refusal beside a benign control. Native unknown attack verdicts remain unknown. External/global skill-persistence and live robustness acceptance remain separate parent work.

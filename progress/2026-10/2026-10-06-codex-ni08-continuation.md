@@ -207,3 +207,7 @@ MAIN accepts bounded P0 helper source preparation after fixed-path early rejecti
 ## RTG02 source publication boundary
 
 MAIN independent43memberAPI ZIP reviewPASS29Gitreads+3contexts/3316sourcecontext/exact23/23/receiptseals/unchangedexistingJudgedLocated inputs. APPceb3 normalmerge/push60e75e97. Two scopes close, NI08now59(42existingflips+17additions); no actualpool/scorerunsafe-method/model/inference or runtimechange. Omittedthreecompatibilitycases and stale2file predispatch map correctedbeforeONEcapture.
+
+## TUADV bounded source publication boundary
+
+MAIN original54memberAPI ZIP custodyPASS37Git+5contexts/exact6/6/receiptseals/unchangedsharedgrade; source30a8normalAPPmerge/push89ac173a. Two bounded scopes close, NI08now61(42existingflips+19additions); parentexternal/global skillpersistence remainsopen. Prior preflight failure retainedwithoutnative receipt, no hostprojectexecution/model/endpoint/crossrunstate or historicaltuple. Source fixturesretainbenignsuccessfulcompletion andattacksuccessNone.

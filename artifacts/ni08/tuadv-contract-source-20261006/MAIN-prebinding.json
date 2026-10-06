@@ -1,0 +1,382 @@
+{
+  "checkout_names": {
+    "app_lock": "app-lock",
+    "carrier": "carrier",
+    "recipe": "recipe",
+    "source": "source"
+  },
+  "expected_generated_contexts": [
+    "source-manifest.json",
+    "environment.json",
+    "pip-freeze.txt",
+    "pre-status.json",
+    "pip-install.log"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_repeated_invalid_payload_is_typed_terminal_before_842_attempts"
+    },
+    {
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[privileged-environment-read]"
+    },
+    {
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[skill-reuse-write]"
+    },
+    {
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_and_skill_calls_are_rejected_atomically_as_one_response"
+    },
+    {
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_authorized_benign_tool_fixture_still_reaches_unchanged_judge"
+    },
+    {
+      "classname": "tests.test_tool_contract",
+      "name": "test_unknown_function_is_rejected_before_runner_records_accepted_call"
+    }
+  ],
+  "host_project_execution": false,
+  "manual_blast_radius": "LOW: new synthetic DTAP test only; native runner/catalog/judge remain unchanged; no global skill-store or live attack/endpoint claim.",
+  "recipe_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "tracked_file_count": 37,
+  "tracked_files": [
+    {
+      "bytes": 3088,
+      "git_blob": "615749ad6f539405ded382f14b18ce7adbaadd7d",
+      "mode": "100644",
+      "path": ".github/workflows/vb-tuadv-native-conformance.yml",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "3e1fc12c88f66aece6c6db88033e58298fa82c6d955f35848a1c8dbbf618d589"
+    },
+    {
+      "bytes": 24946,
+      "git_blob": "fd7d09328b6fe9303d26819fac96e7039afe0dc7",
+      "mode": "100644",
+      "path": "scripts/ci/vb_tuadv_native_capture.py",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "60d7c76ae3c7e2d0ab29607e9c065d11ec255631df3797d03dc1466cff2c697a"
+    },
+    {
+      "bytes": 2792,
+      "git_blob": "98bb0b0ea9e99c5ca2602898947b9d97d0eee466",
+      "mode": "100644",
+      "path": "scripts/ci/vb_tuadv_native_cases.json",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "caeceda14c24e78ab5175d8079f6318ff117688232052906364238a730220479"
+    },
+    {
+      "bytes": 675,
+      "git_blob": "3bb3e36ee811bb9e545640eb7534cad49806de22",
+      "mode": "100644",
+      "path": "scripts/ci/vb_tuadv_native_requirements.txt",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "dd9a9e3abf22f585479eed68ef6384442e9f181bfee391b4aaddde591f0c63e6"
+    },
+    {
+      "bytes": 326943,
+      "git_blob": "e622bb44de74f619b6e3f8f58bdbc863f5499c95",
+      "mode": "100644",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "ef6ee21caf36cb31f11638bd85d02ef8e9473877601424fcedc94fc0393a55ba"
+    },
+    {
+      "bytes": 244823,
+      "git_blob": "e5c633571051f9955f66a49a7afe7143d103da13",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "recipe",
+      "repo_pin": "35edd1d10174ac9247a4c0e5e95b0d612da8c682",
+      "sha256": "b2ca24a53690daeda3b24732842517cd43c4e6b316f41ae745164a6751421ba6"
+    },
+    {
+      "bytes": 6869,
+      "git_blob": "792715678992a24c7b61787dc27d7cf934d5271b",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/tests/test_adversarial_contract_fixtures.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "1b1aea5435db3471d984efdf476040fa3c798375de58954dd6f76ff4217f75e4"
+    },
+    {
+      "bytes": 10571,
+      "git_blob": "71b3dd2b5be07dd45b915bc8bece3522c3420999",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf"
+    },
+    {
+      "bytes": 1295,
+      "git_blob": "a1294e4f0af6e21b86c5d0bee46710b1dbf75b81",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/__init__.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "15b5fd1bfe480ab12e8b6058e0c035141e5aef8833ade80f5455b6f6ac3417bc"
+    },
+    {
+      "bytes": 47363,
+      "git_blob": "186f75e1206954af90e83df6a71f49dc2dcfa735",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "814d0b4c6aa2cc753d68a2f3bc723752a96d7c315fa5b3cf1ab18fc7eb4aab3a"
+    },
+    {
+      "bytes": 17025,
+      "git_blob": "65a2e5f4b90b6393f1d0c519123b9782febccfe5",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/tool_contract.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "892a74d49f88f548bd4a30dbfda0934d13a8b2fa92b3b560f3c58ae0647f74ea"
+    },
+    {
+      "bytes": 11104,
+      "git_blob": "9fa2adad3036bc90e3806d6a26177e899351460a",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/endpoint.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "47215dc94454d824c88669175357b456add5e0fa56909442c0ec29f239deed10"
+    },
+    {
+      "bytes": 4987,
+      "git_blob": "9220c4969fd72e1b1bb29b13a5c58a245f4e0d94",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/env_state.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f"
+    },
+    {
+      "bytes": 14620,
+      "git_blob": "aa5edb6fbd016069b3533869cec4d86a5e6e0a50",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/failure_ledger.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "84c5e1d68e05a037e08bbbc16f9d9d69887c426b369f67f62c16208dca3cb3e6"
+    },
+    {
+      "bytes": 13372,
+      "git_blob": "3c1591ae7ea494b1da39fe40764ae647210b1fd2",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/judge_guard.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216"
+    },
+    {
+      "bytes": 2914,
+      "git_blob": "ebda452563b29f046ba2f03639fc87f5521f493a",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/outcomes.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00"
+    },
+    {
+      "bytes": 5408,
+      "git_blob": "a1223e5aec960a8aed8321e3235c3e70cd1aed64",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/trace.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3"
+    },
+    {
+      "bytes": 4620,
+      "git_blob": "a4b2e7504faec13be1e8523d545a42e61237e07b",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/base_judge.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "f645a99ed4f5a3566488c826f7740aab549bfdb3e01ec78a39b84e9fa2f269be"
+    },
+    {
+      "bytes": 377,
+      "git_blob": "d05e12aaebd44a2fb042ecc96015e3dfade23b04",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/__init__.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "c2316b355ada0e9f99dd536da4e752d1ccc0859af8c1b82e53814c81fccf7534"
+    },
+    {
+      "bytes": 4262,
+      "git_blob": "5548c939dba4440eaf5b9d782a06e28454261d35",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/finance.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "9d402265a6c5efd359f5af3385076d141efa70ea5101aa639eea2f6f0668dc56"
+    },
+    {
+      "bytes": 5348,
+      "git_blob": "fceb529f286d4c1a5b3c1075193b2d8371ff6ca6",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/gmail.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "4d5c7f45951f54302567c42cb4c4a64346637fec502264c92c0e25afb201d145"
+    },
+    {
+      "bytes": 893,
+      "git_blob": "eb538ccfea12de50ba8e210d049f858f602a61df",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/paypal.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "244d4cdbad6cc65d67c16ba321fc80d33ca4111cf6b9ce5b5adf810213ad2ef0"
+    },
+    {
+      "bytes": 5364,
+      "git_blob": "ba341ae79daf3188714f46dc362de92967c9b650",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/salesforce.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "b730f48e6f4e2ee7c4150978ba1ff98d1fa307e7bbef9a18e8fee0ebe0238cf8"
+    },
+    {
+      "bytes": 1036,
+      "git_blob": "c4e74ed319037607d1ccb09c2fe65c6a9c7b3e69",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/slack.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7"
+    },
+    {
+      "bytes": 3341,
+      "git_blob": "b90e059b0c70f5e50b1fc323657df854a39b2e17",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/utils.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e"
+    },
+    {
+      "bytes": 103635,
+      "git_blob": "e95b9f13aca14cbc5e18c869f172e927ba3acfa4",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/cases.json",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431"
+    },
+    {
+      "bytes": 706785,
+      "git_blob": "db5946efd2c1bffbbc1a23ff2f085baf1b39c505",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/harness/tool_schemas.json",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "3f5e42e4dcd4f0dc27cb17623f43af3a813db4d7bda2b9b99d6f64d125c88741"
+    },
+    {
+      "bytes": 686,
+      "git_blob": "08bd2ea80823d5381cbadf8e11f33b497e43b3fc",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-benign-trade-execution-001.done.json",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "bb3f095b6676c8b74e4b8f8bf2dd64fd9e70f594b1a0424dc8a3835924fd5ec9"
+    },
+    {
+      "bytes": 2313,
+      "git_blob": "7106f7ce92b39987a08c57355322017100160253",
+      "mode": "100644",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-benign-trade-execution-001/judge.py",
+      "repo": "source",
+      "repo_pin": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+      "sha256": "20d5f169881db42e55fdfeb139207365642bab5828645aa8518d5d49950b74db"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 6832,
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "mode": "100644",
+      "path": "pyproject.toml",
+      "repo": "app_lock",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app_lock",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ]
+}

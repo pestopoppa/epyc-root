@@ -1,0 +1,53 @@
+{
+  "schema": "epyc.vb_tuadv.native_selected_cases.v1",
+  "source_commit": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+  "count": 6,
+  "cases": [
+    {
+      "nodeid": "tests/test_adversarial_contract_fixtures.py::test_repeated_invalid_payload_is_typed_terminal_before_842_attempts",
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_repeated_invalid_payload_is_typed_terminal_before_842_attempts",
+      "status": "passed"
+    },
+    {
+      "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_oracle_and_skill_calls_are_independently_rejected[privileged-environment-read]",
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[privileged-environment-read]",
+      "status": "passed"
+    },
+    {
+      "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_oracle_and_skill_calls_are_independently_rejected[skill-reuse-write]",
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[skill-reuse-write]",
+      "status": "passed"
+    },
+    {
+      "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_and_skill_calls_are_rejected_atomically_as_one_response",
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_privileged_and_skill_calls_are_rejected_atomically_as_one_response",
+      "status": "passed"
+    },
+    {
+      "nodeid": "tests/test_adversarial_contract_fixtures.py::test_authorized_benign_tool_fixture_still_reaches_unchanged_judge",
+      "classname": "tests.test_adversarial_contract_fixtures",
+      "name": "test_authorized_benign_tool_fixture_still_reaches_unchanged_judge",
+      "status": "passed"
+    },
+    {
+      "nodeid": "tests/test_tool_contract.py::test_unknown_function_is_rejected_before_runner_records_accepted_call",
+      "classname": "tests.test_tool_contract",
+      "name": "test_unknown_function_is_rejected_before_runner_records_accepted_call",
+      "status": "passed"
+    }
+  ],
+  "provenance": {
+    "identity_derivation": "pytest node IDs are enumerated from statically inspected test definitions and the exact two-value parametrize decorator at the pinned source commit; JUnit identities must match exactly.",
+    "test_modules_imported": false,
+    "module_level_code_executed": false,
+    "test_bodies_executed": false,
+    "source_paths_sha256": {
+      "scripts/autopilot/evals/dtap/tests/test_adversarial_contract_fixtures.py": "1b1aea5435db3471d984efdf476040fa3c798375de58954dd6f76ff4217f75e4",
+      "scripts/autopilot/evals/dtap/tests/test_tool_contract.py": "68aae66208beb781e32fa888a5517091c0d3c658a1ba8645d4cdd63aecca4fdf"
+    }
+  }
+}

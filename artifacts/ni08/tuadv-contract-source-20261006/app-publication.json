@@ -1,0 +1,12 @@
+{
+  "previous_head": "60e75e97df7e499a1efd6b07f9aa0048634790bc",
+  "main_before": "60e75e97df7e499a1efd6b07f9aa0048634790bc",
+  "source": "30a8665bcb69e7679173f026dc2dcf9549a6c7ca",
+  "commit": "89ac173a8871b706298d2499b373038325318e0a",
+  "paths": [
+    "scripts/autopilot/evals/dtap/tests/test_adversarial_contract_fixtures.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

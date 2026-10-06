@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **59 completed scoped tasks: 42 existing checkbox flips and 17 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **61 completed scoped tasks: 42 existing checkbox flips and 19 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -145,3 +145,7 @@ MAIN reviewed the fixed-source privacy-minimal HS-19a summary and meaningful unk
 ## RTG02 programmatic input-echo source — MAIN acceptance
 
 [Source/native23/23 and publication](../../artifacts/ni08/rtg02-echo-source-20261006/README.md) close the residual guard gap plus its pre-enrolled VB source companion. **59 scoped completions (42 existing flips +17 additions)**. Real pool rebuild, inference and parent program remain open; whole-backlog exhaustion unproved.
+
+## Bounded adversarial contract fixtures — MAIN acceptance
+
+[Original6/6 and test-only source publication](../../artifacts/ni08/tuadv-contract-source-20261006/README.md) close TU-ADV-1-SOURCE and pre-enrolled VB companion: **61 scoped completions (42 existing flips +19 additions)**. Actual TU-ADV-1 external/global skill persistence remains open. Native attack verdict unknowns retained; no live robustness claim. All-card source eligibility review and implementation continue.
