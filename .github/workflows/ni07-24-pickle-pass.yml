@@ -1,7 +1,7 @@
 name: NI07 signed-pickle checkpoint transport
 on:
   push:
-    branches: [codex/ni07-24-pickle-pass-recipe]
+    branches: [codex/ni07-24-pickle-pass-20261006]
     paths:
       - .github/workflows/ni07-24-pickle-pass.yml
       - scripts/ci/ni07_24_pickle_pass_capture.py
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.13.15'
       - name: Install frozen application and test dependencies
         working-directory: app
         run: |
@@ -64,7 +64,7 @@ jobs:
         working-directory: app
         env:
           PYTHONPATH: ${{ github.workspace }}/app
-        run: .venv/bin/python recipe/scripts/ci/ni07_24_pickle_pass_capture.py
+        run: .venv/bin/python "$GITHUB_WORKSPACE/recipe/scripts/ci/ni07_24_pickle_pass_capture.py"
       - name: Preserve original receipt, JUnit and status on every outcome
         if: always()
         uses: actions/upload-artifact@v4

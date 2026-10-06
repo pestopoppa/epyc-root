@@ -8,6 +8,7 @@ import platform
 import subprocess
 import sys
 import tomllib
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 SELECTIONS = (
@@ -60,6 +61,7 @@ LOCKED_FIXTURE_PACKAGES = {
     'pluggy': '1.6.0',
     'Pygments': '2.20.0',
 }
+EXPECTED_CASES = 110  # AST count of complete selected modules, including literal parametrizations.
 
 def git_head(repo: Path) -> str:
     return subprocess.check_output(
@@ -76,6 +78,19 @@ def require_clean(repo: Path, label: str) -> None:
         raise RuntimeError(f"{label} checkout is not clean: {status.strip()}")
 
 
+def reject_symlink_components(repo: Path, name: str) -> Path:
+    path = repo
+    if path.is_symlink():
+        raise RuntimeError(f"repository checkout is a symlink: {repo}")
+    for part in Path(name).parts:
+        path = path / part
+        if path.is_symlink():
+            raise RuntimeError(f"tracked input traverses a symlink: {name}")
+    if not path.is_file():
+        raise RuntimeError(f"tracked declared input is missing or not a file: {name}")
+    return path.absolute()
+
+
 def tracked_inputs(repo: Path):
     names = subprocess.check_output(["git", "-C", str(repo), "ls-files", "-z"])
     for name in names.decode().split("\0"):
@@ -83,9 +98,7 @@ def tracked_inputs(repo: Path):
             continue
         path = repo / name
         if path.suffix.lower() == ".py" or path.name in CONFIG_NAMES:
-            if not path.is_file():
-                raise RuntimeError(f"tracked declared input is missing: {path}")
-            yield path.resolve()
+            yield reject_symlink_components(repo, name)
 
 
 def verify_locked_packages(app: Path) -> None:
@@ -114,6 +127,8 @@ def main() -> int:
     try:
         if os.environ["NI07_RUNNER_CONTEXT"] != "ubuntu-latest":
             raise RuntimeError("runner context differs from reviewed recipe")
+        if sys.version_info[:3] != (3, 13, 15):
+            raise RuntimeError(f"Python is {sys.version_info[:3]}, expected (3, 13, 15)")
         expected_pins = {
             "recipe": os.environ["GITHUB_SHA"],
             "carrier": os.environ["ROOT_CARRIER_PIN"],
@@ -147,6 +162,8 @@ def main() -> int:
                         "are installed at exact lock versions with their exact lock closure."
                     ),
                     "selected_tests": list(SELECTIONS),
+                    "expected_collected_cases": EXPECTED_CASES,
+                    "expected_skips": 0,
                     "environment": {
                         key: os.environ.get(key)
                         for key in (
@@ -159,8 +176,11 @@ def main() -> int:
                         )
                     },
                     "isolation": (
-                        "Injected string bodies and callbacks only; no model, tokenizer, "
-                        "GitNexus, benchmark, server, inference or backend execution."
+                        "Temporary SQLite/session and set roundtrips use the real signed-pickle "
+                        "boundary; safe-pickle cases include NumPy structural guards. The chat "
+                        "suite supplies MagicMock LLM primitives/backends and asserts call counts; "
+                        "tests do not construct or query real models, embeddings, encoders, "
+                        "tokenizers or inference backends. No server, benchmark or live session."
                     ),
                 },
                 indent=2,
@@ -176,16 +196,13 @@ def main() -> int:
         read_paths = [
             freeze,
             environment,
-            Path(__file__).resolve(),
-            recipe / ".github/workflows/ni07-24-pickle-pass.yml",
+            Path(__file__).absolute(),
+            reject_symlink_components(recipe, ".github/workflows/ni07-24-pickle-pass.yml"),
         ]
         for repo in repos.values():
             read_paths.extend(tracked_inputs(repo))
         for name in APP_CONTEXTS:
-            context = app / name
-            if not context.is_file():
-                raise RuntimeError(f"declared APP context is missing: {context}")
-            read_paths.append(context.resolve())
+            read_paths.append(reject_symlink_components(app, name))
 
         native = carrier / "scripts/ci/native_conformance.py"
         argv = [
@@ -222,6 +239,18 @@ def main() -> int:
         status["state"] = "running"
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
         code = subprocess.call([*argv, "--", *command], cwd=app)
+        if junit.is_file():
+            root = ET.parse(junit).getroot()
+            suites = [root] if root.tag == "testsuite" else root.findall(".//testsuite")
+            cases = sum(int(suite.attrib.get("tests", 0)) for suite in suites)
+            skipped = sum(int(suite.attrib.get("skipped", 0)) for suite in suites)
+            status.update(collected_cases=cases, skipped_cases=skipped)
+            if code == 0 and cases != EXPECTED_CASES:
+                code = 1
+                status["error"] = f"JUnit reports {cases} cases, expected {EXPECTED_CASES}"
+            if code == 0 and skipped != 0:
+                code = 1
+                status["error"] = f"JUnit reports {skipped} skipped cases, expected zero"
         status.update(state="passed" if code == 0 else "failed", exit_code=code)
         return code
     except Exception as exc:
