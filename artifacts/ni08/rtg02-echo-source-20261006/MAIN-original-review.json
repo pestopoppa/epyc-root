@@ -1,0 +1,39 @@
+{
+  "reviewed_at": "2026-10-06T23:54:24.448093+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37548878050,
+  "attempt": 1,
+  "artifact": 11451333948,
+  "pins": {
+    "root": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+    "app": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177"
+  },
+  "zip_sha256": "17ef4c7476f27c3738707f00087b997c7380289a7851af1b11fe262f716e24cc",
+  "zip_bytes": 1213423,
+  "members": 43,
+  "readset_count": 32,
+  "git_inputs": 29,
+  "contexts": 3,
+  "counts": {
+    "collected": 23,
+    "error": 0,
+    "executed": 23,
+    "failure": 0,
+    "passed": 23,
+    "skipped": 0
+  },
+  "testcase_nodes": 23,
+  "native_value": true,
+  "receipt_file_sha256": "deb2d507661b47043d39619469c5a1d2f39c657dc338e70aa3c721e34eb579ea",
+  "receipt_self_sha256": "837725a1474e401ea33ecb457b7f6b46846cff412c1c263638a42a1dab773280",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "MEDIUM bounded pure-text verifier selection and cache cleanup; no inference/nonprogrammatic verifier execution, real pool rewrite or policy change.",
+  "job_identity": "github_job_112559361164"
+}

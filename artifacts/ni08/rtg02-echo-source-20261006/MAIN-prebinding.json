@@ -1,0 +1,370 @@
+{
+  "review": "PASS",
+  "recipe_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+  "tracked_files": [
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": ".github/workflows/rtg02-native-conformance.yml",
+      "mode": "100644",
+      "git_blob": "93a7c2e78993b1087a10c4694cff944bde3b3c34",
+      "bytes": 2325,
+      "sha256": "67fc82e941b588f047d13b9b2c6ef42c04c6af355cb54ecb3e3bcb6f4eaaa61a"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/ci/rtg02_run_native_capture.py",
+      "mode": "100644",
+      "git_blob": "3da78d93317cb91a04cc9f59436eb7b3a53e18e9",
+      "bytes": 10969,
+      "sha256": "65bc0f6203b6de2bc358112269bd2dc820433423d4f64fe78fd786f1bca66937"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/ci/rtg02-expected-cases.json",
+      "mode": "100644",
+      "git_blob": "29f78ef7007b9e99b2a62d53efc2ad85c3a01e91",
+      "bytes": 6221,
+      "sha256": "de6ccd8561b189d0244719779e3cd92a7609c32afd75df49cd435bd93609078c"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/ci/rtg02-hosted-requirements.txt",
+      "mode": "100644",
+      "git_blob": "a26ad9215b105b07d7cb32940fc8914e28d95bba",
+      "bytes": 692,
+      "sha256": "9619ade5463bd8659b273d90c6772169945ca46f635a8a96766801cf60cc3b22"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/ci/ni08_source_context.py",
+      "mode": "100644",
+      "git_blob": "344c861a00c6885f0a3b81f90712c3fc40cb4496",
+      "bytes": 2658,
+      "sha256": "d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/ci/native_conformance.py",
+      "mode": "100644",
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "bytes": 19249,
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "mode": "100644",
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "bytes": 2260,
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/vidya/adapters/README.md",
+      "mode": "100644",
+      "git_blob": "e5c633571051f9955f66a49a7afe7143d103da13",
+      "bytes": 244823,
+      "sha256": "b2ca24a53690daeda3b24732842517cd43c4e6b316f41ae745164a6751421ba6"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "scripts/vidya/claim_tuple.py",
+      "mode": "100644",
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "bytes": 40447,
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "repo": "root",
+      "repo_pin": "2221ad6fd8e5d1f2bf1b604557e72c1b90d06638",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "mode": "100644",
+      "git_blob": "e622bb44de74f619b6e3f8f58bdbc863f5499c95",
+      "bytes": 326943,
+      "sha256": "ef6ee21caf36cb31f11638bd85d02ef8e9473877601424fcedc94fc0393a55ba"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "pyproject.toml",
+      "mode": "100644",
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "bytes": 6832,
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "scripts/autopilot/core_v2_select.py",
+      "mode": "100644",
+      "git_blob": "412c55e5a16b9372b19a594aefb0fcd5f8ac4043",
+      "bytes": 31641,
+      "sha256": "95489df973d6ff2b59e951968ce21d1d20dbf8b5c2414e521165020cdb9e350c"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "scripts/autopilot/experiment_journal.py",
+      "mode": "100644",
+      "git_blob": "c981baf9b046ffb8c26882b90fa2b588e52498b4",
+      "bytes": 97479,
+      "sha256": "4eee049b136ac3f79e42bfa4c7fc8a88084cef621f38c95e4dbae5d50c2ac6e8"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "scripts/autopilot/journal_shards.py",
+      "mode": "100644",
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "bytes": 4019,
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "scripts/benchmark/debug_scorer.py",
+      "mode": "100644",
+      "git_blob": "6b5da1895cf51cf6ce034cfbe77f9ff7694fbbee",
+      "bytes": 101730,
+      "sha256": "e1b79e69dec755365d8bb69e2a8accb8e3ec747f4212e5bc2393561937d039fd"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/__init__.py",
+      "mode": "100644",
+      "git_blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "bytes": 4047,
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/__init__.py",
+      "mode": "100644",
+      "git_blob": "27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37",
+      "bytes": 3904,
+      "sha256": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/action_identity.py",
+      "mode": "100644",
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "bytes": 6706,
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "mode": "100644",
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "bytes": 14483,
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "mode": "100644",
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "bytes": 7883,
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/measurement_guards.py",
+      "mode": "100644",
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "bytes": 18893,
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/multitier_decision.py",
+      "mode": "100644",
+      "git_blob": "5dce1594af423b7a91e7eec916741fb39de02854",
+      "bytes": 11966,
+      "sha256": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/pareto_math.py",
+      "mode": "100644",
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "bytes": 5839,
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/rlvr_tiers.py",
+      "mode": "100644",
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "bytes": 11863,
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/sequential_verdict.py",
+      "mode": "100644",
+      "git_blob": "5086b05f9e7517b1c8b7a9b3934f2b57da5f0356",
+      "bytes": 29215,
+      "sha256": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "src/autopilot_core/tier_specs.py",
+      "mode": "100644",
+      "git_blob": "c16b5dcf974724686aaba10e3b862498920ef651",
+      "bytes": 30706,
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "tests/conftest.py",
+      "mode": "100644",
+      "git_blob": "3b87111c6bc4ec1f8c8840d204e337e12ae00851",
+      "bytes": 13851,
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "tests/unit/test_core_pool_vacuous_oracle.py",
+      "mode": "100644",
+      "git_blob": "91beabea0e7a03a62514ec915d8398e2d8ad94a8",
+      "bytes": 10305,
+      "sha256": "27b3a2ec45b70211fddfbad527708215996ee0f16329a072e3f82b657ceb1ba0"
+    },
+    {
+      "repo": "app",
+      "repo_pin": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+      "path": "uv.lock",
+      "mode": "100644",
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "bytes": 1099589,
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_the_debugbench_shape_is_caught"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_a_genuine_oracle_is_not_flagged"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_short_incidental_containment_is_reported_but_not_structural"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_exact_scorer_is_not_made_vacuous_by_containment"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[llm-judge]"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[code-execution]"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[math-verify]"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[unknown]"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[exact]"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_failed_verifier_import_does_not_poison_the_module_cache"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_programmatic_echo_uses_the_existing_verifier"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_programmatic_echo_that_fails_the_verifier_is_not_flagged"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_programmatic_verifier_errors_are_unresolved_not_safe"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_a_longer_prefix_is_not_a_fix"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_missing_or_empty_expected_is_ignored_not_crashed"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_the_livecodebench_shape_is_caught"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_vacuous_rows_does_not_already_catch_it"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_a_varying_oracle_is_not_flagged"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_constant_expected_with_the_oracle_elsewhere_is_left_alone"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_small_suites_are_not_judged"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_empty_expected_across_a_suite_is_not_a_constant_oracle"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_write_core_jsonl_records_the_flag_and_scopes_it_to_drawn_suites"
+    },
+    {
+      "classname": "tests.unit.test_core_pool_vacuous_oracle",
+      "name": "test_suites_are_partitioned_not_pooled"
+    }
+  ],
+  "expected_generated_contexts": [
+    "source-context.json",
+    "dependency-install.log",
+    "environment.json"
+  ],
+  "source_context_sha256": "1302ce8ed771bd7f23fd4acd3e4cbe4ccdee26d3b163a021d845cddd96ec0d7a",
+  "source_context_bytes": 655994,
+  "manual_blast_radius": "MEDIUM bounded pure-text verifier selection and cache cleanup; no inference/nonprogrammatic verifier execution, real pool rewrite or policy change.",
+  "host_project_execution": false
+}

@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **57 completed scoped tasks: 41 existing checkbox flips and 16 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **59 completed scoped tasks: 42 existing checkbox flips and 17 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -141,3 +141,7 @@ The report successor is approved for one hosted synthetic capture after MAIN ind
 ## Newly unlocked descriptive preflight source
 
 MAIN reviewed the fixed-source privacy-minimal HS-19a summary and meaningful unknown/refusal controls. HS19D-P0-DESCRIPTIVE-SOURCE and prospective VB companion are enrolled before capture; preparations add no completions. Parent P0 remains open for native emitted-call/template boundaries, and frozen dispatch consumers are unchanged. C5/report source-table acceptance pointers now reflect their completed boundaries.
+
+## RTG02 programmatic input-echo source — MAIN acceptance
+
+[Source/native23/23 and publication](../../artifacts/ni08/rtg02-echo-source-20261006/README.md) close the residual guard gap plus its pre-enrolled VB source companion. **59 scoped completions (42 existing flips +17 additions)**. Real pool rebuild, inference and parent program remain open; whole-backlog exhaustion unproved.

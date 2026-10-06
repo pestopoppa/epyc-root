@@ -5122,3 +5122,7 @@ The recovered historical C5 policy is now carried byte-exactly in Research and v
 ### Prospective report identities and citation bounds — 2026-10-06
 
 [Analysis writer/reader source acceptance](../artifacts/ni08/analysis-report-source-20261006/README.md) wires source-bound verify-before-stop/discriminability reports through the existing carrier and grade; legacy identityless outputs are refused. Original58/58 include actual producer round trips. Citation checks now resolve exact key-claim bounds before native ledger status while malformed/unavailable bounds stay unknown. No historical warrants or live effectiveness are inferred.
+
+### Programmatic input-echo source guard — 2026-10-06
+
+[RTG02 source acceptance](../artifacts/ni08/rtg02-echo-source-20261006/README.md) reuses the existing pure-text verifier behind an explicit programmatic-method gate, preserving unresolved failures and clean module-cache refusal. Original23/23 includes unsafe-method no-load controls. Actual pool rebuild and live quality evidence remain distinct.

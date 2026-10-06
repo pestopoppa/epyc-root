@@ -479,7 +479,7 @@ First full smoke run of the trial loop. Four defects, three silent.
   needs scheduling by the pool owner. Until then the 4 debugbench rows in `core_v2` still score
   vacuously, and **historical debugbench scores remain uninterpretable and were not re-derived**.
 
-- [ ] **Residual guard gap:** `vacuous_rows()` only inspects the substring family, so a *programmatic*
+- [x] **Residual guard gap:** `vacuous_rows()` only inspects the substring family, so a *programmatic*
   row whose oracle is input-satisfiable would not be flagged. Debugbench is covered by its own build
   gate; nothing generic covers that class.
 
@@ -906,3 +906,5 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 - [Historical ledger through 2026-06-20](../completed/autopilot-continuous-optimization-history-through-2026-06-20.md)
 - [Historical ledger, 2026-06-21 through 2026-09-25](../completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md)
+
+2026-10-06 MAIN acceptance: residual programmatic input-echo guard source completed with all23 original compatibility/refusal controls and APP byte-identical publication; [scope](../../artifacts/ni08/rtg02-echo-source-20261006/README.md). Live pool rebuild and alternative-repair measurement remain open.

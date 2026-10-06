@@ -203,3 +203,7 @@ MAIN accepts final0f79 original58cases (ROOT38APP20) after independently reopeni
 ## P0 prospective source enrollment boundary
 
 MAIN accepts bounded P0 helper source preparation after fixed-path early rejection, single nofollow owned/singlelink regular snapshot, nonblockingFIFO refusal, pinnedGitHEAD and byte identity, privacy/unknown/duplicate controls. New source/VB scopes prospectively enrolled before nativeCIPE. Actual emitted calls/template/childjoin remain unknown and parentP0open; no frozen dispatch change. Source-table accepted C5/report pointers reconciled. Tally remains57.
+
+## RTG02 source publication boundary
+
+MAIN independent43memberAPI ZIP reviewPASS29Gitreads+3contexts/3316sourcecontext/exact23/23/receiptseals/unchangedexistingJudgedLocated inputs. APPceb3 normalmerge/push60e75e97. Two scopes close, NI08now59(42existingflips+17additions); no actualpool/scorerunsafe-method/model/inference or runtimechange. Omittedthreecompatibilitycases and stale2file predispatch map correctedbeforeONEcapture.

@@ -545,7 +545,7 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 
 
 | AP62 invocation ring snapshot source controls | existing native CI verifier | Real-lock writer/reader synthetic controls plus unchanged current route guard; no shared serving activity. | VB-AP62-CONFORMANCE; private source/recipe review |
-| RTG02 programmatic echo diagnostic source controls | existing native CI verifier | Actual existing pure-text programmatic verifier, unresolved errors and explicit method gate; no pool efficacy or model/code execution. | VB-RTG02-CONFORMANCE; private source/recipe review |
+| RTG02 programmatic echo diagnostic source controls | existing native CI verifier | Actual existing pure-text programmatic verifier, unresolved errors and explicit method gate; no pool efficacy or model/code execution. | VB-RTG02-CONFORMANCE accepted2026-10-06; [original23/23](../../../artifacts/ni08/rtg02-echo-source-20261006/README.md) |
 | Prospective retained RAW literature anchor source controls | existing native CI verifier | Controlled artifact identity and existing literature-ladder proof prerequisites with synthetic fetch fixtures; no retroactive evidence or semantic adjudication. | VB-RAW-ANCHOR-CONFORMANCE; private source/recipe review |
 | DTAP negative contract fixture source controls | existing native CI verifier | Repeated invalid requests and undeclared privileged/skill calls through existing evaluator boundaries beside a benign control; cross-run skill persistence remains outside current API. | VB-TUADV-CONFORMANCE; private source/recipe review |
 

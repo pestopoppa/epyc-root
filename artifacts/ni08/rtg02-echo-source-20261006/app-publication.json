@@ -1,0 +1,13 @@
+{
+  "previous_head": "00077b3a156dd18a1416ccc764e33c80afd89b32",
+  "main_before": "00077b3a156dd18a1416ccc764e33c80afd89b32",
+  "source": "ceb3ea84feba2dbc654987e3bc2ec12fb061f177",
+  "commit": "60e75e97df7e499a1efd6b07f9aa0048634790bc",
+  "paths": [
+    "scripts/autopilot/core_v2_select.py",
+    "tests/unit/test_core_pool_vacuous_oracle.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
