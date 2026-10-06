@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/ci_conformance.py",
+  "adapter_id": "vidya.adapters.ci_conformance/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 3,
+  "frames_skipped": 0,
+  "missing": [],
+  "only_new": true,
+  "paths": [
+    "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/custody-run-37473538913-attempt-1/extracted-original/native/receipt.json"
+  ],
+  "refused": [],
+  "rows_projected": 1,
+  "source": "ci-fixture-conformance",
+  "units_matched": 1,
+  "units_projected": 1
+}

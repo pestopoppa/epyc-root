@@ -1434,3 +1434,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 - [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — the scored verdict and its derived actions.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261001-shared-clone-drift-voided-ri18-revise.
 - [Vidya belief-substrate program](../handoffs/active/vidya-belief-substrate-program.md) — VB-RI18 sidecar and VB-RI18a gaps.
+
+## 2026-10-06 calibration input byte bindings
+
+[Calibration input byte bindings](../docs/reference/calibration-input-byte-bindings.md) attach raw state, question-catalogue, and gold-label byte identities to prospective receipts: CLI reads and parses each original buffer once; direct-API metadata is explicitly caller_asserted or null. [Native evidence](../artifacts/ni07/run-37473538913/README.md) passes34/34 selected synthetic cases. This is dependency evidence, not a calibration-quality or model-validity result. TD-18's broader receipt metrics remain separate; TD-16 no-harm, TD-29 shadow/prefill counts, and TD-1d.3 isolated-question branches remain live gates.

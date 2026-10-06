@@ -2720,10 +2720,12 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 - [x] **VB-NI07-CANDIDATE-DESCRIPTIONS — ingest structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37468262427/README.md) TRUE14/14, one Judged/Located observation and three canonical frames; no live/adoption/quality gate.
 
-- [ ] **VB-TD-CAL-INPUT-BINDINGS — capture input-binding structural conformance prospectively.** NI07-29/TD-18-NI-INPUTS uses existing native CI carrier/shared grader for exact-read/parsed-byte identity, independent source mutation, invalid/legacy/caller-asserted controls. Writer hashes are dependency evidence, not a standalone calibration ClaimTuple; VB-TDP-1/shared-screen measurement integration retains original source/model/protocol/custody requirements. No second ladder, historical backfill or calibration-quality warrant.
+- [x] **VB-TD-CAL-INPUT-BINDINGS — capture input-binding structural conformance prospectively.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37473538913/README.md) TRUE34/34; one Judged/Located observation and three shared-grade frames. Source-byte identities are dependency evidence only, not a standalone calibration ClaimTuple; VB-TDP-1/shared-screen retains original source/model/protocol/custody and live-quality requirements. No second ladder, historical backfill, or calibration-quality warrant.
 
 - [ ] **VB-STANDALONE-NUMA-GUARD — bind CLI declared-mode structural conformance.** NI07-30/NIB2-76 existing native CI carrier/shared grade; explicit/declared mode forwarding and unresolved declaration refusal before validation, list/staleness legacy controls and existing portable-source controls. No fleet measurement, live launch/guard acceptance, new ladder or historical backfill.
 
 - [x] **VB-NI07-TERMINAL-REPL — ingest timeout structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37469999403/README.md) TRUE123/123, one Judged/Located observation and three canonical frames; no live lease/cancellation/host-effect gate.
 
 - [ ] **VB-PII-ED25519-CONFORMANCE — bind staged-header structural controls.** NI07-31 uses existing native CI carrier/shared grade for disposable Git staged-blob rejection, metadata pass and original token/partial-stage/excluded controls. No real-secret/privacy/promotion warrant, new ladder, policy exemption or historical backfill.
+
+- [x] **VB-NI07-CALIBRATION-INPUTS — ingest calibration input-binding structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37473538913/README.md) TRUE34/34, one Judged/Located observation and three canonical frames; source hashes are dependency evidence only, no live/calibration-quality gate.
