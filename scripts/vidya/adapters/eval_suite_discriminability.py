@@ -20,7 +20,7 @@ SOURCE_KIND = "eval-suite-discriminability"
 REPORT_SCHEMA = "eval_suite_discriminability_report.v2"
 PRODUCER = "scripts/analysis/eval_suite_discriminability.py"
 ORCHESTRATOR = Path("/workspace/repos/epyc-orchestrator")
-_TOP = frozenset({"schema_version", "generated_at", "measurement_class", "config", "inputs",
+_TOP = frozenset({"schema_version", "category", "generated_at", "measurement_class", "config", "inputs",
                   "warnings", "summary", "suites", "task_classes", "native_provenance"})
 _METRICS = (
     ("pass_rate", "higher_better"),
@@ -57,6 +57,8 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
         raise ProjectionError("eval discriminability report has missing or unknown top-level fields")
     if value.get("schema_version") != REPORT_SCHEMA:
         raise ProjectionError("legacy/version-mismatched report has no admissible ClaimTuple provenance")
+    if value.get("category") != "BASELINE":
+        raise ProjectionError("eval discriminability category must be producer-authored BASELINE")
     if not isinstance(value.get("generated_at"), str) or not isinstance(value.get("inputs"), list):
         raise ProjectionError("report generation time/inputs have invalid types")
     try:
@@ -124,6 +126,8 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
             elif metric == "mde":
                 value = suite.get("mde")
             elif metric == "run_spread":
+                if suite["run_stability_unmeasurable"] or len(_eligible_runs(suite)) < 2:
+                    continue
                 value = suite.get("run_spread")
             else:
                 brittleness = suite.get("brittleness")
@@ -149,8 +153,12 @@ def _validate_group_types(suite: dict[str, Any]) -> None:
     for name in ("n", "n_unique_qids", "n_runs", "correct", "errors", "n_per_arm"):
         if type(suite.get(name)) is not int or suite[name] < 0:
             raise ProjectionError(f"suite.{name} must be a nonnegative integer")
-    if suite["n_unique_qids"] == 0:
-        raise ProjectionError("suite.n_unique_qids must be positive")
+    if suite["n"] == 0 or suite["n_unique_qids"] == 0:
+        raise ProjectionError("suite n and n_unique_qids must be positive")
+    if suite["n_unique_qids"] > suite["n"]:
+        raise ProjectionError("suite unique-question count exceeds native rows")
+    if suite["n_per_arm"] != suite["n_unique_qids"]:
+        raise ProjectionError("suite n_per_arm differs from the native unique-question count")
     for name in ("run_stability_unmeasurable", "saturated", "floored", "tiny_n",
                  "underpowered", "run_unstable"):
         if type(suite.get(name)) is not bool:
@@ -172,6 +180,38 @@ def _validate_group_types(suite: dict[str, Any]) -> None:
             or any(not isinstance(item, str) for item in suite["flags"])
             or not isinstance(suite.get("per_run"), dict)):
         raise ProjectionError("suite run, error, and flag containers are malformed")
+    per_run = suite["per_run"]
+    if (suite["n_runs"] != len(per_run)
+            or any(not isinstance(name, str) or not name or not isinstance(row, dict)
+                   or set(row) != {"n", "correct", "errors", "n_scored", "error_rate",
+                                   "pass_rate", "pass_rate_excl_errors", "error_dominated"}
+                   for name, row in per_run.items())):
+        raise ProjectionError("suite per_run rows do not match the declared run count/schema")
+    for name, row in per_run.items():
+        for key in ("n", "correct", "errors", "n_scored"):
+            if type(row[key]) is not int or row[key] < 0:
+                raise ProjectionError(f"per_run.{name}.{key} must be a nonnegative integer")
+        if (row["n"] <= 0 or row["correct"] > row["n"] or row["errors"] > row["n"]
+                or row["n_scored"] != row["n"] - row["errors"]
+                or type(row["error_dominated"]) is not bool):
+            raise ProjectionError(f"per_run.{name} counts are inconsistent")
+        _finite(row["error_rate"], f"per_run.{name}.error_rate")
+        _finite(row["pass_rate"], f"per_run.{name}.pass_rate")
+        if row["pass_rate_excl_errors"] is not None:
+            _finite(row["pass_rate_excl_errors"], f"per_run.{name}.pass_rate_excl_errors")
+        if ((row["n_scored"] == 0) != (row["pass_rate_excl_errors"] is None)
+                or not 0 <= row["error_rate"] <= 1 or not 0 <= row["pass_rate"] <= 1
+                or (row["pass_rate_excl_errors"] is not None
+                    and not 0 <= row["pass_rate_excl_errors"] <= 1)):
+            raise ProjectionError(f"per_run.{name} rates are inconsistent")
+    if (sum(row["n"] for row in per_run.values()) != suite["n"]
+            or sum(row["correct"] for row in per_run.values()) != suite["correct"]
+            or sum(row["errors"] for row in per_run.values()) != suite["errors"]):
+        raise ProjectionError("suite aggregate row counts differ from per_run native totals")
+    expected_error_dominated = sorted(name for name, row in per_run.items()
+                                      if row["error_dominated"])
+    if suite["error_dominated_runs"] != expected_error_dominated:
+        raise ProjectionError("suite error_dominated_runs omits or adds native excluded runs")
     brittle = suite["brittleness"]
     if type(brittle.get("measured")) is not bool:
         raise ProjectionError("suite.brittleness.measured must be boolean")
@@ -181,6 +221,21 @@ def _validate_group_types(suite: dict[str, Any]) -> None:
     for name in ("flip_rate", "mean_qid_variance", "max_qid_variance"):
         if brittle.get(name) is not None:
             _finite(brittle[name], f"suite.brittleness.{name}")
+    if brittle["measured"]:
+        if brittle["n_multirun_qids"] == 0 or brittle.get("flip_rate") is None:
+            raise ProjectionError("measured brittleness requires a positive native denominator and rate")
+        if not 0 <= brittle["flip_rate"] <= 1:
+            raise ProjectionError("brittleness flip_rate must lie between 0 and 1")
+    elif (brittle["n_multirun_qids"] != 0 or brittle.get("flip_rate") is not None
+          or brittle.get("mean_qid_variance") is not None
+          or brittle.get("max_qid_variance") is not None):
+        raise ProjectionError("unmeasured brittleness must keep its rate and denominator unknown")
+
+
+def _eligible_runs(suite: dict[str, Any]) -> list[dict[str, Any]]:
+    """Native runs that have a scored answer and are not marked error-dominated."""
+    return [row for row in suite["per_run"].values()
+            if row["n_scored"] > 0 and not row["error_dominated"]]
 
 
 def _selection_sha256(suite: dict[str, Any], metric: str, value: Any) -> str:
@@ -231,6 +286,8 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     elif metric == "mde":
         expected_value = disk_suite.get("mde")
     elif metric == "run_spread":
+        if disk_suite["run_stability_unmeasurable"]:
+            raise ProjectionError("run_spread is unknown when native run stability is unmeasurable")
         expected_value = disk_suite.get("run_spread")
     else:
         expected_value = (disk_suite["brittleness"].get("flip_rate")
@@ -244,9 +301,22 @@ def project(native: dict[str, Any]) -> ClaimTuple:
         raise ProjectionError(f"{metric} must lie between 0 and 1")
     if metric == "run_spread" and not 0 <= value <= 1:
         raise ProjectionError("run_spread must lie between 0 and 1")
-    n = suite.get("n_unique_qids")
-    if type(n) is not int or n <= 0:
-        raise ProjectionError("suite n_unique_qids must be positive")
+    if metric == "pass_rate":
+        reps = suite["n"]
+        reps_basis = "native denominator: all per-question rows, including errored rows"
+    elif metric == "mde":
+        reps = suite["n_per_arm"]
+        reps_basis = "native MDE per-arm unique-question denominator"
+    elif metric == "run_spread":
+        reps = len(_eligible_runs(suite))
+        if reps < 2:
+            raise ProjectionError("run_spread has fewer than two eligible native runs")
+        reps_basis = "eligible scored runs after producer error-dominated exclusions"
+    else:
+        reps = suite["brittleness"]["n_multirun_qids"]
+        reps_basis = "native multi-run question denominator for flip_rate"
+    if type(reps) is not int or reps <= 0:
+        raise ProjectionError(f"{metric} native denominator must be positive")
     extra = {
         "record_id": provenance["record_id"],
         "suite": suite_name,
@@ -267,12 +337,13 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     return ClaimTuple(
         measurement_id=f"eval-discriminability:{provenance['record_id']}:{suite_id}:{metric}",
         metric=f"eval_suite_discriminability.{metric}", value=value,
-        date=datetime.fromisoformat(document["generated_at"]).date().isoformat(), category="BASELINE",
+        date=datetime.fromisoformat(document["generated_at"]).date().isoformat(),
+        category=document["category"],
         claim=(f"Observed {metric} for eval suite {suite_name!r}; this diagnostic describes "
                "suite discriminability and is not an eval-quality or promotion verdict."),
-        metric_direction=direction_by_metric[metric], protocol_id="", reps=n,
-        reps_basis="unique question IDs in this report suite", unit="fraction" if metric in {
-            "pass_rate", "flip_rate"} else "report-native",
+        metric_direction=direction_by_metric[metric], protocol_id="", reps=reps,
+        reps_basis=reps_basis, unit="fraction" if metric in {"pass_rate", "flip_rate"}
+        else "report-native",
         attestation_path=str(path), attestation_sha256=digest,
         attestation_locator=f"eval-discriminability:{provenance['record_id']}:{suite_id}:{metric}",
         attestation_present=True, attestation_verified=True, source_kind=SOURCE_KIND,

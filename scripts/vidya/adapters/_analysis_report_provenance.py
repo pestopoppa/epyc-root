@@ -129,8 +129,8 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
             raise ProjectionError("input manifest normalized_row_count is invalid")
         source_path = Path(path_text)
         if source_path.is_absolute():
-            if not source_path.is_relative_to(producer_root.resolve()):
-                raise ProjectionError("absolute input path escapes the named repository root")
+            if ".." in source_path.parts:
+                raise ProjectionError("absolute input path may not contain traversal components")
         elif ".." in source_path.parts:
             raise ProjectionError("relative input path may not traverse outside its repository root")
         snapshot_text = item.get("snapshot_path")

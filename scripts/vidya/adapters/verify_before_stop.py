@@ -20,7 +20,7 @@ REPORT_SCHEMA = "mf_vbs1_verify_before_stop_report.v2"
 PRODUCER = "scripts/analysis/mf_vbs1_verify_before_stop.py"
 ORCHESTRATOR = Path("/workspace/repos/epyc-orchestrator")
 _TOP = frozenset({
-    "prior_reference", "corpus", "classification", "rates", "delegates_to_user_variant",
+    "category", "prior_reference", "corpus", "classification", "rates", "delegates_to_user_variant",
     "execution_tool_availability", "auto_finalize_caveat", "breakdown_by_arm",
     "breakdown_by_task", "breakdown_by_source_dir", "breakdown_by_role",
     "examples_class_c", "examples_class_d", "prior_comparison", "native_provenance",
@@ -59,6 +59,8 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
         raise ProjectionError("MF-VBS-1 report must be a JSON object")
     if set(value) != _TOP:
         raise ProjectionError("MF-VBS-1 report has missing or unknown top-level fields")
+    if value.get("category") != "BASELINE":
+        raise ProjectionError("MF-VBS-1 report category must be producer-authored BASELINE")
     if not isinstance(value.get("corpus"), dict) or not isinstance(value.get("rates"), dict):
         raise ProjectionError("MF-VBS-1 report has no corpus/rates object")
     if (set(value["corpus"]) != _CORPUS_FIELDS
@@ -80,6 +82,8 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
             or (corpus.get("date_range") is not None and not isinstance(corpus["date_range"], str))
             or not isinstance(corpus.get("scope_note"), str)):
         raise ProjectionError("MF-VBS-1 corpus scope fields are malformed")
+    if corpus.get("date_range") is not None or corpus.get("role_model") is not None:
+        raise ProjectionError("MF-VBS-1 producer does not bind native date or role/model scope")
     if any(type(count) is not int or count < 0 for count in value["classification"].values()):
         raise ProjectionError("MF-VBS-1 classification counts must be nonnegative integers")
     return value, raw
@@ -184,12 +188,12 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     if not 0 <= ci_lo <= point <= ci_hi <= 1:
         raise ProjectionError("MF-VBS-1 Wilson interval does not contain the point estimate")
     corpus = doc["corpus"]
-    # Dates and role/model are unknown unless the native parsed rows bind them.
-    date_text = corpus.get("date_range")
-    date = date_text if isinstance(date_text, str) else ""
+    # This producer's parsed rows do not bind dates or role/model; these remain unknown.
+    date_text = None
+    date = ""
     scope = {
         "date_range": date_text if isinstance(date_text, str) else None,
-        "role_model": corpus.get("role_model") if isinstance(corpus.get("role_model"), str) else None,
+        "role_model": None,
         "n_total_real_trajectories": corpus.get("n_total_real_trajectories"),
         "denominator_definition": rate.get("description", ""),
         "numerator": numerator,
@@ -200,7 +204,7 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     }
     return ClaimTuple(
         measurement_id=f"mf-vbs1:{provenance['record_id']}:{metric}",
-        metric=metric, value=point, date=date, category="BASELINE",
+        metric=metric, value=point, date=date, category=doc["category"],
         claim=(f"Observed verify-before-stop rate for the named BEP/REPL corpus: {metric}; "
                "the denominator and task/role/date scope are in extra."),
         metric_direction=direction, protocol_id="", reps=denominator,

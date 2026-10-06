@@ -29,6 +29,19 @@ def _canonical_sha(value: dict) -> str:
     return _sha(raw)
 
 
+def _rewrite_report(path: Path, mutate) -> None:
+    report = json.loads(path.read_text())
+    mutate(report)
+    provenance = report["native_provenance"]
+    provenance.pop("record_id", None)
+    provenance.pop("report_sha256", None)
+    provenance["report_body_sha256"] = _canonical_sha(
+        {key: value for key, value in report.items() if key != "native_provenance"})
+    provenance["record_id"] = _canonical_sha(provenance)
+    provenance["report_sha256"] = _canonical_sha(report)
+    path.write_text(json.dumps(report))
+
+
 def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
     root = tmp_path / "repo"
     src = root / producer
@@ -72,6 +85,7 @@ def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
 
 def _vbs_report(tmp_path: Path) -> Path:
     body = {
+        "category": "BASELINE",
         "prior_reference": {},
         "corpus": {"sources_scanned": ["fixture"], "n_total_real_trajectories": 3,
                    "n_forced_max_turns": 0, "n_forced_error": 0, "n_voluntary": 3,
@@ -106,6 +120,7 @@ def _vbs_report(tmp_path: Path) -> Path:
 def _eval_report(tmp_path: Path) -> Path:
     body = {
         "schema_version": eval_adapter.REPORT_SCHEMA,
+        "category": "BASELINE",
         "generated_at": "2026-10-06T12:00:00+00:00",
         "measurement_class": "OBSERVATION",
         "config": {"alpha": 0.05, "power": 0.8, "target_effect": 0.15,
@@ -127,7 +142,11 @@ def _eval_report(tmp_path: Path) -> Path:
             "brittleness": {"measured": True, "n_multirun_qids": 1, "flip_rate": 0.25,
                             "mean_qid_variance": 0.25, "max_qid_variance": 0.25,
                             "n_error_excluded": 0},
-            "per_run": {}, "saturated": False, "floored": False, "tiny_n": True,
+            "per_run": {"run-1": {"n": 1, "correct": 1, "errors": 0,
+                                    "n_scored": 1, "error_rate": 0.0,
+                                    "pass_rate": 1.0, "pass_rate_excl_errors": 1.0,
+                                    "error_dominated": False}},
+            "saturated": False, "floored": False, "tiny_n": True,
             "underpowered": True, "run_unstable": False, "discriminability_index": 0.2,
             "flags": [],
         }],
@@ -208,6 +227,19 @@ def test_unknown_native_fields_are_refused(tmp_path, monkeypatch, adapter, facto
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
 ])
+def test_category_must_be_producer_authored_diagnostic_baseline(tmp_path, monkeypatch,
+                                                                adapter, factory):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(adapter, "ORCHESTRATOR", root)
+    path = factory(tmp_path)
+    _rewrite_report(path, lambda doc: doc.update(category="CANDIDATE"))
+    with pytest.raises(ProjectionError, match="category must be producer-authored BASELINE"):
+        adapter.native_rows(path)
+
+
+@pytest.mark.parametrize(("adapter", "factory"), [
+    (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
+])
 def test_producer_source_changes_preserve_snapshot_bound_historical_rows(tmp_path, monkeypatch,
                                                                         adapter, factory):
     root = tmp_path / "repo"
@@ -235,25 +267,64 @@ def test_snapshot_path_escape_is_refused(tmp_path, monkeypatch):
         vbs_adapter.native_rows(path)
 
 
+def test_external_input_original_locator_is_metadata_only(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(eval_adapter, "ORCHESTRATOR", root)
+    path = _eval_report(tmp_path)
+    external = tmp_path / "outside" / "question_ledger.jsonl"
+    _rewrite_report(path, lambda doc: doc["native_provenance"]["inputs"][0].update(
+        path=str(external)))
+    rows = eval_adapter.native_rows(path)
+    assert rows
+    assert all(eval_adapter.project(row).attestation_verified for row in rows)
+
+
 def test_zero_denominator_rate_is_omitted_while_defined_rates_remain(tmp_path, monkeypatch):
     root = tmp_path / "repo"
     monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
     path = _vbs_report(tmp_path)
-    report = json.loads(path.read_text())
-    rate = report["rates"]["failure_over_edited_voluntary_stops"]
-    rate.update(numerator=0, denominator=0, point=None,
-                wilson_95ci_lo=None, wilson_95ci_hi=None)
-    provenance = report["native_provenance"]
-    provenance["report_body_sha256"] = _canonical_sha({k: v for k, v in report.items()
-                                                        if k != "native_provenance"})
-    provenance["record_id"] = _canonical_sha({k: v for k, v in provenance.items()
-                                               if k not in {"record_id", "report_sha256"}})
-    provenance.pop("report_sha256")
-    provenance["report_sha256"] = _canonical_sha(report)
-    path.write_text(json.dumps(report))
+    def zero_rate(report):
+        report["rates"]["failure_over_edited_voluntary_stops"].update(
+            numerator=0, denominator=0, point=None,
+            wilson_95ci_lo=None, wilson_95ci_hi=None)
+    _rewrite_report(path, zero_rate)
     rows = vbs_adapter.native_rows(path)
     assert rows
     assert "failure_over_edited_voluntary_stops" not in {row["metric_key"] for row in rows}
+
+
+@pytest.mark.parametrize("field", ["date_range", "role_model"])
+def test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope(tmp_path, monkeypatch, field):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
+    path = _vbs_report(tmp_path)
+    _rewrite_report(path, lambda doc: doc["corpus"].update({field: "claimed-scope"}))
+    with pytest.raises(ProjectionError, match="does not bind native date or role/model"):
+        vbs_adapter.native_rows(path)
+
+
+def test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false(
+        tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(eval_adapter, "ORCHESTRATOR", root)
+    path = _eval_report(tmp_path)
+    rows = eval_adapter.native_rows(path)
+    assert rows
+    assert "run_spread" not in {row["metric"] for row in rows}
+    assert "pass_rate" in {row["metric"] for row in rows}
+
+
+def test_eval_metric_reps_use_each_native_denominator(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(eval_adapter, "ORCHESTRATOR", root)
+    path = _eval_report(tmp_path)
+    rows = eval_adapter.native_rows(path)
+    tuples = {row["metric"]: eval_adapter.project(row) for row in rows}
+    assert tuples["pass_rate"].reps == 1  # producer's all-row n
+    assert tuples["pass_rate"].reps_basis.startswith("native denominator")
+    assert tuples["mde"].reps == 1  # producer's n_per_arm
+    assert tuples["flip_rate"].reps == 1  # n_multirun_qids
+    assert "run_spread" not in tuples  # only one eligible run, even if the cached flag is false
 
 
 def test_eval_cached_suite_and_metric_must_match_bound_report(tmp_path, monkeypatch):
