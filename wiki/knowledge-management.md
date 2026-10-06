@@ -3585,3 +3585,8 @@ The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-2026
 ### Prospective host activation records
 
 [Nativewriter/callback source](../docs/reference/host-supervision-activation-receipts.md) is accepted with81/81 synthetic controls. It writes installation and eligible subsequent heartbeat dependency records only after future explicit capture, preserving consumed markers and source/cron/state integrity. Operational records remain ungraded; existing outer CI conformance grades Judged/Located. First eligible state/sync calls do not prove first physical heartbeat or power-loss recovery; OP73 bootstrap remains unchanged.
+
+
+### Harness-loop design can finish before live tuning
+
+[Reviewed HIL design](../docs/design/harness-improvement-loop-design-20261006.md) completes feature-home/objective/API planning without crossing P0.4 or human measurement-policy boundaries. Several substrate APIs already exist; extract narrow pure guard interfaces rather than duplicating controllers. Architecture recommendation is not approval. Prospective per-feature/per-arm evidence joins the existing SC86 shell identity instead of duplicating its metrics; native diagnostic signatures/counts remain ungraded metadata, and old prose cannot acquire machine identity on read.
