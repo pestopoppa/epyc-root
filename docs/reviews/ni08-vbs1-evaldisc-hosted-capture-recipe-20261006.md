@@ -18,12 +18,12 @@ It remains unmerged. The APP producer and package source hashes are:
 | `src/llm_primitives/__init__.py` | `cdee7bcf079e3023de6da551cd376e9e6db339d0ac52853eba054e3d3d6ccff9` |
 | `uv.lock` | `7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3` |
 
-ROOT is the isolated proposal branch `codex/ni08-vbs1-evaldisc-wire-root-20261006`; its current
-reviewed source base is current published ROOT `621eed0927a1cae6bbcdfb73155ec91dff607153`,
-including `b6279387f` and its checkpointed SC80 source changes. This isolated branch contains only
-the source proposal and its capture recipe on top of that published source base. The exact final
-ROOT capture commit and manifest digest are recorded in the capture's pre-dispatch source map; do
-not substitute the ignored ledger or other workspace state.
+ROOT is the isolated proposal branch `codex/ni08-vbs1-evaldisc-wire-root-20261006`. It is a normal
+merge descendant of current source-owner ROOT `810fda4eee53401dcd923ec19ea1208e4020b888`, retaining
+the accepted SC80 source, UFH13 reader and the current source-table/handoff registrations. The
+proposal commits then add the capture source corrections. The exact final ROOT capture commit and
+manifest digest are recorded in the capture's pre-dispatch source map; do not substitute the
+ignored ledger or other workspace state.
 
 The first hosted attempt (ROOT `e923ec553771b342b0c3836d7f865bfdd5b85dab`, run
 `37544337444`) failed during the exact APP checkout because the pinned object had not yet been

@@ -79,6 +79,7 @@ ROOT_READS = (
     "scripts/ci/ni08-hosted-requirements.txt",
     "docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md",
     "scripts/vidya/adapters/ci_conformance.py",
+    "scripts/vidya/adapters/README.md",
     "scripts/vidya/adapters/_analysis_report_provenance.py",
     "scripts/vidya/adapters/verify_before_stop.py",
     "scripts/vidya/adapters/eval_suite_discriminability.py",
