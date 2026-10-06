@@ -177,8 +177,12 @@ def ast_node_ids(source_root: Path, relative: str, selected_names: set[str],
     path = source_root / "scripts/autopilot/evals/dtap" / relative
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     found: dict[str, list[str]] = {}
+    all_test_names: set[str] = set()
     for node in tree.body:
         if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) or not node.name.startswith("test_"):
+            continue
+        all_test_names.add(node.name)
+        if node.name not in selected_names:
             continue
         parameter_ids: list[str] | None = None
         for decorator in node.decorator_list:
@@ -201,10 +205,10 @@ def ast_node_ids(source_root: Path, relative: str, selected_names: set[str],
                 raise RuntimeError(f"multiple parametrizations need manual case review: {relative}::{node.name}")
             parameter_ids = ids_value
         found[node.name] = parameter_ids or [""]
-    if selected_names - set(found):
-        raise RuntimeError(f"selected test function is absent from AST: {sorted(selected_names - set(found))}")
-    if exact_module and set(found) != selected_names:
-        raise RuntimeError(f"test module has unbound test functions: {sorted(set(found) - selected_names)}")
+    if selected_names - all_test_names:
+        raise RuntimeError(f"selected test function is absent from AST: {sorted(selected_names - all_test_names)}")
+    if exact_module and all_test_names != selected_names:
+        raise RuntimeError(f"test module has unbound test functions: {sorted(all_test_names - selected_names)}")
     nodes = []
     for name in sorted(selected_names):
         for case_id in found[name]:
