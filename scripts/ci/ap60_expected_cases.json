@@ -1,0 +1,562 @@
+{
+  "cases": [
+    {
+      "name": "test_flag_off_appends_a_fresh_row_per_observation",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_flag_on_updates_in_place",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_flag_on_matches_apply_td_update_math",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_flag_on_does_not_merge_distinct_objectives",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_flag_on_does_not_merge_distinct_actions",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_prelinked_memory_id_still_updates_regardless_of_flag",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_flag_off_appends_a_fresh_row_per_observation",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_flag_on_updates_in_place",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_flag_on_matches_apply_td_update_math",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_flag_on_does_not_merge_distinct_reasons",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_flag_on_does_not_merge_distinct_tier_transitions",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_escalation_prelinked_memory_id_still_updates_regardless_of_flag",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_routing_and_escalation_never_cross_partitions",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_q_td_settings_default_when_environment_is_absent",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "name": "test_q_td_settings_are_frozen_per_scorer_and_match_k_is_used",
+      "path": "tests/unit/test_q_td_write_path.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_routing_write_persists_the_work_payload",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_work_is_not_embedded",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_no_work_on_the_outcome_stores_no_work_key",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkReachesTheDatabase",
+      "name": "test_missing_task_outcome_is_not_an_error",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestExternalScorePath",
+      "name": "test_flat_work_keys_land_in_work_not_metrics",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestExternalScorePath",
+      "name": "test_nested_work_dict_is_accepted",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_credentials_are_redacted_before_storage",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_reuses_the_repo_redaction_policy",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_answer_is_bounded_in_the_database",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_step_list_is_bounded_and_says_so",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_oversize_single_step_is_bounded",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestCapturePolicy",
+      "name": "test_the_objective_is_still_never_truncated",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestEndToEndThroughTheRealChannel",
+      "name": "test_work_survives_the_full_production_path",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_empty_work_yields_no_key",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_populated_work_is_nested_under_work",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "class": "TestWorkCompletionMeta",
+      "name": "test_extract_work_reads_the_producer_shape",
+      "path": "tests/unit/test_episodic_work_payload.py"
+    },
+    {
+      "name": "test_update_path_backfills_assigned_role_and_work",
+      "path": "tests/unit/test_q_scorer_update_path_preserves_work.py"
+    },
+    {
+      "name": "test_update_path_merges_and_never_overwrites",
+      "path": "tests/unit/test_q_scorer_update_path_preserves_work.py"
+    },
+    {
+      "name": "test_update_path_preserves_unrelated_context_keys",
+      "path": "tests/unit/test_q_scorer_update_path_preserves_work.py"
+    },
+    {
+      "name": "test_update_still_bumps_q_value_and_update_count",
+      "path": "tests/unit/test_q_scorer_update_path_preserves_work.py"
+    },
+    {
+      "name": "test_merge_row_metadata_is_a_noop_without_inputs",
+      "path": "tests/unit/test_q_scorer_update_path_preserves_work.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_cost_penalty_lambda_default",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_cost_lambda_duration_default_is_ratified",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_baseline_tps_has_all_production_roles",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_baseline_tps_loads_current_registry_values",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_default_config_exposes_stack_prior_sources",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_stack_prior_priors_load_live_roles_and_skip_candidates",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_stack_prior_priors_keep_missing_live_fields_visible_as_fallback",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_stack_prior_priors_fall_back_when_artifact_missing",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_default_stack_priors_path_exists",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_baseline_tps_falls_back_when_registry_missing",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_memory_cost_falls_back_when_registry_missing",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_memory_cost_loads_current_hot_registry_roles",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_descriptor_priors_overlay_clean_existing_roles",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_descriptor_priors_skip_role_server_conflicts",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_descriptor_priors_fall_back_when_descriptor_missing",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_baseline_tps_values_positive",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestScoringConfigDefaults",
+      "name": "test_config_override",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_optimized_and_baseline_are_never_folded_into_each_other",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_coincident_optimized_and_baseline_are_separable",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_substituted_baseline_is_logged_not_silent",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_unseparated_pair_is_logged_not_silent",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_substituted_source_reaches_the_caller_visible_prior_channel",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_float_projection_never_drifts_from_the_records",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_numeric_behaviour_is_unchanged_on_the_live_registry",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestRegistryTpsProvenance",
+      "name": "test_live_registry_coincidences_are_classified_not_hidden",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_success_no_cost",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_failure_no_cost",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_partial_no_cost",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_gate_failures_penalize",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_escalation_penalizes",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_plan_review_approved",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardNoCost",
+      "name": "test_plan_review_corrected",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_at_expected_speed_no_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_faster_than_expected_no_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_slower_than_expected_penalized",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_much_slower_higher_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_incorrect_no_cost_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_unknown_role_no_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_zero_tokens_no_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_zero_elapsed_no_penalty",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_cost_plus_gate_penalties_stack",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_clamp_lower_bound",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_custom_lambda",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_architect_role_slower_baseline",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeRewardWithCost",
+      "name": "test_architect_role_2x_slower",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_config_has_quality_baselines",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_config_has_memory_costs",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_quality_gap_penalty_architect",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_quality_gap_penalty_worker",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_custom_non_hot_memory_cost_penalizes",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_memory_tier_no_penalty_hot",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_worker_beats_architect_on_simple_task",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestMultiDimensionalCost",
+      "name": "test_no_quality_memory_penalty_on_failure",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_no_task_context_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_none_task_started_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_embedding_failure_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_no_candidates_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_no_alternatives_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_all_alternatives_at_default_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_success_selected_below_best_alt_positive_adjustment",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_success_selected_above_alt_with_margin_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_failure_selected_above_worst_alt_negative_adjustment",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_failure_selected_below_alt_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_positive_adjustment_capped_at_max_adj",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_negative_adjustment_capped_at_neg_max_adj",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeContrastiveAdjustment",
+      "name": "test_no_memory_id_uses_default_q",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_no_task_context_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_embedding_failure_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_no_candidates_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_no_alternatives_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_success_with_alternatives_produces_adjustment",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_adjustment_bounded",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestComputeSpoPlusAdjustment",
+      "name": "test_small_spo_loss_below_margin_returns_zero",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_high_similarity_different_identity_is_not_updated",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_exact_normalized_identity_is_updated",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_fallback_embedding_cannot_update_or_create",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_fallback_with_null_task_type_cannot_update_or_create",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_external_score_preserves_non_routing_action_namespace",
+      "path": "tests/unit/test_q_scorer.py"
+    },
+    {
+      "class": "TestExternalScoreIdentity",
+      "name": "test_external_score_rejects_empty_action_namespace",
+      "path": "tests/unit/test_q_scorer.py"
+    }
+  ],
+  "count": 115,
+  "derivation": "AST function definitions only; no import/collection/execution",
+  "source_commit": "ec8529c26eb464a5f705e3e517c204ab59da660e"
+}
