@@ -114,9 +114,10 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 
 **Rationale:** every 2026-10-05/06 failure was found by a human or audit, not by the loop.
 
-- [ ] AKX-AUTO-1 Roofline-gap route coverage: per-node roofline in the planner context; startup/stagnation check flags gap share in nodes with no admitted route (uncovered_gap, scope_gap.json). Detect only, never auto-widen. (in progress: research feat/ak-roofline-coverage-20261006)
-- [x] AKX-AUTO-2 Planner sees its own history: structured abstentions, abstentions trip the diminishing-returns escape, always-shown epoch keeps/families, generated ALREADY-IMPLEMENTED block (research fix/ak-planner-history-20261006, landing)
-- [ ] AKX-AUTO-3 Campaign-level numerics contract (operator: wikitext2 |Δppl| ≤ 0.5% + NMSE + coherence) instead of per-route constants (in progress: feat/ak-lowbit-scope-20261006). ppl_contract acceptance is layered (NMSE on served shapes + Δppl ≤ 0.5% + coherence/token agreement on production-length prompts + a ≥1k-token canary), fails closed, and never folds on bench evidence alone (operator: 'utmost care to not introduce garbage').
+- [x] AKX-AUTO-1 Roofline-gap route coverage: per-node roofline in the planner context; startup/stagnation check flags gap share in nodes with no admitted route (uncovered_gap, scope_gap.json). Detect only, never auto-widen. (research 0e9e0b4a)
+- [x] AKX-AUTO-2 Planner sees its own history: structured abstentions, abstentions trip the diminishing-returns escape, always-shown epoch keeps/families, generated ALREADY-IMPLEMENTED block (research ecdded0d)
+- [x] AKX-AUTO-3 Campaign-level numerics contract (operator: wikitext2 |Δppl| ≤ 0.5% + NMSE + coherence) instead of per-route constants (research f17bb5a3). ppl_contract acceptance is layered (NMSE on served shapes + Δppl ≤ 0.5% + coherence/token agreement on production-length prompts + a ≥1k-token canary), fails closed, and never folds on bench evidence alone (operator: 'utmost care to not introduce garbage').
+  - [ ] cross-lane quality gate so low-bit (ppl_contract) keeps can reach the global champion
 - [ ] AKX-AUTO-4 Calibration self-check: reject a contiguous degraded block, or auto-recalibrate when spread is anomalous vs the prior floor (2026-10-05 Q38FN floor 6.528% from a 5.5-min degraded block)
 - [ ] AKX-AUTO-5 Launch preflight cross-checks lane binding ↔ inputs ↔ anchor ↔ store (2026-10-06: lane1 bound to inputs-b0ba1d427 while running inputs-802bf9ac6)
 - [ ] AKX-AUTO-6 Auto re-anchor/relaunch on champion advance (uses the --new-anchor-epoch path, research 5da038ad)
