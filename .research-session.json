@@ -2,7 +2,7 @@
  "session_id": "intake-cafe-llama-ec-20261006",
  "started_at": "2026-10-06T00:00:00Z",
  "last_checkpoint": "2026-10-06T00:00:00Z",
- "stage": "stage2-complete",
+ "stage": "stage3-draft",
  "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
  "branch": "lane/ec-intake-cafe-1006",
@@ -17,10 +17,12 @@
   "intake-1931",
   "intake-1932",
   "intake-1933",
-  "intake-1934"
+  "intake-1934",
+  "intake-1935",
+  "intake-1936"
  ],
  "entries_remaining": [],
- "next_intake_id": 1935,
+ "next_intake_id": 1937,
  "expansion_cap": 10,
  "expansion_count": 6,
  "expansion_entries": [
@@ -84,6 +86,14 @@
    "disposition": "declined",
    "plan_ref": null,
    "note": "Operator on starting Stage 3 (as relayed by the coordinator): stop at the Stage-2 close-out; do not draft Stage 3."
+  },
+  {
+   "seq": 6,
+   "stage": 2,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "if there are no more stage 2 intake recommendations, proceed to stage 3",
+   "disposition": "planned",
+   "plan_ref": "STAGE3_PLAN.md (wave 4 ran: 2 sources; then Stage 3 drafted, plan file only)"
   }
  ],
  "prior_sessions": [
@@ -5090,7 +5100,7 @@
   }
  ],
  "stage2": {
-  "waves_used": 3,
+  "waves_used": 4,
   "wave1": "intake-1925 scoped dives (GDN raw-gate/rows, --spec-adaptive, rs-rollback) + intake-1926",
   "wave2": [
    "intake-1932",
@@ -5107,12 +5117,17 @@
   ],
   "stopped_early": "wave 2 surfaced nothing that beats the Saxena/Strata findings; remaining candidates are dense-model dynamic-K or offload papers",
   "not_selected_left_unverified": [],
-  "anchor_count": 52,
+  "anchor_count": 55,
   "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md",
   "wave3": "completion of the original Stage-2 selection: K-cache mean-centering, CUDA MoE expert cache/moe-direct (intake-1925 claims 1,2,6); intake-1925 promoted to dive-verified",
   "claims_marked_not_dived": [
    "intake-1925 claim 7 (turbo, DFly/DSpark)",
    "intake-1925 claim 8 (SSD streaming, safetensors loader)"
-  ]
+  ],
+  "wave4": [
+   "intake-1935 MoESD 2505.19645",
+   "intake-1936 Strata PR 1010"
+  ],
+  "stage": "stage3-plan-drafted"
  }
 }

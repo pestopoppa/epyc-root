@@ -242002,3 +242002,97 @@
     intake_entries:
     - intake-1925
     - intake-1926
+- id: intake-1935
+  arxiv_id: '2505.19645'
+  url: https://arxiv.org/abs/2505.19645
+  source_type: paper
+  title: 'MoESD: Unveil Speculative Decoding''s Potential for Accelerating Sparse MoE'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  expanded_from: intake-1926
+  verdict: worth_investigating
+  key_claims:
+  - Speculative decoding is ineffective for MoE at small batch because verifying gamma tokens activates more experts (expert-union term N(t)=E(1-((E-K)/E)^t), i.i.d. uniform routing assumed) and moves memory-bound cost; at moderate batch (above ~16) all experts are already active so extra draft tokens are cheap and MoE benefits more than dense (Sec 1, 3.1-3.2, Eq 6-8).
+  - Speedup model T_SD = R(gamma*T_D + T_T(B,gamma) + T_reject) with a roofline-fitted forward time (bias + k1 G(t) + k2 N(t) + k3 G(T_exp)); 10 parameters fitted on 21 GPU measurements; vLLM on GPUs only; Qwen2-57B-A14B up to 2.29x (Sec 3-4, Tables 1-2). Author-reported.
+  - Nothing in the paper covers batch 1 on CPU, llama.cpp, n-gram drafts or long KV (explicitly deferred to MagicDec); K!=8 results are rescaled, not retrained.
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Sec 1 (intro)
+    quote: when the batch size is moderate such that all experts are already activated in a single decoding step, verifying multiple draft tokens will not incur additional expert parameter loading costs
+    quote_sha256: cfe0533450738d81f9150a1f39b9e2dea70f81b10760f25272240f27b07a5e02
+    source_revision: arXiv:2505.19645v4 (HTML render 2026-02-16, read from /mnt/raid0/llm/tmp/dive-2505.19645/p.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Sec 3.2
+    quote: Although SD is ineffective for MoE under small batches
+    quote_sha256: 8b46ec20e05c26a8fc2922f5ab9862847bca66dc62fc851f00302e2f95b4b2ee
+    source_revision: arXiv:2505.19645v4 (HTML render 2026-02-16, read from /mnt/raid0/llm/tmp/dive-2505.19645/p.txt)
+    verified_by: research-intake/stage2
+  notes: 'Wave-4 dive 2026-10-06 (subagent read of arXiv HTML v4; anchors re-found by the owning session). Figures not read (images). INFERENCE labelled in the dive (not stored as claims): with E=256, K=8 the i.i.d. model gives N(2)~15.7, N(5)~37, N(9)~70 experts, so a 4-draft window loads ~4.6x the expert bytes of one token on a memory-bound CPU; real routing is correlated, so this is an upper bound on the penalty; a cost model T_verify(k)=a+b*N(k+1)+c*(k+1) calibrated from llama-bench n_batch=1..9 is proposed (see STAGE3_PLAN AK-C). Dense 27B on MI210 needs no union term.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - moe-spec-cpu-spec-dec-integration.md
+    experiments: []
+    intake_entries:
+    - intake-1925
+    - intake-1926
+    - intake-1932
+    - intake-1933
+  disposition_evidence:
+  - 'Wave-4 dive: theory source for the expert-union cost term in R1/AK-C.'
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+- id: intake-1936
+  arxiv_id: null
+  url: https://github.com/Niko1221/Strata/pull/1010
+  source_type: repo
+  title: 'Strata PR #1010: up to 3 MTP drafts per slot inside the 8-row window (multi-lane batch path)'
+  categories:
+  - speculative_decoding
+  - local_inference
+  novelty: low
+  relevance: low
+  expanded_from: intake-1934
+  verdict: not_applicable
+  key_claims:
+  - The PR is MTP-only for the multi-lane batch-slot path (rows shared across slots, 1/2/4-row groups); it does NOT combine lookup and MTP drafts, contrary to what a search snippet suggested; the lookup-after-MTP chain lives in the single-stream DraftPolicy::chain() (already read, intake-1934).
+  - 'State: closed, not merged (auto-closed by a maintainer force-push, maintainer says it is not a rejection). Only author-reported measurement: 2 lanes x 256K code 71.6 -> 84.3 tok/s (+17.7% vs the 1-draft batch path #846), prose 75.2 -> 72.6 (-3.5%); RTX 4090, single runs, no variance.'
+  claim_anchors:
+  - claim_index: 1
+    kind: json-pointer
+    locator: pr.json#/title
+    quote: 'batch: up to 3 MTP drafts per slot inside the 8-row window (2 lanes, code: 71.6 -> 84.3 tok/s)'
+    quote_sha256: 45056cee5f0d97f802a7aa41ffd881719a1946a005c3d7487b77dce402750d88
+    source_revision: Niko1221/Strata PR 1010 saved 2026-10-06 at /mnt/raid0/llm/tmp/dive-strata-pr1010/pr.json
+    verified_by: research-intake/stage2
+  notes: Wave-4 dive 2026-10-06 (subagent read of the PR diff, commits, comments from disk). Not applicable to llama.cpp chain design beyond knowledge already captured in intake-1934; the prose regression shows a cost check is advisable when filling spare verify rows.
+  cross_references:
+    chapters: []
+    handoffs: []
+    experiments: []
+    intake_entries:
+    - intake-1934
+  disposition_evidence:
+  - 'Wave-4 dive: closed unmerged, single-run author numbers, wrong premise in the discovery snippet; no action.'
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: declined
