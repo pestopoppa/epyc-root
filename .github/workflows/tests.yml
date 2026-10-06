@@ -41,6 +41,14 @@ jobs:
           # question. Full history is ~47 MB packed / ~4 s to clone.
           fetch-depth: 0
 
+      - name: Checkout pinned research producers
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: bed81e59f5a4d9f9cdb246b4b1eebe1d3e400762
+          path: .ci-research-producers
+          persist-credentials: false
+
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
@@ -52,6 +60,10 @@ jobs:
 
       - name: Belief substrate
         # The vidya adapters and their ladder: pure projection, no hardware.
+        env:
+          KV_QUANT_TEST_RESEARCH_ROOT: ${{ github.workspace }}/.ci-research-producers
+          EXL3_TEST_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/kernel_rnd/exl3/evidence.py
+          EVIDENCE_DURABILITY_PRODUCER: ${{ github.workspace }}/.ci-research-producers/scripts/validate/check_evidence_durability.py
         run: python -m pytest -q tests/vidya/
 
       - name: Handoff index integrity

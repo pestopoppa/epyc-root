@@ -1,6 +1,7 @@
 """Producer-shaped capture, strict whole-file refusal, ingest and planner readback."""
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -17,6 +18,14 @@ AS_OF = "2026-09-25T12:00:00Z"
 
 
 def write_capture(tmp_path, monkeypatch):
+    research_root = Path(os.environ.get(
+        "KV_QUANT_TEST_RESEARCH_ROOT", str(reader.RESEARCH_ROOT)
+    )).resolve()
+    monkeypatch.setattr(
+        reader,
+        "PRODUCER_PATH",
+        research_root / "scripts/benchmark/kv_quant_27b_v10_sweep.py",
+    )
     producer = reader._producer()
     monkeypatch.setattr(reader, "RESEARCH_ROOT", tmp_path)
     summary_path = tmp_path / "summary.json"
