@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
+from importlib import metadata
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -29,7 +30,18 @@ SELECTION = [
 EXPECTED_CASES = 29
 CONFIG_NAMES = {"pytest.ini", "setup.cfg", "tox.ini", "pyproject.toml", "uv.lock"}
 CONFIG_SUFFIXES = {".ini", ".cfg", ".toml", ".yaml", ".yml"}
-INSTALL_COMMAND = "python -m pip install pytest==9.1.1 PyYAML==6.0.3"
+INSTALL_COMMAND = (
+    "python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0 "
+    "pluggy==1.6.0 Pygments==2.20.0 PyYAML==6.0.3"
+)
+PACKAGE_PINS = {
+    "pytest": "9.0.3",
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "Pygments": "2.20.0",
+    "PyYAML": "6.0.3",
+}
 
 
 def git(repo: Path, *args: str) -> str:
@@ -183,11 +195,30 @@ def main() -> int:
         if os.environ.get("NI22_CARRIER_PIN") != CARRIER_PIN:
             raise ValueError("workflow carrier pin differs from reviewed carrier pin")
 
+        expected_env_paths = {
+            "KV_QUANT_TEST_RESEARCH_ROOT": research,
+            "EXL3_TEST_PRODUCER": research / "scripts/kernel_rnd/exl3/evidence.py",
+            "EVIDENCE_DURABILITY_PRODUCER": research / "scripts/validate/check_evidence_durability.py",
+        }
+        for key, expected in expected_env_paths.items():
+            observed = os.environ.get(key)
+            if observed is None or Path(observed).resolve() != expected.resolve():
+                raise ValueError(f"workflow producer path does not resolve inside pinned research checkout: {key}")
+
+        if sys.version_info[:3] != (3, 13, 15):
+            raise ValueError("runner Python version differs from reviewed 3.13.15 pin")
+        installed = {name: metadata.version(name) for name in PACKAGE_PINS}
+        if installed != PACKAGE_PINS:
+            raise ValueError("installed fixture dependency versions differ from reviewed pins")
+
         root_paths, symlink_facts = verify_root_sources(root, root_pin)
+        carrier_paths, carrier_symlink_facts = verify_root_sources(carrier, carrier_pin)
         research_paths = verify_research_sources(research, research_pin)
         source_counts = {
             "root_regular_python_config": len(root_paths),
             "root_symlink_metadata_only": len(symlink_facts),
+            "carrier_regular_python_config": len(carrier_paths),
+            "carrier_symlink_metadata_only": len(carrier_symlink_facts),
             "research_exact_regular_sources": len(research_paths),
         }
         context_path = output_root / "context.json"
@@ -206,6 +237,8 @@ def main() -> int:
             "python": sys.version,
             "platform": platform.platform(),
             "install_command": INSTALL_COMMAND,
+            "required_package_versions": PACKAGE_PINS,
+            "observed_package_versions": installed,
             "repositories": {
                 "root_candidate": root_pin,
                 "recipe": root_pin,
@@ -216,6 +249,7 @@ def main() -> int:
             "expected_case_count": EXPECTED_CASES,
             "source_counts": source_counts,
             "symlink_facts_metadata_only": symlink_facts,
+            "carrier_symlink_facts_metadata_only": carrier_symlink_facts,
             "environment": {key: os.environ.get(key) for key in environment_keys},
         }
         context_path.write_text(json.dumps(context, sort_keys=True, indent=2) + "\n", encoding="utf-8")
@@ -242,7 +276,7 @@ def main() -> int:
         if sha256(read_regular(carrier_reader)) != CARRIER_READER_SHA256:
             raise ValueError("carrier reader source hash differs from pin")
         native = load_native_carrier(carrier_reader)
-        read_paths = [*root_paths, *research_paths, context_path, freeze_path]
+        read_paths = [*root_paths, *carrier_paths, *research_paths, context_path, freeze_path]
         status.update(state="running", selection=SELECTION, source_counts=source_counts)
         status_path.write_text(json.dumps(status, sort_keys=True, indent=2) + "\n", encoding="utf-8")
         record = native.capture_fixture_execution(
