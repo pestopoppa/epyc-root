@@ -1,0 +1,7 @@
+# DCP ColGREP hit-span policy preparation
+
+`pack()` now removes CODEMAP_ONLY from the existing downgrade ladder for candidates whose source is COLGREP and whose line_ranges are nonempty. It preserves their existing FULL/SLICES mode ceiling. If no allowed mode fits the budget, the candidate is excluded with a missing-evidence reason; the existing manifest retains source, ranges, symbols and content hash. A SLICES candidate is never upgraded to FULL. Spanless COLGREP and other sources retain their existing ladders.
+
+This prepares the literal source/range policy without introducing an edit-site classifier or AST/header reconstruction. Existing renderers, flags, advisory caller and feature defaults are unchanged. The historic warm.py downgrade fixture has no hit spans and therefore remains unchanged. Parent DCP-11 remains unchecked: DCP-12 power calibration and DCP-6 ON-vs-current validation are still required before a quality or activation claim.
+
+APP8739c034/maincd37eb3c and ROOTf6d83eda/mainfa1379c43 retain exact tested bytes. [Off-host original CI37458830138](../../artifacts/ni07/run-37458830138/README.md) passes the full33-case assembly module, including4 new controls for ranged slices fit, missing-evidence exclusion, spanless fallback and non-COLGREP fallback. MAIN independently verified source-first readset, original API ZIP and runner assertions; this establishes bounded policy conformance only.

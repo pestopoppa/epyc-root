@@ -1505,3 +1505,7 @@ The [DTAP additive failure ledger](../docs/reference/dtap-native-failure-ledger-
 ## 2026-10-06 DCP rendered source identity
 
 The [render identity guard](../docs/reference/dcp-render-content-identity-contract.md) rejects changed bound file bodies before any included rendering mode returns a bundle, preserving advisory fallback and matching/unbound/unreadable compatibility. [OriginalCI37457222213](../artifacts/ni07/run-37457222213/README.md) passes17/17 after MAIN independent source-first complete original custody verification. This does not establish an absolute rendered-prompt budget, discovery quality or live activation; parent DCP evaluation gates remain.
+
+## 2026-10-06 DCP hit-span policy candidate
+
+The [prepared policy](../docs/reference/dcp-hit-span-policy-preparation.md) prevents signature-only downgrade for ColGREP candidates with hit ranges: existing FULL/SLICES mode ceilings are retained or the manifest records missing-evidence exclusion. [OriginalCI37458830138](../artifacts/ni07/run-37458830138/README.md) passes33/33 after complete MAIN original custody review. Spanless/other-source behavior and feature defaults remain; DCP-11 awaits DCP-12 then DCP-6 validation, with no AST-complete context or quality warrant.

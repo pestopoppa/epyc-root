@@ -491,4 +491,4 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
 | Hermetic research producer-backed tests (prospective NI07-22) | existing native CI verifier | Pinned three producer families/29full-module synthetic cases (24 prior failures plus5 passing controls) and unchanged generic suite; no production hash/ladder/skip relaxation | tests.yml/KV test helper, VB-CI-RESEARCH-PRODUCERS / NI07-22 |
-| DCP hit-span-preserving policy candidate (prospective NI07-23) | existing native CI verifier | Pure budget-mode/source/range facts only; no AST-complete context/live quality/activation | context_assembly.py, VB-DCP-HIT-SPAN-POLICY / NI07-23 |
+| DCP hit-span-preserving policy candidate (accepted NI07-23) | existing native CI verifier | Pure budget-mode/source/range facts only; no AST-complete context/live quality/activation | OriginalCI37458830138 TRUE33/33 accepted through existing native carrier; context_assembly.py, VB-DCP-HIT-SPAN-POLICY / NI07-23 |
