@@ -888,6 +888,7 @@
   discovered_via: seed
   verdict: already_integrated
   ingested_date: '2026-03-14'
+  notes: 'Re-encountered 2026-10-06 as a seed of the context-extension-exactness intake (lane ec-intake-ctxext-1006); no new entry minted. Linked entries intake-1900..1917.'
   citation_context: 'Efficient Context Window Extension of Large Language Models](https://arxiv.org/abs/2309.00071) (ICLR 2024) - **GitHub**: [jquesnelle/yarn](https://github.com/jquesnelle/yarn'
   cross_references:
     handoffs:
@@ -238909,3 +238910,836 @@
     human_verification: false
     empirical_reproduction: false
     qualifications_preserved_in: claim_corrections, claim_anchors and dive_corrections
+- id: intake-1900
+  arxiv_id: '2607.07740'
+  url: https://arxiv.org/abs/2607.07740
+  source_type: paper
+  title: 'Jet-Long: Efficient Long-Context Extension with Dynamic Bifocal RoPE'
+  authors:
+  - Haozhan Tang
+  - Zerui Wang
+  - Yuxian Gu
+  - Song Han
+  - Han Cai
+  categories:
+  - context_extension
+  - kv_cache
+  - inference_serving
+  novelty: high
+  relevance: high
+  credibility_score: 3
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - 'Training-free: a protected local RoPE window (default w0=2048 per digest) plus a remote window whose grouping factor
+    G=max(1,ceil(L/w_pretrained)) adapts to the current length L.'
+  - 'Exact below native: the paper states that for L<=w_pretrained the mapping is the identity and attention reduces to unmodified
+    base attention (Sec 3.1 per digest; measured diffs ~0.16-0.21 pp on Llama-3-8B attributed to implementation variation).'
+  - KV cache keeps keys roped at their absolute base positions (k_cache=RoPE(x_k,k)); correction rotations are applied on
+    the fly when G changes, so no cache rewrite; Appendix E says retained-cache decoding differs from full re-prefill and
+    gives only finite observations.
+  - Fused CuTe kernel on H100 reported at 0.83-0.88x FlashAttention-3 prefill and 1.04-1.08x decode throughput (64K-128K,
+    8B).
+  - Evaluated on Qwen3-1.7B/4B/8B-Base up to 128K (RULER, HELMET-RAG, PG-19), Llama-3-8B and Jet-Nemotron hybrid; GQA/MoE/speculative
+    decoding/Qwen3.5 NOT FOUND in the digest.
+  techniques:
+  - dynamic bifocal RoPE
+  - dynamic remote grouping G
+  - on-the-fly correction rotation
+  reported_results:
+  - 'Table 1: Qwen3-1.7B Base RULER at 32K 60.93 vs Jet-Long 73.93 (digest; note this is a change inside the claimed-exact
+    window, to be reconciled in a dive).'
+  - RULER lead +4.79/+2.18/+2.03 pp over strongest baseline (1.7B/4B/8B).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Closest published match to the inert-in-window requirement; check whether cached-key correction is feasible
+    in llama.cpp FA/MTP paths and how remote aliasing (floor(q/G)) interacts with hybrid GDN layers.'
+  - '[unverified] Resolve the apparent tension between the exact-in-window claim and a +13 pp RULER delta at 32K.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Second HTML pass on arxiv.org/html/2607.07740v4 (digest) for Eq.1/4-6 and Appendix E. Code: https://github.com/jet-ai-projects/jet-long
+    (redirect check: no change; README not read). v4 revised 2026-09-29.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1901
+  arxiv_id: '2502.02659'
+  url: https://arxiv.org/abs/2502.02659
+  source_type: paper
+  title: 'A Training-Free Length Extrapolation Approach for LLMs: Greedy Attention Logit Interpolation (GALI)'
+  authors:
+  - Yan Li
+  - Tianyi Zhang
+  - Zechuan Li
+  - Soyeon Caren Han
+  categories:
+  - context_extension
+  novelty: medium
+  relevance: medium
+  credibility_score: 2
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Training-free; retains pretrained position IDs inside the training window and interpolates only beyond it (greedy localized
+    position-id interpolation), plus attention-logit interpolation with Gaussian noise.
+  - Authors state in-window short-context performance is not compromised.
+  - 'Stated limitation: needs two attention-logit passes, incompatible with FlashAttention; not optimized for inference.'
+  - Tested on Llama3-8B-ins (4k/8k) and Llama2-7B only.
+  techniques:
+  - greedy position-ID interpolation
+  - attention logit interpolation
+  reported_results:
+  - LongBench avg 46.22 (Llama3 4k->16k) vs 45.04 SelfExtend; PG19 ppl ~11.05-11.54 over 1k-32k (digest).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Likely not llama.cpp-feasible with FA; value is the position-id-preserving-in-window principle.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v2 2025-05-30 (HTML v2 digest). Code: https://github.com/adlnlp/Gali (redirect check unchanged; not read).'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1902
+  arxiv_id: '2412.18811'
+  url: https://arxiv.org/abs/2412.18811
+  source_type: paper
+  title: 'DCIS: Efficient Length Extrapolation of LLMs via Divide-and-Conquer Scaling Factor Search'
+  authors:
+  - Lei Yang
+  - Shaoyang Xu
+  - Jianxiang Peng
+  - Shaolin Zhu
+  - Deyi Xiong
+  categories:
+  - context_extension
+  - training_distillation
+  novelty: low
+  relevance: low
+  credibility_score: 3
+  discovered_via: seed
+  verdict: not_applicable
+  key_claims:
+  - A RoPE scaling-factor search that is a fine-tuning framework (not training-free per the abstract digest); EMNLP 2025.
+  - Claims 2x search efficiency vs competing search methods and that found factors work even without subsequent fine-tuning.
+  techniques:
+  - divide-and-conquer scaling factor search
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Only the no-fine-tune claim could matter; unquantified in the digest.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v2 2025-11-22. No code link found in digest. not_applicable here means out of the training-free scope,
+    pending operator review.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1903
+  arxiv_id: '2607.19363'
+  url: https://arxiv.org/abs/2607.19363
+  source_type: paper
+  title: 'AdaRoPE: Not All Attention Heads Should Rotate and Scale Equally'
+  authors:
+  - Shaowen Wang
+  - Yuke Zheng
+  - Tansheng Zhu
+  - Shuang Chen
+  - Shaofan Liu
+  - Suncong Zheng
+  - Jian Li
+  categories:
+  - context_extension
+  novelty: medium
+  relevance: low
+  credibility_score: 3
+  discovered_via: seed
+  verdict: not_applicable
+  key_claims:
+  - Argues uniform RoPE frequency schedules across heads are suboptimal; heads with different roles need different frequency
+    ranges.
+  - Assigns learnable per-head rotation frequencies and scale factors, requiring pretraining (not training-free); ICML 2026.
+  techniques:
+  - per-head learnable RoPE frequencies/scale
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v3 2026-09-11. No code link in digest. The per-head analysis may inform per-head YaRN/mscale policy but
+    needs a dive to know.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1904
+  arxiv_id: '2402.13753'
+  url: https://arxiv.org/abs/2402.13753
+  source_type: paper
+  title: 'LongRoPE: Extending LLM Context Window Beyond 2 Million Tokens'
+  authors:
+  - Yiran Ding
+  - Li Lyna Zhang
+  categories:
+  - context_extension
+  novelty: low
+  relevance: medium
+  credibility_score: 4
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Searches per-dimension rescale factors exploiting non-uniform interpolation; claims 8x extension without fine-tuning.
+  - Progressive extension to 2048k with up to 1k fine-tuning steps; readjusts factors at 8k to recover short-context performance.
+  - Integrated in Microsoft Phi-3 (short/long factor sets chosen by length).
+  techniques:
+  - evolutionary factor search
+  - progressive extension
+  - short/long factor switch
+  reported_results:
+  - 2048k tokens with up to 1k fine-tuning steps (abstract digest).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Code: https://github.com/microsoft/LongRoPE (redirect unchanged). The short/long factor switch is the HF/vLLM
+    inert-below-native mechanism referenced in OPTIONS.md; llama.cpp #24823 concerns exactly it.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1905
+  arxiv_id: '2502.20082'
+  url: https://arxiv.org/abs/2502.20082
+  source_type: paper
+  title: 'LongRoPE2: Near-Lossless LLM Context Window Scaling'
+  authors:
+  - Ning Shang
+  - Li Lyna Zhang
+  - Siyuan Wang
+  - Gaokai Zhang
+  - Gilsinia Lopez
+  - Fan Yang
+  - Weizhu Chen
+  - Mao Yang
+  categories:
+  - context_extension
+  novelty: medium
+  relevance: medium
+  credibility_score: 4
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Attributes OOD to under-trained high RoPE dimensions; uses needle-driven perplexity evolutionary search for rescale factors.
+  - Needs mixed-context-window fine-tuning (training required) to preserve short context.
+  - LLaMA3-8B reaches 128K effective length keeping >98.5% short-context performance with 10B tokens (abstract digest).
+  techniques:
+  - needle-driven PPL search
+  - mixed context window training
+  reported_results:
+  - '>98.5% short-context retention; 10B tokens, 80x fewer than Meta (abstract).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Retention is near-lossless, not exact; needs training, so unusable on trained Qwen3.x without a training
+    run.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Adopted in Phi-4-mini per a search digest (not independently checked).'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1906
+  arxiv_id: '2402.17463'
+  url: https://arxiv.org/abs/2402.17463
+  source_type: paper
+  title: Training-Free Long-Context Scaling of Large Language Models
+  authors:
+  - Chenxin An
+  - Fei Huang
+  - Jun Zhang
+  - Shansan Gong
+  - Xipeng Qiu
+  - Chang Zhou
+  - Lingpeng Kong
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Dual Chunk Attention decomposes attention into intra-chunk, inter-chunk and successive-chunk modules so relative positions
+    never exceed the pretraining length.
+  - Training-free; integrates with FlashAttention and composes with PI/NTK/YaRN per the authors.
+  - Llama2-70B reaches >100k context; 94% of gpt-3.5-16k performance claimed.
+  - 'Reported limitation (search digest): intra-chunk pattern effectively truncates distant info; 7B models make practical
+    mistakes despite low perplexity.'
+  techniques:
+  - Dual Chunk Attention
+  reported_results:
+  - 94% of gpt-3.5-16k (abstract).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence:
+  - Search digest notes weaker accuracy for small models and loss at text beginning (unverified, from a secondary summary).
+  recommended_actions:
+  - '[unverified] Local design exists: /mnt/raid0/llm/tmp/dca-yarn-kernel-20261004/DESIGN-DCA.md; dive should compare its
+    equivalence claims with the paper and the Qwen2.5-1M implementation.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Code: https://github.com/HKUNLP/ChunkLlama (redirect unchanged). Search digest indicates llama.cpp has
+    no DCA upstream (unverified).'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1907
+  arxiv_id: '2501.15383'
+  url: https://arxiv.org/abs/2501.15383
+  source_type: paper
+  title: Qwen2.5-1M Technical Report
+  authors:
+  - An Yang
+  - Bowen Yu
+  - Chengyuan Li
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: medium
+  relevance: high
+  credibility_score: 4
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Extends Qwen2.5 to 1M tokens via long-data synthesis, progressive pre-training and multi-stage SFT.
+  - Inference framework combines Dual Chunk Attention with MInference-based sparse prefill; claims 3x-7x prefill speedup at
+    1M (per search digest and the blog; the abs-page digest did not name DCA).
+  - Qwen blog says YaRN attention scaling used with DCA leaves short-sequence behavior unchanged (recalled from OPTIONS.md
+    prior art; not re-fetched).
+  techniques:
+  - DCA + MInference inference framework
+  reported_results:
+  - 3x-7x prefill speedup at 1M (search digest).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Dive must read the PDF/HTML to anchor the DCA-in-production and short-sequence-unchanged claims for a trained
+    (not training-free) model family.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Blog: https://qwenlm.github.io/blog/qwen2.5-1m/ not fetched in this pass. Only 3 authors recorded of 28.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1908
+  arxiv_id: '2407.02490'
+  url: https://arxiv.org/abs/2407.02490
+  source_type: paper
+  title: 'MInference 1.0: Accelerating Pre-filling for Long-Context LLMs via Dynamic Sparse Attention'
+  authors:
+  - Huiqiang Jiang
+  - Yucheng Li
+  categories:
+  - context_extension
+  - inference_serving
+  - hardware_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: 5
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Identifies A-shape, Vertical-Slash and Block-Sparse attention patterns usable for sparse prefill without retraining.
+  - Reports up to 10x prefill latency reduction on A100 at 1M tokens while maintaining accuracy (NeurIPS 2024 spotlight).
+  techniques:
+  - dynamic sparse attention patterns
+  reported_results:
+  - up to 10x prefill speedup; 95% attention FLOPs reduced (search digest).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Orthogonal to positional exactness (prefill cost), but not exact: sparse prefill changes outputs. CPU/HIP
+    feasibility unexamined.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Code: https://github.com/microsoft/MInference (redirect unchanged). Authors list truncated.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1909
+  arxiv_id: null
+  url: https://github.com/sgl-project/sglang/issues/6030
+  source_type: repo
+  title: 'sglang issue 6030: [Feature] Dynamic YaRN for Qwen3 models'
+  authors:
+  - KMouratidis
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Requests dynamic YaRN for Qwen3 citing Qwen docs that static YaRN may hurt short text; state closed; opened 2025-05-05.
+  - 'Reporter hack: re-initialising rope embeddings every few hundred steps; flagged CUDA-graph, compile and concurrent-request
+    incompatibilities.'
+  - Suggested precomputing several cos_sin caches or updating at request initialisation; no maintainer response visible in
+    the digest.
+  techniques:
+  - dynamic YaRN request
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: Retrieved 2026-10-06 via WebFetch digest; thread comments not read in full, so absence of maintainer reply is provisional
+    (unverified-in-stage1). No commit SHA applicable; retrieval date pinned.
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1910
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/issues/24823
+  source_type: repo
+  title: 'llama.cpp issue 24823: Phi-3/Phi-4 LongRoPE short sequences silently use long-context RoPE factors when allocated
+    context exceeds original_max_position_embeddings'
+  authors:
+  - b-bargabus
+  categories:
+  - context_extension
+  - local_inference
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  discovered_via: seed
+  verdict: worth_investigating
+  key_claims:
+  - Reports llama.cpp chooses LongRoPE factor set from allocated context, not actual sequence length; F1 0.992 at num_ctx=4096
+    vs 0.105 at 131072 for the reporter fine-tune (reporter figure).
+  - Proposes choosing factors from the actual sequence length or max position in the batch.
+  - States mid-generation crossing is hard because cached keys cannot be cheaply re-roped; closed as not planned (2026-06-19).
+  techniques:
+  - per-sequence rope factor selection
+  reported_results:
+  - F1 0.992 vs 0.105 (reporter, unverified).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Maintainers closed as not planned, so no upstream path is expected.'
+  notes: 'Retrieved 2026-10-06 via WebFetch digest; comments not read in full. Companion context: llama.cpp #22140 (server
+    ctx cap) not ingested.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1911
+  arxiv_id: '2401.01325'
+  url: https://arxiv.org/abs/2401.01325
+  source_type: paper
+  title: 'LLM Maybe LongLM: Self-Extend LLM Context Window Without Tuning'
+  authors:
+  - Hongye Jin
+  - Xiaotian Han
+  - Jingfeng Yang
+  - Zimeng Jiang
+  - Zirui Liu
+  - Chia-Yuan Chang
+  - Huiyuan Chen
+  - Xia Hu
+  categories:
+  - context_extension
+  - local_inference
+  novelty: low
+  relevance: high
+  credibility_score: 4
+  discovered_via: expansion
+  expanded_from: intake-1906
+  verdict: worth_investigating
+  key_claims:
+  - Training-free grouped attention for distant tokens plus neighbor attention in a local range; ICML 2024 spotlight.
+  - Neighbor attention preserves original positions locally; in-window exactness depends on the neighbor-window size vs native
+    length (to be checked).
+  - llama.cpp already ships --grp-attn-n/--grp-attn-w options in common/arg.cpp at ffc1bac82 (lines 2224-2236, examples completion
+    and passkey only; server not verified).
+  techniques:
+  - grouped + neighbor attention
+  - K-shift re-rope in llama.cpp
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions:
+  - '[unverified] Exactness inside the native window not guaranteed by the abstract.'
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). Local check 2026-10-06: git grep at /mnt/raid0/llm/llama.cpp ffc1bac82 shows the options; implementation
+    depth (mid-sequence re-rope via K-shift) not yet read. If it re-ropes cached K, OPTIONS.md claim of no prior re-rope art
+    needs revising. Code: https://github.com/datamllab/LongLM.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1912
+  arxiv_id: '2504.18857'
+  url: https://arxiv.org/abs/2504.18857
+  source_type: paper
+  title: Effective Length Extrapolation via Dimension-Wise Positional Embeddings Manipulation
+  authors:
+  - Yi Lu
+  - Wanxu Zhao
+  - Xin Zhou
+  - Chenxin An
+  - Chenglong Wang
+  categories:
+  - context_extension
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: expansion
+  expanded_from: intake-1906
+  verdict: worth_investigating
+  key_claims:
+  - Training-free DPE manipulates RoPE per hidden dimension rather than uniformly; claims Llama3-8k reaches 128k and beats
+    YaRN and Self-Extend.
+  - 'Claims better in-window performance (Llama3.1-70B +18 RULER points) which means it changes in-window outputs: opposite
+    of exactness.'
+  techniques:
+  - dimension-wise position manipulation
+  reported_results:
+  - +18 RULER points on Llama3.1-70B (abstract digest).
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v1 2025-04-26 only; code link not seen. Listed authors truncated to 5 of 12.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1913
+  arxiv_id: '2602.22175'
+  url: https://arxiv.org/abs/2602.22175
+  source_type: paper
+  title: 'DySCO: Dynamic Attention-Scaling Decoding for Long-Context Language Models'
+  authors:
+  - Xi Ye
+  - Wuwei Zhang
+  - Fangcong Yin
+  - Howard Yen
+  - Danqi Chen
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-1900
+  verdict: worth_investigating
+  key_claims:
+  - Training-free decoding algorithm that uses retrieval heads to find task-relevant tokens and up-weights their attention
+    dynamically.
+  - Digest does not say whether short contexts are left unchanged; mechanism relation to YaRN mscale unknown.
+  techniques:
+  - retrieval-head attention rescaling
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v2 2026-04-16. Code: https://github.com/princeton-pli/DySCO (redirect unchanged; not read). Candidate for
+    replacing the lost mscale sharpening only above native.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1914
+  arxiv_id: '2606.23687'
+  url: https://arxiv.org/abs/2606.23687
+  source_type: paper
+  title: Randomized YaRN Improves Length Generalization for Long-Context Reasoning
+  authors:
+  - Manas Mehta
+  - Fangcong Yin
+  - Greg Durrett
+  categories:
+  - context_extension
+  - training_distillation
+  novelty: low
+  relevance: low
+  credibility_score: 3
+  discovered_via: search
+  expanded_from: intake-032
+  verdict: not_applicable
+  key_claims:
+  - 'Training method: assigns YaRN positions sampled from a larger range during short-context training with curriculum; EMNLP
+    2026 Findings.'
+  techniques:
+  - randomized YaRN training
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v2 2026-08-30. Training-based, outside scope; filed as not_applicable pending operator review.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1915
+  arxiv_id: '2602.10959'
+  url: https://arxiv.org/abs/2602.10959
+  source_type: paper
+  title: 'Rotary Positional Embeddings as Phase Modulation: Theoretical Bounds on the RoPE Base for Long-Context Transformers'
+  authors:
+  - Feilong Liu
+  categories:
+  - context_extension
+  novelty: medium
+  relevance: low
+  credibility_score: 2
+  discovered_via: search
+  expanded_from: intake-032
+  verdict: worth_investigating
+  key_claims:
+  - Derives aliasing and DC-component stability lower bounds on RoPE base and an upper bound from floating-point precision;
+    reports a hard precision wall beyond one million tokens.
+  techniques:
+  - aliasing bound
+  - DC stability bound
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
+    read in full). v1 2026-02-11, single author. arXiv id also appears in the referenced list of an existing entry, not as
+    an own arxiv_id, so no collision. The 1M precision-wall claim bears on the 1M plan and can be checked cheaply.'
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1916
+  arxiv_id: null
+  url: https://zolotukhin.ai/blog/2026-05-24-static-yarn-buys-qwen3-128k-by-taxing-every-short-prompt/
+  source_type: blog
+  title: Static YaRN buys Qwen3 128k context by taxing every short prompt
+  authors:
+  - Stepan Zolotukhin
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: low
+  relevance: medium
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-1909
+  verdict: worth_investigating
+  key_claims:
+  - Argues for per-request dynamic rope scaling with factor roughly max(1, length/32768) so short prompts run at factor 1.
+  - Provides no measurements of short-prompt degradation (digest), only the Qwen caveat.
+  - Notes prefix-KV reuse breaks across scaling factors; proposes versioning cached prefixes by scaling regime.
+  techniques:
+  - per-request rope factor
+  - prefix cache keyed by regime
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: Retrieved 2026-10-06 via WebFetch digest; author engine named zinc. Opinion blog, no data; cache-versioning idea
+    bears on admission-time design.
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
+- id: intake-1917
+  arxiv_id: null
+  url: https://github.com/turboderp-org/exllamav3/issues/29
+  source_type: repo
+  title: 'exllamav3 issue 29: Auto-YaRN for Qwen3? Maybe even set it dynamically?'
+  categories:
+  - context_extension
+  - inference_serving
+  novelty: low
+  relevance: low
+  credibility_score: null
+  discovered_via: search
+  expanded_from: intake-1909
+  verdict: worth_investigating
+  key_claims:
+  - Requests static auto-factor and dynamic per-request YaRN, possibly disabling YaRN for requests under 32K; closed 2025-04-28;
+    no maintainer reply in the digest.
+  techniques:
+  - dynamic YaRN request
+  reported_results: []
+  cross_references:
+    chapters: []
+    handoffs:
+    - yarn-context-extension-research.md
+    experiments: []
+    intake_entries:
+    - intake-032
+  contradicting_evidence: null
+  recommended_actions: []
+  notes: Retrieved 2026-10-06 via WebFetch digest. Second independent serving-stack request, no implementation.
+  verification: stage1-unverified
+  ingested_date: '2026-10-06'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
