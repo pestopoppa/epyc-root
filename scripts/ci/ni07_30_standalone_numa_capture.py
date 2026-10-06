@@ -11,7 +11,7 @@ import tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "88b5f44ad285e0accad6fc36f7c69377e06032b6"
+APP_PIN = "e8e163d7d9d10c257fc59a46cc0a662557125c57"
 SELECTIONS = (
     (
         "tests/unit/test_stack_change_guard.py::"
@@ -280,8 +280,9 @@ def main() -> int:
                         "Two selected launch-helper controls import static stack_manifest "
                         "under a test-only fixture that intercepts only Path('/proc/meminfo') "
                         "during module import with synthetic 1 TiB MemTotal; other path reads "
-                        "delegate unchanged, and the fixture removes the imported module cache "
-                        "at teardown. The runner's physical /proc/meminfo is read separately "
+                        "delegate unchanged, and the fixture removes the imported module and "
+                        "package attribute at teardown while restoring any prior cache. The "
+                        "runner's physical /proc/meminfo is read separately "
                         "and recorded below as context, not substituted or asserted as a claim. "
                         "No LLMPrimitives instance/backend execution method, "
                         "endpoint, server, kernel, inference, or live network call is invoked. "
