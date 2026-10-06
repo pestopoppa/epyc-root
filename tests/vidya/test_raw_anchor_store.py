@@ -82,8 +82,15 @@ def test_response_bytes_are_retained_and_reopened_by_content_identity(tmp_path, 
 
 
 def test_human_tier_requires_valid_retained_source_and_machine_tier_stays_capped(tmp_path, monkeypatch):
+    """The human fields below model an explicit reviewer assertion in a synthetic fixture.
+
+    The test exercises the adapter's tier contract; it does not claim that raw-byte integrity
+    verification itself makes a semantic judgment about the source.
+    """
     entry, machine, _root = _anchor(tmp_path, monkeypatch, located_by="machine")
-    human = {key: value for key, value in machine.items() if key != "located_by"}
+    human = dict(machine)
+    human["located_by"] = "human"
+    human["verified_by"] = "synthetic-human-reviewer"
     assert _t_level(entry, human) == "Attested"
     assert _t_level(entry, machine) == "MachineLocated"
 
