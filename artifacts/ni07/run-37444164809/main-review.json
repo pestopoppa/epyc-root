@@ -1,0 +1,77 @@
+{
+  "fixture_execution_conformant": true,
+  "junit_counts": {
+    "collected": 127,
+    "error": 0,
+    "executed": 127,
+    "failure": 0,
+    "passed": 127,
+    "skipped": 0
+  },
+  "pins": {
+    "app": "8fbbb6a2348a2f234da418239ea4216068500220",
+    "recipe": "fe252f4c95f1ab873143226ca84c4314aed2d0ca",
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+  },
+  "readset_rows": 2747,
+  "receipt_file_sha256": "92f8a3600ce68d55b1b1a34a6d1cf954a478364cc923cdda8396ae7e506806ca",
+  "receipt_self_seal": "b4f9915592534abcb24cbc946fb09f1be21c3334b3076b28fe33392cb101b269",
+  "state": "passed",
+  "unique_source_union": 2745,
+  "zip_crc": "ok",
+  "zip_sha256": "98f9be958846e575d86b3bf50bf170b9a8994fbdce8516dd04225eeb3f7af2fd",
+  "run": 37444164809,
+  "attempt": 1,
+  "artifact_id": 11402821227,
+  "zip_size": 13146009,
+  "zip_extracted_members": 2755,
+  "receipt_self_sha256": "b4f9915592534abcb24cbc946fb09f1be21c3334b3076b28fe33392cb101b269",
+  "repositories": {
+    "orchestrator": "8fbbb6a2348a2f234da418239ea4216068500220",
+    "recipe": "fe252f4c95f1ab873143226ca84c4314aed2d0ca",
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+  },
+  "readset_count": 2747,
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+    "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+    "scripts/autopilot/evals/dtap/tests/test_judge_guard.py",
+    "--junitxml=/home/runner/work/_temp/ni07/result/dtap.junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 127,
+    "error": 0,
+    "executed": 127,
+    "failure": 0,
+    "passed": 127,
+    "skipped": 0
+  },
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "app_complete_python_config_paths": 2080,
+  "dtap_explicit_case_fixture_harness_judge_paths": 78,
+  "unused_transcribe_python_still_captured_in_full_app_closure": true,
+  "root_complete_python_config_paths": 625,
+  "source_main": "00a2e3cb3d86197ff1bdeb9215cff2b68542e8eb",
+  "recipe_main": "cd2f05ccfb77cd43c9314ffa963f13dbd9a8b0f7"
+}

@@ -1487,3 +1487,8 @@ The repository also added a CPU-claim admission guard around host code-index ref
 ## Static tool-rendering paths — 2026-10-06
 
 The [accepted TU-HR static map](../docs/reference/tool-rendering-source-map.md) distinguishes prompt text from advertised native functions. DTAP currently sends message/generation fields and parses returned calls without advertising structured schemas; its live path returns generic tool results without applying service effects. Orchestrator default REPL mode and explicit client-native-tool mode differ, and backend forwarding support must be checked per route. For local GGUF serving, the loaded template and launch overrides own token rendering; registry kwargs alone do not identify template bytes. Eighteen public case catalogs and 54 exact source identities were reopened by MAIN. Actual served route/model/template identity remains unknown; [HR parent and live DTAP evaluation](../handoffs/active/tool-use-eval-contract.md) stay open. The isolated fake-transport contract fix is separately tracked as NI07-11.
+
+
+## 2026-10-06 DTAP opt-in native contract
+
+The [DTAP native contract](../docs/reference/dtap-native-tool-contract.md) advertises public case-specific schemas with explicit endpoint mode, strict allowed-name/argument validation and immutable catalog/schema identity in traces. Legacy cases, fixtures, judges and dry-run behavior remain unchanged. [Original synthetic CI37444164809](../artifacts/ni07/run-37444164809/README.md) passes127/127 after MAIN reopened source and all API artifact members. This proves fake transport contracts; live service effects, model acceptance and TU-DTAP-2 remain open.
