@@ -157,7 +157,7 @@ def _eval_report(tmp_path: Path) -> Path:
 
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_report_bytes_and_retained_inputs_are_reverified_at_projection(tmp_path, monkeypatch,
                                                                        adapter, factory):
     root = tmp_path / "repo"
@@ -198,7 +198,7 @@ def test_mf_cached_metric_key_must_match_native_selection(tmp_path, monkeypatch)
 
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_identity_free_legacy_report_is_refused(tmp_path, monkeypatch, adapter, factory):
     root = tmp_path / "repo"
     monkeypatch.setattr(adapter, "ORCHESTRATOR", root)
@@ -212,7 +212,7 @@ def test_identity_free_legacy_report_is_refused(tmp_path, monkeypatch, adapter, 
 
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_unknown_native_fields_are_refused(tmp_path, monkeypatch, adapter, factory):
     root = tmp_path / "repo"
     monkeypatch.setattr(adapter, "ORCHESTRATOR", root)
@@ -226,7 +226,7 @@ def test_unknown_native_fields_are_refused(tmp_path, monkeypatch, adapter, facto
 
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_category_must_be_producer_authored_diagnostic_baseline(tmp_path, monkeypatch,
                                                                 adapter, factory):
     root = tmp_path / "repo"
@@ -239,7 +239,7 @@ def test_category_must_be_producer_authored_diagnostic_baseline(tmp_path, monkey
 
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_producer_source_changes_preserve_snapshot_bound_historical_rows(tmp_path, monkeypatch,
                                                                         adapter, factory):
     root = tmp_path / "repo"
@@ -293,7 +293,7 @@ def test_zero_denominator_rate_is_omitted_while_defined_rates_remain(tmp_path, m
     assert "failure_over_edited_voluntary_stops" not in {row["metric_key"] for row in rows}
 
 
-@pytest.mark.parametrize("field", ["date_range", "role_model"])
+@pytest.mark.parametrize("field", ["date_range", "role_model"], ids=("date_range", "role_model"))
 def test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope(tmp_path, monkeypatch, field):
     root = tmp_path / "repo"
     monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
@@ -346,7 +346,7 @@ def test_eval_cached_suite_and_metric_must_match_bound_report(tmp_path, monkeypa
 @pytest.mark.parametrize(("source", "adapter", "factory"), [
     ("verify-before-stop-measurement", vbs_adapter, _vbs_report),
     ("eval-suite-discriminability", eval_adapter, _eval_report),
-])
+], ids=("vbs", "eval"))
 def test_cli_dispatch_uses_shared_grade_only(tmp_path, monkeypatch, capsys,
                                              source, adapter, factory):
     root = tmp_path / "repo"

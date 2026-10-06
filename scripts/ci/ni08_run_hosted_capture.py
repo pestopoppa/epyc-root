@@ -74,6 +74,7 @@ APP_NODEIDS = (
 ROOT_READS = (
     ".github/workflows/ni08-vbs1-evaldisc-native.yml",
     "scripts/ci/ni08_run_hosted_capture.py",
+    "scripts/ci/ni08-hosted-expected-cases.json",
     "scripts/ci/ni08_source_context.py",
     "scripts/ci/ni08-hosted-requirements.txt",
     "docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md",
@@ -203,6 +204,11 @@ def main() -> int:
     capture_root.mkdir(mode=0o700)
     install_log, _environment_sha = _install_locked_minimal_set(capture_root)
     manifest = _context_manifest(app_root, capture_root)
+    expected_cases = json.loads((ROOT / "scripts/ci/ni08-hosted-expected-cases.json").read_bytes())
+    if (expected_cases.get("schema") != "epyc.ni08.expected_cases/v1"
+            or len(expected_cases.get("root", [])) != 38
+            or len(expected_cases.get("app", [])) != len(APP_NODEIDS)):
+        raise RuntimeError("expected-case identity manifest is malformed or has the wrong case count")
 
     os.environ.update({"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
                        "PYTHONDONTWRITEBYTECODE": "1",
@@ -239,27 +245,30 @@ def main() -> int:
         manifest, capture_root / "environment.json",
     )
     before_sharedgrade = _artifact_snapshot(sharedgrade_inputs)
-    def exact_cases(capture: dict, selections: tuple[str, ...]) -> bool:
+    def exact_cases(capture: dict, expected: list[dict]) -> bool:
         cases = capture.get("summary", {}).get("cases", [])
-        expected_names = [node.rsplit("::", 1)[1] for node in selections]
-        actual_names = [case["name"] for case in cases]
+        expected_identities = [(item["classname"], item["name"]) for item in expected]
+        actual_identities = [(case["classname"], case["name"]) for case in cases]
         counts = capture.get("summary", {}).get("counts", {})
-        return (len(cases) == len(selections) and sorted(actual_names) == sorted(expected_names)
-                and counts == {"passed": len(selections), "failure": 0, "error": 0,
-                               "skipped": 0, "collected": len(selections),
-                               "executed": len(selections)})
+        return (len(cases) == len(expected) and len(set(expected_identities)) == len(expected)
+                and sorted(actual_identities) == sorted(expected_identities)
+                and counts == {"passed": len(expected), "failure": 0, "error": 0,
+                               "skipped": 0, "collected": len(expected),
+                               "executed": len(expected)})
 
-    app_exact = exact_cases(app_record, APP_NODEIDS)
-    root_exact = exact_cases(record, NODEIDS)
+    app_exact = exact_cases(app_record, expected_cases["app"])
+    root_exact = exact_cases(record, expected_cases["root"])
     validation = {"schema": "epyc.ni08.hosted_validation/v1",
                   "app_receipt_sha256": app_record["receipt_sha256"],
                   "app_fixture_execution_conformant": app_record["fixture_execution_conformant"],
                   "app_exact_selected_cases": app_exact,
                   "app_case_count": len(app_record.get("summary", {}).get("cases", [])),
+                  "app_expected_cases": len(expected_cases["app"]),
                   "root_receipt_sha256": record["receipt_sha256"],
                   "root_fixture_execution_conformant": record["fixture_execution_conformant"],
                   "root_exact_selected_cases": root_exact,
-                  "root_case_count": len(record.get("summary", {}).get("cases", []))}
+                  "root_case_count": len(record.get("summary", {}).get("cases", [])),
+                  "root_expected_cases": len(expected_cases["root"])}
     captures_ok = (app_record["fixture_execution_conformant"] is True and app_exact
                    and record["fixture_execution_conformant"] is True and root_exact)
     grades = {}

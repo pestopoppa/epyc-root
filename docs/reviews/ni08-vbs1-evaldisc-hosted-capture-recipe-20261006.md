@@ -36,7 +36,8 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `2bcf79d901f25076376b566f78770d48f33865274734117be9b6eae2e463efda` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `c6e4a32cd557a89a5bdb3c6bbd466402cf4b83a8c15f1164d6125e746497c1cb` |
+| `scripts/ci/ni08-hosted-expected-cases.json` | `a44a0a89e2486f7e285d170ba39051581cdcaef3a4ee8caa162c7cc76142bc15` |
 | `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
@@ -56,7 +57,7 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 | `scripts/vidya/ledger.py` | `552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09` |
 | `tests/conftest.py` | `e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a` |
 | `tests/vidya/test_analysis_producer_roundtrip.py` | `15d2a863cc6f1bd343e55b48d5fdd11cf398ba1c0d1b9d985019fdb75eba4c09` |
-| `tests/vidya/test_analysis_report_adapters.py` | `599940fd515469f3c1be2e064a81970956b8c8fb737bc0c34f1d77132dc901d2` |
+| `tests/vidya/test_analysis_report_adapters.py` | `830e26a56c70a3c0160eea341dd82697594c8ea891b620cc995328364fe60b94` |
 | `tests/vidya/test_citation_gate.py` | `48c2326df76b93828f7ef5680589b8616e0e33c53d5fadf50b67e83ef3e8d439` |
 | `tests/vidya/test_claim_tuple.py` | `93a01202da69951afd170d61f527abd7e21c52853d8f6c429ccf5265aa4b2a6b` |
 | `tests/vidya/test_ingest_sources.py` | `b8ba17a255997189b8119468c730b9830ff1d059da77e92148206deabfbd90d1` |
@@ -134,8 +135,12 @@ and `claim_tuple.grade()`. They assert resulting ledger support grades equal the
 The other ROOT cases cover retained input/source snapshots, path escape, cached-native binding, external
 input locators, native denominators, report category/schema, citation bounds including a forged
 matching ledger ID, and CLI `unknown` exit 0 versus `dangling` exit 3. Expected collected identities
-are these 31 named node IDs; require exactly 31 collected, executed, and passed, with zero skips,
-failures, or errors.
+are the expanded `(classname, name)` pairs in `scripts/ci/ni08-hosted-expected-cases.json`: 38 ROOT
+cases from the 31 selected node IDs, including both cases for each of seven parameterized functions.
+Require an exact pair multiset and exactly 38 collected, executed, and passed, with zero skips,
+failures, or errors. The selected APP IDs expand to 20 cases and use the same exact-pair check. The
+case-identity JSON is an explicit native readset input; parameterized ROOT controls have stable
+pytest `ids=` values while assertions and fixture behavior remain unchanged.
 
 Run this exact APP test selection separately from the APP checkout to cover the actual writer and
 its existing controls:
