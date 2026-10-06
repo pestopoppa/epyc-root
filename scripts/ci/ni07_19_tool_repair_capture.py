@@ -115,7 +115,7 @@ def validate_source_rows(repo: Path, pin: str, rows: object, label: str) -> list
         if blob != item["git_blob"] or sha256(data) != item["sha256"]:
             raise ValueError(f"{label} source differs from pinned readset: {name}")
         resolved.append((repo / name).resolve())
-    if seen != expected:
+    if seen != set(expected):
         raise ValueError(
             f"{label} readset does not cover its full tracked Python/config/lock closure"
         )
