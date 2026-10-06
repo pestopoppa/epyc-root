@@ -487,3 +487,5 @@ Prospective consumers/source contracts enrolled before these follow-on implement
 | Tool-call repair log minimization | existing native CI verifier | Synthetic no-payload sentinel plus unchanged parser/outcome/counter facts; no global-rate warrant | code_utils.py, VB-TOOL-REPAIR-LOG / NI07-19 |
 
 | Optional declared query-expansion refusal (prospective NI07-20) | existing native CI verifier | Fake/temp supported absence/false and unsupported true/malformed refusal before constructor; no new grading ladder or model/quality claim | colbert_encoder.py, VB-K2-QUERY-EXPANSION-REFUSAL / NI07-20 |
+
+| DCP render-time source identity (prospective NI07-21) | existing native CI verifier | Injected old/new body, bound-hash refusal before rendering; valid bound/unbound compatibility; no quality/serialized-prompt budget claim | context_discovery.py, VB-DCP-RENDER-IDENTITY / NI07-21 |
