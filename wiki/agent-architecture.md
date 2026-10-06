@@ -5093,3 +5093,5 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 2026-10-06 source checkpoint: [HS-E1 dated context and container pin](../artifacts/ni08/harness-source-review-20261006/README.md) accepted without inference or selection warrant. [HS-OD-4 API generation-budget decision](../docs/design/hs-od-4-max-tokens-decision-prep-20261006.md) remains with the operator.
 
 2026-10-06: [default-off mutation-context and crossover diagnostics](../artifacts/ni08/mutation-context-source-20261006/README.md) source accepted; live context baselines and donor efficacy remain open.
+
+2026-10-06: [Phase-0 source review](../artifacts/ni08/harness-phase0-source-20261006/README.md) publishes dated HS-7 disclosure and release freeze; UFH-15 now owns OpenCode shell integration, UFH-01 retains selection and feature gates.

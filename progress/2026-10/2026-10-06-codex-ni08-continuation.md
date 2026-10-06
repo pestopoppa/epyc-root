@@ -124,3 +124,7 @@ Applied the verified container package pin and HS-E1 dated external-context adde
 ## AP context diagnostics — MAIN acceptance
 
 Accepted exact APP3dec5cc/recipec568acff/carrier4c0c source after independent frozen3,673Git-input map and original3,683member API ZIP review of native37533718483 TRUE88/88. All31 new controls and57 compatibility cases execute, shared Judged/Located original preserved. APPmain036f4e68 matches all nine source files. One jointly scoped source task and one existing VB flip close: **37 NI08 scoped completions (30 existing flips + 7 scoped additions)**. Metadata is hash-only/ungraded/default-off; AP-ME1 baseline/budget and AP-ME3 actual donor-selection remain open. No live trial or reload.
+
+## Phase-0 source boundaries — MAIN acceptance
+
+P0.4b dated Harness Card, P0.4c full release tag pin and preauthorized P0 split close after independent r3 original/config/plugin review. Exact task texts/states moved into new UFH-15 owner; UFH-01 retains decision/candidates/P1–P6/freeze. Three existing flips: **40 NI08 scoped completions (33 existing flips + 7 scoped additions)**. No original relabel, runtime identity guarantee, efficacy or inference. P7/override carry remain open; source prep continues.

@@ -1,0 +1,95 @@
+{
+  "reviewed_at": "2026-10-06T21:43:48.042441+00:00",
+  "proposal": "1344bc5e48f409b7455358b6d6451026474edda5",
+  "evidence_commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+  "source_commit": "0ce7e11162631f25b445e84a233589c498be5d3a",
+  "evidence_bindings": [
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/opencode.jsonc",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "a0da4052f7d54cfbf7246f1ed115051d0ffe64b4",
+      "sha256": "e180a37d602f82b6f42e7d1a0f796c904075b9c532b1387657aebc80a17de4bf",
+      "bytes": 4985
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/opencode-version.txt",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "769c5a4d057b2c98430169f166e2365f8d898536",
+      "sha256": "ce93d3a23f487a3c7a9c41bcac7a01907e2d098e11d63d7d77187cb38add2af5",
+      "bytes": 8
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/opencode_shell_run.json",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "8d17bec1592fe780e1c0716a0b2e7357247938f2",
+      "sha256": "85255c34ddb635a06891e4bfc34fe81c7dd18c68b684e9fdcfca111dc6d2da2b",
+      "bytes": 1163
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/verdict.json",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "fe295e0aecfc5056211e5c14faf55c48cdcb2450",
+      "sha256": "7b5578a93887194dd04690169fa5cc0a25007d823d6f508c10a8f36ccbbc2c5b",
+      "bytes": 2445
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/prepared.json",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "7ee12d0110d56d046c6077094e515fe5ee4a112c",
+      "sha256": "6a16d513dcf443d5a8b38055c0dd6d29f7a76d77fec18fc0ec3117d6d788df43",
+      "bytes": 415
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/attempts.jsonl",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "07cf52f502e71666238eeea8437dad99ae2f057d",
+      "sha256": "e70c1ace7a21e2edbe9877ccc5e56f5324f5884487cf516e458bb23800afacb8",
+      "bytes": 252
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/opencode_shell_run.beliefs.jsonl",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "8feaaa0c4513d1687d25bca7a9bd0b8a7ea53083",
+      "sha256": "ef872f17a1d8bf4aeb62802de70b3a2312317f1f693e1f35d9e34aba4dc360e7",
+      "bytes": 8490
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/window-start.txt",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "e519ff25b56a117bdfbd39fe41b635fc2ed77fcd",
+      "sha256": "c79781440f07d256268f12ddaaecdeded6d232cc8ae03f5935794a2cb9a06105",
+      "bytes": 21
+    },
+    {
+      "path": "artifacts/harness/hs4-p04-20260926-r3/window-end.txt",
+      "commit": "5c053841cdd6cb73b5a48ef623074dbc00bc13aa",
+      "blob": "e5917f4c9ab729d5b1dec3d58ec7064ebdd2168b",
+      "sha256": "7d1d6464b989c4f989563bd4b5a893f652be05fcc5fa6cfbb294f4ce6250cbb6",
+      "bytes": 21
+    }
+  ],
+  "plugin_inputs": [
+    {
+      "path": "harness/opencode-plugin/src/config-lint.ts",
+      "blob": "66f365760b2ceedba3f4770b2a22fd85d09895d4",
+      "sha256": "b5a7a0cdb934655ab63b18b674ea3eff96435f7a554fc866cfb5aa45b92aab3b",
+      "contribution_sha256": "d311f6d87a547f152f9e08e7e1353127c2abd5844e4d9c078e7bf354064bc70b"
+    },
+    {
+      "path": "harness/opencode-plugin/src/index.ts",
+      "blob": "99dd57bef8bafa58c742de70b569badcd8fb1e76",
+      "sha256": "af8d7e4df9316792da239db6753a0830cedc71beebaf31bb1760d75ab132193a",
+      "contribution_sha256": "a688123677879d7a1977443461053f3e50a93fdc003ccd12c2a3818ae1d1d637"
+    },
+    {
+      "path": "harness/opencode-plugin/src/lib.ts",
+      "blob": "b16c4aec1959910c7a84e7f84b1de65a988e7207",
+      "sha256": "0679e8b940d30542d49d7696b7623143f6a8c0d8e71d6b888a407bbfa7c3c924",
+      "contribution_sha256": "71e9a7247fc8a909fe2254d483559d864dd0c147948676fd3dee4962f047584a"
+    }
+  ],
+  "plugin_digest": "d49194fcc50d66ff47afdc2aa12490b44579d25b316261843b949cb57edecfb1",
+  "originals_unmodified": true,
+  "scope": "dated r3 configuration disclosure, not new runtime verification or efficacy",
+  "native_originals_regenerated": false
+}

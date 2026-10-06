@@ -13,6 +13,29 @@ and lists where its run departs from it.
 Re-publishing rule (HS-7): a model or freeze change refreshes the conformant card for the realized
 configuration before the result is called re-targetable.
 
+### HS-7 realized OpenCode shell — r3 configuration (2026-09-26; republished 2026-10-06)
+
+This is the realized-shell disclosure for the HS-4 P0.4 r3 run. It records the configuration and
+serving identity present in the immutable r3 artifacts; it does not generalize the single live
+acceptance run into a harness efficacy claim. The original run remains attached to card version
+`HS-6@2026-07-29`; this dated republication can be cited by future reports only with departures disclosed; it is not a claim about current live configuration.
+
+| Field | Realized value | Source |
+|---|---|---|
+| Harness and release | OpenCode `1.18.31`; release tag `v1.18.31` (`014614d35b397775e5d397a490fc72368c894ec2`). The `350c726aa8b6b11eb9242040bc5eb7ae837fbf8a` commit is retained as the audit anchor, not the frozen install identity. | r3 `opencode-version.txt`; package pin in the accepted install evidence; HS-4 P0.4c source audit |
+| OpenCode configuration | SHA-256 `e180a37d602f82b6f42e7d1a0f796c904075b9c532b1387657aebc80a17de4bf` (`opencode.jsonc`) | r3 run sidecar and config file |
+| Plugin | `@epyc/opencode-plugin`, SHA-256 `d49194fcc50d66ff47afdc2aa12490b44579d25b316261843b949cb57edecfb1`, matching the captured `src/*.ts` digest at ROOT commit `0ce7e11162631f25b445e84a233589c498be5d3a` (plugin tree `73e5b468d9a4096f14eacd8f38b6665132b68fa4`) | r3 source checkout and captured shell-run sidecar |
+| Tool mode | `x_tool_mode="client"`; run verifier found 4 keyed calls and zero with incorrect `x_user_id` or `x_tool_mode`. | r3 run sidecar and verdict |
+| Served role and build | `frontdoor`; `b10303-ffc1bac82`; thinking disabled. | r3 run sidecar |
+| Endpoint | `http://127.0.0.1:8000/v1` | r3 run sidecar |
+| Shell autonomy | OpenCode compaction/pruning disabled; share disabled; autoupdate disabled; general/explore agents disabled; task permission denied; webfetch asks and websearch denied. | r3 `opencode.jsonc` |
+| MCP | Orchestrator MCP configured but disabled for this run. | r3 `opencode.jsonc`, `prepared.json` |
+| Acceptance boundary | One `hs4-p04-calc-fixture` task, one attempt; live P0.4 acceptance passed. This is acceptance evidence only, not comparative efficacy or a general pass rate. | r3 `verdict.json`, run sidecar |
+
+The frozen install identity is the npm release `opencode-ai@1.18.31`; the dev-branch audit anchor is
+not a substitute for that reproducible package pin. Future reports must cite this card and disclose
+departures from the realized configuration above.
+
 ---
 
 ### HS-6 Harness Card — current Layer-B disclosure (2026-07-29)
