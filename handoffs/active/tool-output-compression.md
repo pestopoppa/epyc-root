@@ -551,6 +551,8 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
       rewrote the files in place, with `[period redacted]`, rather than blocking. So evidence copies silently
       stop being byte-exact, and the artifact README has to say so. Same exemption shape, second instance.
 
+- [x] **TOC-RD-1B-SRC — implement and verify the exact observed-periods cell selector.** ✅ 2026-10-06 — [MAIN source/native acceptance](../../artifacts/ni08/pii-period-source-20261006/README.md), staged synthetic73/73 with same-table account/secret refusal and full compatibility controls. Parent historical unredacted-fixture acceptance remains open; no whole-file exemption or historical reconstruction.
+
 - [x] **TOC-RD-1a-NI-ED25519 — staged header recognition child.** ✅ 2026-10-06 — ROOT staged-blob scanner recognizes ED25519 while retaining RSA/OPENSSH; source/recipe promoted eb870f0fe697f02f887bedecaeaccaf24df2d531; native run 37474797195 TRUE9/9. This closes only the implementation child. Parent TOC-RD-1a is resolved by operator choice 1B: both fixture files remain scanned, with no whole-file exemption applied.
 
 [Resolved scanner decision and narrower preparation guidance](../../docs/reference/credential-fixture-hook-decision.md); the rejected exact patch remains unchanged historical evidence.

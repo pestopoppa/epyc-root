@@ -177,16 +177,19 @@ First full smoke run of the trial loop. Four defects, three silent.
       it is superseded by `ruling_op19_e8_chain_20260827.json` and not by RTG-02's work
       (`handoffs/active/autopilot-continuous-optimization.md:1714`) (found 2026-09-14, noninf sweep).
 
-- [ ] **AP-60 — remove the import-time `Q_TD_WRITE` test trap** with a fixture or a config-object read, since
-      `Q_TD_WRITE = os.environ.get(...)` is evaluated at import so the branch production actually runs is
-      `False` under pytest unless a test monkeypatches the module attribute — the standing coverage hazard for
-      that whole write path, and why the pre-existing create-only tests passed for the bug's entire lifetime
-      (`orchestration/repl_memory/q_scorer.py:52`) (found 2026-09-14, noninf sweep).
+- [ ] **AP-60 — remove the import-time `Q_TD_WRITE` test trap** by snapshotting write enablement and match-k
+      from the existing environment keys at each QScorer construction, preserving default-off/k10 and integer
+      parsing. Set fixture environments before construction and prove existing instances retain their settings
+      when later instances use different environments. Existing row-update/work-payload cases must remain.
+      Current production launcher supplies the environment before construction; no serving reload is implied.
+      The earlier pytest-always-False wording was overbroad: one fixture patched a module flag after construction,
+      while another patched it before construction (found2026-09-14; refined2026-10-06 from APP816/sourceec852).
 
-- [ ] **AP-61 — stop hand-maintaining the invocation-log guard's module list**, since it covers five modules
+- [x] **AP-61 — stop hand-maintaining the invocation-log guard's module list**, since it covers five modules
       and will not notice a new route file reading the shared `get_invocation_log()`;
       `src/api/routes/openai_compat.py:285` already reads `repl._invoked_tools` correctly but sits outside the
       guarded set (found 2026-09-14, noninf sweep).
+      ✅2026-10-06 — [MAIN source acceptance](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md): all-current-route guard, method/direct-name negative controls, independent46-file Git/AST census; APPmain041ec98a exact source. Test-only/static validation, no runtime/native-quality claim.
 
 - [ ] **AP-62 — document the shared invocation ring's synchronisation contract**: `invoke()` appends from
       whatever thread is dispatching and the bound holds only because `deque.append` is atomic under CPython,

@@ -1,0 +1,418 @@
+{
+  "counts": {
+    "app": 1,
+    "carrier": 6,
+    "recipe": 4,
+    "research": 1,
+    "source": 18
+  },
+  "expected_generated_contexts": [
+    "environment.json",
+    "pip-freeze.txt",
+    "source-manifest.json",
+    "pre-status.json"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_actual_producer_rows_project_through_shared_measurement_grade"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_none_native_metric_stays_omitted"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_source_is_defaultless_and_registered_once_in_existing_cli"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_pilot_manifest_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_missing_or_malformed_manifest_source_pin_is_refused[]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_missing_or_malformed_manifest_source_pin_is_refused[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_missing_or_malformed_manifest_source_pin_is_refused[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_missing_or_malformed_manifest_source_pin_is_refused[not-a-commit]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_native_iso_date_and_shared_scored_reps[date]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_native_iso_date_and_shared_scored_reps[naive-date]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_native_iso_date_and_shared_scored_reps[reps]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_shared_native_verdict_rule_and_prereg[verdict]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_shared_native_verdict_rule_and_prereg[rule]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_sidecar_requires_shared_native_verdict_rule_and_prereg[prereg]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_manifest_preregistration_is_preserved_and_must_match_rows"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_duplicate_json_member_and_nonfinite_value_are_refused"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[duplicate-id]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[mixed-run]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[mixed-suite]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-category]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-reps-basis]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-locator]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-record-path]"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_duplicate_measurement_id_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_records_digest_mismatch_and_symlink_are_refused"
+    },
+    {
+      "classname": "tests.vidya.test_ufh13_thesis_adapter",
+      "name": "test_records_change_during_hash_read_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_ingest_sources",
+      "name": "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"
+    },
+    {
+      "classname": "tests.vidya.test_ingest_sources",
+      "name": "test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"
+    },
+    {
+      "classname": "tests.vidya.test_ingest_sources",
+      "name": "test_source_ingests_a_fixture_end_to_end[ufh13-thesis-measurement]"
+    }
+  ],
+  "host_project_execution": false,
+  "manual_blast_radius": "MEDIUM: defaultless measurement adapter and explicit CLI/dispatcher registration, shared ladder unchanged. Exact producer fields; synthetic records, no scored thesis run.",
+  "pins": {
+    "app": "70096b763939a43409a1f1827ab633d62425a6c1",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "589bbea916b0adcda097be798b19148f6e49cae7",
+    "research": "1bace97dc655ab5896291b4571781e53b821d9a3",
+    "source": "9891c1979d4580512aeb6451850b8bd0dca86055"
+  },
+  "recipe_pin": "589bbea916b0adcda097be798b19148f6e49cae7",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "tracked_file_count": 30,
+  "tracked_files": [
+    {
+      "bytes": 833,
+      "git_blob": "d9dba47dc8443eb0ba816114a1bd64d5a5db2078",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "10c16231f06d380ad96987c164ecf0560eba68aea5f265eebb8d90fa2993c528"
+    },
+    {
+      "bytes": 10036,
+      "git_blob": "2acf98e29a15d3186fe15b58f013d71cade0ca4a",
+      "mode": "100644",
+      "path": "tests/vidya/test_ufh13_thesis_adapter.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "bbdefde11623bc402db7d1390673c69c380477b9838ea188e820ed5e701ebe90"
+    },
+    {
+      "bytes": 26315,
+      "git_blob": "ed5a2046b6a4bb1b8eb7347636924672c508b794",
+      "mode": "100644",
+      "path": "tests/vidya/test_ingest_sources.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "c50eb891ef168fc091ccb0a8d5dd8dae508b6f8dce8e555498bd02dab5ccba98"
+    },
+    {
+      "bytes": 6245,
+      "git_blob": "c069169347e2f8dfb05336c602fd8e7d52e12a71",
+      "mode": "100644",
+      "path": "tests/vidya/ufh13_thesis_fixtures.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "9b8ef4a917e5624821a4816a9b7d8408d97a65b1dd1b7e284a5b685a6ed4c065"
+    },
+    {
+      "bytes": 322430,
+      "git_blob": "93932f3e6fb4a6da4d09469dec3a1e7c364bd852",
+      "mode": "100644",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "caeee46c94ae18e18c51e2c7996cfb39aafc3f752848194f4b62d81772c5fc42"
+    },
+    {
+      "bytes": 241471,
+      "git_blob": "21ececcfa80da42849dc0a6c5dbd5bc38d4719ca",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "7146615c8e6f472e51160f1ea202f4948359dc8e4dd2978f29c0976d386d132e"
+    },
+    {
+      "bytes": 0,
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 18073,
+      "git_blob": "25ac88edc50c09f6b37e5f70edaa4f6d56328af9",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ufh13_thesis.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "5172b8ed5bf187148b0aec83d480d301228de15677513cb7af2e2ddb1a3fa5fb"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 38958,
+      "git_blob": "4e9b34ccd3caae473406adaf22e689171a1bcf8a",
+      "mode": "100644",
+      "path": "scripts/vidya/cli.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "93f6eda4fb4eff8685d557b63b8f2e6b9f28a6fd9104f6ac2b8a8f184f28e27b"
+    },
+    {
+      "bytes": 24739,
+      "git_blob": "0478746076820f60252a6d10f8991456656241e6",
+      "mode": "100644",
+      "path": "scripts/vidya/ingest_sources.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "e737c530a4a0e7f4631eedca4895c84bd8623e6fc489e3d85e3855b5763e86d9"
+    },
+    {
+      "bytes": 14329,
+      "git_blob": "299792d3f909181cf973415511a3bc5ff8a90765",
+      "mode": "100644",
+      "path": "scripts/vidya/ledger.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 9185,
+      "git_blob": "9017103221d57c6cf47952b9b2f86646fecaa66e",
+      "mode": "100644",
+      "path": "scripts/vidya/checkpoint.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "496fb200484f6d93c97690d1e85c07251eb394dce0c846e31ba4ff6e43b24456"
+    },
+    {
+      "bytes": 44566,
+      "git_blob": "01938146e0d94642759ce77c3abfb34f6c748e31",
+      "mode": "100644",
+      "path": "scripts/vidya/fold.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 3691,
+      "git_blob": "4ec090f9f43a77bb5f8a651347d41d6a33a925e3",
+      "mode": "100644",
+      "path": "pytest.ini",
+      "repo": "source",
+      "repo_pin": "9891c1979d4580512aeb6451850b8bd0dca86055",
+      "sha256": "d9068321b5c07e5138e3adce3db7e911dc7d29201bb7ed9c9aa2fc92b137dc28"
+    },
+    {
+      "bytes": 3142,
+      "git_blob": "3eafad03d86d62c0ebff4bb805b9d220163dc3be",
+      "mode": "100644",
+      "path": ".github/workflows/vb-thesis2-native-conformance.yml",
+      "repo": "recipe",
+      "repo_pin": "589bbea916b0adcda097be798b19148f6e49cae7",
+      "sha256": "e791fb6193443c0b0129617798a7f1d92c4e01bb162de12fec648eb75f1d931c"
+    },
+    {
+      "bytes": 16961,
+      "git_blob": "7f553236f3705e84c0997eb67045d8330d7d2215",
+      "mode": "100644",
+      "path": "scripts/ci/vb_thesis2_native_capture.py",
+      "repo": "recipe",
+      "repo_pin": "589bbea916b0adcda097be798b19148f6e49cae7",
+      "sha256": "798061810574d44e8a1fcad596f2030ac280cf4bd4604cc7c72cfd533d1343c3"
+    },
+    {
+      "bytes": 4072,
+      "git_blob": "42077a9aa58ac73e146bfb640b6ba5cd9864d1a9",
+      "mode": "100644",
+      "path": "scripts/ci/vb_thesis2_native_cases.json",
+      "repo": "recipe",
+      "repo_pin": "589bbea916b0adcda097be798b19148f6e49cae7",
+      "sha256": "76463b1e70698c92c3ea4cd2a2f941ec2420c88e55e33842508b69f68af89a66"
+    },
+    {
+      "bytes": 1093,
+      "git_blob": "66b049f0d7c2b207b35f22ab383a8d91da25f4c0",
+      "mode": "100644",
+      "path": "scripts/ci/vb_thesis2_native_requirements.txt",
+      "repo": "recipe",
+      "repo_pin": "589bbea916b0adcda097be798b19148f6e49cae7",
+      "sha256": "5ee573567ebe7bef3ecea65293275fad35e1fdb6c12d086294c5574360907a94"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "bytes": 13792,
+      "git_blob": "8e44c6ca155817b0a08bd8a1ff14b57b8b37c3bd",
+      "mode": "100644",
+      "path": "scripts/benchmark/thesis_ufh13/score.py",
+      "repo": "research",
+      "repo_pin": "1bace97dc655ab5896291b4571781e53b821d9a3",
+      "sha256": "544c1277d1eb00e9f685e40490385644573417f813a9989dacff83a7cdb4350f"
+    }
+  ]
+}

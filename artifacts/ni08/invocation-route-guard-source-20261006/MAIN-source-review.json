@@ -1,0 +1,291 @@
+{
+  "base_pin": "81663c30177fb567b91df3ef9615060c8d018ab6",
+  "limitation": "Direct named and method calls are caught; arbitrary aliases and dynamic getattr/dataflow are outside this bounded syntax guard.",
+  "manual_blast_radius": "LOW: test-only coverage expands to every current route; no production source behavior changes.",
+  "project_test_execution": false,
+  "review": "PASS",
+  "route_count": 46,
+  "routes": [
+    {
+      "bytes": 2749,
+      "offenders": [],
+      "path": "src/api/routes/__init__.py",
+      "sha256": "db7c34c727fb008050ce74b23d329cde61ce0327a1db404cfca229e42f959f4c"
+    },
+    {
+      "bytes": 73566,
+      "offenders": [],
+      "path": "src/api/routes/chat.py",
+      "sha256": "a6029081c61cb96edf03fff644822b79313fd0c8dc000f17d429275814c2c2e6"
+    },
+    {
+      "bytes": 51908,
+      "offenders": [],
+      "path": "src/api/routes/chat_delegation.py",
+      "sha256": "6e5c12bc077dacd0d6f0973e5910bd4dba5a7676e04420aca61a772bfcf26ae9"
+    },
+    {
+      "bytes": 7442,
+      "offenders": [],
+      "path": "src/api/routes/chat_delegation_config.py",
+      "sha256": "561c1682cc5c40aab9c71f751c1c8ad8b5f90cdcaec3dbefbac5548bbac3a443"
+    },
+    {
+      "bytes": 34118,
+      "offenders": [],
+      "path": "src/api/routes/chat_delegation_decision.py",
+      "sha256": "7c22223a29050c52b1faf1d649d074d9ef63aeea1e835fe4b7429d0f12faa065"
+    },
+    {
+      "bytes": 6765,
+      "offenders": [],
+      "path": "src/api/routes/chat_delegation_reports.py",
+      "sha256": "c1e9b1dffb98a49fa2cfce13f06df1a54953030e7a43527d0829a3371c7a5daf"
+    },
+    {
+      "bytes": 3042,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/__init__.py",
+      "sha256": "bd53c66a37c54d5faa0a9ba88e10212d6bcc2da1e729b1ed9b9983db13512f5c"
+    },
+    {
+      "bytes": 12554,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/delegation_stage.py",
+      "sha256": "a160da4bd9a5223be155975575f61cbf87d20d3aa1a0fe091f0619e9d76dde6e"
+    },
+    {
+      "bytes": 10793,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/direct_stage.py",
+      "sha256": "73cd4fec13e7ad336299f35f56e58deb72d609a00406e952d22f708232a2e74d"
+    },
+    {
+      "bytes": 15388,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/proactive_stage.py",
+      "sha256": "6e8094f49da410c18f62db588d76937403144a5070f03ddeaee3353082f8362c"
+    },
+    {
+      "bytes": 46523,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/repl_executor.py",
+      "sha256": "650725866a7d69145243c2e8da07376ea39bb0053cfc3cfe12ccf71f7c8681f6"
+    },
+    {
+      "bytes": 25024,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/routing.py",
+      "sha256": "fd87856c036fffe858ae8fbb8699fd262fe13e17055c7cfeb2f95731cd497f3f"
+    },
+    {
+      "bytes": 32615,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/routing_decision.py",
+      "sha256": "afb4df47c10f38da7b46ad6388e541faad5396c1e5b67bc8ddc05df82819b755"
+    },
+    {
+      "bytes": 60092,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/scout_stage.py",
+      "sha256": "5a0e50622015f6e19684f2243d16f010f26568d8e3c5ccf8a7a45f85e2e15621"
+    },
+    {
+      "bytes": 8294,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/script_interceptor.py",
+      "sha256": "af7eaf7232e1dc8b1a24c082372b9537ede9bfe2a1ffb6142fad6e02bea23785"
+    },
+    {
+      "bytes": 15322,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/stages.py",
+      "sha256": "a36e8249e72c54a928ef481ab67861f899c6d8963cbe84abc95d96849bc11fb8"
+    },
+    {
+      "bytes": 18985,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/stream_adapter.py",
+      "sha256": "d7f022dfc435202c39f13b9a20c890cd508a65d6d31dbf3e8318605a16181283"
+    },
+    {
+      "bytes": 2968,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/telemetry.py",
+      "sha256": "87eb0d70067e9236d2d0f98e79e9f9cb32d515042cafaada0161c024cf8fec97"
+    },
+    {
+      "bytes": 15091,
+      "offenders": [],
+      "path": "src/api/routes/chat_pipeline/vision_stage.py",
+      "sha256": "c6ead2a58220c0b406b8cdeddf6492e79c9ab4ccc8ce80b64ee72aee287c5a90"
+    },
+    {
+      "bytes": 14503,
+      "offenders": [],
+      "path": "src/api/routes/chat_review.py",
+      "sha256": "d8e7629c993637ddf8c4cc167ee0de0be4f51bb02f5214f849a0595cc82856f2"
+    },
+    {
+      "bytes": 12013,
+      "offenders": [],
+      "path": "src/api/routes/chat_routing.py",
+      "sha256": "4d2eb95c364fa98a7c019d7ab798e02ae75fb94b58f3b0226d957be30ba37276"
+    },
+    {
+      "bytes": 10750,
+      "offenders": [],
+      "path": "src/api/routes/chat_summarization.py",
+      "sha256": "82d859c0c7338ec4768db39ee4076fc30439549fd7604020a30e8f5770106d66"
+    },
+    {
+      "bytes": 17925,
+      "offenders": [],
+      "path": "src/api/routes/chat_utils.py",
+      "sha256": "04c452763aaf9c683924ff1b729f1043901374b38767b2f157d12e4d770c5224"
+    },
+    {
+      "bytes": 29182,
+      "offenders": [],
+      "path": "src/api/routes/chat_vision.py",
+      "sha256": "d04b2a291afc74ce2481b0320c551b8aebbb50b71eddfa87ccacfb8e13d764f3"
+    },
+    {
+      "bytes": 2814,
+      "offenders": [],
+      "path": "src/api/routes/config.py",
+      "sha256": "e0d7a1248ea1f77f91b04c0c85c584307bfbc7c85659aa079424ef5d9873f60a"
+    },
+    {
+      "bytes": 346238,
+      "offenders": [],
+      "path": "src/api/routes/dashboard.py",
+      "sha256": "30a76d7fe13234e3ca5938d4f70855d546358fe7b3d112e71b5455a1b15f4d6f"
+    },
+    {
+      "bytes": 11339,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_freshness.py",
+      "sha256": "b613b19cd5c3b08e26eac339bb4c164816b303818d783d320d7b02eb2beb1d57"
+    },
+    {
+      "bytes": 14816,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_panels.py",
+      "sha256": "f0d6e97bdf15dfeb7e5a95c5fe23d72d70257577990052c00f196e5fda9e9f6d"
+    },
+    {
+      "bytes": 15104,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_snapshot.py",
+      "sha256": "6373926d4d435746ecec23b0d769bda0bedb23d8075eec4179ff763a32a21c37"
+    },
+    {
+      "bytes": 19379,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_tap.py",
+      "sha256": "2de26b16163c58700969da510feee62461b3e0758f57feb80ddf8e8fce204fe0"
+    },
+    {
+      "bytes": 15195,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_tasks.py",
+      "sha256": "489554feb12fe407703d79847d3232ec65ac196e5c19b9c1ca62dc9aa85e200f"
+    },
+    {
+      "bytes": 41140,
+      "offenders": [],
+      "path": "src/api/routes/dashboard_topology.py",
+      "sha256": "e14094d02a7f6f095747938ca63df2d0dd0d72c9589a58e4bb0b73efbad84e75"
+    },
+    {
+      "bytes": 3982,
+      "offenders": [],
+      "path": "src/api/routes/delegate.py",
+      "sha256": "c0da9013fabbd7edc69a5653a26ba7debba491dcfdd8387bb5dfab3180715493"
+    },
+    {
+      "bytes": 11461,
+      "offenders": [],
+      "path": "src/api/routes/documents.py",
+      "sha256": "2e5390e6ff793032254ae43113cfddfaa7ae2b39324267d5807b889ed38cdc57"
+    },
+    {
+      "bytes": 1765,
+      "offenders": [],
+      "path": "src/api/routes/gates.py",
+      "sha256": "f6b99f316e482d72ab762d53e73f6dd925404093853c0d10f4a52a76d33bffa3"
+    },
+    {
+      "bytes": 12693,
+      "offenders": [],
+      "path": "src/api/routes/health.py",
+      "sha256": "00c8a87841d163ea6a0e1977a5cb99f8bc0ba7d7c81ddcc85006f433bd613381"
+    },
+    {
+      "bytes": 87270,
+      "offenders": [],
+      "path": "src/api/routes/openai_compat.py",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b"
+    },
+    {
+      "bytes": 48758,
+      "offenders": [],
+      "path": "src/api/routes/passthrough.py",
+      "sha256": "03192903b8ce1efd4490059422e74a4923297f94291822bc56c81c1e8da56c33"
+    },
+    {
+      "bytes": 2110,
+      "offenders": [],
+      "path": "src/api/routes/path_validation.py",
+      "sha256": "41a960c8704cb80160f0f9e7892e3faad1a5e0e445cead669913dc36a1874d56"
+    },
+    {
+      "bytes": 15458,
+      "offenders": [],
+      "path": "src/api/routes/sessions.py",
+      "sha256": "fe479d0f6b7523c761172a85a28e89d0a717b28314a8aaad3a0deb1dc92febbc"
+    },
+    {
+      "bytes": 655,
+      "offenders": [],
+      "path": "src/api/routes/stats.py",
+      "sha256": "9c2b1754e35616b618f58a776d397e6fbd4aa804d6369e43e651c5773b2c8ed8"
+    },
+    {
+      "bytes": 3836,
+      "offenders": [],
+      "path": "src/api/routes/typed_judge.py",
+      "sha256": "a210c5c4e5ac0df94cbd659ec3e7cc712d710b86d4d2acfa005babd2aec2fbf7"
+    },
+    {
+      "bytes": 16013,
+      "offenders": [],
+      "path": "src/api/routes/v1_escalation.py",
+      "sha256": "2bbd6a720adfb2da67b3925b4e0f6c4a36db2f3f79ec9fa8e0c15b756771d908"
+    },
+    {
+      "bytes": 15477,
+      "offenders": [],
+      "path": "src/api/routes/v1_subagent_link.py",
+      "sha256": "0a877623cf0abc6e3ba697542e99bcbb2aa1b487791bcf787367eacae02e4c71"
+    },
+    {
+      "bytes": 9053,
+      "offenders": [],
+      "path": "src/api/routes/vision.py",
+      "sha256": "1eaa45cb4bfff1da67d2d2592314b8292e4a0092e843beb2e698d482312b9734"
+    },
+    {
+      "bytes": 4004,
+      "offenders": [],
+      "path": "src/api/routes/vision_serving.py",
+      "sha256": "9d161d2a712f70944b3ea98c0a3a3a828bda4a81b846c0a1238ecf16a8d9914f"
+    }
+  ],
+  "schema": "ni08-main-source-review/v1",
+  "source_path": "tests/unit/test_invocation_log_request_scope.py",
+  "source_pin": "e17b5e9f69fac549beba06f5d39d0de3662d625f",
+  "source_sha256": "bf0435bd43c21b0d3710ead0f52e4a3016d99655779c72619516f3014814eb89",
+  "validation": "Independent Git/AST census and review of meaningful negative/positive guard controls. No pytest/import/collection execution; no native fixture metric or efficacy claim."
+}

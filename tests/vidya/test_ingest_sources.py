@@ -180,6 +180,10 @@ def _ak_actor_seat(tmp: Path) -> Path:
     return _helpers("test_autokernel_actor_seat_adapter").write_fixture(tmp)
 
 
+def _ufh13_thesis(tmp: Path) -> Path:
+    return _helpers("ufh13_thesis_fixtures").write_run(tmp)
+
+
 BUILDERS = {
     "session-intercall-gap": lambda tmp: _helpers("test_session_gap_adapter").write_fixture(tmp),
     "orchestrator-serving-call": lambda tmp: _helpers("test_serving_call_adapter").write_fixture(tmp),
@@ -208,6 +212,7 @@ BUILDERS = {
     "reviewer-fa": _reviewer_fa,
     "typed-decisions-measurement": _typed_decisions,
     "ak-actor-seat": _ak_actor_seat,
+    "ufh13-thesis-measurement": _ufh13_thesis,
 }
 #: sealed-manifest is exercised by its own real-corpus test (tests/vidya/test_sealed_manifest.py);
 #: its unit discovery is pinned below instead of a synthetic seal.

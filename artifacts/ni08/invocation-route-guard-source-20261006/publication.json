@@ -1,0 +1,12 @@
+{
+  "previous_head": "81663c30177fb567b91df3ef9615060c8d018ab6",
+  "main_before": "81663c30177fb567b91df3ef9615060c8d018ab6",
+  "source": "e17b5e9f69fac549beba06f5d39d0de3662d625f",
+  "commit": "041ec98abba9c93c9b9cf75c07fa6a20ecdee775",
+  "paths": [
+    "tests/unit/test_invocation_log_request_scope.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

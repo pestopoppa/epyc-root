@@ -149,3 +149,35 @@ MAIN independently derives all 73 TOC and 138 P7 expanded case identities from s
 ## P7 completed source boundary
 
 MAIN accepts full tracked invocation census at e6aeaf10/source79eeb5ea and independently reviewed hosted37538484204 TRUE138/138 (33HS4+57HS19a+48probe). Exact33Git+2contexts/all44originalAPI members, case identities, receipt seals and unchanged outer Judged/Located output pass. Applies two source and five reviewed recipe files byte-identically; switches only HS4 prompt transport and adds meaningful >128KiB Unicode stdin/exact-argv control. P7 plus new prospective VB companion close: **43 NI08 scoped completions (35 existing flips +8 scoped additions)**. Historical r3 and incomplete local collection unchanged/excluded, no model/project test execution on host. Failed TOC native73-case original remains immutable; exact regex and fixture corrections approved for hosted successor. No whole-backlog exhaustion claim.
+
+
+## TOC period-cell completed source boundary
+
+MAIN reopens original37539619867 TRUE73/73, exact2,276Git+2contexts/all2,287API ZIP members, source64c245/recipee709b8/carrier4c0c, receipt and shared Judged/Located integrity. Source additions preserve existing hook semantics outside one exact public period cell; all negative controls remain. Failed37538101485 FALSE53/73 is retained, source doubled-backslash bug and syntheticparentsetup corrected. TOC-RD-1B-SRC plus pre-enrolled VB companion close two new scoped tasks: **45 NI08 completions (35 existing flips +10 additions)**. Parent requires actual historical unredacted-fixture acceptance and stays unchecked; no reconstruction/realprompt/model or newgrade.
+
+Scope transfer correction: replacement worker ran GitNexus analyze/status/impact because MAIN omitted NI76 prohibition from its replacement handoff. Further instrument calls stopped. Canonical source tracked state remains clean before this integration; metadata and complete runtime effects are being preserved/reviewed, graph scores excluded from acceptance. MAIN owns this transfer error; no inference/build absence is inferred from incomplete effect custody. Separate report worker rewrote private unpublished proposal history to currentbase before receiving no-rebase correction; no original capture or remote ref was rewritten, exact successor source pins will be independently rebound, and further rewriting is prohibited.
+
+
+## Continuing source preparation boundary
+
+MAIN independently binds C5 recipe4762a77/source82619/carrier4c0c:32 exact Git inputs,27 AST-derived case identities and hash-locked5-package closure pass. Hosted capture37541801662 is authorized; only its redundant generic sibling37541801546 is being cancelled, and that sibling supplies no acceptance evidence. Original missing C5 policy digest remains unavailable, default verification unchanged; no provider/GPU/kernel run. Thesis source9891 received static review and prospective VB-THESIS-CONFORMANCE enrollment; initial manual recipe1f053 is rejected because it omits the shared native carrier and pinned runtime/readset controls, and will be replaced before dispatch. Normal worker Git hooks are statically confirmed governance/AST checks, not pytest collection; private output retained.
+
+AP61 exact low-risk test-only sourcee17b5e9f is reviewed; independent current route census/publication pending. AP60/AP62, existing-scorer RTG02 and SC76/77 remain useful source work, with SC78/79 follow-ons surfaced for current-source screening. No new completion counted. MAIN drains bus owed0 and refreshes heartbeat; operator-held coordinator remains down and operator-owned shared files are untouched.
+
+
+## AP61 completed source boundary
+
+MAIN approves/publishes test-onlye17b5e9f at APPmain041ec98a with exactblobverification/normalhooks/serializedleases. IndependentGit+AST46routecensus findszero prohibited calls; guard includesfuture/currentroutes, method/directnamedcalls, permittedcomments/strings/requestlocalrecords. One existingAP61 checkbox closes: **46 NI08 completions (36 existing flips +10 additions)**. No project test/import/collection/nativecapture. Canonical handoff/source-table/wiki updated by MAIN. C5failedoriginal37541801662 stays NULL: originalJUnit42suitecount/27nodes, nofailedcases; narrow4-subTest-context removal retainsallassertions and27identities before a newreviewedrecipe.
+
+
+## C5 completed source boundary
+
+MAIN accepts exact Research7aaf/ROOTrecipef43 source and independently preserved original37542457227 TRUE27/27,32Git+2context readset/all43members and unchanged existing Judged/Located. Research source published via independent clean MAIN clone, normal merge and serialized/CAS main push; shared dirty Research lane untouched. Publication initially stopped on the serializer own untracked `coordination/push-locks/wrapup-2431-195211476.json`; helper now checks that exact owned lease file separately from source cleanliness, retains/release leases normally, with no ignore or deletion. Earlier37541801662 NULL original remains preserved/excluded, all27 method assertions retained and only unittest subTest contexts removed. C5-5+new VB companion close:48 NI08 scoped completions(37existingflips+11new). Missing historical policy digest is not restored or repinned; default production verifier still fail-closed. No project/GPU/model/kernel run. Thesis source capture29/29 independently accepted, publication next; report capture/source queues continue.
+
+
+MAIN independently recovers exact90723-byte historical policy Git blobf17f from commit97674 in pool/lane0: SHA c8cec matches corpus original pin. Earlier unavailable finding is superseded; no policy replacement or ratification needed. Versioned source-repo-relative path restoration and new actual default-verifier controls are authorized private preparation. Public metadata represents GitHub job identity with an explicit `github_job_` namespace to avoid PII scanner false positives, retaining original private review bytes; no hook bypass or scanner relaxation.
+
+
+## Thesis reader completed source boundary
+
+MAIN applies six exact accepted9891 source files and four exact589bbCIPE files after independent original37542886917 TRUE29/29 review:30Git+4contexts/all45members, exact JUnitcase multiset/readset/seals and unchanged existing Judged/Located grade. Source-table/CLI/dispatcher now expose ufh13-thesis-measurement; pooled native rows project only after strictschema/manifest/sibling-record digest checks, absentmetrics/protocol notinvented. Two checked scopes close VB-THESIS-2+new conformancecompanion:50NI08scopedcompletions(38existingflips+12new). Actual VB-THESIS-1firstscoredrun remains open. Report firstattempt37544337444 failed APP checkout because sourcecfc proposalobject was not yet onpublicref; retainoriginal setupartifact, publishapprovedprivate sourcebranch and reviewnormalrecipe successor beforecapture. No hostprojectexecution or runtimechange. C5exacthistoricalpolicy restoration is newlyunlockedsourcework, notoperatorauthoritydecision.

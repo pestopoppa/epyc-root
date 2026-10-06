@@ -565,6 +565,7 @@ _FILE_SOURCES = (
     "mhs-guard-verdicts", "mhs-guard-ops",
     "verify-before-stop-measurement", "eval-suite-discriminability",
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
+    "ufh13-thesis-measurement",
     "ak-actor-seat",
 )
 
