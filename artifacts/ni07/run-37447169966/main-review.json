@@ -1,0 +1,60 @@
+{
+  "run": 37447169966,
+  "independent_git_bindings": 3340,
+  "source_counts": {
+    "carrier": 625,
+    "app": 2084,
+    "recipe": 631
+  },
+  "contexts": 2,
+  "receipt_file_sha256": "cc37a35a8f114e9eded6635af0fe8278b9bb2634a6c89ce37dd310104d1df4cd",
+  "receipt_self_sha256": "be1d6b9ebb3671c3b072e4dce39b1ca61cbdb4cca246ebfdd6a0426b3280c169",
+  "native_conformant": true,
+  "counts": {
+    "collected": 19,
+    "error": 0,
+    "executed": 19,
+    "failure": 0,
+    "passed": 19,
+    "skipped": 0
+  },
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "attempt": 1,
+  "artifact_id": 11403268382,
+  "zip_sha256": "6b21335efc46d1114c377ee48889b3dda02e782e9ad4b5d224f3587d6b77ff8d",
+  "zip_size": 16806158,
+  "zip_extracted_members": 3350,
+  "repositories": {
+    "app": "4add71bd925f1e8661a3f669d197382eca62aeb1",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "af0300d9a8a2fee0322f96735337440724778fa4"
+  },
+  "readset_count": 3342,
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_conversation_shadow.py",
+    "--junitxml=/home/runner/work/_temp/ni07-08-shadow/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "a6f3e0d5a6b4f8bac5638d1d956e4a16403b0873",
+  "recipe_main": "df29717a514a87db8d40b2d10a8787bf9cc5165e"
+}

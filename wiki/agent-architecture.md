@@ -5074,3 +5074,8 @@ Delegation's compact loop telemetry and user-visible report are separate product
 ## Source update — 2026-10-06: detector/fixer topology design
 
 [HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-escalation-and-human-gate-policy.md).
+
+
+## 2026-10-06 provisional conversation shadow contract
+
+The [binary conversation shadow helper](../docs/reference/conversation-shadow-preparation.md) delegates JSON decisions beside the unchanged incumbent using existing default-off/sink/queue gates. [Original synthetic CI37447169966](../artifacts/ni07/run-37447169966/README.md) passes19/19 after MAIN source/API review; no executor or model call runs. LOCAL/ORCH descriptions remain provisional until CS-4 schema verification. Confidence is logging only; controller integration, three-arm comparison and live routing gates remain open.
