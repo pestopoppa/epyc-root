@@ -1,0 +1,76 @@
+name: TD-30f public Markdown successor capture
+on:
+  push:
+    branches: [codex/td30f-public-replay-20261006]
+    paths:
+      - .github/workflows/td30f-public-markdown-capture.yml
+      - scripts/ci/td30f_public_markdown_capture.py
+      - scripts/ci/td30f_public_markdown_report.py
+      - scripts/ci/td30f_public_markdown_run.py
+      - tests/ci/test_td30f_public_markdown_report.py
+permissions:
+  contents: read
+jobs:
+  td30f-public-markdown-successor-capture:
+    name: td30f-public-markdown-successor-capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ROOT_CORPUS_PIN: 9a18693b627487122c306bdadfb2e64fc254536a
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_PIN: 79abe3eca50c911d89e5e9855bbd6392bae2b35d
+      TD30F_RUNNER_CONTEXT: ubuntu-latest
+      TD30F_EXECUTION_CONTEXT: public-markdown-offline-guard-body-replay
+      TD30F_INSTALL_COMMAND: >-
+        python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0
+        pluggy==1.6.0 Pygments==2.20.0
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/td30f-public-markdown-capture/result"
+          printf '{"state":"setup_pending","job":"td30f-public-markdown-successor-capture","exit_code":null}\n' > "$RUNNER_TEMP/td30f-public-markdown-capture/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout pinned native carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout pinned ROOT public-Markdown corpus
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CORPUS_PIN }}
+          path: corpus
+          persist-credentials: false
+      - name: Checkout pinned APP detector source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact APP lock-resolved test closure
+        run: ${{ env.TD30F_INSTALL_COMMAND }}
+      - name: Build aggregate and capture exact offline conformance cohort
+        run: python recipe/scripts/ci/td30f_public_markdown_capture.py
+      - name: Preserve status, original aggregate-bearing native receipt, and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: td30f-public-markdown-capture-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/td30f-public-markdown-capture/result/
+          if-no-files-found: error
