@@ -822,7 +822,7 @@ def _clear_own_pending(target: str, baseline: str,
     H-2, 2026-08-12: this sent a BARE `C-u`, which C55 measured to be a NO-OP on a
     Claude composer holding queued text. So every failed delivery stranded its payload
     — and that residue then tripped the pre-typing composer-empty guard on every LATER
-    nudge and doorbell to the same main, which is the F-34 refusal loop re-arming
+    nudge and doorbell to the same main, which is the F-34(b) refusal loop re-arming
     itself from its own rollback. Routed through `_press_key_with_wake` (read its
     caveat block) so the rollback can actually succeed.
 
