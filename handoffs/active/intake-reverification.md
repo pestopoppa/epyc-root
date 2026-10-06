@@ -2,7 +2,7 @@
 
 **Scratch**: `/mnt/raid0/llm/tmp/intake-reverify/` · worktrees: `/mnt/raid0/llm/worktrees/intake-reverify-*`
 
-**Status**: active — IRV-1–3 complete; IRV-4–7 remain open pending correction filing and validation
+**Status**: active — IRV-1–4 complete; IRV-5–7 remain open pending source/index/ledger filing and validation
 **Created**: 2026-10-06 (operator-approved with the read-depth fix, commit 4563f8d8e)
 **Categories**: knowledge_management, benchmark_methodology
 
@@ -62,7 +62,7 @@ Output classes (record reason per entry in the triage table):
 - [x] **IRV-1 — Generate the at-risk list.** Run the script above on current `research/intake_index.yaml`; save TSV and counts to the scratch dir. ✅ 2026-10-06
 - [x] **IRV-2 — Run cite-check and citation grep.** `cite-check --as-of <ts>` plus `grep` for `intake-NNN` across handoffs, wiki and docs; join onto the TSV as `cited_by`. ✅ 2026-10-06
 - [x] **IRV-3 — Triage.** Apply the rubric; emit RE-DIVE / DEMOTE / KEEP with a one-line reason each. ✅ 2026-10-06
-- [ ] **IRV-4 — Stage-3 plan for the re-dives.** Plan-mode audit of the RE-DIVE set, operator approval before any handoff edits.
+- [x] **IRV-4 — Stage-3 plan for the re-dives.** Plan-mode audit of the RE-DIVE set, operator approval before any handoff edits. ✅ 2026-10-06 — [Corrective plan](../../research/intake-stage3-plan-2026-10-06-reverification.md); operator instruction to proceed authorizes the selected 22+8 corrective scope.
 - [ ] **IRV-5 — Re-dive batches.** Waves of at most 10 under the fixed skill; record verdict changes and `dive_corrections`.
 - [ ] **IRV-6 — Demotions.** Apply approved DEMOTE rows to the index; run `validate_intake.py` (exit 0) and `cite-check`.
 - [ ] **IRV-7 — Final report.** Counts by class, verdict changes, affected handoffs; move this handoff to `completed/` and delete its index row.
@@ -74,8 +74,12 @@ Output classes (record reason per entry in the triage table):
 - IRV-3 reviewed triage is complete (322/22/8). The 22 primary-source reads and independent reviews are complete, but their 22-entry updates plus eight verification-status repairs remain a prepared, unapplied candidate. No correction/demotion is claimed filed.
 - The 17 additional surfaced identities are outside this authorized 22+8 round and do not block its corrective checkpoint; preserve their source/action records and do not infer applicability declines. Preserve all 79 extracted recommendation records and their existing task bindings; unresolved disposition remains unreconciled, not declined.
 
-Next action: finish IRV-4's concrete corrective plan, then file and validate the reviewed 22 source-entry updates and eight verification repairs under IRV-5/6. Preserve prior claim history and all 79 recommendation records/task bindings. Attach intake-validation and native refresh/citation receipts before closing IRV-7. The operator's instruction to proceed with these re-dives and demotions authorizes this existing corrective round; it does not add the 17 surfaced sources.
+Next action: under the filed corrective plan, file and validate the reviewed 22 source-entry updates and eight verification repairs under IRV-5/6. Preserve prior claim history and all 79 recommendation records/task bindings. Attach intake-validation and native refresh/citation receipts before closing IRV-7. The operator's instruction to proceed with these re-dives and demotions authorizes this existing corrective round; it does not add the 17 surfaced sources.
 
 ## Cost guidance
 
 Cheapest capable model per step (`agents/shared/OPERATING_CONSTRAINTS.md` token-efficiency rules): haiku for IRV-1 and IRV-2 (mechanical); sonnet for dives in IRV-5 and for triage judgment in IRV-3; main reviews and owns the Stage-3 plan. No Fable.
+
+### IRV-4 filing — 2026-10-06
+
+The corrective plan and all five consumer/history patches are reviewed. Registration of the existing literature correction/refresh producer path is prospective; VB-RI-CORRECTION-REFRESH-1 owns implementation and validation. The exact current index candidate preserves every non-target block and the peer suffix. Actual current-ledger rebase, 23 durable plus six read-depth tests, source/index/ledger application, intake validation and current citation gate remain required under IRV-5/6. The 79 historical recommendation records remain preserved; the 17 surfaced identities stay outside this selected round without an applicability disposition.

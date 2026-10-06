@@ -1,0 +1,25 @@
+{
+  "approved_stage3_manifest_sha256": "c6743881e2006ab276ccbd5e17c8840e998711dcd15b4cdf1a168c8a7cfe0f73",
+  "checkbox_flips": 1,
+  "checks": {
+    "index-check.log": "feed17f08e7208eee68abde714a2a14ffe323c32593cfc98addf30867160eb8f",
+    "index-regeneration.log": "51a06ba5fc2bb647b5bebde09bd4b4ced4450bda17e4479739ac56bfd0a006dc",
+    "lane-check.log": "d9c786983830244052c2e18ef08cd9c1513a5a2bcee745c19ea92a9c516faf7a",
+    "main-wrap.pid": "5bd2498d8226cbeae613534642ce0ad982a1e2a5f301403fb1ea22579944d214",
+    "readme-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "synchronized-base.txt": "964550e54eba6991c1a890c75a440879996320360a8977740b2c09e92765f0b2",
+    "wiki-incremental.json": "2322337793c69bf30f7de53d9e15c0af43a3dad1d73371193fa1c0ad374f6218",
+    "wiki-scoped-touch.json": "41414db1652e9b228559f700c712caa6710ea5c9775ac3518648ac7a3f06345f",
+    "wiki-scoped-touch.stderr": "a36b0fb4ea64446a9018607361c412ca3524ab62001ddc5c773ae40bf8d8a28f"
+  },
+  "current_tests_executed": false,
+  "explicit_applicability_declines": 0,
+  "index_check_exit": 0,
+  "lane_check_exit": 0,
+  "native_source_index_ledger_application": false,
+  "new_tasks": 1,
+  "plan_sha256": "394d6d4da9a1650e35fcb53a375bfbc115415bd43da05e3d0e811b6afa6ac930",
+  "readme_warnings": [],
+  "scope": "IRV-4 plan and prospective source registration; IRV-5\u20137 remain open",
+  "synchronized_base": "fb06b1d93023458b95283aeb8ffa28c0ee79709d"
+}
