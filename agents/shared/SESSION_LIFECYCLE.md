@@ -109,6 +109,10 @@ dashboard sees checkbox state only (axiom above).
   APPLIES them and owns the commit.** Adding, deleting or re-pointing an index row is never a
   subagent's own write; the same holds for intake entries and handoff stubs. Widening this — a
   subagent writing an index directly — needs explicit operator approval. (ruling (b), 2026-08-16)
+  On Claude sessions, the subagent that writes progress/logs/handoff-edit text and prepares the
+  index-row diff is **Haiku** (clerical, mechanical, wrap-up-shaped work; `agents/README.md` →
+  Model Routing) — the main reviews and approves before applying. This is the Claude-side mirror
+  of the Codex-side pin two bullets below ("Wrap-up routines go to `gpt-5.6-luna` at `high`").
 - Step-level split of what runs when: `agents/commands/wrap-up.md` → CADENCE.
 
 Related standing direction (2026-07-28): actively source and track non-inference work that can

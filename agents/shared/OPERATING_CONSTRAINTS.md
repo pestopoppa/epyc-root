@@ -418,6 +418,10 @@ including the dispatches whose nudge says nothing about subagents.
 - **A main observed working serially is a defect in these files, not a nudge target.** Fix it here.
   A rule that lives in dispatch nudges is a per-task favour that disappears the moment a nudge
   omits it.
+- **Exception, narrowly scoped**: a single read-only command whose output decides a management
+  step (`ls`, a status read, `git log -1`) may run on the main thread. Anything multi-step, any
+  edit, and anything that runs code still goes to a subagent. See *Token-Efficiency Operating
+  Rules* below for the full contract this exception belongs to.
 
 **When NOT to fan out.** Sequential phases of the same work; tightly coupled components; work
 requiring shared state; and any decomposition by ROLE rather than by context boundary — the last is
@@ -502,6 +506,51 @@ Harness-specific sizing and scheduling for the fan-out default above.
   presented only while compute is saturated* (MEASUREMENT_POLICY → Consolidated apply-time
   ratification). (4) A failed operator-presented command is an agent defect; pre-validate
   end-to-end.
+- **Zero-token waiting generalizes beyond compute saturation**: see *Token-Efficiency Operating
+  Rules* → *Zero-Token Liveness Watching* below, which also covers the case of a backgrounded
+  `region-lock run` blocked on acquire.
+
+## Token-Efficiency Operating Rules (operator, 2026-10-05)
+
+Consolidated token-discipline doctrine. May get amendments later; this section is their canonical
+home — amend here, not by re-deriving the rule at the point of use.
+
+### Main thread scope
+
+- Main thread = management and review of completed work only; all execution goes to subagents.
+  The one exception is the single-read-only-command carve-out already stated under *Parallel
+  Subagent Fan-Out* above — it does not widen into multi-step work, edits, or running code.
+- **Canonical home for model tiering is `agents/README.md` → Model Routing (Task-Based)**: the
+  per-tier task categories, the escalate-exactly-one-tier rule, the no-`fork`-for-cheap-work rule,
+  lock discipline under cheap tiers, and the brief/report contract all live there — this section is
+  not complete without it.
+
+### Zero-Token Liveness Watching — no recurring polling prompts
+
+- **No recurring LLM polling for steady-state liveness.** A cron job or loop that re-invokes an
+  LLM prompt every N minutes just to check "anything changed?" burns tokens on every negative
+  tick. Use a zero-token script watcher (inotify, a poll loop in bash/python with no model call,
+  a blocking wait on a lock or file) that exits ONLY on a reportable change and then re-invokes
+  the session — mirroring the existing *Observation Windows* and *Saturation scheduling* rules
+  against manufacturing false idle/busy reads from a sampling cadence, but for liveness instead of
+  compute occupancy.
+- **A backgrounded `region-lock run` blocked on lock acquire is a zero-token waiter** and is the
+  correct way to wait for lock-gated work to become available. Never sleep-poll for a lock in a
+  loop that re-prompts an LLM on each cycle.
+
+### Cross-session handoffs are pushed, never "I'll notice"
+
+- A cross-session handoff is delivered via `SendMessage` plus a flag file touched on both success
+  and failure — never left for the other session to discover by polling or by chance re-read.
+  This is the push-side of the existing *Bus drain (M1)* practice (`CLAUDE.md` → Agents &
+  Automation): drain reads what arrived, this rule is about making sure something arrives.
+
+### Operator status replies stay short
+
+- Replies to the operator are short; long material (reports, diffs, logs, analysis) goes into a
+  file and the reply names its path. This is the same instinct as the decision-package contract
+  immediately above (*Operator Decision Requests*) applied to ordinary status updates, not only to
+  decisions: the operator's terminal is not the place for the material itself.
 
 ## Doctrine rulings — 2026-08-16
 

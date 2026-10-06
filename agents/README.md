@@ -71,11 +71,39 @@ than this section for the design rationale.
 
 ## Model Routing (Task-Based)
 
-- Claude sessions: `Haiku` routine execution / `Sonnet` most engineering / `Opus` novel architecture and hard debugging. `Fable` is metered — reserve for architect-grade work.
+- Claude sessions, set the model and effort EXPLICITLY on every subagent dispatch (operator,
+  2026-10-05):
+  - `Haiku` — clerical, search, mechanical transforms, wrap-up docs/logs/handoff-edit writing.
+  - `Sonnet` — code reading, routine fixes, tests, log audits.
+  - `Opus` — hard design or hard debugging only.
+  - `Fable` — only on explicit operator request; it is metered.
 - Codex sessions: smallest capable `gpt-5.6-terra` or `gpt-5.6-luna` at the lowest adequate effort (CLAUDE.md § Codex Delegation Policy).
 - Local stack roles route via the orchestrator's frozen registry, never hand-picked per task.
 
-Rule: start with the cheapest model likely to succeed, escalate only when blocked.
+Rule: start with the cheapest model likely to succeed; a failed cheap attempt escalates **exactly
+one tier** (Haiku -> Sonnet -> Opus), never straight to the top.
+
+**Never use `subagent_type: "fork"` for cheap work.** A fork inherits the full parent context and
+always runs on the parent's model, regardless of any `model` override passed to it — so forking
+for a Haiku-shaped task still spends parent-model tokens. Fork only when the point is to share the
+parent's context (open-ended research questions), never as a shortcut to spawn cheaply.
+
+**Cheap tiers do not relax lock discipline.** Every brief that runs a CPU build, test, or server
+still carries the region-lock / gpu-quiet clause (`OPERATING_CONSTRAINTS.md` → Inference and
+Benchmarks), regardless of which model runs the subagent. There is no subagent GPU work during a
+measurement window, cheap model or not.
+
+### Delegation brief and report contract
+
+- Briefs are tight and self-contained (the subagent gets no parent context except a fork); reports
+  are word-capped.
+- A subagent's result is a capped summary (~15 lines) plus a file path for any long output; the
+  main reviews the summary and never reads a subagent's raw JSONL transcript.
+- **Harness caveat**: some subagent types/harness configurations refuse a Write of a report file
+  ("subagents should return findings as text, not write report files"). Word the brief so it works
+  either way — ask for the deliverable as returned text (the main persists it to a file itself if
+  a durable copy is needed) or as a non-report artifact (a patch, a diff, a code file) rather than
+  assuming a report-file Write will succeed.
 
 Role launch profiles are recommendations, not identity. In particular, the Auditor and Inference
 Main profiles in their role files may be changed by the operator at any time without a warning,

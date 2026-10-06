@@ -185,6 +185,10 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
   and decomposition by ROLE — a measured anti-pattern) are canonical in [Parallel Subagent
   Fan-Out](agents/shared/OPERATING_CONSTRAINTS.md#parallel-subagent-fan-out--the-default-working-mode-of-every-main).
   Read the exceptions there before deciding not to fan out — do not infer them.
+  Main thread = management + review of completed work; each subagent runs on the cheapest capable
+  model/effort, set explicitly (`agents/README.md` → Model Routing); never `fork` for cheap work;
+  no recurring LLM polling, use zero-token watchers (`OPERATING_CONSTRAINTS.md` → *Token-Efficiency
+  Operating Rules*).
 - **Index rows, intake entries and handoff stubs: a subagent may PREPARE, the owning session
   APPLIES.** Drafting the row text, running `scripts/handoffs/index_state.py --check` and reporting
   the exact diff is preparation. Adding, deleting or re-pointing a row is never a subagent's own
@@ -192,6 +196,9 @@ table is in [`scripts/vidya/adapters/README.md`](scripts/vidya/adapters/README.m
   `agents/shared/OPERATING_CONSTRAINTS.md` → *Doctrine rulings*)
 - **Codex delegation & long-horizon throughput contract**: `agents/shared/OPERATING_CONSTRAINTS.md` → *Codex Delegation & Long-Horizon Throughput*.
 - **Bus drain (M1)**: at every task boundary run `scripts/coordination/session_bus.py drain --agent <your-roster-id> --triage`; act on assignments/nudges; write acks to **your own** outbox with `corr_id` for routed items; never write another agent's file. Contract: [`coordination/session-bus/BUS_PROTOCOL.md`](coordination/session-bus/BUS_PROTOCOL.md).
+  Push, don't wait to be noticed: a cross-session handoff is `SendMessage` plus a flag file
+  touched on success AND failure — see `agents/shared/OPERATING_CONSTRAINTS.md` → *Token-Efficiency
+  Operating Rules*.
 - **The 15 coordination invariants are canonical in [`agents/shared/INVARIANTS.md`](agents/shared/INVARIANTS.md)** — single writer, never block on the bus, claims acquired never observed, trust boundaries human-only, never tick another agent's checkbox, two-sample persistence, and the rest. Cite that file; never restate an invariant.
 - **Doctrine rulings (2026-08-16)** — wrap-up cadence, subagent index edits, role-based decomposition: `agents/shared/OPERATING_CONSTRAINTS.md` → *Doctrine rulings — 2026-08-16*.
 - **Wrap-up cadence: one task done = one wrap-up, AS YOU GO.** Only index PRUNING and the wiki compilation sweep wait for an operator-invoked `/wrap-up`, and nothing may auto-trigger the routine. Full contract: `agents/shared/SESSION_LIFECYCLE.md` → *Wrap-up cadence*.
