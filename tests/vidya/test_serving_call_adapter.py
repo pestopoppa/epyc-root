@@ -168,7 +168,7 @@ def test_refuses_projected_source_line_mutation(tmp_path):
     row = dict(reader.native_rows(path)[0])
     row["source_line_bytes"] = row["source_line_bytes"].replace(b"10.0", b"11.0", 1)
     row["source_line_sha256"] = hashlib.sha256(row["source_line_bytes"]).hexdigest()
-    with pytest.raises(ct.ProjectionError, match="matching original line"):
+    with pytest.raises(ct.ProjectionError, match="does not bind the projected record"):
         reader.project(row)
 
 
@@ -209,6 +209,7 @@ def test_absent_timing_row_is_native_metadata_only_even_when_queue_exists(tmp_pa
 def test_refuses_bad_hash_or_schema_without_partial_rows(tmp_path, mutation, message):
     good = _serving()
     bad = dict(good)
+    bad["record_id"] = "native-002"
     mutation(bad)
     path = _write_lines(tmp_path / "serving_calls.jsonl", good, bad)
     with pytest.raises(ct.ProjectionError, match=message):

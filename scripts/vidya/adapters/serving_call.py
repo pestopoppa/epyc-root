@@ -461,10 +461,11 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
     if not isinstance(line, bytes) or not isinstance(line_sha, str) or hashlib.sha256(line).hexdigest() != line_sha:
         raise ProjectionError("serving-call native row lacks matching original line bytes/digest")
     try:
-        if json.loads(line.decode("utf-8")) != record:
-            raise ProjectionError("serving-call source line does not bind the projected record")
-    except (UnicodeDecodeError, ValueError) as exc:
+        source_record = json.loads(line.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
         raise ProjectionError("serving-call source line is not valid JSON") from exc
+    if source_record != record:
+        raise ProjectionError("serving-call source line does not bind the projected record")
     unit, direction = _METRICS[metric_field]
     identity = {
         "record_id": record_id,
