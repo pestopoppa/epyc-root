@@ -2725,3 +2725,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 - [ ] **VB-STANDALONE-NUMA-GUARD — bind CLI declared-mode structural conformance.** NI07-30/NIB2-76 existing native CI carrier/shared grade; explicit/declared mode forwarding and unresolved declaration refusal before validation, list/staleness legacy controls and existing portable-source controls. No fleet measurement, live launch/guard acceptance, new ladder or historical backfill.
 
 - [x] **VB-NI07-TERMINAL-REPL — ingest timeout structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37469999403/README.md) TRUE123/123, one Judged/Located observation and three canonical frames; no live lease/cancellation/host-effect gate.
+
+- [ ] **VB-PII-ED25519-CONFORMANCE — bind staged-header structural controls.** NI07-31 uses existing native CI carrier/shared grade for disposable Git staged-blob rejection, metadata pass and original token/partial-stage/excluded controls. No real-secret/privacy/promotion warrant, new ladder, policy exemption or historical backfill.

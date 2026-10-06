@@ -504,3 +504,5 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | Calibration input byte bindings (prospective NI07-29) | dependency evidence; existing native CI verifier for synthetic conformance | CLI read-once state/catalogue/gold SHA256 and byte lengths, bounded hints; API metadata caller_asserted or null. No original hashes reconstructed on read, no calibration/label/model validity or standalone tuple | TD-18-NI-INPUTS / VB-TD-CAL-INPUT-BINDINGS; future measurement integration remains VB-TDP-1/shared-screen |
 
 | Standalone guard declared NUMA mode (prospective NI07-30) | native CI verifier | Source-pinned fake CLI forwarding/refusal and portable-pin fixtures; preserve diagnostic/default Python callers and pipeline/update behavior | NIB2-76 / VB-STANDALONE-NUMA-GUARD through existing native carrier/shared grade |
+
+| PII ED25519 header recognition (prospective NI07-31) | existing native CI verifier | Original disposable staged-index synthetic headers and compatibility controls; existing PII producer retained unchanged | VB-PII-ED25519-CONFORMANCE / TOC-RD-1a; no whole-file fixture exception or privacy authority |
