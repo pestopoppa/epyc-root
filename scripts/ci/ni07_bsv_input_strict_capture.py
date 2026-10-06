@@ -29,7 +29,7 @@ APP_SOURCE_PATHS = (
 RECIPE_WORKFLOW = ".github/workflows/ni07-bsv-input-strict.yml"
 INSTALL_COMMAND = (
     "python -m pip install pytest==8.4.2 iniconfig==2.3.0 "
-    "packaging==26.3 pluggy==1.6.0 Pygments==2.21.0"
+    "packaging==26.0 pluggy==1.6.0 Pygments==2.20.0"
 )
 
 
@@ -114,9 +114,9 @@ def main() -> int:
                     "declared_dependencies": [
                         "pytest==8.4.2",
                         "iniconfig==2.3.0",
-                        "packaging==26.3",
+                        "packaging==26.0",
                         "pluggy==1.6.0",
-                        "Pygments==2.21.0",
+                        "Pygments==2.20.0",
                     ],
                     "dependency_basis": (
                         "The selected test module imports pytest; the BSV report and its "
