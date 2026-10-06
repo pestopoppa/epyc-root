@@ -138,3 +138,7 @@ Source/recipee5ade5a80d6b15048d4ef4937e82b0cb61c4b7fb promoted ROOTmainf01aea743
 ## NI07-25 completed question-sidecar persistence status
 
 Source87e06e062d8ab5fcb8a1cce0642b17ebbd0d241e promotedAPPmain05a18b4e35688a56c6bc5984a49bb56d1bde072d; recipeba4be4d36f3a35fc0c45c6c3ff69bd71928deca3 promotedROOTmain490b7030ac3141c0f90e306d50746ccd76094475. Native37463260425 TRUE9/9 after MAIN3361Git+2contexts/all3371original API custody review; package/runtime assertions checked. Four checklist closures/three canonical frames; cohort27/30. Original37461378205 has a diagnostic NULL receipt (unnamed JUnit case, summaryNone, no native row), not an absent receipt. Original37462303467 remains FALSE6/9 after three fixture expectations used0..1 instead of the existing0..3 quality scale. MAIN caught the metric baseline mistake; only test assertions changed. Originals were not resealed. Eval_tower ownership transfers to NI26 after this published boundary. No host tests/models/benchmarks/serving. MAIN retains next-ROI suggestions pending source review, not completed tasks.
+
+## MAIN enrolled NI07-28 candidate-description preparation
+
+Source-reviewed existing TD-14 omission at APP05a18b4e; bounded additive implementation and synthetic JSON/native/layout/readers controls queued to cheapest worker. Parent empirical no-harm gate remains open. Prospective source table and belief task filed before first fixture, index next actions updated, cohort27/31. TD-18 receipt/replay and TD-12 joint-head work remain suggestions pending further selection, not accepted or completed.
