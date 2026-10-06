@@ -5099,3 +5099,6 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 2026-10-06: [R23-70 canonical priors remediation](../artifacts/ni08/stack-guard-remediation-source-20261006/README.md) is a verified source/text correction only; it does not regenerate production priors.
 
 2026-10-06 source-review boundary: pytest collection imports project modules and executes their top-level code. The P7 worker collection exceeded the static-only host scope; its incomplete runtime/effect custody remains unknown and is not validation. MAIN independently reconstructed the intended cases from AST before approving isolated native CI. [Running review record](../docs/reference/ni08-non-inference-continuation.md).
+
+
+2026-10-06: [OpenCode prompt transport source acceptance](../artifacts/ni08/harness-stdin-source-20261006/README.md) audits all three current generators and moves HS4 to exact UTF-8 stdin. Hosted138/138 covers a long Unicode prompt and compatibility suites using fake tools; live shell/model efficacy and original r3 remain separate.

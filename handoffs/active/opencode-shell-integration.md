@@ -1,13 +1,13 @@
 # OpenCode Shell Integration — Phase 0
 
-**Status:** active; dated r3 acceptance and card/release pin are recorded. Remaining P0 override carry requires its inference owner; P7 is source-only launcher work.
+**Status:** active; dated r3 acceptance and card/release pin are recorded. P7 stdin source is accepted; remaining P0 override carry requires its inference owner.
 **Scratch:** `/mnt/raid0/llm/worktrees/ni08-screen-proposals-root-20261006`, `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/`.
 **Parent:** [harness-selection-and-integration.md](harness-selection-and-integration.md), which retains decision/candidates/P1–P6 gates.
 **Owner index:** [user-facing-harness-index.md](user-facing-harness-index.md), UFH-15.
 
 ## Start here
 
-Fix P7 prompt transport and its argv guard; validate the remaining `/v1` override carry only at the owning inference session boundary. The operator approved this split on 2026-09-17; its recorded P0.4 trigger passed on 2026-09-26.
+P7 stdin transport is accepted; validate the remaining `/v1` override carry only at the owning inference session boundary. The operator approved this split on 2026-09-17; its recorded P0.4 trigger passed on 2026-09-26.
 
 ## Phase 0 tasks
 
@@ -20,7 +20,9 @@ Fix P7 prompt transport and its argv guard; validate the remaining `/v1` overrid
         ✅ 2026-10-06 — MAIN applied the exact npm package version after readonly official registry verification; no container build or runtime installation claimed.
     - [ ] **HS-4 P0.4 carry — live `/v1` override validation, shell-agnostic** (moved 2026-09-16 from the closed [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) items Phase-2 and P; **needs inference**). In the P0.4 quiet window, run `scripts/hermes/reference_openai_client.py --send` (print-only by default) against the current `/v1/chat/completions` and verify: role override, `x_force_model`, `x_max_escalation` (still metadata/pass-through on this route until full-graph enforcement; see P4 routing parity), `x_disable_repl` end-to-end, `x_show_routing` metadata, and streaming with the override params present. Procedure: [`client-surface-audit.md`](../../docs/reference/harness-candidates/client-surface-audit.md) Step 4.
       ✅ 2026-10-06 — MAIN reopened original r3 source/config/receipt objects, republished the dated HS-7 card and froze release tag `v1.18.31`=`014614d35b397775e5d397a490fc72368c894ec2`. [Review](../../artifacts/ni08/harness-phase0-source-20261006/README.md). No new inference.
-    - [ ] **HS-4 P7 — OpenCode re-quotes any positional containing a space; pass prompts on STDIN.** opencode 1.18 builds its message as `message.map(G => G.includes(" ") ? '"' + G.replace(/"/g, '\\"') + '"' : G).join(" ")` (verified in the 1.18.31 binary) — the DS41 2026-09-24 planner prompt reached the model wrapped in quotes with 2,982 backslash-escaped quotes, all JSON. Stdin is appended verbatim (`message + "\n" + stdin`) and also clears the kernel's 128 KiB per-argument limit (~100 KB prompts). Reference fix: research `loop/actors.py` `Backend.argv` for `opencode` + `Backend.stdin_payload` (lane `lane/ak-actor-seat-20260924`). Action: audit every place this repo invokes `opencode run` / a CLI shell with a prompt argument (`scripts/hermes/`, any launcher under HS-4) and switch to stdin; add a guard test that the argv never carries the prompt. Zero inference. The full list of measured `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt, compaction echo, rc=1 with a complete reply, `hidden`, unused `task`) is in [`opencode-p03-audit-20260916.md`](../../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) → *Addendum 2026-09-24*.
+    - [x] **HS-4 P7 — OpenCode re-quotes any positional containing a space; pass prompts on STDIN.** opencode 1.18 builds its message as `message.map(G => G.includes(" ") ? '"' + G.replace(/"/g, '\\"') + '"' : G).join(" ")` (verified in the 1.18.31 binary) — the DS41 2026-09-24 planner prompt reached the model wrapped in quotes with 2,982 backslash-escaped quotes, all JSON. Stdin is appended verbatim (`message + "\n" + stdin`) and also clears the kernel's 128 KiB per-argument limit (~100 KB prompts). Reference fix: research `loop/actors.py` `Backend.argv` for `opencode` + `Backend.stdin_payload` (lane `lane/ak-actor-seat-20260924`). Action: audit every place this repo invokes `opencode run` / a CLI shell with a prompt argument (`scripts/hermes/`, any launcher under HS-4) and switch to stdin; add a guard test that the argv never carries the prompt. Zero inference. The full list of measured `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt, compaction echo, rc=1 with a complete reply, `hidden`, unused `task`) is in [`opencode-p03-audit-20260916.md`](../../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) → *Addendum 2026-09-24*.
+
+      ✅ 2026-10-06 — [MAIN source/native acceptance](../../artifacts/ni08/harness-stdin-source-20261006/README.md): full current three-launcher census, exact long Unicode stdin/no-prompt argv and original hosted138/138. Historical r3 unchanged; no model execution.
 
 ## P0.4 r3 evidence identity for the proposed HS-7 card
 

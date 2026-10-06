@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **41 completed scoped tasks: 34 existing checkbox flips and 7 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **43 completed scoped tasks: 35 existing checkbox flips and 8 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -70,7 +70,7 @@ These are existing task identities or already filed prospective source companion
 
 | Task | Source work now | Remaining gate on the parent |
 |---|---|---|
-| HS-4 P7 (UFH-15) | Reviewed stdin generator and meaningful long/Unicode exact-argv guard; hosted recipe preparation | Source/native review only; original r3 remains unchanged |
+| HS-4 P7 (UFH-15) | Accepted: stdin generator, full invocation census and hosted138/138 | Remaining P0 live override carry belongs to its inference owner; historical r3 unchanged |
 | TOC-RD-1b | Exact public observed-periods table selector and same-table account/secret negative controls under review | Historical unredacted fixture acceptance is not established by synthetic source controls |
 | VB-MFVBS1-PROV / VB-EVALDISC1-PROV; VB-MFVBS-1 / VB-EVALDISC-1 | Prospective input/source snapshots, strict read-side projection, edited-only denominator correction; source under review | No historical identityless JSON backfill or new grading rule |
 | SC80 | Exact claim-index bounds distinguish dangling references from un-ingested coverage; private source preparation authorized | Existing citation statuses/ledger remain authoritative; no new ladder |
@@ -84,3 +84,8 @@ R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source delivera
 2026-10-06 preparation boundary: P7 and period-cell source verification now have prospective VB/source-table enrollment before capture. MAIN requested exact expanded-case checks and complete input binding before isolated execution. The running tally remains **41**, with no pending proposal counted.
 
 Preparation boundary: TOC recipe6fd5fd9 is in isolated CI after MAIN full Git/case binding; P7 recipee6aeaf1 is approved after independent 138-case reconstruction. Local P7 collection violated the static-only boundary, has incomplete runtime/effect custody, and supplies no validation. C5 source preparation now passed MAIN review with eight exact joins and preserved oracle workload/dtype authority; prospective verification is enrolled before capture. These remain pending acceptance and add no completions.
+
+
+## P7 source transport — MAIN acceptance
+
+[Full launcher census and original138/138](../../artifacts/ni08/harness-stdin-source-20261006/README.md) close P7 and its pre-enrolled VB companion. MAIN independently reopens33Git+2contexts/all44API members and shared Judged/Located output. **43 scoped completions (35 existing flips +8 scoped additions)**. One generator switches to stdin; other current generators already comply. No actual OpenCode/model invocation, historical r3 rewrite or excluded host-collection warrant. Source/native preparation for TOC, C5, report adapters and SC80 continues; whole-backlog exhaustion remains unproved.

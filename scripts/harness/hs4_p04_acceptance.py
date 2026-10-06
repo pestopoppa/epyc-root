@@ -104,9 +104,11 @@ node {lint} "$OPENCODE_CONFIG" {env_file}
 opencode --version > "$EVID/opencode-version.txt"
 date +%s.%N > "$EVID/window-start.txt"
 # No --auto: permission asks are auto-rejected. edit and bash are allowed by
-# OpenCode's defaults inside the project directory.
+# OpenCode's defaults inside the project directory. Keep the prompt out of argv:
+# OpenCode re-quotes positional messages containing spaces (audit pitfall 1).
 RUN_RC=0
-(cd "$REPO" && opencode run --format json --title hs4-p04-acceptance {prompt}) \\
+(cd "$REPO" && opencode run --format json --title hs4-p04-acceptance) \\
+  < "$EVID/prompt.txt" \\
   > "$EVID/events.jsonl" 2> "$EVID/opencode-stderr.log" || RUN_RC=$?
 date +%s.%N > "$EVID/window-end.txt"
 echo "$RUN_RC" > "$EVID/opencode-exit.txt"
@@ -239,11 +241,11 @@ def cmd_prepare(args: argparse.Namespace) -> int:
             root=_sh(ROOT),
             env_file=_sh(ENV_FILE),
             lint=_sh(PLUGIN_DIR / "scripts" / "lint-config.ts"),
-            prompt=_sh(TASK_PROMPT),
             script=_sh(Path(__file__).resolve()),
         )
     )
     run_sh.chmod(0o755)
+    (evidence / "prompt.txt").write_text(TASK_PROMPT, encoding="utf-8")
     (evidence / "prepared.json").write_text(
         json.dumps(
             {

@@ -1,0 +1,315 @@
+{
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "review": "PASS",
+  "recipe_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+  "tracked_file_count": 33,
+  "counts": {
+    "app": 1,
+    "carrier": 6,
+    "recipe": 26
+  },
+  "tracked_files": [
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 2609,
+      "git_blob": "36768fae5e841d3a0aaddff5c8e1d588c9875a58",
+      "mode": "100644",
+      "path": ".github/workflows/ni08-p7-stdin-capture.yml",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "9e5c5c3cd426c68fa0f170ceab5457b747f164609e846d669fc0da5fffd1e102"
+    },
+    {
+      "bytes": 1788,
+      "git_blob": "35335cee87aba0b89ec52c07b802ca73bca6e646",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/config/opencode.env",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "5cadf9c55e7bd9279f1ecf6a638f0e4c9d96c1d740c06f6288f923537d7cf2b5"
+    },
+    {
+      "bytes": 5088,
+      "git_blob": "ed9bf944fafcd8e031987779472cbb51d2b3505d",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/config/opencode.jsonc.template",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "4128c13e5c462cb30f709ed2c2cd7c604f9388002eebcb269904dadbcae91948"
+    },
+    {
+      "bytes": 7626,
+      "git_blob": "9760bea291f415afb29407998c100e9ae7e6889e",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/config/opencode.subagents.jsonc.template",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "88448edf09af1b55b2f25d071abbc4e18768307cc76c331afd9bd35036904513"
+    },
+    {
+      "bytes": 820,
+      "git_blob": "cb45d0a72abc24d2a377209ea66f1e9575e8dca1",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/package.json",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "3d22fca1781ed8c1502414f774ba8d5a06f22c4c8e2769a9f3da79254b1d91d1"
+    },
+    {
+      "bytes": 1983,
+      "git_blob": "ac35f49a634b5d218ec949e64e0e29f378a688df",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/scripts/lint-config.ts",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "a1482ce854fc9b943a281a2eddff4e04bf7a58d5019d7ce48b716493a60e19d2"
+    },
+    {
+      "bytes": 16244,
+      "git_blob": "ade18f267b99c4c4d883d0180803a9d00decad37",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/src/config-lint.ts",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "874fc012923772832b5716d09f23176f61edff02dc516f64d9414aa435c1b8e4"
+    },
+    {
+      "bytes": 4922,
+      "git_blob": "d4e0235c5f1ed91b5e520cc4676ed2c2f0f11099",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/src/index.ts",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "84d57d67a81decd789678e552df4e221ee3da00ac5e11d7f5618c0c2e4aaff3b"
+    },
+    {
+      "bytes": 10092,
+      "git_blob": "f945d47f8b082b022bf5cb855d0eba3e7ca7adbf",
+      "mode": "100644",
+      "path": "harness/opencode-plugin/src/lib.ts",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "1708abf627c1b157e0f2c5026433fc4a61035f2a44348d5ab9a763d27abb0a8e"
+    },
+    {
+      "bytes": 3691,
+      "git_blob": "4ec090f9f43a77bb5f8a651347d41d6a33a925e3",
+      "mode": "100644",
+      "path": "pytest.ini",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "d9068321b5c07e5138e3adce3db7e911dc7d29201bb7ed9c9aa2fc92b137dc28"
+    },
+    {
+      "bytes": 12346,
+      "git_blob": "0c07a5c9ca33ed90c2bbf4950311b40cbbb4ec23",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_p7_collected_nodeids.txt",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "ce7c5aa47502cc4bbef43ae0ff65e2a3b624ffe1286f10bd1b68109d606ef2d8"
+    },
+    {
+      "bytes": 20426,
+      "git_blob": "c5cc9ae1d6d72c87d1ee2b43e0ccb33c992c1101",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_p7_expected_cases.json",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "6f1bb6f7650cc29615dbaae1ba3dfe6c52493e31e474d98c7633fe763b308e32"
+    },
+    {
+      "bytes": 17001,
+      "git_blob": "5d266efc2a63d11870e963359854fd81c28773e3",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_p7_stdin_capture.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "54f4ff035e3cd5df1a343a4ecbc56c5033014bee145d4f65fc0a02b383cb351b"
+    },
+    {
+      "bytes": 503,
+      "git_blob": "d371343799b821748e72dcb17ff5802b943772d8",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_p7_stdin_capture_requirements.txt",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "a3da1fa63695d5ebe4b2d1501bc3defccba4cfa7d25244fbcf25f2ff56874862"
+    },
+    {
+      "bytes": 35366,
+      "git_blob": "ed5e993a6eda82eeb1b8d9b8ea0db3258f4045d5",
+      "mode": "100755",
+      "path": "scripts/harness/hs19a_acceptance.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "6e93460cd0069f04de051c7e89a678bbb99efd00abd11757541b287f14176ead"
+    },
+    {
+      "bytes": 28603,
+      "git_blob": "924ad80f375661aece8ce313cbc28a5b011fdf53",
+      "mode": "100644",
+      "path": "scripts/harness/hs4_p04_acceptance.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "31ecd73d4901f6570718af6c1e8930d36c960bd4181b4f57ac9df2605875774a"
+    },
+    {
+      "bytes": 48907,
+      "git_blob": "b0c6adec7fd09ba3c61661cd7249487af5b60c9d",
+      "mode": "100644",
+      "path": "scripts/harness/task_delegation_probe.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "65eb9376a7a82e96b12bc90114f309e9fc5d894c0c9ec35ca2e9ba1ec933d5fc"
+    },
+    {
+      "bytes": 25181,
+      "git_blob": "8ab2cc59a4b15d0242408ee6c1468aa73b0554b8",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/opencode_shell_run_capture.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "e17ee65a4789c689afb7c56aa956a8651c5f108694757833d91615afc98817b4"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 999,
+      "git_blob": "7c8d00f842e6f53bd495ed80263720255da50e03",
+      "mode": "100644",
+      "path": "tests/conftest.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+    },
+    {
+      "bytes": 25535,
+      "git_blob": "e46006f1e517c0269cde089c6d801ccca0473051",
+      "mode": "100644",
+      "path": "tests/harness/test_hs19a_acceptance.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "f4ba61650634c7d7068a2a13967ba76f09d36bfd215d05268a3c31912a092767"
+    },
+    {
+      "bytes": 16374,
+      "git_blob": "fe66a9fd3f2fdfce2750c3a07b442ca7c5568f25",
+      "mode": "100644",
+      "path": "tests/harness/test_hs4_p04_acceptance.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "df1357d45876235c2e7b578bc6c06dd78921a62e238ff6481d11ac830afec42d"
+    },
+    {
+      "bytes": 23540,
+      "git_blob": "58a1c554d3d099fe31e49c8690ac39332de82595",
+      "mode": "100644",
+      "path": "tests/harness/test_task_delegation_probe.py",
+      "repo": "recipe",
+      "repo_pin": "e6aeaf10af69545945d8c8260c6253f8f7a34a41",
+      "sha256": "12a6b0a4527d4a5e497c726bd351f17d086625406a997e2b9939089b90fad65d"
+    }
+  ],
+  "case_count": 138,
+  "case_basis": "MAIN independent static AST expansion, scalar/complex pytest IDs and declared source dictionaries; no project imports or test collection",
+  "worker_map_sha256": "824bf58110818f534533869bde5993396f4dd84f2e7fb5a4c8b07454406e647e",
+  "no_capture_yet": true,
+  "collection_boundary_violation": "Worker local collection retained separately; incomplete runtime/side-effect custody is unknown and is not validation."
+}
