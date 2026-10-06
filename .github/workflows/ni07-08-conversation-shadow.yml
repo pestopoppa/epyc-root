@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      APP_PIN: 70663a6dd61817e7ec12dc5982ad6a3352a839f0
+      APP_PIN: 4add71bd925f1e8661a3f669d197382eca62aeb1
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       RECIPE_PIN: ${{ github.sha }}
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
