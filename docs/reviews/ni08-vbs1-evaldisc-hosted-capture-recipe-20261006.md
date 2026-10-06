@@ -1,6 +1,6 @@
 # NI08 prospective report adapter hosted capture recipe
 
-Status: **APP source proposal published; initial setup-only attempt failed before capture; retry recipe awaiting MAIN rebind**.
+Status: **APP source proposal published; two failed capture attempts preserved; corrected ROOT/recipe source is in private review preparation**.
 This is a bounded synthetic source-wiring control. It does not assert corpus behavior, evaluator quality, inference, performance, or adoption.
 
 ## Exact source proposals
@@ -29,14 +29,26 @@ The first hosted attempt (ROOT `e923ec553771b342b0c3836d7f865bfdd5b85dab`, run
 `37544337444`) failed during the exact APP checkout because the pinned object had not yet been
 published to the public remote. Setup stopped before Python setup or capture; its original status
 artifact is retained at `/mnt/raid0/llm/tmp/ni08-vbs1-capture-37544337444` and has no native
-result. This retry recipe changes only the documented APP source-ref custody; the driver, tests,
-APP pin, job and output contract remain unchanged.
+result. The second attempt (ROOT `f759a23db280ed927b1f70a16187cfab6f7a1d04`, run
+`37544676995`) reached the selected controls but is nonconformant and preserved unchanged at
+`/mnt/raid0/llm/tmp/ni08-vbs1-capture-37544676995`. ROOT reported 29/38 passed and 9 failures;
+APP collection stopped with exit 4 and no summary. The original 97-member artifact is retained,
+including the JUnit files and failed receipts. The APP failure exposed an incomplete copied source
+closure and missing locked imports; ROOT failures exposed two `NameError`s. The driver also raised
+an `AttributeError` while validating the APP's null summary. None of these artifacts is a passing
+capture or a shared-grade acceptance.
 
-The exact producer bytes above are loaded from an isolated temporary APP checkout by
-`test_analysis_producer_roundtrip.py`. The test verifies those bytes before import. It now pins
-`src/llm_primitives/__init__.py` too; that package file was previously copied without an equality
-check. The APP writer receives only synthetic in-memory rows and synthetic JSONL input bytes. It
-does not open the BEP corpus, a real question ledger, traces, or an evaluation run.
+The synthetic round-trip fixture now statically follows module-time imports from both APP writers
+and `src.llm_primitives.stat_tests`, includes their real parent-package initializers and the full
+40-file producer import closure, and SHA-pins each byte to APP `cfcf3768716de888a971bf66489397f5b91241df`.
+It copies the actual package initializer and `src.llm_primitives.config` dependencies; it does not
+substitute fake package files. The APP writer receives only synthetic in-memory rows and synthetic
+JSONL input bytes. It does not open the BEP corpus, a real question ledger, traces, or an evaluation
+run. The selected APP tests and producers have a 58-file module-time local-source closure; it is
+explicitly included in the APP carrier readset, alongside the lock and deliberately excluded
+conftest. Third-party roots are `httpx`, `pydantic`, `pydantic-settings`, PyYAML and the stat-test
+module's `scikit-learn`; the hosted requirements pin these roots and their applicable APP-lock
+transitive dependencies.
 
 ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit are:
 
@@ -77,11 +89,15 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 ## Minimal locked runner environment
 
 Use CPython `3.13.15`, Linux x86_64, and install only the requirements in
-`scripts/ci/ni08-hosted-requirements.txt` with pip `--require-hashes`. The exact PyYAML wheel is
+`scripts/ci/ni08-hosted-requirements.txt` with pip `--require-hashes`. The APP dependency lock is
+bound to its exact `uv.lock` bytes above. The exact PyYAML wheel is
 from APP `uv.lock`: `PyYAML==6.0.3`, SHA-256
 `0f29edc409a6392443abf94b9cf89ce99889a1dd5376d94316ae5145dfedd5d6`. The requirements file also
-pins pytest `9.0.3` and its Linux-independent runtime dependencies to hashes in the same APP lock.
-It is a hosted-fixture-only install set; the source environment remains the APP lock above.
+pins pytest `9.0.3`, the producer import roots (`httpx`, `pydantic`, `pydantic-settings`, PyYAML),
+the selected stat-test import (`scikit-learn`), pytest's `colorama` dependency, and their minimal
+Python-3.13 dependency closure to hashes in the same APP lock. The runner records and checks each
+installed version. It is a hosted-fixture-only install set; the source environment remains the APP
+lock above.
 
 Before pytest, generate one source-context manifest outside both checkouts:
 
@@ -117,7 +133,6 @@ tests/vidya/test_analysis_report_adapters.py::test_snapshot_path_escape_is_refus
 tests/vidya/test_analysis_report_adapters.py::test_external_input_original_locator_is_metadata_only
 tests/vidya/test_analysis_report_adapters.py::test_zero_denominator_rate_is_omitted_while_defined_rates_remain
 tests/vidya/test_analysis_report_adapters.py::test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope
-tests/vidya/test_analysis_report_adapters.py::test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false
 tests/vidya/test_analysis_report_adapters.py::test_eval_metric_reps_use_each_native_denominator
 tests/vidya/test_analysis_report_adapters.py::test_eval_cached_suite_and_metric_must_match_bound_report
 tests/vidya/test_analysis_report_adapters.py::test_cli_dispatch_uses_shared_grade_only

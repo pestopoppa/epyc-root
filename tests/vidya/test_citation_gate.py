@@ -5,6 +5,7 @@ These build real frames and fold them rather than mocking a FoldResult. The gate
 exactly where a test starts agreeing with a bug.
 """
 
+import json
 import sys
 from pathlib import Path
 

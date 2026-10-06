@@ -321,7 +321,7 @@ def project(native: dict[str, Any]) -> ClaimTuple:
         "record_id": provenance["record_id"],
         "suite": suite_name,
         "suite_id": suite_id,
-        "n_unique_qids": n,
+        "n_unique_qids": suite["n_unique_qids"],
         "n_rows": suite.get("n"),
         "error_rate": suite.get("error_rate"),
         "wilson_ci": suite.get("wilson_ci"),

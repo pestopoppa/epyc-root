@@ -102,18 +102,67 @@ ROOT_READS = (
     "scripts/ci/native_conformance.py",
 )
 APP_READS = (
-    "scripts/analysis/mf_vbs1_verify_before_stop.py",
-    "scripts/analysis/eval_suite_discriminability.py",
-    "src/llm_primitives/stat_tests.py",
-    "src/llm_primitives/__init__.py",
-    "uv.lock",
-    "tests/test_analysis_report_provenance.py",
-    "tests/test_analysis_report_snapshot_sealing.py",
-    "tests/test_eval_suite_discriminability.py",
-    "tests/unit/test_stat_tests.py",
-    "tests/conftest.py",
+    'scripts/analysis/eval_suite_discriminability.py',
+    'scripts/analysis/mf_vbs1_verify_before_stop.py',
+    'scripts/autopilot/journal_shards.py',
+    'scripts/autopilot/paired_stats.py',
+    'src/__init__.py',
+    'src/autopilot_core/__init__.py',
+    'src/autopilot_core/action_identity.py',
+    'src/autopilot_core/journal_reconstruction.py',
+    'src/autopilot_core/learning_exclusions.py',
+    'src/autopilot_core/measurement_guards.py',
+    'src/autopilot_core/multitier_decision.py',
+    'src/autopilot_core/pareto_math.py',
+    'src/autopilot_core/rlvr_tiers.py',
+    'src/autopilot_core/sequential_verdict.py',
+    'src/autopilot_core/tier_specs.py',
+    'src/backends/__init__.py',
+    'src/backends/anthropic.py',
+    'src/backends/context_overflow.py',
+    'src/backends/llama_server.py',
+    'src/backends/openai.py',
+    'src/backends/protocol.py',
+    'src/backends/serving_calls.py',
+    'src/config/__init__.py',
+    'src/config/models.py',
+    'src/config/validation.py',
+    'src/env_parsing.py',
+    'src/exceptions.py',
+    'src/llm_primitives/__init__.py',
+    'src/llm_primitives/backend.py',
+    'src/llm_primitives/config.py',
+    'src/llm_primitives/cost_tracking.py',
+    'src/llm_primitives/inference.py',
+    'src/llm_primitives/mock.py',
+    'src/llm_primitives/persona.py',
+    'src/llm_primitives/primitives.py',
+    'src/llm_primitives/stat_tests.py',
+    'src/llm_primitives/stats.py',
+    'src/llm_primitives/teleport.py',
+    'src/llm_primitives/tokenizer.py',
+    'src/llm_primitives/tokens.py',
+    'src/llm_primitives/types.py',
+    'src/model_server.py',
+    'src/registry/__init__.py',
+    'src/registry/kernel_paths.py',
+    'src/registry/stack_priors.py',
+    'src/registry_loader.py',
+    'src/roles.py',
+    'src/runtime/__init__.py',
+    'src/runtime/git_head.py',
+    'src/scheduling/__init__.py',
+    'src/scheduling/gate_observation.py',
+    'src/workload_model.py',
+    'tests/__init__.py',
+    'tests/conftest.py',
+    'tests/test_analysis_report_provenance.py',
+    'tests/test_analysis_report_snapshot_sealing.py',
+    'tests/test_eval_suite_discriminability.py',
+    'tests/unit/__init__.py',
+    'tests/unit/test_stat_tests.py',
+    'uv.lock',
 )
-
 
 def _write_once(path: Path, data: bytes) -> None:
     with path.open("xb") as handle:
@@ -175,11 +224,23 @@ def _install_locked_minimal_set(capture_root: Path) -> tuple[Path, str]:
     if completed.returncode:
         raise RuntimeError("hash-locked hosted fixture dependency install failed")
     packages = {name: importlib.metadata.version(name) for name in
-                ("pytest", "iniconfig", "packaging", "pluggy", "Pygments", "PyYAML")}
+                ("pytest", "iniconfig", "packaging", "pluggy", "Pygments", "PyYAML",
+                 "httpx", "httpcore", "anyio", "certifi", "h11", "idna",
+                 "pydantic", "pydantic-core", "pydantic-settings", "annotated-types",
+                 "python-dotenv", "typing-extensions", "typing-inspection", "colorama",
+                 "joblib", "numpy", "scikit-learn", "scipy", "threadpoolctl")}
     if (sys.version_info[:3] != (3, 13, 15) or platform.system() != "Linux"
             or platform.machine().lower() not in {"x86_64", "amd64"}
             or packages != {"pytest": "9.0.3", "iniconfig": "2.3.0", "packaging": "26.0",
-                            "pluggy": "1.6.0", "Pygments": "2.20.0", "PyYAML": "6.0.3"}):
+                            "pluggy": "1.6.0", "Pygments": "2.20.0", "PyYAML": "6.0.3",
+                            "httpx": "0.28.1", "httpcore": "1.0.9", "anyio": "4.13.0",
+                            "certifi": "2026.2.25", "h11": "0.16.0", "idna": "3.11",
+                            "pydantic": "2.13.0", "pydantic-core": "2.46.0",
+                            "pydantic-settings": "2.13.1", "annotated-types": "0.7.0",
+                            "python-dotenv": "1.2.2", "typing-extensions": "4.15.0",
+                            "typing-inspection": "0.4.2", "colorama": "0.4.6",
+                            "joblib": "1.5.3", "numpy": "2.4.4", "scikit-learn": "1.8.0",
+                            "scipy": "1.17.1", "threadpoolctl": "3.6.0"}):
         raise RuntimeError("hosted runtime or locked package versions differ from recipe")
     env = {"python": platform.python_version(), "system": platform.system(),
            "machine": platform.machine(), "packages": packages,
@@ -246,10 +307,17 @@ def main() -> int:
     )
     before_sharedgrade = _artifact_snapshot(sharedgrade_inputs)
     def exact_cases(capture: dict, expected: list[dict]) -> bool:
-        cases = capture.get("summary", {}).get("cases", [])
+        summary = capture.get("summary")
+        if (not isinstance(summary, dict) or not isinstance(summary.get("cases"), list)
+                or not isinstance(summary.get("counts"), dict)):
+            return False
+        cases = summary["cases"]
         expected_identities = [(item["classname"], item["name"]) for item in expected]
+        if any(not isinstance(case, dict) or not isinstance(case.get("classname"), str)
+               or not isinstance(case.get("name"), str) for case in cases):
+            return False
         actual_identities = [(case["classname"], case["name"]) for case in cases]
-        counts = capture.get("summary", {}).get("counts", {})
+        counts = summary["counts"]
         return (len(cases) == len(expected) and len(set(expected_identities)) == len(expected)
                 and sorted(actual_identities) == sorted(expected_identities)
                 and counts == {"passed": len(expected), "failure": 0, "error": 0,
@@ -262,12 +330,24 @@ def main() -> int:
                   "app_receipt_sha256": app_record["receipt_sha256"],
                   "app_fixture_execution_conformant": app_record["fixture_execution_conformant"],
                   "app_exact_selected_cases": app_exact,
-                  "app_case_count": len(app_record.get("summary", {}).get("cases", [])),
+                  "app_summary_present": isinstance(app_record.get("summary"), dict),
+                  "app_summary_counts": (app_record["summary"].get("counts")
+                                         if isinstance(app_record.get("summary"), dict) else None),
+                  "app_case_count": (len(app_record["summary"]["cases"])
+                                     if isinstance(app_record.get("summary"), dict)
+                                     and isinstance(app_record["summary"].get("cases"), list)
+                                     else None),
                   "app_expected_cases": len(expected_cases["app"]),
                   "root_receipt_sha256": record["receipt_sha256"],
                   "root_fixture_execution_conformant": record["fixture_execution_conformant"],
                   "root_exact_selected_cases": root_exact,
-                  "root_case_count": len(record.get("summary", {}).get("cases", [])),
+                  "root_summary_present": isinstance(record.get("summary"), dict),
+                  "root_summary_counts": (record["summary"].get("counts")
+                                          if isinstance(record.get("summary"), dict) else None),
+                  "root_case_count": (len(record["summary"]["cases"])
+                                      if isinstance(record.get("summary"), dict)
+                                      and isinstance(record["summary"].get("cases"), list)
+                                      else None),
                   "root_expected_cases": len(expected_cases["root"])}
     captures_ok = (app_record["fixture_execution_conformant"] is True and app_exact
                    and record["fixture_execution_conformant"] is True and root_exact)
