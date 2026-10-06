@@ -3573,3 +3573,7 @@ The original 352-entry triage is closed for its authorized 22 re-dives and eight
 ## 2026-10-06 catalog consumer source audit
 
 The [accepted source audit](../artifacts/ni08/source-audits-20261006/kb-consumer-findings.md) confirms K7 report and Lab context manifest already attach strict native catalog dependencies. They call the reader directly; unused export convenience is not a missing attachment. Query-length telemetry remains separately bound to its historical byte-prefix/window and must not acquire a retroactive current-catalog dependency. No additional test, reindex or retrieval-quality claim. [NI08 continuation](../docs/reference/ni08-non-inference-continuation.md) tracks newly available source work and concrete gates.
+
+### NI08 inactive event-duty source boundary (2026-10-06)
+
+LR-8 source is inactive by default and has MAIN-reviewed hosted native88/88 conformance with exact source/API artifact bindings. [Acceptance](../artifacts/ni08/lr8-source-acceptance-20261006/README.md) separates this source boundary from the pending shared-grade analysis and actual daemon handover. Parent runtime work stays open; the original OP73 installation records and current daemon/registry are unchanged.
