@@ -1,0 +1,10 @@
+{
+  "ledger_path": "/workspace/.vidya/ledger.jsonl",
+  "sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "frontier": 14341,
+  "cite_as_of": "2026-10-06T21:00:00Z",
+  "global_exit": 0,
+  "scoped_exit": 0,
+  "excluded_default_worktree_probe": true,
+  "ledger_mutated": false
+}

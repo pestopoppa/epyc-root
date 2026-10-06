@@ -269,7 +269,7 @@ def test_text_absent_before_enter_refuses_without_sending_enter(
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
     # H-2 (2026-08-12): the rollback presses the C55 wake character first — a bare
     # `C-u` is a MEASURED no-op on a Claude composer, so without it the rollback
-    # stranded the payload and re-armed the F-34 refusal loop. Pinned as an ORDERED
+    # stranded the payload and re-armed the F-34(b) refusal loop. Pinned as an ORDERED
     # pair: the wake char must PRECEDE the key, not merely appear somewhere.
     assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
                      ("send-keys", "-t", "throwaway:shell", " "),
@@ -295,7 +295,7 @@ def test_paste_blob_before_enter_refuses_with_its_own_diagnostic(
     assert adapter.cmd_nudge(_Args()) == adapter.EX_MISCONFIG
     # H-2 (2026-08-12): the rollback presses the C55 wake character first — a bare
     # `C-u` is a MEASURED no-op on a Claude composer, so without it the rollback
-    # stranded the payload and re-armed the F-34 refusal loop. Pinned as an ORDERED
+    # stranded the payload and re-armed the F-34(b) refusal loop. Pinned as an ORDERED
     # pair: the wake char must PRECEDE the key, not merely appear somewhere.
     assert calls == [("send-keys", "-l", "-t", "throwaway:shell", "--", _Args.message),
                      ("send-keys", "-t", "throwaway:shell", " "),
@@ -2336,7 +2336,7 @@ def test_h2_the_rollback_sends_the_wake_character_before_ctrl_u(monkeypatch) -> 
     keys = [a[-1] for a in sent if a and a[0] == "send-keys"]
     assert keys == [" ", "C-u"], (
         f"rollback sent {keys!r} — a bare C-u is a measured no-op on a Claude "
-        f"composer, so the payload stays stranded and re-arms the F-34 refusal loop")
+        f"composer, so the payload stays stranded and re-arms the F-34(b) refusal loop")
 
 
 def test_h2_a_failed_wake_character_is_reported_and_never_read_as_cleared(monkeypatch) -> None:

@@ -1,0 +1,9 @@
+{
+  "source_head": "f5a316b64ac4078df0afc7d6e67a62645564037c",
+  "original_blob": "6ca930276ba3e85a5349714fd31db5e5d3681589",
+  "rows": 42,
+  "non_recur_row_cells_byte_identical": true,
+  "new_ids_preserve_number_and_add_suffix_only": true,
+  "patch_sha256": "3fb902fd5ad4eb52b3444af92b4f031e57e26f1a5d46dde42a71addd7a75fa3c",
+  "preview_sha256": "3b8ef11c6b215a659afcd79c8edfe2d856f01fc3f83dc395d59fcb33ec280c58"
+}

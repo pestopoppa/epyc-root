@@ -1,0 +1,28 @@
+{
+  "base": "f5a316b64ac4078df0afc7d6e67a62645564037c",
+  "proposal": "145540334907d399354adbd74a5b51c35c982a1e",
+  "source_paths": [
+    "scripts/coordination/observer_registry.json",
+    "scripts/coordination/tmux_adapter.py",
+    "scripts/coordination/worker_runner.py"
+  ],
+  "scope": "Static source identity, registry structural applicability; no runtime, imports, fixture execution or activation",
+  "blobs": {
+    "scripts/coordination/observer_registry.json": {
+      "preimage_sha256": "3116dee5c2ba05879d10d045f0a6318a9d822cc9849418bb90bb25e311c89057",
+      "postimage_sha256": "de4d86c712e3f366e058ec110fe7c4b185c73e6ef537174a497bd666eb32acba"
+    },
+    "scripts/coordination/tmux_adapter.py": {
+      "preimage_sha256": "1bf31c290e050673044fc1550e5effe0cd132e677f0973458e74257dda054125",
+      "postimage_sha256": "95e11b02bf4cf88f569c70e8e9f9b1ca6142173bab6e63aaf54f6ab6a3d01433"
+    },
+    "scripts/coordination/worker_runner.py": {
+      "preimage_sha256": "c72952ce1ff4f37fc4092aafb02912cb2d5f07b4a65ae0f889cb13d055c1bb9d",
+      "postimage_sha256": "c6bb9d311dc5ff6f1aa97a9a9d4097f650992cdb960125a9718f946cff8a973b"
+    }
+  },
+  "executable_ast_identical_after_docstrings": true,
+  "other_18_registry_rows_equal": true,
+  "fleet_runtime_equal": true,
+  "fleet_marker_owner_equal": true
+}

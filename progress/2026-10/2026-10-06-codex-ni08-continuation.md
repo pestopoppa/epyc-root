@@ -79,3 +79,12 @@ MAIN independently recomputed all private allowlisted projection identities/coun
 ## Batch verifier source-review boundary
 
 MAIN approved corrected MF source with captured owner-command identity and honest syntax-only reporting, preserving onepatchset/default behavior. Prompt missing-check language permits honest terminal failure/unknown rather than maxturn deadlock. Worker snapshot transferred to independent clone; original4fileproposal retained in privateMAINcustody, MAINlane restoredclean only after preservation. Reviewed3filefinal sourcec0263f8c frozen/pushed to workerbranch; no accepted CI/mainpromotion yet. Filed VB-MFVBS-VERIFIER/source-table row before capture. No completion counted until original evidence review.
+
+
+## Coordinator ledger boundary
+
+MAIN applied reviewed integrated R25/AUD12 unprotected changes. All42 failure rows retain non-Recur cells exactly; unreliable recurrence counts withdrawn, original Git blob preserved. AUD12 adds one existing flip:27scoped completions(23flips+4additions). Historical intake narratives were removed from the initial overbroad proposal before application; only live relevance/action and current design/tests changed. R25/OBS11 exact three-file D9 proposal independently reviewed and packaged, not merged or counted complete. Protected gate is explicitly sourced to the ratified D9 ruling, not an inferred approval request. Native TD30 successor recipe b267 approved after two predispatch defects fixed and independent MAIN3405Gitreadset/218document manifest matched; hosted run is pending. APv2 source approved/frozen, actual native recipe preparation continues.
+
+Citation probe correction at this boundary: the own worktree has an older ignored ledger snapshot; its default scan is excluded as the wrong runtime identity. Explicit canonical `/workspace/.vidya/ledger.jsonl` matches published intake custody SHA5e580775/14,341frames, and scoped plus global current scans pass exit0. No belief-ledger mutation or doc correction was made from the excluded probe; both ledgers remain untouched.
+
+Normal index publication gate also resolved its ledger relative to the worktree and therefore repeated the excluded wrong-identity scan. Preserved the old19,602-frame ignored read copy immutably in private custody, then refreshed only this lane’s ignored read-only replica from the verified canonical14,341-frame original; canonical original unchanged, no append/repair/merge or bypass. Replica identity report is public.

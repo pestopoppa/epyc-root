@@ -1078,6 +1078,8 @@ something else, which is exactly how 3 of them became uncountable.
   the outbox. Schema validated under both validators; live-bus validate: 0 new failures. 3
   red-first tests.
 
+**2026-10-06 incremental source correction:** the coordinator ledger withdraws its unreliable active recurrence column; the original source stays in Git for historical custody. Stable F-33…F-36 aliases distinguish original events `(a)` from delivery-plane events `(b)`; historical snapshots remain unchanged. [Review and scope](../artifacts/ni08/coordinator-ledger-source-review-20261006/README.md). Protected docstrings and fleet-watch registry classification await [the exact D9 decision](../artifacts/operator/decisions/D9-R25-OBS11-20261006/README.md).
+
 ### WS-1..4 — the delivery-plane residuals, filed with their design constraints attached
 
 Four rows from the lost-wake/wake-spike round (2026-09-07 intake; zero compute; WS-3 is a decision

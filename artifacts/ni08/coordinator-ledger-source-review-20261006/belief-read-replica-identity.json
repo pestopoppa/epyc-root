@@ -1,0 +1,12 @@
+{
+  "created_at": "2026-10-06T21:01:18.180926+00:00",
+  "action": "refresh only owned ignored read replica from verified canonical source; original older replica retained immutable privately",
+  "canonical_sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "canonical_frontier": 14341,
+  "preserved_replica_sha256": "7855aec1998e8f6ec0eb9b647e21f609d229baefa00ff92e3faed87af8129b12",
+  "preserved_replica_frontier": 19602,
+  "source_canonical_unchanged": true,
+  "new_claim_frames": 0,
+  "merges_repairs_rewrites_of_originals": false,
+  "normal_gate_bypass": false
+}

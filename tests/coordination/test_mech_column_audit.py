@@ -19,7 +19,7 @@ Per-row verdicts (full analysis: docs/reviews/rtg48-mech-column-audit-2026-08-23
   F-11  MECH-UC              LANDED — fleet_watch committed, detect-only (R-16 ruling)
   F-13  MECH-UC              LANDED — fleet_watch committed + adapter `pending` detector
   F-24  MECH-UC              LANDED as SUPERSEDED — H-4 SHA deploy-marker (bc6dc77f)
-  F-35  MECH-UC              LANDED — C51/C55/H-1/H-2 all committed
+  F-35(a) MECH-UC              LANDED — C51/C55/H-1/H-2 all committed
 
 Mutation style: the closures under test are not patchable in place, so each
 mutation is shown as (a) the REAL code path refusing the failure, then (b) the
@@ -499,12 +499,12 @@ def test_f071113_fleet_watch_detect_only_and_mutation_suited():
 
 
 # ============================================================================
-# F-10 / F-35 — MECH-UC: C51/C55 composer delivery (landed)
+# F-10 / F-35(a) — MECH-UC: C51/C55 composer delivery (landed)
 # ============================================================================
 
 def test_f1035_submit_sends_the_wake_character_before_the_key(
         monkeypatch: pytest.MonkeyPatch) -> None:
-    """C55 (2076e359): the F-33/F-35 class is refused by sending a wake character
+    """C55 (2076e359): the F-33(b)/F-35(a) class is refused by sending a wake character
     (space), settling `_WAKE_SETTLE_S`, and ONLY THEN the action key. A bare Enter
     is a measured no-op on a Claude composer."""
     adapter = _load_adapter("c55")
@@ -522,7 +522,7 @@ def test_f1035_mutation_bare_key_sequence_is_the_measured_noop(
         monkeypatch: pytest.MonkeyPatch) -> None:
     """Mutation: skip the wake character (the pre-C55 sequence — a single bare key).
     The code's own measured record (tmux_adapter.py:764-774) says that sequence
-    leaves the text exactly where it was: the F-33/F-35 failure recurs. Restore
+    leaves the text exactly where it was: the F-33(b)/F-35(a) failure recurs. Restore
     (previous test): the wake character is present and the composer is consumed."""
     adapter = _load_adapter("c55")
     sent: list[list[str]] = []

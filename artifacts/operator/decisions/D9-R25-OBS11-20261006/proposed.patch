@@ -1,0 +1,44 @@
+diff --git a/scripts/coordination/observer_registry.json b/scripts/coordination/observer_registry.json
+index 35f0957b0..8595f3e7b 100644
+--- a/scripts/coordination/observer_registry.json
++++ b/scripts/coordination/observer_registry.json
+@@ -201,10 +201,11 @@
+     {
+       "id": "fleet_watch",
+       "script": "scripts/coordination/fleet_watch.sh",
+-      "contract": "unadopted",
++      "contract": "exempt",
+       "owning_handoff": "handoffs/active/session-bus-thin-dispatcher.md",
+       "task_marker": "OBS-11",
+-      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED — STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them — every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. What is missing for v1 is the uniform `observe` entrypoint and the behavioural battery. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills.",
++      "reason": "Reviewed against current D8/P3-3 source (2026-10-06): fleet_watch observes hardware occupancy and bus queue aging, not per-main/session liveness. Pane capture is optional human evidence and never a decision input. Exempt from the semantic main-liveness observe contract and shared liveness battery; scheduled log freshness remains monitored. OBS-11 task marker and owning handoff are retained for owner-side closure after D9 review.",
++      "notes": "Enrolled BY HAND: neither discovery rule finds it (it identifies no process by argv, so Rule A misses it, and it does not source observer_guard.sh, so Rule B does too). REWRITTEN AT P3-3 (2026-08-16): the pane-text heuristics were DELETED — STUCK-INPUT, IDLE-CANDIDATE, DETECTOR-BLIND, PANE-UNREADABLE/DEAD and FLEET-UNREADABLE are gone, because 2,499 of 2,654 STUCK-INPUT reports (94%) were the agent CLI's own empty-composer placeholder text. It no longer decides anything about a session's liveness; per-recipient liveness belongs to the daemon (P0-2b) and pool-runner liveness to P3-4. What remains is hardware- and bus-grounded: COMPUTE-IDLE (rocm-smi + region claims, escalated only when compute-gated READY rows are waiting) and QUEUE-AGING (READY rows past a threshold with worker capacity free, classified by the gate refusing them — every refusal class has an owner and a routed fix). Its internal discipline is still three-valued: fw_classify_compute returns 'unknown' and never collapses it to idle, an unreadable queue is reported as QUEUE-UNREADABLE rather than as an empty one, and a domain that could not be read is excluded from the alarm clear sweep. Alarms go to alarm_channel.py (emit-once-on-state-change); pane capture survives ONLY as clearly-labelled human evidence attached to an already-decided alarm, OFF by default. The original OBS-11 liveness-adoption premise was superseded by the D8/P3-3 rewrite: this remains a hardware/queue report-only monitor, outside the session-liveness observer contract. Takes no corrective action of any kind: it detects and logs, never sends keys, never writes the bus, never kills.",
+       "runtime": {
+         "mode": "scheduled",
+         "log": "/mnt/raid0/llm/epyc-root/logs/fleet_watch.log",
+diff --git a/scripts/coordination/tmux_adapter.py b/scripts/coordination/tmux_adapter.py
+index 4ba92286c..488f93997 100755
+--- a/scripts/coordination/tmux_adapter.py
++++ b/scripts/coordination/tmux_adapter.py
+@@ -822,7 +822,7 @@ def _clear_own_pending(target: str, baseline: str,
+     H-2, 2026-08-12: this sent a BARE `C-u`, which C55 measured to be a NO-OP on a
+     Claude composer holding queued text. So every failed delivery stranded its payload
+     — and that residue then tripped the pre-typing composer-empty guard on every LATER
+-    nudge and doorbell to the same main, which is the F-34 refusal loop re-arming
++    nudge and doorbell to the same main, which is the F-34(b) refusal loop re-arming
+     itself from its own rollback. Routed through `_press_key_with_wake` (read its
+     caveat block) so the rollback can actually succeed.
+ 
+diff --git a/scripts/coordination/worker_runner.py b/scripts/coordination/worker_runner.py
+index 6b868d1bb..26616b24e 100644
+--- a/scripts/coordination/worker_runner.py
++++ b/scripts/coordination/worker_runner.py
+@@ -25,7 +25,7 @@ THE MACHINE'S CHANNEL TO THE WORKER IS TYPED AND ONE-WAY (D8)
+ ------------------------------------------------------------
+ Spawn args + a brief file in. A schema-valid report file and a process exit
+ status out. **This module never types into a pane and never reads pane text to
+-make a decision.** Those two channels produced the entire C51–C56 / F-33–F-43
++make a decision.** Those two channels produced the entire C51–C56 / F-33(b)–F-43
+ delivery-plane defect class and a 94%-false-positive perception class; deleting
+ them is the point of the restructure, not an incidental cleanup. Pane scrollback
+ IS captured — but only as evidence attached to a failed row, for a human to
