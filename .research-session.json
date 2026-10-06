@@ -1,164 +1,44 @@
 {
- "session_id": "intake-ctxext-ec-20261006",
- "started_at": "2026-10-06T02:41:21Z",
- "last_checkpoint": "2026-10-06T03:11:59Z",
- "stage": "stage4-complete",
- "phase": "stage2",
- "lane": "/mnt/raid0/llm/worktrees/ec-intake-ctxext-1006",
- "branch": "lane/ec-intake-ctxext-1006",
- "topic": "training-free context extension exact/near-lossless inside native window (Qwen3.x on llama.cpp)",
+ "session_id": "intake-cafe-llama-ec-20261006",
+ "started_at": "2026-10-06T00:00:00Z",
+ "last_checkpoint": "2026-10-06T00:00:00Z",
+ "stage": "stage1-complete",
+ "phase": 5,
+ "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
+ "branch": "lane/ec-intake-cafe-1006",
+ "topic": "kozmic-labs/cafe-llama.cpp fork (SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf)",
  "entries_processed": [
-  "intake-1900",
-  "intake-1901",
-  "intake-1902",
-  "intake-1903",
-  "intake-1904",
-  "intake-1905",
-  "intake-1906",
-  "intake-1907",
-  "intake-1908",
-  "intake-1909",
-  "intake-1910",
-  "intake-1911",
-  "intake-1912",
-  "intake-1913",
-  "intake-1914",
-  "intake-1915",
-  "intake-1916",
-  "intake-1917",
-  "intake-1918",
-  "intake-1919",
-  "intake-1920",
-  "intake-1921",
-  "intake-1922"
+  "intake-1925",
+  "intake-1926",
+  "intake-1927",
+  "intake-1928",
+  "intake-1929",
+  "intake-1930",
+  "intake-1931"
  ],
  "entries_remaining": [],
- "next_intake_id": 1923,
+ "next_intake_id": 1932,
  "expansion_cap": 10,
- "expansion_count": 7,
+ "expansion_count": 6,
  "expansion_entries": [
-  "intake-1911",
-  "intake-1912",
-  "intake-1913",
-  "intake-1914",
-  "intake-1915",
-  "intake-1916",
-  "intake-1917"
+  "intake-1926",
+  "intake-1927",
+  "intake-1928",
+  "intake-1929",
+  "intake-1930",
+  "intake-1931"
  ],
  "dedup": {
-  "yarn_2309.00071": "duplicate of intake-032; re-encounter noted on the entry, no new id",
-  "sweep": "unbounded grep of all arxiv_id/url values, 0 other collisions; 2602.10959 appears only in another entry referenced list"
+  "cafe-llama": "no collision (url, resolved url identical, HTTP 200 no redirect)",
+  "re_encounters_not_minted": "TurboQuant 2504.19874=intake-191, AngelSpec 2607.25852=intake-1848, DFlash 2602.06036=intake-158, RFC #24528=intake-1191 (companion artifacts, cross-referenced not duplicated)"
  },
- "expansion_queue_unprocessed": [
-  "github.com/jet-ai-projects/jet-long README",
-  "github.com/HKUNLP/ChunkLlama README",
-  "vLLM Phi3 rotary per-request cache selection",
-  "llama.cpp #22140",
-  "arXiv 2308.16137 LM-Infinite (already referenced in index)"
- ],
- "expansion_refused": [],
- "steering_ledger": [
+ "expansion_refused": [
   {
-   "seq": 1,
-   "stage": 2,
-   "verbatim": "All recommended. Perform no more than four stage 2 ingest/dive waves",
-   "disposition": "planned",
-   "plan_ref": null
-  },
-  {
-   "seq": 2,
-   "stage": 2,
-   "verbatim": "I never said to limit the agent to the top three sources! I said ALL recommended",
-   "disposition": "planned",
-   "plan_ref": null
-  },
-  {
-   "seq": 3,
-   "stage": 2,
-   "verbatim": "To keep it reasonable, set the cap to 10",
-   "disposition": "planned",
-   "plan_ref": null
-  },
-  {
-   "seq": 4,
-   "stage": 2,
-   "verbatim": "The fused kernel is H100-only.\" - we can fuse ourselves",
-   "disposition": "planned",
-   "plan_ref": null,
-   "note": "self-fused HIP/CPU kernel is in scope; H100-only is not a blocker"
-  },
-  {
-   "seq": 5,
-   "stage": 2,
-   "verbatim": "Candidate list: \"sends reasonable\"",
-   "disposition": "context-only",
-   "plan_ref": null,
-   "note": "NOT plan approval"
-  },
-  {
-   "seq": 6,
-   "stage": 2,
-   "verbatim": "why not? Isn't that the whole point of deep diving a source in stage 2?!?",
-   "disposition": "planned",
-   "plan_ref": null,
-   "note": "digest reads are not dives; redo against full sources"
-  },
-  {
-   "seq": 7,
-   "stage": 3,
-   "verbatim": "YaRN shouldn't regress performance at context lengths within the model's default supported context window",
-   "disposition": "planned",
-   "plan_ref": "CTX-1, CTX-3b, CTX-4 G1-G3, decline of static YaRN in-window",
-   "note": "operator 2026-10-05, pre-intake"
-  },
-  {
-   "seq": 8,
-   "stage": 3,
-   "verbatim": "we could even first test it on the CPU models where RAM is abundant",
-   "disposition": "planned",
-   "plan_ref": "CTX-5",
-   "note": "operator 2026-10-04, pre-intake (1M on CPU first)"
-  },
-  {
-   "seq": 9,
-   "stage": 3,
-   "verbatim": "this sounds sensible",
-   "disposition": "planned",
-   "plan_ref": "CTX-4 G1 (F leads if CTX-1 passes)",
-   "note": "operator 2026-10-06 on option F, pre-Stage-3"
-  },
-  {
-   "seq": 10,
-   "stage": 3,
-   "verbatim": "I don't know how i feel about this. Doesn't it imply that we would be swapping weights and kv cache dynamically between RAM and gpu? That sounds slow. But also... Why the extra copy of the weights? Don't they remain the same?",
-   "disposition": "planned",
-   "plan_ref": "CTX-4 step 1 (D RAM as a number incl. second private weights copy under --no-mmap --mlock)",
-   "note": "operator 2026-10-06 on option D"
-  },
-  {
-   "seq": 11,
-   "stage": 3,
-   "verbatim": "this sounds very promising if true",
-   "disposition": "context-only",
-   "plan_ref": "CTX-3",
-   "note": "operator 2026-10-06 on the Jet-Long cached-variant gate; not approval"
-  },
-  {
-   "seq": 12,
-   "stage": 3,
-   "verbatim": "make sure these aren't accidentally dropped",
-   "disposition": "planned",
-   "plan_ref": "this ledger append (rows above)",
-   "note": "operator 2026-10-06"
-  },
-  {
-   "seq": 13,
-   "stage": 3,
-   "verbatim": "Proceed to stage 4",
-   "disposition": "planned",
-   "plan_ref": "Stage-3 plan approved; Stage 4 applied"
+   "seed": "intake-1925",
+   "reason": "Strata (adaptive window origin) canonical repo unresolved from search (stratallm.org, xenodeve/Strata-xeno issue); not persisted rather than guess; vpozharski/moe-cache and PR #27861 seen but not persisted (budget)"
   }
  ],
+ "steering_ledger": [],
  "prior_sessions": [
   {
    "session_id": "intake-monty-clef-looped-multiharness-20261003",
@@ -4958,46 +4838,208 @@
      "dedup_note": "Unbounded parent scalar-locator sweep checked 2750 non-null url/arxiv_id fields; all five initial Wave2 sources are new."
     }
    }
+  },
+  {
+   "session_id": "intake-ctxext-ec-20261006",
+   "started_at": "2026-10-06T02:41:21Z",
+   "last_checkpoint": "2026-10-06T03:11:59Z",
+   "stage": "stage4-complete",
+   "phase": "stage2",
+   "lane": "/mnt/raid0/llm/worktrees/ec-intake-ctxext-1006",
+   "branch": "lane/ec-intake-ctxext-1006",
+   "topic": "training-free context extension exact/near-lossless inside native window (Qwen3.x on llama.cpp)",
+   "entries_processed": [
+    "intake-1900",
+    "intake-1901",
+    "intake-1902",
+    "intake-1903",
+    "intake-1904",
+    "intake-1905",
+    "intake-1906",
+    "intake-1907",
+    "intake-1908",
+    "intake-1909",
+    "intake-1910",
+    "intake-1911",
+    "intake-1912",
+    "intake-1913",
+    "intake-1914",
+    "intake-1915",
+    "intake-1916",
+    "intake-1917",
+    "intake-1918",
+    "intake-1919",
+    "intake-1920",
+    "intake-1921",
+    "intake-1922"
+   ],
+   "entries_remaining": [],
+   "next_intake_id": 1923,
+   "expansion_cap": 10,
+   "expansion_count": 7,
+   "expansion_entries": [
+    "intake-1911",
+    "intake-1912",
+    "intake-1913",
+    "intake-1914",
+    "intake-1915",
+    "intake-1916",
+    "intake-1917"
+   ],
+   "dedup": {
+    "yarn_2309.00071": "duplicate of intake-032; re-encounter noted on the entry, no new id",
+    "sweep": "unbounded grep of all arxiv_id/url values, 0 other collisions; 2602.10959 appears only in another entry referenced list"
+   },
+   "expansion_queue_unprocessed": [
+    "github.com/jet-ai-projects/jet-long README",
+    "github.com/HKUNLP/ChunkLlama README",
+    "vLLM Phi3 rotary per-request cache selection",
+    "llama.cpp #22140",
+    "arXiv 2308.16137 LM-Infinite (already referenced in index)"
+   ],
+   "expansion_refused": [],
+   "steering_ledger": [
+    {
+     "seq": 1,
+     "stage": 2,
+     "verbatim": "All recommended. Perform no more than four stage 2 ingest/dive waves",
+     "disposition": "planned",
+     "plan_ref": null
+    },
+    {
+     "seq": 2,
+     "stage": 2,
+     "verbatim": "I never said to limit the agent to the top three sources! I said ALL recommended",
+     "disposition": "planned",
+     "plan_ref": null
+    },
+    {
+     "seq": 3,
+     "stage": 2,
+     "verbatim": "To keep it reasonable, set the cap to 10",
+     "disposition": "planned",
+     "plan_ref": null
+    },
+    {
+     "seq": 4,
+     "stage": 2,
+     "verbatim": "The fused kernel is H100-only.\" - we can fuse ourselves",
+     "disposition": "planned",
+     "plan_ref": null,
+     "note": "self-fused HIP/CPU kernel is in scope; H100-only is not a blocker"
+    },
+    {
+     "seq": 5,
+     "stage": 2,
+     "verbatim": "Candidate list: \"sends reasonable\"",
+     "disposition": "context-only",
+     "plan_ref": null,
+     "note": "NOT plan approval"
+    },
+    {
+     "seq": 6,
+     "stage": 2,
+     "verbatim": "why not? Isn't that the whole point of deep diving a source in stage 2?!?",
+     "disposition": "planned",
+     "plan_ref": null,
+     "note": "digest reads are not dives; redo against full sources"
+    },
+    {
+     "seq": 7,
+     "stage": 3,
+     "verbatim": "YaRN shouldn't regress performance at context lengths within the model's default supported context window",
+     "disposition": "planned",
+     "plan_ref": "CTX-1, CTX-3b, CTX-4 G1-G3, decline of static YaRN in-window",
+     "note": "operator 2026-10-05, pre-intake"
+    },
+    {
+     "seq": 8,
+     "stage": 3,
+     "verbatim": "we could even first test it on the CPU models where RAM is abundant",
+     "disposition": "planned",
+     "plan_ref": "CTX-5",
+     "note": "operator 2026-10-04, pre-intake (1M on CPU first)"
+    },
+    {
+     "seq": 9,
+     "stage": 3,
+     "verbatim": "this sounds sensible",
+     "disposition": "planned",
+     "plan_ref": "CTX-4 G1 (F leads if CTX-1 passes)",
+     "note": "operator 2026-10-06 on option F, pre-Stage-3"
+    },
+    {
+     "seq": 10,
+     "stage": 3,
+     "verbatim": "I don't know how i feel about this. Doesn't it imply that we would be swapping weights and kv cache dynamically between RAM and gpu? That sounds slow. But also... Why the extra copy of the weights? Don't they remain the same?",
+     "disposition": "planned",
+     "plan_ref": "CTX-4 step 1 (D RAM as a number incl. second private weights copy under --no-mmap --mlock)",
+     "note": "operator 2026-10-06 on option D"
+    },
+    {
+     "seq": 11,
+     "stage": 3,
+     "verbatim": "this sounds very promising if true",
+     "disposition": "context-only",
+     "plan_ref": "CTX-3",
+     "note": "operator 2026-10-06 on the Jet-Long cached-variant gate; not approval"
+    },
+    {
+     "seq": 12,
+     "stage": 3,
+     "verbatim": "make sure these aren't accidentally dropped",
+     "disposition": "planned",
+     "plan_ref": "this ledger append (rows above)",
+     "note": "operator 2026-10-06"
+    },
+    {
+     "seq": 13,
+     "stage": 3,
+     "verbatim": "Proceed to stage 4",
+     "disposition": "planned",
+     "plan_ref": "Stage-3 plan approved; Stage 4 applied"
+    }
+   ],
+   "source_fetch_note": "All arXiv reads were WebFetch digests of abs pages (plus HTML v4 of 2607.07740 and v2 of 2502.02659); not full source reads. Every entry stage1-unverified.",
+   "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md",
+   "stage2": {
+    "wave1_dives": [
+     "intake-1900",
+     "intake-1906+1907",
+     "intake-1911"
+    ],
+    "wave2_ingest_dive": [
+     "intake-1918",
+     "intake-1919",
+     "intake-1920",
+     "intake-1921",
+     "intake-1922"
+    ],
+    "waves_used": 2,
+    "wave_limit": 4,
+    "stage2b_cap_per_wave": 10,
+    "stopped_early": "wave 2 surfaced no source worth a wave 3 (AnchorContext code and PJ-RoPE declined)",
+    "not_selected_left_unverified": [
+     "intake-1901..1905",
+     "intake-1908",
+     "intake-1909",
+     "intake-1910",
+     "intake-1912..1917"
+    ],
+    "declines": [
+     "arXiv 2606.05345 PJ-RoPE",
+     "chunkqwen/flash_decoding patch files",
+     "alphaxiv/HF pages for 2607.07740"
+    ],
+    "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md",
+    "redo": {
+     "date": "2026-10-06",
+     "scope": "1900,1906,1907,1911,1918-1922 re-verified against full PDFs (pypdf text + Read), shallow clones, raw blog HTML",
+     "claim_anchors_recorded": 103,
+     "sources_dir": "/mnt/raid0/llm/tmp/intake-ctxext-src/",
+     "wave_counted": "wave 2 (not a new wave)"
+    }
+   }
   }
- ],
- "source_fetch_note": "All arXiv reads were WebFetch digests of abs pages (plus HTML v4 of 2607.07740 and v2 of 2502.02659); not full source reads. Every entry stage1-unverified.",
- "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md",
- "stage2": {
-  "wave1_dives": [
-   "intake-1900",
-   "intake-1906+1907",
-   "intake-1911"
-  ],
-  "wave2_ingest_dive": [
-   "intake-1918",
-   "intake-1919",
-   "intake-1920",
-   "intake-1921",
-   "intake-1922"
-  ],
-  "waves_used": 2,
-  "wave_limit": 4,
-  "stage2b_cap_per_wave": 10,
-  "stopped_early": "wave 2 surfaced no source worth a wave 3 (AnchorContext code and PJ-RoPE declined)",
-  "not_selected_left_unverified": [
-   "intake-1901..1905",
-   "intake-1908",
-   "intake-1909",
-   "intake-1910",
-   "intake-1912..1917"
-  ],
-  "declines": [
-   "arXiv 2606.05345 PJ-RoPE",
-   "chunkqwen/flash_decoding patch files",
-   "alphaxiv/HF pages for 2607.07740"
-  ],
-  "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md",
-  "redo": {
-   "date": "2026-10-06",
-   "scope": "1900,1906,1907,1911,1918-1922 re-verified against full PDFs (pypdf text + Read), shallow clones, raw blog HTML",
-   "claim_anchors_recorded": 103,
-   "sources_dir": "/mnt/raid0/llm/tmp/intake-ctxext-src/",
-   "wave_counted": "wave 2 (not a new wave)"
-  }
- }
+ ]
 }

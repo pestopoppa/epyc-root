@@ -241223,3 +241223,230 @@
   integration_disposition: awaiting_dive
   disposition_evidence:
     - "Stage 1 only: web research 2026-10-04 from github.com/ashhart/TensorFold README, INSTALL-MANUAL, PR history. Raw docs saved to /mnt/raid0/llm/tmp/tensorfold-research-20261004/src/. No source code analysis, no operator dive assignment, no claim anchors recorded. Per the unverified contract, no reported_results may be quoted in a plan or handoff until Stage-2 dive."
+- id: intake-1925
+  arxiv_id: null
+  url: https://github.com/kozmic-labs/cafe-llama.cpp
+  source_type: repo
+  title: 'cafe-llama.cpp: a CUDA-centric llama.cpp fork (MoE expert cache/host-MoE/SSD streaming, TurboQuant KV, DSpark/DFly drafters, adaptive draft window, GDN raw-gate fusion, safetensors direct serving)'
+  authors:
+  - kozmic-labs (GitHub)
+  categories:
+  - local_inference
+  - moe_optimization
+  - speculative_decoding
+  - kv_cache
+  - hardware_optimization
+  - ssm_hybrid
+  - quantization
+  novelty: high
+  relevance: high
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: PARTIAL
+  key_claims:
+  - 'Fork of ggml-org/llama.cpp (README retains upstream text); single-commit shallow history at SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf (2026-10-01). Diff against upstream commit f1cee994 (2026-10-01) was measured locally: 264 files, +47273/-1769 lines.'
+  - 'Adds a CUDA MoE expert cache (--moe-cache; docs/backend/CUDA-MOE-CACHE.md): hot experts of CPU-resident MoE weights live in a VRAM pool, hits run on GPU while the CPU computes miss rows through stock MUL_MAT_ID; credited to leloch (RFC ggml-org/llama.cpp#24528). Doc reports author-measured gains (e.g. +18% to +48% on DeepSeek V4 Flash, 1-4 RTX 3090) - author-reported only.'
+  - Adds -hmoe/-nhmoe (pinned-host MoE read by GPU), SSD expert streaming (-ssd/-nssd, src/llama-ssd.cpp) and a safetensors/FP8/NVFP4/EXL3 direct-serving loader (common/safetensors.cpp, f8_e4m3 ggml type with CPU vec_dot).
+  - 'Adds --spec-adaptive: a Strata-style adaptive draft window that learns per-position conditional acceptance (EMA) and picks the draft length maximising expected committed tokens per verify cost (common/speculative.cpp struct common_speculative_adaptive); verify-cost table is hard-coded.'
+  - 'Fuses GDN gate math into the gated-delta-net op (ggml_gated_delta_net_set_raw_gates: sigmoid(beta), a*softplus(g+dt_bias) inside CPU/CUDA/Metal kernels) and a "rows mode" that reads recurrent state directly from the cache rows (no gather), enabled for CPU/Metal only.'
+  - Adds TurboQuant KV types turbo2/3/4 (WHT-rotated, fused into flash-attn, CUDA/Vulkan/Metal), K-cache mean-centering for Q4_0 (--kv-mean-center, softmax-invariant bias subtraction at cache write), DSpark/DFly drafter graphs, and an rs-rollback harness for the recurrent-state snapshot ring.
+  techniques:
+  - CUDA MoE expert cache (hit rows on GPU, miss rows on CPU)
+  - host-pinned MoE + VRAM hot-expert cache (moe-direct)
+  - SSD expert streaming via O_DIRECT parallel reader
+  - Strata-style adaptive draft window
+  - GDN raw-gate fusion + state-rows mode
+  - TurboQuant turbo2/3/4 KV with fused FA
+  - K-cache mean-centering for Q4_0
+  - DFly/DSpark drafter support
+  - safetensors direct serving incl. f8_e4m3
+  - recurrent-state rollback correctness harness
+  reported_results:
+  - All numbers are author-reported in the fork docs (CUDA-MOE-CACHE.md, README) on RTX 3090 / M5 hardware; none reproduced; no number from this fork is measured on EPYC or MI210.
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    - cpu-decode-roofline-program.md
+    - dflash2-block-drafter-experimental-build.md
+    - tq3-quantization-evaluation.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-191
+    - intake-1191
+    - intake-1848
+    - intake-158
+    - intake-1924
+  recommended_actions:
+  - '[unverified] AK-HYPOTHESIS: port the GDN raw-gate fusion and CPU state-rows mode onto champion for Qwen3.6-35B-A3B (champion has neither raw_gates nor gated_delta_net_rows).'
+  - '[unverified] REBUILD/AK-HYPOTHESIS: --spec-adaptive draft window with a verify-cost table measured on our CPU and MI210 (champion has no adaptive window).'
+  - '[unverified] KNOWLEDGE/AK-HYPOTHESIS: MoE expert-cache pattern as an MI210 hot-expert cache for host-resident big MoE (CUDA-only code; HIP port needed).'
+  - '[unverified] KNOWLEDGE: K-cache mean-centering for Q4_0 K and the rs-rollback harness as validation aids for Jet-Long / K-shift work.'
+  notes: 'Stage 1 intake 2026-10-06. Read from disk: git clone --depth 1 at SHA %s (commit 2026-10-01 "ci : release CUDA 13..."), README in full, docs/kv-mean-center.md and tools/kv-mean-center/README.md (partly), docs/backend/CUDA-MOE-CACHE.md (first ~140 lines), docs/speculative.md diff, and targeted diffs of common/speculative.cpp, ggml-cpu.c, ops.cpp, delta-net-base.cpp, qwen35.cpp, gated_delta_net.cu, arg.cpp. NOT read: ggml-turbo-quant, moe-cache.cu/moe-direct.cu internals, llama-ssd.cpp body, safetensors.cpp body, xing4/deepseek41/dspark graphs, Metal/Vulkan shaders, mmq-hopper-q1. Fork base is estimated (shallow clone; best-matching upstream commit f1cee994, 2026-10-01 by minimal diff in src/ggml/common/tools); fork-vs-upstream attribution of individual features is therefore approximate. Several features are credited upstream-of-fork to others (leloch expert cache, giveen soft mode, PrismML DFly port, unsloth qwen4exp/MTP). Champion check (ak/champion/llama-cpp-ffc1bac82eec, ggml/src+src+common):
+    no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only.'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: PARTIAL read of a local clone at 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf; awaiting operator-selected Stage 2 dives.'
+- id: intake-1926
+  arxiv_id: '2605.00342'
+  url: https://arxiv.org/abs/2605.00342
+  source_type: paper
+  title: 'Making Every Verified Token Count: Adaptive Verification for MoE Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search summary] Adaptive verification width for MoE speculative decoding (verified tokens vs expert traffic).'
+  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Closest literature to the fork --spec-adaptive; a dive should check whether it defines a cost model our AK can reuse.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+- id: intake-1927
+  arxiv_id: '2607.24434'
+  url: https://arxiv.org/abs/2607.24434
+  source_type: paper
+  title: 'DraftExpert: Expansion-Aware Self-Speculative Decoding for End-Device MoE Inference'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search summary] Under expert offload, speed is governed by accepted tokens per expert-set expansion rather than tokens per target forward.'
+  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Relevant to draft-width policy when experts are host-resident.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+- id: intake-1928
+  arxiv_id: '2510.10302'
+  url: https://arxiv.org/abs/2510.10302
+  source_type: paper
+  title: 'SP-MoE: Speculative Decoding and Prefetching for Accelerating MoE-based Model Inference'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search summary] Combines speculative decoding with expert prefetching for MoE inference.'
+  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Companion to the expert-cache/prefetch theme.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+- id: intake-1929
+  arxiv_id: '2609.14643'
+  url: https://arxiv.org/abs/2609.14643
+  source_type: paper
+  title: 'BigMoMo: Efficient Inference of Large-Scale MoE with Speculative Decoding on Mobile Devices'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: low
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: not_applicable
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search summary] Uses the multi-token verification window to decouple expert movement from single-token execution.'
+  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Mobile target; low direct relevance to EPYC/MI210.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+- id: intake-1930
+  arxiv_id: '2606.21448'
+  url: https://arxiv.org/abs/2606.21448
+  source_type: paper
+  title: 'Fast-TurboQuant: A Multiplier-Free Online Vector Quantization Approach'
+  categories:
+  - kv_cache
+  - quantization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search summary] Rademacher sign flip plus FWHT feeding scalar Lloyd-Max quantization; follow-up to TurboQuant (intake-191).'
+  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Follow-up to the TurboQuant lineage behind the fork turbo KV types.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+- id: intake-1931
+  arxiv_id: null
+  url: https://github.com/ggml-org/llama.cpp/pull/25294
+  source_type: repo
+  title: 'llama : stream MoE routed experts from disk (ggml-org/llama.cpp PR #25294)'
+  categories:
+  - moe_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  read_depth: DIGEST
+  key_claims:
+  - '[search-result title only] Upstream PR proposing disk streaming of routed MoE experts; likely the upstream counterpart to the fork -ssd flags. Content not read.'
+  notes: Stage 1 expansion from intake-1925; URL observed in a 2026-10-06 WebSearch result (title only). Unread; merge state unknown.
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - 'Stage 1 only: title-level discovery, nothing read.'
