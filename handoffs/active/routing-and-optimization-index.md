@@ -30,7 +30,7 @@
 | RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | SSU-F18 moved-lineup plugin publication; SSU-F8 owner confirmation | — |
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-2 — add a verify-before-FINAL step to the edit rider, then re-run the BEP sandbox and re-measure | — |
-| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | Terminal REPL timeout source and bounded late-worker validation | — |
+| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | Terminal REPL timeout; prospective calibration input byte bindings | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e — merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |
@@ -58,7 +58,7 @@
 | RTG-52 | loop owned fleet implementation | [loop-owned-fleet-implementation.md](loop-owned-fleet-implementation.md) | P4-1 — adjudicate the 7-day role-shrink gate; then P5-1 hook-surface trust-boundary analysis and P5-2 NL-only fixture | RTG-34, RTG-48 |
 | RTG-54 | qwen chat template evaluation | [qwen-chat-template-evaluation.md](qwen-chat-template-evaluation.md) | CT-11 — re-decide the pilot template adoption once the three roles serve real traffic; run the CT-10 cruxeval re-check alongside | — |
 | RTG-55 | promptforge mutation safety | [promptforge-mutation-safety-contract.md](promptforge-mutation-safety-contract.md) | MHS-3d — operator runs the v10 episodic re-pin RATIFY (run_v10_episodic_repin_ratify_20260917.sh); then MHS-12 | RTG-02 |
-| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | Retain TD-16 no-harm, TD-29 shadow/prefill counts and TD-1d.3 isolation | — |
+| RTG-56 | typed decision plane | [typed-decision-plane.md](typed-decision-plane.md) | TD-18-NI-INPUTS source binding; retain TD-16 no-harm and TD-29/TD-1d.3 gates | — |
 | RTG-57 | kv unified stack rollout | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) | KVU-16g-1 row-5c A/B on 98c0ce12a; KVU-19b-rework-c2-cal; V11-FA-4/-6 into v11; fold-c1-p3; CPU-FA-VKQ-2 bench | RTG-19, RTG-36, INF-41 |
 | RTG-58 | kv prefix fork and paged attention | [kv-prefix-fork-and-paged-attention.md](kv-prefix-fork-and-paged-attention.md) | KPF-27d shadow windows on :8083 with FORK=auto; KPF-27e checkpoint_at via KPF-21; re-cut KPF-17a for the current champion | RTG-57, RTG-27, INF-65 |
 

@@ -679,3 +679,5 @@ intake-1885#record and intake-1891#record. Their primary anchors and corrections
 All numbers above are from dive-verified entries; none may be promoted to a deployment measurement until TD-2/TD-3
 produce our own. This stub follows the 2026-09-17 operator steering; the vendor's own documentation states confidence
 is an undisclosed statistic and calibration is group-level only.
+
+- [ ] **TD-18-NI-INPUTS — prospective exact-byte calibration input binding.** NI07-29 adds only state/question/label file SHA256 and byte lengths derived at one-read parse boundary, with strict bounded optional hints. Direct API metadata stays caller_asserted or unavailable. Existing metric/row semantics and shared provenance helpers remain unchanged; broader TD-18 new metrics, probability-source contract and live studies remain separate.

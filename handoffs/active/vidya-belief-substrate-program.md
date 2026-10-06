@@ -2719,3 +2719,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 - [x] **VB-NI07-RECONNECT-COST — ingest outer reconnect conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37466167911/README.md) TRUE57/57, one Judged/Located observation and three shared-grade frames, no live/quality warrant.
 
 - [x] **VB-NI07-CANDIDATE-DESCRIPTIONS — ingest structural conformance.** ✅ 2026-10-06 — [Original evidence](../../artifacts/ni07/run-37468262427/README.md) TRUE14/14, one Judged/Located observation and three canonical frames; no live/adoption/quality gate.
+
+- [ ] **VB-TD-CAL-INPUT-BINDINGS — capture input-binding structural conformance prospectively.** NI07-29/TD-18-NI-INPUTS uses existing native CI carrier/shared grader for exact-read/parsed-byte identity, independent source mutation, invalid/legacy/caller-asserted controls. Writer hashes are dependency evidence, not a standalone calibration ClaimTuple; VB-TDP-1/shared-screen measurement integration retains original source/model/protocol/custody requirements. No second ladder, historical backfill or calibration-quality warrant.
