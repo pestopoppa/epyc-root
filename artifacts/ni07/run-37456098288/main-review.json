@@ -1,0 +1,58 @@
+{
+  "run": 37456098288,
+  "attempt": 1,
+  "artifact_id": 11409403216,
+  "independent_git_bindings": 3593,
+  "source_counts": {
+    "orchestrator": 2180,
+    "root": 695,
+    "recipe": 718
+  },
+  "contexts": 2,
+  "zip_sha256": "ce5382763d918dee593c731cefa9fca72c23ddf3e712f782a504acf543b072fa",
+  "zip_size": 29907790,
+  "zip_extracted_members": 3603,
+  "receipt_file_sha256": "f3208d0e8eaebc13191413043bbf504935fe83872b303e3377590cd092d7f8fb",
+  "receipt_self_sha256": "d5ff67c5e16be9070f853fbafe6ead0ad244bf04d2f44cdddc4590b64323f4eb",
+  "repositories": {
+    "orchestrator": "713a79ab4ab9bbffd11a00e806ee22f52866c5b9",
+    "recipe": "0c9e21ea8618e35f4e702729626b303c33a64f90",
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_prompt_builders.py",
+    "--junitxml=/home/runner/work/_temp/ni07-19-tool-repair/result/prompt-builders.junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 149,
+    "error": 0,
+    "executed": 149,
+    "failure": 0,
+    "passed": 149,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "cfdb4cbfde85e11d65082a74218aa8c0fc5188c2",
+  "recipe_main": "331f792f7ac07372810706b7ee8e29d267daf209",
+  "context_recipe_assertions_checked": true
+}

@@ -1,0 +1,26 @@
+{
+  "run": 37455822152,
+  "attempt": 1,
+  "artifact_id": 11409797454,
+  "recipe_pin": "dbcea608f6ce97aee81670a58d718fca051555b9",
+  "zip_sha256": "45329c2ecbe8fa5adbea2143f21efb282c1d0fd166acf7952c88c515a5ae67f5",
+  "zip_size": 287,
+  "members": [
+    {
+      "name": "status.json",
+      "sha256": "2988ebc6fea0539cb738c3be9777759e54861a1fa463c5ffc622cb26ea848688",
+      "size": 195
+    }
+  ],
+  "status": {
+    "error": "ValueError: APP readset does not cover its full tracked Python/config/lock closure",
+    "exit_code": 1,
+    "schema": "ni07-19-tool-repair-ci-status.v1",
+    "state": "capture_failed"
+  },
+  "native_conformant": null,
+  "no_junit": true,
+  "no_native_receipt": true,
+  "reason": "Preflight compares set to dictionary, corrected only in subsequent recipe",
+  "originals_preserved": true
+}

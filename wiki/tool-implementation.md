@@ -1497,3 +1497,7 @@ The [DTAP native contract](../docs/reference/dtap-native-tool-contract.md) adver
 ## 2026-10-06 native failure reporting
 
 The [DTAP additive failure ledger](../docs/reference/dtap-native-failure-ledger-contract.md) preserves typed native outcomes/trace references beside matrix aggregation, reports partial successful-response usage and compares only explicit case/seed arm pairs. Raw failure payloads stay in native custody; unknown verifier/tool-validity semantics stay unmeasured. [OriginalCI37451263389](../artifacts/ni07/run-37451263389/README.md) passes141/141 after MAIN original source/API review. Live effects/task quality remain separate.
+
+## 2026-10-06 tool repair helper logs
+
+[Repair helper logs](../docs/reference/tool-repair-log-content-contract.md) now retain outcome, content digest and honest UTF8-surrogatepass byte count instead of malformed raw payload. Parser/counters and visible refusal remain. [OriginalCI37456098288](../artifacts/ni07/run-37456098288/README.md) passes149/149 after MAIN full source/API review; initial NULL preflight has no invented JUnit/receipt. This applies to the helper, without claiming global payload-free logging or live tool behavior.

@@ -1,0 +1,20 @@
+{
+  "source_counts": {
+    "orchestrator": {
+      "regular": 2180,
+      "symlink_metadata": 1
+    },
+    "root": {
+      "regular": 695,
+      "symlink_metadata": 0
+    },
+    "recipe": {
+      "regular": 717,
+      "symlink_metadata": 0
+    }
+  },
+  "regular_git_bindings": 3593,
+  "symlink_targets_never_opened": true,
+  "recipe_pin": "0c9e21ea8618e35f4e702729626b303c33a64f90",
+  "capture_blob_followup_independently_reviewed": true
+}
