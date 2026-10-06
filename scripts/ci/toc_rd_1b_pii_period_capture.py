@@ -73,7 +73,7 @@ def verify_dependency_lock(requirements: Path, freeze: bytes) -> list[dict[str, 
             continue
         if not line.endswith("\\") or index + 1 >= len(lines) or "==" not in line[:-1]:
             raise RuntimeError("requirements lock format differs from reviewed pins")
-        name_raw, version = line[:-1].split("==", 1)
+        name_raw, version = (part.strip() for part in line[:-1].split("==", 1))
         if not name_raw or not version:
             raise RuntimeError("requirements lock package pin is malformed")
         hash_match = re.fullmatch(r"--hash=sha256:([0-9a-f]{64})", lines[index + 1].strip())
