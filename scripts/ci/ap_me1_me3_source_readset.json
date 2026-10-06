@@ -247,7 +247,7 @@
     },
     {
       "path": "orchestration/model_registry_full.yaml",
-      "role": "tracked-python-or-config-tracked-symlink",
+      "role": "tracked-python-or-config",
       "sha256": "4bb5aa6e3d07c55864f2b3a92364dc85388d741df3c52690d78e821e09707537",
       "symlink_target": "/mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml"
     },
@@ -1039,7 +1039,7 @@
     {
       "path": "scripts/autopilot/actions.py",
       "role": "tracked-python-or-config",
-      "sha256": "da9eb049fdb12ccc94a2315b3e3907ffb1766231d9a5cb9052a007bfb1e6422a"
+      "sha256": "ec8081e03590da7721caf2036d4c90a74b72a57a7e22391f70c5cdc2f33e51be"
     },
     {
       "path": "scripts/autopilot/ap55_shadow_review.py",
@@ -1069,7 +1069,7 @@
     {
       "path": "scripts/autopilot/autopilot.py",
       "role": "tracked-python-or-config",
-      "sha256": "322babf9fa90906c2e0d7d148c9cf632be55e977c8c56621eb59e4098dc7314a"
+      "sha256": "f07d13af377d3f9b5da4bce1628301b1314017add62ab1bdf28742509b5f3c24"
     },
     {
       "path": "scripts/autopilot/autopilot_restart_advisor.py",
@@ -1104,7 +1104,7 @@
     {
       "path": "scripts/autopilot/bsv_observe.py",
       "role": "tracked-python-or-config",
-      "sha256": "ff7ca91aaff7bf9f2692f89667324692d022a864f8255929356eb85385538688"
+      "sha256": "3359af4ef777ec614323de3fa2c4d024464a060e4930b3f97a658d693bb412be"
     },
     {
       "path": "scripts/autopilot/bsv_paired_report.py",
@@ -1175,6 +1175,11 @@
       "path": "scripts/autopilot/core_v2_select.py",
       "role": "tracked-python-or-config",
       "sha256": "f3a6fd12a53584cc08f60a6e5318d2f254f495a1e4eae9e9ea5b089a5c033d89"
+    },
+    {
+      "path": "scripts/autopilot/crossover_diagnostics.py",
+      "role": "tracked-python-or-config",
+      "sha256": "a7112a1a9902a414ce37a5d8cd1f7387993b194aabf60573b60b661639bb5c64"
     },
     {
       "path": "scripts/autopilot/decision_cockpit.py",
@@ -1532,6 +1537,16 @@
       "sha256": "1337eb3fa2119c5a24995a4527929d489fc8dd623138dd8712bed16331468770"
     },
     {
+      "path": "scripts/autopilot/mutation_author_capture.py",
+      "role": "tracked-python-or-config",
+      "sha256": "ffb00bbb401232586627bf439c31da62f71679e345fe292d692e8700e556d2b1"
+    },
+    {
+      "path": "scripts/autopilot/mutation_pair_features.py",
+      "role": "tracked-python-or-config",
+      "sha256": "ef658669e34a37bcead6f08f947f84d73eb51c7508b402b4fe58c3e4b5695997"
+    },
+    {
       "path": "scripts/autopilot/operator_candidates/ratify_and_apply_e11_operational_baseline.py",
       "role": "tracked-python-or-config",
       "sha256": "ca76bac175b47af5508eb570baae60334f63a0ced94b97f6d406ca3bc9d5d38d"
@@ -1864,7 +1879,7 @@
     {
       "path": "scripts/autopilot/species/prompt_forge.py",
       "role": "tracked-python-or-config",
-      "sha256": "0ca9176f25e3137f695bf52a2710d8be531f235229a70da7f69b0cba7a232eec"
+      "sha256": "33888fe8b2dfce87548e760c04901ab5789caaca15d5976d555ac18d09fb62ea"
     },
     {
       "path": "scripts/autopilot/species/seeder.py",
@@ -8877,6 +8892,11 @@
       "sha256": "0f99e38155049d8b99ffbb849393f8be577c89c7f4c624cd7e297a7986051f33"
     },
     {
+      "path": "tests/unit/test_mutation_diagnostics.py",
+      "role": "tracked-python-or-config",
+      "sha256": "558c93fa1f76ddca164b834341e741ff552609830e7b33d3c67552bf720bcbcd"
+    },
+    {
       "path": "tests/unit/test_mutation_graph.py",
       "role": "tracked-python-or-config",
       "sha256": "871176820342e775ec656863875199bad9f71a5ab7f3912fabf2ec14925b2562"
@@ -10905,11 +10925,16 @@
       "path": "tests/vision/test_pipeline.py",
       "role": "tracked-python-or-config",
       "sha256": "f27949e749492b7fd7fac47a58bb6b188ce981ebd7100cee1883227b67c62e45"
+    },
+    {
+      "path": "uv.lock",
+      "role": "tracked-python-or-config",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
     }
   ],
   "app_repository": "pestopoppa/epyc-orchestrator",
   "app_revision": "3dec5ccde33d9d1c1c8472187d581f5b5277ef74",
-  "app_tracked_python_config_count": 2181,
+  "app_tracked_python_config_count": 2186,
   "app_uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
   "carrier_files": [
     {
@@ -11030,7 +11055,7 @@
     {
       "path": ".claude/skills/research-intake/scripts/validate_intake.py",
       "role": "tracked-python-or-config",
-      "sha256": "4a922aac1f72f6f340465e1c0b5f3d65bbc9fdae871682b857be405cff18ad9c"
+      "sha256": "601940be1c6686f61b635271416f6e449bc13c5c3c8d2a2d99e0e602e29dcc25"
     },
     {
       "path": ".claude/skills/retire-model/scripts/common.py",
@@ -11058,29 +11083,9 @@
       "sha256": "c488eeb9c61dd8433f8366f5c3c7a52dc485414a281be74ebab3b2c75cdd91ae"
     },
     {
-      "path": ".github/ci/ni07_dcp_hit_span_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "1547c717e3d0c886c8b799d994ed3e18c03b4a9d8d73e9fc5d8128b699bf2fef"
-    },
-    {
       "path": ".github/workflows/docs.yml",
       "role": "tracked-python-or-config",
       "sha256": "54c472ecd2680787b8739d48a347e88e4037e07ff6f90167a84435a463ca37cf"
-    },
-    {
-      "path": ".github/workflows/host-activation-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "8084b668110dbb07167dfecf13db1754511d52bea74350f4b9ffa6de9fc996bf"
-    },
-    {
-      "path": ".github/workflows/lr8-event-duty-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "a130992019ec58334f60151d4d7194ed133d6eec111b4209d51cb177c1f7f876"
-    },
-    {
-      "path": ".github/workflows/lr8-shared-grade-analysis.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "5c288e89700617e3744a6d135edcd71200d0779f228878d1c02603c2c4217e12"
     },
     {
       "path": ".github/workflows/ni06.yml",
@@ -11088,144 +11093,9 @@
       "sha256": "09ff2597ba3fac7c3591fcaaea6dea53c6e91b511b3fa036d2cd3d88649e3cb9"
     },
     {
-      "path": ".github/workflows/ni07-07-rc10.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "7db599ee0c0343aa7b4a0d810df6b0d475100fcb4315924849ffa4cde452df9c"
-    },
-    {
-      "path": ".github/workflows/ni07-08-conversation-shadow.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "98a139b7c57b8a2e3bc74a51f927f86eda6122d99839548394b65c9d5d7a5445"
-    },
-    {
-      "path": ".github/workflows/ni07-14-tu-led1a.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "71e298f4fe738dc21bc693b89a6dfeca01b48b693a4999b402f67185775ce56c"
-    },
-    {
-      "path": ".github/workflows/ni07-19-tool-repair.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "b0208ad73a9a125a6f503a712b5ef906c56a472664b4bb9792658f65e698fb04"
-    },
-    {
-      "path": ".github/workflows/ni07-21-dcp-render-identity.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "9dc7e2033212aeddf2368de971f83aa1df9b62c3a6dc8727b2d7ae3c7f509aed"
-    },
-    {
-      "path": ".github/workflows/ni07-22-kv-adapter.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "dbd251332c09e9a1550e43ce598175ecd8e731d5dc5f1bcab068bbd37813fc57"
-    },
-    {
-      "path": ".github/workflows/ni07-24-pickle-pass.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "11e8fd4740f4312fa15140016d36bcc54bc8d3647bd1edd94fb306700068fa90"
-    },
-    {
-      "path": ".github/workflows/ni07-25-eval-capture-status.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "0c6b6e1363b10859d0876a72edd6d48e000b3d0e604155d511931168aad44c7d"
-    },
-    {
-      "path": ".github/workflows/ni07-26-reconnect-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "336f52e38c7475b53a12343eaae22e238d29a68e819109ad9c0b1e228313288f"
-    },
-    {
-      "path": ".github/workflows/ni07-27-repl-timeout.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "53975986a8adfab170f9d57859295d41ab3a3c0aa2891bcfd7e2f41c06312692"
-    },
-    {
-      "path": ".github/workflows/ni07-28-td14-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "46253b006c1b26813f5e386719478904878383a40254a590981afae4d225956e"
-    },
-    {
-      "path": ".github/workflows/ni07-29-calibration-input-binding.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "7e163d1a1b74d53d407e8e8691addcba474ed1c3778a2b03ccb1a1513de9aa49"
-    },
-    {
-      "path": ".github/workflows/ni07-30-standalone-numa-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "1862d104b14d0284d8149d8024422108b3529c6c3a4831b9ed43f1412c6e621d"
-    },
-    {
-      "path": ".github/workflows/ni07-31-pii-ed25519.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "a5cd921f6d6d398d169971c9cf2165b9ca077c3d9e98435a0edd0aa459945eba"
-    },
-    {
-      "path": ".github/workflows/ni07-32-root-keep-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "446a1f50d5329938dfe71bdc849b97d1c8825dec92bc6794faa30b58ca3c5c34"
-    },
-    {
-      "path": ".github/workflows/ni07-bsv-input-strict.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "40cab3a2ac593145dc19e92b319190cf5b6e012763cdbfbb085beb737b97044a"
-    },
-    {
-      "path": ".github/workflows/ni07-dcp-hit-span.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "a3f21db2661e9553eceed6389c11487787bfbf2dc3848f014ef45c92aeef49b0"
-    },
-    {
-      "path": ".github/workflows/ni07-dtap.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "295432e53006423c392c3947cc9c23ba5a25c00ff2902d6908e833e5dee8367a"
-    },
-    {
-      "path": ".github/workflows/ni07-k2.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "6db07a7ad61459ec5c71abcd193b371d234aada0e22debd87a32561cf05fdc40"
-    },
-    {
-      "path": ".github/workflows/ni07-k7-report-catalog.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "faed9bfd9e1b1dfc2d6ca58b689c806c0526662d572cbd512375f8b90af65324"
-    },
-    {
-      "path": ".github/workflows/ni07-kb-force-dedup.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "14d6c7f761e4cbe1f42c3b31d9a1e939a2162b8773f4582009c48bde8050abbd"
-    },
-    {
-      "path": ".github/workflows/ni07-kb-lab-context.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "9fda29b61603c37768a1538abc8b349620fcca8129850d39bac469347e97e7ef"
-    },
-    {
-      "path": ".github/workflows/ni07-query-expansion-refusal.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "40d376700f79bb0baab1e94f3acff7ed0269aecf6c48fc688723c2ff7352d4f1"
-    },
-    {
-      "path": ".github/workflows/ni07-serving.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "1a2601c338917e1b1c418af6096b59e9ce26cd38a62cb765b6e6d27a5f5e88d2"
-    },
-    {
-      "path": ".github/workflows/ni07-utm-v3.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "02748a210318596ad8acef6498c60f3dc350d5b105a5de99d240392a20ee9322"
-    },
-    {
-      "path": ".github/workflows/ni08-etvt2-tool-use-report-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "46dfae8d376ddf6856b3b43b104a8cfc95a15edac1a870312445ddf373563423"
-    },
-    {
-      "path": ".github/workflows/ni08-failure-signatures-capture.yml",
-      "role": "tracked-python-or-config",
-      "sha256": "9d2b3e5800a9e99986115454e4c31c96cb57773113ba3994e0304d818cb86111"
-    },
-    {
       "path": ".github/workflows/tests.yml",
       "role": "tracked-python-or-config",
-      "sha256": "d6588c189cb8692cd31c8422a72e07ed3712a7a0548071cb39bff19857fabbc9"
+      "sha256": "f24474affc9312c6435b15b9503fedd0462a9fbd94693470571c1c0a3097464a"
     },
     {
       "path": ".research/tmp/ipex_ab.py",
@@ -11438,6 +11308,11 @@
       "sha256": "8f64c7c9bc38572074f72292dc8ceef0a124a6854009385e4ca3983aa40657e2"
     },
     {
+      "path": "artifacts/ni05/code-index-37358369281/ni52-index-install-originals-37358369281/package-lock.json",
+      "role": "tracked-python-or-config",
+      "sha256": "734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c"
+    },
+    {
       "path": "artifacts/ni05/code-index-37358369281/ni52-index-install-originals-37358369281/workflow.yml",
       "role": "tracked-python-or-config",
       "sha256": "b6cca8584f8d4ec918f436e8789ba92fa40f216b3f0ef932b8505743299f3d26"
@@ -11471,6 +11346,11 @@
       "path": "artifacts/ni05/eval-scoring-37351080596/originals/ni41-original-37351080596-1-verifier-mode/ni41-resolver-inputs-37351080596/pyproject.before.toml",
       "role": "tracked-python-or-config",
       "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "path": "artifacts/ni05/executor-impact-37361379823/ni75-index-install-originals-37361379823/package-lock.json",
+      "role": "tracked-python-or-config",
+      "sha256": "734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c"
     },
     {
       "path": "artifacts/ni05/executor-impact-37361379823/ni75-index-install-originals-37361379823/workflow.yml",
@@ -11583,29 +11463,9 @@
       "sha256": "16d49d8edfcaac4ca5bb2cc360bc5b0161f1f3eaa28894850be6e7d12e74b226"
     },
     {
-      "path": "artifacts/ni07-07-confidence/ci/capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "7237c50bf8bc3c5c934d5145ed036e9e73c5dd8fa79df136cd485be3417ddf8f"
-    },
-    {
-      "path": "artifacts/ni08/usage-source-audit-20261006/source/dcp9a_aggregate_lib.py",
-      "role": "tracked-python-or-config",
-      "sha256": "c5d91aaa61b212d20fc31cbc57e6afa11e34538a2cae09212aef1f274d3ff34f"
-    },
-    {
-      "path": "artifacts/ni08/usage-source-audit-20261006/source/dcp9a_stable.py",
-      "role": "tracked-python-or-config",
-      "sha256": "fd95879da52f7521e79545daaae786cbfdd36eb3ae3340b28b79c492b0b0f787"
-    },
-    {
       "path": "artifacts/operator/apply_e8_quality_baseline_state.py",
       "role": "tracked-python-or-config",
       "sha256": "f1e0c0a88edaea5a66dda34ec9a938f8a20daa17491263a44ffff179623d3d61"
-    },
-    {
-      "path": "artifacts/operator/decisions/OP73-host-activation-20261006/registry_patch.py",
-      "role": "tracked-python-or-config",
-      "sha256": "9a794584c497556f1ce0b75a465097621d73792ed456648f55ce1d156b1b9767"
     },
     {
       "path": "artifacts/operator/e8_quality_pool_regenerator.py",
@@ -11878,11 +11738,6 @@
       "sha256": "3d22fca1781ed8c1502414f774ba8d5a06f22c4c8e2769a9f3da79254b1d91d1"
     },
     {
-      "path": "harness/opencode-plugin/tsconfig.json",
-      "role": "tracked-python-or-config",
-      "sha256": "d28fc56c140695f61c7d35d45041dac3a70a9132aa7ab5743772501eaf15cbe4"
-    },
-    {
       "path": "mkdocs.yml",
       "role": "tracked-python-or-config",
       "sha256": "e2025b22bd2c4d08a571748f6620f0f834cbaffeb8c3897b1c5c8983e5e80df5"
@@ -11905,7 +11760,7 @@
     {
       "path": "research/intake_index.yaml",
       "role": "tracked-python-or-config",
-      "sha256": "97e529d536d67296ad2f325e1ff6d9d6274ab2f2d90e48c89d461b106dc2cca3"
+      "sha256": "df73fae60a0ddf63b141359e096f622f698d366b5e07b45755fb4c4c18565b30"
     },
     {
       "path": "research/multilingual_ingest_test/aggregate_results.py",
@@ -11993,21 +11848,6 @@
       "sha256": "f766dc91cabffc37438c53ad4df80291c61d1b67c9518ef9c3a3995682df1183"
     },
     {
-      "path": "scripts/ci/host_activation_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "9384943a65705aa9e274f81af9cf2ac14ebc53ca276ee459edcfada0e60a7c53"
-    },
-    {
-      "path": "scripts/ci/lr8_event_duty_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "fb6f9c0e2f29776c3c1336001983ef410de62b38723b25b702c0c6901819c058"
-    },
-    {
-      "path": "scripts/ci/lr8_shared_grade_analysis.py",
-      "role": "tracked-python-or-config",
-      "sha256": "524af75022d10e2f6daa18bee9cd9bd685f28fff914cf9827154390f3b190872"
-    },
-    {
       "path": "scripts/ci/native_conformance.py",
       "role": "tracked-python-or-config",
       "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
@@ -12021,131 +11861,6 @@
       "path": "scripts/ci/ni06_reader_b_pytest.py",
       "role": "tracked-python-or-config",
       "sha256": "5d0f6387a98240bd8a35e30ded49a402e899009c34584c47ab49b452f5d7a3fc"
-    },
-    {
-      "path": "scripts/ci/ni07_08_conversation_shadow_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "cd5aa94c5be0c01bbc54d101d5eafc249f1c5dec5f7a08bbc4b9f930bd5162d7"
-    },
-    {
-      "path": "scripts/ci/ni07_14_tu_led1a_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "688e17bf30ce963d314708d7b4c3ef2be467a452fadf5ce13bc5845a2e803715"
-    },
-    {
-      "path": "scripts/ci/ni07_19_tool_repair_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "94d96d7e29fb9634ee06a5ade91058245396a701971cfa45c5dca413b1a58831"
-    },
-    {
-      "path": "scripts/ci/ni07_21_dcp_render_identity_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "070bc463201861eb045c9225f9a234a3ae59e26a49bb9d3907d8f6d2e47f4ccb"
-    },
-    {
-      "path": "scripts/ci/ni07_22_kv_adapter_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "e2b49af07294bb86ebe0add06fe14437f7d528a090e4333ba26dfaac319c0bdd"
-    },
-    {
-      "path": "scripts/ci/ni07_24_pickle_pass_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "0b361957092342470f13fb775a762b804c8e14e05e533ff41b240592f148ce27"
-    },
-    {
-      "path": "scripts/ci/ni07_25_eval_capture_status.py",
-      "role": "tracked-python-or-config",
-      "sha256": "d653016be42442df5533c721864a3dc60c98aabd1d49393406d23797baa96035"
-    },
-    {
-      "path": "scripts/ci/ni07_26_reconnect_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "67c4c1336952bbc2851300d046030c7cfab459e75300bb5bec11ad5bf597d64a"
-    },
-    {
-      "path": "scripts/ci/ni07_27_repl_timeout_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "5979fefda479f6d6bec0937102d36a9cff050f539e11492fce3cb06a299ed02d"
-    },
-    {
-      "path": "scripts/ci/ni07_28_td14_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "1f4d1ef256eff1a6c3c8603f38c979ed310c3fb9782f00d07f52eac55d95adce"
-    },
-    {
-      "path": "scripts/ci/ni07_29_calibration_input_binding.py",
-      "role": "tracked-python-or-config",
-      "sha256": "ef43a46e5886eb17679dd4ce115101d851bf4d41d74e211ebd4eb09ffbef42e3"
-    },
-    {
-      "path": "scripts/ci/ni07_30_standalone_numa_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "4b4bd2fa397a2983fd5e5de021b3589355ad4bac3be54cf2abc976b8787ccb37"
-    },
-    {
-      "path": "scripts/ci/ni07_31_pii_ed25519_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "b6a630bd2745bcac196d86774b37ce859769332e3d2631d4d568e06a3f8186a2"
-    },
-    {
-      "path": "scripts/ci/ni07_32_root_keep_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "635f49f79995454bb4ffa983d867b129b65732e6f97e14d1ac489f458e77ce6b"
-    },
-    {
-      "path": "scripts/ci/ni07_bsv_input_strict_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "754fd75f8cb5dfa384ca24ccc2768e46610ee2bd8e835d002ccd61699f57713b"
-    },
-    {
-      "path": "scripts/ci/ni07_dtap_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "fa646b3fde49cde968d7191131699a5a994a031619de9f67e2ab2a46b9fba4cb"
-    },
-    {
-      "path": "scripts/ci/ni07_k2_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "1ab0267f57463a9eeb8268ba46b837bb6210de6e0ad445811a60328eaf12e60f"
-    },
-    {
-      "path": "scripts/ci/ni07_k7_report_catalog_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "a6447d8118c79cb960166a59a52f60488644c823c301a284ab20f9d84ffaee36"
-    },
-    {
-      "path": "scripts/ci/ni07_kb_force_dedup_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "f7f2750f1c615bb33563508593d82d371f256887d78161a00188d901282e44ee"
-    },
-    {
-      "path": "scripts/ci/ni07_kb_lab_context_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "42c036ab76a8ee1b3a332e4dc22dc7815ddf7b40a6ff558605d926b0d9487d22"
-    },
-    {
-      "path": "scripts/ci/ni07_query_expansion_refusal_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "2df78fc68937439878a134f50eec41fea735a1dbeabfb9352c70c5695d59cc78"
-    },
-    {
-      "path": "scripts/ci/ni07_serving_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "4909cfe5940c5bc9d1391ec76d713bfa39f65641d325b457f6158131097c3bb5"
-    },
-    {
-      "path": "scripts/ci/ni07_utm_v3_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "5497672cfa1c11e164457ba9f1f5abb6a3df76bdc79d11880dc36bf2e30dd659"
-    },
-    {
-      "path": "scripts/ci/ni08_etvt2_tool_use_report_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "61042a6ed0e160c31cf706841d58885df7bf1dc0b288c0463b8d7d965ade8d9e"
-    },
-    {
-      "path": "scripts/ci/ni08_failure_signatures_capture.py",
-      "role": "tracked-python-or-config",
-      "sha256": "4ad3783313c6a0d0723ae7fee8677afc932cbbbe05af4562876b9f02051c2b70"
     },
     {
       "path": "scripts/coordination/_retired/composer_repair.py",
@@ -12795,7 +12510,7 @@
     {
       "path": "scripts/hooks/tests/test_pii_staged_capture.py",
       "role": "tracked-python-or-config",
-      "sha256": "e7625c956fef0f19fd54c88c74af4783ce969b94b944cc00ea460720f98d9cbd"
+      "sha256": "47cb8900465400934b04f7b5787fdddc99af087499e64f99ae6e44ec5d2df366"
     },
     {
       "path": "scripts/hooks/tests/test_policy_snapshot_provenance.py",
@@ -12925,7 +12640,7 @@
     {
       "path": "scripts/system/host_hygiene_tick.py",
       "role": "tracked-python-or-config",
-      "sha256": "9d5771245e6ab16ef495a7053321f380dcb403a45b3d38d6930746f05104d6ff"
+      "sha256": "cd1856f6d087356307d5a4dddf841d612b351078e5b0342d6b79d50af1fb9dcf"
     },
     {
       "path": "scripts/system/prune_agent_event_store.py",
@@ -12935,7 +12650,7 @@
     {
       "path": "scripts/system/scratch_cleanup.py",
       "role": "tracked-python-or-config",
-      "sha256": "b5cb437a66d0c7489838fc5b01e8a451f82221f03790ca3858b477003467def1"
+      "sha256": "484b3b09d5bd0794589d92170475e92af2b1118a70fab7bddab4711d48a503b0"
     },
     {
       "path": "scripts/system/worktree_gate.py",
@@ -13228,11 +12943,6 @@
       "sha256": "cd82adc527398a1d4f571cc4df60410f0a87f311d9324267ce267c9e4c28d0d3"
     },
     {
-      "path": "scripts/vidya/adapters/host_supervision_activation.py",
-      "role": "tracked-python-or-config",
-      "sha256": "c07c7135bfe8e779a94ea53d521f32f2aad8d2c69839915bdb4364ffd16e1f67"
-    },
-    {
       "path": "scripts/vidya/adapters/inf70_roofline_ledger.py",
       "role": "tracked-python-or-config",
       "sha256": "8870921791af94f01e10368e3fbb1509c561df4cb9fed13ffe38cc5aefa05375"
@@ -13305,7 +13015,7 @@
     {
       "path": "scripts/vidya/adapters/research_intake.py",
       "role": "tracked-python-or-config",
-      "sha256": "16d62a85df95e47951d9e9f3424d0ee9d14a6f2b751b2be08c62eb9792c5261d"
+      "sha256": "fef8cedbb000f54472af5df395541a70082d7feea22f723121bb575160c7ff7a"
     },
     {
       "path": "scripts/vidya/adapters/research_screen.py",
@@ -13336,11 +13046,6 @@
       "path": "scripts/vidya/adapters/sealed_manifest.py",
       "role": "tracked-python-or-config",
       "sha256": "ce1a948f7c778b5571c8ac9f3ab864496e3626a1a7c651cce58f4b144aa7900d"
-    },
-    {
-      "path": "scripts/vidya/adapters/serving_call.py",
-      "role": "tracked-python-or-config",
-      "sha256": "bfedf5115733150d627964b5a5ceb357cfd3b54fa1eb4c2d8dcf0b8ce777c2df"
     },
     {
       "path": "scripts/vidya/adapters/session_intercall_gap.py",
@@ -13420,7 +13125,7 @@
     {
       "path": "scripts/vidya/cli.py",
       "role": "tracked-python-or-config",
-      "sha256": "025f7d9887650522279ef4ae91c1a3d99ef873f0a696cb9662d5b39545041d74"
+      "sha256": "6c31bbc332a6d289f11587bc41992e57c07b21d50abf51b2d479e0116f964ca7"
     },
     {
       "path": "scripts/vidya/correction_queue.py",
@@ -13460,12 +13165,7 @@
     {
       "path": "scripts/vidya/ingest_sources.py",
       "role": "tracked-python-or-config",
-      "sha256": "f9a350509fc4ff68545d6e37b8e62e8fd5f3468cd14b8bd25d997a36699c16c0"
-    },
-    {
-      "path": "scripts/vidya/intake_assertion_kinds.py",
-      "role": "tracked-python-or-config",
-      "sha256": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f"
+      "sha256": "343fd5b7e8b6f22fa97cfad361848fbf3a690328775a5ec4214d80ad0eb7c750"
     },
     {
       "path": "scripts/vidya/intent_reconcile.py",
@@ -13488,11 +13188,6 @@
       "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09"
     },
     {
-      "path": "scripts/vidya/ledger_write_lease.py",
-      "role": "tracked-python-or-config",
-      "sha256": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4"
-    },
-    {
       "path": "scripts/vidya/live_eval.py",
       "role": "tracked-python-or-config",
       "sha256": "fc98470150b7407d90c400f16b736bb6a4df6ca884b6f57e4360b6ae35158a92"
@@ -13503,19 +13198,9 @@
       "sha256": "05046e1d36f2b2b04fbbdaf341e85f4f0d70d9b003ae0440cd60cf10506a8380"
     },
     {
-      "path": "scripts/vidya/materialize_reviewed_batch.py",
-      "role": "tracked-python-or-config",
-      "sha256": "2c9cfc3b8e61e7629fcdd2cf296b636b9c35b4a23d9c5527b918b173c1acb8ab"
-    },
-    {
       "path": "scripts/vidya/measurement_record.py",
       "role": "tracked-python-or-config",
       "sha256": "3cdd96a72df3de6ac2fd941a23ac6e94debd5a1fb32214aff6764a395692b945"
-    },
-    {
-      "path": "scripts/vidya/native_correction_replay.py",
-      "role": "tracked-python-or-config",
-      "sha256": "2af947286ed1b36c371774f5df014757b181d0ac6ed202ab6efe256dd64d8d3d"
     },
     {
       "path": "scripts/vidya/projection.py",
@@ -13541,21 +13226,6 @@
       "path": "scripts/vidya/r5_series.py",
       "role": "tracked-python-or-config",
       "sha256": "5ce38ab8d341555a1144de10fe1e9ea929d03c1f903561d3cfbab942dc2807a1"
-    },
-    {
-      "path": "scripts/vidya/rebase_current_index.py",
-      "role": "tracked-python-or-config",
-      "sha256": "d923f40284ef2bff55b13d1f60489b9cf7f7a9d6a1765e262bf3544cdc7c6b54"
-    },
-    {
-      "path": "scripts/vidya/rebase_reviewed_batch.py",
-      "role": "tracked-python-or-config",
-      "sha256": "b396ec7f49757f5a874b28f7273b3151debf4c2921c5bd58b8e197e8203be724"
-    },
-    {
-      "path": "scripts/vidya/semantic_impact_audit.py",
-      "role": "tracked-python-or-config",
-      "sha256": "594ff1ec8ed8b74c5e8b05249806f3db2a2c384aaed56b03e772a24b453cea11"
     },
     {
       "path": "scripts/vidya/source_coverage.py",
@@ -13670,7 +13340,7 @@
     {
       "path": "tests/coordination/test_mech_column_audit.py",
       "role": "tracked-python-or-config",
-      "sha256": "ff57d7effb94ab2275634cb63bb337f8b877f54f18338a16b6fba6d0e6996ac4"
+      "sha256": "ee422e647bdf44813ee03e12712c1b153340f702242639b964f1961e1484c78a"
     },
     {
       "path": "tests/coordination/test_monitor_file_reinvoke.py",
@@ -13776,11 +13446,6 @@
       "path": "tests/skills/test_research_intake_id_sequencing.py",
       "role": "tracked-python-or-config",
       "sha256": "b65b36ff3f270505744c1c223b38cc226f810e5b3f3715c9079d8bf00208ebd9"
-    },
-    {
-      "path": "tests/skills/test_research_intake_read_depth_scope.py",
-      "role": "tracked-python-or-config",
-      "sha256": "2c7dee3c055c98b1d747fff7bbd99f2659969eaff27c4f1a7d5711d5ba9ad91a"
     },
     {
       "path": "tests/skills/test_skill_interpreters.py",
@@ -14078,11 +13743,6 @@
       "sha256": "8b065eeceaa390d6e09aaf8d9356a9009bce8c2b4035c467936e33a53954b0ca"
     },
     {
-      "path": "tests/test_host_hygiene_event_duty.py",
-      "role": "tracked-python-or-config",
-      "sha256": "99d15b8dc65936f2a1e39cf55741524dec092834fe1515537879ef849d8d6fff"
-    },
-    {
       "path": "tests/test_host_hygiene_tick.py",
       "role": "tracked-python-or-config",
       "sha256": "ff3f62df27ceef5ea9408c679e43bde5bd9c1a54bc5ca65fd6fd34894c25d300"
@@ -14118,24 +13778,9 @@
       "sha256": "2ad3edbaef87de6405368a0de0612bb648b55af11a0c519f56b15d95f03385d0"
     },
     {
-      "path": "tests/test_ledger_write_lease.py",
-      "role": "tracked-python-or-config",
-      "sha256": "732caeaa2f2b7ee711dfe9c1ce2dd2c6f84268807a2aaf112aa6e2b1355bafc7"
-    },
-    {
       "path": "tests/test_measurement_trust_boundary_writer_lock.py",
       "role": "tracked-python-or-config",
       "sha256": "4abe96081ea7a632e5ac1098ce21c4c96d4580f85cd5d50d481f1048716a0b08"
-    },
-    {
-      "path": "tests/test_native_correction_builders.py",
-      "role": "tracked-python-or-config",
-      "sha256": "12bf3d55af3b4d668bd65748beaaa07e5216f9ec62a8fa7bc877e9041518c0e9"
-    },
-    {
-      "path": "tests/test_native_correction_replay.py",
-      "role": "tracked-python-or-config",
-      "sha256": "c5d76c74775bbc681a79932ee05a114b6f0eac64f17a4d7b11a05df87db38883"
     },
     {
       "path": "tests/test_observer_contract.py",
@@ -14146,11 +13791,6 @@
       "path": "tests/test_opencode_event_reaper.py",
       "role": "tracked-python-or-config",
       "sha256": "4f809e9ca8d83c66216bf0c491252c2ca6286ccce1e1aa1c5a25d4972e5a71a5"
-    },
-    {
-      "path": "tests/test_opencode_event_status.py",
-      "role": "tracked-python-or-config",
-      "sha256": "39ecae3283b2fe25a101430e113522093f4e5b744888f10b3b1045a73838aa84"
     },
     {
       "path": "tests/test_pii_fixture_eval_sides.py",
@@ -14193,11 +13833,6 @@
       "sha256": "a77acd7096c85ef94256fe0e5e048676a6ad982833b3da177460aa6d40d28905"
     },
     {
-      "path": "tests/test_rebase_current_index.py",
-      "role": "tracked-python-or-config",
-      "sha256": "693e81ae25c63527982ea16e932b0172c31625858d29748fd8237c7145b5ae5b"
-    },
-    {
       "path": "tests/test_row_intake.py",
       "role": "tracked-python-or-config",
       "sha256": "b921f6135753489857d408913a12a404bcf35d26274e7c4b430a4a2a6d08c5a9"
@@ -14210,7 +13845,7 @@
     {
       "path": "tests/test_scratch_cleanup.py",
       "role": "tracked-python-or-config",
-      "sha256": "a042db8fa7d7aceefec012063a3af01a955e38c035f868f593af363e0a505e99"
+      "sha256": "153cea46d0a26fb43d974376e483df7d91fb5431eae6e503616597543b308cfe"
     },
     {
       "path": "tests/test_selector_replay.py",
@@ -14230,7 +13865,7 @@
     {
       "path": "tests/test_tmux_adapter.py",
       "role": "tracked-python-or-config",
-      "sha256": "969f92c46cacd23e2be79bc439dcdb32b4f5cbb8392c2d2e5f8367f59841a033"
+      "sha256": "c8e9e8402b28cef1dd0ba456cc03c7f54062536d045a6b5555d6ea8903f537eb"
     },
     {
       "path": "tests/test_verify_llama_cpp.py",
@@ -14518,11 +14153,6 @@
       "sha256": "fad36b25ce9bcf32d2c03874ede2be508dea4ccf97d1c785bbdcb70e6ccf5371"
     },
     {
-      "path": "tests/vidya/test_host_supervision_activation.py",
-      "role": "tracked-python-or-config",
-      "sha256": "a8acfd9f84d848318068950a168f0b1db47f01d7b47cc34a45b858624e7fb6fb"
-    },
-    {
       "path": "tests/vidya/test_impact_coverage_anchor_level.py",
       "role": "tracked-python-or-config",
       "sha256": "8681189929d5388d226deaa94c94dd4c51657f8b85181d32cf724de2cd591c00"
@@ -14545,7 +14175,7 @@
     {
       "path": "tests/vidya/test_ingest_sources.py",
       "role": "tracked-python-or-config",
-      "sha256": "8651ff26c5ef4baa789a6830be8f7ad3bd04e82bd58b7df40ea8169c30234239"
+      "sha256": "3d76b23cea1f279584ec988b871bee147167c0f9b8d6ab669523429d3c771c4a"
     },
     {
       "path": "tests/vidya/test_judgment_digest_binding.py",
@@ -14560,7 +14190,7 @@
     {
       "path": "tests/vidya/test_kv_quant_27b_v10_adapter.py",
       "role": "tracked-python-or-config",
-      "sha256": "6241b5016468a657bee189b2cf500b6252f650222ff40474ed32d661e090c941"
+      "sha256": "3dcf4fbabbe91d87dc6ec3e1f282fd5ca7986b726d7c97345a07b779021671f3"
     },
     {
       "path": "tests/vidya/test_ledger_empty_verify.py",
@@ -14613,11 +14243,6 @@
       "sha256": "594f8ad8525222248460f2b8819cfbe54fdd3a2ea820334414d25007cd00b756"
     },
     {
-      "path": "tests/vidya/test_research_intake_warrant_correction.py",
-      "role": "tracked-python-or-config",
-      "sha256": "b4efefef629d1d5eb6118d6e59def69a9e6c04d0a4cc1cc9f9f2df368d655124"
-    },
-    {
       "path": "tests/vidya/test_research_screen_adapter.py",
       "role": "tracked-python-or-config",
       "sha256": "0783c80543a46a98e2f5428dadbf2915370a1567562c69d8016b8661a4b27650"
@@ -14646,11 +14271,6 @@
       "path": "tests/vidya/test_sealed_manifest.py",
       "role": "tracked-python-or-config",
       "sha256": "38c108a39d91a9f62d15916192e9429d13135179affd6e531ebab6d74309a2b5"
-    },
-    {
-      "path": "tests/vidya/test_serving_call_adapter.py",
-      "role": "tracked-python-or-config",
-      "sha256": "ffed4b74edd0e8ec37f9baacfd818c7faedb9ea502459c714e2a21f5efed5dd2"
     },
     {
       "path": "tests/vidya/test_session_gap_adapter.py",
@@ -14821,7 +14441,7 @@
   "carrier_native_conformance_path": "scripts/ci/native_conformance.py",
   "carrier_native_conformance_sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
   "carrier_revision": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
-  "carrier_tracked_python_config_count": 781,
+  "carrier_tracked_python_config_count": 700,
   "compatibility_control_scope": [
     "existing native experiment-journal signature/scope append/reload and legacy-unknown behavior",
     "existing shared BSV signature/diff and trace-schema persistence",
@@ -15494,6 +15114,11 @@
       "sha256": "8f64c7c9bc38572074f72292dc8ceef0a124a6854009385e4ca3983aa40657e2"
     },
     {
+      "path": "artifacts/ni05/code-index-37358369281/ni52-index-install-originals-37358369281/package-lock.json",
+      "role": "tracked-python-or-config",
+      "sha256": "734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c"
+    },
+    {
       "path": "artifacts/ni05/code-index-37358369281/ni52-index-install-originals-37358369281/workflow.yml",
       "role": "tracked-python-or-config",
       "sha256": "b6cca8584f8d4ec918f436e8789ba92fa40f216b3f0ef932b8505743299f3d26"
@@ -15527,6 +15152,11 @@
       "path": "artifacts/ni05/eval-scoring-37351080596/originals/ni41-original-37351080596-1-verifier-mode/ni41-resolver-inputs-37351080596/pyproject.before.toml",
       "role": "tracked-python-or-config",
       "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "path": "artifacts/ni05/executor-impact-37361379823/ni75-index-install-originals-37361379823/package-lock.json",
+      "role": "tracked-python-or-config",
+      "sha256": "734c187820f8e972354dec7aa7519ce37bf0b688530ef83623d8baeb645b448c"
     },
     {
       "path": "artifacts/ni05/executor-impact-37361379823/ni75-index-install-originals-37361379823/workflow.yml",
@@ -15934,11 +15564,6 @@
       "sha256": "3d22fca1781ed8c1502414f774ba8d5a06f22c4c8e2769a9f3da79254b1d91d1"
     },
     {
-      "path": "harness/opencode-plugin/tsconfig.json",
-      "role": "tracked-python-or-config",
-      "sha256": "d28fc56c140695f61c7d35d45041dac3a70a9132aa7ab5743772501eaf15cbe4"
-    },
-    {
       "path": "mkdocs.yml",
       "role": "tracked-python-or-config",
       "sha256": "e2025b22bd2c4d08a571748f6620f0f834cbaffeb8c3897b1c5c8983e5e80df5"
@@ -16051,7 +15676,7 @@
     {
       "path": "scripts/ci/ap_me1_me3_capture.py",
       "role": "tracked-python-or-config",
-      "sha256": "79264d4b7e690010f810aa0a41f037e3edce5848e02670ab65633c83a4cba9aa"
+      "sha256": "534f3023732ed279c0e7e290b740a0a6a0e3572f586d5370b56ab933f14dabe7"
     },
     {
       "path": "scripts/ci/ap_me1_me3_case_guard.py",
@@ -18882,11 +18507,6 @@
       "path": "wiki.yaml",
       "role": "tracked-python-or-config",
       "sha256": "e2f30f4a1b3c862519a0773b51c8599eb4a05f5c0d6c2cfb04dad13f5f9c497b"
-    },
-    {
-      "path": "scripts/ci/ap_me1_me3_test_requirements.txt",
-      "role": "explicit-recipe-input",
-      "sha256": "ff33a42f9b04daadf4c0586c135f47ec8f9d2ee14ea89e719b45ad3e7f41dcf8"
     }
   ],
   "recipe_revision": "bound by hosted workflow github.sha and native receipt repository identity",
@@ -18900,7 +18520,7 @@
     "proposal_branch": "codex/ap-me1-me3-hosted-ci-proposal-20261006",
     "proposal_checkout": "standalone no-hardlinks clone with independent .git common directory"
   },
-  "schema": "epyc.ap_me1_me3.source_readset.v2",
+  "schema": "epyc.ap_me1_me3.source_readset.v3",
   "scope": "prospective synthetic hosted test execution; source identity and readset only",
   "selections": [
     "tests/unit/test_mutation_diagnostics.py",
@@ -18908,6 +18528,7 @@
     "tests/unit/test_behavior_signature.py",
     "tests/unit/test_bsv_observe.py"
   ],
+  "source_population_rule": "All tracked .py/.yaml/.yml/.toml files; all tracked files under config/; explicit lockfiles, package manifests, pytest/tool config, and requirements*.txt; exact path population reconstructed from pinned Git trees and runtime-set-checked.",
   "test_dependency_artifact_hashes_from_uv_lock": {
     "iniconfig": [
       "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730",

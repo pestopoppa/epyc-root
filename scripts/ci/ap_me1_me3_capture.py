@@ -68,6 +68,42 @@ def verify_identity(repo: Path, expected: str, label: str) -> None:
         raise RuntimeError(f"{label} checkout has tracked modifications")
 
 
+def source_paths_from_git_tree(repo: Path) -> set[str]:
+    """Complete tracked Python/config input set for the pinned clean checkout."""
+    raw = subprocess.check_output(["git", "-C", str(repo), "ls-tree", "-r", "-z", "HEAD"])
+    selected = set()
+    config_names = {
+        "uv.lock", "poetry.lock", "Pipfile.lock", "package.json", "package-lock.json",
+        "yarn.lock", "pnpm-lock.yaml", "pytest.ini", "tox.ini", "setup.cfg",
+        "mypy.ini", ".coveragerc",
+    }
+    for entry in raw.split(b"\0"):
+        if not entry:
+            continue
+        metadata, raw_path = entry.split(b"\t", 1)
+        mode = metadata.split(b" ", 1)[0]
+        if mode == b"160000":
+            continue
+        relative = os.fsdecode(raw_path)
+        name = Path(relative).name
+        suffix = Path(relative).suffix.lower()
+        if (suffix in {".py", ".yaml", ".yml", ".toml"}
+                or relative.startswith("config/")
+                or name in config_names
+                or (name.startswith("requirements") and suffix == ".txt")):
+            selected.add(relative)
+    return selected
+
+
+def verify_complete_file_records(repo: Path, records: list[dict], label: str) -> None:
+    declared = {item.get("path") for item in records if isinstance(item, dict)}
+    actual = source_paths_from_git_tree(repo)
+    if declared != actual:
+        missing = sorted(actual - declared)[:5]
+        extra = sorted(declared - actual)[:5]
+        raise RuntimeError(f"{label} readset is incomplete (missing={missing}, extra={extra})")
+
+
 def verify_file_records(repo: Path, records: list[dict], label: str) -> list[Path]:
     paths = []
     for item in records:
@@ -247,13 +283,16 @@ def main() -> int:
         verify_identity(recipe, recipe_pin, "workflow recipe")
         source_map_path = recipe / READSET_MAP
         source_map = json.loads(source_map_path.read_text(encoding="utf-8"))
-        if source_map.get("schema") != "epyc.ap_me1_me3.source_readset.v2":
+        if source_map.get("schema") != "epyc.ap_me1_me3.source_readset.v3":
             raise RuntimeError("unsupported AP source/readset map")
         if source_map.get("app_revision") != APP_PIN or source_map.get("carrier_revision") != ROOT_CARRIER_PIN:
             raise RuntimeError("source/readset map revisions disagree with workflow pins")
         if source_map.get("selections") != SELECTIONS:
             raise RuntimeError("source/readset map selection differs from runner selection")
 
+        verify_complete_file_records(app, source_map.get("app_files", []), "APP")
+        verify_complete_file_records(carrier, source_map.get("carrier_files", []), "carrier")
+        verify_complete_file_records(recipe, source_map.get("recipe_files", []), "recipe")
         app_inputs = verify_file_records(app, source_map.get("app_files", []), "APP")
         carrier_inputs = verify_file_records(carrier, source_map.get("carrier_files", []), "carrier")
         recipe_inputs = verify_file_records(recipe, source_map.get("recipe_files", []), "recipe")
@@ -319,7 +358,8 @@ def main() -> int:
         env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         read_paths = [
-            source_map_path.resolve(), (recipe / WORKFLOW).resolve(),
+            source_map_path.resolve(), (app / "uv.lock").resolve(),
+            (recipe / WORKFLOW).resolve(),
             (recipe / DRIVER).resolve(), (recipe / CASE_GUARD).resolve(),
             (recipe / REQUIREMENTS).resolve(), environment_path.resolve(), freeze_path.resolve(),
             carrier_script.resolve(), *recipe_inputs, *app_inputs,
