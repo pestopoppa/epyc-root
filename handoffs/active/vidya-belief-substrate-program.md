@@ -2686,3 +2686,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 - [x] **VB-NI07-CI-BSV-INPUT — ingest strict standalone input fixtures.** ✅ 2026-10-06 — [OriginalCI37454712581](../../artifacts/ni07/run-37454712581/README.md) TRUE38/38, one existing Judged/Located observation and three canonical frames; original FALSE31/38 independently reopened and retained, not regraded.
 
   - [x] **VB-NI07-CI-LAB-CONTEXT — ingest lab dependency-consumer fixtures.** ✅ 2026-10-06 — [OriginalCI37454908617](../../artifacts/ni07/run-37454908617/README.md) TRUE19/19; one existing Judged/Located observation and3canonical frames after MAIN exact source/API review. Initial FALSE17/19 original retained, not resealed or regraded.
+
+- [ ] **VB-K2-QUERY-EXPANSION-REFUSAL — bind optional config capability refusal prospectively.** NI07-20/KB-K2-QUERY-EXPANSION-REFUSAL, existing native CI/shared grading only. Exact fake/temp declaration refusal before constructor plus absent/false compatibility; no new source class/ladder, expansion semantics/quality/model/live warrant.
