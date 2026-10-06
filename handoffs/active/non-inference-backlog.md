@@ -14,9 +14,9 @@
 
 ## Start here
 
-- **Next:** NI05 is complete (79/79) and the selected NI06/NI07 implementation queue is complete (35/35). LR-6a host activation is accepted; prepare LR-8 event-duty/alarm integration below without changing the running daemon.
+- **Next:** NI05 (79/79) and selected NI06/NI07 (35/35) are complete; the whole backlog is not exhausted. [NI08 continuation](../../docs/reference/ni08-non-inference-continuation.md): two source audits accepted, LR-8 source integration and prospective host native receipt wiring in progress. Preserve the running daemon until a reviewed handover.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
-- **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
+- **Operator-held:** NIB2-65 and NIB2-66; NIB2-71 archival-versus-deletion disposition is pending the concrete operator choice. NIB2-73f's named current-file exposure is absent and closed.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
 - **Leak robustness:** LR-6a accepted 2026-10-06 with a post-install heartbeat; LR-8 is now available for bounded source preparation. LR-9a was ratified 2026-10-04 (`ae06680f`). LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
@@ -212,10 +212,7 @@ All zero-inference unless stated. Filed by the 2026-09-15 dispatch session (prog
       sibling bundles are cited under `bonsai_current_v7` (L8626/8627/8641/8642/8715) and
       `qwable_reasoning_economics` (L9124-9131). Extend the checker's scan to docs/handoffs, or accept the limit
       explicitly — today the gate's silence on these is not evidence of their durability.
-- [ ] **NIB2-73f** (LOW, operator): **the operator's own email address is in a tracked file** —
-      `data/cpu_optimization/2026-04-30-v5-cleanup-audit/README.md:27`, attributing his own decisions. First-party, so
-      the third-party-PII WITHHELD precedent does not apply and nothing was changed. Redact or keep: an operator call,
-      relevant only if this repo ever becomes public.
+- [x] **NIB2-73f** (LOW): **review the named current tracked-file exposure.** ✅ 2026-10-06 — the exact named `data/cpu_optimization/2026-04-30-v5-cleanup-audit/README.md` is absent from fresh published ROOT `6033e30cd7938c87233b3632c71764a6acf4d2c9` and the reviewed worktree. [Disposition](../../artifacts/ni08/source-audits-20261006/current-exposure-disposition.json). No current redaction/keep choice remains for that file; no address was copied or reintroduced. This closes only the named current-file exposure, not a whole-repository privacy audit or Git-history erasure.
 - [x] **NIB2-76 — resolve both residuals of the NIB2-69 gate fix.** ✅ 2026-10-06 — (a) the standalone guard no longer falls through to realized fleet/environment/default mode; it uses explicit mode or its own checkout declaration and fails closed before validation. (b) portable priors/source-artifact resolution was already fixed and is covered by existing selected worktree-relative and external-absolute controls. APP source 82e398da2478bfd9c3baaddbd0c6fb742d09dafa; run 37476312545 TRUE20/20 including 9 existing focused guard/pipeline controls. Synthetic source/fixture evidence only.
 - [ ] **NIB2-77** (MED): **finish AutoKernel disk hygiene after the approved sweep and archive-backed retirement.**
       The exact `a49053c273ee` manifest's prequalified REMOVE rows were approved and applied. A separate
@@ -339,6 +336,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
 - [x] **LR-7** — the DS41 load-bearing worktrees are declared with git locks: `root-main-epyc-root-repo` and
       `research-ds41-run10`. ✅ 2026-10-04 (INF-77 DS41-C113a)
 - [ ] **LR-8** — **merge the periodic cleanups into one tick.** LR-6a is accepted; isolated non-inference source preparation is now available. Fresh source review finds the report-only `codex_retention_reaper.py` is already a daily heavy-phase duty with the CPU-region interlock; do not duplicate it or enable apply. The remaining gap is the standalone `opencode_event_reaper.sh` loop: integrate its existing `once` duty, preserving the 1800-second cadence and fail-closed present/unobservable VACUUM guard; unify failure/blind alarms and adjust the keeper/registry contract consistently. Scope remains only opencode's `event` table in idle sessions, never sessions/messages/parts or harness transcripts. Keep the current daemon running until a reviewed owning-session runtime handover. Published tick source is consumed by the refreshed read-only view, so preparation must remain inactive by default to prevent dual schedulers. [Activation evidence and bounded next step](../../artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/README.md).
+  - [ ] **LR-8-SRC — implement and validate inactive event-duty source.** NI08-01: explicit opt-in plus full scheduled owner contract, independent 1800-second cadence, fail-closed CPU/daemon observations, overlap lock and one native outcome/alarm owner. Preserve the existing registry and daemon defaults. Hosted synthetic native verifier acceptance precedes runtime handover; source preparation alone does not close LR-8.
 - [x] **LR-9** — **harness state and session transcripts are never cleanup targets** (operator hard rule 2026-10-04:
       Claude/Codex backup logs and transcripts *"should NOT BE TOUCHED UNDER ANY CIRCUMSTANCES. They are historical
       transcripts used by a root filesystem project far more senior to anything performed in this project repo"*,

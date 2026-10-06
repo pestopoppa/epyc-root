@@ -1,0 +1,25 @@
+{
+  "audit": "VB-KB-CATALOG-CONSUMERS",
+  "orchestrator_remote": "https://github.com/pestopoppa/epyc-orchestrator.git",
+  "orchestrator_commit": "48a546e90fbc202a0c2ae103203621ba29175915",
+  "root_adapter_sha256": "d06d51b78db2135d6eda6dab45846347352d0d65344197b8c5312b63b83e2aaa",
+  "root_source_table_sha256": "40a53236c734a1cfab2bdbd3c8c9e20f9e6e57df4bb0ad88a858c8b7571948b6",
+  "handoff_snapshot_sha256": "078e40d7ed63018e83689ee35f714b7b2bf15372434ba6a823cebc912c5cafc0",
+  "orchestrator_sources": {
+    "src/retrieval/kb_catalog_dependency.py": "3f24777cfc43dac8b63aa3d13645f19ae9ebff5ddd7ca4e93ee3841286353e5c",
+    "scripts/kb_rag/eval_k7.py": "90145ea567b18db2e9b9289ebf8e9dd7578d34b94259731950432de2e5fc86e7",
+    "scripts/lab/run_job.py": "055ec555e262c50c2ca91a0e8af8d5fd187987fd48fcb8ef54ef5a4288fb7907",
+    "src/retrieval/kb_rag_query_telemetry.py": "51d69daa69600524bfe53995cc7d2293b0fb37c019a98744d76401ec1f43dffa"
+  },
+  "evidence": {
+    "strict_reader": "kb_catalog_dependency.py:144-185 validates native row and returns None for missing/legacy; export_dependency delegates to it.",
+    "artifact_consumers": [
+      "eval_k7.py:377 attaches validated dependency before report artifact writes; tests/unit/test_kb_rag_eval.py:204-345 cover attached, absent and refusal cases.",
+      "lab/run_job.py:421-432 attaches validated record during context collection; :867-877 persists manifest and :993-1009 passes context; tests/unit/test_lab_run_job.py:363-489 cover refusal/manifest behavior."
+    ],
+    "other_runtime_consumers": "CLI/federation query results and status render KB content; they do not generate artifact/document evidence records.",
+    "cumulative_telemetry": "kb_rag_query_telemetry.py:232 and :245-298 creates belief rows from append-only log snapshot, with prefix digest/path/window; root adapter projects those producer-authored rows as measurement observations. Binding the current final-catalog row to this historical cumulative report would be retroactive synthesis, outside the task scope.",
+    "exporter": "No production caller invokes export_dependency; both existing evidence consumers invoke the strict read_dependency directly and attach its validated object, so absence of exporter calls is not a gap."
+  },
+  "disposition": "Source audit satisfied for current artifact/document evidence consumers; recommend MAIN close bounded audit row after confirming its canonical task text. No source change or new tests indicated."
+}

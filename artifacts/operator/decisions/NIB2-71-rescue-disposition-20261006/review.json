@@ -1,0 +1,168 @@
+{
+  "ch8_build_note_comparison": {
+    "assessment": "CH-8 source rationale is present in current main; no source-note fold required. The rescue commit remains a historical snapshot for the two older benchmark scripts and its other preserved file versions.",
+    "base_to_rescue_diff_path": "/mnt/raid0/llm/tmp/nib2-71-review-main-20261006/nib2-71-rescue-deployment-factory.diff",
+    "base_to_rescue_diff_sha256": "f92f40098cf919427a892ea4dc275a891efc09348925539987cb6cfd36649c60",
+    "current_main_comment_lines": "2147-2175",
+    "current_main_contains_rescue_comment_block": true,
+    "current_main_readme_contains_build_guidance": true,
+    "path": "scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py",
+    "rescue_commit_comment_lines": "2052-2075",
+    "rescue_commit_retains_original_comment_block": true
+  },
+  "ch8_commit": "162d17dd0239e7c38bbb318527e0d11ea9456a22",
+  "ch8_is_ancestor_of_main": true,
+  "original_rescue_backup": {
+    "added_file_copies": [
+      {
+        "exact_copy_path": "/mnt/raid0/llm/tmp/research-shared-clone-rescue-20260908/df2_greedy_parity.py",
+        "exact_copy_sha256": "98929ab829ba0bcb60543c524efc2d721264e0cbc34292328672636f9d09387f",
+        "rescue_path": "scripts/benchmark/df2_greedy_parity.py"
+      },
+      {
+        "exact_copy_path": "/mnt/raid0/llm/tmp/research-shared-clone-rescue-20260908/g2_df25_concurrency_grid.py",
+        "exact_copy_sha256": "aa9602af637d4621cae40ebde3440ce1622d3da73517410feffd986a975efcae",
+        "rescue_path": "scripts/benchmark/g2_df25_concurrency_grid.py"
+      }
+    ],
+    "added_path_count": 2,
+    "exact_same_volume_custody_complete_for_11_paths": true,
+    "independently_archived_off_volume": false,
+    "modified_path_count": 9,
+    "patch_byte_identical_to_rescue_parent_to_commit_for_all_9_modified_paths": true,
+    "patch_path": "/mnt/raid0/llm/tmp/research-shared-clone-rescue-20260908/dirty-9-files.patch",
+    "patch_sha256": "70137662f379f6f20b917ef5484d50b49f6ada11f96370b23597e75daf7bb173",
+    "path": "/mnt/raid0/llm/tmp/research-shared-clone-rescue-20260908",
+    "same_volume_note": "The existing rescue directory and review clone are both under /mnt/raid0/llm/tmp; exact byte coverage does not establish independent off-volume custody."
+  },
+  "paths": [
+    {
+      "identical": false,
+      "main_blob": "2feac1e81847601b469114e73594a66cda1d60d5",
+      "main_bytes": 22424,
+      "main_present": true,
+      "main_sha256": "9e4c8101017a723566717d52d871436970e46a6e73777fef81fff45fe153eff7",
+      "path": "README.md",
+      "rescue_blob": "56debcb8314e7b626b5bcfd1a3b0df2a4729004d",
+      "rescue_bytes": 21614,
+      "rescue_sha256": "eeaa2bb66bc55a89d121e85f4eb1cbd2ed70b6eff8b976dadbe9b86e55a67362"
+    },
+    {
+      "identical": false,
+      "main_blob": "638eaa9c3c2eda80bb8a7dbfe076317cd400b80d",
+      "main_bytes": 4686,
+      "main_present": true,
+      "main_sha256": "c7967a86edcf27a4d4e7a6a4d646698417e8d0e3541101e8388e34d33c51540b",
+      "path": "scripts/benchmark/bench_kv_hadamard.sh",
+      "rescue_blob": "cff70acd2c6f6c3fc99b67e685e3fa4675feae58",
+      "rescue_bytes": 5638,
+      "rescue_sha256": "03b8d13dc944873346bbe7d9ceca401db6e6c19a98171700fe5d30f952f2a5b9"
+    },
+    {
+      "identical": false,
+      "main_blob": "f9381bda2889205e56f1f5a0f09559950c1c05ba",
+      "main_bytes": 13735,
+      "main_present": true,
+      "main_sha256": "73b83c68ea987df9d57d3b68719914d0b2a66fb1e12a6aef6cb944eef91a5f49",
+      "path": "scripts/benchmark/df2_greedy_parity.py",
+      "rescue_blob": "1f70317aa8f540c2efeb0fc360b073bd169eca8f",
+      "rescue_bytes": 12847,
+      "rescue_sha256": "98929ab829ba0bcb60543c524efc2d721264e0cbc34292328672636f9d09387f"
+    },
+    {
+      "identical": false,
+      "main_blob": "c28fe4f6c84b6a21114b09f558dc7843486887f0",
+      "main_bytes": 10130,
+      "main_present": true,
+      "main_sha256": "3a924782a69f65de9d578335b61c7cc79320e23c76bae223f9ee779e15406060",
+      "path": "scripts/benchmark/expert_routing_skew_profile.sh",
+      "rescue_blob": "1a17b118c0ef45c12789cc865c48158758bfd7d9",
+      "rescue_bytes": 11037,
+      "rescue_sha256": "20a1270ba120bd85c15f85e2066e117487b8e74521c7596ba55713f9af4e226e"
+    },
+    {
+      "identical": false,
+      "main_blob": "0900f58daec6392bb3f3a2e8d09528fdc08bf90d",
+      "main_bytes": 16631,
+      "main_present": true,
+      "main_sha256": "45844048757f266b035ab69e9ea6e2976becef8242cefd6d3b9103e9da26c8f1",
+      "path": "scripts/benchmark/g2_df25_concurrency_grid.py",
+      "rescue_blob": "5948962547d9911040a9f1ff31272263a5b978bf",
+      "rescue_bytes": 15238,
+      "rescue_sha256": "aa9602af637d4621cae40ebde3440ce1622d3da73517410feffd986a975efcae"
+    },
+    {
+      "identical": false,
+      "main_blob": "a52c74589b7518ab651bbdc51fcea85399ca855f",
+      "main_bytes": 13369,
+      "main_present": true,
+      "main_sha256": "1df069d32bb38c5a72f13c75f847b4110712861bbe226fe6a9aa28e6fe71eb4c",
+      "path": "scripts/benchmark/prove_paged_attention.sh",
+      "rescue_blob": "d8c9e581506691fe14ffd53bb7c53d3ae469e29b",
+      "rescue_bytes": 14827,
+      "rescue_sha256": "58850d1663a9e96f92e145e6f28c54b2fc968d5049b86ca66c4bfc9f1c844dd9"
+    },
+    {
+      "identical": false,
+      "main_blob": "2c19fb9e581a4f6819556b6c4b349644b8c5bc1e",
+      "main_bytes": 189111,
+      "main_present": true,
+      "main_sha256": "cf784873951c2dab2b93b72e09061eceb2b6dfdedb401435c84c5929492db797",
+      "path": "scripts/benchmark/run_autokernel_gpu_discovery.py",
+      "rescue_blob": "3a86c661b13ae1019ee6bfb94096b8bc1329bff7",
+      "rescue_bytes": 178784,
+      "rescue_sha256": "e078f2a75c20899294fc79641b27a5a6df3636ddedf635f505cb3fa86673d1e4"
+    },
+    {
+      "identical": false,
+      "main_blob": "459c970d78a45e1addf35a216c90a53049071b2e",
+      "main_bytes": 13400,
+      "main_present": true,
+      "main_sha256": "4083cccd6e31695182cc71299a8df8a8c52abace0640ee581cf367e4aeba0c8d",
+      "path": "scripts/benchmark/run_autokernel_historical_replay.py",
+      "rescue_blob": "a95d84ef28b3ddb18d1dbf9cdc4e3861e6e84525",
+      "rescue_bytes": 15459,
+      "rescue_sha256": "99f292a41643fd73756a3ca6794856788710393d4691e1a215b7a64aa15b8e6c"
+    },
+    {
+      "identical": false,
+      "main_blob": "7565297723a69182eeb97f81bd76013cc6704334",
+      "main_bytes": 178740,
+      "main_present": true,
+      "main_sha256": "5e40c6be01cde01a42e85b09bbc509313727b4f666e7dc0dcb463737bf86eac9",
+      "path": "scripts/kernel_rnd/autokernel/controller/discovery_deployment_factory.py",
+      "rescue_blob": "b80ada7ba3db0a19bf437d0c28b2f4cae51790db",
+      "rescue_bytes": 170424,
+      "rescue_sha256": "044cde2df68308f86d0e64c110d56a5196266a328557c93f45aec9c45d8ab713"
+    },
+    {
+      "identical": false,
+      "main_blob": "ea054a80c34cd8edd78deeb28e4739f1acbd227c",
+      "main_bytes": 14707,
+      "main_present": true,
+      "main_sha256": "48e2036028ffc311aaad2ac9fbd03f4a37114bf823ff33efe880a43ab4760b14",
+      "path": "scripts/kernel_rnd/kernel_eval.sh",
+      "rescue_blob": "8e2b5a3db827065ea41204fba4c686d1d5efaa6f",
+      "rescue_bytes": 15440,
+      "rescue_sha256": "1373baa5762c394d022153497b8fb2d39f0f9d2f6e52294927a8ccdb0826bd56"
+    },
+    {
+      "identical": false,
+      "main_blob": "598190efd92e9cf4da8ab015a46f22ad1f939a32",
+      "main_bytes": 1162,
+      "main_present": true,
+      "main_sha256": "3f83d8a4e62e24c54eded008754c6a4d3f0fe6f720a5286dab887ae7b7e9829a",
+      "path": "scripts/legacy/build_llama.sh",
+      "rescue_blob": "4d79dfd783ecd48c11213fc2647c6de8bf619d4c",
+      "rescue_bytes": 1895,
+      "rescue_sha256": "fa23e9fefc49e7bb04c9c11dd128b5b101d62405b070f16239d3c89d2fed012c"
+    }
+  ],
+  "preserved_paths_count": 11,
+  "remote_main": "1bace97dc655ab5896291b4571781e53b821d9a3",
+  "repository": "epyc-inference-research",
+  "rescue_commit": "63ec9f534bc7b1adc15958512019bf371cee0b2a",
+  "rescue_parent": "1d2fe2a31e2bd3c3750f9425eab4e2c8d3ae993a",
+  "reviewed_at": "2026-10-06",
+  "schema": "nib2-71-rescue-review.v1"
+}
