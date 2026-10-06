@@ -140,3 +140,7 @@ MAIN surfaced the newly verified source queue in the continuation index as it un
 ## Prospective P7 and period-cell verification enrollment
 
 MAIN enrolled VB-HS4-P7-CONFORMANCE and VB-PII-PERIOD-CONFORMANCE in the source table and owning handoff before first capture. Source review is complete for P7 stdin generation and the narrowly bounded period-cell selector; recipes still require exact-case and complete input-binding corrections before hosted execution. No completion counted, historical originals unchanged, no shared-host project execution or privacy authority.
+
+## Isolated verification dispatch boundary
+
+MAIN independently derives all 73 TOC and 138 P7 expanded case identities from static AST and verifies complete declared Git input maps. Reviewed TOC recipe6fd5fd9 is running in isolated GitHub CI; P7 recipee6aeaf1 is approved for its isolated run. No completion counted. One P7 worker previously ran host pytest collection outside the static-only boundary; modules were imported, complete argv/runtime and side-effect audit were not retained, and that collection is not validation. Original collector custody is preserved, independently reconstructed static IDs now match, and further host collection/imports are prohibited. Generic sibling CI queued by the TOC push is being cancelled by its captured run ID. C5 join source is reviewed after fixing a uniqueness control that otherwise failed the earlier slug guard; prospective VB-C5-JOIN-CONFORMANCE is enrolled before capture.

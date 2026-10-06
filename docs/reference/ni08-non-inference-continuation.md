@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **thirty-three completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **41 completed scoped tasks: 34 existing checkbox flips and 7 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -77,8 +77,10 @@ These are existing task identities or already filed prospective source companion
 | SC76 / SC77 | Source-first RAW artifact/revision resolution and shared re-verifier design | Canonical human/machine traceability ladder must remain intact; no original artifact may be fabricated |
 | HS-4 P6 | Cross-repo shared exploration-tool contract/source prep | Live catalog-growth before/after acceptance and Claude-owned deployment stay at the inference owner boundary |
 | HS-19d.P0 | Multi-call source checks, per-message task-part counters and versioned unscored corpus preparation | VB-DISPATCH-S2 itself is explicitly frozen; do not treat all P0 as either wholly free or wholly blocked |
-| C5-5 | Exact existing eight-seed problem-ID join is a source-only candidate; source/fixture proposal still needed | No SOL bound port, benchmark or kernel change |
+| C5-5 | Exact existing eight-seed problem-ID join has private source/fixture preparation assigned; MAIN review remains pending | No SOL bound port, benchmark or kernel change |
 
 R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.
 
 2026-10-06 preparation boundary: P7 and period-cell source verification now have prospective VB/source-table enrollment before capture. MAIN requested exact expanded-case checks and complete input binding before isolated execution. The running tally remains **41**, with no pending proposal counted.
+
+Preparation boundary: TOC recipe6fd5fd9 is in isolated CI after MAIN full Git/case binding; P7 recipee6aeaf1 is approved after independent 138-case reconstruction. Local P7 collection violated the static-only boundary, has incomplete runtime/effect custody, and supplies no validation. C5 source preparation now passed MAIN review with eight exact joins and preserved oracle workload/dtype authority; prospective verification is enrolled before capture. These remain pending acceptance and add no completions.
