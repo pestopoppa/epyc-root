@@ -1,0 +1,7 @@
+# Standalone BSV EvalResult input integrity
+
+`bsv_paired_report.py` validates the standalone EvalResult pair path before constructing a paired report. Native correctness must be a boolean; normalized question IDs must be unique strings. Blank/null primary qid falls back to question_id; a legitimate stable qid and source question_id may differ. Supported direct/nested vectors are normalized and compared: identical aliases remain valid and conflicting aliases refuse. Malformed vector/wrapper/row containers refuse instead of being silently coerced.
+
+The existing measurement disposition taxonomy and `is_quality_admissible` determine admissibility. Absent/null/empty dispositions preserve legacy scored behavior; unknown nonempty dispositions and infra/scoring-failed placeholders refuse. Explicit false task_failed is admissible; true task_failed contradicts its disposition and refuses. No shared journal parser, fingerprint, paired statistics, threshold, native producer or acceptance flag is changed. Existing default-off callers retain their own failure handling.
+
+Two APP paths301df359 promoted main09e087b2, two ROOT recipe paths94f2d6d0 promoted mainb6fb1016. [Off-host original CI](../../artifacts/ni07/run-37454712581/README.md) passes the full existing module, 38/38, zero skips. Seven CLI refusal fixtures were corrected after the initial FALSE31/38 invocation error; both originals and MAIN full source/API reviews remain preserved. This verifies synthetic input contracts, not campaign evidence quality or a deployed acceptance decision.

@@ -482,6 +482,6 @@ Prospective consumers/source contracts enrolled before these follow-on implement
 
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
-| Standalone BSV native-outcome input integrity | existing native CI verifier | Strict boolean/ID/alias/native disposition acceptance/refusal; no new grading ladder or inference/quality warrant | bsv_paired_report.py, VB-BSV-INPUT-STRICT / NI07-17 |
+| Standalone BSV native-outcome input integrity (accepted NI07-17) | existing native CI verifier | Strict boolean/ID/alias/native disposition acceptance/refusal; no new grading ladder or inference/quality warrant | OriginalCI37454712581 TRUE38/38 accepted through existing native carrier; bsv_paired_report.py, VB-BSV-INPUT-STRICT / NI07-17 |
 | Lab KB collection-time catalog dependency | existing document/artifact dependency identity | Strict original completed-writer record/null unknown, before query/backend; no frozen query snapshot | run_job.py, VB-KB-LAB-CONTEXT / NI07-18 |
 | Tool-call repair log minimization | existing native CI verifier | Synthetic no-payload sentinel plus unchanged parser/outcome/counter facts; no global-rate warrant | code_utils.py, VB-TOOL-REPAIR-LOG / NI07-19 |

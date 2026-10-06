@@ -2621,3 +2621,7 @@ Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-
 ## 2026-10-06 per-call reader source acceptance
 
 The [strict per-call reader](../docs/reference/serving-call-reader-contract.md) is published with native schema/hash/rotation/absence guards and the correct parent-request to judge-call join. Distinct backend attempts retain distinct IDs; no judge score duplication. [Original synthetic CI37443323928](../artifacts/ni07/run-37443323928/README.md) passes87/87 after MAIN reopened source/context/API custody. This establishes reader contracts only. Window aggregates and organic timing coverage remain unmeasured; no service was reloaded.
+
+## 2026-10-06 standalone BSV input integrity
+
+[Standalone report inputs](../docs/reference/bsv-standalone-input-integrity-contract.md) now reject malformed native booleans, IDs, containers, conflicting supported aliases and inadmissible existing dispositions before paired reporting. Valid native producer forms and stable/source ID distinction remain. [Corrected originalCI37454712581](../artifacts/ni07/run-37454712581/README.md) passes38/38 after MAIN full source/API review; original FALSE31/38 CLI fixture failure remains preserved. No campaign, journal, statistical threshold or live acceptance change.
