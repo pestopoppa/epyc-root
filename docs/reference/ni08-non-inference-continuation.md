@@ -137,3 +137,7 @@ The report successor is approved for one hosted synthetic capture after MAIN ind
 ## Prospective report readers/writers and SC80 — MAIN acceptance
 
 [Original38/38+20/20, actual producer round trips and source publication](../../artifacts/ni08/analysis-report-source-20261006/README.md) close five bounded tasks: three existing flips and two pre-enrolled writer companions. **57 scoped completions (41 existing flips +16 additions)**. Historical identityless reports stay descriptive; live measurements and other source queues remain open. All-card source eligibility audit continues; backlog exhaustion is unproved.
+
+## Newly unlocked descriptive preflight source
+
+MAIN reviewed the fixed-source privacy-minimal HS-19a summary and meaningful unknown/refusal controls. HS19D-P0-DESCRIPTIVE-SOURCE and prospective VB companion are enrolled before capture; preparations add no completions. Parent P0 remains open for native emitted-call/template boundaries, and frozen dispatch consumers are unchanged. C5/report source-table acceptance pointers now reflect their completed boundaries.

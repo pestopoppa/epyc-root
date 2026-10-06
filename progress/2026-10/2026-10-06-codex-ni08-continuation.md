@@ -199,3 +199,7 @@ MAIN independently reopens all2241 original API ZIP members: 2228 Git inputs/3 c
 ## Prospective report/citation source publication boundary
 
 MAIN accepts final0f79 original58cases (ROOT38APP20) after independently reopening210API ZIP members, both96-entry readsets, exact3316-file source context, both generated original bundles and unchanged shared-grade inputs. APPcfcf normally merged/pushed00077b3a; ROOT17source/recipe files preserved exactly with thesis routing retained. Three preceding execution attempts retain failed originals (NULL boundaries), including corrected unknownMDE-at-one-question fixture. Five bounded tasks close, now57scopes(41existingflips+16additions). No hostproject execution, grading ladder change, legacy backfill, actual evaluation or reload. AP60/TUADV initial captures failed preflight beforetestexecution; narrowCIPE fixes continue independently and countzero.
+
+## P0 prospective source enrollment boundary
+
+MAIN accepts bounded P0 helper source preparation after fixed-path early rejection, single nofollow owned/singlelink regular snapshot, nonblockingFIFO refusal, pinnedGitHEAD and byte identity, privacy/unknown/duplicate controls. New source/VB scopes prospectively enrolled before nativeCIPE. Actual emitted calls/template/childjoin remain unknown and parentP0open; no frozen dispatch change. Source-table accepted C5/report pointers reconciled. Tally remains57.
