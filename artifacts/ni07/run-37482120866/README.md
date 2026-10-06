@@ -1,0 +1,13 @@
+# NI07-32 original declared-root KEEP capture
+
+[GitHub run 37482120866](https://github.com/pestopoppa/epyc-root/actions/runs/37482120866), attempt1, artifact11422381651, TRUE27/27 (27 collected/executed/passed; no failures, errors or skips). Source `7f1aa593dd2ea23aceaa9d1b2d3c78b38d4dd906`; recipe `ccd2b6e839308a5d95fa2e8b3ee3c68173c06686`; carrier `4c0c653baf1654c8c25c66433cf39c8faefd8e52`. ROOT main promotion `a5cf51d7e984dc7fdc5a25cb64bae2fd5d7c6060` preserves all four tested paths.
+
+MAIN independently derived 1,932 pinned Git inputs (source652, carrier626, recipe654) before artifact access, then checked the two runtime contexts and all 1,942 original ZIP/extracted members with no extras. Original ZIP is 11,339,740 bytes, SHA-256 `2b456f23cd2ef49b2b4d7b0e359b4acac2575bfc47b4f4fc5b857daf84310815`, equal to the fresh GitHub API digest. Native receipt FILE SHA-256 `0722008493f2c0f1c637fde8bf0836dc0f6e0a4d59d50917875b547a65e82915` differs intentionally from its SELF seal `f7e97633c10c73c3151818a010408adc3fc2ca8372760f1ae971418b7fce2188`.
+
+Python3.13.15, pytest9.0.3, iniconfig2.3.0, packaging26.0, pluggy1.6.0 and Pygments2.20.0 match the recipe and freeze. MAIN also compared all 1,932 embedded manifest bindings to its independent map; runtime context remains runner-asserted, not independent installation proof. `environment.json` SHA-256 `48303836dac265ed4fec459eb71a333433b8d200ed0652c0b8000048e4b572a9`; `pip-freeze.txt` SHA-256 `a6ddcaf1fc08584525b8c1c2be7fe12f2b5afa0794e48db0f643fe3e4b2ba151`.
+
+[MAIN review](main-review.json) and [canonical ingestion](canonical-ingest.json) record one existing-carrier Judged/Located observation and three frames. Original ZIP/extraction are KEEP-marked at `/mnt/raid0/llm/tmp/ni07-32-custody-20261006/`; public metadata omits source/context payloads and cannot independently reopen originals. Source-first worker manifest `/tmp/ni07-32-preartifact-manifest-ccd2b6e839308a5d95fa2e8b3ee3c68173c06686.json`, SHA-256 `b11ea59763acc874afe650879a864614fa4cc97f075f247df9ce472b58bdc7c6`.
+
+Synthetic temporary-root conformance only. Local test Git clones/pushes target temporary bare repos; fake trash scripts touch only temporary paths. One existing busy-path test uses an owned temporary sleep and ephemeral hosted /proc, then kills/reaps it. No host cleanup, model, server, APP, inference, production kernel or live safety acceptance is inferred. No original receipt or grading ladder was rewritten.
+
+The pre-artifact manifest is also preserved byte-identically at `/mnt/raid0/llm/tmp/ni07-32-custody-20261006/preartifact-manifest.json` under KEEP; copying it after acceptance did not change its earlier derivation or hash.

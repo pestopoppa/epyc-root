@@ -1446,3 +1446,7 @@ split. External-validity caveat: both of RI-18's strata are closed-form scored t
 ## 2026-10-06 standalone guard declared NUMA mode
 
 [Standalone guard contract](../docs/reference/standalone-numa-guard.md) makes explicit mode or the running checkout’s declaration determine standalone CLI admission, with unresolved input refused before validation. [Native capture](../artifacts/ni07/run-37476312545/README.md) passes 20/20 selected cases; synthetic 1 TiB import scaffolding and empty backend directories establish no live capacity, deployment or serving warrant. The lower-level diagnostic fallback and pipeline update/compile paths retain their prior contract.
+
+## 2026-10-06 declared scratch-root retention
+
+[Declared-root KEEP contract](../docs/reference/declared-scratch-root-keep.md) protects marked roots, their marker files, overlaps and ancestor candidates, with a second marker check at apply entry. [Native synthetic capture](../artifacts/ni07/run-37482120866/README.md) passes 27/27 cases. Markers may still race after the check; fixture conformance confers no whole-host cleanup warrant. This closes the source gap uncovered during NI07 final retention review.

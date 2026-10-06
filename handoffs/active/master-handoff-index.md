@@ -36,6 +36,7 @@ missed (measured: G9-disk sat unnoticed for two weeks and governed 227 GB).
 
 | ID | Decision | Owner | Open since |
 |----|----------|-------|-----------|
+| OP-TOC-RD-1A | Choose whether to retain scanning or approve exactly two global whole-file credential-fixture exclusions; future real secrets in matching files would also be skipped. [Reviewed unapplied patch and options](../../docs/reference/credential-fixture-hook-decision.md) | [tool-output-compression.md](tool-output-compression.md) TOC-RD-1a | 2026-10-06 |
 | OP-79 | Run on the HOST after the :8083 restore: install `scripts/server/gpu_window_watchdog.cron` (`* * * * *` + `@reboot sleep 90`) so the GPU-window executor ticks (G1 review F2). Verify that a tick writes `mi210.json.executor-status.json` | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) AKX-ALL-15a | 2026-10-04 |
 | OP-78 | Approve updating the shared epyc-orchestrator checkout to include device-busy `6ce26fc9` (G1 manual-window fix; the checkout is at `c5dc4ae5` + `4b871cc5` per today's decision (d)). Options: (1) approve now, which completes the ACK-with-fixes set for manual windows (recommended); (2) hold until the AK-window fixes (AKX-ALL-15b) land, so the checkout moves once | [autokernel-all-devices-all-dimensions.md](autokernel-all-devices-all-dimensions.md) AKX-ALL-15 | 2026-10-04 |
 | OP-76 | Sign STACKCHG-8083BATCH-20261004 (:8083 `-b 512 -ub 512` + `--no-cache-idle-slots`; KVU-16f + UFH14-B4j). `--validate-only` VALID; greenlit by workspace-ec. Applies at the next :8083 relaunch (one relaunch; the post-E1 restore 2026-10-04 ~19:56Z went ahead without it). Known cost: solo shallow prefill −26%, TTFT +35% (KVU-16g removes it). Command (interactive terminal, TTY-gated): `RATIFY_OPERATOR="<name>" bash /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/ratify_stackchg_8083batch_20261004.sh --attest RATIFY-STACKCHG-8083BATCH-20261004` | [kv-unified-stack-rollout.md](kv-unified-stack-rollout.md) KVU-16f | 2026-10-04 |
@@ -106,9 +107,9 @@ nobody is moving.
 |--------|----------|------|---------|----------------|
 | inference-research | 61 | 1029 | 33 | 2026-07-29 |
 | pipeline-integration | 5 | 69 | 1 | 2026-08-11 |
-| research-evaluation | 44 | 495 | 15 | 2026-07-29 |
+| research-evaluation | 44 | 494 | 15 | 2026-07-29 |
 | reviewer-control-plane | 6 | 28 | 12 | 2026-07-29 |
-| routing-and-optimization | 51 | 606 | 17 | 2026-07-29 |
+| routing-and-optimization | 51 | 605 | 17 | 2026-07-29 |
 | user-facing-harness | 12 | 116 | 16 | 2026-07-29 |
 <!-- END GENERATED index_state -->
 

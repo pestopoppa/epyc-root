@@ -1,0 +1,57 @@
+{
+  "run": 37482120866,
+  "attempt": 1,
+  "artifact_id": 11422381651,
+  "independent_git_bindings": 1932,
+  "source_counts": {
+    "source": 652,
+    "carrier": 626,
+    "recipe": 654
+  },
+  "contexts": 2,
+  "zip_sha256": "2b456f23cd2ef49b2b4d7b0e359b4acac2575bfc47b4f4fc5b857daf84310815",
+  "zip_size": 11339740,
+  "zip_extracted_members": 1942,
+  "receipt_file_sha256": "0722008493f2c0f1c637fde8bf0836dc0f6e0a4d59d50917875b547a65e82915",
+  "receipt_self_sha256": "f7e97633c10c73c3151818a010408adc3fc2ca8372760f1ae971418b7fce2188",
+  "repositories": {
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "ccd2b6e839308a5d95fa2e8b3ee3c68173c06686",
+    "source": "7f1aa593dd2ea23aceaa9d1b2d3c78b38d4dd906"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/test_scratch_cleanup.py",
+    "--junitxml=/home/runner/work/_temp/ni07-32-root-keep/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/source",
+  "counts": {
+    "collected": 27,
+    "error": 0,
+    "executed": 27,
+    "failure": 0,
+    "passed": 27,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "root_main": "a5cf51d7e984dc7fdc5a25cb64bae2fd5d7c6060",
+  "context_recipe_assertions_checked": true
+}
