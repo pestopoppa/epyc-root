@@ -325,7 +325,13 @@ def joined_rows(serving_paths=None, judge_path=None) -> dict[str, tuple[dict[str
 
 
 def _finite_number(value: Any, field: str) -> int | float:
-    if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value):
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ProjectionError(f"serving-call {field} must be a finite number")
+    try:
+        finite = math.isfinite(value)
+    except OverflowError:
+        finite = False
+    if not finite:
         raise ProjectionError(f"serving-call {field} must be a finite number")
     return value
 

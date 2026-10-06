@@ -128,6 +128,7 @@ def test_identity_source_is_validated_and_only_complete_sidecar_is_scoped(tmp_pa
 
 @pytest.mark.parametrize("field,value,message", [
     ("prompt_ms", -1, "cannot be negative"), ("prompt_ms", "10", "finite number"),
+    ("prompt_ms", 10**1000, "finite number"),
     ("prompt_per_second", float("nan"), "canonical JSON"),
     ("predicted_ms", float("inf"), "canonical JSON"),
 ])
