@@ -16,6 +16,7 @@ READSET_REL = Path("artifacts/ni07-19-tool-repair/ni07-19-tool-repair-readset.js
 SELECTION = ["tests/unit/test_prompt_builders.py"]
 CONFIG_NAMES = {"pytest.ini", "setup.cfg", "tox.ini"}
 CONFIG_SUFFIXES = {".ini", ".cfg", ".toml", ".yaml", ".yml"}
+INSTALL_COMMAND = "python -m pip install pytest==9.0.3 PyYAML==6.0.3"
 
 
 def git(repo: Path, *args: str) -> str:
@@ -41,19 +42,55 @@ def source_path(name: str) -> bool:
     )
 
 
-def tracked_source_paths(repo: Path, pin: str) -> set[str]:
-    names = git(repo, "ls-tree", "-r", "--name-only", pin).splitlines()
-    return {name for name in names if source_path(name)}
+def tracked_tree(repo: Path, pin: str) -> dict[str, tuple[str, str, str]]:
+    raw = subprocess.check_output(["git", "-C", str(repo), "ls-tree", "-r", "-z", pin])
+    entries: dict[str, tuple[str, str, str]] = {}
+    for entry in raw.split(b"\0"):
+        if not entry:
+            continue
+        metadata, path_bytes = entry.split(b"\t", 1)
+        mode, object_type, oid = metadata.decode("ascii").split(" ")
+        entries[path_bytes.decode("utf-8")] = (mode, object_type, oid)
+    return entries
+
+
+def source_entries(
+    repo: Path, pin: str
+) -> tuple[dict[str, tuple[str, str, str]], dict[str, tuple[str, str, str]]]:
+    entries = {
+        name: row for name, row in tracked_tree(repo, pin).items() if source_path(name)
+    }
+    regular = {
+        name: row
+        for name, row in entries.items()
+        if row[0] in {"100644", "100755"} and row[1] == "blob"
+    }
+    symlinks = {
+        name: row
+        for name, row in entries.items()
+        if row[0] == "120000" and row[1] == "blob"
+    }
+    unsupported = set(entries) - set(regular) - set(symlinks)
+    if unsupported:
+        raise ValueError(
+            f"unsupported tracked source entry mode: {sorted(unsupported)[:3]}"
+        )
+    return regular, symlinks
 
 
 def validate_source_rows(repo: Path, pin: str, rows: object, label: str) -> list[Path]:
     if not isinstance(rows, list):
         raise TypeError(f"{label} readset is not a path list")
-    expected = tracked_source_paths(repo, pin)
+    expected, _ = source_entries(repo, pin)
     seen: set[str] = set()
     resolved: list[Path] = []
     for item in rows:
-        if not isinstance(item, dict) or set(item) != {"path", "git_blob", "sha256"}:
+        if not isinstance(item, dict) or set(item) != {
+            "path",
+            "git_blob",
+            "mode",
+            "sha256",
+        }:
             raise ValueError(f"malformed {label} source row")
         name = item["path"]
         if not isinstance(name, str):
@@ -68,7 +105,12 @@ def validate_source_rows(repo: Path, pin: str, rows: object, label: str) -> list
         if name in seen:
             raise ValueError(f"duplicate {label} source path: {name}")
         seen.add(name)
-        data = (repo / name).read_bytes()
+        if name not in expected or item["mode"] != expected[name][0]:
+            raise ValueError(f"{label} source is not a tracked regular file: {name}")
+        path = repo / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError(f"{label} source path is not a regular file: {name}")
+        data = path.read_bytes()
         blob = git(repo, "rev-parse", f"{pin}:{name}")
         if blob != item["git_blob"] or sha256(data) != item["sha256"]:
             raise ValueError(f"{label} source differs from pinned readset: {name}")
@@ -78,6 +120,52 @@ def validate_source_rows(repo: Path, pin: str, rows: object, label: str) -> list
             f"{label} readset does not cover its full tracked Python/config/lock closure"
         )
     return resolved
+
+
+def validate_symlink_rows(repo: Path, pin: str, rows: object, label: str) -> None:
+    if not isinstance(rows, list):
+        raise TypeError(f"{label} symlink readset is not a path list")
+    _, expected = source_entries(repo, pin)
+    seen: set[str] = set()
+    for item in rows:
+        if not isinstance(item, dict) or set(item) != {
+            "path",
+            "git_blob",
+            "mode",
+            "target",
+            "target_sha256",
+        }:
+            raise ValueError(f"malformed {label} symlink row")
+        name = item["path"]
+        if not isinstance(name, str):
+            raise TypeError(f"{label} symlink path is not a string")
+        if name in seen or name not in expected or item["mode"] != "120000":
+            raise ValueError(
+                f"{label} symlink identity differs from the pinned Git tree: {name}"
+            )
+        seen.add(name)
+        blob = git(repo, "rev-parse", f"{pin}:{name}")
+        target_bytes = subprocess.check_output(
+            ["git", "-C", str(repo), "cat-file", "blob", blob]
+        )
+        target = target_bytes.decode("utf-8")
+        path = repo / name
+        if not path.is_symlink() or os.readlink(os.fsencode(path)) != target_bytes:
+            raise ValueError(
+                f"{label} symlink checkout target differs from its Git blob: {name}"
+            )
+        if (
+            blob != item["git_blob"]
+            or target != item["target"]
+            or sha256(target_bytes) != item["target_sha256"]
+        ):
+            raise ValueError(
+                f"{label} symlink metadata differs from pinned readset: {name}"
+            )
+    if seen != set(expected):
+        raise ValueError(
+            f"{label} symlink readset does not cover its tracked Python/config symlinks"
+        )
 
 
 def main() -> int:
@@ -110,12 +198,25 @@ def main() -> int:
 
         readset_path = recipe / READSET_REL
         inventory = json.loads(readset_path.read_text(encoding="utf-8"))
-        if inventory.get("schema") != "ni07-19-tool-repair-readset.v1":
+        if inventory.get("schema") != "ni07-19-tool-repair-readset.v2":
             raise ValueError("unsupported source-readset schema")
         if inventory.get("selection") != SELECTION:
             raise ValueError("selected test module differs from the readset")
         if inventory.get("app_pin") != app_pin or inventory.get("root_pin") != ROOT_PIN:
             raise ValueError("readset APP/ROOT pins differ from checked-out sources")
+        if (
+            inventory.get("dependency_selection")
+            != {
+                "python": "3.13",
+                "pytest": "9.0.3",
+                "PyYAML": "6.0.3",
+                "source": "app uv.lock",
+            }
+            or os.environ.get("NI07_INSTALL_COMMAND") != INSTALL_COMMAND
+        ):
+            raise ValueError(
+                "installed CI dependency pins differ from the reviewed readset"
+            )
         app_paths = validate_source_rows(
             app, app_pin, inventory.get("app_source_files"), "APP"
         )
@@ -125,6 +226,23 @@ def main() -> int:
         recipe_paths = validate_source_rows(
             recipe, recipe_pin, inventory.get("recipe_source_files"), "recipe"
         )
+        validate_symlink_rows(app, app_pin, inventory.get("app_source_symlinks"), "APP")
+        validate_symlink_rows(
+            root, root_pin, inventory.get("root_source_symlinks"), "ROOT"
+        )
+        validate_symlink_rows(
+            recipe, recipe_pin, inventory.get("recipe_source_symlinks"), "recipe"
+        )
+        status["source_file_counts"] = {
+            "app_regular_files": len(app_paths),
+            "root_carrier_regular_files": len(root_paths),
+            "recipe_regular_files": len(recipe_paths),
+            "app_symlinks_metadata_only": len(inventory["app_source_symlinks"]),
+            "root_carrier_symlinks_metadata_only": len(
+                inventory["root_source_symlinks"]
+            ),
+            "recipe_symlinks_metadata_only": len(inventory["recipe_source_symlinks"]),
+        }
         for repo_name, expected in (
             ("epyc-orchestrator", "app"),
             ("epyc-root-carrier", "root"),
