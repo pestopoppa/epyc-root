@@ -1521,3 +1521,7 @@ The [pinned research checkout/test seams](../docs/reference/hermetic-research-pr
 ## 2026-10-06 signed checkpoint transport
 
 [Checkpoint producers](../docs/reference/signed-checkpoint-payload-transport.md) preserve signed non-JSON payloads through SQLite/restore while the existing restricted boundary rejects tamper/unsupported values. Persister cap accounting includes both maps; deterministic eviction drops matching lineage/payload. [Full-module native evidence](../artifacts/ni07/run-37465024500/README.md) passes116/116. Three existing inert config overrides serve off-host fixtures; production kernel-path guard is unchanged.
+
+## 2026-10-06 outer reconnect cost
+
+[Reconnect carrier](../docs/reference/eval-outer-reconnect-cost.md) retains outer attempts, backoff and closed reasons independently of inner retries, through the original question row. [Native evidence](../artifacts/ni07/run-37466167911/README.md) passes57/57 fake transport/clock and persistence controls; no grading change.
