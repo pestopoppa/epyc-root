@@ -30,7 +30,7 @@
 | RTG-19 | model stack single source update pipeline | [model-stack-single-source-update-pipeline.md](model-stack-single-source-update-pipeline.md) | SSU-F18 moved-lineup plugin publication; SSU-F8 owner confirmation | — |
 | RTG-20 | model stack update pipeline audit | [model-stack-update-pipeline-audit.md](model-stack-update-pipeline-audit.md) | Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient | — |
 | RTG-21 | multi file coding completion capability | [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md) | MF-VBS-2 — add a verify-before-FINAL step to the edit rider, then re-run the BEP sandbox and re-measure | — |
-| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | Checkpoint transport and eval capture/reconnect metadata; terminal REPL timeout | — |
+| RTG-22 | non inference backlog | [non-inference-backlog.md](non-inference-backlog.md) | Checkpoint transport, durable eval reconnect metadata; terminal REPL timeout | — |
 | RTG-23 | objective task rate goodput | [objective-task-rate-goodput.md](objective-task-rate-goodput.md) | W3e — merge sub/autopilot-safety, then add an objective policy whose TierSpec drops neg_cost (3-D ref point, era stamp, fence) | — |
 | RTG-24 | orchestration robustness audit 2026 07 11 | [orchestration-robustness-audit-2026-07-11.md](orchestration-robustness-audit-2026-07-11.md) | P0.1 operator run/pause decision on autopilot candidate species | — |
 | RTG-27 | prompt construction determinism | [prompt-construction-determinism.md](prompt-construction-determinism.md) | D3 — Run the P-BENCH canonical sampling-quality cert (`bench_canonical.sh`) in a clean window to certify items #1–3 | — |

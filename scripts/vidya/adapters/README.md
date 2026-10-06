@@ -496,6 +496,6 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
 | Signed REPL checkpoint transport (prospective NI07-24) | native CI verifier | Two producer/SQLite/restore/tamper fixtures; existing signed boundary/caps/fencing, no live state | Checkpoint producers, VB-REPL-PICKLE-PASS / D-RI-PICKLE-PASS |
-| Question sidecar status (prospective NI07-25) | native CI verifier | Writer initialization/appends/completion and fake failure counts; in-memory grade unchanged | eval_tower writer, VB-EVAL-CAPTURE-STATUS / EV-RI-CAPTURE-STATUS |
+| Question sidecar status (accepted NI07-25) | native CI verifier | Writer initialization/appends/completion and fake failure counts; in-memory grade unchanged | Native37463260425 TRUE9/9 through existing carrier, eval_tower writer, VB-EVAL-CAPTURE-STATUS / EV-RI-CAPTURE-STATUS |
 | Outer eval reconnect cost (prospective NI07-26) | native CI verifier | Fake transport/clock return and QuestionResult/compact-row metadata; inner retries distinct | call_orchestrator_forced, VB-EVAL-RECONNECT-COST / EV-RI-RECONNECT-COST |
 | Terminal REPL timeout state (prospective NI07-27) | native CI verifier | Bounded late-worker reuse/checkpoint refusal; no termination or host-effect isolation | REPL await/execute/persistence, VB-REPL-TIMEOUT-STATE / D-RI-TIMEOUT-STATE |

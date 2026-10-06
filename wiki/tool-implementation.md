@@ -1513,3 +1513,7 @@ The [prepared policy](../docs/reference/dcp-hit-span-policy-preparation.md) prev
 ## 2026-10-06 hermetic producer CI repair
 
 The [pinned research checkout/test seams](../docs/reference/hermetic-research-producer-ci-contract.md) repair the24missing-source failures without changing production guards or skipping tests. The isolated destination also preserves ROOT's tracked intake tree. [Final native](../artifacts/ni07/run-37461044899/README.md) passes29/29 and separate generic CI reports1720pass/165standing skips, with index and ratification checks green. Original checkout-collision failure and MAIN review miss are preserved explicitly; no model/benchmark/kernel or live execution warrant.
+
+## 2026-10-06 question archive status
+
+[Sidecar persistence status](../docs/reference/eval-question-sidecar-persistence-status.md) exposes initialization, append and completion failures separately from scoring, and survives filtering and role summaries. [Native evidence](../artifacts/ni07/run-37463260425/README.md) passes9/9. Completion describes writer/fsync return values. Earlier diagnosticNULL and failed fixture originals remain preserved; grades unchanged.

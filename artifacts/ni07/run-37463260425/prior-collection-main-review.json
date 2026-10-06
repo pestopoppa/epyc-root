@@ -1,0 +1,46 @@
+{
+  "run": 37461378205,
+  "attempt": 1,
+  "artifact_id": 11412692867,
+  "independent_git_bindings": 3361,
+  "source_counts": {
+    "app": 2092,
+    "carrier": 625,
+    "recipe": 644
+  },
+  "contexts": 2,
+  "zip_sha256": "5bb8ff172195d99dee305c255395022737d838497a3f5b84b3e148f81209ef24",
+  "zip_size": 16887110,
+  "zip_extracted_members": 3371,
+  "receipt_file_sha256": "a61b1ed5e5d98fc3e69bceadded27dc3ceb67289f461ae43b6c84c064e985726",
+  "receipt_self_sha256": "fc5c077efebfdf0e9ebe505f99f51d88ee9b7417533c57ad74767c74cb6e65f8",
+  "repositories": {
+    "app": "060a097642c326dfdd88de46d69b46214269db3f",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "2ffc5b2bff4e51f847919ce61f6fcf7fe25d2fea"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_eval_tower_question_persistence.py",
+    "--junitxml=/home/runner/work/_temp/ni07-25-eval-capture-status/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": null,
+  "diagnostic": "unnamed JUnit case",
+  "shared_grade": {
+    "Q": null,
+    "T": null,
+    "reasons": []
+  },
+  "native_conformant": null,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true
+}
