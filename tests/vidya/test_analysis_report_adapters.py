@@ -67,9 +67,13 @@ def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
 def _vbs_report(tmp_path: Path) -> Path:
     body = {
         "prior_reference": {},
-        "corpus": {"n_total_real_trajectories": 3,
-                   "date_range": None, "role_model": None},
-        "classification": {},
+        "corpus": {"sources_scanned": ["fixture"], "n_total_real_trajectories": 3,
+                   "n_forced_max_turns": 0, "n_forced_error": 0, "n_voluntary": 3,
+                   "date_range": None, "role_model": None,
+                   "scope_note": "fixture scope is not native time/role evidence"},
+        "classification": {"a_no_edit": 1, "b_edit_then_executed": 1,
+                           "c_edit_then_unverified": 1, "d_edit_then_delegated_to_user": 0,
+                           "n_edited_total_b_c_d": 2, "n_failure_c_plus_d": 1},
         "rates": {
             "failure_over_all_voluntary_stops": {
                 "numerator": 1, "denominator": 2, "point": 0.5,
@@ -78,6 +82,7 @@ def _vbs_report(tmp_path: Path) -> Path:
                 "numerator": 1, "denominator": 2, "point": 0.5,
                 "wilson_95ci_lo": 0.0945, "wilson_95ci_hi": 0.9055},
             "no_execution_after_edit_corpuswide_forced_and_voluntary": {
+                "description": "Fixture call-bearing heuristic",
                 "numerator": 2, "denominator": 3, "point": 2 / 3,
                 "wilson_95ci_lo_of_never_executed": 0.2077,
                 "wilson_95ci_hi_of_never_executed": 0.9385,
@@ -157,6 +162,16 @@ def test_immutable_input_snapshot_is_required_and_rechecked(tmp_path, monkeypatc
         vbs_adapter.project(native[0])
 
 
+def test_mf_cached_metric_key_must_match_native_selection(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
+    path = _vbs_report(tmp_path)
+    native = vbs_adapter.native_rows(path)
+    changed = dict(native[0], metric_key="failure_over_edited_voluntary_stops")
+    with pytest.raises(ProjectionError, match="metric selection"):
+        vbs_adapter.project(changed)
+
+
 @pytest.mark.parametrize(("adapter", "factory"), [
     (vbs_adapter, _vbs_report), (eval_adapter, _eval_report),
 ])
@@ -199,6 +214,22 @@ def test_producer_source_changes_refuse_previously_discovered_rows(tmp_path, mon
     producer.write_bytes(producer.read_bytes() + b"# source changed after capture\n")
     with pytest.raises(ProjectionError, match="producer source bytes differ"):
         adapter.project(native[0])
+
+
+def test_eval_cached_suite_and_metric_must_match_bound_report(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(eval_adapter, "ORCHESTRATOR", root)
+    path = _eval_report(tmp_path)
+    rows = eval_adapter.native_rows(path)
+    selected = next(row for row in rows if row["metric"] == "pass_rate")
+    changed_value = dict(selected, value=0.0)
+    with pytest.raises(ProjectionError, match="cached metric value"):
+        eval_adapter.project(changed_value)
+    changed_suite = dict(selected, suite=dict(selected["suite"]))
+    changed_suite["suite"]["brittleness"] = dict(selected["suite"]["brittleness"],
+                                                    measured=False)
+    with pytest.raises(ProjectionError, match="cached suite"):
+        eval_adapter.project(changed_suite)
 
 
 @pytest.mark.parametrize(("source", "adapter", "factory"), [

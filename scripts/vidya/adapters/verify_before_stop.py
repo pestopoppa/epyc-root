@@ -31,6 +31,22 @@ _RATES = {
     "no_execution_after_edit_corpuswide_forced_and_voluntary":
         ("mf_vbs1.no_execution_after_edit", "lower_better"),
 }
+_CORPUS_FIELDS = frozenset({"sources_scanned", "n_total_real_trajectories",
+                            "n_forced_max_turns", "n_forced_error", "n_voluntary",
+                            "role_model", "date_range", "scope_note"})
+_CLASSIFICATION_FIELDS = frozenset({"a_no_edit", "b_edit_then_executed",
+                                    "c_edit_then_unverified", "d_edit_then_delegated_to_user",
+                                    "n_edited_total_b_c_d", "n_failure_c_plus_d"})
+_RATE_FIELDS = {
+    "failure_over_all_voluntary_stops": frozenset({"numerator", "denominator", "point",
+                                                    "wilson_95ci_lo", "wilson_95ci_hi"}),
+    "failure_over_edited_voluntary_stops": frozenset({"numerator", "denominator", "point",
+                                                       "wilson_95ci_lo", "wilson_95ci_hi"}),
+    "no_execution_after_edit_corpuswide_forced_and_voluntary": frozenset({
+        "description", "numerator", "denominator", "point",
+        "wilson_95ci_lo_of_never_executed", "wilson_95ci_hi_of_never_executed",
+        "call_bearing_edited_trajectories"}),
+}
 
 
 def _document(path: Path) -> tuple[dict[str, Any], bytes]:
@@ -45,6 +61,27 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
         raise ProjectionError("MF-VBS-1 report has missing or unknown top-level fields")
     if not isinstance(value.get("corpus"), dict) or not isinstance(value.get("rates"), dict):
         raise ProjectionError("MF-VBS-1 report has no corpus/rates object")
+    if (set(value["corpus"]) != _CORPUS_FIELDS
+            or not isinstance(value.get("classification"), dict)
+            or set(value["classification"]) != _CLASSIFICATION_FIELDS):
+        raise ProjectionError("MF-VBS-1 corpus/classification has missing or unknown fields")
+    if (set(value["rates"]) != set(_RATE_FIELDS)
+            or any(not isinstance(value["rates"].get(key), dict)
+                   or set(value["rates"][key]) != expected
+                   for key, expected in _RATE_FIELDS.items())):
+        raise ProjectionError("MF-VBS-1 rate rows have missing or unknown fields")
+    corpus = value["corpus"]
+    for field in ("n_total_real_trajectories", "n_forced_max_turns", "n_forced_error", "n_voluntary"):
+        if type(corpus.get(field)) is not int or corpus[field] < 0:
+            raise ProjectionError(f"MF-VBS-1 corpus.{field} must be a nonnegative integer")
+    if (not isinstance(corpus.get("sources_scanned"), list)
+            or any(not isinstance(item, str) for item in corpus["sources_scanned"])
+            or (corpus.get("role_model") is not None and not isinstance(corpus["role_model"], str))
+            or (corpus.get("date_range") is not None and not isinstance(corpus["date_range"], str))
+            or not isinstance(corpus.get("scope_note"), str)):
+        raise ProjectionError("MF-VBS-1 corpus scope fields are malformed")
+    if any(type(count) is not int or count < 0 for count in value["classification"].values()):
+        raise ProjectionError("MF-VBS-1 classification counts must be nonnegative integers")
     return value, raw
 
 
@@ -65,7 +102,15 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
         return ()
     return tuple({"document": document, "provenance": provenance,
                   "report_path": str(report_path), "report_sha256": report_digest,
-                  "metric_key": key} for key in _RATES if key in document["rates"])
+                  "metric_key": key,
+                  "selection_sha256": _selection_sha256(key, document["rates"][key])}
+                 for key in _RATES if key in document["rates"])
+
+
+def _selection_sha256(key: str, rate: dict[str, Any]) -> str:
+    raw = json.dumps({"metric_key": key, "rate": rate}, sort_keys=True,
+                     separators=(",", ":"), ensure_ascii=False, allow_nan=False).encode("utf-8")
+    return hashlib.sha256(raw).hexdigest()
 
 
 def _finite_number(value: Any, label: str) -> float:
@@ -96,6 +141,8 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     rate = doc["rates"].get(key)
     if not isinstance(rate, dict):
         raise ProjectionError("MF-VBS-1 rate entry must be an object")
+    if native.get("selection_sha256") != _selection_sha256(key, rate):
+        raise ProjectionError("cached MF-VBS-1 metric selection does not match the native report")
     numerator, denominator = rate.get("numerator"), rate.get("denominator")
     if type(numerator) is not int or numerator < 0 or type(denominator) is not int or denominator <= 0:
         raise ProjectionError("MF-VBS-1 rate requires a positive integer denominator")

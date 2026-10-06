@@ -5,6 +5,7 @@ import json
 import hashlib
 import math
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -58,6 +59,12 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
         raise ProjectionError("legacy/version-mismatched report has no admissible ClaimTuple provenance")
     if not isinstance(value.get("generated_at"), str) or not isinstance(value.get("inputs"), list):
         raise ProjectionError("report generation time/inputs have invalid types")
+    try:
+        generated_at = datetime.fromisoformat(value["generated_at"])
+    except ValueError as exc:
+        raise ProjectionError("report generated_at must be an ISO timestamp") from exc
+    if generated_at.tzinfo is None or generated_at.utcoffset() != timedelta(0):
+        raise ProjectionError("report generated_at must carry an explicit UTC offset")
     if (any(not isinstance(path, str) for path in value["inputs"])
             or not isinstance(value.get("warnings"), list)
             or any(not isinstance(item, str) for item in value["warnings"])):
@@ -71,6 +78,14 @@ def _document(path: Path) -> tuple[dict[str, Any], bytes]:
             or not isinstance(value.get("suites"), list)
             or not isinstance(value.get("task_classes"), list)):
         raise ProjectionError("report config/suites have invalid types")
+    for name, config_value in value["config"].items():
+        if name == "min_n":
+            if type(config_value) is not int or config_value <= 0:
+                raise ProjectionError("config.min_n must be a positive integer")
+        elif type(config_value) not in (int, float) or not math.isfinite(config_value):
+            raise ProjectionError(f"config.{name} must be a finite number")
+    if any(type(count) is not int or count < 0 for count in value["summary"].values()):
+        raise ProjectionError("summary counts must be nonnegative integers")
     if value.get("warnings"):
         raise ProjectionError("report has malformed/unreadable input warnings and is incomplete")
     return value, raw
@@ -96,6 +111,7 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
             if (not isinstance(suite.get("brittleness"), dict)
                     or set(suite["brittleness"]) != _BRITTLENESS_FIELDS):
                 raise ProjectionError("suite brittleness has missing or unknown fields")
+            _validate_group_types(suite)
             if suite["group"] in group_names:
                 raise ProjectionError(f"report contains duplicate {groups_key} identities")
             group_names.add(suite["group"])
@@ -124,8 +140,53 @@ def native_rows(path: str | Path) -> tuple[dict[str, Any], ...]:
             rows.append({"document": document, "provenance": provenance,
                          "report_path": str(report_path), "report_sha256": report_digest,
                          "suite": suite, "suite_name": suite_name, "metric": metric,
-                         "suite_id": suite_id, "value": value})
+                         "suite_id": suite_id, "value": value,
+                         "selection_sha256": _selection_sha256(suite, metric, value)})
     return tuple(rows)
+
+
+def _validate_group_types(suite: dict[str, Any]) -> None:
+    for name in ("n", "n_unique_qids", "n_runs", "correct", "errors", "n_per_arm"):
+        if type(suite.get(name)) is not int or suite[name] < 0:
+            raise ProjectionError(f"suite.{name} must be a nonnegative integer")
+    if suite["n_unique_qids"] == 0:
+        raise ProjectionError("suite.n_unique_qids must be positive")
+    for name in ("run_stability_unmeasurable", "saturated", "floored", "tiny_n",
+                 "underpowered", "run_unstable"):
+        if type(suite.get(name)) is not bool:
+            raise ProjectionError(f"suite.{name} must be boolean")
+    for name in ("error_rate", "pass_rate", "wilson_width", "effective_quantum",
+                 "mde_target_effect", "run_spread", "discriminability_index"):
+        _finite(suite.get(name), f"suite.{name}")
+    for name in ("pass_rate_excl_errors", "mde"):
+        if suite.get(name) is not None:
+            _finite(suite[name], f"suite.{name}")
+    ci = suite.get("wilson_ci")
+    if not isinstance(ci, list) or len(ci) != 2:
+        raise ProjectionError("suite.wilson_ci must be a two-number list")
+    for index, bound in enumerate(ci):
+        _finite(bound, f"suite.wilson_ci[{index}]")
+    if (not isinstance(suite.get("error_dominated_runs"), list)
+            or any(not isinstance(item, str) for item in suite["error_dominated_runs"])
+            or not isinstance(suite.get("flags"), list)
+            or any(not isinstance(item, str) for item in suite["flags"])
+            or not isinstance(suite.get("per_run"), dict)):
+        raise ProjectionError("suite run, error, and flag containers are malformed")
+    brittle = suite["brittleness"]
+    if type(brittle.get("measured")) is not bool:
+        raise ProjectionError("suite.brittleness.measured must be boolean")
+    for name in ("n_multirun_qids", "n_error_excluded"):
+        if type(brittle.get(name)) is not int or brittle[name] < 0:
+            raise ProjectionError(f"suite.brittleness.{name} must be a nonnegative integer")
+    for name in ("flip_rate", "mean_qid_variance", "max_qid_variance"):
+        if brittle.get(name) is not None:
+            _finite(brittle[name], f"suite.brittleness.{name}")
+
+
+def _selection_sha256(suite: dict[str, Any], metric: str, value: Any) -> str:
+    body = json.dumps({"group": suite["group"], "metric": metric, "value": value},
+                      sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    return hashlib.sha256(body).hexdigest()
 
 
 def _finite(value: Any, label: str) -> float:
@@ -161,6 +222,23 @@ def project(native: dict[str, Any]) -> ClaimTuple:
         raise ProjectionError("suite native schema has missing or unknown fields")
     if suite.get("group") != suite_name:
         raise ProjectionError("suite identity differs from report row")
+    matches = [row for row in document["suites"] if row.get("group") == suite_name]
+    if len(matches) != 1 or suite != matches[0]:
+        raise ProjectionError("cached suite is not the unique suite row in the source-bound report")
+    disk_suite = matches[0]
+    if metric == "pass_rate":
+        expected_value = disk_suite.get("pass_rate")
+    elif metric == "mde":
+        expected_value = disk_suite.get("mde")
+    elif metric == "run_spread":
+        expected_value = disk_suite.get("run_spread")
+    else:
+        expected_value = (disk_suite["brittleness"].get("flip_rate")
+                          if disk_suite["brittleness"].get("measured") else None)
+    if expected_value is None or native.get("value") != expected_value:
+        raise ProjectionError("cached metric value is not the selected native report metric")
+    if native.get("selection_sha256") != _selection_sha256(disk_suite, metric, expected_value):
+        raise ProjectionError("cached metric selection identity does not rederive")
     value = _finite(native.get("value"), metric)
     if not 0 <= value <= 1 and metric in {"pass_rate", "flip_rate"}:
         raise ProjectionError(f"{metric} must lie between 0 and 1")
@@ -174,7 +252,7 @@ def project(native: dict[str, Any]) -> ClaimTuple:
         "suite": suite_name,
         "suite_id": suite_id,
         "n_unique_qids": n,
-        "n_rows": suite.get("n_rows"),
+        "n_rows": suite.get("n"),
         "error_rate": suite.get("error_rate"),
         "wilson_ci": suite.get("wilson_ci"),
         "error_dominated_runs": suite.get("error_dominated_runs", []),
@@ -189,7 +267,7 @@ def project(native: dict[str, Any]) -> ClaimTuple:
     return ClaimTuple(
         measurement_id=f"eval-discriminability:{provenance['record_id']}:{suite_id}:{metric}",
         metric=f"eval_suite_discriminability.{metric}", value=value,
-        date=str(document.get("generated_at", ""))[:10], category="BASELINE",
+        date=datetime.fromisoformat(document["generated_at"]).date().isoformat(), category="BASELINE",
         claim=(f"Observed {metric} for eval suite {suite_name!r}; this diagnostic describes "
                "suite discriminability and is not an eval-quality or promotion verdict."),
         metric_direction=direction_by_metric[metric], protocol_id="", reps=n,
