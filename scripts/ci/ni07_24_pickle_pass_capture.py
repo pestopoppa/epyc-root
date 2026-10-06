@@ -61,7 +61,7 @@ LOCKED_FIXTURE_PACKAGES = {
     'pluggy': '1.6.0',
     'Pygments': '2.20.0',
 }
-EXPECTED_CASES = 110  # AST count of complete selected modules, including literal parametrizations.
+EXPECTED_CASES = 116  # AST count of complete selected modules, including literal parametrizations.
 
 def git_head(repo: Path) -> str:
     return subprocess.check_output(
