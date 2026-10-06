@@ -87,7 +87,7 @@ def regular_repo_file(repo: Path, name: str) -> Path:
     if not path.is_file():
         raise RuntimeError(f"declared read is missing or not a regular file: {name}")
     mode = git(repo, "ls-tree", "HEAD", "--", name).split(maxsplit=1)[0]
-    if mode != "100644":
+    if mode not in {"100644", "100755"}:
         raise RuntimeError(f"declared read is not a tracked regular file: {name}")
     return path.absolute()
 
