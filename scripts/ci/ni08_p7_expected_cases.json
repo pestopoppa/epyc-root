@@ -1,0 +1,559 @@
+{
+  "cases": [
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_loop_in_order_passes"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_write_counts_as_the_edit_step"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_incomplete_or_misordered_loop_fails[parts0]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_incomplete_or_misordered_loop_fails[parts1]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_incomplete_or_misordered_loop_fails[parts2]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_incomplete_or_misordered_loop_fails[parts3]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_compaction_or_subtask_fails[extra0]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_compaction_or_subtask_fails[extra1]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_compaction_or_subtask_fails[extra2]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_tap_keys_for_this_session_pass"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_no_keyed_call_fails_a2"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_wrong_key_value_fails_a2[x_user_id-other]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_wrong_key_value_fails_a2[x_tool_mode-repl]"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_unkeyed_call_is_advisory_unless_strict"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_events_outside_the_window_are_ignored"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_another_session_in_window_fails_a4"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_render_config_enables_mcp_only_on_request"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_prepare_writes_a_runnable_script"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_generated_run_script_passes_exact_unicode_prompt_only_on_stdin"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_verify_passes_and_writes_sc86_beliefs"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_failed_attempt_is_recorded_not_dropped"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_missing_serving_identity_fails_the_verdict"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_capture_can_be_skipped_explicitly"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_plugin_and_suite_digests_are_stable_hex"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_prepare_refuses_a_non_empty_directory"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_preflight_flags_an_unpinned_opencode"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_tap_token_counts_attribute_by_session_window_and_source"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_a5_passes_when_client_recorded_what_the_server_measured"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_a5_fails_when_the_client_recorded_zero_usage"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_a5_fails_without_a_server_prompt_count_or_any_call"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_resolve_prefers_the_tap_and_labels_the_fallback"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_verify_with_zeroed_session_usage_fails_a5_but_records_tap_counts"
+    },
+    {
+      "classname": "tests.harness.test_hs4_p04_acceptance",
+      "name": "test_verify_without_tap_file_fails_a5"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_prepare_writes_a_runnable_script"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_prepare_refuses_a_non_empty_directory"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_live_template_fails_the_subagents_lint"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_run_helpers_extract_parent_and_child_ids"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_verify_passes_and_writes_sc86_beliefs"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_missing_serving_identity_fails_the_verdict"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_capture_can_be_skipped_explicitly"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_wrong_answer_is_recorded_as_a_failed_attempt"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_a_modified_repo_fails_t2"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_verify_without_tap_file_fails_s2_to_s5"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_passes_for_one_linked_child"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent0-children0-ids0]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent1-children1-ids1]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent2-children2-ids2]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent3-children3-ids3]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent4-children4-ids4]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent5-children5-ids5]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_failures[parent6-children6-ids6]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s1_compaction_in_parent_fails"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s2_s3_s4_pass_on_contract_shaped_calls"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s2_needs_a_child_keyed_call"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s2_a_foreign_session_fails_and_unkeyed_is_advisory"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s2_wrong_user_fails"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_accepts_every_contract_source[body]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_accepts_every_contract_source[header:x-parent-session-id]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_accepts_every_contract_source[header:x-dynamo-parent-session-id]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_accepts_parent_unseen_basis_and_a_missing_agent_name"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes0]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes1]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes2]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes3]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes4]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes5]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes6]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes7]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes8]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes9]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_child_link_defects_fail[changes10]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_parent_calls_must_carry_no_link_keys"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s3_without_child_calls_fails"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s4_child_served_by_selection_records_but_does_not_gate_the_role"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s4_any_force_pin_fails[x_force_model]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s4_any_force_pin_fails[x_force_role]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s4_a_second_model_in_either_export_fails"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s5_is_checked_per_session"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_combine_tokens_falls_back_to_sessions_unless_the_tap_measured_both"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_row_in_window_passes"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wrong_or_late_rows_fail[row0]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wrong_or_late_rows_fail[row1]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wrong_or_late_rows_fail[row2]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wrong_or_late_rows_fail[row3]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wrong_or_late_rows_fail[row4]"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_missing_log_dir_is_advisory_unless_strict"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_strict_verify_fails_without_the_row"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_polls_until_a_late_row_lands"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_s6_wait_is_bounded_and_skipped_when_the_row_is_there"
+    },
+    {
+      "classname": "tests.harness.test_hs19a_acceptance",
+      "name": "test_task_suite_fingerprint_is_stable_hex"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_strip_jsonc_keeps_strings_and_drops_comments_and_trailing_commas"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_the_subagents_template_parses"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[27b-nothink-ds41]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[27b-nothink-hs19a]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[27b-think-ds41]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[27b-think-hs19a]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[fd-ds41]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_build_config_pins_only_the_primary_agent[fd-hs19a]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_check_config_pin_refuses_a_misplaced_or_extra_pin"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_lint_passes_on_the_stripped_copy_and_refuses_the_pinned_config[ds41]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_lint_passes_on_the_stripped_copy_and_refuses_the_pinned_config[hs19a]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_prepare_writes_a_runnable_script[hs19a-fd]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_prepare_writes_a_runnable_script[ds41-27b-nothink]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_prepare_refuses_a_non_empty_directory"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_check_config_fails_after_tampering"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_schedule_is_aba_and_paired_by_seed"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_prepare_all_writes_every_run_and_one_conditional_header"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_pinned_parent_and_unpinned_child_is_valid_and_delegated"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_falls_back_to_the_served_port_when_the_tap_has_no_override_keys"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_invalidates_a_wrong_pin_or_a_pinned_child[calls0]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_invalidates_a_wrong_pin_or_a_pinned_child[calls1]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_invalidates_a_wrong_pin_or_a_pinned_child[calls2]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_invalidates_a_wrong_pin_or_a_pinned_child[calls3]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_invalidates_a_wrong_pin_or_a_pinned_child[calls4]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_unpinned_arm"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_non_delegating_outcomes_are_valid_runs[first0-no idea-unparsed_attempt]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_non_delegating_outcomes_are_valid_runs[first1-CODENAME=amber-heron-47-self_served]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_non_delegating_outcomes_are_valid_runs[first2-CODENAME=amber-heron-47-no_tool]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_non_delegating_outcomes_are_valid_runs[first3-failed-delegated_failed]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_ds41_two_scouts"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_verify_writes_sc86_beliefs_for_a_valid_run"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_invalid_run_writes_no_beliefs"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states0-INCOMPLETE]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states1-CONTROL_FAILED]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states2-INCONCLUSIVE]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states3-MODEL]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states4-SETUP]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states5-SETUP (V1)]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states6-PENDING_CONDITIONAL]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states7-SETUP]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states8-MODEL (propensity)]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states9-SETUP]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states10-SETUP]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states11-SETUP]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_decision_rule[states12-SETUP (V1); ds41 INCONCLUSIVE]"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_model_verdict_names_the_parser_when_attempts_are_unparsed"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_invalid_runs_do_not_count"
+    },
+    {
+      "classname": "tests.harness.test_task_delegation_probe",
+      "name": "test_summarize_reads_every_verdict"
+    }
+  ],
+  "collector": "pytest 9.1.1 --collect-only (no tests executed)",
+  "count": 138,
+  "schema": "ni08-p7-expected-junit/v1"
+}

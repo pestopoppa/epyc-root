@@ -9,6 +9,7 @@ import platform
 import subprocess
 import sys
 import tomllib
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,7 @@ SELECTIONS = (
     "tests/harness/test_task_delegation_probe.py",
 )
 EXPECTED_CASES = 138
+EXPECTED_CASES_PATH = "scripts/ci/ni08_p7_expected_cases.json"
 LOCKED_PACKAGES = {
     "iniconfig": "2.3.0", "packaging": "26.0", "pluggy": "1.6.0",
     "pygments": "2.20.0", "pytest": "9.0.3",
@@ -36,6 +38,11 @@ APP_LOCK = "uv.lock"
 
 ROOT_READS = (
     *SELECTIONS,
+    "scripts/ci/ni08_p7_stdin_capture.py",
+    INSTALL_REQUIREMENTS,
+    EXPECTED_CASES_PATH,
+    "pytest.ini",
+    "tests/conftest.py",
     "scripts/harness/hs4_p04_acceptance.py",
     "scripts/harness/hs19a_acceptance.py",
     "scripts/harness/task_delegation_probe.py",
@@ -108,6 +115,20 @@ def verify_dependencies(app: Path, requirements: Path) -> None:
                 raise RuntimeError(f"requirements hashlock omits an APP wheel for {name}")
 
 
+def native_files(directory: Path) -> list[Path]:
+    if directory.is_symlink() or not directory.is_dir():
+        raise RuntimeError("native output is missing or is not a regular directory")
+    files = []
+    for path in sorted(directory.rglob("*")):
+        if path.is_symlink():
+            raise RuntimeError("native output contains a symlink")
+        if path.is_file():
+            files.append(path)
+        elif not path.is_dir():
+            raise RuntimeError("native output contains a non-regular member")
+    return files
+
+
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
@@ -127,6 +148,11 @@ def main() -> int:
             raise RuntimeError(f"Node runtime differs from pin: {node_version}")
         if os.environ.get("NI08_INSTALL_COMMAND") != INSTALL_COMMAND:
             raise RuntimeError("install command differs from reviewed recipe")
+        expected_env = {"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                        "PYTHONDONTWRITEBYTECODE": "1", "PYTHONHASHSEED": "0"}
+        for key, value in expected_env.items():
+            if os.environ.get(key) != value:
+                raise RuntimeError(f"{key} differs from reviewed recipe")
         expected = {"recipe": os.environ["GITHUB_SHA"], "carrier": ROOT_CARRIER_PIN,
                     "app": APP_PIN}
         pins = {name: require_clean(repo, name) for name, repo in repos.items()}
@@ -142,6 +168,15 @@ def main() -> int:
         requirements = regular_repo_file(recipe, INSTALL_REQUIREMENTS)
         workflow = regular_repo_file(recipe, WORKFLOW)
         verify_dependencies(app, requirements)
+        case_manifest = json.loads(regular_repo_file(recipe, EXPECTED_CASES_PATH).read_text())
+        expected_case_rows = case_manifest.get("cases")
+        expected_identities = [(row.get("classname"), row.get("name"))
+                               for row in expected_case_rows or []]
+        if (case_manifest.get("count") != EXPECTED_CASES
+                or len(expected_identities) != EXPECTED_CASES
+                or any(not all(identity) for identity in expected_identities)
+                or len(set(expected_identities)) != EXPECTED_CASES):
+            raise RuntimeError("frozen expected JUnit identity manifest is invalid")
 
         freeze = result / "pip-freeze.txt"
         freeze.write_bytes(subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"]))
@@ -153,6 +188,9 @@ def main() -> int:
             "dependency_lock": {"repo": "app", "pin": APP_PIN, "path": APP_LOCK,
                                 "sha256": hashlib.sha256(app_lock.read_bytes()).hexdigest()},
             "dependency_set": LOCKED_PACKAGES,
+            "pytest_plugin_autoload": os.environ["PYTEST_DISABLE_PLUGIN_AUTOLOAD"],
+            "bytecode_writes": os.environ["PYTHONDONTWRITEBYTECODE"],
+            "python_hash_seed": os.environ["PYTHONHASHSEED"],
             "dependency_basis": (
                 "Three exact ROOT harness test modules use pytest plus Python stdlib. Their only "
                 "external executable is the OpenCode config linter, run by Node 22.18.0 from "
@@ -172,7 +210,8 @@ def main() -> int:
         junit, native = result / "original-junit.xml", result / "native"
         if junit.exists() or native.exists():
             raise RuntimeError("refusing to overwrite existing capture outputs")
-        read_paths = [workflow, requirements, app_lock, *root_reads, *carrier_reads]
+        read_paths = [workflow, requirements, app_lock, *root_reads, *carrier_reads,
+                      freeze, environment]
         producer_argv = [
             sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
             "--cwd", str(recipe), "--junit", str(junit), "--output", str(native),
@@ -196,12 +235,19 @@ def main() -> int:
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
         metric = receipt.get("fixture_execution_conformant")
         counts = (receipt.get("summary") or {}).get("counts") or {}
+        observed_rows = (receipt.get("summary") or {}).get("cases") or []
+        observed_identities = [(row.get("classname"), row.get("name"))
+                               for row in observed_rows]
+        identity_match = (len(observed_identities) == EXPECTED_CASES
+                          and len(set(observed_identities)) == EXPECTED_CASES
+                          and Counter(observed_identities) == Counter(expected_identities))
         cases_ok = (counts.get("collected") == EXPECTED_CASES
                     and counts.get("executed") == EXPECTED_CASES
                     and counts.get("skipped") == 0
-                    and counts.get("failure") == 0 and counts.get("error") == 0)
+                    and counts.get("failure") == 0 and counts.get("error") == 0
+                    and identity_match)
 
-        originals = [*sorted(native.iterdir()), junit, freeze, environment]
+        originals = [*native_files(native), junit, freeze, environment]
         before = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in originals}
         sys.path.insert(0, str(carrier / "scripts/vidya"))
         sys.path.insert(0, str(carrier))
@@ -232,7 +278,9 @@ def main() -> int:
         with (result / "shared-grade.json").open("x", encoding="utf-8") as handle:
             json.dump(analysis, handle, indent=2, sort_keys=True)
             handle.write("\n")
-        passed = code == 0 and metric is True and cases_ok
+        grade_ok = len(rows) == 1 and analysis.get("grade", {}).get("Q") == "Judged" \
+            and analysis.get("grade", {}).get("T") == "Located"
+        passed = code == 0 and metric is True and cases_ok and grade_ok
         status.update(state="passed" if passed else "failed",
                       exit_code=0 if passed else (code or 1), native_metric=metric,
                       junit_counts=counts, expected_case_count=EXPECTED_CASES,

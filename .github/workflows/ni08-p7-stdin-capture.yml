@@ -6,6 +6,7 @@ on:
       - .github/workflows/ni08-p7-stdin-capture.yml
       - scripts/ci/ni08_p7_stdin_capture.py
       - scripts/ci/ni08_p7_stdin_capture_requirements.txt
+      - scripts/ci/ni08_p7_expected_cases.json
 permissions:
   contents: read
 jobs:
