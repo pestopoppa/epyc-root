@@ -186,12 +186,13 @@ def main() -> int:
             "runtime_context_hashes": runtime_context_hashes,
             "isolation": (
                 "The selected ROOT-only test module uses temporary directories and temporary local bare Git repos; "
-                "all Git clones, pushes, fetches and worktree removals target those temporary repos. A legacy "
-                "busy-path test creates one temporary sleep process, reads the ephemeral GitHub runner's /proc "
-                "to identify it, then kills and reaps it in finally. Fake guarded_rm scripts act only on temp paths. "
-                "No APP, external network service, model, kernel, server, inference or production cleanup is invoked. "
-                "This hosted fixture run is not evidence about production host processes or cleanup safety beyond "
-                "the selected deterministic source cases."
+                "its Git clones, pushes, fetches and worktree removals target those temporary repos. One existing "
+                "busy-path test creates a temporary sleep process and reads the ephemeral GitHub runner's /proc "
+                "to identify that process, then kills and reaps it in finally. Fake guarded_rm scripts act only on "
+                "temporary paths. The test command makes no remote-service calls. Workflow setup checks out the "
+                "pinned ROOT snapshots and installs five exact-pinned pytest dependencies. No APP, model, kernel, "
+                "server, inference or production cleanup is invoked. This hosted fixture run is not evidence about "
+                "production host processes or cleanup safety beyond the selected deterministic source cases."
             ),
         }
         environment_bytes = (json.dumps(environment_data, sort_keys=True, indent=2) + "\n").encode()
