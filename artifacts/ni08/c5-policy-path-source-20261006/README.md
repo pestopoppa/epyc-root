@@ -1,0 +1,9 @@
+# C5 portable policy-path source acceptance — 2026-10-06
+
+MAIN accepted the exact recovered historical policy bytes and the versioned Research evidence carrier. The default loader now verifies the pinned policy through an explicit repository-relative, no-follow path; absolute external authorities retain their existing verifier. Policy identity, claims, digest, seed IDs, provider joins, workloads and dtype plans are unchanged.
+
+Research source `12f51c0e8b85f81576502377e0db9d678fbf1029` was normally merged and published at `604437893809731f87b84a41d2779eb56c83b4a6`. Frozen ROOT recipe `c9d25b768e482bc79c9a2a968019a0fc07e02c40` ran once in [GitHub-hosted capture](https://github.com/pestopoppa/epyc-root/actions/runs/37547590336). MAIN independently downloaded and reopened all 2,241 archive members, verified the API archive digest, all 2,228 pinned Git inputs plus three generated contexts, receipt seal, exact original 28-case JUnit multiset, and before/after hashes. All 28 passed. The existing shared carrier returned Judged/Located; MAIN did not run a grader or reconstruct a tuple on this host.
+
+[Original review](MAIN-original-review.json), [predispatch binding](MAIN-prebinding.json), and [Research publication](research-publication.json) preserve the bounded acceptance. ZIP SHA-256 `23afc2792f7c7da5f3656dfe917ddf47a2037e0d8ddf8484af793393534ae3e9`; artifact 11451331591. Full byte originals remain in MAIN private custody `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/c5-policy-MAIN-original-custody/`; the cancelled generic sibling is excluded.
+
+Manual source blast radius is MEDIUM: offline corpus metadata/evidence loading and synthetic refusal controls. This closes C5-POLICY-PATH and VB-C5-POLICY-CONFORMANCE only. No SOL/GPU measurement, kernel change, production reload, replacement authority or retrospective warrant.

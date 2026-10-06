@@ -5114,3 +5114,7 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [UFH-13 thesis reader source acceptance](../artifacts/ni08/thesis-reader-source-20261006/README.md) wires strict producer-native pooled measurements and records-byte attestations into CLI/dispatcher before the first scored run. Hosted29/29 synthetic controls pass; empty protocol remains an observation and actual thesis measurement is separate.
+
+### C5 portable evidence carrier — 2026-10-06 source boundary
+
+The recovered historical C5 policy is now carried byte-exactly in Research and verified through an explicit repository-relative no-follow loader. [Source acceptance and original28/28](../artifacts/ni08/c5-policy-path-source-20261006/README.md) bind the default positive and tamper/missing/symlink/hardlink/traversal refusal controls; external absolute authorities retain their verifier. Offline source conformance supplies no SOL/kernel or live deployment warrant.

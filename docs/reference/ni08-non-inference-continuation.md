@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **50 completed scoped tasks: 38 existing checkbox flips and 12 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **52 completed scoped tasks: 38 existing checkbox flips and 14 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -129,3 +129,7 @@ MAIN independently verified the recovered policy blob against its original commi
 The report successor is approved for one hosted synthetic capture after MAIN independently verifies3,316 source/config Git blobs,89 explicit reads,40 actual producer-copy inputs,25 hash-locked wheel versions and all original58 case identities. The preceding failed capture remains NULL with collection/source errors and provides no acceptance. NI08 stays **50 completed scopes**.
 
 [HS4-P6 shared exploration contract](../design/hs4-p6-shared-exploration-source-contract-20261006.md) is accepted source preparation: current standalone MCP lacks a REPL context resolver, and the actor’s outline tool needs compatibility treatment beside the four named shared tools. HS4-P6-SOURCE and its prospective VB companion are enrolled as newly valuable non-inference work. Active catalog changes remain inference-gated. Private observer fixes now bind originally captured start ticks and suppress restart after unconfirmed exit; VB-OBS1-CONFORMANCE is enrolled before synthetic verification. No protected source merge or host action is approved. These preparations add no completion; whole-backlog exhaustion remains unproved.
+
+## C5 portable policy-path — MAIN acceptance
+
+[Exact policy/source and original28/28](../../artifacts/ni08/c5-policy-path-source-20261006/README.md) close the two pre-enrolled C5-POLICY-PATH/VB companions. Research main60443789 carries the unchanged historical policy bytes and reviewed versioned loader. **52 scoped completions (38 existing flips +14 additions)**. Other source queues and the full remaining-card eligibility audit continue; whole-backlog exhaustion is unproved.

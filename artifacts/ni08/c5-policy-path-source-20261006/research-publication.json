@@ -1,0 +1,15 @@
+{
+  "previous_head": "604437893809731f87b84a41d2779eb56c83b4a6",
+  "main_before": "eedb192b73ad639adaf0a71157bfec3f4cfaba56",
+  "source": "12f51c0e8b85f81576502377e0db9d678fbf1029",
+  "commit": "604437893809731f87b84a41d2779eb56c83b4a6",
+  "paths": [
+    "scripts/kernel_rnd/autokernel/c5_seed_corpus.json",
+    "scripts/kernel_rnd/autokernel/c5_seed_corpus.py",
+    "scripts/kernel_rnd/autokernel/evidence/c5-sol-bound-policy-20260815.md",
+    "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
