@@ -4,7 +4,7 @@ import importlib.metadata, json, os, platform, subprocess, sys, tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "0b1408c51a10cb7a0527b9206c415df9dd9a9a71"
+APP_PIN = "4dd914bb5a00d760e2e87c25069daef67305e9ba"
 SELECTIONS = (
     "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_are_optional_ordered_choice_metadata",
     "tests/unit/test_typed_decisions.py::TestQuestionInvariants::test_option_descriptions_reject_text_as_the_outer_sequence",

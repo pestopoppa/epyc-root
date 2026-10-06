@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      APP_PIN: 0b1408c51a10cb7a0527b9206c415df9dd9a9a71
+      APP_PIN: 4dd914bb5a00d760e2e87c25069daef67305e9ba
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       NI07_RUNNER_CONTEXT: ubuntu-latest
       NI07_EXECUTION_CONTEXT: offline-fake-decision-fixtures
