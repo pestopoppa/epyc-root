@@ -2610,6 +2610,8 @@ Preserve the original absence rules: skip absent timings, never invent zeros, an
 
 ## JEV-aware handoff audit dependency capture — 2026-10-06
 
+- [ ] **VB-NI06-CI-WIRE — capture the three selected non-inference fixture executions prospectively.** Use the existing native CI producer and adapter/shared grader. Bind exact reviewed source pins, selected tests/import readset, workflow/harness and package inventory before execution; preserve original request, JUnit, command/status and snapshots. MAIN reopens original custody before accepting each bounded result. Fake reader/model primitives and temporary graph/SQLite/tokenizer bytes only; no live inference, embedding, performance, migration, deployment or whole-suite authority. Source table enrollment precedes capture.
+
 - [x] **VB-HANDOFF-JEV-AUDIT — preserve and check the prospective documentation dependency inventory.** Bind the pre-review source manifest, every original task key, delegated review and MAIN acceptance/rejection/applied text in the audit artifacts. Check complete file/key coverage and original source identities before final reporting; preserve the distinct audit snapshot and subsequent edits/peer deltas. This is documentation/source review, not a new measurement or ClaimTuple producer. Use existing document dependency handling; no grading ladder, historical tuple reconstruction, runtime or scientific authority. Source row filed before final audit consumption. ✅ 2026-10-06 — all 528 original file hashes and 3,558 task keys validated, with MAIN decisions/applied text preserved in artifacts/handoff-audit/2026-10-06.
 
 ### VB-INF70-ARMS — source-verified remaining scope (MAIN, 2026-10-06)
