@@ -1,0 +1,144 @@
+{
+  "schema": "ni06.scratch.source_custody_review.v1",
+  "outcomes": [
+    {
+      "job": "root-graph",
+      "receipt_file_sha256": "9e6e1e951f55830ae91cb3b398f767942e64f3e2fd9d552c98a32405b1abd269",
+      "receipt_self_sha256": "2102119e90298dad08bccbfab365b9dfe5a3a34ddf4c9eb3f895ebad1e44120c",
+      "conformant": null,
+      "exit_code": 0,
+      "counts": null,
+      "diagnostic": "inconsistent JUnit suite counts",
+      "source_binding_counts": {
+        "root": 623,
+        "recipe": 625
+      },
+      "exact_readset_count": 1250,
+      "independent_git_source_count": 1248,
+      "context": {
+        "pip-freeze.txt": {
+          "sha256": "979919d70214742feb0c35d88d8464bd2abd60324019e54729c63531fab391df",
+          "size": 90
+        },
+        "environment.json": {
+          "sha256": "25664eff79b21536b7e5755a33801e069436893cbc1caa733344f7ea509dcd6b",
+          "size": 505
+        }
+      },
+      "context_limit": "runner asserted, not independent package installation proof",
+      "projected_rows": 0,
+      "shared_grade": [],
+      "selected_fixture": {
+        "sha256": "f28a7ae1c3e3c42936dce250160867d62b52cb97e4b671dad158541d579aec05",
+        "source_pin": "ec513cbefa937bbe382ea502a88ab96c27022863",
+        "source_path": "tests/test_index_state_prune.py",
+        "source_label": "root"
+      }
+    },
+    {
+      "job": "cj13",
+      "receipt_file_sha256": "33bc08f1e2ad8a6dca5e274f3c91e99b5a63388d163717aa409abf6d02d9f754",
+      "receipt_self_sha256": "29a74977356edaeea02d86debb12cbef9a3eafb6cb3847ce692071efe7a73129",
+      "conformant": false,
+      "exit_code": 1,
+      "counts": {
+        "collected": 44,
+        "error": 0,
+        "executed": 44,
+        "failure": 21,
+        "passed": 23,
+        "skipped": 0
+      },
+      "diagnostic": "",
+      "source_binding_counts": {
+        "root": 623,
+        "recipe": 625,
+        "cj13": 2076
+      },
+      "exact_readset_count": 3326,
+      "independent_git_source_count": 3324,
+      "context": {
+        "environment.json": {
+          "sha256": "09d00cde6131ea28cd549944192927d9fc77d25f9befcafb2a0d22a68bd9c318",
+          "size": 552
+        },
+        "pip-freeze.txt": {
+          "sha256": "64c90b4fd5ee33ddb25472acd0b4108435a838b7964bae0ebac2eeb6ca417382",
+          "size": 197
+        }
+      },
+      "context_limit": "runner asserted, not independent package installation proof",
+      "projected_rows": 1,
+      "shared_grade": [
+        {
+          "Q": "Judged",
+          "T": "Located",
+          "reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+            "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+          ]
+        }
+      ],
+      "selected_fixture": {
+        "sha256": "105a0e422d7e7127069850f5374d7543f84fd00d219d32e8b1d56cbc4dc361e4",
+        "source_pin": "1721cc208d756506b7d31e315436f1edf8cb343b",
+        "source_path": "tests/unit/test_typed_decisions_judge_redundancy.py",
+        "source_label": "cj13"
+      }
+    },
+    {
+      "job": "k3",
+      "receipt_file_sha256": "e244afb488702472e9d71f299824643f98883aefb9d89fafef5d44403c361708",
+      "receipt_self_sha256": "8aab5a8f3a786cf85b645edccae000feed2dfeb9790fd9720662e96b93cb0d0c",
+      "conformant": true,
+      "exit_code": 0,
+      "counts": {
+        "collected": 15,
+        "error": 0,
+        "executed": 15,
+        "failure": 0,
+        "passed": 15,
+        "skipped": 0
+      },
+      "diagnostic": "",
+      "source_binding_counts": {
+        "root": 623,
+        "recipe": 625,
+        "k3": 2077
+      },
+      "exact_readset_count": 3327,
+      "independent_git_source_count": 3325,
+      "context": {
+        "environment.json": {
+          "sha256": "a7d73368fa0c6ce8f63069e6ef0245e2af9b04ed1d886ef788b01422bbd63937",
+          "size": 517
+        },
+        "pip-freeze.txt": {
+          "sha256": "42140c74ec99f1507a1199efe5b9d78a89823dac403bf81cc87680e00c05ece3",
+          "size": 103
+        }
+      },
+      "context_limit": "runner asserted, not independent package installation proof",
+      "projected_rows": 1,
+      "shared_grade": [
+        {
+          "Q": "Judged",
+          "T": "Located",
+          "reasons": [
+            "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+            "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+          ]
+        }
+      ],
+      "selected_fixture": {
+        "sha256": "7bdae8510493684108cd34fe5242b679a9204e4b2459271b884cf25541c64f78",
+        "source_pin": "9d3a338acdd3dec258afee27ac3d359dc35efbf3",
+        "source_path": "tests/unit/test_kb_rag_tokenizer_identity.py",
+        "source_label": "k3"
+      }
+    }
+  ],
+  "originals_preserved": true,
+  "pin_checks_before_after": true,
+  "expectation_method": "git ls-files at exact clean pins + Git archive blobs; capture constants AST only"
+}

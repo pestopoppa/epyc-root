@@ -1387,3 +1387,9 @@ No retrieval-quality result exists yet. REPL-EMB-2.2, the offline eval, still de
 - [2026-10-01 workspace-8d progress](../progress/2026-10/2026-10-01-workspace-8d.md) — the context.search landing and the deploy for `orsv`.
 - [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-runtime-flag-survived-reboot.
 - [AutoKernel orchestrator actor backend](../handoffs/active/autokernel-orchestrator-actor-backend.md) — OAB-35, the dict-idiom crash that blocked the arm.
+
+## Tokenizer provenance in KB catalogs — 2026-10-06
+
+K3 now stamps `tokenizer_sha256` from the exact byte buffer parsed by the ColBERT loader. A known stamp must match both the loaded tokenizer and current file before query encoding or encoding-writer mutation. A same-path replacement therefore fails explicitly; stale cached bytes cannot be mislabeled by hashing only the new file. Load failure and model-directory refresh clear the fingerprint. Unstamped legacy catalogs remain compatible, and removing rows requires no model load.
+
+APP source `9d3a338a` is published in main `2a98c6f0`. Fifteen temporary-byte/SQLite/fake-loader cases passed in original CI37424571462; MAIN reopened exact source custody through the existing native carrier/shared grader. This warrants synthetic contract behavior only. Existing catalogs are not migrated or re-embedded, and retrieval quality is unmeasured. [K3 handoff](../handoffs/active/internal-kb-rag.md), [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md).
