@@ -16,7 +16,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
 
 import machine_anchor  # noqa: E402
-from adapters.research_intake import _t_level  # noqa: E402
+from adapters.research_intake import _frames_for_entry, _t_level  # noqa: E402
 from raw_anchor_store import ArtifactUnavailable, read_raw_bytes, store_raw_bytes  # noqa: E402
 
 
@@ -99,6 +99,16 @@ def test_legacy_shape_and_unknown_metadata_never_raise_anchor_tier(tmp_path, mon
     assert _t_level({"url": URL}, anchor) == "Located"
 
 
+def test_frame_retains_the_exact_source_binding_metadata(tmp_path, monkeypatch):
+    entry, anchor, _root = _anchor(tmp_path, monkeypatch, located_by="machine")
+    entry = dict(entry, id="intake-1234", claim_anchors=[anchor])
+    frames = _frames_for_entry(entry, "2026-10-06T12:00:00Z")
+    support = next(frame for frame in frames if frame["frame_type"] == "SUPPORT")
+    projected = support["provenance"]["anchor"]
+    assert projected["source_verification"] == "verified"
+    assert projected["source_artifact"] == anchor["source_artifact"]
+
+
 def test_tampered_or_symlinked_artifact_is_unknown(tmp_path, monkeypatch):
     _entry, anchor, root = _anchor(tmp_path, monkeypatch, located_by="machine")
     object_path = root / anchor["source_artifact"]["relative_path"]
@@ -114,6 +124,60 @@ def test_tampered_or_symlinked_artifact_is_unknown(tmp_path, monkeypatch):
     object_path.symlink_to(outside)
     assert machine_anchor.verify_source_anchor(anchor, entry_url=URL)[0] is False
 
+
+def test_hardlinked_retained_file_is_unknown(tmp_path, monkeypatch):
+    _entry, anchor, root = _anchor(tmp_path, monkeypatch, located_by="machine")
+    object_path = root / anchor["source_artifact"]["relative_path"]
+    alias = tmp_path / "alias.raw"
+    os.link(object_path, alias)
+    with pytest.raises(ArtifactUnavailable):
+        read_raw_bytes(anchor["source_artifact"], root=root)
+    assert machine_anchor.verify_source_anchor(anchor, entry_url=URL)[0] is False
+
+
+def test_fifo_at_content_path_is_refused_without_blocking(tmp_path):
+    root = tmp_path / "vault"
+    raw = b"fifo control bytes"
+    digest = hashlib.sha256(raw).hexdigest()
+    shard = root / "sha256" / digest[:2]
+    shard.mkdir(parents=True, mode=0o700)
+    os.chmod(root, 0o700)
+    os.chmod(root / "sha256", 0o700)
+    os.chmod(shard, 0o700)
+    fifo = shard / f"{digest}.raw"
+    os.mkfifo(fifo, 0o600)
+    metadata = {
+        "entry_url": URL,
+        "requested_url": URL,
+        "effective_url": URL,
+        "retrieved_at_utc": "2026-10-06T12:00:00Z",
+        "media_type": "text/plain",
+        "extractor_id": machine_anchor.EXTRACTOR_ID,
+        "extractor_sha256": machine_anchor._extractor_sha256(),
+    }
+    with pytest.raises(ArtifactUnavailable):
+        store_raw_bytes(raw, metadata, root=root)
+
+
+def test_arxiv_verification_requires_three_explicit_exact_revision_urls(tmp_path, monkeypatch):
+    _entry, anchor, _root = _anchor(tmp_path, monkeypatch, located_by="machine")
+    artifact = dict(anchor["source_artifact"])
+    urls = [
+        "https://arxiv.org/abs/2604.08224",
+        "https://arxiv.org/html/2604.08224",
+        "https://arxiv.org/html/2604.08224",
+    ]
+    for key, url in zip(("entry_url", "requested_url", "effective_url"), urls):
+        artifact[key] = url
+    anchor["source_artifact"] = artifact
+    anchor["source_revision"] = urls[-1]
+    assert machine_anchor.verify_source_anchor(anchor, entry_url=urls[0])[0] is False
+
+    artifact["entry_url"] = "https://evil-arxiv.org/abs/2604.08224v2"
+    artifact["requested_url"] = "https://example.org/?next=https://arxiv.org/html/2604.08224v2"
+    artifact["effective_url"] = "https://arxiv.org/html/2604.08224v2"
+    anchor["source_revision"] = artifact["effective_url"]
+    assert machine_anchor.verify_source_anchor(anchor, entry_url=artifact["entry_url"])[0] is False
 
 def test_missing_original_wrong_quote_and_wrong_source_revision_are_unknown(tmp_path, monkeypatch):
     entry, anchor, root = _anchor(tmp_path, monkeypatch, located_by="machine")

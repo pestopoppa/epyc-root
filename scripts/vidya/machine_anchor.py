@@ -28,6 +28,7 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -90,9 +91,23 @@ def _extractor_sha256() -> str:
     return hashlib.sha256(identity.encode("utf-8")).hexdigest()
 
 
+def _arxiv_locator(url: str) -> tuple[bool, str | None]:
+    """Return exact arXiv host/path identity without matching query or host substrings."""
+    try:
+        parsed = urlsplit(url)
+    except ValueError:
+        return False, None
+    if parsed.hostname not in {"arxiv.org", "www.arxiv.org"}:
+        return False, None
+    match = re.fullmatch(r"/(?:abs|pdf|html)/([A-Za-z0-9.-]+(?:/[A-Za-z0-9.-]+)?)(?:\.pdf)?", parsed.path, re.I)
+    if not match:
+        return True, None
+    identifier = re.sub(r"\.pdf$", "", match.group(1), flags=re.I)
+    return True, identifier if re.search(r"v\d+$", identifier, re.I) else None
+
+
 def _versioned_arxiv_id(url: str) -> str | None:
-    match = re.search(r"arxiv\.org/(?:abs|pdf|html)/([0-9.]+v\d+)(?:\.pdf)?(?:$|[?#])", url, re.I)
-    return match.group(1) if match else None
+    return _arxiv_locator(url)[1]
 
 
 def fetch_document(url: str, *, timeout: int = 45) -> tuple[str | None, dict | None]:
@@ -101,9 +116,8 @@ def fetch_document(url: str, *, timeout: int = 45) -> tuple[str | None, dict | N
     `None` artifact metadata means the text may be useful for discovery but cannot
     support a source-verification warrant.
     """
-    parsed_arxiv = re.search(r"arxiv\.org/(?:abs|pdf|html)/([0-9.]+v?\d*)(?:\.pdf)?(?:$|[?#])", url, re.I)
-    entry_version = parsed_arxiv.group(1) if parsed_arxiv else None
-    if parsed_arxiv and not re.search(r"v\d+$", entry_version or ""):
+    is_arxiv, entry_version = _arxiv_locator(url)
+    if is_arxiv and entry_version is None:
         # An unversioned alias may resolve to a different revision between reads.
         return None, None
     fetch_url = (f"https://arxiv.org/html/{entry_version}" if entry_version else url)
@@ -129,7 +143,7 @@ def fetch_document(url: str, *, timeout: int = 45) -> tuple[str | None, dict | N
     artifact = None
     if media_type in SUPPORTED_MEDIA_TYPES:
         effective_version = _versioned_arxiv_id(effective_url)
-        if entry_version and effective_version != entry_version:
+        if is_arxiv and effective_version != entry_version:
             return text, None
         raw_digest = hashlib.sha256(raw).hexdigest()
         try:
@@ -167,13 +181,14 @@ def verify_source_anchor(anchor: dict, *, entry_url: str | None = None) -> tuple
         validate_artifact_metadata(artifact)
         if entry_url is not None and artifact.get("entry_url") != entry_url:
             raise ArtifactUnavailable("entry URL does not match retained source metadata")
-        arxiv_versions = [
-            _versioned_arxiv_id(artifact.get(key, ""))
+        arxiv_locators = [
+            _arxiv_locator(artifact.get(key, ""))
             for key in ("entry_url", "requested_url", "effective_url")
-            if "arxiv.org" in artifact.get(key, "").lower()
         ]
-        if arxiv_versions and (
-            len(arxiv_versions) != 3 or any(value != arxiv_versions[0] for value in arxiv_versions)
+        if any(is_arxiv for is_arxiv, _identifier in arxiv_locators) and (
+            not all(is_arxiv for is_arxiv, _identifier in arxiv_locators)
+            or any(identifier is None for _is_arxiv, identifier in arxiv_locators)
+            or len({identifier for _is_arxiv, identifier in arxiv_locators}) != 1
         ):
             raise ArtifactUnavailable("arXiv source revision is not consistently version-pinned")
         if artifact.get("extractor_id") != EXTRACTOR_ID or artifact.get("extractor_sha256") != _extractor_sha256():

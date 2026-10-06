@@ -98,6 +98,21 @@ def _relative_path(digest: str) -> str:
     return f"sha256/{digest[:2]}/{digest}.raw"
 
 
+def _same_open_path(parent_fd: int, name: str, fd: int, before: os.stat_result) -> bool:
+    """Require one regular, singly-linked file at both its descriptor and directory name."""
+    opened = os.fstat(fd)
+    try:
+        named = os.stat(name, dir_fd=parent_fd, follow_symlinks=False)
+    except OSError:
+        return False
+    identity = lambda item: (item.st_dev, item.st_ino, item.st_mode, item.st_nlink)
+    return (
+        stat.S_ISREG(opened.st_mode)
+        and opened.st_nlink == 1
+        and identity(before) == identity(opened) == identity(named)
+    )
+
+
 def store_raw_bytes(raw: bytes, metadata: dict[str, Any], *, root: Path | None = None) -> dict[str, Any] | None:
     """Store one response buffer create-once and return strict source metadata.
 
@@ -138,7 +153,7 @@ def store_raw_bytes(raw: bytes, metadata: dict[str, Any], *, root: Path | None =
                         )
                     except FileExistsError:
                         fd = os.open(
-                            f"{digest}.raw", os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
+                            f"{digest}.raw", os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0),
                             dir_fd=shard_fd,
                         )
                         try:
@@ -146,8 +161,10 @@ def store_raw_bytes(raw: bytes, metadata: dict[str, Any], *, root: Path | None =
                             if (
                                 not stat.S_ISREG(info.st_mode)
                                 or info.st_uid != os.geteuid()
+                                or info.st_nlink != 1
                                 or (info.st_mode & 0o600) != 0o600
                                 or info.st_mode & 0o077
+                                or not _same_open_path(shard_fd, f"{digest}.raw", fd, info)
                             ):
                                 raise ArtifactUnavailable("existing artifact is not a private regular file")
                             existing = bytearray()
@@ -156,12 +173,24 @@ def store_raw_bytes(raw: bytes, metadata: dict[str, Any], *, root: Path | None =
                                 if not chunk:
                                     break
                                 existing.extend(chunk)
-                            if bytes(existing) != raw:
+                            if (
+                                not _same_open_path(shard_fd, f"{digest}.raw", fd, info)
+                                or bytes(existing) != raw
+                            ):
                                 raise ArtifactUnavailable("content-addressed object conflicts with response bytes")
                         finally:
                             os.close(fd)
                     else:
                         try:
+                            created = os.fstat(fd)
+                            if (
+                                not stat.S_ISREG(created.st_mode)
+                                or created.st_uid != os.geteuid()
+                                or created.st_nlink != 1
+                                or created.st_mode & 0o077
+                                or not _same_open_path(shard_fd, f"{digest}.raw", fd, created)
+                            ):
+                                raise ArtifactUnavailable("new artifact path is not a private single-link file")
                             view = memoryview(raw)
                             while view:
                                 written = os.write(fd, view)
@@ -240,7 +269,7 @@ def read_raw_bytes(artifact: Any, *, root: Path | None = None) -> bytes:
             try:
                 fd = os.open(
                     f"{artifact['raw_sha256']}.raw",
-                    os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0),
+                    os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0),
                     dir_fd=shard_fd,
                 )
                 try:
@@ -248,8 +277,12 @@ def read_raw_bytes(artifact: Any, *, root: Path | None = None) -> bytes:
                     if (
                         not stat.S_ISREG(before.st_mode)
                         or before.st_uid != os.geteuid()
+                        or before.st_nlink != 1
                         or (before.st_mode & 0o600) != 0o600
                         or before.st_mode & 0o077
+                        or not _same_open_path(
+                            shard_fd, f"{artifact['raw_sha256']}.raw", fd, before
+                        )
                     ):
                         raise ArtifactUnavailable("artifact is not a private regular file")
                     if before.st_size != artifact["byte_length"] or before.st_size > MAX_ARTIFACT_BYTES:
@@ -263,6 +296,8 @@ def read_raw_bytes(artifact: Any, *, root: Path | None = None) -> bytes:
                     after = os.fstat(fd)
                     if (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns) != (
                         after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns
+                    ) or not _same_open_path(
+                        shard_fd, f"{artifact['raw_sha256']}.raw", fd, before
                     ):
                         raise ArtifactUnavailable("artifact changed while being read")
                 finally:

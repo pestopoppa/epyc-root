@@ -324,6 +324,8 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
                 "source_verification": (
                     "verified" if source_verification and source_verification[0] else "unknown"
                 ),
+                **({"source_artifact": dict(anchor["source_artifact"])}
+                   if isinstance(anchor.get("source_artifact"), dict) else {}),
             }
         else:
             # An absent anchor is recorded explicitly. Inferring it from a low grade would make the
