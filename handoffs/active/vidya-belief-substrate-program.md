@@ -2667,10 +2667,18 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
   - [x] **VB-NI07-CI-FORCE — ingest accepted original forced-build duplicate fixtures.** ✅ 2026-10-06 — [CI37447817516](../../artifacts/ni07/run-37447817516/README.md) TRUE113/113;3335Git bindings plus2contexts,3345API members reopened. One existing shared Judged/Located observation emits3canonical frames; three original FALSEs unchanged. No native vector-integrity/quality/concurrent-writer warrant.
 
 
-- [ ] **VB-KB-VECTOR-PUBLISH — prospectively capture staged vector publication source contracts.** Existing native CI carrier/shared grading only; bind fake writer/source/readset and original partial-write/refusal/success fixtures before execution. No new grading/source class, vector-byte attestation, DB/filesystem transaction or live index warrant. NI07-16; MAIN owns acceptance.
+- [x] **VB-KB-VECTOR-PUBLISH — prospectively capture staged vector publication source contracts.** ✅ 2026-10-06 — [OriginalCI37451221250](../../artifacts/ni07/run-37451221250/README.md) TRUE122/122 accepted through existing native CI carrier/shared grader after MAIN3349Git+2contexts/all3359APImember review. Fake/source partial/refused/successful-write identity only, no new ladder/source class, vector attestation or cross-resource transaction claim.
 
 
   - [x] **VB-NI07-CI-K7-REPORT — ingest original report-consumer fixtures.** ✅ 2026-10-06 — [OriginalCI37450891733](../../artifacts/ni07/run-37450891733/README.md) TRUE11/11; MAIN3351Git+2contexts/all3361API members verified. Existing Judged/Located observation emits3frames; synthetic report contracts only.
 
 
   - [x] **VB-NI07-CI-FAILURE-LEDGER — ingest original additive reporting controls.** ✅ 2026-10-06 — [OriginalCI37451263389](../../artifacts/ni07/run-37451263389/README.md) TRUE141/141; MAIN2758Git+2contexts/all2768API members verified. Existing Judged/Located observation emits3frames; descriptive native integrity only.
+
+
+  - [x] **VB-NI07-CI-VECTOR-STAGE — ingest original staged-write fixtures.** ✅ 2026-10-06 — [OriginalCI37451221250](../../artifacts/ni07/run-37451221250/README.md) TRUE122/122; existing Judged/Located observation and3canonical frames, complete MAIN source/API custody review.
+
+
+- [ ] **VB-BSV-INPUT-STRICT — bind strict standalone native-outcome input handling prospectively.** NI07-17 under existing native CI producer/shared grading; source/fixtures/JUnit and original refusal cases before consumption. No new outcome taxonomy/ladder or model-quality/gating warrant.
+  - [ ] **VB-KB-LAB-CONTEXT — capture existing native catalog dependency at lab context collection.** NI07-18/KB-LAB-CONTEXT-DEPENDENCY under VB-KB-CATALOG-CONSUMERS; strict original identity/null unknown/refusal before query/backend. No historical reconstruction/new class/all-query snapshot.
+- [ ] **VB-TOOL-REPAIR-LOG — prospectively capture repair-log minimization source contracts.** NI07-19/TU-TC-1b, existing native CI/shared grading only; original synthetic sentinel/outcome/counter controls. Runtime global counters are descriptive, not decision authority; no new source class/ladder.

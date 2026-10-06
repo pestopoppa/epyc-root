@@ -1417,3 +1417,8 @@ The [forced-build correction](../docs/reference/kb-force-build-identity-contract
 ## 2026-10-06 K7 report provenance
 
 The [K7 report consumer](../docs/reference/k7-report-catalog-dependency-contract.md) attaches the original strict catalog record once at report time; absent/legacy null and stale/tamper refusal precede report publication. [OriginalCI37450891733](../artifacts/ni07/run-37450891733/README.md) passes11/11 after MAIN source/API custody review. Ranking/metrics remain; report identity does not prove an all-query catalog snapshot or retrieval quality.
+
+
+## 2026-10-06 individual vector publication
+
+[Staged NPZ publication](../docs/reference/kb-vector-staged-publication-contract.md) protects old canonical bytes from partial serialization and replace refusal at both KB writers, preserves modes and closes before replacement. [OriginalCI37451221250](../artifacts/ni07/run-37451221250/README.md) passes122/122 after MAIN source/API custody review. SQL/native catalog identity remains logical; later SQL failure, crash recovery and concurrent writes remain outside this guarantee.
