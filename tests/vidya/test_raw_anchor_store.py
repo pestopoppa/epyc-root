@@ -16,7 +16,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts" / "vidya"))
 
 import machine_anchor  # noqa: E402
-from adapters.research_intake import _frames_for_entry, _t_level  # noqa: E402
+from adapters.research_intake import FT_SUPPORT, _frames_for_entry, _t_level  # noqa: E402
 from raw_anchor_store import ArtifactUnavailable, read_raw_bytes, store_raw_bytes  # noqa: E402
 
 
@@ -110,7 +110,7 @@ def test_frame_retains_the_exact_source_binding_metadata(tmp_path, monkeypatch):
     entry, anchor, _root = _anchor(tmp_path, monkeypatch, located_by="machine")
     entry = dict(entry, id="intake-1234", claim_anchors=[anchor])
     frames = _frames_for_entry(entry, "2026-10-06T12:00:00Z")
-    support = next(frame for frame in frames if frame["frame_type"] == "SUPPORT")
+    support = next(frame for frame in frames if frame["frame_type"] == FT_SUPPORT)
     projected = support["provenance"]["anchor"]
     assert projected["source_verification"] == "verified"
     assert projected["source_artifact"] == anchor["source_artifact"]
