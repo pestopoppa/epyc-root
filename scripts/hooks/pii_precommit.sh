@@ -321,8 +321,8 @@ is_perf_period_table_cell() {
   awk -v target="$lineno" '
     function trim(s) { sub(/^[[:space:]]+/, "", s); sub(/[[:space:]]+$/, "", s); return s }
     function cells(s, a, n) {
-      if (s !~ /^\\|.*\\|$/) return 0
-      sub(/^\\|/, "", s); sub(/\\|$/, "", s)
+      if (s !~ /^\|.*\|$/) return 0
+      sub(/^\|/, "", s); sub(/\|$/, "", s)
       n = split(s, a, "|")
       for (i = 1; i <= n; i++) {
         a[i] = trim(a[i])

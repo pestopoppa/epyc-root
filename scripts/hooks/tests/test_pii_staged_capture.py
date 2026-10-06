@@ -119,6 +119,14 @@ def _perf_table(period_value, dso="runtime", symbol="kernel"):
     return _perf_table_rows([period_value], dso=dso, symbol=symbol)
 
 
+def _write_perf_fixture(repo, content):
+    """Write only the synthetic perf fixture, creating its private parent."""
+    path = repo / "research/perf.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(content)
+    return path
+
+
 def _perf_table_rows(period_values, dso="runtime", symbol="kernel"):
     body_rows = "".join(
         "| 50.02% | " + value + " | " + dso + " | " + symbol + " |\n"
@@ -133,9 +141,9 @@ def _perf_table_rows(period_values, dso="runtime", symbol="kernel"):
 
 @pytest.mark.parametrize("width", [12, 13])
 def test_perf_period_number_is_allowed_only_in_public_period_column(repo, width):
-    name = "research/perf.md"
     expected = _perf_table(_digit_run(width))
-    (repo / name).write_text(expected)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, expected)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -149,10 +157,10 @@ def test_perf_period_number_is_allowed_only_in_public_period_column(repo, width)
 
 
 def test_all_seven_public_perf_period_cells_are_allowed(repo):
-    name = "research/perf.md"
     content = _perf_table_rows([_digit_run(12), _digit_run(13), _digit_run(12), _digit_run(13),
                                 _digit_run(12), _digit_run(13), _digit_run(12)])
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -162,9 +170,9 @@ def test_all_seven_public_perf_period_cells_are_allowed(repo):
 
 
 def test_perf_period_exception_does_not_exempt_account_value_in_same_table(repo):
-    name = "research/perf.md"
     content = _perf_table(_digit_run(12), symbol="kernel account_id=" + _digit_run(12))
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -174,10 +182,10 @@ def test_perf_period_exception_does_not_exempt_account_value_in_same_table(repo)
 
 
 def test_later_perf_table_row_with_account_label_still_blocks(repo):
-    name = "research/perf.md"
     content = _perf_table_rows(["42", "73", "84", "95", "106", "117", _digit_run(12)],
                                symbol="kernel account_id=" + _digit_run(12))
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -188,9 +196,9 @@ def test_later_perf_table_row_with_account_label_still_blocks(repo):
 
 @pytest.mark.parametrize("label", ["account", "card", "customer", "iban", "routing", "ssn"])
 def test_perf_period_exception_rejects_sensitive_label_in_header_or_row(repo, label):
-    name = "research/perf.md"
     content = _perf_table(_digit_run(12), symbol="kernel " + label)
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -200,9 +208,9 @@ def test_perf_period_exception_rejects_sensitive_label_in_header_or_row(repo, la
 
 
 def test_perf_period_exception_does_not_exempt_number_in_other_column(repo):
-    name = "research/perf.md"
     content = _perf_table("42", dso=_digit_run(12))
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -219,7 +227,7 @@ def test_perf_period_exception_does_not_exempt_number_in_other_column(repo):
 ], ids=["period-only", "bad-separator", "fourteen-digit", "prose"])
 def test_perf_period_exception_requires_exact_schema_and_12_or_13_digits(repo, content):
     name = "research/perf.md"
-    (repo / name).write_text(content)
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -229,13 +237,13 @@ def test_perf_period_exception_requires_exact_schema_and_12_or_13_digits(repo, c
 
 
 def test_perf_period_exception_does_not_leak_into_adjacent_unrelated_table(repo):
-    name = "research/perf.md"
     content = _perf_table(_digit_run(12)) + (
         "| customer | record id | DSO | symbol |\n"
         "| --- | --- | --- | --- |\n"
         "| customer one | " + _digit_run(12) + " | runtime | kernel |\n"
     )
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -245,9 +253,9 @@ def test_perf_period_exception_does_not_leak_into_adjacent_unrelated_table(repo)
 
 
 def test_perf_table_exception_context_resets_at_blank_line(repo):
-    name = "research/perf.md"
     content = _perf_table(_digit_run(12)) + "\n| 50.02% | " + _digit_run(12) + " | runtime | kernel |\n"
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -257,9 +265,9 @@ def test_perf_table_exception_context_resets_at_blank_line(repo):
 
 
 def test_secret_in_valid_perf_period_row_still_blocks(repo):
-    name = "research/perf.md"
     content = _perf_table(_digit_run(12), symbol="kernel token=" + "ghp_" + "Z" * 36)
-    (repo / name).write_text(content)
+    name = "research/perf.md"
+    _write_perf_fixture(repo, content)
     git(repo, "add", "--", name)
 
     code, receipt = run(repo)
@@ -271,9 +279,7 @@ def test_secret_in_valid_perf_period_row_still_blocks(repo):
 def test_perf_period_exception_follows_staged_bytes_only(repo):
     name = "research/perf.md"
     staged = _perf_table(_digit_run(12))
-    path = repo / name
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(staged)
+    path = _write_perf_fixture(repo, staged)
     git(repo, "add", "--", name)
     path.write_text(_perf_table(_digit_run(12), symbol="account_id=" + _digit_run(12)))
 
