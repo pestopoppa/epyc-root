@@ -42,7 +42,6 @@ ROOT_READS = (
     "tests/vidya/test_raw_anchor_store.py",
     "tests/vidya/test_vidya_alias.py",
     "tests/vidya/test_vidya_machine_anchor.py",
-    "pyproject.toml",
     "handoffs/active/vidya-belief-substrate-program.md",
 )
 APP_READS = ("uv.lock",)
