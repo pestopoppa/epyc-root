@@ -1,0 +1,61 @@
+{
+  "run": 37451263389,
+  "attempt": 1,
+  "artifact_id": 11405723687,
+  "independent_git_bindings": 2758,
+  "source_counts": {
+    "orchestrator": 2123,
+    "root": 631,
+    "recipe": 4
+  },
+  "contexts": 2,
+  "zip_sha256": "7714683bf196c84f94ddd2c9ff77e234850e5c065f0216abc3d7d889c2ef6e04",
+  "zip_size": 13516734,
+  "zip_extracted_members": 2768,
+  "receipt_file_sha256": "f9b57aa19048e1714fcddb97372f564286f47c71e503567f1a9f6b1d89bee8e1",
+  "receipt_self_sha256": "5968ebd494720e38ee73ea9e66363bdc6830b0dae0c055945499c1aabfe23b2b",
+  "repositories": {
+    "orchestrator": "face5c0f39f128d4d228ca7d7d7374a285518036",
+    "recipe": "c3bada205944c32339cb868b3b4ea2511eef845b",
+    "root": "1f09dde6818df8756be86feaabcedeb9f3a60748"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+    "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+    "scripts/autopilot/evals/dtap/tests/test_judge_guard.py",
+    "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py",
+    "--junitxml=/home/runner/work/_temp/ni07-14-tu-led1a/result/tu-led1a.junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 141,
+    "error": 0,
+    "executed": 141,
+    "failure": 0,
+    "passed": 141,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "acc4c3613c6073a2899f641c9385f8a86e497e76",
+  "recipe_main": "895ffa5c02a000238f629880a465d1cf816627b3",
+  "context_recipe_assertions_checked": true
+}

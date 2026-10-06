@@ -84,3 +84,8 @@ MAIN independently reopened3335Git bindings plus2contexts, all3345API ZIP member
 ## NI07-15 completed report provenance boundary
 
 MAIN independently derives3351Git bindings before reopening receipt, verifies2contexts/all3361original API ZIP members and nativeCI37450891733 TRUE11/11. APP847a9b15 promoted main1109ad39; ROOT2585e25d promoted mainf0c5a35b, exact tested paths and peer ancestry preserved. Four owned checklist closures and3existing-carrier canonical frames; docs/wiki/source table/thin next actions updated. Queue17/19; native failure ledger and staged vector publication remain under delegated off-host validation. New-source shortlist is read-only until MAIN review/enrollment. No host tests/inference/embedding/serving/kernel change.
+
+
+## NI07-14 completed native failure reporting boundary
+
+MAIN derives2758Git+2contexts before receipt reopening and verifies all2768original API ZIP members/nativeCI37451263389 TRUE141/141 (14new+127regressions). Sourceface5c0f promoted APPmainacc4c361; recipec3bada20 promoted ROOTmain895ffa5c, exact tested paths/peer ancestry preserved. Four checklist closures and3canonical native frames. Source review corrections prevent unrestricted raw-message sidecars, false complete total-token cost and changed trace-byte hash binding. Report remains descriptive; native outcome/matrix/judge/receipt authority unchanged. Queue18/19, staged vector publication acceptance next; new source-backed proposals reviewed separately. No host tests/inference/kernel/serving/process changes.

@@ -2649,7 +2649,7 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 - [x] **VB-NI07-UTM-READOUT — preserve native synthetic memory conformance readout at execution.** ✅ 2026-10-06 — [Original native readout/custody](../../artifacts/ni07/run-37444684189/README.md) reopened by MAIN: case/rubric/per-case hashes,8store categories,5parser batches/6attempts and separate denominators. Existing generated-output carrier/shared grading only; semantic gold null, six axes unassessed and calibration unmeasured.
 
-- [ ] **VB-DTAP-FAILURE-LEDGER — preserve prospective per-run failure/usage reporting identities.** Wire the additive native ledger writer before consumption: original outcome/trace and explicit pair identities, terminal timeout basis, source-known unavailable usage and unmeasured verification/no-valid-call semantics. Reuse existing native reporting/CI/dependency carriers and shared grading, never equate a timeout integrity receipt with task grading. Source/API review and synthetic original custody acceptance required; no live endpoint/model run or new ladder.
+- [x] **VB-DTAP-FAILURE-LEDGER — preserve native per-run outcomes and usage prospectively.** ✅ 2026-10-06 — [Accepted additive write-side report](../../docs/reference/dtap-native-failure-ledger-contract.md) binds native closed trace bytes/IDs and projects restricted typed facts before consumption; no reconstructed grade or estimated total-attempt cost. [OriginalCI37451263389](../../artifacts/ni07/run-37451263389/README.md) accepted via existing native carrier/shared grader; live DTAP remains separate.
 
   - [x] **VB-NI07-CI-SERVING — ingest accepted original serving-reader fixtures.** ✅ 2026-10-06 — [Original CI37443323928](../../artifacts/ni07/run-37443323928/README.md) TRUE87/87;3332pinned Git bindings plus2contexts,3342API ZIP members reopened. Existing shared Judged/Located observation,3new canonical frames; original FALSE unchanged. No live timing or window/quality warrant.
 
@@ -2671,3 +2671,6 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 
   - [x] **VB-NI07-CI-K7-REPORT — ingest original report-consumer fixtures.** ✅ 2026-10-06 — [OriginalCI37450891733](../../artifacts/ni07/run-37450891733/README.md) TRUE11/11; MAIN3351Git+2contexts/all3361API members verified. Existing Judged/Located observation emits3frames; synthetic report contracts only.
+
+
+  - [x] **VB-NI07-CI-FAILURE-LEDGER — ingest original additive reporting controls.** ✅ 2026-10-06 — [OriginalCI37451263389](../../artifacts/ni07/run-37451263389/README.md) TRUE141/141; MAIN2758Git+2contexts/all2768API members verified. Existing Judged/Located observation emits3frames; descriptive native integrity only.

@@ -1492,3 +1492,8 @@ The [accepted TU-HR static map](../docs/reference/tool-rendering-source-map.md) 
 ## 2026-10-06 DTAP opt-in native contract
 
 The [DTAP native contract](../docs/reference/dtap-native-tool-contract.md) advertises public case-specific schemas with explicit endpoint mode, strict allowed-name/argument validation and immutable catalog/schema identity in traces. Legacy cases, fixtures, judges and dry-run behavior remain unchanged. [Original synthetic CI37444164809](../artifacts/ni07/run-37444164809/README.md) passes127/127 after MAIN reopened source and all API artifact members. This proves fake transport contracts; live service effects, model acceptance and TU-DTAP-2 remain open.
+
+
+## 2026-10-06 native failure reporting
+
+The [DTAP additive failure ledger](../docs/reference/dtap-native-failure-ledger-contract.md) preserves typed native outcomes/trace references beside matrix aggregation, reports partial successful-response usage and compares only explicit case/seed arm pairs. Raw failure payloads stay in native custody; unknown verifier/tool-validity semantics stay unmeasured. [OriginalCI37451263389](../artifacts/ni07/run-37451263389/README.md) passes141/141 after MAIN original source/API review. Live effects/task quality remain separate.
