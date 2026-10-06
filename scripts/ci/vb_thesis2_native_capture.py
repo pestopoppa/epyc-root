@@ -184,6 +184,8 @@ def main() -> int:
             "tests/__init__.py",
             "tests/vidya/test_ingest_sources.py",
             "tests/vidya/ufh13_thesis_fixtures.py",
+            "handoffs/active/vidya-belief-substrate-program.md",
+            "scripts/vidya/adapters/README.md",
             "scripts/vidya/adapters/ufh13_thesis.py",
             "scripts/vidya/adapters/__init__.py",
             "scripts/vidya/claim_tuple.py", "scripts/vidya/cli.py",
@@ -242,8 +244,11 @@ def main() -> int:
             "schema": "epyc.ufh13_thesis.source_manifest.v1",
             "repositories": pins, "inputs": manifest_rows,
         }, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        pre_status_path = result / "pre-status.json"
+        if not pre_status_path.is_file():
+            raise RuntimeError("workflow's immutable setup pre-status artifact is missing")
         read_paths = [workflow, driver, req, cases_file, lock, score, env_path, freeze_path,
-                      source_manifest_path, *root_reads, *carrier_reads]
+                      source_manifest_path, pre_status_path, *root_reads, *carrier_reads]
         pytest_argv = [sys.executable, "-m", "pytest", "--noconftest", "-p",
                        "no:cacheprovider", "-o", "addopts=", "-q", *SELECTIONS,
                        f"--junitxml={junit}"]
@@ -270,7 +275,7 @@ def main() -> int:
         native, receipt_sha = api.read_receipt(receipt_path)
         cases = verify_junit(junit, native, expected)
         originals = [p for p in native_dir.rglob("*") if p.is_file()]
-        originals.extend((junit, env_path, freeze_path))
+        originals.extend((junit, env_path, freeze_path, source_manifest_path, pre_status_path))
         before = {str(p): digest(p) for p in originals}
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
