@@ -1,0 +1,63 @@
+{
+  "run_id": 37441909661,
+  "attempt": 1,
+  "repositories": {
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "8949798c6820616e5a40b33e08a277446323855f",
+    "orchestrator": "efd67c526acedca69e15059846d86fa7bf63084f"
+  },
+  "native_conformant": true,
+  "exit_code": 0,
+  "counts": {
+    "collected": 108,
+    "error": 0,
+    "executed": 108,
+    "failure": 0,
+    "passed": 108,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "readset_count": 3335,
+  "independent_git_bindings": 3333,
+  "source_binding_counts": {
+    "root": 625,
+    "recipe": 627,
+    "orchestrator": 2081
+  },
+  "runner_contexts": {
+    "pip-freeze.txt": "9af52daad9f061f84374a35f64b2e57f2effd239d10cf0a528bd42e5281996e7",
+    "environment.json": "2a43dd61be9f2573f4392a0d89e368e94e9c7ded166d4182d4dc0e0e065e4505"
+  },
+  "context_limit": "runner asserted; not independent package installation proof",
+  "original_zip_seals": [
+    {
+      "artifact_id": 11401657200,
+      "name": "ni07-catalog-37441909661-1",
+      "sha256": "193a599ff4d3933d2dec4d8d52f50345fd998613bc41a159c7f3680786465c6e",
+      "size": 16468482
+    }
+  ],
+  "receipt_file_sha256": "3ac7696207b0fbae8460c2b2b4ddf99a0fa8311e4eb34af4e3b11a862334e513",
+  "receipt_self_sha256": "5cec428fe352dab06b70792ed2805277ee80cecea1086b9194eae9f079b13da9",
+  "projected_rows": 1,
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "originals_preserved": true,
+  "fixture_hashes": {
+    "tests/unit/test_kb_catalog_dependency.py": "bfcbaa042da9c71371e01969dc8efc9af0d27e2185cfae864c7c19ca1e6a4c6a",
+    "tests/unit/test_colbert_lock_contract.py": "20bf794d9b9e066b1895bd6ad54829fa3b9990fcbaa4b1f4bf490719999cfb6b",
+    "tests/unit/test_kb_rag_caps.py": "704695356aaa85a5f986adfe4dccfd147b934067de745c0d2150055a7bc64f77",
+    "tests/unit/test_kb_rag_tokenizer_identity.py": "7bdae8510493684108cd34fe5242b679a9204e4b2459271b884cf25541c64f78"
+  },
+  "main_independent_reopen": true,
+  "main_api_digest_verified": true,
+  "zip_member_count": 3343
+}
