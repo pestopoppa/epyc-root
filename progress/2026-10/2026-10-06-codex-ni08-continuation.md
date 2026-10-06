@@ -128,3 +128,7 @@ Accepted exact APP3dec5cc/recipec568acff/carrier4c0c source after independent fr
 ## Phase-0 source boundaries — MAIN acceptance
 
 P0.4b dated Harness Card, P0.4c full release tag pin and preauthorized P0 split close after independent r3 original/config/plugin review. Exact task texts/states moved into new UFH-15 owner; UFH-01 retains decision/candidates/P1–P6/freeze. Three existing flips: **40 NI08 scoped completions (33 existing flips + 7 scoped additions)**. No original relabel, runtime identity guarantee, efficacy or inference. P7/override carry remain open; source prep continues.
+
+## R23-70 — MAIN source acceptance
+
+Applied the guard's canonical pipeline-remediation string, independently proved sole guard AST change, and retained an independent literal in the existing test. Source70096b76 is byte-identical at APPmain81663c30; no build, project test or runtime action. One existing flip: **41 NI08 scoped completions (34 existing flips + 7 scoped additions)**.

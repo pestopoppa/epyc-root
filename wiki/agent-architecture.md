@@ -5095,3 +5095,5 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 2026-10-06: [default-off mutation-context and crossover diagnostics](../artifacts/ni08/mutation-context-source-20261006/README.md) source accepted; live context baselines and donor efficacy remain open.
 
 2026-10-06: [Phase-0 source review](../artifacts/ni08/harness-phase0-source-20261006/README.md) publishes dated HS-7 disclosure and release freeze; UFH-15 now owns OpenCode shell integration, UFH-01 retains selection and feature gates.
+
+2026-10-06: [R23-70 canonical priors remediation](../artifacts/ni08/stack-guard-remediation-source-20261006/README.md) is a verified source/text correction only; it does not regenerate production priors.

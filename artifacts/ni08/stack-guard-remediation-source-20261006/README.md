@@ -1,0 +1,5 @@
+# R23-70 source remediation — MAIN acceptance
+
+MAIN accepted source `70096b763939a43409a1f1827ab633d62425a6c1`, integrated byte-for-byte into APP main `81663c30177fb567b91df3ef9615060c8d018ab6`. The guard now prints `uv run python scripts/registry/stack_change_pipeline.py update`, matching the pipeline's own remediation and launch runbook. The legacy wrapper omitted the active NUMA-mode contract.
+
+Manual blast radius LOW: the constant only feeds printed `SOURCE_ARTIFACT_REMEDIATION`, appended at two guard error sites. MAIN's AST comparison proves the guard source differs only in that string. The existing stale-artifact test's independent literal expectation and fixture docstring were updated. `git diff --check` and static AST verification passed; tests were not run, and no test warrant is claimed for this low-impact text fix. No compilation, priors regeneration, kernel edit, live process or source owner window was invoked. This closes the exact one-line source task, not an AutoKernel parent.

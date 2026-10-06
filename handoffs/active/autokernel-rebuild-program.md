@@ -2230,7 +2230,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
       **R23-61a** box directly above; the sweep confirms it is the binding live blocker rather than adding a
       new action.*
 
-      - [ ] **R23-70 — `stack_change_guard.py:78` points operators at the WRONG recompile command.**
+      - [x] **R23-70 — `stack_change_guard.py:78` points operators at the WRONG recompile command.**
         `RECOMPILE_PRIORS_COMMAND = "uv run python scripts/registry/compile_stack_priors.py"` is a numa-blind
         wrapper around `src.registry.stack_priors.main`, which has no `--numa-mode` and compiles the legacy
         single-instance lineup while production declares `numa_mode: both`. Following the guard's own
@@ -2239,6 +2239,7 @@ production model at pairs=5, ~18% cadence overhead). Six operator decision items
         [8072] vs [8082,8182]) — measured 2026-09-22, reverted. Should read
         `scripts/registry/stack_change_pipeline.py update`, matching the pipeline's own five messages and
         `docs/reference/stack-change-launch-runbook.md:16`. One-line fix, in epyc-orchestrator.
+        ✅2026-10-06 — MAIN accepted exact text-only correction and existing test expectation, APPmain81663c30; [static source review](../../artifacts/ni08/stack-guard-remediation-source-20261006/README.md). No build/test execution or owner runtime change.
   - [ ] **R23-71 — a live `--skip-stack-change-gate` sits in benchmark automation.**
         `coordination/inference-batch/entries/30-bulk-campaign.yaml:297` (and the BULK-K-EMB-1 bundles,
         `manifest.yaml:3076`) start embedders FOR A BENCHMARK with

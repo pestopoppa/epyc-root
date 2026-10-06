@@ -1,0 +1,13 @@
+{
+  "previous_head": "036f4e6873a06a512bb45468528fe5d39ddbb58f",
+  "main_before": "036f4e6873a06a512bb45468528fe5d39ddbb58f",
+  "source": "70096b763939a43409a1f1827ab633d62425a6c1",
+  "commit": "81663c30177fb567b91df3ef9615060c8d018ab6",
+  "paths": [
+    "scripts/validate/stack_change_guard.py",
+    "tests/unit/test_stack_change_guard.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
