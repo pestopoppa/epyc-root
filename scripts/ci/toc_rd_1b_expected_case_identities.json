@@ -1,0 +1,300 @@
+{
+  "case_identities": [
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_gate_original_boolean_and_shared_frames[False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_gate_original_boolean_and_shared_frames[True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_private_key_header_is_blocked_from_staged_blob[RSA]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_private_key_header_is_blocked_from_staged_blob[OPENSSH]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_private_key_header_is_blocked_from_staged_blob[ED25519]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_ed25519_metadata_without_private_key_header_passes"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_partial_stage_uses_original_index_not_worktree[False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_partial_stage_uses_original_index_not_worktree[True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_number_is_allowed_only_in_public_period_column[12]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_number_is_allowed_only_in_public_period_column[13]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_all_seven_public_perf_period_cells_are_allowed"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_does_not_exempt_account_value_in_same_table"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_later_perf_table_row_with_account_label_still_blocks"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[account]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[card]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[customer]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[iban]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[routing]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_rejects_sensitive_label_in_header_or_row[ssn]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_does_not_exempt_number_in_other_column"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_requires_exact_schema_and_12_or_13_digits[period-only]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_requires_exact_schema_and_12_or_13_digits[bad-separator]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_requires_exact_schema_and_12_or_13_digits[fourteen-digit]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_requires_exact_schema_and_12_or_13_digits[prose]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_does_not_leak_into_adjacent_unrelated_table"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_table_exception_context_resets_at_blank_line"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_secret_in_valid_perf_period_row_still_blocks"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_perf_period_exception_follows_staged_bytes_only"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_selected_alternate_index"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_linked_worktree_index"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unborn_head_is_original_empty_comparison"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unsupported_index_preserves_gate_and_yields_no_tuple[split]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unsupported_index_preserves_gate_and_yields_no_tuple[unmerged]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_all_excluded_is_diagnostic_not_success"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_reader_refuses_original_custody_mutation[input]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_reader_refuses_original_custody_mutation[missing]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_reader_refuses_original_custody_mutation[receipt-permission]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_reader_refuses_original_custody_mutation[symlink]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_reader_refuses_original_custody_mutation[extra]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_writer_seals_diagnostic_on_observed_drift[index]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_writer_seals_diagnostic_on_observed_drift[head]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_writer_seals_diagnostic_on_observed_drift[missing-event]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_gate_freezes_index_during_change_and_aba[False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_gate_freezes_index_during_change_and_aba[True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_private_exclusive_outputs_and_duplicate_json_refusal"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_original_git_read_error_keeps_exit_but_has_no_finding[size]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_original_git_read_error_keeps_exit_but_has_no_finding[show]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_receipt_reseal_cannot_replace_original_terminal[exit_code]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_receipt_reseal_cannot_replace_original_terminal[ended_utc]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_receipt_reseal_cannot_replace_original_terminal[checks]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_recorder_setup_failure_preserves_blocking_gate[python3]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_recorder_setup_failure_preserves_blocking_gate[tee]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_recorder_setup_failure_preserves_blocking_gate[mktemp]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_cli_dry_run_exports_safe_report_only[False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_cli_dry_run_exports_safe_report_only[True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_coherent_metadata_reseal_cannot_change_original_git_snapshot[stage_entries]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_coherent_metadata_reseal_cannot_change_original_git_snapshot[selection]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_coherent_metadata_reseal_cannot_change_original_git_snapshot[comparison_tree]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_original_rename_selection_is_preserved_and_declines_crosscheck"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_policy_copy_aba_is_observed_without_executing_captured_code"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_regular_fifo_refuses_before_open"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_escaped_request_pin_refuses_before_external_read[terminal]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_escaped_request_pin_refuses_before_external_read[index]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_escaped_request_pin_refuses_before_external_read[comparison_commit]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_git_commit_only_installed_hook_captures_temporary_index[False-False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_git_commit_only_installed_hook_captures_temporary_index[False-True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_git_commit_only_installed_hook_captures_temporary_index[True-False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_actual_git_commit_only_installed_hook_captures_temporary_index[True-True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_setgid_git_common_new_custody_and_ancestor_only_migration[False]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_setgid_git_common_new_custody_and_ancestor_only_migration[True]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unsafe_existing_ancestor_is_not_migrated[488]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unsafe_existing_ancestor_is_not_migrated[960]"
+    },
+    {
+      "classname": "scripts.hooks.tests.test_pii_staged_capture",
+      "name": "test_unsafe_existing_ancestor_is_not_migrated[2496]"
+    }
+  ],
+  "expected_case_count": 73,
+  "schema": "tocrd1b-junit-identities-v1",
+  "source_path": "scripts/hooks/tests/test_pii_staged_capture.py",
+  "source_sha256": "43c27fac0ba6b7e70a5918d6f9daace368f9f1a831c97a2873cff31773be237c"
+}

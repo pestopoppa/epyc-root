@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **43 completed scoped tasks: 35 existing checkbox flips and 8 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **50 completed scoped tasks: 38 existing checkbox flips and 12 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -71,13 +71,13 @@ These are existing task identities or already filed prospective source companion
 | Task | Source work now | Remaining gate on the parent |
 |---|---|---|
 | HS-4 P7 (UFH-15) | Accepted: stdin generator, full invocation census and hosted138/138 | Remaining P0 live override carry belongs to its inference owner; historical r3 unchanged |
-| TOC-RD-1b | Exact public observed-periods table selector and same-table account/secret negative controls under review | Historical unredacted fixture acceptance is not established by synthetic source controls |
+| TOC-RD-1b | Source child accepted: exact staged period-cell selector and same-table negative controls73/73 | Historical unredacted fixture acceptance is not established by synthetic source controls |
 | VB-MFVBS1-PROV / VB-EVALDISC1-PROV; VB-MFVBS-1 / VB-EVALDISC-1 | Prospective input/source snapshots, strict read-side projection, edited-only denominator correction; source under review | No historical identityless JSON backfill or new grading rule |
 | SC80 | Exact claim-index bounds distinguish dangling references from un-ingested coverage; private source preparation authorized | Existing citation statuses/ledger remain authoritative; no new ladder |
 | SC76 / SC77 | Source-first RAW artifact/revision resolution and shared re-verifier design | Canonical human/machine traceability ladder must remain intact; no original artifact may be fabricated |
 | HS-4 P6 | Cross-repo shared exploration-tool contract/source prep | Live catalog-growth before/after acceptance and Claude-owned deployment stay at the inference owner boundary |
 | HS-19d.P0 | Multi-call source checks, per-message task-part counters and versioned unscored corpus preparation | VB-DISPATCH-S2 itself is explicitly frozen; do not treat all P0 as either wholly free or wholly blocked |
-| C5-5 | Exact existing eight-seed problem-ID join has private source/fixture preparation assigned; MAIN review remains pending | No SOL bound port, benchmark or kernel change |
+| C5-5 | Accepted persisted eight-way join and original27/27 source controls | No SOL bound port, benchmark or kernel change; original policy bytes recovered; versioned verifier path restoration under review |
 
 R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.
 
@@ -89,3 +89,36 @@ Preparation boundary: TOC recipe6fd5fd9 is in isolated CI after MAIN full Git/ca
 ## P7 source transport — MAIN acceptance
 
 [Full launcher census and original138/138](../../artifacts/ni08/harness-stdin-source-20261006/README.md) close P7 and its pre-enrolled VB companion. MAIN independently reopens33Git+2contexts/all44API members and shared Judged/Located output. **43 scoped completions (35 existing flips +8 scoped additions)**. One generator switches to stdin; other current generators already comply. No actual OpenCode/model invocation, historical r3 rewrite or excluded host-collection warrant. Source/native preparation for TOC, C5, report adapters and SC80 continues; whole-backlog exhaustion remains unproved.
+
+
+## Period-cell source boundary — MAIN acceptance
+
+[Original73/73 and exact source bindings](../../artifacts/ni08/pii-period-source-20261006/README.md) close new TOC-RD-1B-SRC and pre-enrolled VB companion: **45 scoped completions (35 existing flips +10 scoped additions)**. Failed53/73 original retained; source regex/fixture-directory defects corrected without changing case identities. Narrow staged-cell selector only, no privacy/historical-fixture warrant. Whole-backlog exhaustion remains unproved; native report/SC80, C5 and thesis source work continue.
+
+
+## Continuing source queue — fresh review
+
+MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final native-recipe review. AP61 has a reviewed test-only replacement for the five-file guard: every current route source is scanned, with both method and direct-name calls caught. AP60 remains eligible configuration/test work: preserve default-off startup semantics while proving environment-to-instance write settings. AP62's append-unsafety premise is stale; its distinct concurrent `list(deque)` snapshot behavior needs source/caller review. RTG02 can reuse the existing pure-text programmatic scorer behind an explicit method gate. SC76/77 retained-RAW/source-quote verification source is under review; SC78/79 follow-ons must be re-screened against that shared checker rather than left implicitly gated. No pending source proposal or enrollment adds a completion; NI08 remains45 and whole-backlog exhaustion is unproved.
+
+
+## AP61 source boundary — MAIN acceptance
+
+[All-route invocation guard source review/publication](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md) closes AP61: **46 scoped completions (36 existing flips +10 additions)**. Test-only change,46 currentroutefiles independently AST-inspected, meaningful forbidden-method/direct-name and permitted-text/request-local controls reviewed. No host pytest/import/collection or fixture/runtime claim; aliases/dynamic dataflow outside bounded guard. AP60/AP62 and other source queues continue.
+
+
+## C5 persisted join — MAIN acceptance
+
+[C5 source/native acceptance](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md) closes C5-5 and its pre-enrolled VB companion: **48 scoped completions (37 existing flips +11 additions)**. Exact eight provider joins and193 workload partition remain intact. Failed NULL original retained; successor27/27 independently reviewed. Exact historical policy bytes are now recovered; versioned path restoration and native default-load verification remain separate engineering; no SOL or kernel execution.
+
+
+## Thesis reader — MAIN acceptance
+
+[Strict prospective UFH-13 reader and original29/29](../../artifacts/ni08/thesis-reader-source-20261006/README.md) close VB-THESIS-2 and its pre-enrolled conformance companion: **50 scoped completions (38 existing flips +12 additions)**. Source/CLI/dispatcher wired before the first actual scored run; native missing metrics/protocol retained, no raw answers or inferred warrants. Report, AP60/AP62, RAW-anchor and other source queues continue; whole-backlog exhaustion remains unproved.
+
+
+Remaining verified source queues are prospectively enrolled: VB-AP60-CONFORMANCE, VB-AP62-CONFORMANCE, VB-RTG02-CONFORMANCE, VB-RAW-ANCHOR-CONFORMANCE and VB-TUADV-CONFORMANCE. Enrollment adds no completion. Recovered C5 historical policy bytes unlock narrow versioned verifier-path restoration; its source/capture scope will be enrolled before dispatch.
+
+
+## Newly unlocked C5 policy restoration
+
+MAIN independently verified the recovered policy blob against its original commit and authenticated GitHub contents API. The private four-file source proposal preserves the exact bytes, all policy IDs/claims/SHA and seed/workload data while restoring an explicit versioned Research carrier. C5-POLICY-PATH and VB-C5-POLICY-CONFORMANCE are enrolled before capture; full28-method default-loader/refusal verification remains pending. This needs engineering, not replacement policy approval. NI08 remains50 completed scopes.

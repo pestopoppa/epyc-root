@@ -5102,3 +5102,15 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [OpenCode prompt transport source acceptance](../artifacts/ni08/harness-stdin-source-20261006/README.md) audits all three current generators and moves HS4 to exact UTF-8 stdin. Hosted138/138 covers a long Unicode prompt and compatibility suites using fake tools; live shell/model efficacy and original r3 remain separate.
+
+
+2026-10-06: [Staged perf-period selector](../artifacts/ni08/pii-period-source-20261006/README.md) source is accepted by73/73 original synthetic controls; narrow exact table-cell exemption keeps account/secret refusals and historical bytes. Parent unredacted-fixture acceptance remains separate. GitNexus outputs from the replacement-worker scope-transfer incident are excluded; review uses independent Git/AST/native-original custody.
+
+
+2026-10-06: [AP61 source guard](../artifacts/ni08/invocation-route-guard-source-20261006/README.md) scans every current API route for process-global invocation-log calls; source census covers46 routefiles with zero prohibited calls. Per-request telemetry continues to use request-local records. This test-only/static acceptance does not establish cross-thread diagnostic snapshot safety; AP62 remains distinct.
+
+
+2026-10-06: [C5 persisted provider joins](../artifacts/ni08/c5-seed-provider-join-20261006/README.md) make the existing eight-way mapping explicit, preserving193 workloads/dtypes. Hosted27/27 metadata and refusal controls pass; historical policy bytes are recovered and versioned path restoration remains separate source work.
+
+
+2026-10-06: [UFH-13 thesis reader source acceptance](../artifacts/ni08/thesis-reader-source-20261006/README.md) wires strict producer-native pooled measurements and records-byte attestations into CLI/dispatcher before the first scored run. Hosted29/29 synthetic controls pass; empty protocol remains an observation and actual thesis measurement is separate.

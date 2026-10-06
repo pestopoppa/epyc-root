@@ -907,7 +907,7 @@ oracle-workload and candidate-metadata identities separate rather than repeating
       number; never quote their `S` as a speed-of-light figure.** k228 is named in the source as a
       problem where a correct kernel beat the bound, and k227's correction took its bound to 8 cycles —
       "correct, and vacuous". Note k175 additionally sits on the still-defective `declared_traffic` tier.
-- [ ] **C5-5 — Persist the kNNN ↔ problem-slug mapping into `c5_seed_corpus.json`.** All eight resolve
+- [x] **C5-5 — Persist the kNNN ↔ problem-slug mapping into `c5_seed_corpus.json`.** All eight resolve
       uniquely with matching ordinals (k138→`L2__044_mamba…`, k145→`L2__051_…hyena…`,
       k154→`L2__060_chunk_gated_delta_rule…`, k175→`L2__081_moe_sparse_expert_dispatch`,
       k215→`FlashInfer-Bench__006_gemm_n2048_k4096`, k225→`FlashInfer-Bench__016_gqa_ragged_prefill…`,
@@ -916,7 +916,8 @@ oracle-workload and candidate-metadata identities separate rather than repeating
       nowhere in either repository** — they are HyRA's — so this join is ours to maintain and should
       stop being re-derived. Add it as a `sol_execbench_problem_id` field. **2026-08-16 checkpoint:**
       `c5_seed_corpus.json` is now tracked, but exact problem IDs still live separately in
-      `c5_rocm_oracle.json`; the requested joined field remains open.
+      `c5_rocm_oracle.json`; the requested joined field remained open at that checkpoint.
+      ✅2026-10-06 — [MAIN source/native acceptance](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md): exact persisted eight-way join, unchanged193 workloads/dtypes, original27/27 controls and byte-identical Research publication. Exact historical policy bytes are recovered; versioned default-verifier path restoration remains separate source work.
 
 ### OPERATOR DECISION — port the SOL bound constants to gfx90a?
 
@@ -1235,3 +1236,8 @@ candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA
   16x16 MFMAs are 8-pass). Do not port. (intake-1823#record) ✅ 2026-09-26
 - Register-pressure datapoint (cross-reference only): intake-1825 Table 5 reports a 32x32 INT8 MFMA gate at 165 VGPR plus
   32 KiB LDS collapsing occupancy on gfx90a. That is independent support for INF03-REGAUDIT-1.
+
+
+## Recovered C5 historical policy carrier — 2026-10-06
+
+- [ ] **C5-POLICY-PATH — restore default verification of the exact already-pinned historical policy bytes through a versioned Research evidence carrier.** MAIN independently verified90723-byte Git blob `f17f295b884889ba837709f1822e1045fad4a5cb`, original ROOT commit `97674cbce44146bd40778d50d1232fc62af8918d` and authenticated GitHub source identity. Keep SHA `c8cec57941b5c0954cd65b44719b984612d9c25094fce3e2ef4bcd42e8ec4f70`, evidence ID and all claims unchanged; add explicit repo-relative no-follow identity checks and actual default-loader/refusal controls. Existing absolute external authorities retain their verifier. No policy replacement, ratification, SOL/GPU run, production kernel edit or retrospective warrant. C5-5 persisted join is already complete; this is newly unlocked source work.

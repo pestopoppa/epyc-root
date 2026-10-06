@@ -1,0 +1,42 @@
+{
+  "reviewed_at": "2026-10-06T22:22:48.456411+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37539619867,
+  "attempt": 1,
+  "artifact": 11448321264,
+  "pins": {
+    "recipe": "e709b8e1e92b14eb066ed641675acfc3de3f0123",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "source": "64c245f3a71551028a56b760196e5429437c4f20"
+  },
+  "zip_sha256": "cf3697b3cb8396e5fe2725f33bf468e61b1fb7af6bce62d0316805de6efcae05",
+  "zip_bytes": 30741520,
+  "members": 2287,
+  "readset_count": 2278,
+  "git_inputs": 2276,
+  "contexts": 2,
+  "counts": {
+    "collected": 73,
+    "executed": 73,
+    "passed": 73,
+    "failure": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "native_value": true,
+  "receipt_file_sha256": "b08fe6ca29a4de3bea36f1deb5bc209be133c2e8f5f1b8eb2f9ca9693df3b1ff",
+  "receipt_self_sha256": "74256e18b2b33bf497da8d69d82debfc42e47c1202d78e5040c1821e9dee597b",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "failed_cases": [],
+  "scope": "Synthetic staged period-cell selector and existing PII source conformance only; historical unredacted fixture acceptance remains open."
+}

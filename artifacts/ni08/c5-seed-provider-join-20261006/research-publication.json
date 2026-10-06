@@ -1,0 +1,16 @@
+{
+  "previous_head": "eedb192b73ad639adaf0a71157bfec3f4cfaba56",
+  "main_before": "1bace97dc655ab5896291b4571781e53b821d9a3",
+  "source": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+  "commit": "eedb192b73ad639adaf0a71157bfec3f4cfaba56",
+  "paths": [
+    "scripts/kernel_rnd/autokernel/c5_rocm_oracle.py",
+    "scripts/kernel_rnd/autokernel/c5_seed_corpus.json",
+    "scripts/kernel_rnd/autokernel/c5_seed_corpus.py",
+    "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py",
+    "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

@@ -1,0 +1,419 @@
+{
+  "counts": {
+    "app": 1,
+    "carrier": 6,
+    "recipe": 5,
+    "research": 20
+  },
+  "expected_generated_contexts": [
+    "pip-freeze.txt",
+    "environment.json"
+  ],
+  "expected_junit_cases": [
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_checked_in_registry_pins_exact_seed_partition_and_provenance"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_sol_bound_labels_claims_and_current_frame_eligibility_are_exact"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_task_surface_is_gfx90a_bound_and_omits_nvidia_performance_numbers"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_context_selection_is_ordered_hash_bound_and_reference_only"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_unknown_duplicate_and_empty_selections_refuse"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_nvidia_attestation_cannot_be_relabelled_as_gfx90a_evidence"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_cuda_bound_target_must_name_its_nvidia_binding"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_seed_partition_artifact_identity_and_disposition_are_fail_closed"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_sol_execbench_problem_join_is_required_unique_and_slug_bound"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_bound_policy_tampering_is_refused_adversarially"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_policy_evidence_path_hash_and_schema_are_fail_closed"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_runtime_policy_evidence_bytes_and_file_identity_are_verified"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_unavailable_policy_bytes_refuse_default_verified_load"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_checked_in_config_covers_all_eight_seeds_and_193_workloads"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_oracle_dtype_evidence_is_not_conflated_with_hyra_candidate_metadata"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_gfx950_constants_cannot_be_relabelled_or_enabled_for_gfx90a"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_rocm_72_source_provenance_is_mandatory_and_exact"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_problem_join_population_and_dtype_drift_refuse"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_plan_is_correctness_only_and_records_cross_version_without_claiming_compatibility"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_runtime_provenance_is_required_even_when_not_rocm72"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staged_driver_exits_after_correctness_before_port_timing"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staging_refuses_to_overwrite_any_noncanonical_driver"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_seed_selection_preserves_counts_and_separate_dtype_surfaces"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_full_compile_and_correctness_result_is_reduced_from_raw_bytes"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_original_fabricated_plan_zero_workload_poc_is_refused"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_raw_population_timing_claim_and_aggregate_forgery_refuse"
+    },
+    {
+      "classname": "scripts.kernel_rnd.autokernel.test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staged_driver_byte_drift_refuses_before_reduction"
+    }
+  ],
+  "historical_policy": "Source-only metadata join; default verified load remains fail-closed if original authority bytes unavailable. No CUDA/ROCm/provider/model/kernel execution.",
+  "host_project_execution": false,
+  "manual_blast_radius": "MEDIUM: C5 metadata schema/oracle plan join plus offline test controls; original grading/carrier and production authority verifier unchanged.",
+  "recipe_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "tracked_file_count": 32,
+  "tracked_files": [
+    {
+      "bytes": 2834,
+      "git_blob": "b2bdcba51890afcb82081f690ac343a573c41c9b",
+      "mode": "100644",
+      "path": ".github/workflows/ni08-c5-seed-map-capture.yml",
+      "repo": "recipe",
+      "repo_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+      "sha256": "aa1c0305dc80c2c74da6a6291cd081fc6c22d00cd579d7511cfed32dd42c0a8f"
+    },
+    {
+      "bytes": 17082,
+      "git_blob": "c0c8b6ceefab24f08ef4185fffc839203fcbc135",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_c5_seed_map_capture.py",
+      "repo": "recipe",
+      "repo_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+      "sha256": "61e5c152e315856ba3d9e7397981908d17d54185fb25f8462698f4a50214a111"
+    },
+    {
+      "bytes": 503,
+      "git_blob": "d371343799b821748e72dcb17ff5802b943772d8",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_c5_seed_map_capture_requirements.txt",
+      "repo": "recipe",
+      "repo_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+      "sha256": "a3da1fa63695d5ebe4b2d1501bc3defccba4cfa7d25244fbcf25f2ff56874862"
+    },
+    {
+      "bytes": 5753,
+      "git_blob": "4be79facc39bee3416fa17de04bd9be4c522c2fb",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_c5_seed_map_expected_cases.json",
+      "repo": "recipe",
+      "repo_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+      "sha256": "752b4cfb33db097dc787e0ffb4d9d7ecfaf1f6e629e94e668376adda2143f548"
+    },
+    {
+      "bytes": 126135,
+      "git_blob": "f20f10b64a33db33fe620ca9cce5478428334eb4",
+      "mode": "100644",
+      "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "repo": "recipe",
+      "repo_pin": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+      "sha256": "c7b5d6f96cd7ab53ab99e0c6ff8621f743e79d0354e99a5cf06461aa283a96ba"
+    },
+    {
+      "bytes": 12780,
+      "git_blob": "b688de2c4ebaeb6be037d9e78b488f06154f460e",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "3e597ef49b206b9da3f6562758dc8207dfa4dd0e10f4e00bcd02830e126b5a9f"
+    },
+    {
+      "bytes": 19155,
+      "git_blob": "358013c090b3c9b5445d2198b4b216be50bd33bb",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "43defaae36cb08189c670ca5cad9b9522f143c3631bd9ed6d40127b99ec42ee8"
+    },
+    {
+      "bytes": 1481,
+      "git_blob": "5b26a20549d897c74484b4d7ae4022c88f5dd7c0",
+      "mode": "100644",
+      "path": "pyproject.toml",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "d20fbd0942498e78b94839f4e6b32bd5dfd07911a23339f1d89cec13ae53c140"
+    },
+    {
+      "bytes": 792,
+      "git_blob": "2fc3952024ba0a1bdad122928089c7fe2b503552",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/__init__.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "b94859500275b1c19c6ec12cb357f2dd0f44ccd118fc95dc6ecfbb358ae37543"
+    },
+    {
+      "bytes": 23075,
+      "git_blob": "ed0a27ee6d62bafcd077ee07c812df51cb70bc82",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/c5_seed_corpus.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "9c0c3c24a51ffbc21e5b4f2263ff343e6d928037af15e57707640f0f90d74ea1"
+    },
+    {
+      "bytes": 13435,
+      "git_blob": "eab232cc96115a726203d30cc53ad29bb78111b3",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/c5_seed_corpus.json",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "d55a26cb62527c079d53d6ef4f8028c7753cc01df35e140b8dabbab575542e59"
+    },
+    {
+      "bytes": 41221,
+      "git_blob": "48ea76a6a1a140129e9581d5c6ae424d3f8f1cb0",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/c5_rocm_oracle.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "7eda73c044d6063908d46796758e6e4d866235b9ec6dd79fd7f63af1adadfcd4"
+    },
+    {
+      "bytes": 4989,
+      "git_blob": "9f56a7cbcd12af914ea04355c5a497ac48be5707",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/c5_rocm_oracle.json",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "f0c4e30f0cf9f11051bb8664a4a3a48afb4aca36c8d0471d2862543ce9f87781"
+    },
+    {
+      "bytes": 191810,
+      "git_blob": "8353c5f9495bbd712e6d75f5750d9ece16691b10",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/schemas.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "4dd07e2492a534029654b4bad5a2fb1062d66ddf5582bbd3bda8b7f17ea88644"
+    },
+    {
+      "bytes": 4996,
+      "git_blob": "67c4151e3cbd6b8738f00e31f392b930332de678",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/controller/__init__.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "7b886cb86f5bdd63cca362f81f8adf319f2584a46af35f266d7add5bc1a3a0f0"
+    },
+    {
+      "bytes": 19005,
+      "git_blob": "284bcd6497b8d2a4f7897f4b1fd6f2f3965a20ac",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/controller/authoring_contract.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "86edb5a5ee10c8ed7d96354a31d65d1defd057277cf5cc808a5d35dd5c5d3f0b"
+    },
+    {
+      "bytes": 106173,
+      "git_blob": "6f78ce210c4f802f487bf415063cd07228454930",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/controller/do_not_repeat.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "66c32876760b2f61c1064e0e6767c3ce3b5c22ae4878ee558439e188e7e6aec3"
+    },
+    {
+      "bytes": 216183,
+      "git_blob": "04bced1a4255f23d94d68359f08e6c0e5613f7cf",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/controller/hypotheses.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "425c1dc97ba9d2f4085cb49f6433badc007f7af14efcc7a30a2d43ae98fedf75"
+    },
+    {
+      "bytes": 8120,
+      "git_blob": "40e305e7dd225d15354634ef065daaad2dd35cd0",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/controller/shared.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "d0e7cf87e24ea9301b8da59e7537be3ef45806ab007fa53765a8b833cbf1e3ed"
+    },
+    {
+      "bytes": 2264,
+      "git_blob": "4b1ca93d4016f955b963c480bb027a23cf8c629c",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/evaluator/__init__.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "78741f051d83ea3d84ea60440226630889053d93b49790d12b57d7ab1b099630"
+    },
+    {
+      "bytes": 156541,
+      "git_blob": "833934a01af10da480f784cadb3101809f24de17",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/evaluator/api.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "bf7a729fb84c2a4b7a7f44c9872a7647680ee129bc07a74aa28db963c767a956"
+    },
+    {
+      "bytes": 39414,
+      "git_blob": "cd1b72ce02591bb8f5a89851f0bc41d5a92382c3",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/evaluator/devices.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "af8ee4813a4a80535f2628604bd53257259ef1aad5173c96863db68b1e990c3b"
+    },
+    {
+      "bytes": 209268,
+      "git_blob": "495eee035ff9f2d704643c9c34bc662ccef8c6a2",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/journal.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "c73cc8d7e4f6ec9e4a36de1396a72daa412d4d79cc026940bd785aa49fe83a2a"
+    },
+    {
+      "bytes": 1727,
+      "git_blob": "f6430791d5a35732c88ac49bfffceefc5bce8596",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/resource/__init__.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "86556de74e577691e7b10b724e4443e3f763efe940dcbf20574d4b062880ded3"
+    },
+    {
+      "bytes": 79476,
+      "git_blob": "e4c6b31906ebfd98bb6f5e3c012caaa6f8b525aa",
+      "mode": "100644",
+      "path": "scripts/kernel_rnd/autokernel/resource/device_claim.py",
+      "repo": "research",
+      "repo_pin": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+      "sha256": "ed079e49946a869399b905e2149f6b0a3c76c1c19d1acbb1bfd39766e4d861d7"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "carrier",
+      "repo_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app",
+      "repo_pin": "70096b763939a43409a1f1827ab633d62425a6c1",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ]
+}
