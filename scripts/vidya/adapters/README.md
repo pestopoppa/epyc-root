@@ -548,3 +548,6 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | RTG02 programmatic echo diagnostic source controls | existing native CI verifier | Actual existing pure-text programmatic verifier, unresolved errors and explicit method gate; no pool efficacy or model/code execution. | VB-RTG02-CONFORMANCE; private source/recipe review |
 | Prospective retained RAW literature anchor source controls | existing native CI verifier | Controlled artifact identity and existing literature-ladder proof prerequisites with synthetic fetch fixtures; no retroactive evidence or semantic adjudication. | VB-RAW-ANCHOR-CONFORMANCE; private source/recipe review |
 | DTAP negative contract fixture source controls | existing native CI verifier | Repeated invalid requests and undeclared privileged/skill calls through existing evaluator boundaries beside a benign control; cross-run skill persistence remains outside current API. | VB-TUADV-CONFORMANCE; private source/recipe review |
+
+
+| C5 recovered historical policy carrier source controls | existing native CI verifier | Exact previously published c8cec policy bytes, portable repo-relative default verification and identity/refusal controls; same policy authority and source-only observation. | VB-C5-POLICY-CONFORMANCE; private source accepted, recipe pending MAIN binding |

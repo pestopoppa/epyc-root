@@ -117,3 +117,8 @@ MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final na
 
 
 Remaining verified source queues are prospectively enrolled: VB-AP60-CONFORMANCE, VB-AP62-CONFORMANCE, VB-RTG02-CONFORMANCE, VB-RAW-ANCHOR-CONFORMANCE and VB-TUADV-CONFORMANCE. Enrollment adds no completion. Recovered C5 historical policy bytes unlock narrow versioned verifier-path restoration; its source/capture scope will be enrolled before dispatch.
+
+
+## Newly unlocked C5 policy restoration
+
+MAIN independently verified the recovered policy blob against its original commit and authenticated GitHub contents API. The private four-file source proposal preserves the exact bytes, all policy IDs/claims/SHA and seed/workload data while restoring an explicit versioned Research carrier. C5-POLICY-PATH and VB-C5-POLICY-CONFORMANCE are enrolled before capture; full28-method default-loader/refusal verification remains pending. This needs engineering, not replacement policy approval. NI08 remains50 completed scopes.

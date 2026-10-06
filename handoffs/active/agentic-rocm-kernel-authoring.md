@@ -1236,3 +1236,8 @@ candidate must pass a static audit first. The AGPR copy tax on <=256-thread MFMA
   16x16 MFMAs are 8-pass). Do not port. (intake-1823#record) ✅ 2026-09-26
 - Register-pressure datapoint (cross-reference only): intake-1825 Table 5 reports a 32x32 INT8 MFMA gate at 165 VGPR plus
   32 KiB LDS collapsing occupancy on gfx90a. That is independent support for INF03-REGAUDIT-1.
+
+
+## Recovered C5 historical policy carrier — 2026-10-06
+
+- [ ] **C5-POLICY-PATH — restore default verification of the exact already-pinned historical policy bytes through a versioned Research evidence carrier.** MAIN independently verified90723-byte Git blob `f17f295b884889ba837709f1822e1045fad4a5cb`, original ROOT commit `97674cbce44146bd40778d50d1232fc62af8918d` and authenticated GitHub source identity. Keep SHA `c8cec57941b5c0954cd65b44719b984612d9c25094fce3e2ef4bcd42e8ec4f70`, evidence ID and all claims unchanged; add explicit repo-relative no-follow identity checks and actual default-loader/refusal controls. Existing absolute external authorities retain their verifier. No policy replacement, ratification, SOL/GPU run, production kernel edit or retrospective warrant. C5-5 persisted join is already complete; this is newly unlocked source work.
