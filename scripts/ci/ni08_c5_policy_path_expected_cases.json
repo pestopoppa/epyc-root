@@ -1,0 +1,130 @@
+{
+  "cases": [
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_checked_in_registry_pins_exact_seed_partition_and_provenance"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_sol_bound_labels_claims_and_current_frame_eligibility_are_exact"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_task_surface_is_gfx90a_bound_and_omits_nvidia_performance_numbers"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_context_selection_is_ordered_hash_bound_and_reference_only"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_unknown_duplicate_and_empty_selections_refuse"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_nvidia_attestation_cannot_be_relabelled_as_gfx90a_evidence"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_cuda_bound_target_must_name_its_nvidia_binding"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_seed_partition_artifact_identity_and_disposition_are_fail_closed"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_sol_execbench_problem_join_is_required_unique_and_slug_bound"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_bound_policy_tampering_is_refused_adversarially"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_policy_evidence_path_hash_and_schema_are_fail_closed"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_runtime_policy_evidence_bytes_and_file_identity_are_verified"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_unavailable_policy_bytes_refuse_default_verified_load"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.C5SeedCorpusTest",
+      "name": "test_repository_relative_policy_path_verifies_then_refuses_tamper_and_missing"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_checked_in_config_covers_all_eight_seeds_and_193_workloads"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_oracle_dtype_evidence_is_not_conflated_with_hyra_candidate_metadata"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_gfx950_constants_cannot_be_relabelled_or_enabled_for_gfx90a"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_rocm_72_source_provenance_is_mandatory_and_exact"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOracleConfigTest",
+      "name": "test_problem_join_population_and_dtype_drift_refuse"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_plan_is_correctness_only_and_records_cross_version_without_claiming_compatibility"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_runtime_provenance_is_required_even_when_not_rocm72"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staged_driver_exits_after_correctness_before_port_timing"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staging_refuses_to_overwrite_any_noncanonical_driver"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_seed_selection_preserves_counts_and_separate_dtype_surfaces"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_full_compile_and_correctness_result_is_reduced_from_raw_bytes"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_original_fabricated_plan_zero_workload_poc_is_refused"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_raw_population_timing_claim_and_aggregate_forgery_refuse"
+    },
+    {
+      "classname": "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.C5RocmOraclePlanTest",
+      "name": "test_staged_driver_byte_drift_refuses_before_reduction"
+    }
+  ],
+  "count": 28,
+  "provenance": {
+    "identity_derivation": "static Python AST inspection of test_* methods and enclosing unittest classes; no project import, pytest collection, or test execution",
+    "module_level_code_executed": false,
+    "source_commit": "12f51c0e8b85f81576502377e0db9d678fbf1029",
+    "source_paths_sha256": {
+      "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py": "43defaae36cb08189c670ca5cad9b9522f143c3631bd9ed6d40127b99ec42ee8",
+      "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py": "394f5221d36ac8ec632ac6c2a899a52f3c39ce01f96986b9ccc6bf277f3da8e9"
+    },
+    "source_repository": "pestopoppa/epyc-inference-research",
+    "test_bodies_executed": false,
+    "test_modules_imported": false
+  },
+  "schema": "epyc.ni08.c5.policy-path.expected-junit.v1"
+}
