@@ -241277,23 +241277,194 @@
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
     intake_entries:
-    - intake-191
     - intake-1191
-    - intake-1848
     - intake-158
+    - intake-1848
+    - intake-191
     - intake-1924
+    - intake-1926
+    - intake-1932
+    - intake-1933
+    - intake-1934
   recommended_actions:
   - '[unverified] AK-HYPOTHESIS: port the GDN raw-gate fusion and CPU state-rows mode onto champion for Qwen3.6-35B-A3B (champion has neither raw_gates nor gated_delta_net_rows).'
   - '[unverified] REBUILD/AK-HYPOTHESIS: --spec-adaptive draft window with a verify-cost table measured on our CPU and MI210 (champion has no adaptive window).'
   - '[unverified] KNOWLEDGE/AK-HYPOTHESIS: MoE expert-cache pattern as an MI210 hot-expert cache for host-resident big MoE (CUDA-only code; HIP port needed).'
   - '[unverified] KNOWLEDGE: K-cache mean-centering for Q4_0 K and the rs-rollback harness as validation aids for Jet-Long / K-shift work.'
   notes: 'Stage 1 intake 2026-10-06. Read from disk: git clone --depth 1 at SHA %s (commit 2026-10-01 "ci : release CUDA 13..."), README in full, docs/kv-mean-center.md and tools/kv-mean-center/README.md (partly), docs/backend/CUDA-MOE-CACHE.md (first ~140 lines), docs/speculative.md diff, and targeted diffs of common/speculative.cpp, ggml-cpu.c, ops.cpp, delta-net-base.cpp, qwen35.cpp, gated_delta_net.cu, arg.cpp. NOT read: ggml-turbo-quant, moe-cache.cu/moe-direct.cu internals, llama-ssd.cpp body, safetensors.cpp body, xing4/deepseek41/dspark graphs, Metal/Vulkan shaders, mmq-hopper-q1. Fork base is estimated (shallow clone; best-matching upstream commit f1cee994, 2026-10-01 by minimal diff in src/ggml/common/tools); fork-vs-upstream attribution of individual features is therefore approximate. Several features are credited upstream-of-fork to others (leloch expert cache, giveen soft mode, PrismML DFly port, unsloth qwen4exp/MTP). Champion check (ak/champion/llama-cpp-ffc1bac82eec, ggml/src+src+common):
-    no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only.'
+    no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only. STAGE 2 (2026-10-06): read_depth PARTIAL - FULL reads of ggml-cpu/ops.cpp GDN kernel, ggml.c GDN ctors, delta-net-base.cpp build_recurrent_attn, qwen35.cpp, llama-graph.cpp build_rs_cache_view, common/speculative.cpp 2895-3010/3470-3800/3880-3900, both examples/rs-rollback/*.cpp; champion comparison via git show ak/champion/llama-cpp-ffc1bac82eec. Not read: ggml-metal GDN kernel, moe-cache/moe-direct/turbo/ssd/safetensors internals. Wave-2 siblings: intake-1932, 1933, 1934.'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage 1 only: PARTIAL read of a local clone at 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf; awaiting operator-selected Stage 2 dives.'
+  claim_anchors:
+  - claim_index: 4
+    kind: line-range
+    locator: ggml/src/ggml-cpu/ops.cpp:11267-11271
+    quote: "            if (raw_gates) {\n                beta_val = 1.0f / (1.0f + expf(-beta_val));\n                const float x = g0 + raw_dt_bias[iv1];\n                g0 = raw_a[iv1] * ((x > 20.0f) ? x : logf(1.0f + expf(x)));\n            }"
+    quote_sha256: 0ee2af36b8cc2898620c40d45d5c8e2e450a2b2d26b6b52bbb6e84e174dbc52a
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: ggml/src/ggml-cpu/ops.cpp:11250-11252
+    quote: "        const float * s_in = state_rows_idx\n            ? state_in_base + (int64_t) state_rows_idx[iv3] * state_row_size + iv1 * S_v * S_v\n            : state_in_base + iv3 * state_seq_stride + iv1 * S_v * S_v;"
+    quote_sha256: 87044292b52e1fd9e3d980e185429c649faf4dbda4dab5079c77671c668076c2
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/models/qwen35.cpp:448-450
+    quote: "    if (!raw_gates_disable && gdn_raw_gates_dev_ok &&\n        model.layers[il].ssm_dt && model.layers[il].ssm_dt->type == GGML_TYPE_F32 &&\n        model.layers[il].ssm_a  && model.layers[il].ssm_a->type  == GGML_TYPE_F32) {"
+    quote_sha256: aa95e0f9897004c8ab3ff7687a9cdf9b8e0f7effd87f540957a62f8f67b164a0
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/models/qwen35.cpp:163-165
+    quote: "        if (is_gpu && strcmp(reg_name, \"MTL\") != 0) {\n            gdn_state_rows_dev_ok = false;\n        }"
+    quote_sha256: a536f197f3d8df84931e4b8bcfc1c4fc6b612b1af8169970b4910dccff2c5972
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/models/qwen35.cpp:486-486
+    quote: '    const bool gdn_state_rows = gdn_state_rows_env && gdn_state_rows_dev_ok && cparams.n_rs_seq > 0;'
+    quote_sha256: 7c048b240fa71804208b7e53daa1336b63d0aa446b10b95a5956c6d16354a391
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/models/delta-net-base.cpp:556-556
+    quote: '    GGML_ASSERT(state_rows == nullptr || keep); // rows mode is a ring-path optimization'
+    quote_sha256: a4d939da21b75744236679a0bd9aa087fc46f42ceb3c3f44cc078e43591f4e56
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/llama-graph.cpp:3724-3726
+    quote: "    // KNOWN LIMITATION (tracked follow-up): build_rs gathers the main rows\n    // BEFORE this extra relocation, so an overlapping main row is read before\n    // being overwritten. rows mode defers the main read into the consumer, and"
+    quote_sha256: 64402a182bf79d718a86a8e96a599c2db4408a871d137cf9faad0e8d2cbf5ca5
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: src/models/qwen35moe.cpp:472-472
+    quote: '    ggml_tensor * output = build_recurrent_attn(inp, ssm_states_all, q_conv, k_conv, v_conv, gate, beta, state, il);'
+    quote_sha256: 97737f9bc942347c6e25e2ba0434ce1a08990f347adced4b15695d588c000e94
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 4
+    kind: line-range
+    locator: ggml/src/ggml-cuda/gated_delta_net.cu:109-113
+    quote: "            float g0 = *g_t;\n            if constexpr (RAW) {\n                const float x = g0 + raw_dt_bias[h_idx];\n                g0 = raw_a[h_idx] * ((x > 20.0f) ? x : logf(1.0f + expf(x)));\n            }"
+    quote_sha256: a8d986f07e1d5baed888458c4c14bca5e6091677147380cef11c9b7077d91204
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:2944-2947
+    quote: "        const double verify[KM] = {\n            1.00, 1.08, 1.16, 1.24, 1.40, 1.56, 1.72, 1.88,\n            2.04, 2.20, 2.36, 2.52, 2.68, 2.84, 3.00, 3.16,\n        };"
+    quote_sha256: fa4615e39045c272e5a209348c75959a1f5ce809fc5b942467231767b101e0ef
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:2974-2977
+    quote: "        // plain decoding commits one token at unit cost: 0 disables speculation\n        if (best < 1.0 * (1.0 + min_gain)) {\n            return 0;\n        }"
+    quote_sha256: 21b003c7da62657a02acbc320a06fb938fa287b7599d8e7c61ddf331b1a6fcc6
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:2981-2984
+    quote: "    void observe(int k, int accepted) {\n        if (k <= 0) {\n            return;\n        }"
+    quote_sha256: 44195b3ea4d35d11e4b344736c31d30aa38f4fc93dda38735333925e4af3c74b
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:3730-3732
+    quote: "                if (spec->adaptive_enabled && common_speculative_type_uses_draft_model(impl->type) && !result.empty()) {\n                    const int n_cap = dp.n_max > 0 ? dp.n_max : common_speculative_n_max(spec);\n                    const int n_adapt = spec->adaptive[seq_id].choose(n_cap);"
+    quote_sha256: 675ba42f01f9b1a8b90ecb32169282c3e68e8f2228ba007f6d435bf4e8d84f2e
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:3486-3489
+    quote: "        add_config_if_enabled(COMMON_SPECULATIVE_TYPE_NGRAM_SIMPLE);\n        add_config_if_enabled(COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K);\n        add_config_if_enabled(COMMON_SPECULATIVE_TYPE_NGRAM_MAP_K4V);\n        add_config_if_enabled(COMMON_SPECULATIVE_TYPE_NGRAM_MOD);"
+    quote_sha256: 456b67b4f861c6a347c36f8bc7b8f3469178bbce6861c43def15bb7cdc119fd4
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 3
+    kind: line-range
+    locator: common/speculative.cpp:2622-2622
+    quote: '        : common_speculative_impl(COMMON_SPECULATIVE_TYPE_NGRAM_MOD, n_seq, params.ngram_mod.n_max)'
+    quote_sha256: 7d17516c7bb32e32123775647148ed34c9789a1a4649371de8640dab920d1db1
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 5
+    kind: line-range
+    locator: examples/rs-rollback/rs-rollback.cpp:67-67
+    quote: '    mparams.n_gpu_layers       = 99;'
+    quote_sha256: 2f68f0c23137f925db9107b26930970f334fe5e928e66356002df79399109135
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 5
+    kind: line-range
+    locator: examples/rs-rollback/rs-rollback.cpp:106-106
+    quote: '            batch = llama_batch_get_one(&tok, 1);'
+    quote_sha256: f997faf066b1e7890fb9bc9c74c90513a8820e979bca7c2f31a02e1abfe87b21
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 5
+    kind: line-range
+    locator: examples/rs-rollback/rs-rollback.cpp:178-178
+    quote: '    if (n_rollbacks == 0) {'
+    quote_sha256: 396140f7f3e5db10e17c1862ddfe7c38a03d86b4c3fd50fc5d29fbd0afd44db5
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  - claim_index: 5
+    kind: line-range
+    locator: examples/rs-rollback/rs-rollback-multi.cpp:6-6
+    quote: // that class of bug at all.
+    quote_sha256: 1e2ec4185c9a71082ed71f1919fedb1632ea3434eb77d9a17e38cef818c6d4a0
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: static read of the clone; nothing built or run
+  claim_corrections:
+  - claim_index: 3
+    effect: narrowed
+    note: 'Policy confirmed (common/speculative.cpp:2926-3010) but: verify-cost table is hard-coded (2944-2947) and the draft term 0.1*(i+1) too; applies only to draft-model impls (3730-3732), ngram-mod drafts bypass it; choose()==0 truncates the draft to empty and observe(k<=0) returns at 2982-2984, so p_acc can never update again - speculation stays off for that seq until server restart (second reader found no reset path). The README/doc presents it as a plain adaptive window; the absorbing zero state is a defect in the fork.'
+  - claim_index: 4
+    effect: narrowed
+    note: 'Confirmed for src/models/qwen35.cpp only (448-450, 486). NOT wired in qwen35moe.cpp:472 (our Qwen3.6-35B-A3B arch), qwen3next.cpp or qwen4exp.cpp (second reader grep: 0 hits). Rows mode is CPU/Metal-only (qwen35.cpp:163-165), needs n_rs_seq>0 (delta-net-base.cpp:556), and carries a self-documented multi-sequence hazard (llama-graph.cpp:3724+). Raw gates reach CUDA/ROCm via gated_delta_net.cu:109-113 but the fork kernel lacks the champion BF16-state and cache-fusion templates.'
+  - claim_index: 5
+    effect: narrowed
+    note: 'rs-rollback harnesses confirmed (examples/rs-rollback/*.cpp) but the rollback loop uses single-token decodes only (prompt prefill is multi-token); they do not exercise a multi-token verify batch with partial accept; n_gpu_layers is hard-coded to 99; champion already carries upstream tests/test-recurrent-state-rollback.cpp (older 224-line copy: single-seq, rollback + state save/load).'
+  - claim_index: 0
+    effect: unaffected
+    note: Provenance claim (fork, SHA, diff size) was not disputed; base estimate remains approximate.
+  dive_corrections: '2026-10-06 Stage-2 wave 1, scoped to operator-selected dives (GDN raw-gate/rows mode; --spec-adaptive; rs-rollback). Read from disk at clone 0ae77ef49. Claims 1,2 (MoE expert cache/hmoe/SSD/safetensors) and the K-cache mean-centering and TurboQuant claims were NOT selected and remain stage1-unverified: do not cite them. Entry-level verification stays stage1-unverified for that reason; claim_anchors/claim_corrections record the per-claim state. Second reader: 19 of 21 anchors support or partly support; 2 unsupportive anchors dropped.'
 - id: intake-1926
   arxiv_id: '2605.00342'
   url: https://arxiv.org/abs/2605.00342
@@ -241310,16 +241481,92 @@
   expanded_from: intake-1925
   verdict: worth_investigating
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
-  read_depth: DIGEST
+  verification: dive-verified
+  read_depth: PARTIAL
   key_claims:
-  - '[search summary] Adaptive verification width for MoE speculative decoding (verified tokens vs expert traffic).'
+  - EVICT selects the verification prefix k* = argmax E[A(T_k)]/C(k), where E[A] is the sum over draft-tree nodes of the product of draft probabilities along the path (draft probability used as proxy for target acceptance) and C(k) is an offline-profiled latency lookup table (Sec 3.1-3.2.3, Eq 8-10).
+  - 'Per-step runtime logic must be fused into CUDA graphs: under SGLang eager mode EVICT underperforms EAGLE-3 because of CPU-bound utility computation (Sec 4.4.1).'
+  - 'Reported on Qwen3-30B-A3B and two other MoEs, single request, SGLang: average 1.21x over EAGLE-3, up to 2.35x over autoregressive; verifies 74.7% fewer tokens, 32.5% fewer activated experts, 26.6% lower verification latency; mean accepted tokens drops to 84.7% of EAGLE-3 (Sec 4.2-4.3, Table 2).'
+  - Cost-agnostic confidence truncation (score-coverage variants, DDD) consistently underperforms EVICT; the cost term matters (Sec 4.4.2).
   notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Closest literature to the fork --spec-adaptive; a dive should check whether it defines a cost model our AK can reuse.
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage 1 only: discovered by one-hop literature expansion 2026-10-06; no primary-source read yet.'
+  - 'Stage-2 dive: cost-aware truncation idea relevant to the --spec-adaptive window policy; GPU tree method, not directly portable (intake-1925 dive 2).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.2.3
+    quote: To evaluate Equation 10 , we directly profile the end-to-end speculative-step latency C ⁡ ( k ) C(k) for all feasible k ∈ { 1 , … , draft_tokens } k\in\{1,\ldots,\texttt{draft\_tokens}\} at initialization time and store the measurements in a lookup table.
+    quote_sha256: ed531e032b9c19ae65df589beb8774c78b365b55a0ce3b3a8f1147486ada00a2
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.2.2, Eq. 9-10
+    quote: We therefore select the best prefix k ⋆ = arg ⁡ max 1 ≤ k ≤ draft_tokens ⁡ 𝔼 ^ ​ [ A ​ ( 𝒯 k ) ] C ⁡ ( k ) , k^{\star}=\arg\max_{1\leq k\leq\texttt{draft\_tokens}}\frac{\widehat{\mathbb{E}}[A(\mathcal{T}_{k})]}{C(k)}, (10) and verify 𝒯 k ⋆ \mathcal{T}_{k^{\sta
+    quote_sha256: ee1960132094953f281300210a63433e6191a835cbb3700658ac009da518fb9b
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Section 3.1, Eq. 8
+    quote: Using draft probabilities as empirical proxies for target-side acceptance, a pre-verification estimate of tree quality for adaptive truncation is given by 𝔼 ^ ​ [ A ⁡ ( 𝒯 ) ] = ∑ v ∈ 𝒯 Score ⁡ ( v ) .
+    quote_sha256: ba5efeabcdede15a1ba1004378cda1d4c917fe8660dcd305dd11454fafb83b7a
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Section 4.4.1
+    quote: In an eager execution environment, these extra CPU-bound calculations become a new bottleneck.
+    quote_sha256: e21277b74759788d87a1932d1a802d35eebd22a4b1524bdf44183ce8316f70ca
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4.3
+    quote: EVICT verifies 74.7% fewer tokens than EAGLE-3 across the entire Mat range on average, with the strongest reduction appearing at both the low- and high- Mat extremes.
+    quote_sha256: f10258e8bbe7e115c06c940562466fa78f4bf9ce875009d7299aa6f14294955b
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4.3
+    quote: this substantially reduces the number of active experts by 32.5% on average, compared with EAGLE-3.
+    quote_sha256: 5ad457e506051ed55e8faf00e3bd4d52ee0133bdd5af72cfd4632778ca20ce95
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 4.2
+    quote: yielding a 1.21 × 1.21\times speedup over EAGLE-3 on average.
+    quote_sha256: 68476df2f895bcdb565405b799ad1b85574802f4980ee1719b630632a0e3a244
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Section 4.4.2
+    quote: they consistently underperform EVICT.
+    quote_sha256: db6541e8231f5450424d76adaa6e5b313afa2b84c0efb473fe3ee0a8b5f9f339
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Section 2.2
+    quote: tree verification aggregates the union of experts activated by all verified nodes ( McDanel et al., 2026 ) .
+    quote_sha256: 00727c5cec438273b4096a05a714bf969aaad1c02a7a9ad052258aae5838fa6d
+    source_revision: arXiv:2605.00342v2 (HTML render, 2026-09-05 revision; read from /mnt/raid0/llm/tmp/dive-1926/paper_v2.html)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: reattributed
+    note: Stage-1 text was a search-result summary; replaced by the paper-text claims above. Note EVICT says it follows Saxena et al. 2025 for the utility ratio (Sec 3.2.2) but profiles C(k) OFFLINE, whereas Saxena (intake-1932) measures cost ONLINE and argues against profiled tables (Sec 8.3).
+  depends_on:
+  - entry: intake-1932
+    claim_index: 0
+    why: EVICT Sec 3.2.2 adopts the speculation-utility ratio "following prior work (Saxena et al., 2025)".
+  dive_corrections: '2026-10-06 Stage-2 wave 1: read paper v2 (2026-09-05) from arXiv HTML saved with curl (PDF page rendering unavailable: pdftoppm missing). Read Abstract through Sec 5.3 and the reference list; NOT read: Appendices A-D (roofline regimes, derivation, estimator validation C.1, larger-batch C.5, dense comparison C.7), Sec 6 conclusion text. Figures not read (images). Tree-based GPU method; applies to chain drafts only by analogy.'
 - id: intake-1927
   arxiv_id: '2607.24434'
   url: https://arxiv.org/abs/2607.24434
@@ -241450,3 +241697,201 @@
   integration_disposition: awaiting_dive
   disposition_evidence:
   - 'Stage 1 only: title-level discovery, nothing read.'
+- id: intake-1932
+  arxiv_id: '2506.20675'
+  url: https://arxiv.org/abs/2506.20675
+  source_type: paper
+  title: Utility-Driven Speculative Decoding for Mixture-of-Experts (Cascade)
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: high
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1926
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  key_claims:
+  - Speculation utility U = ETR_spec / (t_iter,spec / t_iter,base) (benefit over cost); maximising U minimises TPOT on average (Def 4.1, Eq 2-3, Thm 4.2).
+  - Cost is measured ONLINE per request in a test-and-set loop (t=4 trial iterations, set phase S=16); the paper states no offline profiling or performance modelling is required and argues analytic/profiled models do not work for MoE (Sec 5.7, 8.3).
+  - 'Speculation is disabled (K=0) when utility falls below one, but the test phase restarts every t+S iterations starting at K=1, with S doubled when K=0 (adaptive back-off): the off state is NOT absorbing (Sec 5.4-5.5).'
+  - 'Evaluation is single-batch GPU (RTX 6000 Ada), up to 5 MoEs, n-gram and EAGLE drafters; no CPU, MI210, batch>1 or Qwen3-A3B results (Sec 3, 7). Author-reported: avg +20% over no speculation, worst-case slowdown 5% vs 26-54% for static K (Sec 7; not anchored).'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Def 4.1
+    quote: The ratio of the benefit of speculation (ETR improvement) to its cost (speculation overheads).
+    quote_sha256: 23f3fe8d9fdad65d89cdbd3f81611dd4cc170fc6015a7a391051c5cd4e96d035
+    source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 5.7
+    quote: Cascade requires no offline profiling or detailed performance modeling to guide decisions.
+    quote_sha256: 13f68e67df17ab1f1348a8c300bc74404ef23cfac01d4b65025135c5b8f59bdb
+    source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 8.3
+    quote: analytically modeling MoE execution time would not work
+    quote_sha256: 85cdafa2cdae65c0f446e6f7e984a34af2f12afbe34c434312575f8956cb8178
+    source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Sec 5.4
+    quote: We continue monitoring utility by restarting the test phase after every
+    quote_sha256: ee7ac3f4b990b04fd2a7f0020ccb33dca4db4fa1676a764cfa37c647e7138c50
+    source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Sec 5.4
+    quote: disable speculation by setting K=0 for the next set phase if utility falls below one
+    quote_sha256: 3999fa7343e32498ed8046108dbcf7d808bcb089f38206254a276eec6f1c8909
+    source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
+    verified_by: research-intake/stage2
+  notes: 'Stage-2b wave 2 dive (subagent read, anchors mechanically re-found by the owning session). Version v1 only (2025-06-17, MICRO-58). Figures not read. Cascade is the source of the utility ratio EVICT adopts, and the origin of the exploration/back-off mechanism missing from the cafe-llama window policy. Surfaced further draft-length papers seen in its reference list (IDs observed in text, not yet verified against abs pages): 2409.00142 DDD, 2405.04304 DISCO, 2406.14066 SmartSpec, 2503.05096 SpecServe, 2501.12162 AdaServe, 2408.11850 PEARL.'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-2b wave-2 dive 2026-10-06: read from disk; findings feed the --spec-adaptive actionables (intake-1925).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-1925
+    - intake-1926
+- id: intake-1933
+  arxiv_id: '2602.16052'
+  url: https://arxiv.org/abs/2602.16052
+  source_type: paper
+  title: 'MoE-Spec: Expert Budgeting for Efficient Speculative Decoding'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1926
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  key_claims:
+  - 'Verification-time expert budgeting (lossy, training-free): aggregate router probabilities over the whole draft tree and load at most B experts per layer; out-of-shortlist experts are substituted with the best in-shortlist ones.'
+  - 'Measured on OLMoE (64 experts, top-8, A100): a 127-token tree activates 54 of 64 experts per layer; EAGLE-3 speedup peaks near tree 31 then declines.'
+  - Reported 10-30% over EAGLE-3 on A100, tree 63, single request; 27 of 30 configs; budget tuned per benchmark (mildly optimistic).
+  - 'Not tested: chain drafts, 256-expert models (largest 128), CPU-hosted experts, batching; the paper itself treats chain drafts as a different regime and cites Saxena et al. (intake-1932) for adaptive length there.'
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: Sec 1
+    quote: regardless of tree size, we load at most B experts per layer
+    quote_sha256: 4b873d376e1a543f68fc5c9b7e193ee855b4979d18ca9cea405ef5022bfbb938
+    source_revision: arXiv:2602.16052v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2602.16052/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: Sec 1
+    quote: a 127-token tree activates 54 of 64 experts per layer
+    quote_sha256: 759b297ed77c45f1584c66ce7c51db7e8cfce074a8f5e6bc78bbdbbdf3e82cee
+    source_revision: arXiv:2602.16052v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2602.16052/paper.txt)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Sec 5
+    quote: chain-structured
+    quote_sha256: f14b7c301cab9580f65614b5e16f939952384be06d461ceb3e3a074d144c79b3
+    source_revision: arXiv:2602.16052v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2602.16052/paper.txt)
+    verified_by: research-intake/stage2
+  notes: 'Stage-2b wave 2 dive (subagent read; anchors mechanically re-found). v1 only (2026-02-17). Figures not read. Own-inference (labelled in the dive): with top-8 of 256, a k-token chain touches at most 8k experts per layer, so the paper union-saturation argument does not transfer; a direct llama.cpp CPU measurement of verify time vs window is needed. Also seen: 2508.21706 SpecMoEOff, 2510.10302 SP-MoE (already intake-1928).'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-2b wave-2 dive 2026-10-06: read from disk; findings feed the --spec-adaptive actionables (intake-1925).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-1925
+    - intake-1926
+- id: intake-1934
+  arxiv_id: null
+  url: https://github.com/Niko1221/Strata
+  source_type: repo
+  title: 'Strata (Niko1221): local MoE inference engine with a speculative draft-window controller'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - local_inference
+  novelty: medium
+  relevance: medium
+  credibility_score: null
+  contradicting_evidence: null
+  discovered_via: expansion
+  expanded_from: intake-1925
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  key_claims:
+  - 'Layer A (include/strata/spec/controller.hpp, src/spec/controller.cpp) is the ancestor of the cafe-llama adaptive window: per-position EMA, regrowth of untested positions, k=0 gate, early return when k<=0 (so no recovery); it has no non-test callers in src.'
+  - Layer B (src/spec/draft_policy.cpp), the wired-in policy, measures round time per window size online (EMA alpha 0.1) and probes an unmeasured window kProbes=3 times before a guessed cost can veto it; it has no k=0 state.
+  - Cost model includes a distinct-experts term U(n) and per-source draft costs, with defaults from the author's 2026-09-23 RTX 5070 measurements; result files cited in comments are not in the repo (author-reported, unreproducible here).
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: src/spec/controller.cpp:58-58
+    quote: if (c.source == Source::None || c.k <= 0) return;
+    quote_sha256: 38656e8692be9e12d2ae2cd1c7925dc64745e65de0a222e29402e5b3a3df5870
+    source_revision: Niko1221/Strata@82f46a8c8f475f001ad76d92f58f4a4f8ffb0253
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: src/spec/controller.cpp:49-49
+    quote: if (best.source != Source::None && best.tokens_per_ms < baseline * (1.0 + min_gain_)) {
+    quote_sha256: 91d088cfe12eef1294d2dfe41efb984e98815f11c0b1555106a96caf89156cb8
+    source_revision: Niko1221/Strata@82f46a8c8f475f001ad76d92f58f4a4f8ffb0253
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: src/spec/draft_policy.cpp:20-20
+    quote: constexpr int kProbes = 3;       // a lookup window size is tried this often before its guessed cost can veto it
+    quote_sha256: fc336ba4b597ff52ab815da3225792798d8856aca6ba3345d3fced56b4fd7327
+    source_revision: Niko1221/Strata@82f46a8c8f475f001ad76d92f58f4a4f8ffb0253
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: include/strata/spec/controller.hpp:15-15
+    quote: // Replace them with in-engine measurements through `CostModel`.
+    quote_sha256: 601f705bf390fc782c69ec8b085b66e24e649475dd510dba33d4e76898f30555
+    source_revision: Niko1221/Strata@82f46a8c8f475f001ad76d92f58f4a4f8ffb0253
+    verified_by: research-intake/stage2
+  notes: 'Stage-2b wave 2 dive: git clone --depth 1 at 82f46a8c8 (2026-10-06); shallow history, so introduction date of the controller is unknown. Anchors are repo line-ranges re-found mechanically. stratallm.org names this repo as its GitHub source. xenodeve/Strata-xeno is a separate repo (API: fork False). Relevant transferable ideas: online per-window-size cost EMA with probe-before-veto; separate lookup/MTP sources with a chain() extension.'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Stage-2b wave-2 dive 2026-10-06: read from disk; findings feed the --spec-adaptive actionables (intake-1925).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - autokernel-all-devices-all-dimensions.md
+    experiments: []
+    intake_entries:
+    - intake-1925
+    - intake-1926

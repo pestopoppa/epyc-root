@@ -2,8 +2,8 @@
  "session_id": "intake-cafe-llama-ec-20261006",
  "started_at": "2026-10-06T00:00:00Z",
  "last_checkpoint": "2026-10-06T00:00:00Z",
- "stage": "stage1-complete",
- "phase": 5,
+ "stage": "stage2-complete",
+ "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
  "branch": "lane/ec-intake-cafe-1006",
  "topic": "kozmic-labs/cafe-llama.cpp fork (SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf)",
@@ -14,10 +14,13 @@
   "intake-1928",
   "intake-1929",
   "intake-1930",
-  "intake-1931"
+  "intake-1931",
+  "intake-1932",
+  "intake-1933",
+  "intake-1934"
  ],
  "entries_remaining": [],
- "next_intake_id": 1932,
+ "next_intake_id": 1935,
  "expansion_cap": 10,
  "expansion_count": 6,
  "expansion_entries": [
@@ -38,7 +41,24 @@
    "reason": "Strata (adaptive window origin) canonical repo unresolved from search (stratallm.org, xenodeve/Strata-xeno issue); not persisted rather than guess; vpozharski/moe-cache and PR #27861 seen but not persisted (budget)"
   }
  ],
- "steering_ledger": [],
+ "steering_ledger": [
+  {
+   "seq": 1,
+   "stage": 1,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "It could be very relevant to the currently running claude inference sessions. I imagine there will be a number of insights we could distill and rebuild ourselves directly or inject as autokernel hypotheses",
+   "disposition": "planned",
+   "plan_ref": null
+  },
+  {
+   "seq": 2,
+   "stage": 2,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "All recommended with a cap of 10, and maximum four stage 2 waves",
+   "disposition": "planned",
+   "plan_ref": null
+  }
+ ],
  "prior_sessions": [
   {
    "session_id": "intake-monty-clef-looped-multiharness-20261003",
@@ -5041,5 +5061,29 @@
     }
    }
   }
- ]
+ ],
+ "stage2": {
+  "waves_used": 2,
+  "wave1": "intake-1925 scoped dives (GDN raw-gate/rows, --spec-adaptive, rs-rollback) + intake-1926",
+  "wave2": [
+   "intake-1932",
+   "intake-1933",
+   "intake-1934"
+  ],
+  "wave3_candidates_not_run": [
+   "2409.00142 DDD",
+   "2406.14066 SmartSpec",
+   "2508.21706 SpecMoEOff",
+   "2505.19645 MoESD",
+   "EcoSpec (id unobserved)",
+   "2503.05096 SpecServe"
+  ],
+  "stopped_early": "wave 2 surfaced nothing that beats the Saxena/Strata findings; remaining candidates are dense-model dynamic-K or offload papers",
+  "not_selected_left_unverified": [
+   "K-cache mean-centering",
+   "MoE expert cache / hmoe / SSD / safetensors / turbo (intake-1925 claims 1,2 and others)"
+  ],
+  "anchor_count": 40,
+  "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md"
+ }
 }
