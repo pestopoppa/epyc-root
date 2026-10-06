@@ -38,13 +38,18 @@ closure and missing locked imports; ROOT failures exposed two `NameError`s. The 
 an `AttributeError` while validating the APP's null summary. None of these artifacts is a passing
 capture or a shared-grade acceptance.
 
-The synthetic round-trip fixture now statically follows module-time imports from both APP writers
-and `src.llm_primitives.stat_tests`, includes their real parent-package initializers and the full
-40-file producer import closure, and SHA-pins each byte to APP `cfcf3768716de888a971bf66489397f5b91241df`.
+The synthetic round-trip fixture statically follows module-time imports from both APP writers and
+`src.llm_primitives.stat_tests`, including imports in module-level conditionals, package
+initializers, and compatibility shims. The first hosted attempt exposed that the APP
+`src/model_server.py` shim redirects to `src.inference.model_server`; that package and its
+`src/registry_loader.py` shim's target module were missing from the synthetic copy. The corrected
+fixture includes those four real files and their recursively checked local imports, for a
+44-file producer import closure, with each byte SHA-pinned to APP
+`cfcf3768716de888a971bf66489397f5b91241df`.
 It copies the actual package initializer and `src.llm_primitives.config` dependencies; it does not
 substitute fake package files. The APP writer receives only synthetic in-memory rows and synthetic
 JSONL input bytes. It does not open the BEP corpus, a real question ledger, traces, or an evaluation
-run. The selected APP tests and producers have a 58-file module-time local-source closure; it is
+run. The selected APP tests and producers have a 62-file module-time local-source closure; it is
 explicitly included in the APP carrier readset, alongside the lock and deliberately excluded
 conftest. Third-party roots are `httpx`, `pydantic`, `pydantic-settings`, PyYAML and the stat-test
 module's `scikit-learn`; the hosted requirements pin these roots and their applicable APP-lock
