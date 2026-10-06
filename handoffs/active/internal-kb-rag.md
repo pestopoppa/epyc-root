@@ -793,6 +793,15 @@ _2026-10-06 source re-read: the current v2 scope above qualifies the earlier v1 
       and the fail-loud check is not implemented — `_QUERY_MAX_TOKENS = 48` (`kb_rag.py:66`) and
       `_MAX_QUERY_TOKENS = 48` (`src/tools/web/colbert_reranker.py:66`) remain hard-coded on both
       call sites.
+      **Current source correction (2026-10-06; APP `79abe3eca50c911d89e5e9855bbd6392bae2b35d`):**
+      the historical paragraph above does not describe the current web path. `_token_caps()` in
+      `src/tools/web/colbert_reranker.py` obtains declared query/document caps from the shared
+      encoder and clamps the document cap to the snippet budget. The encoder merges checkpoint
+      declarations with `onnx_config.json` taking precedence, applies declared lower-casing,
+      supplies `token_type_ids` when the graph requires them and refuses unsatisfied graph inputs.
+      Declared `do_query_expansion=true` is refused; malformed declarations raise. Declared caps
+      fall back only when unusable or absent. MAIN re-opened these source seams; no ONNX/model
+      execution or new tests. K2's broader checkpoint/consumer acceptance remains open.
       **H3 — the three-slot `query_length` spread, verified from each model directory on disk
       2026-08-23**: LateOn **32** (`lateon-onnx-int8/onnx_config.json`), GTE-ModernColBERT-v1 **48**
       (`gte-moderncolbert-v1-onnx/onnx_config.json`), Reason-mxbai-32m **256**. An 8× spread across

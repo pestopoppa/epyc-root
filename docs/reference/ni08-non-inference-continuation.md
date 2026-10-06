@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **twenty-four completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **twenty-six completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -35,3 +35,5 @@ M19-RECORD scoped design, FW2 contract/draft, FW3 survey and CFHF1 source compar
 INF02 triage vocabulary accepted:22 scoped completions (20 existing checkbox flips+2 scoped additions). VB-DCP-LOG-USAGE filed before the approved v3 allowlisted usage read; prior defective snapshots remain excluded and private. Whole-backlog exhaustion is not established.
 
 ETVT2-SRC and VB-ETVT2-DIAGNOSTICS accepted after native11/11 and independent MAIN original custody verification. Two scoped completions (one existing flip+one added source subtask):24 total,21 existing flips+3 scoped additions. Actual tool_use cohort, causal interpretation and parent ETV-T2 remain open.
+
+DCP9A-USAGE and VB-DCP-LOG-USAGE accepted:26 scoped completions (22existingflips+4scopedadditions). Independent MAIN recomputation matches214,334stable usage rows/34,412conservative subset; three moving files excluded. Parent trajectory test remains open for native completed-task quality/time records, not an operator arithmetic choice. K2/TD30f source corrections/prospective enrollment carry no extra completion.

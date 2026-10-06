@@ -64,3 +64,13 @@ MAIN adopted INF02 five-label non-exclusive metadata contract, explicit classifi
 ## Tool-use report acceptance
 
 MAIN accepted11/11 exact native cases, independently reopened3,408ZIP members/3,399readset bindings after prior3,397Git-input map, checked API success/digest, receipt, original JUnit/environment and unchanged shared grade. APPsource5c7333da promoted byte-identically to `79abe3eca50c911d89e5e9855bbd6392bae2b35d`. ETVT2-SRC/VB-ETVT2-DIAGNOSTICS add two scoped completions:24 total (21existingflips+3scopedadditions). No currently inspected sidecar has tool_use rows; no live efficacy/causal estimate or policy change. ROOTrecipe and public review metadata preserved with private original custody.
+
+
+## Current-source correction and replay enrollment
+
+MAIN corrected K2 historical web/encoder premises against APP79abe3ec and TD30f actual guard semantics without closing either parent or claiming new model results. Enrolled VB-TD30F-REPLAY/source-table row before successor runner capture. Authored-Markdown provenance cannot supply gold coherence/false-positive labels; threshold/runtime changes remain outside scope. No completion counted for correction/enrollment. MF proposal was mistakenly written by the worker into MAIN integration lane; stopped immediately, exact four-file diff preserved for transfer to an independent clone before further edits. An overly broad source search also reached local runtime data; no such output is copied into public evidence and subsequent searches use pinned tracked-source globs only.
+
+
+## Usage source acceptance
+
+MAIN independently recomputed all private allowlisted projection identities/counts/exclusions/sums/ratios/partial intensity distribution and manifest digests. Accepted DCP9A-USAGE/VB-DCP-LOG-USAGE, preserving prior excluded snapshots;26scoped completions(22flips+4scopedadditions). Stable214,334rows;3movingfiles excluded. No transcript bodies/HMAC rows public, no billing/cost/quality/coordination share claim. Definition1 genuinely lacks ordered completed-task quality/time records; parent remains open. Approved source copies/hashpins and aggregate evidence published; metadata ungraded.

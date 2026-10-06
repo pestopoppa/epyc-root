@@ -570,9 +570,13 @@ native single-token path and its sidecar.
     Operator queue row OP-75, text prepared in `/mnt/raid0/llm/tmp/wrapup-ec-gpublock2/INDEX_ROWS.md`. Done when the
     receipt exists and both rows are in the file.
   - [ ] **TD-30f — check the orchestrator's runtime unique-ratio guards for the same length bias** (RECTIFY §6f).
-    The guards are `classifiers/quality_detector.py:42-48,120`, `pipeline_monitor/anomaly.py:137-148` and
-    `llm_primitives/inference.py:50`. They are independent fixed unique-ratio repetition guards, not this classifier,
-    but a fixed threshold false-flags coherent text above ~300–500 tokens. Replay the `length_bias.py` corpora
+    Current source correction2026-10-06: the guards are `src/classifiers/quality_detector.py::detect_output_quality_issue`
+    (only its20-word trigram branch), `src/pipeline_monitor/anomaly.py::detect_repetition_loop`
+    (9-word trigram minimum), and `src/llm_primitives/inference.py::_detect_streaming_repetition`.
+    The third is not a unique-ratio guard: it counts exact repeated three-line substrings of at least60characters
+    in the last4,000characters, with separate streaming cadence/schema constraints. The earlier coherent-text
+    threshold finding concerned the historical classifier and is not evidence that these guards false-flag.
+    Preserve this parent's need for independently supported coherence labels and output-length denominators. Replay the `length_bias.py` corpora
     (`analysis/q38t7-rescore/`) through each guard's threshold, with no inference. Done when each guard has a
     measured false-positive rate by output length, and any guard that fires on coherent long text is made
     length-aware or switched to the `degeneracy.v2` loop trigger.

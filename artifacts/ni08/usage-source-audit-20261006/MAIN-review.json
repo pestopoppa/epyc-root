@@ -1,0 +1,15 @@
+{
+  "reviewed_at": "2026-10-06T20:30:08.722543+00:00",
+  "result_sha256": "9b55ae0ab357644ca349f070cc32de34993379fc95ad1256ac292a41e71d64a6",
+  "projection_sha256": "ec36ab1f4b310818335a0ff147e2e3d899d908d6e9f4b5eba68c7a1771e7f6ef",
+  "manifest_file_sha256": "36f82ac4510578561d2137690ecb2836b3e1f9eefe2b1cd384af15af08e70642",
+  "row_count": 214334,
+  "unique_subset_rows": 34412,
+  "stable_files": 1734,
+  "moving_files_excluded": 3,
+  "aggregate_counts_sums_ratios_distribution_recomputed": true,
+  "private_mode_verified": true,
+  "raw_transcripts_read_by_MAIN": false,
+  "definition_1": "not_evaluable",
+  "scope": "usage-source metadata only; no billing, task-quality, coordination-share or model claims"
+}

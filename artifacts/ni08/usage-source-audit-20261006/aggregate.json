@@ -1,0 +1,79 @@
+{
+  "counts": {
+    "ambiguous_session_uuid_groups_excluded": 460,
+    "cross_session_uuid_identity": "unknown_not_used_for_dedup",
+    "exact_session_uuid_groups": 213546,
+    "exact_session_uuid_request_duplicate_extra_rows": 85,
+    "metadata_parse_failures": 0,
+    "missing_request_id": 4,
+    "records_in_repeated_request_groups": 178674,
+    "repeated_request_groups": 77378,
+    "stable_source_files": 1734,
+    "stable_usage_rows": 214334,
+    "unique_record_subset": 34412,
+    "unstable_file_records_discarded": 11362,
+    "unstable_source_files": 3
+  },
+  "definition_1": {
+    "reason": "quality_and_completed_task_grouping_absent",
+    "source": "arXiv:2607.06906v2 \u00a73.1-3.2 Definition 1",
+    "status": "not_evaluable"
+  },
+  "file_counts": {
+    "excluded_moving_or_unreadable": 3,
+    "jsonl_total": 1737,
+    "nested_jsonl": 1712,
+    "recursive_regular_all_types": 4445,
+    "stable_hash_before_after": 1734,
+    "top_level_jsonl": 25,
+    "unreadable": 0
+  },
+  "jsonl_total_bytes_at_manifest": 2114724330,
+  "manifest_sha256_after_parse": "d8256278859349d6d37bbce2ffec621f7e51cd8384f7fa27810ccc21e0f63263",
+  "manifest_sha256_before_parse": "2285c2b31b9ec6be43b389f9d4cc815d5c3835c68566837eddaee43466b23a6e",
+  "observed_timestamp_window_utc": {
+    "max": "2026-10-06T19:13:58.282000+00:00",
+    "min": "2026-08-28T14:52:52.284000+00:00"
+  },
+  "parser_sha256": "c5d91aaa61b212d20fc31cbc57e6afa11e34538a2cae09212aef1f274d3ff34f",
+  "partial_per_session_intensity_distribution": {
+    "authority": "partial source-record intensity only; not a complete session total or task tau; cross-session UUID collision semantics unknown",
+    "partial_session_input_components_plus_output_tokens": {
+      "max": 2242829742,
+      "median": 101644393,
+      "min": 115016
+    },
+    "sessions_with_unique_subset_rows": 23
+  },
+  "privacy": "content strings are syntax-scanned without slicing/decoding; only allowlisted scalar identity/time/usage fields captured; raw body-string UTF-8 semantics not validated; projection stores opaque HMAC identities and usage only",
+  "projection_sha256": "ec36ab1f4b310818335a0ff147e2e3d899d908d6e9f4b5eba68c7a1771e7f6ef",
+  "raw_event_ratios": {
+    "cache_creation_share": 0.030359447507822983,
+    "h_cache_read_share": 0.9696090131318347,
+    "input_output_ratio": 691.00922414883,
+    "input_tokens_total_components": 45441663510,
+    "uncached_input_share": 3.153936034240046e-05
+  },
+  "raw_usage_event_sums_moving_and_duplicate_sensitive": {
+    "cache_creation_input_tokens": 1379583798,
+    "cache_read_input_tokens": 44060646511,
+    "input_tokens": 1433201,
+    "output_tokens": 65761298
+  },
+  "schema": "epyc.dcp9a.usage_snapshot.v3",
+  "schema_spec_sha256": "d5f221990357497f6d639bfda4443857962e6de8d0eb81864ab6c9ba69a72bfa",
+  "unique_record_subset_ratios": {
+    "cache_creation_share": 0.022275829180193343,
+    "h_cache_read_share": 0.977714008701133,
+    "input_output_ratio": 1195.7190116305505,
+    "input_tokens_total_components": 8704484059,
+    "uncached_input_share": 1.0162118673597998e-05
+  },
+  "unique_record_subset_sums_not_billing_or_session_authority": {
+    "cache_creation_input_tokens": 193899600,
+    "cache_read_input_tokens": 8510496003,
+    "input_tokens": 88456,
+    "output_tokens": 7279707
+  },
+  "runner_sha256": "fd95879da52f7521e79545daaae786cbfdd36eb3ae3340b28b79c492b0b0f787"
+}
