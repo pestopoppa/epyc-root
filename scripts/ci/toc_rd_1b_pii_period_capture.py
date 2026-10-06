@@ -4,7 +4,7 @@ import hashlib, json, os, platform, re, subprocess, sys
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-SOURCE_PIN = "89d669b2bc81b21a53295ab7640b045810d09081"
+SOURCE_PIN = "64c245f3a71551028a56b760196e5429437c4f20"
 WORKFLOW_PATH = ".github/workflows/toc-rd-1b-pii-period.yml"
 CASE_IDENTITIES_PATH = "scripts/ci/toc_rd_1b_expected_case_identities.json"
 CONFIG_NAMES = {
