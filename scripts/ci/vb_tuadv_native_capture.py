@@ -82,6 +82,7 @@ ROOT_CARRIER_READS = tuple(CARRIER_BLOBS)
 EXPECTED_ENV = {
     "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1", "PYTHONDONTWRITEBYTECODE": "1",
     "PYTHONHASHSEED": "0", "PYTHONUNBUFFERED": "1",
+    "PYTEST_ADDOPTS": "", "PYTEST_PLUGINS": "",
 }
 
 
@@ -343,7 +344,11 @@ def main() -> int:
         read_paths.extend(tracked(source, name) for name in APP_BLOBS)
         read_paths.extend(tracked(app_lock, name) for name in APP_LOCK_BLOBS)
         read_paths.extend(tracked(carrier, name) for name in CARRIER_BLOBS)
-        read_paths.extend((source_manifest, environment, pip_freeze))
+        pre_status = result / "pre-status.json"
+        if not pre_status.is_file() or json.loads(pre_status.read_text(encoding="utf-8")) != {
+                "state": "setup_pending", "job": "tuadv-native-conformance", "exit_code": None}:
+            raise RuntimeError("workflow pre-status artifact is missing or changed")
+        read_paths.extend((source_manifest, environment, pip_freeze, pre_status))
         producer_argv = [
             sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
             "--cwd", str(work), "--junit", str(junit), "--output", str(native),
@@ -379,13 +384,18 @@ def main() -> int:
         before = {str(path.relative_to(result)): digest(path) for path in originals}
         sys.path.insert(0, str(carrier))
         sys.path.insert(0, str(carrier / "scripts/vidya"))
-        from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
-        from claim_tuple import grade
-        rows = native_rows(receipt_path)
+        grade_error = None
+        rows = ()
         grade_result = None
-        if len(rows) == 1:
-            projected = project_ci_conformance(rows[0])
-            grade_result = grade(projected)
+        try:
+            from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+            from claim_tuple import grade
+            rows = native_rows(receipt_path)
+            if len(rows) == 1:
+                projected = project_ci_conformance(rows[0])
+                grade_result = grade(projected)
+        except Exception as exc:
+            grade_error = f"{type(exc).__name__}: {exc}"
         after = {str(path.relative_to(result)): digest(path) for path in originals}
         originals_unchanged = before == after
         analysis = {
@@ -396,6 +406,7 @@ def main() -> int:
             "fixture_execution_conformant": receipt.get("fixture_execution_conformant"),
             "command_exit_code": command_exit,
             "shared_grade": grade_result, "shared_grade_row_count": len(rows),
+            "shared_grade_error": grade_error,
             "original_sha256_before_grade": before,
             "original_sha256_after_grade": after,
             "originals_unchanged": originals_unchanged,
@@ -404,7 +415,7 @@ def main() -> int:
         write_json(result / "shared-grade-analysis.json", analysis)
         passed = (command_exit == 0 and receipt.get("fixture_execution_conformant") is True
                   and identity_ok and counts_ok and originals_unchanged
-                  and len(rows) == 1 and grade_result is not None)
+                  and len(rows) == 1 and grade_result is not None and grade_error is None)
         status.update(state="passed" if passed else "failed", exit_code=command_exit,
                       fixture_execution_conformant=receipt.get("fixture_execution_conformant"),
                       exact_case_set=identity_ok and counts_ok,
