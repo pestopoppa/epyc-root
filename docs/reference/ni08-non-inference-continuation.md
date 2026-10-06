@@ -77,7 +77,7 @@ These are existing task identities or already filed prospective source companion
 | SC76 / SC77 | Source-first RAW artifact/revision resolution and shared re-verifier design | Canonical human/machine traceability ladder must remain intact; no original artifact may be fabricated |
 | HS-4 P6 | Cross-repo shared exploration-tool contract/source prep | Live catalog-growth before/after acceptance and Claude-owned deployment stay at the inference owner boundary |
 | HS-19d.P0 | Multi-call source checks, per-message task-part counters and versioned unscored corpus preparation | VB-DISPATCH-S2 itself is explicitly frozen; do not treat all P0 as either wholly free or wholly blocked |
-| C5-5 | Exact existing eight-seed problem-ID join has private source/fixture preparation assigned; MAIN review remains pending | No SOL bound port, benchmark or kernel change |
+| C5-5 | Source/27-case recipe passed MAIN32-input prebinding; hosted original capture pending | No SOL bound port, benchmark or kernel change; unavailable original policy bytes remain fail-closed |
 
 R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.
 
@@ -94,3 +94,8 @@ Preparation boundary: TOC recipe6fd5fd9 is in isolated CI after MAIN full Git/ca
 ## Period-cell source boundary — MAIN acceptance
 
 [Original73/73 and exact source bindings](../../artifacts/ni08/pii-period-source-20261006/README.md) close new TOC-RD-1B-SRC and pre-enrolled VB companion: **45 scoped completions (35 existing flips +10 scoped additions)**. Failed53/73 original retained; source regex/fixture-directory defects corrected without changing case identities. Narrow staged-cell selector only, no privacy/historical-fixture warrant. Whole-backlog exhaustion remains unproved; native report/SC80, C5 and thesis source work continue.
+
+
+## Continuing source queue — fresh review
+
+MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final native-recipe review. AP61 has a reviewed test-only replacement for the five-file guard: every current route source is scanned, with both method and direct-name calls caught. AP60 remains eligible configuration/test work: preserve default-off startup semantics while proving environment-to-instance write settings. AP62's append-unsafety premise is stale; its distinct concurrent `list(deque)` snapshot behavior needs source/caller review. RTG02 can reuse the existing pure-text programmatic scorer behind an explicit method gate. SC76/77 retained-RAW/source-quote verification source is under review; SC78/79 follow-ons must be re-screened against that shared checker rather than left implicitly gated. No pending source proposal or enrollment adds a completion; NI08 remains45 and whole-backlog exhaustion is unproved.
