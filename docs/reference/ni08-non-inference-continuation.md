@@ -51,3 +51,7 @@ Newly verified remaining work: VB-MFVBS-1 and VB-EVALDISC-1 lack adapters, and b
 ## Harness source boundary — MAIN acceptance
 
 Applied the verified container package pin and HS-E1 dated external-context addendum after manual LOW-risk review. Two existing checkboxes close; NI08 is now **35 scoped completions (29 existing flips + 6 scoped additions)**. Canonical citation check passed, unknown claim coverage remains unknown, no container build or selection warrant. Published HS-OD-4 options preserve actual explicit vision rejection and distinguish generation budgets from rendered tool text; its parent remains unchecked pending operator API-contract choice. Card/pin-freeze/P0 split remain under separate review.
+
+## AP context diagnostics — MAIN acceptance
+
+Accepted exact APP3dec5cc/recipec568acff/carrier4c0c source after independent frozen3,673Git-input map and original3,683member API ZIP review of native37533718483 TRUE88/88. All31 new controls and57 compatibility cases execute, shared Judged/Located original preserved. APPmain036f4e68 matches all nine source files. One jointly scoped source task and one existing VB flip close: **37 NI08 scoped completions (30 existing flips + 7 scoped additions)**. Metadata is hash-only/ungraded/default-off; AP-ME1 baseline/budget and AP-ME3 actual donor-selection remain open. No live trial or reload.

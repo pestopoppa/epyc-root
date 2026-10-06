@@ -1,0 +1,49 @@
+{
+  "reviewed_at": "2026-10-06T21:38:21.074057+00:00",
+  "run": 37533718483,
+  "artifact": 11445835306,
+  "pins": {
+    "app": "3dec5ccde33d9d1c1c8472187d581f5b5277ef74",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "c568acffdaf4636ee4658259f78f24863a7b33fa"
+  },
+  "zip_bytes": 30354572,
+  "zip_sha256": "c44faa7215198e4814a63232a629fd0c9491dd3b5a4fe1275f08e7fb42219f9c",
+  "members": 3683,
+  "predispatch_map_sha256": "b2c78423ff70c3a93185ab463c4621e4612ffd1e6646afd3226063953257c6ac",
+  "git_inputs_bound": 3672,
+  "symlink_identity_only": 1,
+  "native_contexts": 2,
+  "readset": 3674,
+  "receipt_file_sha256": "d9f18a541847b75fa8612023d9eecb5f71bb3513a0851ff7ca1d77a03005ce61",
+  "receipt_self_sha256": "d4598c721bde35307e5d6b6617efb53b930eff48da8548e0e45a71419ac6bbd4",
+  "counts": {
+    "collected": 88,
+    "executed": 88,
+    "passed": 88,
+    "failure": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "exact31reviewed_controls": true,
+  "suite_counts": {
+    "tests.unit.test_mutation_diagnostics": 31,
+    "tests.unit.test_failure_signatures": 11,
+    "tests.unit.test_behavior_signature": 25,
+    "tests.unit.test_bsv_observe": 21
+  },
+  "shared_grade": {
+    "adapter": "vidya.adapters.ci_conformance/v1",
+    "measurement_id": "ci-fixture:d4598c721bde35307e5d6b6617efb53b930eff48da8548e0e45a71419ac6bbd4",
+    "quality": "Judged",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ],
+    "traceability": "Located"
+  },
+  "shared_grade_executed_by_MAIN": false,
+  "originals_unchanged": true,
+  "source_integrity_accepted": true,
+  "scope": "default-off prospective mutation diagnostics synthetic controls; no live mutation measurement or efficacy warrant"
+}

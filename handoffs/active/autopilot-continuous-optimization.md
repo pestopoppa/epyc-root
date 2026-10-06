@@ -47,6 +47,8 @@ This packet is staging only; it does not run live RLM tasks, start Ouro training
   `max_related_cards 8`. **Offline-first**: measure current per-operator context size before changing
   anything, so the change has a baseline to beat.
 
+- [x] **AP-ME1-ME3-SRC — implement default-off prospective assembled-context capture and recorded same-context crossover diagnostics.** ✅ 2026-10-06 — [MAIN source acceptance](../../artifacts/ni08/mutation-context-source-20261006/README.md), original native88/88; APPmain036f4e68. Baseline/budget change and actual donor-selection parent tasks remain open.
+
 - [ ] **AP-ME-3 — Complementarity cue for crossover donor selection**, replacing frequency ranking in
   `informed_crossover_candidates`. **BSV-3 already computes a semantic conflict severity** over shared
   subsystem, files touched, prompt sections touched, feature flags and behavior-signature delta. That

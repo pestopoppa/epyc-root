@@ -1,0 +1,20 @@
+{
+  "previous_head": "e2d3a6706ca1d110730991f5c93d050018750dc7",
+  "main_before": "e2d3a6706ca1d110730991f5c93d050018750dc7",
+  "source": "3dec5ccde33d9d1c1c8472187d581f5b5277ef74",
+  "commit": "036f4e6873a06a512bb45468528fe5d39ddbb58f",
+  "paths": [
+    "docs/reference/mutation-diagnostics.md",
+    "scripts/autopilot/actions.py",
+    "scripts/autopilot/autopilot.py",
+    "scripts/autopilot/bsv_observe.py",
+    "scripts/autopilot/crossover_diagnostics.py",
+    "scripts/autopilot/mutation_author_capture.py",
+    "scripts/autopilot/mutation_pair_features.py",
+    "scripts/autopilot/species/prompt_forge.py",
+    "tests/unit/test_mutation_diagnostics.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}
