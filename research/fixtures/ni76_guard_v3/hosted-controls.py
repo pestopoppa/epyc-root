@@ -53,8 +53,10 @@ def run(label, argv, expected, *, cwd=None, env=None, denied=False):
     record = {'label': label, 'argv': list(map(str, argv)), 'exit_code': result.returncode,
               'expected': expected, 'before': before, 'after': after,
               'owner_pid': os.getpid(), 'denial_no_mutation_required': denied}
-    RESULTS.append(record)
-    (CAPTURE / 'cases.json').write_text(json.dumps(RESULTS, indent=2))
+    case_path = CAPTURE / f'{label}.case.json'
+    with case_path.open('x') as case_file:
+        json.dump(record, case_file, indent=2)
+    RESULTS.append(case_path)
     assert result.returncode == expected, (label, result.returncode, result.stderr)
     if denied:
         assert before == after, ('mutated on refusal', label)
@@ -229,5 +231,21 @@ if os.environ.get('NI76_HOLD_WRITER'):
        'claim':'admission only; no continuous lifetime assurance'}))
 
 
+
+def write_cases():
+    """Aggregate actual immutable records on completion or Python failure."""
+    with (CAPTURE / 'cases.json').open('x') as cases_file:
+        cases_file.write('[\n')
+        for position, case_path in enumerate(RESULTS):
+            if position:
+                cases_file.write(',\n')
+            with case_path.open() as case_file:
+                while chunk := case_file.read(1024 * 1024):
+                    cases_file.write(chunk)
+        cases_file.write('\n]\n')
+
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        write_cases()
