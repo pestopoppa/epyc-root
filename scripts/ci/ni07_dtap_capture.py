@@ -71,8 +71,10 @@ def validate_readset(app: Path, inventory_path: Path, record: dict) -> list[Path
         if not isinstance(item, dict) or set(item) != {"path", "git_blob", "sha256"}:
             raise ValueError("malformed application source readset row")
         name = item["path"]
+        if not isinstance(name, str):
+            raise ValueError("source readset path is not normalized and relative")
         posix = PurePosixPath(name)
-        if (not isinstance(name, str) or posix.is_absolute() or posix.as_posix() != name
+        if (posix.is_absolute() or posix.as_posix() != name
                 or any(part in {"", ".", ".."} for part in posix.parts)):
             raise ValueError("source readset path is not normalized and relative")
         if name in expected:
@@ -99,8 +101,10 @@ def validate_pinned_paths(repo: Path, pin: str, rows: list[dict]) -> list[Path]:
         if not isinstance(row, dict) or set(row) != {"path", "git_blob", "sha256"}:
             raise ValueError("malformed pinned source path row")
         name = row["path"]
+        if not isinstance(name, str):
+            raise ValueError("pinned source path is not normalized and relative")
         rel = PurePosixPath(name)
-        if (not isinstance(name, str) or rel.is_absolute() or rel.as_posix() != name
+        if (rel.is_absolute() or rel.as_posix() != name
                 or any(part in {"", ".", ".."} for part in rel.parts)):
             raise ValueError("pinned source path is not normalized and relative")
         data = (repo / name).read_bytes()
