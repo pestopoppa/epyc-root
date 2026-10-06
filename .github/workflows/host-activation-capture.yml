@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SOURCE_PIN: f1311c1994a591def4dc6cbb967399fb3f24d17f
+      SOURCE_PIN: 77704fe16418476eb4663fa51488a64d3f0c9e70
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       HOSTA_RUNNER_CONTEXT: ubuntu-latest
       HOSTA_EXECUTION_CONTEXT: offhost-synthetic-host-activation-tests

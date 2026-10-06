@@ -12,7 +12,7 @@ import sys
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-SOURCE_PIN = "f1311c1994a591def4dc6cbb967399fb3f24d17f"
+SOURCE_PIN = "77704fe16418476eb4663fa51488a64d3f0c9e70"
 WORKFLOW_PATH = ".github/workflows/host-activation-capture.yml"
 CONFIG_NAMES = {
     "pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini", "uv.lock",
