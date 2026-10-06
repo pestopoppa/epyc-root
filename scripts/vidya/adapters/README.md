@@ -120,6 +120,13 @@ NI06 prospective source enrollment (2026-10-06, before capture):
 
 NI06 capture accepted and ingested (2026-10-06): three original receipts, three projected rows and nine frames in the canonical ledger, using the existing shared grader. Full custody is private; public [ingestion report](../../../artifacts/ni06/belief-ingest-original-report.json) and run review summaries describe the bounded scope. Earlier FALSE/NULL outcomes are retained without rewriting.
 
+NI07 continuation source enrollment (before acceptance/capture):
+
+| source | class | scope / absence rules | producer / adapter |
+|---|---|---|---|
+| HG-9, TU-GR-1 and subsequent NI07 source-backed contract maps | document dependency evidence only | Bind exact Git source pins, relevant symbols/readset, delegated draft and MAIN review/applied content. Runtime mount/UID, model-size eligibility and deployment facts remain unknown unless established by their own producer. Source audit/specification does not establish isolation, accuracy or adoption. | Existing document/artifact dependency handling; `VB-NI07-DOC-DEPS` |
+| NI07 synthetic implementation fixture executions | verifier (existing CI command carrier) | Bind source/test/config/import readset, recipe/harness, runner context and original command/JUnit/status prospectively; retain failures/nulls and original custody. Fake model/role/encoder inputs only. No inference, migration, kernel/serving, quality, performance or whole-suite warrant. | Existing native conformance producer + CI adapter/shared grader; `VB-NI07-CI-WIRE` |
+
 1. **Find the tuple in the source.** Do not invent elements. What is missing must stay missing:
    it grades the claim down, which is a true statement about the measurement.
 

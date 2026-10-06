@@ -1,0 +1,15 @@
+{
+  "scope": "source-backed specification; no runtime isolation or model/quality claim",
+  "owner": "codex-ni-main",
+  "accepted": true,
+  "source_blobs_reopened": 25,
+  "source_identity_mismatches": 0,
+  "native_tests_executed": 0,
+  "draft_sha256": "573b594421c85dfcb9b7c94818bcb33a0b6bb6e7c24f05de33940f79ec9735bc",
+  "applied_document_sha256": "a02b3e56a88392bb16a2326c07b57571f4ca5781f4b080233365e2fbee2e5676",
+  "main_adjustments": [
+    "Endpoint fields described exactly; no advertised tool schema asserted",
+    "Native chain consistency distinguished from external trusted anchor",
+    "Public sanitized task inputs may be mounted; private host workspace stays excluded"
+  ]
+}

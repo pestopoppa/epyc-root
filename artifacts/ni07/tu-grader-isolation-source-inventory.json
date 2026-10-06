@@ -1,0 +1,273 @@
+{
+  "entries": [
+    {
+      "git_blob": "8fef6f6abdd4d60bdc1a063879a3d975396ae3e7",
+      "path": "scripts/benchmark/code_exec_scorer.py",
+      "pin": "f17bb5a399c50dd944d4d53c3b6bf466cd67c45a",
+      "repository": "epyc-inference-research",
+      "sha256": "d734d3323d80c66bc9b86764948145d8f93e4f2d48a51285fa06b766ed1ad265",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "4a6987b8a56549f76e48ead9fccaf20ca6c9b1da",
+      "path": "orchestration/model_registry.yaml",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "dd81678d5bd7d097b4168f41a97e97f1d85a292dd560a029ba3b908b9598eba5",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "25df751169662a316a490f0f8365c6d9037c3d25",
+      "path": "scripts/autopilot/evals/dtap/README.md",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "a3d944efbe9c2d6d71ef9c2a58eb571f6249e0f42e96330843157a215bb11dc0",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "e95b9f13aca14cbc5e18c869f172e927ba3acfa4",
+      "path": "scripts/autopilot/evals/dtap/cases.json",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "183d33e60bba0fd965dfc3fe3e8f61dd9ec094a0",
+      "path": "scripts/autopilot/evals/dtap/harness/endpoint.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "68c49a884b1744ad295fa708271908232fbacc451b3b4f8f2954d631e87899ba",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "9220c4969fd72e1b1bb29b13a5c58a245f4e0d94",
+      "path": "scripts/autopilot/evals/dtap/harness/env_state.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "3c1591ae7ea494b1da39fe40764ae647210b1fd2",
+      "path": "scripts/autopilot/evals/dtap/harness/judge_guard.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "ebda452563b29f046ba2f03639fc87f5521f493a",
+      "path": "scripts/autopilot/evals/dtap/harness/outcomes.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "689adb241d2d742bdf81b18bb6fe9b3d76fa365d",
+      "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "295cb5c7bfb48660b25c7e7ace52d227c13d5425060df64c86fa77936dabae58",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "d05e12aaebd44a2fb042ecc96015e3dfade23b04",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/__init__.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "c2316b355ada0e9f99dd536da4e752d1ccc0859af8c1b82e53814c81fccf7534",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "a1223e5aec960a8aed8321e3235c3e70cd1aed64",
+      "path": "scripts/autopilot/evals/dtap/harness/trace.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "b90e059b0c70f5e50b1fc323657df854a39b2e17",
+      "path": "scripts/autopilot/evals/dtap/harness/utils.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "25f9f9ec44db4b525a98650030898ed9b380151c",
+      "path": "scripts/autopilot/evals/dtap/manifest.json",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "4baf73632e720189ec3dd507a662f327a7b9f742c2ff7c0eb027f2749486807e",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "6cd01a03666b07e689c5a10908974f34025c58e0",
+      "path": "src/api/models/openai.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "169b0076450a508b7f41ccd29ccdbaf9691a06d2bc8b7b7d13eefca4f3d78221",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "e8d87d004eb53d97f0ff62709bf29d29f915ed49",
+      "path": "src/api/routes/openai_compat.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "50eeb8c670648202865c1a3eae200343045fa9f576d366389a250b168b51ff6b",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "533ceb6331ed7a062a4d0960ef0a3f15b1c2619c",
+      "path": "src/backends/llama_server.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "cef546d0009917416d544f5e52814def1d71644e06970a5be6c92145f0533e62",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "e09b17402c489f532e3330011dbe529a904f6bfe",
+      "path": "src/backends/openai.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "129ef11391df6e4be4cb6e99c4bde67374ae075af0d072951ae47e3ee5e8b8b0",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "43e5ae929cf579516510aaa4b5e57c39b6ae7077",
+      "path": "src/llm_primitives/inference.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "d22b9653615ecf6b46fd3821bfb62b9fcfb24e725fe091db9b2154346666b1bf",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "e0a8ecf791d5b7217e4f02e2e867b77a4f82bd9f",
+      "path": "src/llm_primitives/primitives.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "6111549ee50a29eb06efa744ae01ca53a1f205ebf89d6fa22ab4f56ca9388399",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "9bde2526c607d7a7022ecaea6bcad1e06006290a",
+      "path": "src/prompt_builders/builder.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "c47d2b029dd2c59548f29488de648c50267e082f9b2a3e925026750430fe5c48",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "c0be83ef2c8af17e6c64578609c1291ca1718469",
+      "path": "src/prompt_builders/code_utils.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "4f834c0ac7c2f94c8693a1c73eb5dd94384388ae614b4a9f85d7c48651fe51ea",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "c1fea0aaf936ac5740d618e83450233cae7c50cc",
+      "path": "src/prompt_builders/constants.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "5c876a136051929f1bdce66c9b21aaca038146449dfe6301f0b2c50ddfa932d4",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "0bddc98c3a27c40d4e117783f70808f22551fc4f",
+      "path": "src/registry/registry_loader.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "c4a4bf71f0f90384ffb64c673897c9fd496889e4e395a2e3eaf94933550ed18b",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "fa97d38bd485f5a7ebea69746472ecc2856ed005",
+      "path": "src/registry/tool_registry.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "4c378fb21752b0d359137af6da8a1e8a18a751f8cb8a2fbb6c324eb86fb4d230",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "7684a8cdd16665ad787772657e3f1c53c2536127",
+      "path": "src/repl_environment/context.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "09982f2ff765534f5dc2a37119aed11fedd9aa315125974b725a57d79357b1ee",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "80e2b54fb0d4f7b288aeee64e667422086eeeb07",
+      "path": "src/typed_decisions/judge_redundancy.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "9372c01d538cb9482ba0fe516118b42798e556aa9d4c11b0923de4c8d28bf348",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "6f18121f60340509ac897da8fe6ab2a5b7c6d192",
+      "path": "src/typed_decisions/prepared_action.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "b2921dc9006a2f2ad9fe82299f4b774e1d65b5ef02467001a2f2272471a04a90",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "40ec9ed0efef79f69da29427d62b1522c75374db",
+      "path": "src/typed_decisions/runner.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "29cf2de3cddd46ad0f918c730388257f4c5ebbb024c7c77e40a7446f2512c51d",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "cb49cf32f721113f471ba7c08e3a9724bae5f184",
+      "path": "src/typed_decisions/types.py",
+      "pin": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+      "repository": "epyc-orchestrator",
+      "sha256": "8b5e2ec7f76a95ad0ff93e3af0f19153410fa68e61b2bae7f06eaa94a4e31bd1",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "133eea2d49a5607e4a87cfcfdf1c16b795e5a183",
+      "path": "agents/shared/OPERATING_CONSTRAINTS.md",
+      "pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "repository": "epyc-root",
+      "sha256": "8a72009bf05fa425598cf334ecdfec13e9c3b54b075fe41ba744894ee54c2d07",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "7fbd68a0a440ecc346a77b0b6f95272b953a6b2b",
+      "path": "handoffs/active/scoring-infra-standardization.md",
+      "pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "repository": "epyc-root",
+      "sha256": "2425f14edb1734e8fd02c25ee9ffb8d7418a53d2e6127e474eb5ac0333821f26",
+      "source_verified_from_git_show": true
+    },
+    {
+      "git_blob": "72c1bf0429dcba623f70be31c6ded42786cf3697",
+      "path": "handoffs/active/tool-use-eval-contract.md",
+      "pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+      "repository": "epyc-root",
+      "sha256": "6e7aab48b2f2b726be17d8014f12eeee06bafe9a56a4c4069407c88df64a62d7",
+      "source_verified_from_git_show": true
+    }
+  ],
+  "original_inspection_pins_before_published_pin_reconciliation": {
+    "epyc-inference-research": "f1c6fef56c54d1c9532e964658c8eebedce5b8b7",
+    "epyc-orchestrator": "300cf5817edccc4f82089f0faa477828496068b6",
+    "epyc-root": "db398a70ddefd9b71fd4cd7c06a3f34c21b3fa97"
+  },
+  "research_published_pin_resolution": "origin/main at source audit time",
+  "schema": "tu-grader-isolation-source-inventory.v1",
+  "selected_source_paths_clean_in_shared_worktrees_at_inspection": true,
+  "source_pins": {
+    "epyc-inference-research": "f17bb5a399c50dd944d4d53c3b6bf466cd67c45a",
+    "epyc-orchestrator": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+    "epyc-root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+  }
+}
