@@ -1,0 +1,69 @@
+name: NI07-25 eval question archive status
+on:
+  push:
+    branches: [codex/ni07-25-capture-status]
+    paths:
+      - .github/workflows/ni07-25-eval-capture-status.yml
+      - scripts/ci/ni07_25_eval_capture_status.py
+permissions:
+  contents: read
+jobs:
+  eval-capture-status:
+    name: eval-capture-status
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_PIN: 87e06e062d8ab5fcb8a1cce0642b17ebbd0d241e
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      NI07_RUNNER_CONTEXT: ubuntu-latest
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      NI07_INSTALL_COMMAND: >-
+        python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0
+        pluggy==1.6.0 Pygments==2.20.0 httpx==0.28.1 anyio==4.13.0
+        certifi==2026.2.25 h11==0.16.0 httpcore==1.0.9 idna==3.11
+        PyYAML==6.0.3 jsonschema==4.26.0 attrs==26.1.0
+        jsonschema-specifications==2025.9.1 referencing==0.37.0 rpds-py==0.30.0
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni07-25-eval-capture-status/result"
+          printf '{"state":"setup_pending","job":"eval-capture-status","exit_code":null}\n' > "$RUNNER_TEMP/ni07-25-eval-capture-status/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout reviewed APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install pinned pytest and APP lock-resolved import closure
+        run: ${{ env.NI07_INSTALL_COMMAND }}
+      - name: Capture original eval sidecar status receipt
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          python recipe/scripts/ci/ni07_25_eval_capture_status.py
+      - name: Preserve original receipt, JUnit and status on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni07-25-eval-capture-status-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni07-25-eval-capture-status/result/
+          if-no-files-found: error
