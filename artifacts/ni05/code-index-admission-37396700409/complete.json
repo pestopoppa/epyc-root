@@ -1,0 +1,1 @@
+{"passed": true, "cases": 103, "kernel_records": "real /proc/locks only", "native_cli_preflight": "disabled only in disposable runner; actual GLOBAL/write locks still mandatory", "claim": "admission only; no continuous lifetime assurance"}

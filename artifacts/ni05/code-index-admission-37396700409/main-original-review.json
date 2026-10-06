@@ -1,0 +1,41 @@
+{
+  "run": 37396700409,
+  "recipe": "591bd02d148bba94ee1ecc271183337493665c85",
+  "archive_sha256": "7fe3b8c1ca0a7d6aa507a8589f7cb2ed886288a9fe5f58a7f5eeb2dc0772d40f",
+  "archive_bytes": 297266077,
+  "original_members_compared": 830,
+  "receipt_FILE_sha256": "56c1c69638b0afe26c33cd804679acbdeb82e2747d39e0f3f3ada7789f9761ff",
+  "receipt_self_sha256": "da91b0ead24d0149c927aa8fa94197878dd726b4d8cc9f3794ef895a4ad6111c",
+  "counts": {
+    "collected": 1,
+    "error": 0,
+    "executed": 1,
+    "failure": 0,
+    "passed": 1,
+    "skipped": 0
+  },
+  "descriptive_controls": 103,
+  "exact_sidecars": 103,
+  "hardlink_refusals": [
+    "cpu-global-shared-inode",
+    "cpu-global-build-alias"
+  ],
+  "source_classes": {
+    "ROOT_Git": 15,
+    "APP_Git": 16,
+    "fixture": 7,
+    "context": 12
+  },
+  "grade": [
+    "Judged",
+    "Located"
+  ],
+  "postchecks": {
+    "source_bytes_unchanged": true,
+    "HOME_unchanged": true,
+    "host_index_deployed": false,
+    "fixed_root_created_only_on_disposable_runner": true
+  },
+  "originals_unchanged": true,
+  "scope": "Admission only; source implementation, no host-index recovery/execution or continuous-lifetime assurance"
+}

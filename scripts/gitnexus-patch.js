@@ -21,7 +21,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 
 const SENTINEL = 'EPYC-NONTTY-PROGRESS-PATCH v1';
 
@@ -108,6 +108,8 @@ function buildPatches(version) {
 }
 
 function main() {
+  const guard = spawnSync('/usr/bin/python3', ['-I', path.join(__dirname, 'gitnexus-guard.py'), '--repo', 'root'], { stdio: 'inherit' });
+  if (guard.error || guard.status !== 0) return 64;
   const target = resolveAnalyzeJs();
   if (!target) {
     process.stderr.write('gitnexus-patch: could not locate gitnexus dist/cli/analyze.js — skipping (analyze will run unpatched).\n');

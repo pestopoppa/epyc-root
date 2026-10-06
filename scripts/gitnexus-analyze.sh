@@ -17,9 +17,4 @@
 # a patch failure never blocks indexing.
 set -euo pipefail
 HERE="$(dirname "$(readlink -f "$0")")"
-node "$HERE/gitnexus-patch.js" || true
-args=(--skip-agents-md)
-if gitnexus analyze --help 2>&1 | grep -q -- '--skip-skills'; then
-  args+=(--skip-skills)
-fi
-exec gitnexus analyze "${args[@]}" "$@"
+exec /usr/bin/python3 -I "$HERE/gitnexus-writer.py" --repo root -- "$@"
