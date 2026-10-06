@@ -1,0 +1,129 @@
+{
+  "schema": "ni05.main_original_review.v1",
+  "run": 37391662467,
+  "archive_count": 15,
+  "archives": [
+    {
+      "name": "ni6972-priors-compiler-install-37391662467",
+      "sha256": "e1bf857172880aeecae8a95c45381fc771111049a616675bad9d65872d4ef9d2",
+      "bytes": 1051601
+    },
+    {
+      "name": "ni6972-numa-readers-native-37391662467",
+      "sha256": "e8abee14108035296aa356af42192e4a120ece3c0334fd440e474f141234c3eb",
+      "bytes": 74440158
+    },
+    {
+      "name": "ni6972-external-drafter-native-37391662467",
+      "sha256": "e744fae71c1c104c076afb1935f58b93dbf3e266cd8437a6ff90693ea7cef03f",
+      "bytes": 74468145
+    },
+    {
+      "name": "ni6972-priors-compiler-postcheck-37391662467",
+      "sha256": "7e6f07c91444d5442de97c52c4dcb912cbb7c68ec21828720ded6f3d5be7ad76",
+      "bytes": 74482872
+    },
+    {
+      "name": "ni6972-speech-composition-install-37391662467",
+      "sha256": "758ce62f3ead61dae14aa7ac3ca3aec5a3d43f68c3caa0975d458c34dd511342",
+      "bytes": 1051609
+    },
+    {
+      "name": "ni6972-external-drafter-postcheck-37391662467",
+      "sha256": "8328ef6a23c403a371f7316dc39c83b22b895e37d93acf9e09816c705d21c21e",
+      "bytes": 74469043
+    },
+    {
+      "name": "ni6972-external-drafter-install-37391662467",
+      "sha256": "5155268255b83ae1b3466613f737ff22c14d467b38ef6d75c827b9281410a658",
+      "bytes": 1051608
+    },
+    {
+      "name": "ni6972-numa-readers-postcheck-37391662467",
+      "sha256": "c63707a58cd95036581df71206eb1bd2b7569346784c1c34109a2cedee9008e1",
+      "bytes": 74441056
+    },
+    {
+      "name": "ni6972-priors-compiler-native-37391662467",
+      "sha256": "164f241be18ca2ad5e415490521def7d32faa8b4ae0599aba084976d86a99cd8",
+      "bytes": 74481974
+    },
+    {
+      "name": "ni6972-system-card-native-37391662467",
+      "sha256": "d015b43a44bb0bfaf5b88f27e6adaa2f8c49815d5093ffb7cd5cabf1e9d240ae",
+      "bytes": 74437402
+    },
+    {
+      "name": "ni6972-system-card-postcheck-37391662467",
+      "sha256": "42d363cc0750a745cbd3ec36ba89a02001861602e42308eb990ee7aef30672b7",
+      "bytes": 74438300
+    },
+    {
+      "name": "ni6972-system-card-install-37391662467",
+      "sha256": "015d1e422c9ee0c80194dc4f51830ab45f79369cf13010092df0b78d0e54fbe1",
+      "bytes": 1051581
+    },
+    {
+      "name": "ni6972-numa-readers-install-37391662467",
+      "sha256": "77c7897edf5977c953b46aefa2585d076ebbec28b4e7a0fe590ff3183764e1ea",
+      "bytes": 1051591
+    },
+    {
+      "name": "ni6972-speech-composition-native-37391662467",
+      "sha256": "0e511f381333fa97eeb780c9023ff2c4aefb1f9f2f01df202c7fe8087cc05ade",
+      "bytes": 74479191
+    },
+    {
+      "name": "ni6972-speech-composition-postcheck-37391662467",
+      "sha256": "0099b4ad4637a77dcbd86715f58e2940909597b6d7fce96a8fe43c0de915a6a2",
+      "bytes": 74480089
+    }
+  ],
+  "original_members_compared": 42115,
+  "modules": [
+    {
+      "phase": "speech-composition",
+      "counts": {
+        "collected": 7,
+        "error": 0,
+        "executed": 7,
+        "failure": 0,
+        "passed": 7,
+        "skipped": 0
+      },
+      "FILE_sha256": "8806ebb6d6499ea557b4babb061ce5c765da2b076505856192895ab32125945a",
+      "self_sha256": "ccd0bdd6359d0d10e38545cedde391ba5db2f29806335cd74ed86a2beb606454",
+      "readset_count": 4176,
+      "Git_Python_copies": {
+        "canonical": 2069,
+        "fixture": 2069
+      },
+      "root_inputs": 13,
+      "other_declared_inputs": 25,
+      "grade": [
+        "Judged",
+        "Located"
+      ],
+      "repositories": {
+        "app": "45607fda456b6cc26796136a661e2e7f41cbbcdc",
+        "fixture": "a73c589717c77b68ae2e730cbdb79e9593326aaf",
+        "producer": "e8d223ad47629e90d74c84bc5f8c6b8385096e1f",
+        "recipe": "767c41ef92ee30983c967c410b1423c902d6d4bd"
+      },
+      "capacity": {
+        "MemAvailable_kB": 14942600,
+        "MemTotal_kB": 16373452,
+        "actual_available_headroom": true,
+        "fixture_reserve_gib": 1.0,
+        "host_capacity_gib": 15.6149,
+        "host_required_gib": 0.0506,
+        "no_production_capacity_claim": true,
+        "synthetic_owned_declarations": true,
+        "unchanged_guard_executed": true
+      },
+      "true_postchecks": 4
+    }
+  ],
+  "originals_unchanged": true,
+  "scope": "Selected owned synthetic declaration assertions; no production capacity, kernel or whole-suite warrant"
+}
