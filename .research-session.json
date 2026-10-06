@@ -1,107 +1,80 @@
 {
- "session_id": "intake-cafe-llama-ec-20261006",
- "started_at": "2026-10-06T00:00:00Z",
- "last_checkpoint": "2026-10-06T00:00:00Z",
- "stage": "stage4-complete",
- "phase": "stage4",
- "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
- "branch": "lane/ec-intake-cafe-1006",
- "topic": "kozmic-labs/cafe-llama.cpp fork (SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf)",
+ "session_id": "intake-q38fn-cluster-ec-20261006",
+ "started_at": "2026-10-06T19:00:00Z",
+ "last_checkpoint": "2026-10-06T19:00:00Z",
+ "stage": "stage1-complete",
+ "phase": 5,
+ "lane": "/mnt/raid0/llm/worktrees/ec-intake-q38fn-cluster",
+ "branch": "lane/ec-intake-q38fn-cluster",
+ "topic": "myllmbox/qwen38-flash-next-cluster-recipe (SHA d2721ecbd16f4a10b968b2755fc374da3c539502) - 2x DGX Spark Q38FN physics comparison; plus ROCm 10.1 blog",
  "entries_processed": [
-  "intake-1925",
-  "intake-1926",
-  "intake-1927",
-  "intake-1928",
-  "intake-1929",
-  "intake-1930",
-  "intake-1931",
-  "intake-1932",
-  "intake-1933",
-  "intake-1934",
-  "intake-1935",
-  "intake-1936"
+  "intake-1937",
+  "intake-1938",
+  "intake-1939",
+  "intake-1940",
+  "intake-1941",
+  "intake-1942",
+  "intake-1943",
+  "intake-1944",
+  "intake-1945",
+  "intake-1946",
+  "intake-1947",
+  "intake-1948"
  ],
  "entries_remaining": [],
- "next_intake_id": 1937,
+ "next_intake_id": 1949,
  "expansion_cap": 10,
- "expansion_count": 6,
+ "expansion_count": 10,
  "expansion_entries": [
-  "intake-1926",
-  "intake-1927",
-  "intake-1928",
-  "intake-1929",
-  "intake-1930",
-  "intake-1931"
+  "intake-1939",
+  "intake-1940",
+  "intake-1941",
+  "intake-1942",
+  "intake-1943",
+  "intake-1944",
+  "intake-1945",
+  "intake-1946",
+  "intake-1947",
+  "intake-1948"
  ],
  "dedup": {
-  "cafe-llama": "no collision (url, resolved url identical, HTTP 200 no redirect)",
-  "re_encounters_not_minted": "TurboQuant 2504.19874=intake-191, AngelSpec 2607.25852=intake-1848, DFlash 2602.06036=intake-158, RFC #24528=intake-1191 (companion artifacts, cross-referenced not duplicated)"
+  "myllmbox/qwen38-flash-next-cluster-recipe": "no collision (url; HTTP 200, no redirect)",
+  "rocm-10.1 blog": "no collision (tracking params stripped)",
+  "expansion_urls": "swept unbounded against all url/arxiv_id values: no collision for any of the 10 expansion URLs (index holds local-inference-lab/b12x/pull/49 and rocm.blogs.amd.com other posts, distinct sources)"
  },
  "expansion_refused": [
   {
-   "seed": "intake-1925",
-   "reason": "Strata (adaptive window origin) canonical repo unresolved from search (stratallm.org, xenodeve/Strata-xeno issue); not persisted rather than guess; vpozharski/moe-cache and PR #27861 seen but not persisted (budget)"
+   "seed": "intake-1937",
+   "reason": "myllmbox/Qwen3.8-Flash-Next-hibrid48 HF card (fetched) not persisted: cap of 10 reached; its speed claim (~10% slower) is already recorded from the cluster README; tonyd2wild/MiaAI-Lab repos and ai-muninn blog seen in search results but not persisted (cap) - candidates for Stage-2b wave"
   }
  ],
  "steering_ledger": [
   {
    "seq": 1,
    "stage": 1,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "It could be very relevant to the currently running claude inference sessions. I imagine there will be a number of insights we could distill and rebuild ourselves directly or inject as autokernel hypotheses",
-   "disposition": "planned",
-   "plan_ref": "STAGE3_PLAN.md R1-R4 and AK-A..AK-G; handoff tasks CAFE-1..CAFE-8, RT-5, AKX-ALL-25"
+   "ts": "2026-10-06T19:00:00Z",
+   "verbatim": "In the meantime, dispatch a subagent to perform a research-intake of this (usual 'all recommended' 10 cap peer stage 2 wave, and a cap of four maximum stage 2 waves) repo where 2x dgx spark achieve insane performance numbers with q38fn",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "reason": "Operator dive policy: Stage 2 on all recommended dives (<=10 per wave), at most 4 waves total including Stage 2; stop at Stage-2 close-out; Stage 3 needs operator approval."
   },
   {
    "seq": 2,
-   "stage": 2,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "All recommended with a cap of 10, and maximum four stage 2 waves",
+   "stage": 1,
+   "ts": "2026-10-06T19:00:00Z",
+   "verbatim": "2x dgx spark should have an effective aggregate memory bandwidth in line with our CPU+ram hardware. As such, there either must be a physics reason for why we can't hit similar performance numbers, or we MUST got much much higher performance numbers",
    "disposition": "planned",
-   "plan_ref": "STAGE3_PLAN.md section 0 (waves 1-4 executed) and section 1"
+   "plan_ref": null,
+   "reason": "Core question of the intake: physics comparison section in INTAKE_STAGE1.md / INTAKE_STAGE2.md; carried into Stage 3 as a decision input (plan_ref assigned at Stage 3)."
   },
   {
    "seq": 3,
-   "stage": 2,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "Dive the 2 unselected claims too",
-   "disposition": "planned",
-   "plan_ref": "STAGE3_PLAN.md AK-E, R4, AK-F, AK-G; CAFE-7, CAFE-8, RT-5",
-   "note": "Operator option chosen in the coordinator's question. Superseded in framing by seq 4: these dives belonged to the original selection."
-  },
-  {
-   "seq": 4,
-   "stage": 2,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "I did? I don't recall this at all. I told you to deep dive all recommended stage 2 sources (up to a maximum of 10 per stage 2 wave), and to not preform more than four stage 2 waves.",
+   "stage": 1,
+   "ts": "2026-10-06T19:00:00Z",
+   "verbatim": "Add this to the same research intake also please: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.1-blog/README.html?term=10-6-rocmrelease&utm_campaign=thallosocial&utm_source=twitter&utm_medium=social&utm_content=1791306421",
    "disposition": "planned",
    "plan_ref": null,
-   "note": "Correction: the K-mean-centering and MoE-cache dives are part of the ORIGINAL selection, misapplied as 'not selected' by workspace-ec; they are being completed (wave 3, 'completion of the original Stage-2 selection', counts toward the 4-wave cap). Not a new operator request."
-  },
-  {
-   "seq": 5,
-   "stage": 2,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "Not yet",
-   "disposition": "declined",
-   "plan_ref": null,
-   "note": "Operator on starting Stage 3 (as relayed by the coordinator): stop at the Stage-2 close-out; do not draft Stage 3."
-  },
-  {
-   "seq": 6,
-   "stage": 2,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "if there are no more stage 2 intake recommendations, proceed to stage 3",
-   "disposition": "planned",
-   "plan_ref": "STAGE3_PLAN.md (this plan); section 0"
-  },
-  {
-   "seq": 7,
-   "stage": 3,
-   "ts": "2026-10-06T00:00:00Z",
-   "verbatim": "proceed with stage 4. Once complete, have the subagent perform a /wrap-up of its work.",
-   "disposition": "planned",
-   "plan_ref": "Stage 4 implemented as STAGE3_PLAN.md; wrap-up performed per-task"
+   "reason": "Operator added the AMD ROCm 10.1 blog to the same intake: ingested as intake-1938 (tracking params stripped) with the MI210/gfx90a migration angle (REBUILD / AK-HYPOTHESIS / KNOWLEDGE / ALREADY-HAVE tags); carried into Stage 3."
   }
  ],
  "prior_sessions": [
@@ -5105,50 +5078,163 @@
      "wave_counted": "wave 2 (not a new wave)"
     }
    }
+  },
+  {
+   "session_id": "intake-cafe-llama-ec-20261006",
+   "stage": "stage4-complete",
+   "last_checkpoint": "2026-10-06T00:00:00Z",
+   "note": "archived whole-object under prior_sessions 2026-10-06 by intake-q38fn-cluster (stage4-complete); ledgers retained in snapshot",
+   "snapshot": {
+    "session_id": "intake-cafe-llama-ec-20261006",
+    "started_at": "2026-10-06T00:00:00Z",
+    "last_checkpoint": "2026-10-06T00:00:00Z",
+    "stage": "stage4-complete",
+    "phase": "stage4",
+    "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
+    "branch": "lane/ec-intake-cafe-1006",
+    "topic": "kozmic-labs/cafe-llama.cpp fork (SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf)",
+    "entries_processed": [
+     "intake-1925",
+     "intake-1926",
+     "intake-1927",
+     "intake-1928",
+     "intake-1929",
+     "intake-1930",
+     "intake-1931",
+     "intake-1932",
+     "intake-1933",
+     "intake-1934",
+     "intake-1935",
+     "intake-1936"
+    ],
+    "entries_remaining": [],
+    "next_intake_id": 1937,
+    "expansion_cap": 10,
+    "expansion_count": 6,
+    "expansion_entries": [
+     "intake-1926",
+     "intake-1927",
+     "intake-1928",
+     "intake-1929",
+     "intake-1930",
+     "intake-1931"
+    ],
+    "dedup": {
+     "cafe-llama": "no collision (url, resolved url identical, HTTP 200 no redirect)",
+     "re_encounters_not_minted": "TurboQuant 2504.19874=intake-191, AngelSpec 2607.25852=intake-1848, DFlash 2602.06036=intake-158, RFC #24528=intake-1191 (companion artifacts, cross-referenced not duplicated)"
+    },
+    "expansion_refused": [
+     {
+      "seed": "intake-1925",
+      "reason": "Strata (adaptive window origin) canonical repo unresolved from search (stratallm.org, xenodeve/Strata-xeno issue); not persisted rather than guess; vpozharski/moe-cache and PR #27861 seen but not persisted (budget)"
+     }
+    ],
+    "steering_ledger": [
+     {
+      "seq": 1,
+      "stage": 1,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "It could be very relevant to the currently running claude inference sessions. I imagine there will be a number of insights we could distill and rebuild ourselves directly or inject as autokernel hypotheses",
+      "disposition": "planned",
+      "plan_ref": "STAGE3_PLAN.md R1-R4 and AK-A..AK-G; handoff tasks CAFE-1..CAFE-8, RT-5, AKX-ALL-25"
+     },
+     {
+      "seq": 2,
+      "stage": 2,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "All recommended with a cap of 10, and maximum four stage 2 waves",
+      "disposition": "planned",
+      "plan_ref": "STAGE3_PLAN.md section 0 (waves 1-4 executed) and section 1"
+     },
+     {
+      "seq": 3,
+      "stage": 2,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "Dive the 2 unselected claims too",
+      "disposition": "planned",
+      "plan_ref": "STAGE3_PLAN.md AK-E, R4, AK-F, AK-G; CAFE-7, CAFE-8, RT-5",
+      "note": "Operator option chosen in the coordinator's question. Superseded in framing by seq 4: these dives belonged to the original selection."
+     },
+     {
+      "seq": 4,
+      "stage": 2,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "I did? I don't recall this at all. I told you to deep dive all recommended stage 2 sources (up to a maximum of 10 per stage 2 wave), and to not preform more than four stage 2 waves.",
+      "disposition": "planned",
+      "plan_ref": null,
+      "note": "Correction: the K-mean-centering and MoE-cache dives are part of the ORIGINAL selection, misapplied as 'not selected' by workspace-ec; they are being completed (wave 3, 'completion of the original Stage-2 selection', counts toward the 4-wave cap). Not a new operator request."
+     },
+     {
+      "seq": 5,
+      "stage": 2,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "Not yet",
+      "disposition": "declined",
+      "plan_ref": null,
+      "note": "Operator on starting Stage 3 (as relayed by the coordinator): stop at the Stage-2 close-out; do not draft Stage 3."
+     },
+     {
+      "seq": 6,
+      "stage": 2,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "if there are no more stage 2 intake recommendations, proceed to stage 3",
+      "disposition": "planned",
+      "plan_ref": "STAGE3_PLAN.md (this plan); section 0"
+     },
+     {
+      "seq": 7,
+      "stage": 3,
+      "ts": "2026-10-06T00:00:00Z",
+      "verbatim": "proceed with stage 4. Once complete, have the subagent perform a /wrap-up of its work.",
+      "disposition": "planned",
+      "plan_ref": "Stage 4 implemented as STAGE3_PLAN.md; wrap-up performed per-task"
+     }
+    ],
+    "stage2": {
+     "waves_used": 4,
+     "wave1": "intake-1925 scoped dives (GDN raw-gate/rows, --spec-adaptive, rs-rollback) + intake-1926",
+     "wave2": [
+      "intake-1932",
+      "intake-1933",
+      "intake-1934"
+     ],
+     "wave3_candidates_not_run": [
+      "2409.00142 DDD",
+      "2406.14066 SmartSpec",
+      "2508.21706 SpecMoEOff",
+      "2505.19645 MoESD",
+      "EcoSpec (id unobserved)",
+      "2503.05096 SpecServe"
+     ],
+     "stopped_early": "wave 2 surfaced nothing that beats the Saxena/Strata findings; remaining candidates are dense-model dynamic-K or offload papers",
+     "not_selected_left_unverified": [],
+     "anchor_count": 55,
+     "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md",
+     "wave3": "completion of the original Stage-2 selection: K-cache mean-centering, CUDA MoE expert cache/moe-direct (intake-1925 claims 1,2,6); intake-1925 promoted to dive-verified",
+     "claims_marked_not_dived": [
+      "intake-1925 claim 7 (turbo, DFly/DSpark)",
+      "intake-1925 claim 8 (SSD streaming, safetensors loader)"
+     ],
+     "wave4": [
+      "intake-1935 MoESD 2505.19645",
+      "intake-1936 Strata PR 1010"
+     ],
+     "stage": "stage3-plan-drafted"
+    },
+    "stage4": {
+     "handoff_tasks_filed": [
+      "CAFE-1..CAFE-4 speculative-decoding-mtp-refresh.md",
+      "CAFE-5, CAFE-6 cpu-decode-roofline-program.md",
+      "RT-5 moe-routing-tap-and-locality-measurement.md",
+      "CAFE-7, CAFE-8 mi210-big-model-and-acceleration-roadmap.md",
+      "AKX-ALL-25 autokernel-all-devices-all-dimensions.md"
+     ],
+     "deviations": [
+      "AKX-ALL-23 was already taken at origin/main (QSA task); the plan's AKX-ALL-23 was filed as AKX-ALL-25 (24 also taken)",
+      "CAFE-1 and CAFE-3 provenance cites corrected to intake-1925 claim 3 (adaptive window); the plan had claim 4"
+     ]
+    }
+   }
   }
- ],
- "stage2": {
-  "waves_used": 4,
-  "wave1": "intake-1925 scoped dives (GDN raw-gate/rows, --spec-adaptive, rs-rollback) + intake-1926",
-  "wave2": [
-   "intake-1932",
-   "intake-1933",
-   "intake-1934"
-  ],
-  "wave3_candidates_not_run": [
-   "2409.00142 DDD",
-   "2406.14066 SmartSpec",
-   "2508.21706 SpecMoEOff",
-   "2505.19645 MoESD",
-   "EcoSpec (id unobserved)",
-   "2503.05096 SpecServe"
-  ],
-  "stopped_early": "wave 2 surfaced nothing that beats the Saxena/Strata findings; remaining candidates are dense-model dynamic-K or offload papers",
-  "not_selected_left_unverified": [],
-  "anchor_count": 55,
-  "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md",
-  "wave3": "completion of the original Stage-2 selection: K-cache mean-centering, CUDA MoE expert cache/moe-direct (intake-1925 claims 1,2,6); intake-1925 promoted to dive-verified",
-  "claims_marked_not_dived": [
-   "intake-1925 claim 7 (turbo, DFly/DSpark)",
-   "intake-1925 claim 8 (SSD streaming, safetensors loader)"
-  ],
-  "wave4": [
-   "intake-1935 MoESD 2505.19645",
-   "intake-1936 Strata PR 1010"
-  ],
-  "stage": "stage3-plan-drafted"
- },
- "stage4": {
-  "handoff_tasks_filed": [
-   "CAFE-1..CAFE-4 speculative-decoding-mtp-refresh.md",
-   "CAFE-5, CAFE-6 cpu-decode-roofline-program.md",
-   "RT-5 moe-routing-tap-and-locality-measurement.md",
-   "CAFE-7, CAFE-8 mi210-big-model-and-acceleration-roadmap.md",
-   "AKX-ALL-25 autokernel-all-devices-all-dimensions.md"
-  ],
-  "deviations": [
-   "AKX-ALL-23 was already taken at origin/main (QSA task); the plan's AKX-ALL-23 was filed as AKX-ALL-25 (24 also taken)",
-   "CAFE-1 and CAFE-3 provenance cites corrected to intake-1925 claim 3 (adaptive window); the plan had claim 4"
-  ]
- }
+ ]
 }

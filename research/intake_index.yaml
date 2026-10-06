@@ -244867,3 +244867,427 @@
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: declined
+- id: intake-1937
+  arxiv_id: null
+  url: https://github.com/myllmbox/qwen38-flash-next-cluster-recipe
+  source_type: repo
+  title: 'myllmbox/qwen38-flash-next-cluster-recipe: Qwen3.8-Flash-Next on two DGX Sparks (vLLM 0.30, TP=2 over RoCE, INT4-AutoRound default)'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - moe_optimization
+  - hardware_optimization
+  - quantization
+  novelty: high
+  relevance: high
+  discovered_via: input
+  verdict: worth_investigating
+  key_claims:
+  - 'v5.2 (README, repo @d2721ecb): 2x DGX Spark, RDMA, default checkpoint azampatti INT4-AutoRound (5 of 512 experts per token); 93.2 tok/s average / 176.8 peak at c=1 on a thinking-on request; 1,008 tok/s at 64 streams; prefill 3,939 tok/s at 128k; 0.36 s first token on a 1k prompt (all README-reported, unverified).'
+  - 'Engine: vLLM 0.30 with image patches, TP=2 (expert-parallel for the INT4 checkpoint), MTP speculative decode up to K=7 with dynamic depth, block verification, sampled drafts; one-shot RoCE all-reduce (b12x) up to 2 MB, NCCL above; full CUDA graphs.'
+  - 'The README itself states hibrid48 (the full 10-expert NVFP4 body) runs ~10% slower: ~120 tok/s at 1 stream, ~590 at 16, ~1,035 at 64.'
+  - 'Quality table (lm-eval, thinking on, 200-question subsets): INT4-AutoRound HumanEval 93.3, GSM8K 99.0, MMLU-Pro 82.9 vs hibrid48 95.7 / 98.0 / 84.9; +-3 pt sampling noise stated by the author.'
+  techniques:
+  - expert-parallel MoE across 2 nodes
+  - MTP draft with dynamic depth K<=7
+  - one-shot RoCE all-reduce (b12x)
+  - GB10 skinny-GEMM plans
+  - n-gram (PLE) table resident on GPU, half per box
+  reported_results:
+  - 93.2 tok/s avg / 176.8 peak, c=1 thinking-on (README)
+  - peak 1,174 tok/s at c=64 (README per-prompt table)
+  notes: 'Stage-1 read: whole README, recipe.yaml, run.sh and patches/README.md cloned (depth 1) to /mnt/raid0/llm/tmp/intake-q38fn-cluster/repo @d2721ecbd16f4a10b968b2755fc374da3c539502. Operator dive policy: physics comparison against EPYC 9655 + MI210 (see steering ledger). Candidate first-principles gap drivers visible at Stage 1: (a) the default checkpoint cuts routed experts 10->5 (a different model from the one we serve), (b) MTP K up to 7 with ~3.9 accepted per step, (c) aggregate vs c=1 reporting, (d) 273 GB/s per node.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1938
+  arxiv_id: null
+  url: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.1-blog/README.html
+  source_type: blog
+  title: 'ROCm 10.1: Breaking the Data-Movement Bottleneck (AMD ROCm blog, 2026-10-05)'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: input
+  verdict: worth_investigating
+  key_claims:
+  - 'Blog text (curl to disk, sha256 e0f20627ac38 first-12): release centres on hipFile fast-path I/O, NUMA-aware HIP host allocation, LLVM 24 (amdclang++ 23->24), ROCm CLI v1.0.0, AMD SMI replacing ROCm SMI, WSL2 tech preview, hipThreads.'
+  - The blog names no gfx90a / MI210 / CDNA2 item and gives no decode-throughput, FP8/FP4, rocWMMA, hipBLASLt or HIP-graph-capture change; library notes are limited to Composable Kernel (Radeon attention + more quantized GEMM dispatch types), MIGraphX (rocMLIRTriton backend) and rocSPARSE.
+  techniques:
+  - hipFile async fast-path
+  - HIP virtual-memory host NUMA allocation
+  - LLVM 24 LTO partition caching
+  notes: Tracking params stripped (term/utm_*). Fetched raw with curl; blog body read in full from disk. Support status for gfx90a must come from the 10.1.0 docs, not the blog (see expansion entry for rocm.docs.amd.com docs-10.1.0).
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1939
+  arxiv_id: null
+  url: https://huggingface.co/azampatti/Qwen3.8-Flash-Next-125B-A5B-INT4-AutoRound
+  source_type: repo
+  title: 'azampatti/Qwen3.8-Flash-Next-125B-A5B-INT4-AutoRound (HF model card): 5-of-10 routed experts, healed, int4'
+  categories:
+  - moe_optimization
+  - quantization
+  - inference_serving
+  novelty: high
+  relevance: high
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - Card states the checkpoint cuts routed experts from top-10 to top-5 and heals only the shared expert by KL self-distillation (14,667 examples); 125B total, 4.8B active vs 6.0B original.
+  - Card self-reports single-DGX-Spark speed ~67-70 tok/s vs ~57 tok/s for the original 10-expert model, and capability 49.3 vs 51.8 (own harness, trimmed mean of 6 runs).
+  - 'Weights: routed experts int4 GPTQ-Marlin g128, lm_head int4, attention/GDN/shared expert fp8, 49 GB fp8 n-gram table memory-mapped from disk.'
+  notes: 'Stage-1 read: card + config.json to disk (retrieved 2026-10-06). Lowers the per-token expert bytes by half vs the model we serve; quality cost self-reported ~2.5 capability points.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1940
+  arxiv_id: null
+  url: https://github.com/azampatti/Qwen3.8-Flash-Next-Int4-FAST
+  source_type: repo
+  title: 'azampatti/Qwen3.8-Flash-Next-Int4-FAST: single-Spark serving kit for the 5-expert INT4 checkpoint'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  novelty: medium
+  relevance: medium
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - README reports ~70-75 tok/s on ONE DGX Spark (about 75 with the eugr b12x image), original ~57 tok/s; retrained speculative head accepts 75% of drafted tokens overall at temperature 0.5 (85% code, 63% prose, 89% long context).
+  - Documents an MTP drafter CUDA-graph stale-row bug at 3/5/6/7 concurrent requests and a presence_penalty / temperature 0.6 default that the author says speeds decode 10-20% on agent traffic.
+  notes: 'Stage-1 read: README only (raw.githubusercontent, main). Single-node figure is what makes the two-node 93 tok/s interpretable.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1941
+  arxiv_id: null
+  url: https://github.com/Saren-Arterius/qwen3.8-Flash-DGX-AutoRound
+  source_type: repo
+  title: 'Saren-Arterius/qwen3.8-Flash-DGX-AutoRound: hybrid fp8/AutoRound vLLM build for Qwen3.8-Flash-Next on DGX Spark'
+  categories:
+  - inference_serving
+  - quantization
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - Upstream of the vllm_fp8_hybrid loader and fp8 n-gram table that the cluster kit consumes; README (33.6 KB) carries single-Spark launch recipes and measurements (unread beyond skim at Stage 1).
+  notes: 'Stage-1: README saved to disk; not yet read in full. Dive should record its single-Spark tok/s and any bandwidth accounting.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1942
+  arxiv_id: null
+  url: https://github.com/vllm-project/vllm/pull/58863
+  source_type: repo
+  title: 'vllm-project/vllm PR #58863: RecoverSSM (rollback state recovery for speculative decode with gated-delta-net layers)'
+  categories:
+  - speculative_decoding
+  - ssm_hybrid
+  - inference_serving
+  novelty: medium
+  relevance: medium
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - PR JSON fetched via the GitHub API (48.7 KB). Cluster README credits it (by @jschmied) as the mechanism that keeps recurrent-state rollback cheap at deep draft depth; relevance to our llama.cpp MTP path is the SSM rollback cost under K up to 7.
+  notes: 'Stage-1: metadata only; diff and discussion not yet read.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1943
+  arxiv_id: null
+  url: https://docs.nvidia.com/dgx/dgx-spark/hardware.html
+  source_type: blog
+  title: 'NVIDIA DGX Spark User Guide: hardware (GB10, 128 GB LPDDR5x, 273 GB/s, ConnectX-7)'
+  categories:
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - Official spec page lists 128 GB LPDDR5x unified memory, 256-bit interface, 273 GB/s, 2x QSFP (ConnectX-7), 1 PFLOP FP4 with sparsity. Companion page docs.nvidia.com/dgx/dgx-spark/spark-clustering.html (also saved) states up to 200 Gb/s per QSFP port and two independent PCIe Gen5 x4 NIC-to-SoC links.
+  notes: 'Stage-1: both pages curl-saved (hardware.html sha256 02675731cdfc first-12). Denominator source for the Physics comparison. Clustering page is folded in here to respect the expansion cap.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1944
+  arxiv_id: null
+  url: https://rocm.docs.amd.com/en/docs-10.1.0/
+  source_type: blog
+  title: 'AMD ROCm 10.1.0 documentation: release notes, compatibility matrix, graph-safe support'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  novelty: medium
+  relevance: high
+  expanded_from: intake-1938
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - Compatibility-matrix text lists AMD Instinct MI210 (gfx90a), MI250/MI250X (gfx90a) and MI100 (gfx908) among the 10.1.0 Instinct devices; release notes pair vLLM 0.29.0 / SGLang 0.5.18 / PyTorch 2.14.0 framework support and list an MI210 KVM SR-IOV Ubuntu 26.04 line.
+  notes: 'Stage-1: release-notes (373 KB), compatibility-matrix, graph-safe and precision-support pages curl-saved; only keyword-skimmed.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1945
+  arxiv_id: null
+  url: https://huggingface.co/Qwen/Qwen3.8-Flash-Next
+  source_type: repo
+  title: 'Qwen/Qwen3.8-Flash-Next (HF model card): architecture, parameters, MTP head, n-gram table'
+  categories:
+  - moe_optimization
+  - ssm_hybrid
+  - local_inference
+  novelty: medium
+  relevance: high
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - Official card (65 KB) is the source for total/active parameters, experts per token, layer layout and MTP head; needed to compute bytes per token for both stacks.
+  notes: 'Stage-1: saved to disk; architecture numbers deferred to the dive.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1946
+  arxiv_id: null
+  url: https://github.com/local-inference-lab/b12x
+  source_type: repo
+  title: 'local-inference-lab/b12x: SM120/SM121 CuTe DSL and Triton kernels (RoCE one-shot all-reduce)'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  novelty: low
+  relevance: medium
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - README states it targets DGX Spark / RTX Blackwell, is explicitly not for production/datacenter, and carries GEMM, attention and collective kernels; supplies the one-shot RoCE all-reduce the cluster kit uses for per-step exchanges up to 2 MB.
+  notes: Repo is the post-redirect canonical path (lukealonso/b12x redirects to local-inference-lab/b12x, HTTP 200 on both). README read from the master branch.
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1947
+  arxiv_id: null
+  url: https://github.com/eugr/spark-vllm-docker
+  source_type: repo
+  title: 'eugr/spark-vllm-docker: vLLM Docker optimised for DGX Spark single and multi-node (b12x image, recipes)'
+  categories:
+  - inference_serving
+  - local_inference
+  novelty: low
+  relevance: medium
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - README (129 KB) documents multi-node Spark clustering over QSFP/RoCE, recipes and a b12x image that the Int4-FAST kit recommends for about +5-7% speed.
+  notes: 'Stage-1: README saved, headers only.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+- id: intake-1948
+  arxiv_id: null
+  url: https://forums.developer.nvidia.com/t/qwen3-8-flash-next-on-1-2-and-4-dgx-sparks-with-nvidias-official-nvfp4-quant-64-tok-s-peak-single-stream/382476
+  source_type: blog
+  title: 'NVIDIA Developer Forums (tonyd615): Qwen3.8-Flash-Next on 1, 2 and 4 DGX Sparks with the official NVFP4 quant'
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - hardware_optimization
+  novelty: high
+  relevance: high
+  expanded_from: intake-1937
+  discovered_via: expansion
+  verdict: worth_investigating
+  key_claims:
+  - 'Independent community measurement, 2026-09-05, nvidia/Qwen3.8-Flash-Next-NVFP4 (the 10-expert official quant) on upstream vLLM nightly, 40 real prompts, thinking off: ONE Spark median 32.5 tok/s (peak 43.8); TWO Sparks TP2 median 53.7 (peak 63.7, 309 aggregate at 6 streams); FOUR Sparks median 40.5.'
+  - Reports that the 47.7 GB n-gram table does not fit beside the weights on one Spark and is read from disk, and that torch.compile autotune duplicates the table (about 24 GB per box at TP2).
+  notes: 'Stage-1 read: thread HTML curl-saved (sha256 recorded at dive). Forum post is self-reported, not independent in the sense of replicated; it is independent of the myllmbox author. Provides the 10-expert / official-quant comparison point missing from the cluster README.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries: []
+  credibility_score: null
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
+  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
