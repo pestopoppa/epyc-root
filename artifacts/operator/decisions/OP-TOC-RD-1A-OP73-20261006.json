@@ -12,10 +12,12 @@
   "host_activation": {
     "id": "OP-73 / LR-6a",
     "choice": "2A",
-    "authorized": "Host-side preview and installation of supervision cron including necessary published registry deployment for hygiene observer and approved reaper keeper",
+    "authorized": "Host-side preview and installation of supervision cron",
     "execution_status": "not executed by this container session",
     "acceptance_required": "actual host installation plus hygiene heartbeat; NIB2-88 separately requires observed post-restart reaper recovery",
-    "bus_supervisor_restart_authorized": false
+    "bus_supervisor_restart_authorized": false,
+    "required_dependency": "Deploy only the already-published hygiene observer row and reaper relaunch fields into the stale canonical registry",
+    "dependency_scope_basis": "MAIN implementation interpretation: necessary to deliver the hygiene/approved-keeper behavior described in option 2A; not a separate operator instruction or broader registry-update authorization"
   },
   "scope": "Durable record of explicit chat choices; not a signed measurement-policy ratification or proof of deployment."
 }

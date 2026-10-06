@@ -341,6 +341,7 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
         heartbeat line in its log after the re-pin.
         2026-10-06 — operator chose 2A: preview and install approved. Host execution remains required;
         no activation or heartbeat is claimed from chat approval, and bus_supervisor remains DOWN.
+        - [x] **LR-6a-PREP — prepare the approved host activation package.** ✅ 2026-10-06 — MAIN reviewed the fixed installer/helper bytes and independently derived the minimal canonical registry projection; [host launcher and limits](../../artifacts/operator/decisions/OP73-host-activation-20261006/README.md). Static preparation only. Host execution and fresh heartbeat remain the unchecked parent gate; no bus launch or post-restart reaper acceptance.
 - [x] **LR-7** — the DS41 load-bearing worktrees are declared with git locks: `root-main-epyc-root-repo` and
       `research-ds41-run10`. ✅ 2026-10-04 (INF-77 DS41-C113a)
 - [ ] **LR-8** — **merge the periodic cleanups into one tick, after LR-6a.** The standalone

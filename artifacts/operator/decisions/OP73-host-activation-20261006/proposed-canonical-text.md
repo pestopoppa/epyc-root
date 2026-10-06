@@ -1,0 +1,9 @@
+## OP-73 / LR-6a host supervision activation — 2026-10-06
+
+Prepared only: `/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/`. On the HOST, `run_host_activation.sh --preview` reviews the scoped registry candidate and normal installer dry-run; `--apply` repeats preflights/preview, patches only the two reaper runtime fields plus the scheduled host_hygiene_tick row, and installs the approved supervision cron using ROOT pin `00e1820bcd957e905797b3a1b9e4d9dc53a550b0`. Preview may fetch missing Git objects and write private artifacts, without changing canonical registry or crontab. The installer hash is `7fe37e700d8799a8244c62c2ab77353508f3bb3eb8025c3a20483e7883cce9b9`.
+
+The selected view supplies the exact PIN hygiene tick; canonical HYGIENE_ROOT supplies registry, census, alarm and reaper. The helper preserves other registry fields/rows and ownership/mode, leaves codex_retention_reaper absent, takes a runtime backup and uses baseline checks followed by an atomic write (not atomic compare-and-swap). Other current dirty paths are preserved.
+
+No activation has been executed or claimed here. Apply records a start timestamp, cron backup and report. Run `--verify-activation` later to verify a fresh state heartbeat and log after that timestamp; until then heartbeat verification is pending. No waiting, forced restart, server reload, inference/kernel action or bus supervisor launch occurs. The operator's bus DOWN posture remains intact. Static validation only; MAIN owns canonical filing.
+
+The frozen projected registry hash is `8dfdabfc383585eb840cf2b6212cf15c739cd3cdf8553763ec123c5e78f1c35b`; mutable candidate artifacts alone cannot satisfy verification. Later verification reads the current crontab and checks the recorded backup hash before observing heartbeat. This proves installation and a fresh tick only, with reaper behavior after reboot outside that claim.

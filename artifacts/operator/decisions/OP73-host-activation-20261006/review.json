@@ -1,0 +1,22 @@
+{
+  "status": "MAIN accepted preparation only",
+  "launcher_sha256": "49ed734f89527f93a5afe569caf702ae95dd6de68eddc271663c6b077f092491",
+  "helper_sha256": "9a794584c497556f1ce0b75a465097621d73792ed456648f55ce1d156b1b9767",
+  "source_pin": "00e1820bcd957e905797b3a1b9e4d9dc53a550b0",
+  "baseline_registry_sha256": "44ca416c2c802b871e6ed9b999aef1ff8f6bac09116845899b06dedef339e028",
+  "source_registry_sha256": "3116dee5c2ba05879d10d045f0a6318a9d822cc9849418bb90bb25e311c89057",
+  "projected_registry_sha256": "8dfdabfc383585eb840cf2b6212cf15c739cd3cdf8553763ec123c5e78f1c35b",
+  "checks": [
+    "full launcher/helper source review; critical earlier draft rejected and corrected",
+    "independently derived minimal registry projection; all unrelated rows/top-level fields preserved",
+    "frozen helper and installer hashes; preview before mutation",
+    "bash -n and Python AST; no executing helper or installer",
+    "host-only launcher; node-owned guarded data deployment",
+    "fresh heartbeat plus current cron/backup/config verification required later"
+  ],
+  "executed_on_host": false,
+  "inference_or_process_changes_by_review": false,
+  "graded_tuple_emitted": false,
+  "atomicity_limit": "Atomic file replacement with repeated baseline/inode/metadata checks is not an atomic CAS or a guarantee against a concurrent writer.",
+  "scope": "Only already-published hygiene observer/reaper keeper registry settings and approved marker-owned host supervision cron; excludes Codex row, bus restart, other shared files/branches/staging."
+}
