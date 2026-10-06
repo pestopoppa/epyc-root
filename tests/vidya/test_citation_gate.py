@@ -168,13 +168,7 @@ def test_unhashable_yaml_mapping_key_preserves_unknown_counts(tmp_path):
     assert cg.key_claim_counts(index) == {}
 
 
-@pytest.mark.parametrize(("claim_index", "expected_rc", "expected_status"), [
-    ("00", 0, "unknown"),
-    ("01", 3, "dangling"),
-])
-def test_cite_check_cli_uses_yaml_bounds_and_exit_code(tmp_path, monkeypatch, capsys,
-                                                      claim_index, expected_rc,
-                                                      expected_status):
+def _cite_check_cli(tmp_path, monkeypatch, capsys, claim_index):
     index = tmp_path / "intake_index.yaml"
     index.write_text("- id: intake-110\n  key_claims: [the claim]\n")
     monkeypatch.setattr(wiki_dependents, "INDEX", index)
@@ -186,8 +180,16 @@ def test_cite_check_cli_uses_yaml_bounds_and_exit_code(tmp_path, monkeypatch, ca
     rc = cli.main(["--ledger", str(ledger), "--json", "cite-check", "--as-of", AT,
                    str(document)])
     report = json.loads(capsys.readouterr().out)
-    assert rc == expected_rc
-    assert report["verdicts"][0]["status"] == expected_status
+    return rc, report["verdicts"][0]["status"]
+
+
+def test_cite_check_cli_keeps_in_range_uningested_unknown_nonblocking(
+        tmp_path, monkeypatch, capsys):
+    assert _cite_check_cli(tmp_path, monkeypatch, capsys, "00") == (0, "unknown")
+
+
+def test_cite_check_cli_blocks_out_of_range_claim(tmp_path, monkeypatch, capsys):
+    assert _cite_check_cli(tmp_path, monkeypatch, capsys, "01") == (3, "dangling")
 
 
 # --- the states a citer can act on ------------------------------------------------------
