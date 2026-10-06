@@ -183,10 +183,11 @@ First full smoke run of the trial loop. Four defects, three silent.
       that whole write path, and why the pre-existing create-only tests passed for the bug's entire lifetime
       (`orchestration/repl_memory/q_scorer.py:52`) (found 2026-09-14, noninf sweep).
 
-- [ ] **AP-61 — stop hand-maintaining the invocation-log guard's module list**, since it covers five modules
+- [x] **AP-61 — stop hand-maintaining the invocation-log guard's module list**, since it covers five modules
       and will not notice a new route file reading the shared `get_invocation_log()`;
       `src/api/routes/openai_compat.py:285` already reads `repl._invoked_tools` correctly but sits outside the
       guarded set (found 2026-09-14, noninf sweep).
+      ✅2026-10-06 — [MAIN source acceptance](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md): all-current-route guard, method/direct-name negative controls, independent46-file Git/AST census; APPmain041ec98a exact source. Test-only/static validation, no runtime/native-quality claim.
 
 - [ ] **AP-62 — document the shared invocation ring's synchronisation contract**: `invoke()` appends from
       whatever thread is dispatching and the bound holds only because `deque.append` is atomic under CPython,

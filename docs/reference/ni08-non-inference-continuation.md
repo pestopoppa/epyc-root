@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **45 completed scoped tasks: 35 existing checkbox flips and 10 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **46 completed scoped tasks: 36 existing checkbox flips and 10 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -99,3 +99,8 @@ Preparation boundary: TOC recipe6fd5fd9 is in isolated CI after MAIN full Git/ca
 ## Continuing source queue — fresh review
 
 MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final native-recipe review. AP61 has a reviewed test-only replacement for the five-file guard: every current route source is scanned, with both method and direct-name calls caught. AP60 remains eligible configuration/test work: preserve default-off startup semantics while proving environment-to-instance write settings. AP62's append-unsafety premise is stale; its distinct concurrent `list(deque)` snapshot behavior needs source/caller review. RTG02 can reuse the existing pure-text programmatic scorer behind an explicit method gate. SC76/77 retained-RAW/source-quote verification source is under review; SC78/79 follow-ons must be re-screened against that shared checker rather than left implicitly gated. No pending source proposal or enrollment adds a completion; NI08 remains45 and whole-backlog exhaustion is unproved.
+
+
+## AP61 source boundary — MAIN acceptance
+
+[All-route invocation guard source review/publication](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md) closes AP61: **46 scoped completions (36 existing flips +10 additions)**. Test-only change,46 currentroutefiles independently AST-inspected, meaningful forbidden-method/direct-name and permitted-text/request-local controls reviewed. No host pytest/import/collection or fixture/runtime claim; aliases/dynamic dataflow outside bounded guard. AP60/AP62 and other source queues continue.

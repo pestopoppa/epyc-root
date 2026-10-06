@@ -5105,3 +5105,6 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [Staged perf-period selector](../artifacts/ni08/pii-period-source-20261006/README.md) source is accepted by73/73 original synthetic controls; narrow exact table-cell exemption keeps account/secret refusals and historical bytes. Parent unredacted-fixture acceptance remains separate. GitNexus outputs from the replacement-worker scope-transfer incident are excluded; review uses independent Git/AST/native-original custody.
+
+
+2026-10-06: [AP61 source guard](../artifacts/ni08/invocation-route-guard-source-20261006/README.md) scans every current API route for process-global invocation-log calls; source census covers46 routefiles with zero prohibited calls. Per-request telemetry continues to use request-local records. This test-only/static acceptance does not establish cross-thread diagnostic snapshot safety; AP62 remains distinct.
