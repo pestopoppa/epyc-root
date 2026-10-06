@@ -10,7 +10,7 @@ import sys
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "c374ab58757e68ed4291c0aeb0ea99a4c0193bf3"
+APP_PIN = "8ba64dbe1929ff269418e7de50384108a5ff120f"
 SELECTION = "tests/unit/test_bsv_paired_report.py"
 CONFIG_NAMES = {
     "pyproject.toml",
@@ -214,4 +214,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
