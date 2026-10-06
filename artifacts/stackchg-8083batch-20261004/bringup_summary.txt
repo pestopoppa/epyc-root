@@ -1,0 +1,89 @@
+== bring-up start 2026-10-05T08:01:59Z ==
+orch_head rc=0
+    [orch_head] fe07865f77109181c32f9298c5ca3cd93a908fa0 Merge origin/main (ff1063d3) into STACKCHG-8083 lane
+gpu_window_status_pre rc=0
+    [gpu_window_status_pre]     "window_id": null,
+    [gpu_window_status_pre]     "written_by": "gpu_window_executor"
+    [gpu_window_status_pre]   },
+    [gpu_window_status_pre]   "retry_after_s": 0,
+    [gpu_window_status_pre]   "valid": true
+    [gpu_window_status_pre] }
+park rc=0
+    [park]   "parked_roles": [],
+    [park]   "preempt_reason": null,
+    [park]   "preempt_requested_at": null,
+    [park]   "since": "2026-10-05T08:01:59+00:00",
+    [park]   "written_by": "stack_owner"
+    [park] }
+gpu_window_status_parked rc=0
+    [gpu_window_status_parked]     "since": "2026-10-05T08:01:59+00:00",
+    [gpu_window_status_parked]     "written_by": "stack_owner"
+    [gpu_window_status_parked]   },
+    [gpu_window_status_parked]   "retry_after_s": 3299,
+    [gpu_window_status_parked]   "valid": true
+    [gpu_window_status_parked] }
+sampler pid=1614883
+reload_architect_critic rc=0
+    [reload_architect_critic]     LD_LIBRARY_PATH += ['/mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin', '/opt/rocm/lib']
+    [reload_architect_critic]     PID: 1615352
+    [reload_architect_critic]     Waiting for health...
+    [reload_architect_critic]     [OK] Server ready
+    [reload_architect_critic]     [numa-placement] pid=1615352 n0=9MB n1=2224MB n2=3MB n3=455MB total=2691MB max=node1@82.7% (even=25%)
+    [reload_architect_critic] [runtime-facts] Wrote /mnt/raid0/llm/tmp/orchestrator_runtime_facts.json
+reload_orchestrator rc=0
+    [reload_orchestrator]     Fleet marker: /mnt/raid0/llm/tmp/orchestrator_fleet_started_at
+    [reload_orchestrator]     PID: 1622142
+    [reload_orchestrator]     Waiting for health...
+    [reload_orchestrator]     [OK] Orchestrator ready
+    [reload_orchestrator]     [oom-protect] oom_score_adj=-1000 on 8/8 pid(s)
+    [reload_orchestrator] [runtime-facts] Wrote /mnt/raid0/llm/tmp/orchestrator_runtime_facts.json
+item1 :8083 PID=1615352 launch_ts=2026-10-05T08:02:02Z
+item1_new_process rc=0 lstart='Mon Oct  5 08:02:05 2026' (after launch step)
+item2_argv rc=0 byte-identical to PACKAGE.md §3 (expected from PACKAGE.md **pristine** block)
+item3a_exe rc=0 /mnt/raid0/llm/kernels/builds/gpu-20260921-ffc1bac82/bin/llama-server
+item3b_linkage rc=1
+    [item3b_linkage] /mnt/raid0/llm/epyc-inference-research/scripts/utils/verify_ggml_linkage.sh: line 76: 1: usage: verify_ggml_linkage.sh <binary> [expected_tree_root]
+item3c_hip_maps rc=0 count=4
+item3d_threads rc=1 affinity=0-191;184;184-191;185;186;187;188;189;190;191; (want 184-191)
+    item4 ok: n_batch *= *512
+    item4 MISSING: n_ubatch *= *512
+    item4 ok: kv_unified *= *'*true
+    item4 ok: n_ctx_slot *= *262144
+item4_loadlog rc=1
+item5_attestation rc=1
+    [item5_attestation]   detail: data-only stack-change fixture target: uv run pytest -q tests/unit/test_stack_change_pipeline_simulated_fixtures.py
+    [item5_attestation] promotion_gate: skipped
+    [item5_attestation]   warn: skipped because earlier stack-change checks failed
+    [item5_attestation] summary: failed
+    [item5_attestation] acceptance: blocked
+    [item5_attestation] promotion_gate: fix 5 error(s) before promotion
+    runtime_attestation: skipped
+    promotion_gate: skipped
+    promotion_gate: fix 5 error(s) before promotion
+item6_vram peak=51.61 GiB  vs 62.00: PASS   vs 50.78: FAIL   (v10 vram_non_kv_gib at ub512 = peak-12.75 = 38.86; expect ~47.8 peak / ~35.06)
+    item6 NOTE: load above 50.78 contradicts the arm; explain before item 7
+item7 DEFERRED (SKIP_78=1: run later in a gpu-quiet EXCLUSIVE slot, :8083 re-parked without relaunch)
+item8 DEFERRED (SKIP_78=1)
+GATE FAILED in items 1-4: ROLLBACK hint: see PACKAGE.md section 11. NOT executed.
+restore rc=0
+    [restore] {
+    [restore]   "holder": "production",
+    [restore]   "outcome": "restored"
+    [restore] }
+gpu_window_status_post rc=0
+    [gpu_window_status_post]     "window_id": null,
+    [gpu_window_status_post]     "written_by": "gpu_window_executor"
+    [gpu_window_status_post]   },
+    [gpu_window_status_post]   "retry_after_s": 0,
+    [gpu_window_status_post]   "valid": true
+    [gpu_window_status_post] }
+item9 turn1 content_len=444 reuse={}
+item9 turn2 content_len=1225 reuse={}
+item9 turn2 cache reuse: no cache_n in response; check serving_call.v1 record
+item9 rc=0
+item10_idle_slot_residency rc=0
+    [item10_idle_slot_residency] (393216, 4)
+    item10 PASS (393216, 4)
+item11 sampler stopped pid=1614883
+B4 escalation_prewarmer: tracked_files=0 on_disk=absent find_spec_is_None=True (want 0/absent/True)
+B4 API pid=1622151 lstart='Mon Oct  5 08:02:21 2026' after_reload_start=yes

@@ -74,3 +74,61 @@ unwired (VB-YARN-E1).
 |---|---|---|
 | `handoffs/active/agentic-serving-harness-fixes.md` | root | UFH14-B4g-1 ✅ 2026-10-05; UFH14-B4g re-run recipe updated |
 | `artifacts/operator/receipts/RATIFY-STACKCHG-8083BATCH-20261004.json` | root | Operator signature receipt copied |
+
+## STACKCHG-8083BATCH-20261004: serving proof COMPLETE
+
+**Deployment:** :8083 relaunched 08:02Z with `-b 512 -ub 512 --no-cache-idle-slots`.
+
+**Proof (all §8.3 items PASS):**
+- Attestation + promotion gate: OK
+- Load VRAM: 48.54 GiB
+- Turn-2 cache_n: 2407
+- Decode-during-prefill: PASS (gap 0.265× fit; solo decode 28.5/28.2 tok/s)
+- Coherence: PASS after review (20/24 byte-identical, 4 EQUIVALENT)
+- q38_t7 dflash2: 35.74 vs nodraft 15.7 tok/s
+
+**Evidence:** copied to `artifacts/stackchg-8083batch-20261004/` (bringup_summary.txt, bringup_triage.md, run78_summary.txt, coherence-bringup/REVIEW.md).
+
+**Orchestrator:** fe07865f, plus derived regen (shared checkout 300cf581).
+
+**Research:** 7c3ff2b4 and f1c6fef5.
+
+**Lesson:** gpu_window restore must run AFTER releasing gpu-quiet exclusive (the executor refuses while the device is held); :8083 stayed parked ~15 min.
+
+## UFH14-B4e & UFH14-B4h: deployed at API reload (08:02Z)
+
+**Orch branch:** feat/ufh14-b4-cleanup-ec @ 621791f0 (merged as fe07865f).
+
+**B4e:** `escalation_prewarmer` deleted; OAB-3 witness re-pointed to MemRL q-scoring site.
+
+**B4h:** hot-prefix slot-save warming path deleted; `--slot-save-path` KEPT (KV migration and kv_compress use it); `canonicalize_prompt` KEPT (does not run with pinning off; KPF-23 owns it).
+
+**Tests:** 757 combined pass (lint clean; targeted pytest rc 0). API reloaded at 08:02Z.
+
+**Progress notes from HANDOFF_EDITS.md applied.**
+
+## YaRN native-window finding: FAILS operator rule
+
+**Canonical test:** :8070 recipe, Qwen3.6-35B-A3B CPU, 2026-10-05 12:10Z.
+
+**Results:**
+- YaRN ×2 static costs 1.3% at depth 0 and 7.6% at 34k decode
+- MTP acceptance drops 53% → 48%
+- Greedy outputs byte-identical on only 13/20
+- **VERDICT: FAILS operator rule "YaRN must not regress inside the native window"**
+
+**Acceptable approaches:** dynamic/per-request YaRN or DCA (active beyond native length only).
+
+**Evidence:** copied to `artifacts/yarn-native-window-20261005/summary.md`.
+
+**Handoff updates:** YaRN handoff depth check ticked; "make YaRN inert inside the native window" task filed.
+
+**Belief-kernel wiring:** new task in `handoffs/active/vidya-belief-substrate-program.md` for q36 depth-recipe results adapter.
+
+## FIFO region-lock review: APPROVED
+
+**Orchestrator branch:** feat/region-lock-fifo-20261005 (d48b6b79, APPROVED).
+
+**Deterministic FIFO-off control:** precondition for default-on.
+
+**Evidence:** copied to `artifacts/fifo-region-lock-review-20261005/REVIEW.md`.

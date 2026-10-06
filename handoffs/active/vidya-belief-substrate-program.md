@@ -2338,6 +2338,14 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
     (CPU) and the turn index. The projection carries what that file records and nothing more; the build id and argv sit
     only in `block.log` and the scratch server logs. Wire both runners' write side before YARN-CPU-512k runs.
 
+- [ ] **VB-YARN-DEPTH-RECIPE — write side and adapter for the q36 depth-recipe native-window validation** (filed 2026-10-05,
+  workspace-ec). Producer: `q36_depth_recipe.py` on Qwen3.6-35B-A3B CPU, canonical :8070 recipe, 2026-10-05 12:10Z.
+  Record shape: per (arm: native vs YaRN ×2) and (depth: 0%/30%/50%/70%/90%), needle correctness, decode tok/s, and
+  MTP acceptance; summary.json and summary.md durable copies in `artifacts/yarn-native-window-20261005/`.
+  Verdict: static YaRN ×2 **FAILS the operator rule** "YaRN must not regress inside native window" (1.3% cost at depth 0,
+  7.6% at 34k decode, MTP 53%→48%, greedy diverge 7/20). Grades as `Judged/Located`, not qualified measurement.
+  Done when the adapter projects the result and the verdict rides through the fold.
+
 ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main)
 
 - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers:

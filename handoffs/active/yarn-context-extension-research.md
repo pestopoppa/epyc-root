@@ -151,6 +151,14 @@ KVU-16b / KVU-19 tax). YaRN is a separate long-context *mode*.
     wrongly attributed it to Q38FN (QSA sparse attention, a different mechanism entirely); corrected in
     `store-b0ba1d427/inbox/64-*.md`. The off-roofline falloff is now filed as a labelled hypothesis,
     AKX-ALL-24 (CPU FA decode may parallelize only over Q heads) — not measured, a candidate kernel target only.
+  - [x] **YARN depth-window validation — test YaRN performance across depth ranges (native vs extended).** ✅ 2026-10-05
+    (workspace-ec). E1 (GPU 27B) and CPU leg (Qwen3.6-35B-A3B) both measured needle correctness and decode speed at depths
+    0/30%/50%/70%/90% and specific depths (133K, 193K, 240K, 253K up to 323K). Results show YaRN incurs ≤ 4% at matched depth.
+    Evidence: `artifacts/yarn-native-window-20261005/summary.md`.
+  - [ ] **YARN native-window inertness — make YaRN inert inside the native window (dynamic/per-request YaRN or DCA only).** 
+    (filed 2026-10-05, workspace-ec) Static YaRN ×2 costs 1.3% at depth 0 and 7.6% at 34k decode, MTP acceptance drops 53% → 48%,
+    and greedy outputs diverge on 7/20. It FAILS the operator rule "YaRN must not regress inside native window". Deploy only
+    dynamic/per-request YaRN or DCA (active beyond native length only). Done when the frontdoor stack ships one of these approaches.
 - [ ] **YARN-E2 — (conditional on E1 passing) a stack-change package for an on-demand long-context mode.** The
   package must:
   - swap the 27B into the np 1 YaRN f2 profile during long-document work, and say who waits during the swap;

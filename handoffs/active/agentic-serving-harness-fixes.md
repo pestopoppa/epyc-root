@@ -225,14 +225,25 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
   - [ ] **UFH14-B4b — A/B: the stable head as a system message (design R2, §4.2 item 1).** Split the prompt at a
     builder-emitted marker into `[system, user]` on the chat lane behind a flag; A/B on the eval tower (quality) and
     `missed_prefill_share` / `hit_tok` for REPL roles. Largest expected win on hybrids.
+    - *(2026-10-05, workspace-ec)* Runbook (flags, arms, windows, report invocation, rollback):
+      `/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4bcd-RUNBOOK.md`. Needs code: a builder marker after `## Rules` and a new flag (proposed `stable_head_system_message`).
   - [ ] **UFH14-B4c — A/B: `prefix_stable_order` on in production (design R1, §4.2 item 2).** `src/features.py:236`;
     composes with B4b, same A/B protocol.
+    - *(2026-10-05, workspace-ec)* Runbook (flags, arms, windows, report invocation, rollback):
+      `/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4bcd-RUNBOOK.md`. Flag exists (`prefix_stable_order`). Flips live with `POST :8000/config`, no reload. Persists in `runtime_flags.json` across reloads.
   - [ ] **UFH14-B4d — A/B: move CoT prefixes and worker RAG snippets to the tail (design R6, §4.2 item 3).**
     `graph/helpers.py:936-940` (CoT before the system prompt), `corpus_retrieval.py:739-780` (`## Reference Code`
     before `## Task`).
-  - [ ] **UFH14-B4e — delete `escalation_prewarmer` (design §4.2 item 5, delete-lens 4).** It warms
+    - *(2026-10-05, workspace-ec)* Runbook (flags, arms, windows, report invocation, rollback):
+      `/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4bcd-RUNBOOK.md`. Needs code and a new flag (proposed `per_query_material_at_tail`). Design missed two CoT-prefix sites: `api/routes/chat.py:1642-1644`, `chat_pipeline/stream_adapter.py:365-367`. RAG half disabled (`rag_enabled` ABANDONED).
+  - [x] **UFH14-B4e — delete `escalation_prewarmer` (design §4.2 item 5, delete-lens 4).** It warms
     `ARCHITECT_SYSTEM_PREFIX`, a string no real architect request contains (`escalation_prewarmer.py:61-65`); A3's
     client-side warm + stagger is where warming belongs. Review, not A/B: it changes no model input.
+    - *(2026-10-05, workspace-ec; DEPLOYED.)* Deleted on orch `feat/ufh14-b4-cleanup-ec` @ `621791f0` (merged as fe07865f).
+      Removed the turn-1 launch site `graph/helpers.py::_maybe_prewarm_architect` and the two `record_prewarm_hit` attributions
+      in `graph/nodes.py` / `graph/langgraph/nodes.py::_record_escalation_role`. Blast radius (LOW, 3 importers); every call
+      site was fire-and-forget or inside `try/except`. OAB-3 quiescence acceptance test now injects CPU burn behind MemRL
+      q-scoring launch instead. API reloaded 08:02Z; 757 combined tests pass.
   - [ ] **UFH14-B4f — belief-kernel write side for the per-port prefix-cache report.** Add the report's per-port rows as
     a projection under B5's `serving_calls` adapter row in `scripts/vidya/adapters/README.md`. Row text PREPARED for the
     owning session in `/mnt/raid0/llm/tmp/wrapup-ec-kvu16/INDEX_ROWS.md`; read side rides VB-SERVE-TIMING-1.
@@ -322,9 +333,13 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       part B `-b 512 -ub 512`): `--validate-only` VALID, **greenlit by workspace-ec, awaiting the operator's terminal
       signature** (`ratify_stackchg_8083batch_20261004.sh`, token `RATIFY-STACKCHG-8083BATCH-20261004`, TTY-gated). It
       applies at the :8083 restore after YaRN E1 (one relaunch). Detail: `kv-unified-stack-rollout.md` KVU-16f.
-  - [ ] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
+  - [x] **UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /
     `save_hot_prefixes` / `restore_hot_prefixes` have no production caller and lose hybrid checkpoints;
     `canonicalize_prompt` is dead weight with pinning off. One cleanup commit with an upstream gitnexus impact first.
+    - *(2026-10-05, workspace-ec; DEPLOYED.)* Deleted on orch `feat/ufh14-b4-cleanup-ec` @ `621791f0` (merged as fe07865f).
+      Hot-prefix slot-save warming path removed. `--slot-save-path` KEPT (KV migration and kv_compress.py use it).
+      `canonicalize_prompt` KEPT (does not run with pinning off; KPF-23 owns its fate). gitnexus impact: 0 callers (LOW).
+      API reloaded 08:02Z; 757 combined tests pass.
   - Declined, not filed: adding `cache_prompt` to the direct callers that omit it (`worker_pool.py:855-867`,
     `tools/web/research.py:709-716`, design §4.2 item 6) — the server default is `true`, so the edit changes nothing;
     the design says add it when next touched. Declined: `--cache-reuse` as a generic knob (design §3.6, unsound on

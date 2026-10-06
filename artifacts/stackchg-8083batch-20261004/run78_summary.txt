@@ -1,0 +1,49 @@
+== run78 start 2026-10-05T12:12:51Z ==
+calling region-lock with inner script
+== run78_inner start 2026-10-05T12:12:51Z ==
+window open signal received
+parking :8083 with expected-end +60m
+park rc=0
+item7_decode_during_prefill rc=0
+    [item7_decode_during_prefill]  },
+    [item7_decode_during_prefill]  "gap_median_s": 1.9352200031280518,
+    [item7_decode_during_prefill]  "t2048_fit_s": 7.311,
+    [item7_decode_during_prefill]  "gap_ratio_vs_fit": 0.265
+    [item7_decode_during_prefill] }
+    [item7_decode_during_prefill] wrote /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/evidence/decode-during-prefill-20261005T121907Z.json
+    result: /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/evidence/decode-during-prefill-20261005T121907Z.json
+item8a_q38_t7 rc=0
+    [item8a_q38_t7] {"id": "real_suite_v1_0032", "arm": "nodraft", "decode_tps": 15.77, "draft_acc": null, "answer": "correct", "cls": "OK"}
+    [item8a_q38_t7] {"id": "simpleqa_general_01814", "arm": "dflash2", "decode_tps": 28.33, "draft_acc": 0.4286, "answer": "wrong", "cls": "SHORT"}
+    [item8a_q38_t7] {"id": "simpleqa_general_01814", "arm": "nodraft", "decode_tps": 17.35, "draft_acc": null, "answer": "wrong", "cls": "SHORT"}
+    [item8a_q38_t7] {"id": "hellaswag_06230", "arm": "dflash2", "decode_tps": 14.82, "draft_acc": 0.1429, "answer": "correct", "cls": "SHORT"}
+    [item8a_q38_t7] {"id": "hellaswag_06230", "arm": "nodraft", "decode_tps": 29.89, "draft_acc": null, "answer": "correct", "cls": "SHORT"}
+    [item8a_q38_t7] VERDICT correctness PASS; wrote /mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/q38_t7/20261005T121907Z/report.md
+    item8 RUN=/mnt/raid0/llm/tmp/gpu-block-27b-20261003/results/q38_t7/20261005T121907Z/
+item8b_gate_rows rc=0
+    [item8b_gate_rows] dflash2: 24 rows -> /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/evidence/coherence-bringup/dflash2.jsonl
+    [item8b_gate_rows] nodraft: 24 rows -> /mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/evidence/coherence-bringup/nodraft.jsonl
+item8c_coherence_gate rc=2 (0 PASS; 2 INCOMPLETE -> review NEEDS_REVIEW; 1 FAIL -> roll back)
+     "judge_given": false,
+     "gate": "INCOMPLETE",
+     "gate_reasons": [
+      "4 item(s) NEEDS_REVIEW and no judge was given"
+     ]
+    }
+restoring gpu_window
+gpu_window_restore rc=2
+    [gpu_window_restore] gpu_window_executor: REFUSING close (manual_cli) of window manual-2026-10-05T12:12:51+00:00: mi210_0 busy: gpu_quiet_exclusive:bench(pid 4115300) -- no reload; retry next tick
+    [gpu_window_restore] error: device_busy: mi210_0 busy: gpu_quiet_exclusive:bench(pid 4115300)
+== run78_inner done 2026-10-05T12:25:45Z ==
+region_lock_rc=0
+region_lock_rc=0
+gpu_window_status rc=0
+    [gpu_window_status]     "since": "2026-10-05T12:12:51+00:00",
+    [gpu_window_status]     "written_by": "stack_owner"
+    [gpu_window_status]   },
+    [gpu_window_status]   "retry_after_s": 2826,
+    [gpu_window_status]   "valid": true
+    [gpu_window_status] }
+
+== summary (/mnt/raid0/llm/tmp/stack-change-8083-batch-20261004/evidence/run78_summary.txt) ==
+RUN78 DONE
