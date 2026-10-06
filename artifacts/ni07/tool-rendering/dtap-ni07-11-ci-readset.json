@@ -256,9 +256,9 @@
       "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7"
     },
     {
-      "git_blob": "de4f2a4799e91ae433f01664ac627da555258364",
+      "git_blob": "65a2e5f4b90b6393f1d0c519123b9782febccfe5",
       "path": "scripts/autopilot/evals/dtap/harness/tool_contract.py",
-      "sha256": "7860e6504c5a8dcb05751381e8591f9398db569cb8d4f131a2906742675907f6"
+      "sha256": "892a74d49f88f548bd4a30dbfda0934d13a8b2fa92b3b560f3c58ae0647f74ea"
     },
     {
       "git_blob": "db5946efd2c1bffbbc1a23ff2f085baf1b39c505",
@@ -386,12 +386,12 @@
       "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5"
     },
     {
-      "git_blob": "e59e3a7f88c5de57d4796b09ff1f253fca74ff2f",
+      "git_blob": "e4f16a9c20a7ae56b832780acf6d24a131777911",
       "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
-      "sha256": "e44031992d5e153767f9af95d7734d41eded3a9f1f9b43088b06727e76cff188"
+      "sha256": "aaf67a008f8526e0df9b679ccfa510aa53b8c159d77204aeb5794bc7891412df"
     }
   ],
-  "app_pin": "56e3465188e05a7a6129835cde001ce15aaac2ce",
+  "app_pin": "4c86bd611848ffa6aeca99843f0b964d59f7b5e0",
   "app_repository": "epyc-orchestrator",
   "contexts": [
     "python-version",
