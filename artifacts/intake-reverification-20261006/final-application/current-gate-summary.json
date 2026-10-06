@@ -1,0 +1,21 @@
+{
+  "citation_exit": 0,
+  "citation_summary": {
+    "blocking": 0,
+    "by_status": {
+      "conflicted": 0,
+      "dangling": 0,
+      "ok": 2246,
+      "overturned": 0,
+      "record": 936,
+      "review": 296,
+      "unknown": 904,
+      "weak": 11
+    },
+    "citations": 4393,
+    "documents": 286
+  },
+  "current_as_of": "2026-10-06T17:08:51.366204Z",
+  "risk_summary": "# dived=888 at_risk=326 A=163 B=102 C=94",
+  "validator_exit": 0
+}

@@ -23,6 +23,8 @@ except ImportError:
     sys.exit(1)
 
 ROOT = Path(__file__).resolve().parents[4]  # epyc-root
+sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
+from intake_assertion_kinds import validate_assertion_kinds as _validated_assertion_kinds  # noqa: E402
 RESEARCH = ROOT / "research"
 INDEX_PATH = RESEARCH / "intake_index.yaml"
 CROSS_REFERENCE_MAP_PATH = (
@@ -419,18 +421,24 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                             "per-claim verdict cannot be reviewed or overturned later"
                         )
 
-        # Read-depth gate (added 2026-10-06): a dive-verified entry must carry read_depth FULL|PARTIAL
+        # Explicit current assertion kinds are scope-bound producer metadata.
+        try:
+            _validated_assertion_kinds(entry)
+        except ValueError as exc:
+            errors.append(f"{eid}: {exc}")
+
+        # Read-depth gate (added 2026-10-06): either scientific dive state must carry read_depth FULL|PARTIAL
         # and per-claim anchors. WebFetch digests (DIGEST) are discovery-only. Forward-only: applies to
         # entries ingested on/after READ_DEPTH_ENFORCED_FROM or that declare read_depth at all.
-        if entry.get("verification") == "dive-verified":
+        if entry.get("verification") in ("dive-verified", "dive-overturned"):
             rd = entry.get("read_depth")
             gated = rd is not None or str(entry.get("ingested_date") or "") >= READ_DEPTH_ENFORCED_FROM
             if gated:
                 if rd not in ("FULL", "PARTIAL"):
-                    errors.append(f"{eid}: dive-verified requires read_depth FULL|PARTIAL (got {rd!r}); "
+                    errors.append(f"{eid}: {entry.get('verification')} requires read_depth FULL|PARTIAL (got {rd!r}); "
                                   "DIGEST/WebFetch reads stay stage1-unverified")
                 if not entry.get("claim_anchors"):
-                    errors.append(f"{eid}: dive-verified requires non-empty claim_anchors")
+                    errors.append(f"{eid}: {entry.get('verification')} requires non-empty claim_anchors")
 
         # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
         # malformed dependency is worse than an absent one -- it looks like propagation coverage

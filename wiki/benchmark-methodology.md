@@ -4373,8 +4373,9 @@ gloss; neither PyTorch post contains it).
 **Two portable rules from the same wave.** (1) *Correctness-conditioned speedup rates are structurally
 survivorship-biased and must never rank arms* — two independent 2026 benchmarks exhibit it
 (CodegenBench: `Fast_1@1 = 1.00` at `Pass@1 = 0.06`, self-diagnosed; KernelGenBench's accuracy-speedup
-divergence): `fast_p`-style metrics condition on the correct subset, so they inflate exactly where
-correctness is worst. (2) *A dtype-keyed tolerance is an attack surface when the candidate chooses its
+divergence). Keep the denominator distinctions clear: CodegenBench `Fast_1@1` is conditional on correct
+outputs; KernelBench `fast_p` counts tasks with correct outputs and speedup greater than threshold `p`, but
+uses all tasks as its denominator, so incorrect outputs remain in its denominator (`intake-664#01`). (2) *A dtype-keyed tolerance is an attack surface when the candidate chooses its
 own dtype* — an adaptive bar of FP32 1e-5 / BF16 0.016 pays a ~160x looser tolerance as a reward for
 downgrading. Pin required dtype and accumulate-precision per operator STRUCTURALLY, before tolerance
 is chosen (`RVP-C6-22`).
@@ -6721,7 +6722,7 @@ This workflow checkpoint discusses the affected index records; these `#record` r
 
 ### Source References (2026-10-06 denominator and gate scope)
 
-- [Intake re-verification handoff](../handoffs/active/intake-reverification.md) — risk flags, denominator rule and triage sequence.
+- [Intake re-verification handoff](../handoffs/completed/intake-reverification.md) — risk flags, denominator rule and triage sequence.
 - [Read-depth audit](../artifacts/intake-depth-audit-20261006/AUDIT.md) — historical 889-entry snapshot and overlapping flag counts.
 - [At-risk list generator](../.claude/skills/research-intake/scripts/at_risk_list.py) — current-index screen implementation.
 - [Intake validator](../.claude/skills/research-intake/scripts/validate_intake.py) — forward-only enforcement and legacy transition.
@@ -6741,3 +6742,9 @@ The [TU-GR-1 boundary specification](../docs/design/tu-grader-isolation-boundary
 ### Intake re-verification corrective plan — 2026-10-06
 
 [The filed corrective plan](../research/intake-stage3-plan-2026-10-06-reverification.md) completes IRV-4 for the selected 22 source updates and eight verification demotions. It preserves read scope, source revisions, dated refutations, current claim hashes, peer ledger frames and unchanged sibling claims. Native application is gated on a current-prefix rebase, prospective full fold, exact retirement/replacement counts, idempotent retry and current citation/intake validation; preparation and static review are not application. The source-table registration and dedicated correction event task use the existing literature ladder. IRV-5–7 remain open.
+
+### Intake re-verification final application — 2026-10-06
+
+The original 352-entry triage is closed for its authorized 22 re-dives and eight verification demotions (waves 10/10/2). Application verdicts remain unchanged; `intake-982#record` changed verification and `intake-989#record` changed credibility, with prior history preserved. The native producer retires only named warrants, gives reviewed source claims 108 Verified replacements, and retains 22 Hinted discovery replacements for demotions; two administrative slots receive no source warrant. The 420-frame append passed full-fold review and zero-append retry. All 29 targeted checks, current validator and current citation gate passed; peer ledger/index records remain intact. The original 352 flags remain a historical screen, while the current risk count is a new screen, not a count of failed claims. All 79 recommendation records and task bindings are retained; no applicability declines or new source adoption are implied. Earlier same-day preparation paragraphs are historical checkpoints, superseded by this closeout. [Final findings](../docs/reference/intake-reverification-20261006.md), [completed handoff](../handoffs/completed/intake-reverification.md), [actual receipts](../artifacts/intake-reverification-20261006/final-application/README.md).
+
+The consumer corrections preserve existing operational work while fixing its rationale: all-task KernelBench denominators and bounded runtime studies in [RVP](../handoffs/active/rocm-verify-profile-backend.md) and [architect selection](../handoffs/active/architect-model-selection-bench.md); numerical error versus calibration and model-conditional skill ablations in [kernel authoring](../handoffs/active/agentic-rocm-kernel-authoring.md) and [AutoKernel](../handoffs/active/autokernel-research-loop.md); SPCS/PACE setup and retrieval distinctions in [internal KB](../handoffs/active/internal-kb-rag.md); iterative learning versus persistent memory in [Engram](../handoffs/active/engram-conditional-memory.md); and artifact-specific counts and harness-level audit obligations in [scoring infrastructure](../handoffs/active/scoring-infra-standardization.md). Existing declines, reopening triggers, memory freezes, local implementation results and every foreign checkbox state remain as previously owned. These are rationale repairs, with no new local performance result. The final producer wiring is recorded by owned VB-RI-CORRECTION-REFRESH-1 in the [belief program](../handoffs/active/vidya-belief-substrate-program.md).

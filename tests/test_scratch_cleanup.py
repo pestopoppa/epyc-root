@@ -412,3 +412,43 @@ def test_standalone_clone_with_unpushed_commits_is_kept(env):
     git(clone, "fetch", "-q", "origin")
     v = verdicts(sc.build_plan(decl(env), repos=[str(env["repo"])], probe=wg.Probe()))
     assert v["clone"] == "REMOVE"
+
+
+def test_repeated_cleanup_preserves_live_sibling_marker_and_directory_keep(env, monkeypatch):
+    scratch = env["scratch"]
+    payload = scratch / "custody.bin"
+    payload.write_bytes(b"reviewed payload")
+    marker = scratch / "custody.bin.epyc-keep"
+    marker.write_text("retained source custody")
+    pinned = scratch / "pinned-directory"
+    pinned.mkdir()
+    (pinned / "KEEP").write_text("retained directory custody")
+    d = sc.Decl(dirs=[str(scratch)])
+    monkeypatch.setattr(wg, "gather_probe", lambda: wg.Probe())
+    for _ in range(2):
+        plan = sc.build_plan(d, repos=[], probe=wg.Probe())
+        assert verdicts(plan) == {"custody.bin": "KEEP-MARKED",
+                                 "custody.bin.epyc-keep": "KEEP-MARKED",
+                                 "pinned-directory": "KEEP-MARKED"}
+        applied = sc.apply_plan(plan, d, guarded_rm=env["rm"], fetch=False)
+        assert all(e.result == "kept" for e in applied)
+        assert payload.read_bytes() == b"reviewed payload"
+        assert marker.read_text() == "retained source custody"
+        assert (pinned / "KEEP").read_text() == "retained directory custody"
+        assert not (scratch / "custody.bin.epyc-keep.epyc-keep").exists()
+        assert not env["trash"].exists()
+
+
+def test_orphan_sibling_marker_still_trashed(env, monkeypatch):
+    orphan = env["scratch"] / "missing.bin.epyc-keep"
+    orphan.write_text("orphaned custody marker")
+    assert not (env["scratch"] / "missing.bin").exists()
+    d = sc.Decl(dirs=[str(env["scratch"])])
+    monkeypatch.setattr(wg, "gather_probe", lambda: wg.Probe())
+    plan = sc.build_plan(d, repos=[], probe=wg.Probe())
+    assert verdicts(plan) == {"missing.bin.epyc-keep": "REMOVE"}
+    applied = sc.apply_plan(plan, d, guarded_rm=env["rm"], fetch=False)
+    assert applied[0].result == "trashed"
+    assert not orphan.exists()
+    assert (env["trash"] / orphan.name).read_text() == "orphaned custody marker"
+    assert not env["scratch"].exists()

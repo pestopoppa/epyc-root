@@ -1,0 +1,11 @@
+# Final intake custody review — 2026-10-06
+
+Preparation only. The owning root session retains responsibility for filing, final verification, index changes, commit, push and promotion. Root pipeline PID 1121608 was reported queued behind the region CPU benchmark; this review does not claim its gates passed.
+
+Read-only review covered the final filing code, publication gates, ownership checker and publication wrapper. AST inspection found zero literal backslash-n string constants in both original filing code and `root-final-file-v2.py`. The approved scientific table is compared verbatim with report v3. Current modified foreign handoffs retained their ordered checkbox state sequences relative to the synchronized HEAD; consumer citation corrections account for changes to checkbox line text.
+
+The proposed sealing helper is KEEP-protected at `/mnt/raid0/llm/tmp/intake-reverify/final-custody-review-proposed/seal-final-receipts.proposed.py`. It was syntax parsed only, not executed. It binds actual late publication done/stdout/stderr/exit receipts and current ledger/index/document hashes, checks prepublication compact digests, and prepares `publication-gates.json`, `receipt-manifest.json` and an exact artifact path list. It produces no new verification result.
+
+Root's typed fixes in `root-final-filing-check.py` require seven checked IRV identities, sealed compact membership and digests, and exact owned paths. Filing v2 asserts one open match per owned IRV-5/6/7 before ticking. Publication v4 removes the README-warning stop and cleans the captured private-index file on exit. Shared-surface regeneration and wiki synthesis remain root-owned prerequisites before late citation checks. Foreign checkbox checking currently compares state order rather than identity/state pairs; root was informed of that limitation. The root project wrap-up command requires refreshing flagged READMEs after verifying factual claims, while warnings remain nonblocking.
+
+No canonical index, intake, handoff or source files were edited by this review. No fold, native apply, retry, test suite, commit, push or promotion was run. Only this owned progress note and the owned audit shard were written in the lane for this checkpoint.

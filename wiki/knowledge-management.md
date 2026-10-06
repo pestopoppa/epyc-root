@@ -3546,7 +3546,7 @@ The audit snapshot classified 352 of 889 dived entries as *at risk* under a heur
 
 ### Source References (2026-10-06 read-depth controls)
 
-- [Intake re-verification handoff](../handoffs/active/intake-reverification.md) — risk rubric, explicit legacy boundary and seven owner tasks.
+- [Intake re-verification handoff](../handoffs/completed/intake-reverification.md) — risk rubric, explicit legacy boundary and seven owner tasks.
 - [Read-depth audit](../artifacts/intake-depth-audit-20261006/AUDIT.md) — root-cause and historical snapshot; not a current proof for each dive.
 - [Research-intake skill](../.claude/skills/research-intake/SKILL.md) — forward Stage-2 depth and anchor requirements.
 - [Intake schema](../.claude/skills/research-intake/references/intake-schema.md) — optional/required schema transition.
@@ -3565,3 +3565,7 @@ Sources: [JEV-aware handoff audit](../handoffs/completed/jev-aware-handoff-audit
 `index_state.py --check` now warns when the checkout's generated graph is missing, malformed or differs from the current `build_graph(state)` result, ignoring only its generation timestamp. The warning is advisory: existing coverage/schema hard failures keep their return codes, and the independent row screener retains silent absence. Generate state/graph together under the wrap-up lease before relying on freshness; this checks checkout integrity, not model quality or runtime liveness.
 
 The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/internal-kb-rag.md), [belief source enrollment](../scripts/vidya/adapters/README.md).
+
+### Intake re-verification final application — 2026-10-06
+
+The original 352-entry triage is closed for its authorized 22 re-dives and eight verification demotions (waves 10/10/2). Application verdicts remain unchanged; `intake-982#record` changed verification and `intake-989#record` changed credibility, with prior history preserved. The native producer retires only named warrants, gives reviewed source claims 108 Verified replacements, and retains 22 Hinted discovery replacements for demotions; two administrative slots receive no source warrant. The 420-frame append passed full-fold review and zero-append retry. All 29 targeted checks, current validator and current citation gate passed; peer ledger/index records remain intact. The original 352 flags remain a historical screen, while the current risk count is a new screen, not a count of failed claims. All 79 recommendation records and task bindings are retained; no applicability declines or new source adoption are implied. Earlier same-day preparation paragraphs are historical checkpoints, superseded by this closeout. [Final findings](../docs/reference/intake-reverification-20261006.md), [completed handoff](../handoffs/completed/intake-reverification.md), [actual receipts](../artifacts/intake-reverification-20261006/final-application/README.md).

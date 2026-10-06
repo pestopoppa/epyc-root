@@ -59,18 +59,20 @@ The smoke-tests map the card; the payoff is hosting the big models. Two axes:
 
 ## Research Intake Update — 2026-07-08: KernelBench Seeded Fuzzing (rec-007)
 
-**Source**: KernelBench (**intake-664**, arXiv:2502.10517) — id corrected 2026-08-10; see the correction below for what the original citation conflated
+**Source record history**: KernelBench (**intake-664#record**, arXiv:2502.10517) — id corrected 2026-08-10; see the corrections below for what the original citation conflated
 
 > **⚠ CORRECTION 2026-07-22 (MI-KB-1 scoping, verified vs intake index):** This row is a THREE-WAY conflation. The real **KernelBench** is Stanford ScalingIntelligence **arxiv:2502.10517** — a kernel-*generation* benchmark (LLM writes CUDA/DSL kernels for PyTorch programs; metric `fast_p`), confirmed via intake-660/661. It is NOT `arxiv 2606.20128` (a separate seeded-fuzzing / "correctness-illusion" kernel paper) and NOT `intake-797` (the unrelated "Externalization in LLM Agents" review, arxiv 2604.08224). The "9/9 seeded-fuzzing" headline below belongs to the 2606.20128 paper, not KernelBench. MI-KB-1 was scoped against the REAL KernelBench: no CPU backend + gfx942/950-only AMD path (not our gfx90a) → decline the harness; methodology already covered by `test-backend-ops` + `kernel_eval.sh`. Full analysis: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.
 
-**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
+**Historical rec-007 finding, withdrawn as a KernelBench result:** “Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.” This source audit does not verify that result from the separate fuzzing paper.
 
-**Applicability to EPYC**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
+**Historical applicability rationale, withdrawn for KernelBench**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
 
-**Action**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
+**Historical action rationale**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
 - iqk AVX-512 GEMM kernel regression testing
 - GPU kernel validation before future production-kernel promotion
 - Agentic ROCm kernel authoring loop (child handoff)
+
+**Source correction — 2026-10-06:** KernelBench is a kernel-generation benchmark: the paper has 250 tasks in three levels and current upstream has 270 reference Python tasks in four levels (`intake-664#00`). Paper `fast_p` divides correct, strictly-faster-than-p tasks by all tasks, including incorrect tasks; ties do not count in `fast_1` (`intake-664#01`). These CUDA-era author measurements do not establish a seeded-fuzzing regression guard or EPYC performance. The 9/9 and 15/15 headline and its original applicability rationale above are preserved as withdrawn historical provenance, not reinstated by fresh native support. MI-KB-1/MI-KB-2 outcomes and checkbox states below remain completed; no production run or reopened harness adoption is proposed.
 
 - [x] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow) ✅ 2026-07-22
 - [x] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline ✅ 2026-08-11 —

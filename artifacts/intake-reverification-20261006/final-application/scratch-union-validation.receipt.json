@@ -1,0 +1,13 @@
+{
+  "exit_code": 0,
+  "source_sha256": {
+    "scripts/system/scratch_cleanup.py": "b5cb437a66d0c7489838fc5b01e8a451f82221f03790ca3858b477003467def1",
+    "tests/test_scratch_cleanup.py": "a042db8fa7d7aceefec012063a3af01a955e38c035f868f593af363e0a505e99"
+  },
+  "status": "pass",
+  "test_names": [
+    "test_repeated_cleanup_preserves_live_sibling_marker_and_directory_keep",
+    "test_orphan_sibling_marker_still_trashed"
+  ],
+  "tests_passed": 2
+}

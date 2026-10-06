@@ -1,0 +1,39 @@
+{
+  "status": "owning_metadata_applied_and_byte_checked",
+  "observed_at_utc": "2026-10-06T11:59:10.777187+00:00",
+  "owning_lane": "/mnt/raid0/llm/worktrees/intake-reverify-20261006",
+  "preflight_exit": 0,
+  "execution_exit": 0,
+  "actual_tool_execution_session": 89821,
+  "application_script_sha256": "caeb2290a26ba03d077cd74549e3e9d4e927b0ef8839c96807917aa0148e452b",
+  "inventory_sha256": "3a8bed109e6b29875120c21db78779441dab3009291d800afcfb4365da2b7d22",
+  "current_validation_done_sha256": "01dfca0c31561e4b6889d69d0953791490f3b0098ad9fe77130dabf8077eed19",
+  "reviewed_scratch_plan_sha256": "e75c0fb01c67c1a424cf5d4cdf5837ae1cfe52681ee9982ab8d90946ada27b83",
+  "candidate_index_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+  "installed_module_test_sha256": {
+    "scripts/vidya/adapters/research_intake.py": "16d62a85df95e47951d9e9f3424d0ee9d14a6f2b751b2be08c62eb9792c5261d",
+    ".claude/skills/research-intake/scripts/validate_intake.py": "4a922aac1f72f6f340465e1c0b5f3d65bbc9fdae871682b857be405cff18ad9c",
+    "scripts/system/scratch_cleanup.py": "a708867f9c00db36430b370de0ebd359f8500ef8897974ada9c20e273fc533e2",
+    "tests/test_scratch_cleanup.py": "80b8cc361ee25d08053681ce49e6e61496b5629e262f6af019acc8b3c92e9858",
+    "scripts/vidya/intake_assertion_kinds.py": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f",
+    "scripts/vidya/ledger_write_lease.py": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4",
+    "scripts/vidya/materialize_reviewed_batch.py": "2c9cfc3b8e61e7629fcdd2cf296b636b9c35b4a23d9c5527b918b173c1acb8ab",
+    "scripts/vidya/native_correction_replay.py": "2af947286ed1b36c371774f5df014757b181d0ac6ed202ab6efe256dd64d8d3d",
+    "scripts/vidya/rebase_current_index.py": "d923f40284ef2bff55b13d1f60489b9cf7f7a9d6a1765e262bf3544cdc7c6b54",
+    "scripts/vidya/rebase_reviewed_batch.py": "b396ec7f49757f5a874b28f7273b3151debf4c2921c5bd58b8e197e8203be724",
+    "scripts/vidya/semantic_impact_audit.py": "594ff1ec8ed8b74c5e8b05249806f3db2a2c384aaed56b03e772a24b453cea11",
+    "tests/skills/test_research_intake_read_depth_scope.py": "2c7dee3c055c98b1d747fff7bbd99f2659969eaff27c4f1a7d5711d5ba9ad91a",
+    "tests/test_ledger_write_lease.py": "732caeaa2f2b7ee711dfe9c1ce2dd2c6f84268807a2aaf112aa6e2b1355bafc7",
+    "tests/test_native_correction_builders.py": "12bf3d55af3b4d668bd65748beaaa07e5216f9ec62a8fa7bc877e9041518c0e9",
+    "tests/test_rebase_current_index.py": "693e81ae25c63527982ea16e932b0172c31625858d29748fd8237c7145b5ae5b",
+    "tests/vidya/test_research_intake_warrant_correction.py": "b4efefef629d1d5eb6118d6e59def69a9e6c04d0a4cc1cc9f9f2df368d655124",
+    "tests/test_native_correction_replay.py": "c5d76c74775bbc681a79932ee05a114b6f0eac64f17a4d7b11a05df87db38883"
+  },
+  "canonical_ledger_sha256_unchanged": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+  "canonical_mutation_performed": false,
+  "consumer_patches_applied": 5,
+  "whitespace_exception_only": [
+    "scripts/vidya/intake_assertion_kinds.py",
+    ".claude/skills/research-intake/references/intake-schema.md"
+  ]
+}

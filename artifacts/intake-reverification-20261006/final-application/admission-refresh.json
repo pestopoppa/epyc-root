@@ -1,0 +1,17 @@
+{
+  "binding_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/verification/input-bindings.json",
+  "binding_sha256": "04292ce215f81b877e498cc4ab3f26132460d99ddd18e1d3251841eb2d9efd2c",
+  "current_as_of": "2026-10-06T17:08:51.366204Z",
+  "current_frontier": 14341,
+  "current_index_sha256": "e67455cd898e520d829703b0ccb3ba2ccfe5da6183aebc6c8f5201a50d1a927d",
+  "entry_count": 1932,
+  "new_gate_results": null,
+  "new_output_namespace": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/actual-verification",
+  "non_target_count": 1902,
+  "peer_entry_count": 12,
+  "source_index_proof_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/source-index-preservation.json",
+  "source_index_proof_sha256": "cca78c383aa387f928dbcf3c99e49f47c27da8c6d835164663bd4f929606e123",
+  "status": "admission_refreshed_preverification",
+  "synchronized_base": "97f3dcae04e29abb485271190867633a1a6ed7cc",
+  "verification_namespace": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/verification"
+}

@@ -33,11 +33,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import yaml  # noqa: E402
 
+from intake_assertion_kinds import validate_assertion_kinds as _validated_assertion_kinds  # noqa: E402
 from claim_tuple import register_ladder  # noqa: E402
 from frames import make_frame  # noqa: E402
 from lattice import Grade, Q_LEVELS, parse_grade  # noqa: E402
 
-__all__ = ["ingest_intake_index", "grade_for_entry", "ADAPTER_ID"]
+__all__ = ["ingest_intake_index", "emit_read_depth_correction", "emit_warrant_withdrawal",
+           "grade_for_entry", "ADAPTER_ID"]
 
 ADAPTER_ID = "vidya.adapters.research_intake/v1"
 AUTHORITY = "research-verification"
@@ -226,6 +228,7 @@ def _claim_corrections(entry: dict) -> dict[int, dict]:
 
 def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
     """Build the frame set for one index entry: one source, N claims, N support/oppose edges."""
+    assertion_kinds = _validated_assertion_kinds(entry)
     out: list[dict] = []
     entry_id = entry["id"]
     src_id = _source_id(entry)
@@ -263,6 +266,20 @@ def _frames_for_entry(entry: dict, as_of: str) -> list[dict]:
         if not isinstance(text, str):
             continue
         cid = _claim_id(entry_id, i)
+        kind = assertion_kinds.get(i, {}).get("kind", "source_claim")
+        if kind == "record_status":
+            binding = assertion_kinds[i]
+            out.append(make_frame(
+                frame_type=FT_CLAIM,
+                assertion={"claim_id": cid, "display_text": text, "source_id": src_id,
+                           "assertion_kind": "record_status"},
+                provenance={"method": ADAPTER_ID, "derived_from": src_id, "about": entry_id,
+                            "current_claim_text_sha256": binding["current_claim_text_sha256"],
+                            "assertion_kind_reason": binding["reason"]},
+                actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
+            ))
+            # A record status is displayed and addressable, but asserts no source finding.
+            continue
         anchor = anchors.get(i)
         grade, is_opposition = grade_for_entry(entry, anchor)
         # A per-claim verdict overrides the entry-level one. Without it, `dive-overturned` opposes
@@ -418,6 +435,240 @@ def _depends_frames(entry: dict, as_of: str) -> list[dict]:
     return out
 
 
+def emit_read_depth_correction(
+    ledger, *, index_path: Path, target_manifest: dict[str, Any],
+    expected_index_sha256: str, expected_manifest_sha256: str, as_of: str,
+) -> dict[str, Any]:
+    """Retract exact native Verified targets and emit stage1 Hinted replacements."""
+    return _emit_warrant_correction(
+        ledger, index_path=index_path, target_manifest=target_manifest,
+        expected_index_sha256=expected_index_sha256,
+        expected_manifest_sha256=expected_manifest_sha256, as_of=as_of,
+        withdraw_only=False,
+    )
+
+
+def emit_warrant_withdrawal(
+    ledger, *, index_path: Path, target_manifest: dict[str, Any],
+    expected_index_sha256: str, expected_manifest_sha256: str, as_of: str,
+) -> dict[str, Any]:
+    """Withdraw exact reviewed native support/opposition, emitting no replacement evidence.
+
+    The filtered corrected index may retain dive-verified status for supported
+    siblings. Only manifest targets are withdrawn; no per-claim quality is invented.
+    Each target requires an explicit frame_type, reviewed scope reason, and SHA-256
+    bindings to old assertion JSON and the current claim text. Historical refutations
+    stay in dated index history; withdrawal repairs the current stable slot's scope.
+    Index bytes, full canonical manifest JSON and timestamp must stay frozen on retry.
+    """
+    return _emit_warrant_correction(
+        ledger, index_path=index_path, target_manifest=target_manifest,
+        expected_index_sha256=expected_index_sha256,
+        expected_manifest_sha256=expected_manifest_sha256, as_of=as_of,
+        withdraw_only=True,
+    )
+
+
+def _emit_warrant_correction(
+    ledger,
+    *,
+    index_path: Path,
+    target_manifest: dict[str, Any],
+    expected_index_sha256: str,
+    expected_manifest_sha256: str,
+    as_of: str,
+    withdraw_only: bool,
+) -> dict[str, Any]:
+    """Prepare a pinned native correction before any append; optionally replace support.
+
+    The caller pins SHA-256 of index bytes and canonical JSON of the entire manifest
+    (sorted keys, compact separators). Manifest ``targets`` rows name ``entry_id``,
+    ``claim_id`` and ``old_support_frame_id``. Keep those inputs and ``as_of`` frozen
+    for retry: exact event IDs resume a partially fsynced append sequence. Requires
+    the ordinary single-writer ledger ownership; Ledger has no batch transaction.
+    """
+    import hashlib  # noqa: PLC0415
+    import json  # noqa: PLC0415
+    from datetime import datetime  # noqa: PLC0415
+
+    from fold import FT_RETRACT, fold  # noqa: PLC0415
+    from frames import validate_frame  # noqa: PLC0415
+    from ledger import _refuse_future_stamp  # noqa: PLC0415
+
+    stamp = datetime.fromisoformat(as_of.replace("Z", "+00:00"))
+    if stamp.tzinfo is None:
+        raise ValueError("correction timestamp must include a timezone")
+    raw = index_path.read_bytes()
+    index_digest = hashlib.sha256(raw).hexdigest()
+    manifest_digest = hashlib.sha256(json.dumps(
+        target_manifest, sort_keys=True, separators=(",", ":"), allow_nan=False,
+    ).encode()).hexdigest()
+    if index_digest != expected_index_sha256:
+        raise ValueError("corrected index digest does not match reviewed digest")
+    if manifest_digest != expected_manifest_sha256:
+        raise ValueError("target manifest digest does not match reviewed digest")
+    entries = yaml.safe_load(raw)
+    if not isinstance(entries, list) or not entries:
+        raise ValueError("correction index must be a nonempty filtered entry list")
+    entries_by_id = {}
+    for entry in entries:
+        if (not isinstance(entry, dict) or not isinstance(entry.get("id"), str)
+                or not entry["id"]):
+            raise ValueError("all correction entries must be identified records")
+        if not withdraw_only and entry.get("verification") != "stage1-unverified":
+            raise ValueError("all demotion entries must be stage1-unverified records")
+        if entry["id"] in entries_by_id:
+            raise ValueError("duplicate correction entry")
+        entries_by_id[entry["id"]] = entry
+    targets = target_manifest.get("targets")
+    if not isinstance(targets, list) or not targets:
+        raise ValueError("manifest must name a nonempty target list")
+
+    # Prepare through the existing emitter, with no new interpretation of Q or T.
+    native = {entry_id: _frames_for_entry(entry, as_of)
+              for entry_id, entry in entries_by_id.items()}
+    claims = {entry_id: {f["assertion"]["claim_id"]: f for f in frames
+                        if f["frame_type"] == FT_CLAIM}
+              for entry_id, frames in native.items()}
+    supports = {entry_id: {f["assertion"]["claim_id"]: f for f in frames
+                          if f["frame_type"] == FT_SUPPORT}
+                for entry_id, frames in native.items()}
+    frames = [r.frame for r in ledger.read_all() if isinstance(r.frame, dict)]
+    by_id = {f.get("frame_id"): f for f in frames}
+    state = fold(frames, as_of=as_of)
+    retracted = {fid for belief in state.beliefs.values() for fid in belief.retracted_support}
+    method = "warrant-withdrawal/v1" if withdraw_only else "read-depth-correction/v1"
+    provenance = {
+        "correction_method": ADAPTER_ID + "/" + method,
+        "corrected_index_sha256": index_digest,
+        "target_manifest_sha256": manifest_digest,
+    }
+    planned = []
+    seen_targets = set()
+    represented_entries = set()
+    replacement_ids = set()
+    for target in targets:
+        if not isinstance(target, dict):
+            raise ValueError("manifest target must be a mapping")
+        entry_id = target.get("entry_id")
+        cid = target.get("claim_id")
+        fid = target.get("old_frame_id") or target.get("old_support_frame_id")
+        target_type = target.get("frame_type") if withdraw_only else FT_SUPPORT
+        if target_type not in ((FT_SUPPORT, FT_OPPOSE) if withdraw_only else (FT_SUPPORT,)):
+            raise ValueError("withdrawal must explicitly name a native support/opposition direction")
+        if not isinstance(fid, str) or not fid or fid in seen_targets:
+            raise ValueError("manifest has a missing or duplicate target frame ID")
+        seen_targets.add(fid)
+        if entry_id not in entries_by_id or cid not in claims[entry_id]:
+            raise ValueError("manifest claim does not belong to its filtered native entry")
+        represented_entries.add(entry_id)
+        old = by_id.get(fid)
+        if old is None:
+            raise ValueError(f"missing target frame: {fid}")
+        validate_frame(old)
+        assertion = old["assertion"]
+        if (old["frame_type"] != target_type or assertion.get("claim_id") != cid
+                or assertion.get("source_id") != _source_id(entries_by_id[entry_id])
+                or old["pubinfo"].get("actor") != ADAPTER_ID
+                or old["pubinfo"].get("authority_scope") != AUTHORITY
+                or assertion.get("grade", {}).get("Q") != "Verified"):
+            raise ValueError(f"target is not this entry's native Verified {target_type}: {fid}")
+        for key, actual in (("actor", ADAPTER_ID), ("authority_scope", AUTHORITY),
+                            ("frame_type", target_type)):
+            if key in target and target[key] != actual:
+                raise ValueError(f"manifest {key} does not match native target")
+        scope_binding = {}
+        if withdraw_only:
+            reason = target.get("reason")
+            if not isinstance(reason, str) or not reason.strip():
+                raise ValueError("withdrawal requires a nonempty reviewed old/current scope reason")
+            scope_binding = {
+                "old_assertion_sha256": hashlib.sha256(json.dumps(
+                    assertion, sort_keys=True, separators=(",", ":"), allow_nan=False,
+                ).encode()).hexdigest(),
+                "current_claim_text_sha256": hashlib.sha256(
+                    claims[entry_id][cid]["assertion"]["display_text"].encode(),
+                ).hexdigest(),
+            }
+            if any(target.get(k) != v for k, v in scope_binding.items()):
+                raise ValueError("withdrawal old/current assertion scope binding does not match")
+        replacement = supports[entry_id].get(cid)
+        if not withdraw_only and (replacement is None or replacement["assertion"]["grade"]["Q"] != "Hinted"):
+            raise ValueError("target claim does not emit corrected Hinted support")
+        reason = (
+            target["reason"] if withdraw_only else
+            f"Read-depth warrant correction for {entry_id}: the available record does not "
+            "establish sufficient relevant raw-source read scope for the prior dive-verified "
+            "warrant; this does not assert the claim false."
+        )
+        event = make_frame(
+            frame_type=FT_RETRACT,
+            assertion={
+                "retracts": fid,
+                "reason": reason,
+            },
+            provenance={**provenance, **scope_binding, "method": ADAPTER_ID, "about": fid,
+                        "claim_id": cid, "entry_id": entry_id,
+                        "derived_from": assertion["source_id"]},
+            actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
+        )
+        if fid in retracted and by_id.get(event["frame_id"]) != event:
+            raise ValueError("target already effectively retracted outside this frozen correction")
+        if event["frame_id"] in by_id and fid not in retracted:
+            raise ValueError("existing correction event is not effective under fold semantics")
+        planned.append(event)
+        if withdraw_only:
+            continue
+        # Carry source identity and ordinary anchor provenance on the native support.
+        replacement = make_frame(
+            frame_type=FT_SUPPORT, assertion=replacement["assertion"],
+            provenance={**replacement["provenance"], **provenance, "entry_id": entry_id},
+            actor=ADAPTER_ID, authority_scope=AUTHORITY, created_at=as_of,
+        )
+        if replacement["frame_id"] not in replacement_ids:
+            replacement_ids.add(replacement["frame_id"])
+            planned.append(replacement)
+    if represented_entries != set(entries_by_id):
+        raise ValueError("filtered entries must exactly match manifest entry coverage")
+    targeted_directions = {(t["claim_id"], t["frame_type"] if withdraw_only else FT_SUPPORT)
+                           for t in targets}
+    for existing in frames:
+        if ((existing.get("assertion", {}).get("claim_id"), existing.get("frame_type"))
+                in targeted_directions
+                and existing.get("assertion", {}).get("grade", {}).get("Q") == "Verified"
+                and existing.get("pubinfo", {}).get("actor") == ADAPTER_ID
+                and existing.get("pubinfo", {}).get("authority_scope") == AUTHORITY
+                and existing.get("frame_id") not in retracted
+                and existing.get("frame_id") not in seen_targets):
+            raise ValueError("manifest omits active native Verified evidence in a targeted direction")
+    # Schema, stamp, content identity and effective-state preflight ALL precede append.
+    for frame in planned:
+        validate_frame(frame)
+        _refuse_future_stamp(frame)
+        if frame["frame_id"] in by_id and by_id[frame["frame_id"]] != frame:
+            raise ValueError("existing correction frame does not match frozen event")
+        if frame["frame_id"] in retracted:
+            raise ValueError("a generated correction frame has itself been retracted")
+    preview = fold(frames + [f for f in planned if f["frame_id"] not in by_id], as_of=as_of)
+    effective = {fid for b in preview.beliefs.values() for fid in b.retracted_support}
+    if not seen_targets <= effective:
+        raise ValueError("planned retractions do not take effect under fold semantics")
+    appended = []
+    for frame in planned:
+        if frame["frame_id"] not in by_id:
+            ledger.append(frame)
+            by_id[frame["frame_id"]] = frame
+            appended.append(frame["frame_id"])
+    return {
+        "adapter": ADAPTER_ID, "as_of": as_of, "withdraw_only": withdraw_only,
+        "entries_read": len(entries), "target_count": len(seen_targets),
+        "corrected_index_sha256": index_digest, "target_manifest_sha256": manifest_digest,
+        "planned_frame_ids": [f["frame_id"] for f in planned],
+        "appended_frame_ids": appended,
+        "already_present_count": len(planned) - len(appended),
+    }
+
+
 def ingest_intake_index(
     ledger,
     *,
@@ -433,6 +684,12 @@ def ingest_intake_index(
         raise ValueError(f"{index_path}: expected a list of entries")
     if limit is not None:
         entries = entries[:limit]
+
+    # Validate every selected entry before any append, including a malformed late entry.
+    # This is a projection precondition, not a grade or fold rule.
+    for entry in entries:
+        if isinstance(entry, dict) and "id" in entry:
+            _validated_assertion_kinds(entry)
 
     # Frames are content-addressed, so re-ingesting an UNCHANGED entry produces byte-identical
     # frames with identical ids. Skipping ids already in the ledger makes re-ingest incremental and
@@ -464,10 +721,13 @@ def ingest_intake_index(
         # hide the very effect this adapter exists to measure.
         anchors = _anchors_by_claim(entry)
         n_claims = 0
+        assertion_kinds = _validated_assertion_kinds(entry)
         for i, c in enumerate(entry.get("key_claims") or []):
             if not isinstance(c, str):
                 continue
             n_claims += 1
+            if assertion_kinds.get(i, {}).get("kind") == "record_status":
+                continue
             grade, is_opposition = grade_for_entry(entry, anchors.get(i))
             # The SAME helper the frame emitter uses, not a second reading of it. These two drifted
             # before — the report said 112 opposition while the adapter emitted 106, a summary

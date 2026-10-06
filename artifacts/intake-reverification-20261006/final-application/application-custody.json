@@ -1,0 +1,95 @@
+{
+  "canonical-apply": {
+    "appended_count": 420,
+    "fields": {
+      "actual_after_state_hash": "sha256:803ba04e3d27b43fb67140c6bc00bd625eeed78569189ab1d2832293fb5e08db",
+      "actual_frontier": 14311,
+      "actual_ledger_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+      "as_of": "2026-10-06T11:52:22Z",
+      "candidate_index_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+      "canonical_mutation_performed": true,
+      "expected_reviewed_after_ledger_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+      "index_or_handoff_mutation_performed": false,
+      "ledger_integrity_errors": [],
+      "ledger_path": "/workspace/.vidya/ledger.jsonl",
+      "native_adapter_sha256": "16d62a85df95e47951d9e9f3424d0ee9d14a6f2b751b2be08c62eb9792c5261d",
+      "native_identity": {
+        "actor": "vidya.adapters.research_intake/v1",
+        "authority_scope": "research-verification"
+      },
+      "old_prefix_bytes_immutable": true,
+      "old_prefix_frontier": 13891,
+      "old_prefix_sha256": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+      "partial_batch_frames_already_present": 0,
+      "plan_sha256": "3a5d82779785f73091e7ffad97917b4b03e4114dd06e2782cba64eef2d16b355",
+      "prospective_after_state_hash": "sha256:803ba04e3d27b43fb67140c6bc00bd625eeed78569189ab1d2832293fb5e08db",
+      "reviewed_receipt_sha256": "6ea0e3f0ab19fd395ae259066a37f1752a812c4b1bf17e0e92a3fdc1115c3538",
+      "schema": "epyc.native-correction-replay-receipt/v1",
+      "status": "applied_and_verified"
+    },
+    "original_path": "/mnt/raid0/llm/tmp/intake-reverify/final-canonical-attempt-20261006/canonical-apply.receipt.json",
+    "original_sha256": "565047a7b18f503d8272e55bd5fa420eab8e82de50df44aff644908be59ef94f",
+    "semantic_audit_original_sha256": "d46b15ff8433a921d68fd00be2738d8ed99948b1b6f587c0d51099554f7fbbe6"
+  },
+  "native-final-fold": {
+    "appended_count": 0,
+    "fields": {
+      "actual_after_state_hash": "sha256:803ba04e3d27b43fb67140c6bc00bd625eeed78569189ab1d2832293fb5e08db",
+      "actual_frontier": 14311,
+      "actual_ledger_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+      "actual_zero_append_retry": true,
+      "as_of": "2026-10-06T11:52:22Z",
+      "current_cli_sha256": "025f7d9887650522279ef4ae91c1a3d99ef873f0a696cb9662d5b39545041d74",
+      "exact_retired_count": 132,
+      "exact_type_whitelist": {
+        "epyc.vidya/frame/claim_depends_on/v1": 4,
+        "epyc.vidya/frame/claim_proposed/v1": 110,
+        "epyc.vidya/frame/correction_recorded/v1": 22,
+        "epyc.vidya/frame/evidence_supports_claim/v1": 130,
+        "epyc.vidya/frame/retraction/v1": 132,
+        "epyc.vidya/frame/source_observed/v1": 22
+      },
+      "fresh_demote_hinted": 22,
+      "fresh_source_verified": 108,
+      "native_frame_count": 420,
+      "old_frontier": 13891,
+      "original_prefix_sha256": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+      "status": "actual_native_application_verified"
+    },
+    "original_path": "/mnt/raid0/llm/tmp/intake-reverify/final-canonical-attempt-20261006/native-final-fold.receipt.json",
+    "original_sha256": "84e51b57b3e0c71771fadfeffa29f0865ab31d376a6ec4b8a2c788a116c8b812",
+    "semantic_audit_original_sha256": "d46b15ff8433a921d68fd00be2738d8ed99948b1b6f587c0d51099554f7fbbe6"
+  },
+  "zero-append-retry": {
+    "appended_count": 0,
+    "fields": {
+      "actual_after_state_hash": "sha256:803ba04e3d27b43fb67140c6bc00bd625eeed78569189ab1d2832293fb5e08db",
+      "actual_frontier": 14311,
+      "actual_ledger_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+      "as_of": "2026-10-06T11:52:22Z",
+      "candidate_index_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+      "canonical_mutation_performed": false,
+      "expected_reviewed_after_ledger_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+      "index_or_handoff_mutation_performed": false,
+      "ledger_integrity_errors": [],
+      "ledger_path": "/workspace/.vidya/ledger.jsonl",
+      "native_adapter_sha256": "16d62a85df95e47951d9e9f3424d0ee9d14a6f2b751b2be08c62eb9792c5261d",
+      "native_identity": {
+        "actor": "vidya.adapters.research_intake/v1",
+        "authority_scope": "research-verification"
+      },
+      "old_prefix_bytes_immutable": true,
+      "old_prefix_frontier": 13891,
+      "old_prefix_sha256": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+      "partial_batch_frames_already_present": 420,
+      "plan_sha256": "3a5d82779785f73091e7ffad97917b4b03e4114dd06e2782cba64eef2d16b355",
+      "prospective_after_state_hash": "sha256:803ba04e3d27b43fb67140c6bc00bd625eeed78569189ab1d2832293fb5e08db",
+      "reviewed_receipt_sha256": "6ea0e3f0ab19fd395ae259066a37f1752a812c4b1bf17e0e92a3fdc1115c3538",
+      "schema": "epyc.native-correction-replay-receipt/v1",
+      "status": "applied_and_verified"
+    },
+    "original_path": "/mnt/raid0/llm/tmp/intake-reverify/final-canonical-attempt-20261006/zero-append-retry.receipt.json",
+    "original_sha256": "a89241410095eb89cbcdae0b533fe954cbdf9ceedefa6e06afd839dac2f2321b",
+    "semantic_audit_original_sha256": "d46b15ff8433a921d68fd00be2738d8ed99948b1b6f587c0d51099554f7fbbe6"
+  }
+}

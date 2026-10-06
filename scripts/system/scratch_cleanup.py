@@ -133,6 +133,13 @@ class Entry:
 
 
 def _keep_marker(path: str) -> str | None:
+    # A live sibling marker is part of its payload's custody, not disposable scratch.
+    # Strip exactly one suffix; marker-of-marker chains are not a keep convention.
+    suffix = ".epyc-keep"
+    if os.path.isfile(path) and path.endswith(suffix):
+        target = path[:-len(suffix)]
+        if not target.endswith(suffix) and os.path.exists(target):
+            return path
     if os.path.isdir(path) and not os.path.islink(path):
         for m in wg.KEEP_MARKERS:
             mp = os.path.join(path, m)

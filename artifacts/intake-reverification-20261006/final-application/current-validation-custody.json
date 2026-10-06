@@ -1,0 +1,48 @@
+{
+  "actual_current_integration_done": {
+    "application_plan_sha256": "e75c0fb01c67c1a424cf5d4cdf5837ae1cfe52681ee9982ab8d90946ada27b83",
+    "as_of": "2026-10-06T11:52:22Z",
+    "candidate_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+    "canonical_mutations": false,
+    "citation_exit": 3,
+    "current_base_index_sha256": "c4a1f0e6efe01c1a29bc5ed0783819289f956f541e90d1f2559dcc02249aa4a2",
+    "current_baseline_ledger_sha256": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+    "full_fold_and_idempotency_verified": true,
+    "status": "infrastructure_pass",
+    "validator_exit": 0
+  },
+  "done_sha256": "01dfca0c31561e4b6889d69d0953791490f3b0098ad9fe77130dabf8077eed19",
+  "stages": {
+    "actual-builder-fixtures": {
+      "count": 7,
+      "exit": 0,
+      "stderr": "test_actual_materializer_preserves_both_candidate_and_historical_marker_custody (__main__.BuilderTests.test_actual_materializer_preserves_both_candidate_and_historical_marker_custody) ... ok\ntest_actual_rebase_preserves_ci_prefix_alias_sibling_and_historical_marker (__main__.BuilderTests.test_actual_rebase_preserves_ci_prefix_alias_sibling_and_historical_marker) ... ok\ntest_ci_named_peer_same_source_sibling_mutation_refused (__main__.BuilderTests.test_ci_named_peer_same_source_sibling_mutation_refused) ... ok\ntest_materializer_changed_completed_validation_candidate_refused (__main__.BuilderTests.test_materializer_changed_completed_validation_candidate_refused) ... ok\ntest_materializer_changed_current_candidate_refused (__main__.BuilderTests.test_materializer_changed_current_candidate_refused) ... ok\ntest_materializer_changed_rebase_receipt_refused (__main__.BuilderTests.test_materializer_changed_rebase_receipt_refused) ... ok\ntest_target_retirement_in_peer_tail_refused (__main__.BuilderTests.test_target_retirement_in_peer_tail_refused) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 1.798s\n\nOK\n",
+      "stderr_sha256": "75dbaceca1dcda320372be14387062dd87237563e62d43eb312540a35be4c38a"
+    },
+    "index-rebase3": {
+      "count": 3,
+      "exit": 0,
+      "stderr": "test_actual_builder_preserves_peer_bytes (__main__.IndexRebaseTests.test_actual_builder_preserves_peer_bytes) ... ok\ntest_current_target_change_refuses_before_output (__main__.IndexRebaseTests.test_current_target_change_refuses_before_output) ... ok\ntest_post_preparation_peer_byte_tamper_rejected (__main__.IndexRebaseTests.test_post_preparation_peer_byte_tamper_rejected) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.004s\n\nOK\n",
+      "stderr_sha256": "bcbd0ebaa7bc2fae0dc36b89f3cb99756761411fb0dd62e3b3591ded21bc512d"
+    },
+    "lease5": {
+      "count": 5,
+      "exit": 0,
+      "stderr": "test_actual_native_append_and_read_under_lease (__main__.LeaseTests.test_actual_native_append_and_read_under_lease) ... ok\ntest_break_request_aborts_before_mutation (__main__.LeaseTests.test_break_request_aborts_before_mutation) ... ok\ntest_existing_peer_descriptor_refuses (__main__.LeaseTests.test_existing_peer_descriptor_refuses) ... ok\ntest_owned_lease_and_release (__main__.LeaseTests.test_owned_lease_and_release) ... ok\ntest_path_replacement_refuses (__main__.LeaseTests.test_path_replacement_refuses) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.033s\n\nOK\n",
+      "stderr_sha256": "c6b000a97560e737b1d9f5f6b8c2164c522cf0c051036a48c35e1ac2e506b58a"
+    },
+    "read-depth6": {
+      "count": 6,
+      "exit": 0,
+      "stderr": "test_declared_digest_refused_for_both_even_legacy_date (__main__.ReadDepthScopeTests.test_declared_digest_refused_for_both_even_legacy_date) ... ok\ntest_explicit_valid_depth_requires_anchor_for_both (__main__.ReadDepthScopeTests.test_explicit_valid_depth_requires_anchor_for_both) ... ok\ntest_full_and_partial_accepted_for_both_dive_states (__main__.ReadDepthScopeTests.test_full_and_partial_accepted_for_both_dive_states) ... ok\ntest_legacy_without_declared_depth_grandfathered_for_both (__main__.ReadDepthScopeTests.test_legacy_without_declared_depth_grandfathered_for_both) ... ok\ntest_new_era_missing_read_scope_and_anchors_refused_for_both (__main__.ReadDepthScopeTests.test_new_era_missing_read_scope_and_anchors_refused_for_both) ... ok\ntest_stage1_digest_remains_discovery_only_outside_scientific_gate (__main__.ReadDepthScopeTests.test_stage1_digest_remains_discovery_only_outside_scientific_gate) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.000s\n\nOK\n",
+      "stderr_sha256": "27c4159f2deb550817125e3e6a9bbd2c5dc4c41518fc0ae7cfb8c2eb96ce806d"
+    },
+    "replay8": {
+      "count": 8,
+      "exit": 0,
+      "stderr": "test_changed_index_zero_append (__main__.ReplayTests.test_changed_index_zero_append) ... ok\ntest_full_replay_and_zero_append_identical_retry (__main__.ReplayTests.test_full_replay_and_zero_append_identical_retry) ... ok\ntest_malformed_late_frame_zero_append (__main__.ReplayTests.test_malformed_late_frame_zero_append) ... ok\ntest_partial_append_resumes_exact_reviewed_order (__main__.ReplayTests.test_partial_append_resumes_exact_reviewed_order) ... ok\ntest_preflight_only_no_ledger_mutation (__main__.ReplayTests.test_preflight_only_no_ledger_mutation) ... ok\ntest_rebased_current_prefix_preserves_peer_frames (__main__.ReplayTests.test_rebased_current_prefix_preserves_peer_frames) ... ok\ntest_torn_tail_refused_without_repair_or_append (__main__.ReplayTests.test_torn_tail_refused_without_repair_or_append) ... ok\ntest_unrelated_interleaved_append_refused (__main__.ReplayTests.test_unrelated_interleaved_append_refused) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.044s\n\nOK\n",
+      "stderr_sha256": "ff66420adc450806aa82a19cd72c5f096c25f0bfff08a199f9140fbc75c895d5"
+    }
+  },
+  "test_count": 29
+}

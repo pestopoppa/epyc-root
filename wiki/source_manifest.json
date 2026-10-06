@@ -1,34 +1,46 @@
 {
   "by_type": {
-    "docs": 126,
-    "handoff-active": 180,
+    "docs": 127,
+    "handoff-active": 179,
     "handoff-blocked": 2,
-    "handoff-completed": 208,
-    "progress": 623,
+    "handoff-completed": 209,
+    "progress": 628,
     "research": 140
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-06T06:33:38Z",
   "last_touch": {
     "advanced": {
-      "added": 0,
-      "changed": 5,
-      "removed": 0
+      "added": 7,
+      "changed": 9,
+      "removed": 1
     },
-    "at": "2026-10-06T09:58:12Z",
+    "at": "2026-10-06T17:10:56Z",
     "scope_paths": [
+      "docs/reference/intake-reverification-20261006.md",
+      "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "handoffs/active/architect-model-selection-bench.md",
+      "handoffs/active/autokernel-research-loop.md",
+      "handoffs/active/engram-conditional-memory.md",
       "handoffs/active/intake-reverification.md",
+      "handoffs/active/internal-kb-rag.md",
+      "handoffs/active/rocm-verify-profile-backend.md",
+      "handoffs/active/scoring-infra-standardization.md",
       "handoffs/active/vidya-belief-substrate-program.md",
-      "progress/2026-10/2026-10-06-filing_preparation.md",
+      "handoffs/completed/intake-reverification.md",
+      "progress/2026-10/2026-10-06-application-preparation.md",
+      "progress/2026-10/2026-10-06-closeout-review.md",
+      "progress/2026-10/2026-10-06-final-custody-review.md",
+      "progress/2026-10/2026-10-06-final-report-refresh.md",
       "progress/2026-10/2026-10-06-intake-reverify-main.md",
-      "progress/2026-10/2026-10-06-wave2-review.md"
+      "progress/2026-10/2026-10-06-tail-verification.md"
     ],
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-06T09:58:12Z",
+  "scan_time": "2026-10-06T17:10:56Z",
   "schema_version": 1,
-  "source_set_hash": "a1b39aed4626bae1c03003781a24125a8083bfab1d4a5ea609fe165cc2ac0bd2",
+  "source_set_hash": "82289b6994f1954a566616e761bd5e654fd2532fb26033f8ce1df87fbe26e1f8",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -63,10 +75,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3681d1c73e233a3fa58605bad648e6957ce09be3ff29c8684c81564f927a0a3e",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "c7b5d6f96cd7ab53ab99e0c6ff8621f743e79d0354e99a5cf06461aa283a96ba",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
-      "size": 126036,
+      "size": 126135,
       "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
       "type": "handoff-active"
     },
@@ -95,10 +107,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "3a7c97cd8e1aa54bcef82af6ec11b3f6bff4cdd63e03d4189d839ac7cb1f28e3",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "f8cc0e30d8fdbc4937a58a853ddd9c9ac45b0a2e6244bb3b795bb51fbe5d96bf",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/architect-model-selection-bench.md",
-      "size": 117042,
+      "size": 118014,
       "title": "Architect Model Comparison Benchmark",
       "type": "handoff-active"
     },
@@ -159,10 +171,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "b6d0bafc270e201f0c64c6a3e5dc43fbbe034f5784ed6da1d3103d54c1148319",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/autokernel-research-loop.md",
-      "size": 491450,
+      "size": 491793,
       "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
       "type": "handoff-active"
     },
@@ -439,10 +451,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "0c17540d487ef9dcdaf113b339c5995a1c06b6dc3fe3848c4832e030f1e15c9d",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "5f5757de5b331daf5cc4503bc9a1c446df2d1aa7899456d89f748629459aa5c3",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/engram-conditional-memory.md",
-      "size": 43841,
+      "size": 45174,
       "title": "Engram \u2014 Conditional Memory via Scalable Lookup",
       "type": "handoff-active"
     },
@@ -711,14 +723,6 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "279b8b2c0ac46c31ddf610868470f39fc02de40f1ed7e89c591e45e117f92d50",
-      "modified": "2026-10-06T09:57:55Z",
-      "path": "handoffs/active/intake-reverification.md",
-      "size": 9285,
-      "title": "Intake re-verification: past dives at risk from the WebFetch-digest read-depth gap",
-      "type": "handoff-active"
-    },
-    {
       "content_hash": "13b1989cd4a84a109b2458f31ee9f6ac25b202732dca7d5d755c873355e98fea",
       "modified": "2026-10-06T06:31:53Z",
       "path": "handoffs/active/integration-test-coverage.md",
@@ -735,10 +739,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "54fcbdfd685962bc9666c825fcaf4bf6857bc2fab17796bbccc6144711793352",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/internal-kb-rag.md",
-      "size": 126194,
+      "size": 132435,
       "title": "Internal Knowledge-Base RAG",
       "type": "handoff-active"
     },
@@ -1199,10 +1203,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "65998477d436dd17454594aeb3b2e3ac85d15d531980bc2b6576476720ffec10",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/rocm-verify-profile-backend.md",
-      "size": 156691,
+      "size": 157778,
       "title": "ROCm Verify/Profile/Benchmark Backend for MI210 Kernel Authoring",
       "type": "handoff-active"
     },
@@ -1239,10 +1243,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "2425f14edb1734e8fd02c25ee9ffb8d7418a53d2e6127e474eb5ac0333821f26",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "990590b2b0a6cf806d6ac4af458dc909376f288d89dabfe40b9c18a21a5d3660",
+      "modified": "2026-10-06T17:08:50Z",
       "path": "handoffs/active/scoring-infra-standardization.md",
-      "size": 44885,
+      "size": 45834,
       "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
       "type": "handoff-active"
     },
@@ -1423,10 +1427,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "c6b15680cf75d96fc630e5a54dde530fed5e79c8db12a36969f06a957d94e582",
-      "modified": "2026-10-06T09:57:55Z",
+      "content_hash": "e26ace690203b9bd61d71daac285683c8ff103e4d15d9a7d995b72268361c7ef",
+      "modified": "2026-10-06T17:09:12Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 291871,
+      "size": 309576,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -2268,6 +2272,14 @@
       "path": "handoffs/completed/inference-lock-starvation.md",
       "size": 7849,
       "title": "Inference Lock Starvation \u2014 Bug Report",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "20f461c16cb2a089e2460f039b981a1f1d34f7bfbb40fd02ec565bae36215836",
+      "modified": "2026-10-06T17:09:12Z",
+      "path": "handoffs/completed/intake-reverification.md",
+      "size": 10374,
+      "title": "Intake re-verification: past dives at risk from the WebFetch-digest read-depth gap",
       "type": "handoff-completed"
     },
     {
@@ -9135,6 +9147,22 @@
       "type": "progress"
     },
     {
+      "content_hash": "16b4fe08bc7505b6e69a4a3d3f4cca2aa1634504159abf81859604f05990a051",
+      "modified": "2026-10-06T12:00:25Z",
+      "path": "progress/2026-10/2026-10-06-application-preparation.md",
+      "size": 3152,
+      "title": "Application preparation \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
+      "content_hash": "00953f95c923202e798c7b1f871f658738ceb53209145299fe48a248bd800a74",
+      "modified": "2026-10-06T16:31:50Z",
+      "path": "progress/2026-10/2026-10-06-closeout-review.md",
+      "size": 2861,
+      "title": "Intake re-verification closeout review \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
       "content_hash": "6f41ec462df389c1d82f54fb66bd01a361aa87f54e95944e27436fc4765763df",
       "modified": "2026-10-06T06:31:53Z",
       "path": "progress/2026-10/2026-10-06-codex-ni-final-wrap.md",
@@ -9159,10 +9187,26 @@
       "type": "progress"
     },
     {
-      "content_hash": "ed82baa1db52d0d84aae279c37c3588b27581d9398c0abc931572481cf784b93",
-      "modified": "2026-10-06T09:57:55Z",
+      "content_hash": "81ad8bab38c8f98f61ffd1933e8e06027da426bc899b243028b895b7d94062e7",
+      "modified": "2026-10-06T16:46:44Z",
+      "path": "progress/2026-10/2026-10-06-final-custody-review.md",
+      "size": 2226,
+      "title": "Final intake custody review \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ed91a1e69b7632cb7851f096062daa60260edf07392cf5f1b41c295351b1f9fb",
+      "modified": "2026-10-06T16:32:27Z",
+      "path": "progress/2026-10/2026-10-06-final-report-refresh.md",
+      "size": 1324,
+      "title": "Final report preparation \u2014 2026-10-06 (EVL-51 / IRV)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c76a218a4fc079416401fda103b4f69aa105516909c02c5696bff72f35fc70d4",
+      "modified": "2026-10-06T17:09:12Z",
       "path": "progress/2026-10/2026-10-06-intake-reverify-main.md",
-      "size": 10476,
+      "size": 14794,
       "title": "2026-10-06 progress",
       "type": "progress"
     },
@@ -9236,6 +9280,14 @@
       "path": "progress/2026-10/2026-10-06-ni76-code-index-admission.md",
       "size": 2377,
       "title": "NI76 compute-claim admission",
+      "type": "progress"
+    },
+    {
+      "content_hash": "6f10edbea8779cc919d87b805778104d3d7cb9d69cd4fbb695a0e3ad2008c9c7",
+      "modified": "2026-10-06T16:31:52Z",
+      "path": "progress/2026-10/2026-10-06-tail-verification.md",
+      "size": 2161,
+      "title": "Tail verification preparation \u2014 2026-10-06",
       "type": "progress"
     },
     {
@@ -9871,6 +9923,14 @@
       "type": "docs"
     },
     {
+      "content_hash": "894fdbf036409cf89e11d182f48046fa6d89c8eed2569b7babe3ee2c4ad72141",
+      "modified": "2026-10-06T17:09:12Z",
+      "path": "docs/reference/intake-reverification-20261006.md",
+      "size": 14570,
+      "title": "Intake re-verification \u2014 final findings",
+      "type": "docs"
+    },
+    {
       "content_hash": "7bc01d20e3a5a12c8e953872cbef0db6b7f73c165bf5b9c97fbb1d09c062daf0",
       "modified": "2026-10-06T06:31:53Z",
       "path": "docs/reference/k35-minicpm-status-reconciliation-2026-07-18.md",
@@ -10263,7 +10323,7 @@
       "type": "docs"
     }
   ],
-  "total_new": 1279,
+  "total_new": 1285,
   "writer_evidence_policy": {
     "applies_to": "generated-wiki-article-writes",
     "minimum_confidence": "verified",
