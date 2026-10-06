@@ -223,6 +223,8 @@ def main() -> int:
                     "--repo", f"recipe={recipe}", "--repo", f"carrier={carrier}", "--repo", f"app={app}"]
         for path in dict.fromkeys(p.resolve() for p in read_paths):
             producer.extend(("--read-path", str(path)))
+        for selection in TEST_FILES:
+            producer.extend(("--select", selection))
         status.update(state="running", repositories=pins, selection_count=len(selections))
         status_path.write_text(json.dumps(status, sort_keys=True) + "\n")
         exit_code = subprocess.call([*producer, "--", *command], cwd=app)
