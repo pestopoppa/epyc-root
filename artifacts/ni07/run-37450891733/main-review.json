@@ -1,0 +1,58 @@
+{
+  "run": 37450891733,
+  "attempt": 1,
+  "artifact_id": 11406712087,
+  "independent_git_bindings": 3351,
+  "source_counts": {
+    "app": 2089,
+    "carrier": 626,
+    "recipe": 636
+  },
+  "contexts": 2,
+  "zip_sha256": "77976ae1d1fd69cc526157d23e20e15c58b1862bd85b91d1414155ec4dc6f2b6",
+  "zip_size": 16836839,
+  "zip_extracted_members": 3361,
+  "receipt_file_sha256": "c5548ecec81a3d037cd6d9711ea21888cff4b94ed8c56b8a5e5cbaf61f9a634e",
+  "receipt_self_sha256": "43752b23ad6d3212c5f9231059613175b1aaf76c8277e8d747c0e77996e98bac",
+  "repositories": {
+    "app": "847a9b154f5513ff735e9cb882ccaa905576efd3",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "2585e25d393e63d239188a02d42cdf77efcd3b4a"
+  },
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_kb_rag_eval.py",
+    "--junitxml=/home/runner/work/_temp/ni07-k7-report/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 11,
+    "error": 0,
+    "executed": 11,
+    "failure": 0,
+    "passed": 11,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "1109ad39cd016a874155cbda0ae2c60169d812e8",
+  "recipe_main": "f0c5a35b396ca2b53454e1eac3929f74894aa738",
+  "context_recipe_assertions_checked": true
+}

@@ -1,0 +1,7 @@
+# K7 report-time catalog provenance
+
+`scripts/kb_rag/eval_k7.py` reads the existing strict `kb_catalog_dependency.read_dependency` record once before report files are published and puts its original validated value in `summary.json` as `catalog_dependency_at_report`. Missing index or legacy catalog yields null without directory/schema/migration creation. Stale logical content, invalid singleton, malformed native JSON, schema or seal mismatch refuses report publication; no fallback identity is reconstructed.
+
+This is a report-time observation. It does not establish one frozen catalog across all queries, attest vector bytes, or authenticate the dependency. Query implementation, ranking, caps, quality metrics, result/case rows and completed-writer scope remain unchanged. The historical K7 algorithm's documentation posture is separate from this provenance consumer; broader KB-backed evidence consumers remain open.
+
+Two APP paths847a9b15 promoted main1109ad39, two ROOT recipe paths2585e25d promoted mainf0c5a35b. Eight new fake-query/temp-SQLite cases plus3existing module cases pass11/11 in [original off-host CI](../../artifacts/ni07/run-37450891733/README.md). Encoder loading is trapped; actual query/model/ONNX/K7 execution never occurs. MAIN verified all original source/API bytes and existing shared grade; synthetic conformance supplies no retrieval-quality or decision-gating warrant.

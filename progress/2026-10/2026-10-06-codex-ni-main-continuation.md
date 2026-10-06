@@ -79,3 +79,8 @@ MAIN independently reopened3340Git bindings plus2contexts and all3350API ZIP mem
 ## NI07-13 completed forced-build identity boundary
 
 MAIN independently reopened3335Git bindings plus2contexts, all3345API ZIP members and original37447817516 TRUE113/113. Three earlier FALSE112/113 originals remain unchanged; exact setup/hash/named-column corrections retain all assertions. Two source paths promoted APPmaine7257b4c, two recipe paths ROOTmain35486bc7, tested bytes/peer ancestry preserved. Three owned checklist closures and3canonical native frames. Newly source-confirmed NI07-16 staged-write protection enrolled before implementation; logical-catalog source does not warrant vector bytes or full SQL/filesystem rollback. Tally16/19 after one new valuable task; failure ledger, K7 report consumer and staged publication remain. Thin PIP04 next action refreshed. No host test/inference/kernel/process operation.
+
+
+## NI07-15 completed report provenance boundary
+
+MAIN independently derives3351Git bindings before reopening receipt, verifies2contexts/all3361original API ZIP members and nativeCI37450891733 TRUE11/11. APP847a9b15 promoted main1109ad39; ROOT2585e25d promoted mainf0c5a35b, exact tested paths and peer ancestry preserved. Four owned checklist closures and3existing-carrier canonical frames; docs/wiki/source table/thin next actions updated. Queue17/19; native failure ledger and staged vector publication remain under delegated off-host validation. New-source shortlist is read-only until MAIN review/enrollment. No host tests/inference/embedding/serving/kernel change.

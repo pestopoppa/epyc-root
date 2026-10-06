@@ -1412,3 +1412,8 @@ Model-free removal now commits catalog/native state before deleting unreferenced
 ## 2026-10-06 forced-build identity correction
 
 The [forced-build correction](../docs/reference/kb-force-build-identity-contract.md) reuses stable exact chunk identity and reconciles touched duplicate rows/FTS after successful encoding. [Original off-host CI37447817516](../artifacts/ni07/run-37447817516/README.md) passes113/113 after MAIN original source/API review. Shared vector files are retained; nonforced/failure/cleanup behavior remains. Individual staged-write protection is separately enrolled; no live index or retrieval-quality result.
+
+
+## 2026-10-06 K7 report provenance
+
+The [K7 report consumer](../docs/reference/k7-report-catalog-dependency-contract.md) attaches the original strict catalog record once at report time; absent/legacy null and stale/tamper refusal precede report publication. [OriginalCI37450891733](../artifacts/ni07/run-37450891733/README.md) passes11/11 after MAIN source/API custody review. Ranking/metrics remain; report identity does not prove an all-query catalog snapshot or retrieval quality.

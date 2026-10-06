@@ -2659,7 +2659,7 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
   - [x] **VB-NI07-CI-RC — ingest original supplied-score expectation fixtures.** ✅ 2026-10-06 — [Original CI37446388954](../../artifacts/ni07/run-37446388954/README.md) TRUE26/26;3338Git inputs plus2contexts,3348API ZIP members independently reopened. One existing shared Judged/Located observation emits3canonical frames; no native probability or calibration warrant.
 
-  - [ ] **VB-KB-CATALOG-K7-REPORT — preserve the existing native catalog dependency in K7 summary artifacts.** Prospectively enroll the report consumer before implementation/consumption; copy only strict validated original completed-writer identity once at report time. Missing/legacy unknown, invalid/stale refuses; no row invented on read, new ladder/source class, historical rebuild or all-query snapshot assertion. NI07-15/KB-K7-REPORT-DEPENDENCY; original synthetic observations remain under VB-NI07-CI-WIRE.
+  - [x] **VB-KB-CATALOG-K7-REPORT — preserve the existing native catalog dependency in K7 summary artifacts.** ✅ 2026-10-06 — [Accepted strict consumer](../../docs/reference/k7-report-catalog-dependency-contract.md) publishes original validated report-time record, null unknown and refusal without reconstruction. OriginalCI37450891733 TRUE11/11 accepted through existing native CI carrier; broader consumers stay open, no new class/ladder or all-query warrant.
 
   - [x] **VB-NI07-CI-CS — ingest original provisional conversation-shadow fixtures.** ✅ 2026-10-06 — [Original CI37447169966](../../artifacts/ni07/run-37447169966/README.md) TRUE19/19;3340Git inputs plus2contexts,3350API members reopened. Existing shared Judged/Located observation emits3canonical frames; original FALSE unchanged, no corpus schema/calibration/routing warrant.
 
@@ -2668,3 +2668,6 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 
 - [ ] **VB-KB-VECTOR-PUBLISH — prospectively capture staged vector publication source contracts.** Existing native CI carrier/shared grading only; bind fake writer/source/readset and original partial-write/refusal/success fixtures before execution. No new grading/source class, vector-byte attestation, DB/filesystem transaction or live index warrant. NI07-16; MAIN owns acceptance.
+
+
+  - [x] **VB-NI07-CI-K7-REPORT — ingest original report-consumer fixtures.** ✅ 2026-10-06 — [OriginalCI37450891733](../../artifacts/ni07/run-37450891733/README.md) TRUE11/11; MAIN3351Git+2contexts/all3361API members verified. Existing Judged/Located observation emits3frames; synthetic report contracts only.
