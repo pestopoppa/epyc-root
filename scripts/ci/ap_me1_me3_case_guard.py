@@ -7,6 +7,7 @@ suite before native_conformance records the JUnit result.
 from __future__ import annotations
 
 from pathlib import Path
+import pytest
 
 EXPECTED_SINGLE = {
     "test_default_off_no_capture_or_history_io",
@@ -42,7 +43,7 @@ SELECTED_FILES = {
 
 def pytest_collection_finish(session):
     collected_files = set()
-    actual_new = set()
+    actual_new = []
     for item in session.items:
         path = Path(str(item.path)).as_posix()
         for selected in SELECTED_FILES:
@@ -52,7 +53,7 @@ def pytest_collection_finish(session):
             function = getattr(item, "originalname", item.name)
             callspec = getattr(item, "callspec", None)
             parameter = callspec.id if callspec is not None else None
-            actual_new.add((function, parameter))
+            actual_new.append((function, parameter))
 
     expected_new = {(name, None) for name in EXPECTED_SINGLE}
     for name, parameter_ids in EXPECTED_PARAM.items():
@@ -63,7 +64,7 @@ def pytest_collection_finish(session):
             "selected compatibility-suite collection mismatch: "
             f"expected={sorted(SELECTED_FILES)} actual={sorted(collected_files)}"
         )
-    if actual_new != expected_new:
+    if len(actual_new) != len(expected_new) or set(actual_new) != expected_new:
         problems.append(
             "AP-ME1/3 control collection mismatch: "
             f"expected={sorted(expected_new)} actual={sorted(actual_new)}"
@@ -73,4 +74,6 @@ def pytest_collection_finish(session):
         if reporter is not None:
             for problem in problems:
                 reporter.write_line("AP-ME1/3 COLLECTION GUARD: " + problem, red=True)
-        session.exitstatus = 1
+        # Raising UsageError stops collection with a non-overwritable usage exit.
+        # pytest_collection_finish's session.exitstatus can be reset by pytest.main.
+        raise pytest.UsageError("; ".join(problems))

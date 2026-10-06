@@ -23,6 +23,7 @@ jobs:
       RECIPE_PIN: ${{ github.sha }}
       APP_PIN: 3dec5ccde33d9d1c1c8472187d581f5b5277ef74
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      AP_ME1_ME3_RUNNER_CONTEXT: ubuntu-latest
       AP_ME1_ME3_EXECUTION_CONTEXT: offline-native-journal-fixtures
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
