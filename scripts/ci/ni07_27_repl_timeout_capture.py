@@ -76,7 +76,7 @@ LOCKED_FIXTURE_PACKAGES = {
     'pluggy': '1.6.0',
     'Pygments': '2.20.0',
 }
-EXPECTED_CASES = 123  # 117 NI24 cases plus six timeout-specific cases; no parametrization.
+EXPECTED_CASES = 123  # 117 NI24 cases, including safe_pickle parametrization, plus six timeout cases.
 EXPECTED_PINS = {
     "app": "506acf51a060adc85e4c693221a2f50cd3342968",
     "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
