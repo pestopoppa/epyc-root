@@ -74,8 +74,9 @@ def test_actual_gate_original_boolean_and_shared_frames(repo, secret):
     assert "sample.txt" not in display and body(True).strip() not in display
 
 
-def test_ed25519_private_key_header_is_blocked_from_staged_blob(repo):
-    header = "-----BEGIN " + "ED25519 " + "PRIVATE KEY-----"
+@pytest.mark.parametrize("key_type", ["RSA", "OPENSSH", "ED25519"])
+def test_private_key_header_is_blocked_from_staged_blob(repo, key_type):
+    header = "-----BEGIN " + key_type + " " + "PRIVATE KEY-----"
     name = "synthetic_key.txt"
     (repo / name).write_text(header + "\nsynthetic test key material\n")
     git(repo, "add", "--", name)
