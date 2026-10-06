@@ -1,5 +1,7 @@
 # ColBERT Reranker for web_research Pipeline
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/`; owned APP worktrees `/mnt/raid0/llm/worktrees/codex-ni07-s9-20261006/`, `/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006/`.
+
 **Status**: refreshed 2026-05-28; S5 gate rechecked 2026-06-14 — S1-S4 complete; zero-page telemetry defect repaired; targeted and representative direct-tool probes produced real fetched/synthesized counters. Current S5 request-path reranker decision is **NO-GO/HOLD**: representative direct-tool deep-research sentinel sample synthesized 55 pages with 0 irrelevant pages, below the >20% waste threshold. Live Gate-3 now passes hard telemetry plus the `web_research` soft structured-output probe after `epyc-orchestrator` `9a220b9`; keep instrumentation and reranker utilities available but do not add request-path reranking complexity.
 **Created**: 2026-04-05 (extracted from `04-mirothinker-worker-eval.md` intake-174)
 **Updated**: 2026-05-28
@@ -550,7 +552,7 @@ quality tradeoff.
   prefix-free-vs-prefixed rather than like-for-like and mean pooling (`_pooled_vec:462`) plus reference
   truncation (`:519`) were forgiving enough to pass it; needs the ONNX encoder, so not zero-inference
   (`scripts/benchmark/colbert/export_lateon_onnx_int8.py:465-494`) (found 2026-09-14, noninf sweep).
-- [ ] **S9 — give the `colbert_encoder` module singleton a locking contract** before the reranker is ever
+- [x] **S9 — give the `colbert_encoder` module singleton a locking contract** ✅ 2026-10-06 — MAIN accepted source `7825ab09`, promoted APP main `fd0a8dbc`, original off-host CI37439049934 TRUE68/68 (14 new locking cases plus 54 unchanged cap/tokenizer cases); [custody and review](../../artifacts/ni07/run-37439049934/README.md). Reentrant per-process transactions span state load/refresh, KB validation/encode/writers, reranker query/documents, telemetry and worker output publication; fake interleavings prove competing acquisition blocks, and no lock crosses Pool construction. Loader publishes a complete generation or clears failed state. No cross-process/catalog concurrency, activation, live performance or deployment claim. Original requirement: before the reranker is ever
   enabled concurrently with KB-RAG, since `_MODEL_DIR` is import-time state that `kb_rag` stamps into
   `index_meta` and a KB query in flight during a `refresh_model_dir()` re-point would see `_session is None`
   and return an ordinary miss (`src/retrieval/colbert_encoder.py`) (found 2026-09-14, noninf sweep).
@@ -661,3 +663,5 @@ OBLIQ-Bench IS released (HF `dianetc/OBLIQ-Bench`, CC-BY-4.0) but its corpora (t
 ### S04-F4 — Add the ColBERT singleton locking contract before concurrent slots are enabled
 
 **Source verification (JEV audit, 2026-10-06):** `refresh_model_dir()` clears `_session`/`_tokenizer` and `ensure_loaded()` repopulates the globals without synchronization. Before any concurrent KB-RAG/reranker enablement, define a narrow lock contract covering refresh/load/encode and test deterministic fake-object interleavings. This is local state integrity only; no reranker activation or runtime performance claim.
+
+**S04-F4 bounded implementation completed:** S9 above supplies the per-process synchronization contract; concurrent serving activation and its real performance remain separately gated.

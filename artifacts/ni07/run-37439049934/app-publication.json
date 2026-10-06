@@ -1,0 +1,34 @@
+{
+  "accepted_source": "7825ab0948a30b294135a085dca261ba9abfaede",
+  "source_commits": [
+    "0c4dc04c3158072192a3c092cc25fe1dd26ddec4",
+    "7825ab0948a30b294135a085dca261ba9abfaede"
+  ],
+  "native_run": 37439049934,
+  "recipe_sha": "29599a013c917faeafd573a115f99dce4dd87d21",
+  "native_original_outcome": "TRUE68/68",
+  "main_acceptance": "MAIN independently reopened original3341ZIPmembers,3331Gitbindings+2assertedcontexts and existing native/shared grade; canonical3observationframes MAIN-owned",
+  "promotion": "fd0a8dbc75d1845c29c8bc5c758018bbe4c12207",
+  "parents": [
+    "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+    "7825ab0948a30b294135a085dca261ba9abfaede"
+  ],
+  "remote_main": "fd0a8dbc75d1845c29c8bc5c758018bbe4c12207",
+  "remote_main_verified": true,
+  "source_ancestor_verified": true,
+  "exact_six_tested_file_bytes_preserved": true,
+  "paths_sha256": {
+    "src/retrieval/colbert_encoder.py": "7151ed125d6d81408d9151be92bb1916d19fb5e3a8a11e9298c804ccbcd45492",
+    "src/retrieval/kb_rag.py": "ceb2ac4418717ce42bfc699786ed6e775e4782c86f7db9f8bf0ea96da80c8d16",
+    "src/tools/web/colbert_reranker.py": "71c80867137c81bd012901f8002cd109e81d31ca2350e41aba842ac275ab615b",
+    "src/retrieval/kb_rag_query_telemetry.py": "51d69daa69600524bfe53995cc7d2293b0fb37c019a98744d76401ec1f43dffa",
+    "scripts/kb_rag/parallel_reembed.py": "b0040a28f6a45f1acdb77a8f13e3eca1ad6ba11e6c4caf6948b04daf6f26023a",
+    "tests/unit/test_colbert_lock_contract.py": "20bf794d9b9e066b1895bd6ad54829fa3b9990fcbaa4b1f4bf490719999cfb6b"
+  },
+  "clean": true,
+  "leases": "operation-private canonical wrapup and push; both released",
+  "owned_promotion_worktree_retained": "/mnt/raid0/llm/worktrees/codex-ni07-promote-s9-20261006",
+  "root_recipe_promotion": "MAIN-owned; not executed by source worker",
+  "boundary": "per-process encoder/consumer transactions only; no concurrent catalog/crossprocess consistency/performance/deploy/reload claim",
+  "host_tests_or_inference": false
+}

@@ -1,0 +1,62 @@
+{
+  "run_id": 37439049934,
+  "attempt": 1,
+  "repositories": {
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "29599a013c917faeafd573a115f99dce4dd87d21",
+    "orchestrator": "7825ab0948a30b294135a085dca261ba9abfaede"
+  },
+  "native_conformant": true,
+  "exit_code": 0,
+  "counts": {
+    "collected": 68,
+    "error": 0,
+    "executed": 68,
+    "failure": 0,
+    "passed": 68,
+    "skipped": 0
+  },
+  "diagnostic": "",
+  "readset_count": 3333,
+  "independent_git_bindings": 3331,
+  "source_binding_counts": {
+    "root": 625,
+    "recipe": 627,
+    "orchestrator": 2079
+  },
+  "runner_contexts": {
+    "pip-freeze.txt": "9af52daad9f061f84374a35f64b2e57f2effd239d10cf0a528bd42e5281996e7",
+    "environment.json": "281843ee94fee672fabd665d80f5c8ed448a43fd8c4201b03ea7199611de881a"
+  },
+  "context_limit": "runner asserted; not independent package installation proof",
+  "original_zip_seals": [
+    {
+      "artifact_id": 11400666620,
+      "name": "ni07-s9-37439049934-1",
+      "sha256": "5a43e89da3494f2c2884d2b84d29be3844b6b4776c919e085cf1ec017aa56a5a",
+      "size": 16457254
+    }
+  ],
+  "receipt_file_sha256": "bc6a881388190c7a94f531c3d760a57043568930171ee2a5f99920cf482a984b",
+  "receipt_self_sha256": "cf9af735b25af815c620c2d81ad0856875c66198d379755b2b9339dbc52ce86b",
+  "projected_rows": 1,
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "originals_preserved": true,
+  "fixture_hashes": {
+    "tests/unit/test_colbert_lock_contract.py": "20bf794d9b9e066b1895bd6ad54829fa3b9990fcbaa4b1f4bf490719999cfb6b",
+    "tests/unit/test_kb_rag_caps.py": "704695356aaa85a5f986adfe4dccfd147b934067de745c0d2150055a7bc64f77",
+    "tests/unit/test_kb_rag_tokenizer_identity.py": "7bdae8510493684108cd34fe5242b679a9204e4b2459271b884cf25541c64f78"
+  },
+  "zip_members_independently_reopened": 3341,
+  "api_published_zip_digest_matches": true,
+  "main_accepted": true
+}
