@@ -64,7 +64,7 @@ foreign paper's. The instrument is the deliverable; no throughput claim is licen
   is an 8 GB VRAM card behind a 2.4 GB/s SSD, and Limitations (v) says the speed projections are
   modelled, not deployed (`intake-1336#05`). A good SCH does **not** license a throughput claim.
 
-- [ ] **RT-5 — AK-G rider: expert-skew report for Qwen3.6-35B-A3B on the CPU frontdoor.** From the RT-1 tap (or a diagnostic counter in MUL_MAT_ID), report per-layer share of selections in the top 10% and 25% of experts on >= 2 workloads against the 3.13% chance baseline. It gates CAFE-7 (MoE expert-cache HIP port): trigger is top-10% share >= 60% on >= 2 workloads. COMPUTE-GATED — FILE ONLY. (intake-1925 claim 1: the fork publishes no skew statistic)
+- [ ] **RT-5 — AK-G rider: expert-skew report for Qwen3.6-35B-A3B on the CPU frontdoor.** From the RT-1 tap (or a diagnostic counter in MUL_MAT_ID), report per-layer share of selections in the top 10% and 25% of experts on >= 2 workloads against the 3.13% chance baseline. It gates CAFE-7 (MoE expert-cache HIP port): trigger is top-10% share >= 60% on >= 2 workloads. COMPUTE-GATED — FILE ONLY. (intake-1925 claim 1: the fork publishes no skew statistic) — Owner: workspace-ec (2026-10-06).
 
 ## Open Questions
 
