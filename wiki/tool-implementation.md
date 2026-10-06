@@ -1517,3 +1517,7 @@ The [pinned research checkout/test seams](../docs/reference/hermetic-research-pr
 ## 2026-10-06 question archive status
 
 [Sidecar persistence status](../docs/reference/eval-question-sidecar-persistence-status.md) exposes initialization, append and completion failures separately from scoring, and survives filtering and role summaries. [Native evidence](../artifacts/ni07/run-37463260425/README.md) passes9/9. Completion describes writer/fsync return values. Earlier diagnosticNULL and failed fixture originals remain preserved; grades unchanged.
+
+## 2026-10-06 signed checkpoint transport
+
+[Checkpoint producers](../docs/reference/signed-checkpoint-payload-transport.md) preserve signed non-JSON payloads through SQLite/restore while the existing restricted boundary rejects tamper/unsupported values. Persister cap accounting includes both maps; deterministic eviction drops matching lineage/payload. [Full-module native evidence](../artifacts/ni07/run-37465024500/README.md) passes116/116. Three existing inert config overrides serve off-host fixtures; production kernel-path guard is unchanged.

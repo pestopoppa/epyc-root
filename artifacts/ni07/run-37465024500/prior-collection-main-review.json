@@ -1,0 +1,50 @@
+{
+  "run": 37463812687,
+  "attempt": 1,
+  "artifact_id": 11413159154,
+  "independent_git_bindings": 3361,
+  "source_counts": {
+    "app": 2092,
+    "carrier": 625,
+    "recipe": 644
+  },
+  "contexts": 2,
+  "zip_sha256": "9ccadae8e30b313fa426120b95d752d2e6fb235f940ae0524e7a22919d0314e3",
+  "zip_size": 16890264,
+  "zip_extracted_members": 3371,
+  "receipt_file_sha256": "b2e9d04c0b5c09afd510edfd70cd0661b91260291a8d0278116a1b7de00d0f8c",
+  "receipt_self_sha256": "9444144f8ac5ce6ba8760c1650c7e8b4be0d088ee76e0764e74f0ca09f31629b",
+  "repositories": {
+    "app": "abaf5364c4ebfb1eb98173ad867b6c5d119a1581",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "55805d110987d5e8b3055afb013cd305212c8d27"
+  },
+  "argv": [
+    "/home/runner/work/epyc-root/epyc-root/app/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "pytest_asyncio.plugin",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_persister.py",
+    "tests/unit/test_repl_executor.py",
+    "tests/unit/test_safe_pickle.py",
+    "--junitxml=/home/runner/work/_temp/ni07-24-pickle-pass/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": null,
+  "diagnostic": "unnamed JUnit case",
+  "shared_grade": {
+    "Q": null,
+    "T": null,
+    "reasons": []
+  },
+  "native_conformant": null,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true
+}

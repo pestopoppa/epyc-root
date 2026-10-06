@@ -1,0 +1,18 @@
+{
+  "run": 37462627902,
+  "artifact_id": 11412614959,
+  "zip_sha256": "9c72367f1b5997e69d06d337bfff073bacffa281bab9a7f059a0aa76569f1613",
+  "zip_size": 253,
+  "zip_extracted_members": 1,
+  "status_sha256": "27340a1d4f7e7c89e1377fc91b18c163fdb39011c182798c75c8d915f6936d45",
+  "status": {
+    "error": "PackageNotFoundError: No package metadata was found for networkx",
+    "exit_code": 1,
+    "job": "pickle-pass",
+    "state": "capture_failed"
+  },
+  "native_conformant": null,
+  "native_receipt_absent": true,
+  "originals_preserved": true,
+  "no_reseal": true
+}

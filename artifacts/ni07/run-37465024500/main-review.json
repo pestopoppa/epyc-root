@@ -1,0 +1,62 @@
+{
+  "run": 37465024500,
+  "attempt": 1,
+  "artifact_id": 11413219014,
+  "independent_git_bindings": 3361,
+  "source_counts": {
+    "app": 2092,
+    "carrier": 625,
+    "recipe": 644
+  },
+  "contexts": 2,
+  "zip_sha256": "e007f6dcaa08b274e21e4e5a622bded47f2ede929c941383015b9fd8e5ce13be",
+  "zip_size": 16899474,
+  "zip_extracted_members": 3371,
+  "receipt_file_sha256": "6387c0d439252a9c592f976a594bbf3a5521a0c67edc82cc3a1c009007a8c377",
+  "receipt_self_sha256": "e0488dffc3dbc3692adc32e448683a9f07d56fbee09d98ead6546bfb51fabafa",
+  "repositories": {
+    "app": "abaf5364c4ebfb1eb98173ad867b6c5d119a1581",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "1f76d91150c5858a87516a404c3c14e966cecf26"
+  },
+  "argv": [
+    "/home/runner/work/epyc-root/epyc-root/app/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "pytest_asyncio.plugin",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_persister.py",
+    "tests/unit/test_repl_executor.py",
+    "tests/unit/test_safe_pickle.py",
+    "--junitxml=/home/runner/work/_temp/ni07-24-pickle-pass/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 116,
+    "error": 0,
+    "executed": 116,
+    "failure": 0,
+    "passed": 116,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "app_main": "c61c4e8e70768c9472d87232e9d8c75c257ba5f0",
+  "root_main": "881afccf8ad618cbf02de5224c9cdad930e693e8",
+  "context_recipe_assertions_checked": true
+}

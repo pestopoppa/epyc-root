@@ -495,9 +495,8 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
-| Signed REPL checkpoint transport (prospective NI07-24) | native CI verifier | Two producer/SQLite/restore/tamper fixtures; existing signed boundary/caps/fencing, no live state | Checkpoint producers, VB-REPL-PICKLE-PASS / D-RI-PICKLE-PASS |
+| Signed REPL checkpoint transport (accepted NI07-24) | native CI verifier | Two producer/SQLite/restore/tamper fixtures; existing signed boundary/caps/fencing, no live state | Native37465024500 TRUE116/116 through existing carrier; checkpoint producers, VB-REPL-PICKLE-PASS / D-RI-PICKLE-PASS |
 | Question sidecar status (accepted NI07-25) | native CI verifier | Writer initialization/appends/completion and fake failure counts; in-memory grade unchanged | Native37463260425 TRUE9/9 through existing carrier, eval_tower writer, VB-EVAL-CAPTURE-STATUS / EV-RI-CAPTURE-STATUS |
 | Outer eval reconnect cost (prospective NI07-26) | native CI verifier | Fake transport/clock return and QuestionResult/compact-row metadata; inner retries distinct | call_orchestrator_forced, VB-EVAL-RECONNECT-COST / EV-RI-RECONNECT-COST |
 | Terminal REPL timeout state (prospective NI07-27) | native CI verifier | Bounded late-worker reuse/checkpoint refusal; no termination or host-effect isolation | REPL await/execute/persistence, VB-REPL-TIMEOUT-STATE / D-RI-TIMEOUT-STATE |
-
 | Typed candidate descriptions (prospective NI07-28) | native CI verifier | Legacy-byte, strict shape, JSON/native render and layout-reader alignment fixtures; no quality/adoption warrant | TD-14-NI-PREP / VB-TD-OPTION-DESCRIPTIONS through existing native carrier/shared grade |
