@@ -5085,3 +5085,7 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 ### 2026-10-06 coordinator audit attribution correction
 
 [Current-source corrections](../artifacts/ni08/coordinator-attribution-source-review-20261006/README.md) apply one attribution rule: commit trailers neither prove nor disprove individual authorship; a named contemporaneous body or wrap-up supports a scoped self-report. Log shard names provide partial provenance without actor authentication. The composer actor count and reported mainB dispute remain unverified against original pane/bus custody. This correction preserves historical quotes and the separately documented defect; it supplies no new grading rule.
+
+### 2026-10-06 batch verifier reporting
+
+[Accepted source and nine original controls](../artifacts/ni08/batch-verifier-source-20261006/README.md) distinguish syntax-only checks from owner-command success and snapshot the command once for both verification and reporting. The edit rider requests a real acceptance check before FINAL, with honest failure/unknown reporting. Model-authored postconditions stay inert. Native conformance covers an explicitly isolated helper boundary and actual temporary sandbox modules; full-graph semantic acceptance and BEP efficacy remain open.

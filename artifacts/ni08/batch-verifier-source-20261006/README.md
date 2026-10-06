@@ -1,0 +1,9 @@
+# Batch verifier reporting source — MAIN acceptance
+
+APP source c0263f8 is published byte-identically in main e2d3a6706ca1d110730991f5c93d050018750dc7. Exact native recipe c6bcc674 and existing carrier4c0c653 are pinned in the [independent predispatch binding](MAIN-predispatch-binding.json).
+
+[Original hosted run37532436117](https://github.com/pestopoppa/epyc-root/actions/runs/37532436117) passed exactly nine selected cases, zero failures/errors/skips. MAIN independently reopened all27 ZIP members, 19 native readset bindings, API digest/receipt seals, original JUnit and source-context manifest. All selected test bodies and decorators are byte-identical to the actual source; the graph boundary is explicitly AST-isolated with feature/task-root stubs. Actual temporary sandbox parser/apply/verify/promote modules remain source-bound. Existing shared grade is Judged/Located for bounded conformance only; originals are unchanged and MAIN did not execute another grade.
+
+The edit rider now requests an acceptance check before FINAL and asks for honest failed/unknown reporting. The batch finisher snapshots its owner verification command once per turn, then uses that same snapshot for verification and labeling. Successful syntax-only checks say syntax-only; owner-command success is named distinctly. Model-authored postcondition text remains inert metadata. No new gate, arbitrary command selection from model output, timeout policy or turn enforcement is introduced.
+
+[Original integrity review](mfvbs-MAIN-original-review.json) closes MF-VBS2-SRC and VB-MFVBS-VERIFIER only. Parent MF-VBS-2 remains open for the owner-authorized BEP inference remeasurement; full graph integration, semantic acceptance and efficacy are not established here. No host project execution, model, kernel, API reload or runtime activation occurred. [Private custody](private-custody.json) retains all originals.

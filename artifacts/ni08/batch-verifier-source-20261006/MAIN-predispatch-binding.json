@@ -1,0 +1,17 @@
+{
+  "pins": {
+    "app": "c0263f8c36f3042e9a8145d03dfda63952ade199",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "c6bcc674fb9cad6571484698bc58adf68d54ba6b"
+  },
+  "created_at": "2026-10-06T21:13:38.608419+00:00",
+  "full_private_map_path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/mfvbs-MAIN-predispatch-map.json",
+  "full_private_map_sha256": "2733204631ff327bd0280e5eda6a2decb41364086f3f667700420e994c1b2786",
+  "git_binding_counts": {
+    "app": 2851,
+    "carrier": 2063,
+    "recipe": 2331
+  },
+  "original_context_sha256": "331a5f9d120e05d5faeab5e739aeb45f9385a5d26ad6a019573aef951089335e",
+  "own_original_access_started": false
+}

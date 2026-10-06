@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **thirty-one completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **thirty-three completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -43,3 +43,5 @@ AUD12 recurrence-column withdrawal accepted:27 scoped completions (23 existing f
 TD30F-PUBLIC-REPLAY and VB-TD30F-REPLAY accepted:29 scoped completions (24 existing checkbox flips+5 scoped additions). [Four original controls and descriptive authored-Markdown successor](../../artifacts/ni08/td30f-public-replay-20261006/README.md), no detector efficacy or parent completion.
 
 AUD13 and AUD14 accepted:31 scoped completions (26 existing checkbox flips+5 scoped additions). [Consistent scoped attribution and reported dispute](../../artifacts/ni08/coordinator-attribution-source-review-20261006/README.md). RI19 reversible config branch83d530 is published; live RI16 replay remains its owner boundary and adds no completion.
+
+MF-VBS2-SRC and VB-MFVBS-VERIFIER accepted after original9/9 integrity review and byte-identical APPmain publication:33 scoped completions (27 existing flips+6 scoped additions). [Bounded source acceptance](../../artifacts/ni08/batch-verifier-source-20261006/README.md); parent BEP remeasurement remains open.

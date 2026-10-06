@@ -1,0 +1,137 @@
+[
+  {
+    "name": "native/command.log",
+    "bytes": 98,
+    "sha256": "2db18c015cef70e3752c9e825220c8963cdaa886d634471be8397c56f5c593cd"
+  },
+  {
+    "name": "native/execution-request.json",
+    "bytes": 5542,
+    "sha256": "39688b9bb67158b380cfb206d153b8be7bfbf236b5ed496d8602021f165a6b52"
+  },
+  {
+    "name": "environment.json",
+    "bytes": 1269,
+    "sha256": "4eff59791d89fbe1247bc6c7eb7e424ad1e025e0938a08cbebac9bb2b3cc5525"
+  },
+  {
+    "name": "native/original-junit.xml",
+    "bytes": 1343,
+    "sha256": "59d179dee45f41557539bb6fe27a6a7fb61dc4f71a27dbc9db704911cf7d7a65"
+  },
+  {
+    "name": "native/read-000.bin",
+    "bytes": 19249,
+    "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+  },
+  {
+    "name": "native/read-001.bin",
+    "bytes": 2306,
+    "sha256": "d5170116ef4ea995e7d96a56329f5cd8717b083015914db0cb9dc8d6b80dd509"
+  },
+  {
+    "name": "native/read-002.bin",
+    "bytes": 15167,
+    "sha256": "c5038cb04aa863096c36a45fa61b48f5534dc6a5f7464484119557c53b0dad5d"
+  },
+  {
+    "name": "native/read-003.bin",
+    "bytes": 8573,
+    "sha256": "bf06ff5eb7c4e36678a274750623a3df5db00d5b9d5faf634a63beed613caa2c"
+  },
+  {
+    "name": "native/read-004.bin",
+    "bytes": 6886,
+    "sha256": "12c81bcd2d8917f1d55af3eeb795fe02b4cdf961ef2af5eb542f15edbda877f6"
+  },
+  {
+    "name": "native/read-005.bin",
+    "bytes": 2260,
+    "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+  },
+  {
+    "name": "native/read-006.bin",
+    "bytes": 40447,
+    "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+  },
+  {
+    "name": "native/read-007.bin",
+    "bytes": 1099589,
+    "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+  },
+  {
+    "name": "native/read-008.bin",
+    "bytes": 6832,
+    "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+  },
+  {
+    "name": "native/read-009.bin",
+    "bytes": 75435,
+    "sha256": "dfb2dd16f5496121f5f683aa95feb85cede82a44557549c0c1dde6c0eb364fa3"
+  },
+  {
+    "name": "native/read-010.bin",
+    "bytes": 6926,
+    "sha256": "4fb24c8faeccc8e0d5f7220f5cd54f0b065d385145fde713b879526ae52d2805"
+  },
+  {
+    "name": "native/read-012.bin",
+    "bytes": 15723,
+    "sha256": "dade84f7b0a21fa4347d92d1d9d8471249bf1ec975e50f8d8dbbe4f7f256e46c"
+  },
+  {
+    "name": "native/read-011.bin",
+    "bytes": 11906,
+    "sha256": "34c8dd3db2a7b887953fa7e7f55bc54f8c6103ba8d33c85911f088f809dba74e"
+  },
+  {
+    "name": "native/read-013.bin",
+    "bytes": 10635,
+    "sha256": "f3cdf7799172e669d3393471009299732a025a7185ff50134b75e3ca0ec70b1c"
+  },
+  {
+    "name": "native/read-014.bin",
+    "bytes": 7081,
+    "sha256": "d71694482c64de85af180be1229015a3f63a78e69e428ef89b49a8b7532405a7"
+  },
+  {
+    "name": "native/read-015.bin",
+    "bytes": 1269,
+    "sha256": "4eff59791d89fbe1247bc6c7eb7e424ad1e025e0938a08cbebac9bb2b3cc5525"
+  },
+  {
+    "name": "native/read-016.bin",
+    "bytes": 891306,
+    "sha256": "331a5f9d120e05d5faeab5e739aeb45f9385a5d26ad6a019573aef951089335e"
+  },
+  {
+    "name": "native/read-017.bin",
+    "bytes": 100,
+    "sha256": "252cba493345c496d2307ddc716cf40bed6bab5fb29a798682032706af65689a"
+  },
+  {
+    "name": "native/read-018.bin",
+    "bytes": 112,
+    "sha256": "c8072b1c1f67fa98ee23003b88219656f3d7d71c10bc134a34d55b2fef11b8e2"
+  },
+  {
+    "name": "shared-grade-analysis.json",
+    "bytes": 7522,
+    "sha256": "50849d11e5a546df6aa7126ecd064d01ec338f0080ad5331e099fa37f025fc8c"
+  },
+  {
+    "name": "native/receipt.json",
+    "bytes": 9509,
+    "sha256": "cf658710c68a82eba1efe648d23e4f7f1ad0bedc38eb4205b3b0b13c1ab000c2"
+  },
+  {
+    "name": "status.json",
+    "bytes": 152,
+    "sha256": "16ada724c7c2cc403e9b6d227b6353492a78fc6b997050244f8552fd1bf2e34f"
+  },
+  {
+    "name": "tracked-source-config-context.tsv",
+    "bytes": 891306,
+    "sha256": "331a5f9d120e05d5faeab5e739aeb45f9385a5d26ad6a019573aef951089335e"
+  }
+]

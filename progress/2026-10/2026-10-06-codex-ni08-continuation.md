@@ -106,3 +106,9 @@ MAIN applied the separate current account correction: comment-level composer exa
 ## RI19 preparation and D9 pending decision visibility
 
 Published exact source-only config proposal83d530 on its comparison branch, two values only; MAIN independently reviewed keyword fallbacks. No main promotion/store change/live read/reload. Identical RI16 30-request replay belongs to the inference owner; parent remains open. Corrected stale draft key names rather than publishing that prose. Added the already prepared exact145540 D9 package to the operator decision router; pending approval is not inferred from elapsed time. No completion counted for either preparation/package.
+
+## MF-VBS2 source and prospective verifier — MAIN acceptance
+
+MAIN approved APPc0263f8, corrected native recipec6bcc674, independently bound every tracked Python/config source context before dispatch (manifest331a5f9d), then fetched API identities and reopened original run37532436117/artifact11445351008: nine actual original cases pass, no skip/failure/error; all27 ZIP members/19 readset bindings, receipt seals and source-context manifest match. MAIN independently reconstructed the exact nine test bodies plus decorators and six helpers from native original source. Existing shared grade Judged/Located is unchanged original hosted analysis only.
+
+APP main e2d3a670 integrates exactly three source/test files. Edit instructions ask for acceptance execution and honest failure/unknown, batch verification and labels use one owner-command snapshot, syntax-only success is explicit. No source-controlled model postcondition execution, API reload or host test. MF-VBS2-SRC and VB-MFVBS-VERIFIER close; parent MF-VBS-2 still needs BEP inference remeasurement and forced-stop analysis. NI08 now33 scoped completions (27 existing flips+6 additions).
