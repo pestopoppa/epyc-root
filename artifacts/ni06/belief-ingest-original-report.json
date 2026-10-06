@@ -1,0 +1,18 @@
+{
+  "adapter": "adapters/ci_conformance.py",
+  "adapter_id": "vidya.adapters.ci_conformance/v1",
+  "declined": [],
+  "dry_run": false,
+  "frames_emitted": 9,
+  "missing": [],
+  "paths": [
+    "/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/run-37424571462-originals/ni06-k3-37424571462-1/native/receipt.json",
+    "/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/run-37425524371-originals/ni06-cj13-37425524371-1/native/receipt.json",
+    "/mnt/raid0/llm/tmp/codex-ni06-kb-20261006/run-37425524371-originals/ni06-root-graph-37425524371-1/native/receipt.json"
+  ],
+  "refused": [],
+  "rows_projected": 3,
+  "source": "ci-fixture-conformance",
+  "units_matched": 3,
+  "units_projected": 3
+}

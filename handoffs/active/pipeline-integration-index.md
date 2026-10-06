@@ -13,7 +13,7 @@
 | PIP-01 | colbert reranker web research | [colbert-reranker-web-research.md](colbert-reranker-web-research.md) | G14 — re-export Reason-mxbai-colbert-v0-32m with pylate-onnx-export 1.7.0 in a py3.10–3.12 venv, then PREFIX-3 parity | — |
 | PIP-02 | document parser table bench | [document-parser-table-bench.md](document-parser-table-bench.md) | Resolve PP-DocLayoutV3 weights and record cache path + size — a separate download from the GGUF | — |
 | PIP-03 | ernie image turbo evaluation | [ernie-image-turbo-evaluation.md](ernie-image-turbo-evaluation.md) | Run matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record admissible outputs | — |
-| PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | Validate KB-WM-6 graph freshness warnings; implement K2 caps while honoring each stored catalog's identity | — |
+| PIP-04 | internal kb rag | [internal-kb-rag.md](internal-kb-rag.md) | Implement K2 cap plumbing with stored catalog identity preserved; capture catalog-write dependency identity | — |
 | PIP-05 | opendataloader pipeline integration | [opendataloader-pipeline-integration.md](opendataloader-pipeline-integration.md) | CPU subset DONE 2026-08-25; next: canonical-profile A/B rerun (gated on inference-stop order) | — |
 
 ## Cross-domain

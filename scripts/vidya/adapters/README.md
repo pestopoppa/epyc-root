@@ -116,6 +116,9 @@ NI06 prospective source enrollment (2026-10-06, before capture):
 | source | class | scope / absence rules | producer / adapter |
 |---|---|---|---|
 | NI06 graph freshness, reader-B schema and tokenizer identity fixture executions | verifier (existing CI command carrier) | Bind reviewed ROOT/APP source pins, selected tests, complete declared Python import readset, recipe/harness, runner dependency inventory, original argv/JUnit/status and source snapshots before execution. Synthetic graphs, fake primitives/loaders and temporary SQLite/tokenizer bytes only. Preserve failed/null originals. No live inference, embeddings, performance, migration, deployment, host graph or whole-suite warrant; no retrospective tuple or new ladder. MAIN must reopen original custody before acceptance. | Existing `scripts/ci/native_conformance.py` + `scripts/vidya/adapters/ci_conformance.py`; `VB-NI06-CI-WIRE` |
+| Successful internal-KB catalog-write identity (prospective after K3) | dependency evidence only; no new ClaimTuple class | Capture the transactional catalog content digest and native tokenizer/width/cap/convention/model-slot identity at write time. Legacy absence stays unknown; no historical reconstruction, re-embedding or retrieval-quality warrant. | Existing artifact/document dependency mechanism; write hook pending `VB-KB-CATALOG-IDENTITY` |
+
+NI06 capture accepted and ingested (2026-10-06): three original receipts, three projected rows and nine frames in the canonical ledger, using the existing shared grader. Full custody is private; public [ingestion report](../../../artifacts/ni06/belief-ingest-original-report.json) and run review summaries describe the bounded scope. Earlier FALSE/NULL outcomes are retained without rewriting.
 
 1. **Find the tuple in the source.** Do not invent elements. What is missing must stay missing:
    it grades the claim down, which is a true statement about the measurement.

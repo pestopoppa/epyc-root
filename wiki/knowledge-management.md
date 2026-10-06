@@ -3558,3 +3558,10 @@ The audit snapshot classified 352 of 889 dived entries as *at risk* under a heur
 **Confidence: process result, verified by a validator that reopens original Git blobs.** The 2026-10-06 audit reviewed all 528 live and historical handoff files (3,558 original unchecked keys, 15 batches) against current JEV tooling. Three inexpensive reviewers proposed; the main session accepted or rejected every suggestion and applied 13 refinements to 10 live handoffs, rejecting keyword-only gate classification. A normalized comparison found 92 live-open/historical-open pairs (all AutoPilot ledger carry-forward) and no exact live-open/historical-checked pairs. This is handoff review plus targeted code-premise verification, not implementation or a dispatch approval.
 
 Sources: [JEV-aware handoff audit](../handoffs/completed/jev-aware-handoff-audit-2026-10-06.md), [audit progress note](../progress/2026-10/2026-10-06-jev-handoff-audit.md).
+
+
+## Incremental synthesis — 2026-10-06: generated handoff graph freshness
+
+`index_state.py --check` now warns when the checkout's generated graph is missing, malformed or differs from the current `build_graph(state)` result, ignoring only its generation timestamp. The warning is advisory: existing coverage/schema hard failures keep their return codes, and the independent row screener retains silent absence. Generate state/graph together under the wrap-up lease before relying on freshness; this checks checkout integrity, not model quality or runtime liveness.
+
+The three NI06 source tasks used synthetic CI and original-custody review; their original accepted receipts were ingested through the existing verifier carrier/shared grader as observations. Catalog tokenizer identity also opens a prospective dependency-capture hook, with legacy absence remaining unknown and no historical tuple reconstruction. Sources: [NI06 progress](../progress/2026-10/2026-10-06-ni06-noninference.md), [internal KB handoff](../handoffs/active/internal-kb-rag.md), [belief source enrollment](../scripts/vidya/adapters/README.md).

@@ -653,8 +653,8 @@ The compile was then run against the correct 51 and the watermark advanced norma
       (`scripts/utils/agent_log.sh`: `AGENT_SESSION_FILE`). Concurrent agents therefore log under
       each other's session ids, and `agent_session_end` deletes the file for everyone. Shard it per
       `AGENT_ID` like the log itself, with a test that runs two writers.
-- [ ] **KB-WM-6 — `.index-graph.json` freshness is unchecked** (filed 2026-09-17, KB-WM-3 audit).
-      - **What is unchecked.** Neither `index_state.py --check` nor
+- [x] **KB-WM-6 — `.index-graph.json` freshness is unchecked** (filed 2026-09-17, KB-WM-3 audit). ✅ 2026-10-06 — MAIN closes option (b) as NI06-02, source `ec513cbe`; original CI37425524371 TRUE64/66, two existing live-artifact skips. Missing/malformed/stale graphs warn without changing hard-check exits; the row screener stays silent on absence.
+      - **Historical unchecked scope (now closed).** Neither `index_state.py --check` nor
         `backlog_row_check.index_graph_readiness` compares the graph with the checkout it describes.
         Lane worktrees hold copies generated between 2026-08-12 and 2026-09-17, and five are still
         `index_graph.v1`.
@@ -1004,7 +1004,7 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
 
 ### S04-F1 — Finish KB-WM-6 as an advisory graph freshness check
 
-- Bounded completion (JEV audit, 2026-10-06): compare the checkout `.index-graph.json` with `build_graph(state)` in `index_state.py --check` and emit a non-fatal warning for missing/stale graph files. Preserve provenance-only/silent-on-absence screener behavior. Add current/stale/missing fixtures; this is deterministic integrity checking, not a model decision or retrieval-quality claim.
+- Completed NI06-02 (MAIN, 2026-10-06; source `ec513cbe`, original CI37425524371): compare the checkout `.index-graph.json` with `build_graph(state)` in `index_state.py --check` and emit a non-fatal warning for missing/stale graph files. Preserve provenance-only/silent-on-absence screener behavior. Add current/stale/missing fixtures; this is deterministic integrity checking, not a model decision or retrieval-quality claim.
 
 ### S04-F2 — Narrow K2 to the remaining hard-coded internal KB caps
 
