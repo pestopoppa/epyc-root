@@ -2574,3 +2574,39 @@ and that traffic was mostly the DS41 planner seat and the C95 harness experiment
 - [Thesis experiment](../handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md) — ARCHSWAP-4 done.
 - [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — the 2026-10-03 GPU posture block.
 - [REPL embedding retrieval](../handoffs/active/repl-embedding-retrieval.md) — REPL-EMB-4.5.
+
+## Incremental update — 2026-10-06: unified-KV neighbour cost and masked-block skip
+
+**Measured.** On the Qwen3.8-27B production-shape P3 probe, no-draft decode fell 32.6%, 49.5% and 59.5% with one, two and three parked ~99k-token neighbours; drafted decode fell 29.6%, 47.2% and 57.6%. A separate batch probe measured unified-KV vs no-unified-KV at −15.2% generation and −28.6% prefill. The first concurrency probe did not prove full-pool residency: max in-flight occupancy was 92,343 cells against a 300k criterion.
+
+**Measured remediation.** The experimental KVU-19 masked-block skip made prefill chunks 4.5× cheaper at 240–280k occupied cells. In P3 v2 at ~355k cells with three parked neighbours, it changed drafted decode from 15.74 to 34.98 tok/s and no-draft from 8.45 to 21.53; output identity was equal ON/OFF. This addresses the measured decode tax in that setup; it does not establish full-pool concurrency or a general serving improvement.
+
+**Code-read, not measured.** The DeepSeek long-context audit found final attention builds a dense `-inf` mask and concatenates the compressed plane each layer/step. Arithmetic estimates the concat at ~0.9 GiB per step at 32k and ~3.6 GiB at 128k; FA still skips masked cells, so the growing work is graph/mask/indexer/host-side. A depth profile or candidate run is still required; cap semantics remain open.
+
+**Status.** The shared 393k unified pool was retained by operator decision. KVU-16 full-pool concurrent residency remained unproven; the masked-block skip was folded into the experimental champion and production promotion was deferred to a new validated version.
+
+### Source References
+
+- [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md) — KVU-16 residency gate and KVU-18/19 measurements.
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — fold gates and P3 v2 serving-level A/B.
+- [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md) — operator pool decision and coordinated GPU posture.
+- [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — live pool bring-up and failed concurrency criterion.
+- [DeepSeek-V4.1-Flash evaluation](../handoffs/active/deepseek-v41-flash-evaluation.md) — DS41-C123 code-read hypothesis, with measurement and cap-semantics gates still open.
+
+## Incremental synthesis — 2026-10-06 root wrap
+
+**Confidence: implementation and source-boundary findings; no general serving-latency result.** The post-manifest harness update found that prompt-cache save lines are TRACE-level in the frozen v10 server and absent at default verbosity; a diagnostic relaunch at level 4 is needed to inspect those events. The same update records removal of the `escalation_prewarmer` and the hot-prefix slot-save warming path, while retaining `--slot-save-path` for migration and compression uses. Separately, `prefix_stable_order` exists as a live runtime flag, while `per_query_material_at_tail` remains proposed and its design missed two call sites.
+
+The next GPU serving work is still prospective: KVU-16g proposes first-prompt TTFT attribution, and YARN-E1-MEM proposes attribution of the long-prefill memory overshoot. The residency source update reports 19 journal records without session keys and zero eligible pairs, so it establishes no inter-call gap distribution. The October 3 campaign update also records the :8083 P3 result: three resident ~99K-token neighbours coincided with a 59.5% no-draft decode reduction. The operator kept the shared 393K pool and chose the masked-block kernel path; a later P3 v2 check on champion X matched the KVU-19 champion at L3. This is bounded evidence for that tested cell, not a fleet-wide serving result.
+
+These updates identify what can be observed or measured; they do not show a fleet-wide latency improvement.
+
+Sources: [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [Heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md), [Current campaign](../handoffs/active/CURRENT-CAMPAIGN.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md).
+
+### Supplemental serving findings — Oct 3–6 changed files
+
+Q38-T7 now has a bounded production-shape result: on the parked-role, 24-prompt codified mix, DFlash2 delivered 60.02 versus 31.07 token-weighted tok/s (1.93×), with weighted acceptance 0.53 and zero drafting regressions. The long-context comparison to an earlier MTP run was 1.04/0.99/0.95/1.06× at roughly 2K/16K/50K/80K and crosses server-pool shapes; the 80K needle was confounded by the AutoKernel haystack. The 4-stream arm reached 20.84 aggregate tok/s, while TTFT was 40–164 s under prefill/decode interleave. This is a codified workload result, not organic-traffic acceptance or a general latency claim.
+
+The residency audit adds a negative data-availability result: a 19-record serving-call journal census had no eligible keyed session pairs, so it yields no inter-call gap distribution. Synthetic source-boundary checks passed (21 fixtures in the NI10/NI32 sequence), but they validate schema/refusal behavior rather than live call joins. The region-lock follow-up found SMT siblings 160–183 were dropped from claims and could overlap a held 0–95 CPU window; a fix on an orchestrator branch passed 816 tests including 22 new tests and an end-to-end refusal, but had not merged or deployed. GPU tie-in updates add TTFT and YaRN memory-attribution tasks only; they contain no completed new serving measurement.
+
+Sources: [Qwen3.8-27B replacement](../handoffs/active/qwen38-27b-replace-qwen36.md), [heterogeneous slot fabric residency](../handoffs/active/heterogeneous-slot-fabric-residency.md), [shape-keyed contention gating](../handoffs/active/shape-keyed-contention-gating.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [Oct 3 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md), [Oct 4 workspace-ec progress](../progress/2026-10/2026-10-04-workspace-ec.md), [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md).

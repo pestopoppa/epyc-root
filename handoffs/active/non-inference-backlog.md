@@ -2,6 +2,8 @@
 
 **Status**: ACTIVE — rolling zero-inference backlog; closed items live in § Completed Scope. Round-2 baseline open: NIB2-18 (gated on DS-E1 evidence), NIB2-46 (gated on NIB2-32).
 
+**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`, `/mnt/raid0/llm/worktrees/codex-ni05-*`; integration lane: `/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
+
 **Cross-reference, 2026-05-06**: 6 standalone non-inference handoffs (NOT in NIB2 numbering) closed in parallel via Wave A/B/C — see `progress/2026-05/2026-05-06.md` § "6 standalone non-inference handoffs". These are tracked in their own handoff files; the closure pattern matches NIB2. Total non-inference closure throughput this audit cycle: 36 NIB2 + 6 standalone = 42 items.
 **Created**: 2026-02 (Round 1, 18/18 complete → [`completed/non-inference-backlog-completed-through-2026-04-12.md`](../completed/non-inference-backlog-completed-through-2026-04-12.md))
 **Refreshed**: 2026-04-17 (Round 2 catalogue from cross-cutting audit of all active handoffs)
@@ -12,7 +14,7 @@
 
 ## Start here
 
-- **Next:** The NI05 scoped queue is complete (78/78); continue the separately owned NIB2 program below.
+- **Next:** The NI05 scoped queue is complete (79/79); continue the separately owned NIB2 program below.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
 - **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (reclaim only under disk pressure), NIB2-71, NIB2-76, NIB2-78c
@@ -21,157 +23,11 @@
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
 
-## Codex session queue — 2026-10-05
+## Completed Codex session queue — 2026-10-05–06
 
-Operator scope: finish the available non-inference work identified in the 2026-10-05 overview,
-starting with the first twelve items and extending the queue as dependencies clear. Canonical task
-bodies remain authoritative; this queue records the session's bounded deliverables. Implementation
-is delegated, acceptance and publishing belong to Codex main. Each completed item receives its own
-progress record and source-handoff checkbox update after review. Shared indices, wiki integration
-and promotion are serialized by main. No inference grants, production mutations or ratifications.
+The bounded NI05 session queue is **79/79 accepted and published**. The earlier 78/78 checkpoint remains historically accurate; NI05-79 was accepted after the kernel-store documentation correction reached APP main. Exact task texts, task-specific dates, accepted reports, publication facts and evidence boundaries are preserved in the reciprocal completed ledger: [`../completed/non-inference-backlog-ni05-2026-10-06.md`](../completed/non-inference-backlog-ni05-2026-10-06.md). “Accepted” closes each listed bounded deliverable only; it does not close a parent program, establish a whole-suite pass, or grant a serving/production claim.
 
-**Scratch**: `/mnt/raid0/llm/worktrees/codex-ni-*`, `/mnt/raid0/llm/worktrees/codex-ni05-*`; integration lane:
-`/mnt/raid0/llm/worktrees/codex-noninf-session-20261005`. Logs use individual writer shards.
-Local test/build execution acquires the existing CPU-region claim and may queue behind Claude work.
-Hermetic fixtures also run on isolated GitHub Actions runners against immutable candidate commits;
-host-dependent checks remain explicitly separate. Published completion tally: **78/78**. All scoped session deliverables are accepted and published;
-parent-program and host-dependent acceptance boundaries remain explicit.
-
-**Counting contract:** “completed” means the bounded deliverable was reviewed, its required evidence accepted, documented, and published. Selection, source approval, candidate publication, and queued CI do not close a task. Some completed deliverables are audits or validation; a larger parent program can remain open. The original unit sweep is not a whole-suite pass.
-
-- [x] **NI05-01** — VB-KVQ-V10-DICT: native-statistics adapter/producer fixture compatibility.
-- [x] **NI05-02** — VB-INGEST-IDEMPOTENT: opt-in repeat-ingest no-op and partial-state refusal.
-- [x] **NI05-03** — NIB2-86: honest local validation gates and missing-tool failures.
-- [x] **NI05-04** — NIB2-73e: docs/handoff evidence durability checks.
-- [x] **NI05-05** — HS-OD-8: retryable admission refusals before streaming.
-- [x] **NI05-06** — HS-17: MCP timeout and progress contract.
-- [x] **NI05-07** — SSU-F9c: shared promotion lease across worktrees.
-- [x] **NI05-08** — REPL-EMB-4.5: expire temporary experiment flag enables.
-- [x] **NI05-09** — VB-APPLICABILITY: conditional native applicability/run scope in ledger.
-- [x] **NI05-10** — HSF-3 + VB-GAP-DIST: write-side capture and existing-log gap analysis.
-- [x] **NI05-11** — NIB2-90 + scoring-infra 1e: test-order leakage and benchmark collection defects.
-- [x] **NI05-12** — NIB2-87: additive research test dependency and tooling health check.
-- [x] **NI05-13** — VB-NI-DURABILITY: newly unlocked native durability receipts and verifier projection.
-- [x] **NI05-14** — HS-16 lifecycle remainder: explicit session-end signal and existing TTL semantics.
-- [x] **NI05-15** — VB-CI-CONFORMANCE: prospective native off-host fixture receipts and verifier projection.
-- [x] **NI05-16** — explicit kernel-path overrides: avoid eager production-store discovery during configuration import.
-- [x] **NI05-17** — HS-OD-5: reject unsupported explicit sampling controls on image requests.
-- [x] **NI05-18** ✅ 2026-10-05 — SSU-F13: verify upstream topology fixes and classify the required wider unit sweep.
-- [x] **NI05-19** — HS-OD-6: refuse direct-mode tool instructions without an executor; preserve client tools.
-- [x] **NI05-20** — dependency contract: bound pydantic-graph to the supported constructor major or use the authoritative frozen lock for installation; validate actual fresh-import and API fixtures.
-- [x] **NI05-21** — static gate debt: review and apply the nine shfmt formatting repairs with shell syntax/AST checks; capture and repair the independent markdownlint findings without weakening gates.
-- [x] **NI05-22** — TU-TC-1a: keep malformed tool-call refusal echoes out of loop progress detection; retain diagnostic text and genuine executable progress.
-- [x] **NI05-23** — VB-CI-CONFORMANCE-ATTACHMENTS: retain and verify declared generated artifact bytes through the existing prospective fixture receipt, preserving its sole decided proposition.
-- [x] **NI05-24** — NI-SHELL-RELOAD-SAFETY: make the instrumented benchmark preflight refuse an unavailable API without killing or restarting peer processes.
-- [x] **NI05-25** — VB-CI-CONFORMANCE-API-WIRING: prospectively capture named API and explicit synthetic-host unit commands through the existing native producer.
-- [x] **NI05-26** — NI-OFFLINE-CPU-CLI: make two leaf command modules honor explicit binary paths before resolving production-store defaults.
-- [x] **NI05-27** — NIB2-82: replace the name-pattern AutoPilot observer with exact process argv inspection and refuse authority writes when observation is unavailable.
-- [x] **NI05-28** — NIB2-85: validate the upstream canonical-linkage repair plus actual `/bin/true` vacuity control; bind future read-only production-store checks before execution.
-- [x] **NI05-29** — VB-CI-PREFIX-DURABILITY: retain native phase prefixes immediately and time-bound broad unit attempts so timeout cannot erase completed evidence.
-- [x] **NI05-30** — NIB2-80a: apply escalation budget and role-cycle admission to immediate early-abort branches in the active graph modes, with actual route fixtures.
-- [x] **NI05-31** — NI-CI-FIXTURE-CUSTODY: correct privacy-gate false positives for exact synthetic input fixtures while preserving native bytes and genuine-secret refusal.
-
-- [x] **NI05-32** — HSF-3 schema boundaries: synthetic tap/progress/checkpoint coverage controls without inferred enqueue/class joins.
-- [x] **NI05-33** — OBS-12a: remove active explicit system-Python bus invocations; honor the existing managed-venv shebang.
-- [x] **NI05-34** — VB-PII-STAGED-WIRE: prospective private original-index custody and bounded actual privacy-gate receipt.
-
-- [x] **NI05-35** — VB-MANAGED-TOOLING-WIRE: prospective named managed-import custody; preserve original plain NI12 evidence.
-- [x] **NI05-36** — DCP-13a/b: remove unreachable report-fetch instructions and return full reports on delegation-cache hits; retain separate inference-dependent DCP-13 arms.
-
-- [x] **NI05-37** — TU-TM-1: typed native timeout outcomes, finished/timeout/overall denominators and prospective immutable report-integrity custody; deterministic transport/stub fixtures only.
-
-- [x] **NI05-38** ✅ 2026-10-05 — DCP-10-SCORE-PREP: deterministic offline macro/path/span/post-pack scorer plus prospective immutable scored-report custody; full ContextBench benchmark remains separate.
-
-- [x] **NI05-39** ✅ 2026-10-05 — SSU-FIXTURE-KVSLOTS: targeted pure launch-command fixtures with runner-only owned cache-directory preparation; preserve original failures and independent native captures.
-
-- [x] **NI05-40** ✅ 2026-10-05 — SSU-FIXTURE-REPL-SPILL: rerun the unchanged spill-output module with the already reviewed runner scratch fixture; preserve original nine failures.
-
-- [x] **NI05-41** ✅ 2026-10-05 — SSU-SCORING-EXTRA: declare and lock the optional mathematical scorer dependency, then rerun three offline modules and their missing-dependency refusal controls; exact source/recipe review precedes execution.
-
-- [x] **NI05-42** ✅ 2026-10-05 — SSU-GRAPH-FIXTURES: validate named temporary-DB graph modules with the existing locked optional graph extra; no live graph, model or dataset access.
-
-- [x] **NI05-43** ✅ 2026-10-05 — SSU-FIXTURE-REPL-FILESYSTEM: named optional captures of two otherwise skipped pure filesystem modules with disposable owned roots; source default skip guards remain.
-
-- [x] **NI05-44** ✅ 2026-10-05 — OBS-9: require qualified existing authoritative probe evidence in three surviving leaf idle prefilters; unknown/read failures/drift suppress action, no text-derived idle authority or liveness-core mutation.
-
-- [x] **NI05-45** ✅ 2026-10-05 — SSU-STRATEGY-PROJECTION-FLAG: Repair the explicit strategy-report CLI fallback flag at its leaf while preserving owned-store degraded-vector refusal and default semantic requirements. Original test_strategy_projection_report has4/5passed; empty JSON stdout follows RuntimeError/rc2. Review sanctioned opt-in plumbing and mock all embedding paths; never bypass ownership guards or write a live strategy store.
-
-- [x] **NI05-46 ✅ 2026-10-05** — SSU-VL-REPAIR-TEMP-CACHE: Make test_td21_19_vl_structured_repair use a pytest-owned cache directory. Original2/8passed; hardcoded VISION_CACHE_DIR prevents mocked HTTP requests and produces secondary missing-structured errors. Preserve actual vision/runtime code, mocked responses and terminal-repair assertions.
-
-- [x] **NI05-47 ✅ 2026-10-05** — SSU-QUIESCENCE-TEMP-HOLDS: Replace the OAB3 fixture hardcoded /mnt hold directory with pytest-owned temporary storage via the existing HOLD_DIR_ENV seam. Original6/10passed. Preserve quiescence/scoring guards, witness semantics and meaningful local-process fixtures; no host holds or live scorer.
-
-- [x] **NI05-48 ✅ 2026-10-05** — SSU-OPENAI-REPL-SCOPE-DESCRIPTION: Reconcile the x_disable_repl public description with actual vision/client route branches. Original47/48schema cases passed; one description-scope assertion fails. Confirm current request rejection semantics and add only accurate description clauses; no route behavior or serving reload.
-
-- [x] **NI05-49 ✅ 2026-10-05** — SSU-PAIRWISE-PROMPT-FIXTURES: Make two offline pairwise planner fixtures use an explicit temporary instruction_precision prompt-source mapping with tiny synthetic YAML prompts. Original11/13passed; configured production prompt source is absent offhost. Preserve planner/reference-source policy and assert deterministic counts; no real corpus acquisition or collection.
-
-- [x] **NI05-50 ✅ 2026-10-05** — SSU-PARKED-ROLE-HERMETIC-PROBES: Complete the parked-role fake StackOps fixture with deterministic kfd_pids and gpu_quiet_exclusive injection. Original21/22passed; restore refuses real offhost KFD observation. Preserve all production safety probes and final restore guards; no GPU query, stack action or live process.
-
-- [x] **NI05-51** ✅ 2026-10-05 — OBS-10 current-consumer audit: existing OP-19 retires the E8 transaction; historical human-only ratifiers remain unchanged, with no surviving autonomous consumer to repair.
-
-- [x] **NI05-52** — SSU-OFFHOST-CODE-INDEX: fresh immutable offhost GitNexus snapshot and original analyze/status/impact metadata, embeddings/LLM disabled and canonical peer indices untouched. ✅ 2026-10-05 — main accepted originalCI37358369281; historical c885 scope, exact LOW targets and clean-state proofs, no host-index deployment.
-
-- [x] **NI05-53** — VB-AP-STRATEGY-PROJECTION-REPORT-WIRE: prospective original CLI projection-integrity custody and shared verifier projection, with counts descriptive and fallback permission separate from actual method. Source/task filed before implementation/capture. ✅ 2026-10-05 — original 10/10 verified; source, documentation and custody published.
-
-- [x] **NI05-54** ✅ 2026-10-05 — SSU-EXECUTOR-MOCKED-VALIDATION: use the existing explicit validation option only in four mocked executor cases; retain missing-binary refusal coverage and prove no real model child starts.
-
-- [x] **NI05-55** ✅ 2026-10-05 — SSU-CLAIM-API-FIXTURES: bind two mocked placement cases to their declared host-core topology and give the quiet OCR argv fixture an explicit absent executable leaf; preserve placement refusals and mocked spawning.
-
-- [x] **NI05-56** ✅ 2026-10-05 — SSU-TYPED-LIVE-SENTINEL: exercise live-database refusal against a temporary existing sentinel, with a read trap; preserve default path validation and never open the live database.
-
-- [x] **NI05-57** ✅ 2026-10-05 — SSU-ROUTING-POOL-FIXTURE: correct the empty-question lookup test to use its existing path-bound research-loader seam, retaining the stale-module trap and SystemExit assertion.
-
-- [x] **NI05-58** ✅ 2026-10-05 — SSU-PROMPT-FORGE-VOCAB-FIXTURE: supply a tiny synthetic vocabulary through the existing injection seam for mutation extraction fixtures; keep leakage validation and mocked generation, with no research-corpus read.
-
-- [x] **NI05-59** — SSU-REPL-SCORER-SCRATCH: capture unchanged REPL environment and debug code-execution fixtures with owned runner scratch and bounded local subprocesses; separate any remaining logic failure from path setup. ✅ 2026-10-05 — 140+12 cases; source and custody complete; artifacts/ni05/runner-scratch-37383742953.
-
-- [x] **NI05-60** ✅ 2026-10-05 — SSU-LOCAL-EMBEDDING-FIXTURES: inject deterministic embeddings into temporary creativity/strategy stores using existing seams; preserve semantic/default ownership guards and prove no remote embedding request.
-
-- [x] **NI05-61** ✅ 2026-10-05 — SSU-ONNX-THREAD-CONTRACT: Resolve topology-dependent thread defaults against actual source/configuration, then bind deterministic small-host and production-shaped fixture controls; do not change expected values solely to pass.
-
-- [x] **NI05-62** — SSU-KV-PURE-ARITHMETIC: Review a pure KV formula boundary for the two modules refused by import-time capacity validation. Require fresh impact/manual callers before production refactoring; keep actual serving-capacity refusal and avoid synthetic RAM. ✅ 2026-10-06 — original18/18 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-63** — SSU-ARGV-CAPACITY-CHILD: Investigate the two foreign-interpreter argv-import cases with an owned temporary topology that genuinely fits actual runner RAM. Preserve the import-time capacity guard and original traceback; no fake RAM or source-guard move.
-
-- [x] **NI05-64** — SSU-ARCHIVE-INTERRUPTED-ATTRIBUTION: Prospectively capture test_design_archive with finite verbose node attribution and immediate original-prefix retention; preserve the original missing-JUnit NULL and diagnose the exact interrupted node. ✅ 2026-10-05 — prospective16/16 complete; original NULL preserved; see artifacts/ni05/design-archive-37381716978.
-
-- [x] **NI05-65** — SSU-QSCORER-INTERRUPTED-ATTRIBUTION: Prospectively capture test_q_scorer with finite verbose node attribution and immediate original-prefix retention. Preserve censored nodes and original NULL; mock or local code paths only, no inference service. ✅ 2026-10-05 — prospective79/79 complete; original NULL preserved; see artifacts/ni05/q-scorer-37381716978.
-
-- [x] **NI05-66** — SSU-IMPORT-LOCK-INTERRUPTED-ATTRIBUTION: Prospectively capture test_inference_lock_concurrent_import with finite child/node bounds and private fixture state. Preserve original NULL, shared host locks and peer processes; review actual child behavior before execution. ✅ 2026-10-05 — prospective2/2 complete; original NULL preserved; see artifacts/ni05/inference-lock-37381716978.
-
-- [x] **NI05-67** — SSU-JUNIT-COUNT-ATTRIBUTION: Inspect the six-pass command versus twelve-test/six-node JUnit inconsistency in test_makefile_gate_contract, then capture fresh native originals. Retain strict count refusal and never rewrite or reseal the historical XML. ✅ 2026-10-05 — exporter attribution; fresh strict NULL12/6 and separate TRUE4/4; originals preserved.
-
-- [x] **NI05-68** — SSU-SYSTEM-CARD-PATH-FIXTURES: Review the two pure missing-priors fallback cases in test_autopilot_system_card and bind explicit owned path fixtures before capture. Preserve renderer/fallback assertions; no real launch or kernel-store claim. ✅ 2026-10-06 — original13/13 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-69** — SSU-EXTERNAL-DRAFTER-ARGV-FIXTURES: Review five failed external-drafter command/compiler cases for exact resolver seams and no-execution proof, then capture synthetic argv fixtures. Separate any genuine runtime assertion; no external drafter/server launch. ✅ 2026-10-06 — original12/12 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-70** — SSU-STACK-PRIORS-COMPILER-FIXTURES: Review sixteen failed stack-priors compiler cases and bind owned registry/backend path fixtures only for pure compilation. Preserve source-policy assertions and separate real binary/linkage evidence. ✅ 2026-10-06 — original44/44 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-71** — SSU-NUMA-READER-PATH-FIXTURES: Resolve six failed NUMA reader-agreement cases as path metadata versus actual kernel evidence, then capture only the proven pure fixture scope. Never substitute a fake production store or imply residency. ✅ 2026-10-06 — original7/7 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-72** — SSU-SPEECH-ENV-COMPOSITION: Split seven speech environment/path composition failures from two actual ggml loader cases. Use declared temporary paths only for composition, retain the frozen-service loader requirement and each service-specific library policy. ✅ 2026-10-06 — original7/7 independently reviewed; bounded scope and wrap-up published.
-
-- [x] **NI05-73** — SSU-LCB-SYNTHETIC-ORACLE: Separate nine scratch failures and three synthetic-oracle assertions in test_livecodebench_oracle from the cached-JSONL helper/skips. Review finite offline fixtures and preserve dataset boundaries; no upstream dataset read or acquisition. ✅ 2026-10-05 — reviewed original13/13; test source and task wrap-up published.
-
-- [x] **NI05-74** — SSU-E8-T2-ALGORITHM-FIXTURE: Separate local T2 question-vector/refusal logic from the omitted research full-pool property in test_e8_quality_baseline_reseed. Review a tiny source-bound synthetic fixture only for algorithm behavior; preserve actual corpus and human-authorization requirements. ✅ 2026-10-05 — reviewed original6/6; test source and task wrap-up published.
-
-- [x] **NI05-75** — SSU-EXECUTOR-REGISTRY-FALLBACK: Trace and repair the early registry-unavailable fallback in scripts/lib/executor.py:get_binary_paths, which returns an in-tree build/bin literal before the delegated kernel-store override. Review fresh impact and exact existing loader-patch callers first; retain explicit binary overrides and missing-store refusal. Test with unavailable registry and an owned absent override, never launch or modify a kernel. ✅ 2026-10-06
-
-- [x] **NI05-76** — SSU-CODE-INDEX-COMPUTE-CLAIM: prevent host code-index refresh from executing without the existing CPU-region claim, before index or global-tool mutations; retain an explicit verified off-host workflow boundary. Review both ROOT/APP wrappers and validate refusal/claimed/off-host controls in isolated CI. ✅ 2026-10-06 — original1/1 native testcase,103 controls reviewed; seven-file implementation and scoped wrap-up published.
-
-Follow-on pool: DCP-13a/b; DCP-10 offline scoring; SSU-F13; HS-OD-4/5/6; tool-use grader
-isolation, negative fixtures, timeout/failure reporting, TU-TC-1a and TU-HR-1; observer residuals;
-NIB2-80a/83; bounded static kernel preparation; KB fixture/pin preparation; existing-trace UTM
-integration; harness pin/card/source audit; typed-decision offline adapters and workflow plans.
-Claim these only after checking their current canonical task and peer ownership. OAB-29–32 and
-AutoKernel/KV-prefix producers remain with the active Claude owner until an explicit task boundary
-allows division. RTG-58, UFH14-B4/LR-10, STACKCHG8083 deployment and the coordination audit are
-already owned by the two Claude sessions. Frozen routing changes remain frozen. Harness transcripts
-and history are never cleanup candidates. Newly unlocked tasks are filed in their owning handoff,
-linked through its single domain index, then added here for dispatch.
-
-- [x] **NI05-77** — NI-MEMINFO-PRIVACY: review the raw Linux VmallocTotal counter false positive in the existing precommit privacy gate; prepare a narrowly typed, source-bound fix with genuine account/secret refusal controls. Preserve unchanged private originals and full native readset custody; no named-file wildcard exemption, original rewriting, hook bypass or grading-rule change. ✅ 2026-10-05 — 19 staged controls and51 descriptive baseline regressions; typed counter only; artifacts/ni05/meminfo-privacy-37384312011.
-
-- [x] **NI05-78** — NI-PYTEST-DIRECT-ENTRY: add a refusing direct-entry guard to the NI77 fixture suite so `python3 <test-file>` cannot succeed without running pytest; preserve all19 fixture/test bodies and historical source-bound receipts. Validate with the existing AST-only collectability checker; ordinary code-integrity evidence, no new native tuple or host pytest.
+NI05-75 operator authorization was acted on and is not pending. Its original pre-collection NULL and earlier approval checkpoints are historical receipts; final accepted focused evidence is in the completed ledger. NI05-79 records documentation/source review only, with no new native tuple, grader or test warrant. No open NIB2 row or other owner’s work was closed by this compaction.
 
 ## Purpose
 
