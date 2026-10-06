@@ -580,6 +580,7 @@ native single-token path and its sidecar.
     (`analysis/q38t7-rescore/`) through each guard's threshold, with no inference. Done when each guard has a
     measured false-positive rate by output length, and any guard that fires on coherent long text is made
     length-aware or switched to the `degeneracy.v2` loop trigger.
+  - [x] **TD30F-PUBLIC-REPLAY — source-bound authored-Markdown successor and runner controls.** ✅2026-10-06 MAIN accepted [original aggregate and native custody](../../artifacts/ni08/td30f-public-replay-20261006/README.md): 218 pinned public documents; trigram triggers 0/218 for each guard, stream-body triggers 0/217 with one tail-line exclusion; four original controls pass. This completes the scoped successor only. No coherence labels, false-positive rate, length interaction, stream cadence or threshold recommendation; TD-30f remains open.
 - [ ] **TD-31 — prefill optimisation for typed decisions generally.** (filed 2026-10-04, workspace-ec, from TD-30a)
   Carry the judge's prefill addendum to every Jev typed decision:
   - **prefix-stable ordering:** a fixed head of instructions and label definitions, then the shared context, with the

@@ -1,0 +1,6 @@
+{
+  "directory": "/mnt/raid0/llm/tmp/ni08-equation-designs-20261006/td30f-hosted-37529964352-1",
+  "verification_sha256": "b3b781dfbebcca83f7b5192380ef54e9ca851ac5c11f4c817a02c89f3a5e4b91",
+  "original_member_manifest_sha256": "957e62f658ba4f120ee9fc0850375ae3de5f3ac13f1cb4b7f95cd37ff1f0d3be",
+  "mode": "0700 directory, 0600 ZIP/member manifest/review; public file contains no source documents or job dump"
+}

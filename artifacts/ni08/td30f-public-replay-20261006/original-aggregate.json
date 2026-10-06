@@ -1,0 +1,507 @@
+{
+  "app_source_commit": "79abe3eca50c911d89e5e9855bbd6392bae2b35d",
+  "claims": {
+    "cohort": "pinned_public_authored_markdown_successor_not_historical_q38t7_replay",
+    "configuration_basis": "pinned APP source defaults and pinned YAML threshold; not a live runtime environment",
+    "denominator_semantics": "n includes only documents satisfying that detector's pinned preconditions; excluded_n rows are outside the trigger-share denominator",
+    "false_positive_rate": null,
+    "integration_replay": "unavailable_without_original_stream_chunk_boundaries",
+    "no_length_threshold_change_recommendation": true,
+    "outcome": "descriptive_detector_trigger_share_only",
+    "stream_tail_line_exclusion": "tail below six lines is a separately reported exclusion after the 180-character minimum",
+    "streaming_guard_unit": "whole_document_text_detector_body_only"
+  },
+  "guard_fingerprints": {
+    "ast_sha256": {
+      "pipeline_function": "1ff26e757be6ee12d53443296436e6d6824361d1510f0bae78662a83ae2ece75",
+      "quality_branch": "a6485b0e02c789ceb98bac39d10790f5c6673a9ff89f85af58950d4d35990947",
+      "stream_function": "87135bb5c89bab2734509cf5f99610389fbd1d79d523b2fc13cc432621ca83c5"
+    },
+    "raw_sha256": {
+      "orchestration/anomaly_signals.yaml": "7c8a66b2725a5301feb5392dfa269edc4d5307092dfbb71485b2725f30bda0d0",
+      "src/classifiers/quality_detector.py": "4b31deca3ce6b212d18032e096eb308c24eb7971698bfb782541b5592e5f237f",
+      "src/config/__init__.py": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17",
+      "src/config/models.py": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7",
+      "src/llm_primitives/inference.py": "d22b9653615ecf6b46fd3821bfb62b9fcfb24e725fe091db9b2154346666b1bf",
+      "src/pipeline_monitor/anomaly.py": "bed0ef6997514f062c41de227a99e4f10ab927b367d0037e7f86d0354862dc39"
+    },
+    "thresholds": {
+      "pipeline_unique_ratio_lt": 0.4,
+      "quality_unique_ratio_lt": 0.5,
+      "stream_min_block_chars": 60,
+      "stream_min_lines": 6,
+      "stream_min_repeats": 3,
+      "stream_tail_chars": 4000
+    }
+  },
+  "input_document_count": 218,
+  "input_manifest_sha256": "3f107feec71b4b2b8a0481f9b64ddcf72a334d6656b0dab8143b1126fa3078ed",
+  "root_source_commit": "9a18693b627487122c306bdadfb2e64fc254536a",
+  "schema": "td30f-public-markdown-replay-aggregate-v1",
+  "source_document_counts_by_provenance": {
+    "active_handoff_markdown_provenance": 186,
+    "wiki_markdown_provenance": 32
+  },
+  "strata": [
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "20-49",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "50-99",
+      "n": 1,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "100-199",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "200-299",
+      "n": 1,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "300-499",
+      "n": 3,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "500-999",
+      "n": 12,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000+",
+      "n": 169,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_words",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "20-49",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "50-99",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "100-199",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "200-299",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "300-499",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "500-999",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000+",
+      "n": 32,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "quality_trigram_branch",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_words",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "9-19",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "20-49",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "50-99",
+      "n": 1,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "100-199",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "200-299",
+      "n": 1,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "300-499",
+      "n": 3,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "500-999",
+      "n": 12,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000+",
+      "n": 169,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_words",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "9-19",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "20-49",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "50-99",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "100-199",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "200-299",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "300-499",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "500-999",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000+",
+      "n": 32,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "pipeline_monitor_trigram_guard",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_words",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "180-399",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "400-999",
+      "n": 1,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000-3999",
+      "n": 6,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "4000+",
+      "n": 178,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_chars",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 1,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_tail_lines",
+      "n": 0,
+      "provenance_label": "active_handoff_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "180-399",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "400-999",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "1000-3999",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "provenance_only_not_adjudicated",
+      "length_bin": "4000+",
+      "n": 32,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": 0.0,
+      "triggered_n": 0
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_chars",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    },
+    {
+      "detector": "streaming_three_line_block_guard",
+      "excluded_n": 0,
+      "label_basis": "excluded_by_pinned_detector_precondition",
+      "length_bin": "below_minimum_tail_lines",
+      "n": 0,
+      "provenance_label": "wiki_markdown_provenance",
+      "trigger_share": null,
+      "triggered_n": null
+    }
+  ]
+}

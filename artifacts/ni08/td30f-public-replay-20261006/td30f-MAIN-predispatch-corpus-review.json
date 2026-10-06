@@ -1,0 +1,14 @@
+{
+  "created_at": "2026-10-06T20:53:49.681904+00:00",
+  "native_original_access": false,
+  "own_detector_or_project_execution": false,
+  "pin": "9a18693b627487122c306bdadfb2e64fc254536a",
+  "selector": "regular .md Git blobs under handoffs/active/ or wiki/",
+  "manifest_sha256": "3f107feec71b4b2b8a0481f9b64ddcf72a334d6656b0dab8143b1126fa3078ed",
+  "n": 218,
+  "provenance_counts": {
+    "active_handoff_markdown_provenance": 186,
+    "wiki_markdown_provenance": 32
+  },
+  "at_least_500_words": 213
+}

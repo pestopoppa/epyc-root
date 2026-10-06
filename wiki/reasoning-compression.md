@@ -124,3 +124,7 @@ The per-request budget path's root cause was traced 2026-04-17: on **hybrid SSM+
 - [Cost-Aware Routing](cost-aware-routing.md) — the compiled effort-ladder measurements and the TB-6-ROUTER admission-control design
 - [Hardware Optimization](hardware-optimization.md) — the compiled A1/A3/A4 np×context surfaces
 - [Quantization](quantization.md) — the compiled RP-1/RP-2 repetition-penalty fence (model-not-quant)
+
+### 2026-10-06 runtime repetition-guard successor
+
+A [source-bound public Markdown replay](../artifacts/ni08/td30f-public-replay-20261006/README.md) preserves the current quality and pipeline trigram preconditions and the stream body's exact three-line substring rule. Among218 pinned authored documents, the two trigram guards each triggered0/218; the stream body triggered0/217, excluding one tail with fewer than six lines. The corpus has no adjudicated coherence labels or short-text comparison. These descriptive counts do not establish false-positive rates, length interaction, streamed integration or a threshold change. TD-30f remains open; the accepted four-control native receipt warrants bounded runner conformance only.
