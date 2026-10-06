@@ -36,7 +36,7 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `91ef11008b36297b4c3953a084e2d6c0f93607de243c1d064e466a7a382ddc24` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `2bcf79d901f25076376b566f78770d48f33865274734117be9b6eae2e463efda` |
 | `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
@@ -86,8 +86,8 @@ The generator reads Git objects at each clean HEAD, not worktree data. It record
 IDs, byte counts, and SHA-256 for tracked Python, Python stubs, shell, TOML/lock, YAML, INI, CFG, and named code
 configuration JSON files. It excludes logs, generated reports, raw datasets, run directories and
 other JSON data. The capture request binds the manifest itself as a read-path; its Git identities
-bind every listed source/config blob. The explicit readset also binds the exact source, test,
-fixture, grading and carrier files below.
+bind every listed source/config blob. The explicit readset also binds the exact workflow bytes plus
+source, test, fixture, grading and carrier files below.
 
 ## Bounded selected cases
 
@@ -98,13 +98,20 @@ directory outside both checkouts:
 tests/vidya/test_analysis_producer_roundtrip.py::test_actual_mf_producer_snapshot_round_trips_through_root_adapter
 tests/vidya/test_analysis_producer_roundtrip.py::test_actual_eval_producer_snapshot_round_trips_with_native_reps
 tests/vidya/test_analysis_report_adapters.py::test_immutable_input_snapshot_is_required_and_rechecked
+tests/vidya/test_analysis_report_adapters.py::test_report_bytes_and_retained_inputs_are_reverified_at_projection
 tests/vidya/test_analysis_report_adapters.py::test_mf_cached_metric_key_must_match_native_selection
+tests/vidya/test_analysis_report_adapters.py::test_identity_free_legacy_report_is_refused
+tests/vidya/test_analysis_report_adapters.py::test_unknown_native_fields_are_refused
+tests/vidya/test_analysis_report_adapters.py::test_category_must_be_producer_authored_diagnostic_baseline
+tests/vidya/test_analysis_report_adapters.py::test_producer_source_changes_preserve_snapshot_bound_historical_rows
 tests/vidya/test_analysis_report_adapters.py::test_snapshot_path_escape_is_refused
 tests/vidya/test_analysis_report_adapters.py::test_external_input_original_locator_is_metadata_only
 tests/vidya/test_analysis_report_adapters.py::test_zero_denominator_rate_is_omitted_while_defined_rates_remain
+tests/vidya/test_analysis_report_adapters.py::test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope
 tests/vidya/test_analysis_report_adapters.py::test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false
 tests/vidya/test_analysis_report_adapters.py::test_eval_metric_reps_use_each_native_denominator
 tests/vidya/test_analysis_report_adapters.py::test_eval_cached_suite_and_metric_must_match_bound_report
+tests/vidya/test_analysis_report_adapters.py::test_cli_dispatch_uses_shared_grade_only
 tests/vidya/test_citation_gate.py::test_precise_in_range_but_uningested_claim_stays_unknown
 tests/vidya/test_citation_gate.py::test_precise_out_of_range_claim_is_blocking_dangling
 tests/vidya/test_citation_gate.py::test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id
@@ -127,7 +134,7 @@ and `claim_tuple.grade()`. They assert resulting ledger support grades equal the
 The other ROOT cases cover retained input/source snapshots, path escape, cached-native binding, external
 input locators, native denominators, report category/schema, citation bounds including a forged
 matching ledger ID, and CLI `unknown` exit 0 versus `dangling` exit 3. Expected collected identities
-are these 24 named node IDs; require exactly 24 collected, executed, and passed, with zero skips,
+are these 31 named node IDs; require exactly 31 collected, executed, and passed, with zero skips,
 failures, or errors.
 
 Run this exact APP test selection separately from the APP checkout to cover the actual writer and
@@ -178,7 +185,10 @@ digest, writes the Git-object source-context manifest, and calls the existing RO
 `scripts/ci/native_conformance.py` carrier once for APP tests and once for ROOT tests. Each carrier
 receipt binds both clean Git SHAs, runner Python, exact selected identities, JUnit bytes, command
 output, dependency/source-context manifest, explicit source/test/grade/carrier readset, and terminal
-status. The driver sets
+status. Before shared grading, the driver hashes the original APP and ROOT native directories, both
+original JUnit files, both generated synthetic bundles, source-context manifest and locked
+environment; it hashes the same paths again afterward. Any change invalidates validation. This
+before/after manifest checks integrity and never rewrites or reseals original receipts. The driver sets
 `EPYC_ORCHESTRATOR_SOURCE_ROOT="$APP"` and asks the carrier to attach exactly two generated-output
 bundles: `ni08-native-fixtures/mf-bundle.zip` and `ni08-native-fixtures/eval-bundle.zip`. Each
 contains the synthetic raw inputs, producer-authored report, report-adjacent input/source snapshots,

@@ -19,13 +19,20 @@ NODEIDS = (
     "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_mf_producer_snapshot_round_trips_through_root_adapter",
     "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_eval_producer_snapshot_round_trips_with_native_reps",
     "tests/vidya/test_analysis_report_adapters.py::test_immutable_input_snapshot_is_required_and_rechecked",
+    "tests/vidya/test_analysis_report_adapters.py::test_report_bytes_and_retained_inputs_are_reverified_at_projection",
     "tests/vidya/test_analysis_report_adapters.py::test_mf_cached_metric_key_must_match_native_selection",
+    "tests/vidya/test_analysis_report_adapters.py::test_identity_free_legacy_report_is_refused",
+    "tests/vidya/test_analysis_report_adapters.py::test_unknown_native_fields_are_refused",
+    "tests/vidya/test_analysis_report_adapters.py::test_category_must_be_producer_authored_diagnostic_baseline",
+    "tests/vidya/test_analysis_report_adapters.py::test_producer_source_changes_preserve_snapshot_bound_historical_rows",
     "tests/vidya/test_analysis_report_adapters.py::test_snapshot_path_escape_is_refused",
     "tests/vidya/test_analysis_report_adapters.py::test_external_input_original_locator_is_metadata_only",
     "tests/vidya/test_analysis_report_adapters.py::test_zero_denominator_rate_is_omitted_while_defined_rates_remain",
+    "tests/vidya/test_analysis_report_adapters.py::test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope",
     "tests/vidya/test_analysis_report_adapters.py::test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false",
     "tests/vidya/test_analysis_report_adapters.py::test_eval_metric_reps_use_each_native_denominator",
     "tests/vidya/test_analysis_report_adapters.py::test_eval_cached_suite_and_metric_must_match_bound_report",
+    "tests/vidya/test_analysis_report_adapters.py::test_cli_dispatch_uses_shared_grade_only",
     "tests/vidya/test_citation_gate.py::test_precise_in_range_but_uningested_claim_stays_unknown",
     "tests/vidya/test_citation_gate.py::test_precise_out_of_range_claim_is_blocking_dangling",
     "tests/vidya/test_citation_gate.py::test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id",
@@ -65,6 +72,7 @@ APP_NODEIDS = (
 )
 
 ROOT_READS = (
+    ".github/workflows/ni08-vbs1-evaldisc-native.yml",
     "scripts/ci/ni08_run_hosted_capture.py",
     "scripts/ci/ni08_source_context.py",
     "scripts/ci/ni08-hosted-requirements.txt",
@@ -131,6 +139,30 @@ def _context_manifest(app_root: Path, capture_root: Path) -> Path:
     if completed.returncode:
         raise RuntimeError("source-context manifest generation failed")
     return output
+
+
+def _artifact_snapshot(paths: tuple[Path, ...]) -> dict[str, str]:
+    """Hash the original captured inputs without opening or resealing their receipts."""
+    snapshot = {}
+    for path in paths:
+        if path.is_symlink():
+            raise RuntimeError(f"captured source artifact became a symlink: {path.name}")
+        if not path.exists():
+            snapshot[str(path)] = "absent"
+            continue
+        if path.is_dir():
+            for child in sorted(path.rglob("*")):
+                if child.is_symlink():
+                    raise RuntimeError(f"captured source artifact contains a symlink: {child.name}")
+                if child.is_file():
+                    snapshot[str(child)] = hashlib.sha256(child.read_bytes()).hexdigest()
+                elif not child.is_dir():
+                    raise RuntimeError(f"captured source artifact has a non-regular member: {child.name}")
+        elif path.is_file():
+            snapshot[str(path)] = hashlib.sha256(path.read_bytes()).hexdigest()
+        else:
+            raise RuntimeError(f"captured source artifact is not a regular file: {path.name}")
+    return snapshot
 
 
 def _install_locked_minimal_set(capture_root: Path) -> tuple[Path, str]:
@@ -200,6 +232,13 @@ def main() -> int:
         read_paths=reads, selections=list(NODEIDS),
         generated_output_paths=["ni08-native-fixtures/mf-bundle.zip",
                                 "ni08-native-fixtures/eval-bundle.zip"])
+    sharedgrade_inputs = (
+        app_native_output, native_output, app_junit, junit,
+        ROOT / "ni08-native-fixtures/mf-bundle.zip",
+        ROOT / "ni08-native-fixtures/eval-bundle.zip",
+        manifest, capture_root / "environment.json",
+    )
+    before_sharedgrade = _artifact_snapshot(sharedgrade_inputs)
     def exact_cases(capture: dict, selections: tuple[str, ...]) -> bool:
         cases = capture.get("summary", {}).get("cases", [])
         expected_names = [node.rsplit("::", 1)[1] for node in selections]
@@ -223,12 +262,12 @@ def main() -> int:
                   "root_case_count": len(record.get("summary", {}).get("cases", []))}
     captures_ok = (app_record["fixture_execution_conformant"] is True and app_exact
                    and record["fixture_execution_conformant"] is True and root_exact)
+    grades = {}
     if captures_ok:
         sys.path.insert(0, str(ROOT))
         sys.path.insert(0, str(ROOT / "scripts/vidya"))
         from adapters.ci_conformance import native_rows, project_ci_conformance
         from claim_tuple import grade
-        grades = {}
         for label, output in (("app", app_native_output), ("root", native_output)):
             native = native_rows(output / "receipt.json")
             if len(native) != 1:
@@ -237,7 +276,13 @@ def main() -> int:
             grades[label] = {"Q": q, "T": t}
             if (q, t) != ("Judged", "Located"):
                 raise RuntimeError(f"{label} fixture receipt grade differs from existing ceiling")
-        validation["shared_verifier_grades"] = grades
+    after_sharedgrade = _artifact_snapshot(sharedgrade_inputs)
+    validation["shared_verifier_grades"] = grades
+    validation["original_artifact_hashes_before_sharedgrade"] = before_sharedgrade
+    validation["original_artifact_hashes_after_sharedgrade"] = after_sharedgrade
+    validation["sharedgrade_inputs_unchanged"] = before_sharedgrade == after_sharedgrade
+    if not validation["sharedgrade_inputs_unchanged"]:
+        raise RuntimeError("shared grader changed an original native receipt, JUnit, bundle, or context")
     _write_once(capture_root / "validation.json",
                 (json.dumps(validation, sort_keys=True, separators=(",", ":")) + "\n").encode())
     if not captures_ok:
