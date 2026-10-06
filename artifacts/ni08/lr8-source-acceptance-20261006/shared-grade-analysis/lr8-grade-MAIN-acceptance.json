@@ -1,0 +1,32 @@
+{
+  "reviewed_at": "2026-10-06T19:03:41.159996+00:00",
+  "analysis_run": 37515763800,
+  "analysis_recipe": "a15a9e7642bda2784f7f0c897bf197dc80d66195",
+  "artifact": 11436538869,
+  "zip_sha256": "571a359d5b937a782de7b2a8f437ef4a045f59eac480efdb0e2a53ebcbca8998",
+  "zip_bytes": 66892617,
+  "members": 3100,
+  "independent_source_bindings": 8,
+  "original_members_unchanged": 3087,
+  "original_run": 37514086438,
+  "native_counts": {
+    "collected": 88,
+    "executed": 88,
+    "passed": 88,
+    "failure": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "fixture_rerun": false,
+  "new_native_receipt_authored": false,
+  "accepted": true,
+  "local_project_imports": false
+}

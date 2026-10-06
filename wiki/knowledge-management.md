@@ -3576,4 +3576,4 @@ The [accepted source audit](../artifacts/ni08/source-audits-20261006/kb-consumer
 
 ### NI08 inactive event-duty source boundary (2026-10-06)
 
-LR-8 source is inactive by default and has MAIN-reviewed hosted native88/88 conformance with exact source/API artifact bindings. [Acceptance](../artifacts/ni08/lr8-source-acceptance-20261006/README.md) separates this source boundary from the pending shared-grade analysis and actual daemon handover. Parent runtime work stays open; the original OP73 installation records and current daemon/registry are unchanged.
+LR-8 source is inactive by default and has MAIN-reviewed hosted native88/88 conformance with exact source/API artifact bindings. [Acceptance](../artifacts/ni08/lr8-source-acceptance-20261006/README.md) records accepted off-host shared-grade analysis Judged/Located on the unchanged original receipt and separates source verification from actual daemon handover. Parent runtime work stays open; the original OP73 installation records and current daemon/registry are unchanged.

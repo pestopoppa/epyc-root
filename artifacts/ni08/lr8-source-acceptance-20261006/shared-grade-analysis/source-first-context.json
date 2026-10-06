@@ -1,0 +1,77 @@
+{
+  "analysis_recipe": "a15a9e7642bda2784f7f0c897bf197dc80d66195",
+  "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "code_inputs": [
+    {
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repository": "carrier",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+      "snapshot": "code-000.bin"
+    },
+    {
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/__init__.py",
+      "repository": "carrier",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "snapshot": "code-001.bin"
+    },
+    {
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repository": "carrier",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c",
+      "snapshot": "code-002.bin"
+    },
+    {
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repository": "carrier",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe",
+      "snapshot": "code-003.bin"
+    },
+    {
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repository": "carrier",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434",
+      "snapshot": "code-004.bin"
+    },
+    {
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repository": "carrier",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2",
+      "snapshot": "code-005.bin"
+    },
+    {
+      "git_blob": "e0785f34eece408547fd0ba52d3e771f1252e341",
+      "mode": "100644",
+      "path": ".github/workflows/lr8-shared-grade-analysis.yml",
+      "repository": "recipe",
+      "sha256": "5c288e89700617e3744a6d135edcd71200d0779f228878d1c02603c2c4217e12",
+      "snapshot": "code-006.bin"
+    },
+    {
+      "git_blob": "6861447d98ae11d0ab75f10fccb6feeb8decc688",
+      "mode": "100644",
+      "path": "scripts/ci/lr8_shared_grade_analysis.py",
+      "repository": "recipe",
+      "sha256": "524af75022d10e2f6daa18bee9cd9bd685f28fff914cf9827154390f3b190872",
+      "snapshot": "code-007.bin"
+    }
+  ],
+  "context_is_runner_asserted": true,
+  "fixture_rerun": false,
+  "original_artifact": 11437205660,
+  "original_run": 37514086438,
+  "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+  "python": "3.13.15 (main, Aug  6 2026, 02:15:18) [GCC 13.3.0]",
+  "zip_sha256": "28f8208a5a64effbf4b19494a3b78cb26bdca8a4a7e333bcecd0f84abfa4f21c"
+}
