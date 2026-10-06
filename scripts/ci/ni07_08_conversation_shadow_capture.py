@@ -24,6 +24,18 @@ def tracked_inputs(repo: Path):
             yield path.resolve()
 
 
+def verify_pin(repo: Path, expected: str, label: str) -> str:
+    actual = subprocess.check_output(["git", "-C", str(repo), "rev-parse", "HEAD"], text=True).strip()
+    if actual != expected:
+        raise RuntimeError(f"{label} HEAD {actual} does not match declared pin {expected}")
+    status = subprocess.check_output(
+        ["git", "-C", str(repo), "status", "--porcelain", "--untracked-files=all"], text=True
+    )
+    if status:
+        raise RuntimeError(f"{label} checkout is not clean: {status.strip()}")
+    return actual
+
+
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     runner_temp = Path(os.environ["RUNNER_TEMP"]).resolve()
@@ -38,14 +50,17 @@ def main() -> int:
         freeze = result / "pip-freeze.txt"
         freeze.write_bytes(subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"]))
         environment = result / "environment.json"
+        pins = {
+            "recipe": verify_pin(recipe, os.environ["RECIPE_PIN"], "recipe"),
+            "carrier": verify_pin(carrier, os.environ["ROOT_CARRIER_PIN"], "carrier"),
+            "app": verify_pin(app, os.environ["APP_PIN"], "app"),
+        }
         environment.write_text(json.dumps({
             "python": sys.version,
             "platform": platform.platform(),
             "app_pin": os.environ["APP_PIN"],
             "root_carrier_pin": os.environ["ROOT_CARRIER_PIN"],
-            "recipe_pin": subprocess.check_output(
-                ["git", "-C", str(recipe), "rev-parse", "HEAD"], text=True
-            ).strip(),
+            "recipe_pin": pins["recipe"],
             "install_command": os.environ["NI07_08_INSTALL_COMMAND"],
             "declared_dependencies": [
                 "pytest==8.4.2", "PyYAML==6.0.2",
