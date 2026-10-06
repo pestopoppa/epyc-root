@@ -63,3 +63,20 @@ P0.4b dated Harness Card, P0.4c full release tag pin and preauthorized P0 split 
 ## R23-70 — MAIN source acceptance
 
 Applied the guard's canonical pipeline-remediation string, independently proved sole guard AST change, and retained an independent literal in the existing test. Source70096b76 is byte-identical at APPmain81663c30; no build, project test or runtime action. One existing flip: **41 NI08 scoped completions (34 existing flips + 7 scoped additions)**.
+
+## Newly source-verified continuation queue — 2026-10-06
+
+These are existing task identities or already filed prospective source companions, not additional completions. A provisional keyword screen is not an exhaustion audit.
+
+| Task | Source work now | Remaining gate on the parent |
+|---|---|---|
+| HS-4 P7 (UFH-15) | Reviewed stdin generator and meaningful long/Unicode exact-argv guard; hosted recipe preparation | Source/native review only; original r3 remains unchanged |
+| TOC-RD-1b | Exact public observed-periods table selector and same-table account/secret negative controls under review | Historical unredacted fixture acceptance is not established by synthetic source controls |
+| VB-MFVBS1-PROV / VB-EVALDISC1-PROV; VB-MFVBS-1 / VB-EVALDISC-1 | Prospective input/source snapshots, strict read-side projection, edited-only denominator correction; source under review | No historical identityless JSON backfill or new grading rule |
+| SC80 | Exact claim-index bounds distinguish dangling references from un-ingested coverage; private source preparation authorized | Existing citation statuses/ledger remain authoritative; no new ladder |
+| SC76 / SC77 | Source-first RAW artifact/revision resolution and shared re-verifier design | Canonical human/machine traceability ladder must remain intact; no original artifact may be fabricated |
+| HS-4 P6 | Cross-repo shared exploration-tool contract/source prep | Live catalog-growth before/after acceptance and Claude-owned deployment stay at the inference owner boundary |
+| HS-19d.P0 | Multi-call source checks, per-message task-part counters and versioned unscored corpus preparation | VB-DISPATCH-S2 itself is explicitly frozen; do not treat all P0 as either wholly free or wholly blocked |
+| C5-5 | Exact existing eight-seed problem-ID join is a source-only candidate; source/fixture proposal still needed | No SOL bound port, benchmark or kernel change |
+
+R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.

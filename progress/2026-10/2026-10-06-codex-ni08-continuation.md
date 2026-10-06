@@ -132,3 +132,7 @@ P0.4b dated Harness Card, P0.4c full release tag pin and preauthorized P0 split 
 ## R23-70 — MAIN source acceptance
 
 Applied the guard's canonical pipeline-remediation string, independently proved sole guard AST change, and retained an independent literal in the existing test. Source70096b76 is byte-identical at APPmain81663c30; no build, project test or runtime action. One existing flip: **41 NI08 scoped completions (34 existing flips + 7 scoped additions)**.
+
+## Discovery boundary
+
+MAIN surfaced the newly verified source queue in the continuation index as it unlocked: P7, TOC source, prospective analysis writers/adapters, SC80 and RAW-anchor design, P6 source contract, HS19d.P0 non-frozen portions, and C5-5 candidate. These are preparations/known next actions, not extra completions or a global exhaustion claim. Whole-backlog screening now re-resolves all classes rather than trusting keyword categories.
