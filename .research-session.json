@@ -57,6 +57,33 @@
    "verbatim": "All recommended with a cap of 10, and maximum four stage 2 waves",
    "disposition": "planned",
    "plan_ref": null
+  },
+  {
+   "seq": 3,
+   "stage": 2,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "Dive the 2 unselected claims too",
+   "disposition": "planned",
+   "plan_ref": null,
+   "note": "Operator option chosen in the coordinator's question. Superseded in framing by seq 4: these dives belonged to the original selection."
+  },
+  {
+   "seq": 4,
+   "stage": 2,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "I did? I don't recall this at all. I told you to deep dive all recommended stage 2 sources (up to a maximum of 10 per stage 2 wave), and to not preform more than four stage 2 waves.",
+   "disposition": "planned",
+   "plan_ref": null,
+   "note": "Correction: the K-mean-centering and MoE-cache dives are part of the ORIGINAL selection, misapplied as 'not selected' by workspace-ec; they are being completed (wave 3, 'completion of the original Stage-2 selection', counts toward the 4-wave cap). Not a new operator request."
+  },
+  {
+   "seq": 5,
+   "stage": 2,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "Not yet",
+   "disposition": "declined",
+   "plan_ref": null,
+   "note": "Operator on starting Stage 3 (as relayed by the coordinator): stop at the Stage-2 close-out; do not draft Stage 3."
   }
  ],
  "prior_sessions": [
@@ -5063,7 +5090,7 @@
   }
  ],
  "stage2": {
-  "waves_used": 2,
+  "waves_used": 3,
   "wave1": "intake-1925 scoped dives (GDN raw-gate/rows, --spec-adaptive, rs-rollback) + intake-1926",
   "wave2": [
    "intake-1932",
@@ -5079,11 +5106,13 @@
    "2503.05096 SpecServe"
   ],
   "stopped_early": "wave 2 surfaced nothing that beats the Saxena/Strata findings; remaining candidates are dense-model dynamic-K or offload papers",
-  "not_selected_left_unverified": [
-   "K-cache mean-centering",
-   "MoE expert cache / hmoe / SSD / safetensors / turbo (intake-1925 claims 1,2 and others)"
-  ],
-  "anchor_count": 40,
-  "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md"
+  "not_selected_left_unverified": [],
+  "anchor_count": 52,
+  "second_reader": "/mnt/raid0/llm/tmp/intake-cafe-llama/second_reader.md",
+  "wave3": "completion of the original Stage-2 selection: K-cache mean-centering, CUDA MoE expert cache/moe-direct (intake-1925 claims 1,2,6); intake-1925 promoted to dive-verified",
+  "claims_marked_not_dived": [
+   "intake-1925 claim 7 (turbo, DFly/DSpark)",
+   "intake-1925 claim 8 (SSD streaming, safetensors loader)"
+  ]
  }
 }

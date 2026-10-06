@@ -241245,15 +241245,18 @@
   discovered_via: input
   verdict: worth_investigating
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   read_depth: PARTIAL
   key_claims:
   - 'Fork of ggml-org/llama.cpp (README retains upstream text); single-commit shallow history at SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf (2026-10-01). Diff against upstream commit f1cee994 (2026-10-01) was measured locally: 264 files, +47273/-1769 lines.'
   - 'Adds a CUDA MoE expert cache (--moe-cache; docs/backend/CUDA-MOE-CACHE.md): hot experts of CPU-resident MoE weights live in a VRAM pool, hits run on GPU while the CPU computes miss rows through stock MUL_MAT_ID; credited to leloch (RFC ggml-org/llama.cpp#24528). Doc reports author-measured gains (e.g. +18% to +48% on DeepSeek V4 Flash, 1-4 RTX 3090) - author-reported only.'
-  - Adds -hmoe/-nhmoe (pinned-host MoE read by GPU), SSD expert streaming (-ssd/-nssd, src/llama-ssd.cpp) and a safetensors/FP8/NVFP4/EXL3 direct-serving loader (common/safetensors.cpp, f8_e4m3 ggml type with CPU vec_dot).
+  - 'Adds -hmoe/-nhmoe (moe-direct: experts in pinned host memory read by the GPU over PCIe zero-copy with a VRAM hot-expert table and an in-graph CPU-miss mailbox; no measurements published) [dived wave 3].'
   - 'Adds --spec-adaptive: a Strata-style adaptive draft window that learns per-position conditional acceptance (EMA) and picks the draft length maximising expected committed tokens per verify cost (common/speculative.cpp struct common_speculative_adaptive); verify-cost table is hard-coded.'
   - 'Fuses GDN gate math into the gated-delta-net op (ggml_gated_delta_net_set_raw_gates: sigmoid(beta), a*softplus(g+dt_bias) inside CPU/CUDA/Metal kernels) and a "rows mode" that reads recurrent state directly from the cache rows (no gather), enabled for CPU/Metal only.'
-  - Adds TurboQuant KV types turbo2/3/4 (WHT-rotated, fused into flash-attn, CUDA/Vulkan/Metal), K-cache mean-centering for Q4_0 (--kv-mean-center, softmax-invariant bias subtraction at cache write), DSpark/DFly drafter graphs, and an rs-rollback harness for the recurrent-state snapshot ring.
+  - Adds an rs-rollback correctness harness for the recurrent-state snapshot ring (examples/rs-rollback).
+  - 'Adds K-cache mean-centering (--kv-mean-center): a calibrated per-(kv-head, channel) bias subtracted from K at cache write, after RoPE and the Hadamard rotation and before quantization; gated to Q4_0 K; author KLD table: rotation + rotated-basis bias 0.00111 vs rotation alone 0.00144 (one unnamed hybrid model, 12x512 tokens, single run) [dived wave 3].'
+  - 'Adds TurboQuant KV types turbo2/3/4 (fused FA, CUDA/Vulkan/Metal) and DFly/DSpark drafter graphs [NOT DIVED: unverified, uncited; scope was outside the selected dives and the operator has not selected them].'
+  - 'Adds SSD expert streaming (-ssd/-nssd) and a safetensors/FP8/NVFP4/EXL3 direct-serving loader [NOT DIVED: unverified, uncited].'
   techniques:
   - CUDA MoE expert cache (hit rows on GPU, miss rows on CPU)
   - host-pinned MoE + VRAM hot-expert cache (moe-direct)
@@ -241292,12 +241295,13 @@
   - '[unverified] KNOWLEDGE/AK-HYPOTHESIS: MoE expert-cache pattern as an MI210 hot-expert cache for host-resident big MoE (CUDA-only code; HIP port needed).'
   - '[unverified] KNOWLEDGE: K-cache mean-centering for Q4_0 K and the rs-rollback harness as validation aids for Jet-Long / K-shift work.'
   notes: 'Stage 1 intake 2026-10-06. Read from disk: git clone --depth 1 at SHA %s (commit 2026-10-01 "ci : release CUDA 13..."), README in full, docs/kv-mean-center.md and tools/kv-mean-center/README.md (partly), docs/backend/CUDA-MOE-CACHE.md (first ~140 lines), docs/speculative.md diff, and targeted diffs of common/speculative.cpp, ggml-cpu.c, ops.cpp, delta-net-base.cpp, qwen35.cpp, gated_delta_net.cu, arg.cpp. NOT read: ggml-turbo-quant, moe-cache.cu/moe-direct.cu internals, llama-ssd.cpp body, safetensors.cpp body, xing4/deepseek41/dspark graphs, Metal/Vulkan shaders, mmq-hopper-q1. Fork base is estimated (shallow clone; best-matching upstream commit f1cee994, 2026-10-01 by minimal diff in src/ggml/common/tools); fork-vs-upstream attribution of individual features is therefore approximate. Several features are credited upstream-of-fork to others (leloch expert cache, giveen soft mode, PrismML DFly port, unsloth qwen4exp/MTP). Champion check (ak/champion/llama-cpp-ffc1bac82eec, ggml/src+src+common):
-    no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only. STAGE 2 (2026-10-06): read_depth PARTIAL - FULL reads of ggml-cpu/ops.cpp GDN kernel, ggml.c GDN ctors, delta-net-base.cpp build_recurrent_attn, qwen35.cpp, llama-graph.cpp build_rs_cache_view, common/speculative.cpp 2895-3010/3470-3800/3880-3900, both examples/rs-rollback/*.cpp; champion comparison via git show ak/champion/llama-cpp-ffc1bac82eec. Not read: ggml-metal GDN kernel, moe-cache/moe-direct/turbo/ssd/safetensors internals. Wave-2 siblings: intake-1932, 1933, 1934.'
+    no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only. STAGE 2 (2026-10-06): read_depth PARTIAL - FULL reads of ggml-cpu/ops.cpp GDN kernel, ggml.c GDN ctors, delta-net-base.cpp build_recurrent_attn, qwen35.cpp, llama-graph.cpp build_rs_cache_view, common/speculative.cpp 2895-3010/3470-3800/3880-3900, both examples/rs-rollback/*.cpp; champion comparison via git show ak/champion/llama-cpp-ffc1bac82eec. Not read: ggml-metal GDN kernel, moe-cache/moe-direct/turbo/ssd/safetensors internals. Wave-2 siblings: intake-1932, 1933, 1934. WAVE 3: read_depth stays PARTIAL. Read in full by subagents: moe-cache.cu (12 chunks), moe-direct.cu, hooks in ggml-cpu.c and ggml-backend.cpp, mmvq.cu kernels, kv-mean-center docs/tool/loader/test. Not read: turbo, ssd, safetensors, Metal/Vulkan, dspark/dfly graphs.
+    Some subagent anchors are +-5 lines (not stored). Literature seen for K-bias prior art (discovery only, not read, not persisted): 2605.26266, 2402.02750 KIVI, 2401.18079 KVQuant, 2508.04257 KVSink.'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage 1 only: PARTIAL read of a local clone at 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf; awaiting operator-selected Stage 2 dives.'
+  - 'Wave-3 dive 2026-10-06: moe-cache is a REBUILD/AK candidate only after re-measurement on our host; mean-centering is KNOWLEDGE (Q4_0-only measurement, we run q8_0 K).'
   claim_anchors:
   - claim_index: 4
     kind: line-range
@@ -241451,6 +241455,93 @@
     source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
     verified_by: research-intake/stage2
     setup_scope: static read of the clone; nothing built or run
+  - claim_index: 1
+    kind: line-range
+    locator: ggml/src/ggml-cpu/ggml-cpu.c:1618-1618
+    quote: '    // MoE expert cache state is used by thread 0 only.'
+    quote_sha256: 5948a4463b53dcc61bc76563642587e0b3d875c397837d35817705c273b448ee
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/backend/CUDA-MOE-CACHE.md:116-116
+    quote: '| 1 | 19.05 t/s | 22.54 t/s | +18.3% |'
+    quote_sha256: 5760e57b09d4a4402ff17bd99613a67a43197a83a8fa7cb24998127c739f2f3c
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: author-reported; doc states 256 untimed warmup tokens, repeats and variance not stated; host memory/CPU not stated
+  - claim_index: 1
+    kind: line-range
+    locator: ggml/src/ggml-cuda/moe-cache.cu:182-182
+    quote: '    int readmit_after = 8;'
+    quote_sha256: ace3f2e873f8ec018950a5decaf040f28ef84c1cc08d7038f9067511181fd39e
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: ggml/src/ggml-cuda/ggml-cuda.cu:6342-6344
+    quote: "#if !defined(GGML_USE_MUSA)\n            ggml_moe_cache_register(&reg);\n#endif"
+    quote_sha256: 6fdf0c518340ff8ea9ed614dbdbea9f4e671a21264434a79ed5a1c621bb3a3f9
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: docs/backend/CUDA-MOE-CACHE.md:276-276
+    quote: '- CUDA only. HIP, MUSA, Metal, Vulkan, and other backends do not register an implementation.'
+    quote_sha256: ca77a1a7f93c110683c57c390f1b1ad49cee2cff23bc77886d9b8eae71f26bfa
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: ggml/src/ggml-cuda/moe-cache.cu:1612-1612
+    quote: '                error = cudaStreamCreateWithPriority('
+    quote_sha256: ff45ea8692cbea4fa3f51d3466f81de019ce98efb8b2612252a8c7b6b3cf1b83
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: ggml/src/ggml-cuda/moe-direct.cuh:7-7
+    quote: // else the pinned host copy (read over PCIe). The routing never leaves the GPU, so a decode step has no
+    quote_sha256: c202b846b7933e38305082fe9847f30367eb910d346682e972e389f06fab5a4a
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: no measurements for moe-direct exist in the doc or README
+  - claim_index: 2
+    kind: line-range
+    locator: ggml/src/ggml-cuda/moe-direct.cu:54-54
+    quote: '        c.enabled    = env_i("GGML_CUDA_MOE_DIRECT", 1) != 0;'
+    quote_sha256: e09431e81f276dc9f225fbc6706c9e76e6c3c34421699b5ca8d91fa3532d3297
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: src/llama-kv-cache.cpp:1352-1352
+    quote: '        k_cur = ggml_sub(ctx, k_cur, bias);'
+    quote_sha256: 0a66e3c22d6e4ddefe6dc0efbbf13d19ca0aae322b3c89d5aaadbf8725e873fd
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: src/llama-context.cpp:4404-4404
+    quote: '    if (params.path_kv_mean_center != nullptr && params.type_k != GGML_TYPE_Q4_0) {'
+    quote_sha256: 35b3f4fa3001708d696c56e7f75edad3c92177d146ac0084d390dda76ee1de65
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: tools/kv-mean-center/README.md:88-88
+    quote: '| rotation + rotated-basis bias (calibrated with `-ctk q4_0`) | **0.00111** |'
+    quote_sha256: 3edbf84f9966b507f5105e26ed95b400488faf953ebb484b38d3b9e485ad93a5
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
+    setup_scope: author-reported, Q4_0 K only, one unnamed model, no variance; nothing measured for q8_0
+  - claim_index: 6
+    kind: line-range
+    locator: docs/kv-mean-center.md:85-85
+    quote: '- Only `GGML_TYPE_Q4_0` is supported; other K cache types are rejected. Generalizing the mechanism'
+    quote_sha256: 1e0189aae0c9f181e29383befdec2e67ea6ed24549f00bc582e337d0fd35ed35
+    source_revision: cafe-llama.cpp@0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf
+    verified_by: research-intake/stage2
   claim_corrections:
   - claim_index: 3
     effect: narrowed
@@ -241464,7 +241555,23 @@
   - claim_index: 0
     effect: unaffected
     note: Provenance claim (fork, SHA, diff size) was not disputed; base estimate remains approximate.
-  dive_corrections: '2026-10-06 Stage-2 wave 1, scoped to operator-selected dives (GDN raw-gate/rows mode; --spec-adaptive; rs-rollback). Read from disk at clone 0ae77ef49. Claims 1,2 (MoE expert cache/hmoe/SSD/safetensors) and the K-cache mean-centering and TurboQuant claims were NOT selected and remain stage1-unverified: do not cite them. Entry-level verification stays stage1-unverified for that reason; claim_anchors/claim_corrections record the per-claim state. Second reader: 19 of 21 anchors support or partly support; 2 unsupportive anchors dropped.'
+  - claim_index: 1
+    effect: narrowed
+    note: Mechanism CONFIRMED (VRAM slab cache of whole experts, count-then-admit, LRU, hit rows removed from the CPU row-mapping, thread-0 dispatch, doorbell join). The doc names CUDA only (line 276) but the source registers the cache for HIP builds (ggml-cuda.cu:6342, ggml-hip globs ggml-cuda/*.cu); never built, so unverified. Six CUDA runtime symbols used in moe-cache.cu have no hip.h mapping (priority streams, cudaStreamQuery, cudaErrorNotReady, cudaPeekAtLastError, cudaErrorUnknown). Measured numbers are author-reported on RTX 3090 with unstated host; no skew statistic (top-X% of experts) is published; only the single-GPU row (+18.3%) is comparable to one MI210.
+  - claim_index: 2
+    effect: narrowed
+    note: moe-direct/-hmoe confirmed as a GPU-resident-everything design reading host experts over PCIe with a CPU-fraction mailbox (default 0.5); zero published measurements; needs __nanosleep and event-query HIP equivalents; the GPU spins on host memory inside a graph.
+  - claim_index: 6
+    effect: narrowed
+    note: Mechanism CONFIRMED and exactly softmax-invariant for qwen35 (no sinks, no softcap) including RoPEd keys, since a constant subtracted from every cached key shifts all logits equally. Gated to Q4_0 at llama-context.cpp:4404 and require_q4_0 in the loader; the kernel path is type-agnostic (tests bypass the gate). Only measurement is the Q4_0 KLD table; nothing for q8_0. Calibration is at 512-token chunks, so slowly rotating RoPE channels are undersampled at long context (INFERENCE). Doc says no number ships while the tools README ships one (README is the later source).
+  - claim_index: 7
+    effect: uncertain
+    note: Not dived. No primary-source read of the turbo or DFly/DSpark claims; they must not be cited.
+  - claim_index: 8
+    effect: uncertain
+    note: Not dived. SSD streaming and the safetensors loader were not read; they must not be cited.
+  dive_corrections: '2026-10-06 Stage-2 wave 1, scoped to operator-selected dives (GDN raw-gate/rows mode; --spec-adaptive; rs-rollback). Read from disk at clone 0ae77ef49. Claims 1,2 (MoE expert cache/hmoe/SSD/safetensors) and the K-cache mean-centering and TurboQuant claims were NOT selected and remain stage1-unverified: do not cite them. Entry-level verification stays stage1-unverified for that reason; claim_anchors/claim_corrections record the per-claim state. Second reader: 19 of 21 anchors support or partly support; 2 unsupportive anchors dropped. 2026-10-06 wave 3 (completion of the ORIGINAL Stage-2 selection, which the operator stated as all recommended dives; two of the five were wrongly deferred by the coordinating session): K-cache mean-centering and the CUDA MoE expert cache / moe-direct (-hmoe) read in full by subagents with the owning session re-finding every new anchor mechanically. Entry promoted to dive-verified: claims 0,1,2,3,4,5,6 are anchored (claim 6 and 1,2 dived in
+    wave 3); claims 7 (turbo, DFly/DSpark) and 8 (SSD, safetensors) are explicitly marked NOT DIVED and uncited.'
 - id: intake-1926
   arxiv_id: '2605.00342'
   url: https://arxiv.org/abs/2605.00342
