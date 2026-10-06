@@ -38,16 +38,21 @@ def _seal(tmp_path: Path, body: dict, *, schema: str, producer: str) -> Path:
     inp.parent.mkdir(parents=True, exist_ok=True)
     input_bytes = b'{"qid":"q1","correct":true,"error":false}\n'
     inp.write_bytes(input_bytes)
+    input_snapshot = root / "data" / "source.snapshot.raw"
+    input_snapshot.write_bytes(input_bytes)
+    producer_snapshot = root / "producer.snapshot.py"
+    producer_snapshot.write_bytes(src.read_bytes())
     provenance = {
         "schema": schema,
         "producer_path": producer,
         "producer_sha256": _sha(src.read_bytes()),
+        "producer_snapshot_path": str(producer_snapshot),
         "input_root": "epyc-orchestrator",
-        "missing_inputs": [],
         "missing_inputs": [],
         "inputs": [{"path": "data/source.jsonl", "sha256": _sha(input_bytes),
                     "byte_count": len(input_bytes), "row_count": 1,
-                    "normalized_row_count": 1}],
+                    "normalized_row_count": 1,
+                    "snapshot_path": str(input_snapshot)}],
         "analysis_config_sha256": _canonical_sha(body.get("config", {})),
         "report_body_sha256": _canonical_sha(body),
     }
@@ -138,6 +143,18 @@ def test_report_bytes_and_original_inputs_are_reverified_at_projection(tmp_path,
     input_path.write_bytes(input_path.read_bytes() + b"\n")
     with pytest.raises(ProjectionError, match="bound input bytes changed"):
         adapter.project(native[0])
+
+
+def test_immutable_input_snapshot_is_required_and_rechecked(tmp_path, monkeypatch):
+    root = tmp_path / "repo"
+    monkeypatch.setattr(vbs_adapter, "ORCHESTRATOR", root)
+    path = _vbs_report(tmp_path)
+    native = vbs_adapter.native_rows(path)
+    assert native
+    snapshot = root / "data" / "source.snapshot.raw"
+    snapshot.write_bytes(snapshot.read_bytes() + b"tamper")
+    with pytest.raises(ProjectionError, match="immutable input snapshot differs"):
+        vbs_adapter.project(native[0])
 
 
 @pytest.mark.parametrize(("adapter", "factory"), [

@@ -30,7 +30,8 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
     provenance = document.get("native_provenance")
     if not isinstance(provenance, dict):
         raise ProjectionError("legacy analysis JSON has no native provenance; it is descriptive only")
-    if set(provenance) != {"schema", "producer_path", "producer_sha256", "input_root",
+    if set(provenance) != {"schema", "producer_path", "producer_sha256",
+                           "producer_snapshot_path", "input_root",
                            "inputs", "missing_inputs", "analysis_config_sha256", "report_body_sha256",
                            "record_id", "report_sha256"}:
         raise ProjectionError("native_provenance has missing or unknown fields")
@@ -41,6 +42,14 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
     producer_sha = hashlib.sha256(producer_bytes).hexdigest()
     if provenance.get("producer_sha256") != producer_sha:
         raise ProjectionError("producer source bytes differ from the report-bound revision")
+    producer_snapshot_path = provenance.get("producer_snapshot_path")
+    if not isinstance(producer_snapshot_path, str) or not producer_snapshot_path:
+        raise ProjectionError("producer source snapshot path is missing")
+    producer_snapshot = Path(producer_snapshot_path)
+    if not producer_snapshot.is_absolute():
+        producer_snapshot = producer_root / producer_snapshot
+    if _read(producer_snapshot, "producer source snapshot") != producer_bytes:
+        raise ProjectionError("immutable producer snapshot differs from current producer source")
     if not isinstance(provenance.get("inputs"), list) or not provenance["inputs"]:
         raise ProjectionError("a measurement report must bind at least one parsed input file")
     if (not isinstance(provenance.get("missing_inputs"), list)
@@ -56,7 +65,8 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
     seen: set[str] = set()
     for item in provenance["inputs"]:
         if not isinstance(item, dict) or set(item) != {
-                "path", "sha256", "byte_count", "row_count", "normalized_row_count"}:
+                "path", "sha256", "byte_count", "row_count", "normalized_row_count",
+                "snapshot_path"}:
             raise ProjectionError("input manifest row has missing or unknown fields")
         path_text = item.get("path")
         digest = item.get("sha256")
@@ -84,6 +94,15 @@ def validate_provenance(document: dict[str, Any], *, report_path: Path,
         raw = _read(resolved, "bound input")
         if len(raw) != item["byte_count"] or hashlib.sha256(raw).hexdigest() != digest:
             raise ProjectionError(f"bound input bytes changed: {path_text}")
+        snapshot_text = item.get("snapshot_path")
+        if not isinstance(snapshot_text, str) or not snapshot_text:
+            raise ProjectionError("immutable input snapshot path is missing")
+        snapshot_path = Path(snapshot_text)
+        if not snapshot_path.is_absolute():
+            snapshot_path = producer_root / snapshot_path
+        snapshot_bytes = _read(snapshot_path, "immutable input snapshot")
+        if len(snapshot_bytes) != item["byte_count"] or hashlib.sha256(snapshot_bytes).hexdigest() != digest:
+            raise ProjectionError(f"immutable input snapshot differs from its parsed-byte digest: {path_text}")
     id_body = dict(provenance)
     record_id = id_body.pop("record_id")
     report_sha = id_body.pop("report_sha256")
