@@ -158,7 +158,7 @@ def test_duplicate_json_and_tamper_refused(fixture):
     with pytest.raises(host.ReceiptError, match="duplicate"):
         heartbeat(root)
     marker.write_bytes(original.replace(b"dependency_evidence_only", b"dependency_evidence_evil"))
-    with pytest.raises(host.ReceiptError, match="self-hash"):
+    with pytest.raises(host.ReceiptError, match="^evidence_sha256 does not bind native row$"):
         heartbeat(root)
 
 
@@ -274,7 +274,7 @@ def installer_fixture(tmp_path):
     cron.write_text("0 3 * * * /fixture/inert # original\n")
     docker = bin_dir / "docker"
     docker.write_text('''#!/usr/bin/env python3
-import json, os, pathlib, subprocess, sys
+import hashlib, json, os, pathlib, subprocess, sys
 args = sys.argv[1:]
 with open(os.environ["FIXTURE_CALLS"], "a") as stream:
     stream.write(json.dumps(args) + "\\n")
@@ -299,7 +299,15 @@ if args[:2] == ["bash", "-c"]:
         assert len(args) == 6 and pathlib.Path(args[4]).parent == pathlib.Path(os.environ["FIXTURE_ROOT"]) / "logs"
         with open(args[4], "x") as stream: stream.write(args[5] + "\\n")
     else:
-        assert "git archive" in args[2]  # Do not execute any pin/supervisor code.
+        # Admit only the reviewed complete pin helper and its exact arguments.
+        # Return an inert success; never execute its shell/archive/supervisor code.
+        assert hashlib.sha256(args[2].encode()).hexdigest() == "03356d06881896c0fdd0f9650bf66dd9837fa151805b7f1e9793ff21dacca855"
+        pin_base = "/mnt/raid0/llm/ops/hub-supervisor"
+        assert args[3:] == [
+            "_", os.environ["FIXTURE_ROOT"], "a" * 40, pin_base + "/" + "a" * 40, pin_base,
+            "scripts/dashboard/hub_supervisor.sh", "scripts/dashboard/hub_launch_spec.py",
+            "scripts/dashboard/refresh_hub_view.sh", "scripts/coordination/daemon_provenance.sh",
+        ]
     sys.exit(0)
 raise AssertionError("unexpected child: " + repr(args))
 ''')
