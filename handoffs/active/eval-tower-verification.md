@@ -959,6 +959,8 @@ which point revisit with the trajectory JSONL already in hand rather than design
 `_consistency_and_passk` rather than writing a second estimator.
 The single exception is already instrumented, zero-inference, and report-only, so it earns one task:
 
+- [x] **ETVT2-SRC — implement source-bound offline tool-use outcome reporting.** MAIN accepted2026-10-06: [native11/11 and exact APPmain integration](../../artifacts/ni08/tool-use-report-source-20261006/README.md). Known attempted/scoreable denominators, unknown/partial inputs and separate batch/label groups; metadata only, no causal attribution or actual cohort estimate. Parent ETV-T2 remains open.
+
 - [ ] **ETV-T2 — report-only trajectory/outcome divergence counter for `tool_use` sentinels** (cheapest first
       step; ZERO inference, no gate authority). For rows where `suite == "tool_use"`, compare the persisted
       action trace (`tools_called` / `tools_used`, already in `question_results.<arm>.jsonl` per
@@ -1039,3 +1041,5 @@ Operator-approved [P3](../../research/intake-stage3-plan-2026-10-03-decision-too
 **Acceptance.** Fault-inject writer creation, one append and completion-marker failure: grades unchanged, durable counts/status exact. Fake connection failures followed by success and exhausted budget: counts/wait exact, non-reconnectable errors unretried. Cover the direct and watcher paths. Deterministic fixtures replace empirical holdout; count all fixtures, including degraded cases. Consumers are batch details, question metadata and their existing summaries, not a new publication or training system.
 
 **K6 / K9 / M3 qualification.** Evaluation, offline SFT and off-policy RL have distinct requirements. Correctness-before-efficiency is applied by TU-MH-1 in [tool-use-eval-contract.md](tool-use-eval-contract.md) and S2-CGE-1 in [memento-block-reasoning-compression.md](memento-block-reasoning-compression.md); these consumer tasks are not duplicated here. These two repairs establish no training gain or token-perfect GRPO eligibility. Full multi-harness RL requires a named model/workload/objective and eligible original rollouts; exact-token export is implemented only for that actual consumer, under the [approved K/M qualifications](../../research/intake-stage3-plan-2026-10-03-decision-tools.md#broader-follow-ons--distinct-from-the-immediate-integrations).
+
+ETV-T2 source correction2026-10-06: persisted `tools_called` must be a valid native list; a scalar `tools_used` count alone does not establish a trace. No currently inspected sidecar has tool_use rows. Future owner-cohort reporting may quantify observed attempt/wrong co-occurrence; it cannot identify the causal fraction of a SafetyGate carve-out or prove genuine failure. The original parent goal requires additional outcome interpretation, independently supported by that cohort.

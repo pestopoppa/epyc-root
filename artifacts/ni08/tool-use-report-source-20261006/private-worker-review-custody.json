@@ -1,0 +1,6 @@
+{
+  "custody_root": "/mnt/raid0/llm/tmp/ni08-equation-designs-20261006/etvt2-hosted-37524086716-1",
+  "verification_sha256": "de0a9db106c96737bffff1f3adea322e3ea053459c14c51ca63bac4c06dcc508",
+  "original_bytes_preserved": true,
+  "public_scope": "metadata subset only; private full worker API/job review retained without editing"
+}

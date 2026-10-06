@@ -59,3 +59,8 @@ MAIN applied M19-RECORD/FW2 contracts to APPmain `be8d46f61edcf5cb795d485b1a8171
 ## Triage and usage-capture boundary
 
 MAIN adopted INF02 five-label non-exclusive metadata contract, explicit classified/unknown state and MHS5 cross-link; existing runtime retry taxonomy unchanged. One existing checkbox closure brings NI08 to22 scoped completions. Filed VB-DCP-LOG-USAGE/source-table row before exact v3 source-approved allowlisted read. Earlier usage snapshots remain excluded; no quality/task grouping or billing authority inferred. Three completed-design handoffs now declare actual Scratch custody.
+
+
+## Tool-use report acceptance
+
+MAIN accepted11/11 exact native cases, independently reopened3,408ZIP members/3,399readset bindings after prior3,397Git-input map, checked API success/digest, receipt, original JUnit/environment and unchanged shared grade. APPsource5c7333da promoted byte-identically to `79abe3eca50c911d89e5e9855bbd6392bae2b35d`. ETVT2-SRC/VB-ETVT2-DIAGNOSTICS add two scoped completions:24 total (21existingflips+3scopedadditions). No currently inspected sidecar has tool_use rows; no live efficacy/causal estimate or policy change. ROOTrecipe and public review metadata preserved with private original custody.

@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **twenty-two completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **twenty-four completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -33,3 +33,5 @@ AP-ME4/AP-ME6 and VB-AP-ME-DIAGNOSTICS close after [native21/21 and byte-identic
 M19-RECORD scoped design, FW2 contract/draft, FW3 survey and CFHF1 source comparison accepted:21 scoped completions (19 existing checkbox flips+2 newly completed scoped subtasks). M19 parent/calibration and workflow runtime remain open. New VB-M19-WRITE/VB-AP-ME-CONTEXT/VB-ETVT2-DIAGNOSTICS enroll prospective source work before capture; AP1/3 and ETV source are under review, not complete.
 
 INF02 triage vocabulary accepted:22 scoped completions (20 existing checkbox flips+2 scoped additions). VB-DCP-LOG-USAGE filed before the approved v3 allowlisted usage read; prior defective snapshots remain excluded and private. Whole-backlog exhaustion is not established.
+
+ETVT2-SRC and VB-ETVT2-DIAGNOSTICS accepted after native11/11 and independent MAIN original custody verification. Two scoped completions (one existing flip+one added source subtask):24 total,21 existing flips+3 scoped additions. Actual tool_use cohort, causal interpretation and parent ETV-T2 remain open.
