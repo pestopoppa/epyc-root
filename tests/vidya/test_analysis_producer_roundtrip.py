@@ -13,6 +13,8 @@ import json
 import os
 import sys
 from pathlib import Path
+import stat
+import zipfile
 
 import pytest
 
@@ -98,6 +100,42 @@ def _assert_ingested_with_shared_grade(tmp_path, capsys, source, adapter, report
                                                            expected[frame["assertion"]["claim_id"]]))
 
 
+def _capture_synthetic_bundle(kind, report_path, input_paths):
+    configured = os.environ.get("NI08_NATIVE_FIXTURE_CAPTURE_DIR")
+    if not configured:
+        return
+    destination_root = Path(configured).resolve()
+    destination = destination_root / f"{kind}-bundle.zip"
+    destination_root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    candidates = [(f"inputs/{index:02d}-{path.name}", path) for index, path in enumerate(input_paths)]
+    candidates.append(("report.json", report_path))
+    snapshot_root = report_path.with_name(report_path.name + ".native")
+    for snapshot in sorted(snapshot_root.rglob("*")):
+        info = snapshot.lstat()
+        if stat.S_ISDIR(info.st_mode):
+            continue
+        if not stat.S_ISREG(info.st_mode):
+            raise AssertionError(f"non-regular native fixture member: {snapshot}")
+        candidates.append((snapshot.relative_to(report_path.parent).as_posix(), snapshot))
+    entries = []
+    with zipfile.ZipFile(destination, "x", compression=zipfile.ZIP_DEFLATED) as bundle:
+        for archive_path, source in candidates:
+            data = source.read_bytes()
+            info = zipfile.ZipInfo(archive_path)
+            info.compress_type = zipfile.ZIP_DEFLATED
+            info.external_attr = (stat.S_IFREG | 0o600) << 16
+            bundle.writestr(info, data)
+            entries.append({"path": archive_path, "sha256": hashlib.sha256(data).hexdigest(),
+                            "bytes": len(data)})
+        manifest = json.dumps({"schema": "epyc.ni08.synthetic_fixture_bundle/v1",
+                               "kind": kind, "members": entries}, sort_keys=True,
+                              separators=(",", ":")).encode() + b"\n"
+        info = zipfile.ZipInfo("bundle-manifest.json")
+        info.compress_type = zipfile.ZIP_DEFLATED
+        info.external_attr = (stat.S_IFREG | 0o600) << 16
+        bundle.writestr(info, manifest)
+
+
 def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, monkeypatch,
                                                                        capsys):
     app_root, producer, _ = _app_tree(tmp_path)
@@ -132,6 +170,7 @@ def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, 
     assert len(report["native_provenance"]["inputs"]) == 3
     _assert_ingested_with_shared_grade(tmp_path, capsys, "verify-before-stop-measurement",
                                        mf_adapter, report_path)
+    _capture_synthetic_bundle("mf", report_path, [results, trace_a, trace_b])
 
 
 def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, monkeypatch,
@@ -165,3 +204,4 @@ def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, mo
     assert all(row.attestation_verified for row in projected.values())
     _assert_ingested_with_shared_grade(tmp_path, capsys, "eval-suite-discriminability",
                                        eval_adapter, report_path)
+    _capture_synthetic_bundle("eval", report_path, [source])
