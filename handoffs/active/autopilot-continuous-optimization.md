@@ -53,16 +53,19 @@ This packet is staging only; it does not run live RLM tasks, start Ouro training
   is a complementarity signal with its sign flipped — crossover donor pairing and BSV-3 conflict
   scoring **must share one function** rather than be built twice with drifting definitions.
 
-- [ ] **AP-ME-4 — Deterministic `error_signature` plus a repeated-failures counter.** Per the
+- [x] **AP-ME-4 — Deterministic `error_signature` plus a repeated-failures counter.** Per the
   correction recorded in `autokernel-research-loop.md` §8.4.0, `ExperimentJournal.unfalsified_hypotheses()`
   is a recency window over the last five trials checking presence of a falsifier string only, and
   nothing marks a hypothesis resolved. A deterministic failure signature is the cheapest available
   upgrade and is a precondition for AP-ME-1's debug budget to select anything meaningful.
 
-- [ ] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940#record's dive narrowed this from an
+- [x] **AP-ME-6 — Negative-evidence rendering discipline.** intake-940#record's dive narrowed this from an
   exclusion filter to a *rendering* rule: a deterministic error signature per card plus a board-level
   repeated-error counter, rendered as one compact typed line rather than raw prior-attempt text.
   Failures still enter context — they enter it small. Pairs with AP-ME-4; feeds AP-ME-1's budgets.
+
+
+✅ 2026-10-06 MAIN accepted AP-ME-4/6 source15e5b52e after [native21/21 original review](../../artifacts/ni08/failure-signatures-source-20261006/README.md), promoted APP26cb574f. Typed identity/scoped prior totals and compact negative rendering are complete at the source boundary; actual controller execution/rollout is not claimed. AP-ME-1 now permits its offline current-context baseline screening; AP-ME-3 shared-function caller research continues independently. No context-budget, safety-gate or promotion authority changed.
 
 
 ### Deep-Dive Task Proposals — 2026-05-25 (intake-607 Code-as-Agent-Harness §5.2.1 / §5.2.3 / §5.2.4)

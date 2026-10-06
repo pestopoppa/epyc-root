@@ -1,0 +1,17 @@
+{
+  "previous_head": "48a546e90fbc202a0c2ae103203621ba29175915",
+  "main_before": "48a546e90fbc202a0c2ae103203621ba29175915",
+  "source": "15e5b52ec8941c8a46211d363cc9b6774813b30b",
+  "commit": "26cb574fe97401c8976bfc4f757d0d37461a63f5",
+  "paths": [
+    "docs/autopilot/failure-signatures.md",
+    "scripts/autopilot/autopilot.py",
+    "scripts/autopilot/experiment_journal.py",
+    "scripts/autopilot/species/evolution_manager.py",
+    "scripts/autopilot/stm_generated_view.py",
+    "tests/unit/test_failure_signatures.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

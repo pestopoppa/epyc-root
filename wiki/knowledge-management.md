@@ -3595,3 +3595,8 @@ The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-2026
 ### Compare decision layers before transferring a rule
 
 [Admission/granularity review](../docs/reference/ni08-admission-and-skill-granularity.md) distinguishes proposal-training reward, preference-pair construction, bank retention, measured-result safety verdict and tier-local frontier admission. Read the current objective builder: old “speed” comments can obscure a questions-per-hour axis. A suite-level negative guard does not establish task-level regression coverage. No policy changes follow from this descriptive comparison.
+
+
+### Native failure identity is scoped diagnostic metadata
+
+[Accepted journal source](../artifacts/ni08/failure-signatures-source-20261006/README.md) records machine gate categories and native comparable context at append, preserving unknown legacy rows. A repeated total is scoped to the folded journal, not a streak or root-cause verdict; supersession changes the read view without rewriting original snapshots. Compact typed negatives can replace long prose while preserving diagnostic identity. Synthetic21-case conformance does not establish live efficacy, hypothesis resolution or budget improvement.

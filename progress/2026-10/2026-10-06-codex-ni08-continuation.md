@@ -44,3 +44,8 @@ MAIN reviewed cheap proposal against both original papers and actual APP tier/ar
 ## LR8 operational decision package
 
 MAIN refreshed latestpublishedtick hash and independently verified exactnative8dfdab registry preimage/full0f5cca candidate differs onlyopencode_event_reaper.runtime. PublishedA/Bcontext/tradeoffs/recommendationB/exactcronoptin/ownerPIDfdstop/rollback. Inertpackage; no currentPID/hostcrontabcustody/activation/cleanup. ParentLR8remainsopen and no extra scopedcompletioncount. EarlierOP73installationnotreopened.
+
+
+## Native failure diagnostic boundary
+
+MAIN independently reopened run37520888816/artifact11439607473 ZIPf217541b,all3,407members/3,396Gitbindings+2contexts and21selectedcaseidentities. Samejob existinggrade Judged/Located, original hashes unchanged; no localhostimports/tests. APP15e5 source promoted byte-identically26cb574f after isolated merge; genericownCIcancelled/excluded. AP-ME4/6+VBdiagnostic closes3existingboxes,17scopedNI08 completions/16flips+1audit. Source-default journal/render metadata change only, no live restart/tuning/policy/measurementauthority. APPprivateclone object required explicit fetch beforeintegration; failed initialmergecommand changednothing and lease released, corrected exactsourcefetch succeeded. Newly unblockedAPME1offlinebaseline/APME3caller source screening continues.

@@ -1,0 +1,7 @@
+{
+  "kind": "private_original_analysis_custody_pointer",
+  "path": "/mnt/raid0/llm/worktrees/ni08-failure-signatures-evidence-20261006/worker-independent-review.json",
+  "sha256": "edbf837249b290c2bf6d3fc2853f2da68673bea8e80c9686c4f2852225e44a2e",
+  "public_projection_omitted": "numeric GitHub job API metadata was flagged by the privacy hook; private bytes and native originals remain unchanged",
+  "main_independent_review": "failure-signatures-MAIN-original-review.json"
+}

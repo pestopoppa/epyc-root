@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **fourteen completed scoped tasks; AP failure-diagnostic source validation and additional source/design work continue**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **seventeen completed scoped tasks; AP failure-diagnostic source validation and additional source/design work continue**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -27,3 +27,5 @@ HIL1..5 design deliverables are accepted and filed, adding five existing checkbo
 AP51/EV10d/EV10f design/docs are accepted: [current-source distinctions](ni08-admission-and-skill-granularity.md). Three existing flips bring NI08 to14 scoped completions (13 flips+1 added audit subtask), with report-only and record/contract work continuing.
 
 LR8 runtime A/B is [concretely packaged](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md), recommendation B, still unapplied. Source/registry candidate rechecked; live PID/cron custody belongs to the executing owner boundary. No extra completion counted for packaging and no repeat of OP73 authorization.
+
+AP-ME4/AP-ME6 and VB-AP-ME-DIAGNOSTICS close after [native21/21 and byte-identical APPmain integration](../../artifacts/ni08/failure-signatures-source-20261006/README.md). Three existing flips:17 scoped NI08 completions (16 flips+1 added audit subtask). Native diagnostics remain ungraded and source conformance is observation only; per-operator offline context baseline and shared crossover-signal source screening are newly surfaced work.
