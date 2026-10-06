@@ -217,6 +217,189 @@ def test_declared_dir_that_is_a_worktree_is_one_entry_never_enumerated(env):
     assert [(Path(e.path).name, e.kind, e.verdict) for e in entries] == [("hx-42-whole", "worktree", "KEEP-UNLANDED")]
 
 
+@pytest.mark.parametrize("marker", wg.KEEP_MARKERS)
+def test_keep_marker_on_declared_root_protects_root_and_contents(env, monkeypatch, marker):
+    root = env["scratch"]
+    marker_path = root / marker
+    marker_path.write_text("load-bearing scratch root")
+    child = root / "ordinary-source.txt"
+    child.write_text("preserve these bytes")
+    called = env["tmp"] / "guarded-rm-called"
+    guard = env["tmp"] / "guarded-rm-record.sh"
+    guard.write_text(f'#!/bin/bash\nprintf "called\\n" >> "{called}"\n')
+    guard.chmod(0o755)
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    d = sc.Decl(dirs=[str(root)])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert [(Path(e.path).name, e.verdict) for e in entries] == [(root.name, "KEEP-MARKED")]
+    sc.apply_plan(entries, d, guarded_rm=guard, fetch=False)
+
+    assert marker_path.read_text() == "load-bearing scratch root"
+    assert child.read_text() == "preserve these bytes"
+    assert not called.exists()
+
+
+def test_sibling_keep_marker_on_declared_root_protects_whole_root(env, monkeypatch):
+    root = env["scratch"]
+    child = root / "ordinary-source.txt"
+    child.write_text("preserve these bytes")
+    side_marker = Path(str(root) + ".epyc-keep")
+    side_marker.write_text("load-bearing scratch root")
+    called = env["tmp"] / "guarded-rm-called"
+    guard = env["tmp"] / "guarded-rm-record.sh"
+    guard.write_text(f'#!/bin/bash\nprintf "called\\n" >> "{called}"\n')
+    guard.chmod(0o755)
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    d = sc.Decl(dirs=[str(root)])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert [(Path(e.path).name, e.verdict) for e in entries] == [(root.name, "KEEP-MARKED")]
+    sc.apply_plan(entries, d, guarded_rm=guard, fetch=False)
+
+    assert side_marker.read_text() == "load-bearing scratch root"
+    assert child.read_text() == "preserve these bytes"
+    assert not called.exists()
+
+
+def test_mixed_declared_roots_keep_marked_root_and_remove_unmarked_sibling(env, monkeypatch):
+    parent = env["tmp"] / "llmtmp"
+    marked_root = parent / "hx-42-marked"
+    plain_root = parent / "hx-42-marked-extra"
+    marked_root.mkdir(parents=True)
+    plain_root.mkdir()
+    (marked_root / "KEEP").write_text("evidence custody")
+    sentinel = marked_root / "source.txt"
+    sentinel.write_text("preserve")
+    removable = plain_root / "plain.txt"
+    removable.write_text("remove through trash")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    outside_wt = add_wt(env, "hx-42-outside", landed=False)
+    d = sc.Decl(dirs=[str(marked_root), str(plain_root)],
+                worktree_globs=[str(env["wts"] / "hx-42-*")])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert {(Path(e.path).name, e.verdict) for e in entries} == {
+        (marked_root.name, "KEEP-MARKED"), (removable.name, "REMOVE"),
+        (outside_wt.name, "KEEP-UNLANDED")}
+    sc.apply_plan(entries, d, guarded_rm=env["rm"], fetch=False)
+
+    assert sentinel.read_text() == "preserve"
+    assert marked_root.exists()
+    assert not plain_root.exists()
+    assert outside_wt.exists()                  # marker does not cover a worktree outside its root
+    assert (env["trash"] / removable.name).read_text() == "remove through trash"
+
+
+def test_root_marked_after_plan_protects_planned_children_before_any_removal(env, monkeypatch):
+    root = env["tmp"] / "llmtmp" / "hx-42-late-marker"
+    root.mkdir(parents=True)
+    sentinel = root / "source.txt"
+    sentinel.write_text("preserve exact bytes")
+    wt = root / "hx-42-nested-wt"
+    git(env["repo"], "worktree", "add", "--detach", str(wt), "origin/main")
+    called = env["tmp"] / "guarded-rm-called"
+    guard = env["tmp"] / "guarded-rm-record.sh"
+    guard.write_text(f'#!/bin/bash\nprintf "called\\n" >> "{called}"\n')
+    guard.chmod(0o755)
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+    monkeypatch.setattr(
+        wg, "remove_one",
+        lambda *args, **kwargs: pytest.fail("marked descendant worktree reached remove_one"),
+    )
+
+    d = sc.Decl(dirs=[str(root)], worktree_globs=[str(root / "hx-42-*")])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert {(Path(e.path).name, e.verdict) for e in entries} == {
+        (sentinel.name, "REMOVE"), (wt.name, "REMOVE")}
+    (root / "KEEP").write_text("marked after planning; protect all descendants")
+
+    sc.apply_plan(entries, d, guarded_rm=guard, fetch=False)
+
+    assert all(e.verdict == "KEEP-MARKED" for e in entries)
+    assert sentinel.read_text() == "preserve exact bytes"
+    assert wt.exists()
+    assert not called.exists()
+
+
+def test_marked_root_coalesces_overlapping_declared_root_and_worktree_glob(env, monkeypatch):
+    root = env["tmp"] / "llmtmp" / "hx-42-protected"
+    nested = root / "nested"
+    nested.mkdir(parents=True)
+    (root / "KEEP").write_text("preserve descendants")
+    sentinel = nested / "source.txt"
+    sentinel.write_text("preserve exact bytes")
+    wt = nested / "hx-42-nested-wt"
+    git(env["repo"], "worktree", "add", "--detach", str(wt), "origin/main")
+    called = env["tmp"] / "guarded-rm-called"
+    guard = env["tmp"] / "guarded-rm-record.sh"
+    guard.write_text(f'#!/bin/bash\nprintf "called\\n" >> "{called}"\n')
+    guard.chmod(0o755)
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    d = sc.Decl(dirs=[str(root), str(nested)],
+                worktree_globs=[str(nested / "hx-42-*")])
+    entries = sc.build_plan(d, repos=[str(env["repo"])], probe=wg.Probe())
+    assert [(Path(e.path).name, e.verdict) for e in entries] == [(root.name, "KEEP-MARKED")]
+    sc.apply_plan(entries, d, guarded_rm=guard, fetch=False)
+
+    assert sentinel.read_text() == "preserve exact bytes"
+    assert wt.exists()
+    assert not called.exists()
+
+
+def test_marked_nested_root_protects_ancestor_candidate_but_trashes_sibling(env, monkeypatch):
+    parent = env["tmp"] / "llmtmp" / "hx-42-parent"
+    container = parent / "container"
+    kept_root = container / "kept"
+    kept_root.mkdir(parents=True)
+    (kept_root / "KEEP").write_text("preserve marked descendant")
+    sentinel = kept_root / "source.txt"
+    sentinel.write_text("preserve exact bytes")
+    removable = parent / "unmarked-sibling.txt"
+    removable.write_text("remove unrelated sibling")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    d = sc.Decl(dirs=[str(parent), str(kept_root)])
+    entries = sc.build_plan(d, repos=[], probe=wg.Probe())
+    assert {(Path(e.path).name, e.verdict) for e in entries} == {
+        (container.name, "KEEP-MARKED"), (kept_root.name, "KEEP-MARKED"),
+        (removable.name, "REMOVE")}
+    sc.apply_plan(entries, d, guarded_rm=env["rm"], fetch=False)
+
+    assert sentinel.read_text() == "preserve exact bytes"
+    assert (kept_root / "KEEP").read_text() == "preserve marked descendant"
+    assert container.exists()
+    assert not removable.exists()
+    assert (env["trash"] / removable.name).read_text() == "remove unrelated sibling"
+
+
+def test_parent_declaring_sidecar_marked_root_preserves_marker_file(env, monkeypatch):
+    parent = env["tmp"] / "llmtmp" / "hx-42-parent"
+    root = parent / "hx-42-custody"
+    root.mkdir(parents=True)
+    sentinel = root / "source.txt"
+    sentinel.write_text("preserve exact bytes")
+    side_marker = Path(str(root) + ".epyc-keep")
+    side_marker.write_text("load-bearing root")
+    removable = parent / "unmarked-sibling.txt"
+    removable.write_text("remove unrelated sibling")
+    monkeypatch.setattr(wg, "gather_probe", lambda **kwargs: wg.Probe())
+
+    d = sc.Decl(dirs=[str(parent), str(root)])
+    entries = sc.build_plan(d, repos=[], probe=wg.Probe())
+    assert {(Path(e.path).name, e.verdict) for e in entries} == {
+        (root.name, "KEEP-MARKED"), (side_marker.name, "KEEP-MARKED"),
+        (removable.name, "REMOVE")}
+    sc.apply_plan(entries, d, guarded_rm=env["rm"], fetch=False)
+
+    assert side_marker.read_text() == "load-bearing root"
+    assert sentinel.read_text() == "preserve exact bytes"
+    assert root.exists()
+    assert not removable.exists()
+    assert (env["trash"] / removable.name).read_text() == "remove unrelated sibling"
+
+
 def test_standalone_clone_with_unpushed_commits_is_kept(env):
     clone = env["scratch"] / "clone"
     git(env["tmp"], "clone", "-q", str(env["tmp"] / "origin.git"), str(clone))

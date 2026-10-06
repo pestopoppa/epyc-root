@@ -27,7 +27,9 @@ WHAT IS REMOVED. Each top-level entry under a declared dir, and each path a work
     worktree the gate refused.
   KEEP markers: `.epyc-keep` / `.epyc-load-bearing` / `KEEP` / `LOAD-BEARING` inside a dir, or a
   sibling `<name>.epyc-keep` file next to a plain file; for a worktree prefer
-  `git -C <repo> worktree lock --reason "load-bearing: <who>" <path>`. A marker should say WHY.
+  `git -C <repo> worktree lock --reason "load-bearing: <who>" <path>`. A marker should say WHY. A
+  marked declared root is one `KEEP-MARKED` entry; its descendants, marker file and any candidate
+  ancestor containing it are preserved, while unrelated siblings retain their own classifications.
   An emptied declared dir is removed last (rmdir only).
 
 References from INSIDE the declared roots do not keep a sibling: the whole root is being cleaned,
@@ -164,6 +166,25 @@ def _under(src: str, path: str) -> bool:
     return src == p or src.startswith(p + "/")
 
 
+def _declared_keep_roots(dirs: list[str]) -> list[tuple[str, str, str, str]]:
+    """Declared directory roots and their marker paths, all resolved for safe containment checks."""
+    roots = []
+    for d in dirs:
+        marker = _keep_marker(d) if os.path.isdir(d) else None
+        if marker:
+            roots.append((os.path.realpath(d), os.path.realpath(marker), marker, d))
+    return roots
+
+
+def _declared_keep_reason(path: str, roots: list[tuple[str, str, str, str]]) -> str | None:
+    """A declared marked root protects itself, descendants, its marker, and removal ancestors."""
+    real = os.path.realpath(path)
+    for root, marker_real, marker, _ in roots:
+        if real == marker_real or _under(real, root) or _under(root, real):
+            return marker
+    return None
+
+
 def _registered_worktrees(repos: list[str]) -> dict[str, wg.Worktree]:
     out = {}
     for repo in repos:
@@ -195,13 +216,25 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
     # the gate sees only OUTSIDE references; in-root ones are resolved by the fixpoint below
     outside_probe = wg.Probe(cwds=probe.cwds, proc_refs=probe.proc_refs, complete=probe.complete,
                              refs={k: [s for s in v if _outside(s, roots)] for k, v in probe.refs.items()})
-    cands: list[str] = []
+    marked_roots = _declared_keep_roots(decl.dirs)
+    marked_root_paths = {root for root, _, _, _ in marked_roots}
+    cands: list[str] = [path for root, _, _, path in marked_roots
+                        if not any(root != parent and _under(root, parent)
+                                   for parent in marked_root_paths)]
     for g in decl.worktree_globs:
-        cands += sorted(glob.glob(g))
+        for p in sorted(glob.glob(g)):
+            real = os.path.realpath(p)
+            if any(_under(real, root) or real == marker_real
+                   for root, marker_real, _, _ in marked_roots):
+                continue
+            cands.append(p)
     for d in decl.dirs:
         if not os.path.isdir(d):
             continue
-        if os.path.realpath(d) in wts or os.path.exists(os.path.join(d, ".git")):
+        real = os.path.realpath(d)
+        if any(_under(real, marked_root) for marked_root in marked_root_paths):
+            continue                   # a marked declared root coalesces overlapping roots/globs
+        if real in wts or os.path.exists(os.path.join(d, ".git")):
             cands.append(d)          # a checkout is ONE entry — never enumerate (trash) its files
         else:
             cands += sorted(os.path.join(d, c) for c in os.listdir(d))
@@ -213,15 +246,22 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
             continue
         seen.add(real)
         if real in wts:
+            e = Entry(p, "worktree")
+        else:
+            e = Entry(p, "dir" if os.path.isdir(p) and not os.path.islink(p) else "file")
+        marker = _declared_keep_reason(p, marked_roots)
+        if marker:
+            e.verdict, e.reason = "KEEP-MARKED", marker
+            entries.append(e)
+            continue
+        if real in wts:
             wt = wts[real]
             wg.classify(wt, base=base, min_idle_days=0.0, probe=outside_probe,
                         canonical_roots=["/workspace", f"{wg.LLM}/epyc-root"], now=_t.time())
-            e = Entry(p, "worktree")
             e.verdict, e.reason = ("REMOVE", wt.reasons[0]) if wt.verdict == wg.REMOVABLE else \
                 (f"KEEP-{wt.verdict}", "; ".join(wt.reasons))
             entries.append(e)
             continue
-        e = Entry(p, "dir" if os.path.isdir(p) and not os.path.islink(p) else "file")
         gitp = os.path.join(p, ".git")
         if os.path.isfile(gitp):
             e.verdict, e.reason = "KEEP-UNVERIFIABLE", "a worktree of a repo outside the known set"
@@ -277,9 +317,18 @@ def build_plan(decl: Decl, *, repos: list[str] | None = None, probe: wg.Probe | 
 
 def apply_plan(entries: list[Entry], decl: Decl, *, base: str = wg.DEFAULT_BASE,
                guarded_rm: Path = GUARDED_RM, fetch: bool = True) -> list[Entry]:
-    """Execute a plan. Every removal is re-checked against a FRESH probe first (a process may have
-    started since the plan); references from entries that are themselves being removed are
-    dropped from that probe, since they go away in the same pass."""
+    """Execute a plan, rechecking declared-root markers before applying it.
+
+    Every removal is also re-checked against a FRESH probe (a process may have started since the
+    plan); references from entries that are themselves being removed are dropped from that probe,
+    since they go away in the same pass. The marker check protects the plan/apply boundary; it is
+    not an atomic guarantee against a marker created after that check.
+    """
+    marked_roots = _declared_keep_roots(decl.dirs)
+    for e in entries:
+        marker = _declared_keep_reason(e.path, marked_roots)
+        if marker:
+            e.verdict, e.reason, e.result = "KEEP-MARKED", marker, "kept (declared root is marked)"
     fresh = wg.gather_probe()
     dying = [e.path for e in entries if e.verdict.startswith("REMOVE")]
     probe = wg.Probe(cwds=fresh.cwds, proc_refs=fresh.proc_refs, complete=fresh.complete,
