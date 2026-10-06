@@ -650,10 +650,7 @@ its comparator on 2 of 4 tasks there, so no frontier API is required. Cite `inta
 
 ### Research Intake Update — 2026-09-07
 
-- [ ] **AP-51 — Diff THREE JIT admission rules against `ParetoArchive`.** Eq. 4 (reward strict AND one
-      efficiency dimension strict); Stage-III bank retention (reward ≥ frontier AND one dimension
-      strict); Eq. 6's `I[r ≥ b_r]` gating. Pure design comparison over published equations,
-      independent of that source's adverse empirical findings. `intake-1320#02`. Zero compute.
+- [x] **AP-51 — Diff THREE JIT admission rules against `ParetoArchive`.** ✅ 2026-10-06 MAIN accepted [the equation-by-equation comparison](../../docs/reference/ni08-admission-and-skill-granularity.md#ap-51-three-rules-act-at-different-stages), with current tier-local task-rate axes verified. Training-pair construction, bank retention and reward channels remain distinct; no code/gate or efficacy claim. `intake-1320#02`.
 
 - [ ] **AP-52 — STANDING CAUTION against the frozen-frontier-proposer contract.** Two prompted
       frontier editors reading real failure traces produced **net negative** deltas over 1,270

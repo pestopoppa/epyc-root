@@ -34,3 +34,8 @@ MAIN accepted source77704fe/recipe8b5be9 native37518161327 TRUE81/81, existing s
 ## Harness design boundary
 
 MAIN accepted corrected HIL1..5 proposal cbd4f65d after verifying SafetyGate.check (corrected the draft method name), current journal/import seams, SC86 native writer and shared measurement governance. Five actual design checkbox flips; architecture A/B/C remains undecided. B API extraction rough4–9days excludes loopdriver/objective instruments; C1–2day sketch is incomplete/nondecision-capable. Filed exact HIL1 table, durable objective/guard/suite plan, VB-HIL-WRITE row/task, HIL6 operator-dependent next source phase and OP-HIL4. AP-ME diagnostic source773bb9 proposal also reviewed; five correctness/performance fixes present,11 unexecuted native synthetic cases; prospective source/task filed before hosted capture. No project imports, tests, inference, live loop or policy amendment. NI08 eleven scoped completions (ten existing flips+one added audit subtask); newly screened work continues.
+
+
+## Admission and granularity design boundary
+
+MAIN reviewed cheap proposal against both original papers and actual APP tier/archive/gate/skill APIs; corrected live axis from legacy “speed” to corrected questions/eval-wall-hour, distinguished retry cases and removed unsupported universal bias-correction language. AP51/EV10d/EV10f close (3 flips),14 scopedNI08 completions/13 existingflips+1 addedaudit. Durable source comparison and EV10a caveat filed; no tests/inference/admission changes. ETVT2 report-only implementation preparation continues.

@@ -3590,3 +3590,8 @@ The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-2026
 ### Harness-loop design can finish before live tuning
 
 [Reviewed HIL design](../docs/design/harness-improvement-loop-design-20261006.md) completes feature-home/objective/API planning without crossing P0.4 or human measurement-policy boundaries. Several substrate APIs already exist; extract narrow pure guard interfaces rather than duplicating controllers. Architecture recommendation is not approval. Prospective per-feature/per-arm evidence joins the existing SC86 shell identity instead of duplicating its metrics; native diagnostic signatures/counts remain ungraded metadata, and old prose cannot acquire machine identity on read.
+
+
+### Compare decision layers before transferring a rule
+
+[Admission/granularity review](../docs/reference/ni08-admission-and-skill-granularity.md) distinguishes proposal-training reward, preference-pair construction, bank retention, measured-result safety verdict and tier-local frontier admission. Read the current objective builder: old “speed” comments can obscure a questions-per-hour axis. A suite-level negative guard does not establish task-level regression coverage. No policy changes follow from this descriptive comparison.

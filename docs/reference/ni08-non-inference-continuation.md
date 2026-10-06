@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **eleven completed scoped tasks; AP failure-diagnostic source validation and additional source/design work continue**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **fourteen completed scoped tasks; AP failure-diagnostic source validation and additional source/design work continue**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -23,3 +23,5 @@ NIB2-77-AUDIT is accepted: [33-row snapshot](../../artifacts/ni08/nib77-ownershi
 VB-HOST-SUPERVISION-ACTIVATION source wiring is complete; [native acceptance](../../artifacts/ni08/host-native-receipt-source-20261006/README.md). Operational receipts remain ungraded, actual future host activation is not claimed, and failed predecessor76/81 stays immutable. Sixth scoped NI08completion (five actual existing checkbox flips plus one newly completed scoped audit subtask). HIL1..5 proposals and AP-ME4/6 diagnostics are under MAIN review, not yet completed.
 
 HIL1..5 design deliverables are accepted and filed, adding five existing checkbox flips (eleven scoped NI08 completions, ten flips plus one added audit subtask). [Design/package](../design/harness-improvement-loop-design-20261006.md): eight home classifications, feature axes/protocol boundaries, narrowed 4–9-day API estimate, explicit A/B/C choice and prospective VB-HIL-WRITE filing. Architecture selection and runtime gates remain open. Source screening enumerated all178 indexed handoffs/2,474 unchecked lines before these closures; enumeration is not whole-backlog eligibility proof. AP-ME4/6 source proposal passed MAIN review and goes to isolated CI; VB-AP-ME-DIAGNOSTICS is filed before capture.
+
+AP51/EV10d/EV10f design/docs are accepted: [current-source distinctions](ni08-admission-and-skill-granularity.md). Three existing flips bring NI08 to14 scoped completions (13 flips+1 added audit subtask), with report-only and record/contract work continuing.
