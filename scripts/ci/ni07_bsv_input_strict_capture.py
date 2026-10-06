@@ -10,7 +10,7 @@ import sys
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "8ba64dbe1929ff269418e7de50384108a5ff120f"
+APP_PIN = "301df359719fe56d6a7d06bb5fe4474c33b6cb33"
 SELECTION = "tests/unit/test_bsv_paired_report.py"
 CONFIG_NAMES = {
     "pyproject.toml",
