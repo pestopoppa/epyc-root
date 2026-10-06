@@ -8,6 +8,8 @@
 #   --all                install both lines. The hub line runs a PINNED copy of
 #                        hub_supervisor.sh (OP-9 option B, operator 2026-09-17; see below)
 #   --pin-sha SHA        pin this commit instead of origin/main (it must contain the files)
+#   --capture-activation opt in to prospective dependency-only native receipts (--all only).
+#                        Requires this regular source at its canonical path; runs as node.
 #   --dry-run            show the pin and the resulting crontab, and change nothing
 #                        (no fetch, no pin directory, no crontab write)
 #
@@ -59,12 +61,14 @@ LINE_FW="*/5 * * * * docker exec -d -u node -e PATH=/opt/rocm/bin:/usr/local/bin
 
 mode=""
 dry=0
+capture_activation=0
 pin_sha=""
 while (( $# )); do
   case "$1" in
     --fleet-watch-only) mode="fw" ;;
     --all) mode="all" ;;
     --dry-run) dry=1 ;;
+    --capture-activation) capture_activation=1 ;;
     --pin-sha)
       shift
       pin_sha="${1:-}"
@@ -73,9 +77,17 @@ while (( $# )); do
   esac
   shift
 done
-[[ -n "$mode" ]] || { echo "usage: $0 --fleet-watch-only|--all [--pin-sha SHA] [--dry-run]" >&2; exit 2; }
+[[ -n "$mode" ]] || { echo "usage: $0 --fleet-watch-only|--all [--pin-sha SHA] [--dry-run] [--capture-activation]" >&2; exit 2; }
 
 in_ctr() { docker exec -u node "$CONTAINER" "$@"; }
+
+# Legacy process-substitution/outside-tree callers do not import or write receipt state.
+installer_source=""
+installer_sha256=""
+install_id=""
+if (( capture_activation )) && [[ "$mode" != "all" ]]; then
+  echo "ERROR: --capture-activation requires --all" >&2; exit 2
+fi
 
 # Preflight: host, docker, container, scripts. SUPERVISION_CRON_ALLOW_CONTAINER=1 exists
 # only for the regression test, which runs with fake docker and crontab shims.
@@ -88,6 +100,21 @@ running="$(docker inspect -f '{{.State.Running}}' "$CONTAINER" 2>/dev/null || tr
 [[ "$running" == "true" ]] || { echo "ERROR: container ${CONTAINER} is not running" >&2; exit 3; }
 in_ctr test -x "${ROOT}/scripts/coordination/fleet_watch.sh" \
   || { echo "ERROR: fleet_watch.sh not executable inside ${CONTAINER}" >&2; exit 3; }
+
+# Read-only capture checks precede fetch, pin directories, backups and cron mutation.
+# The same node account writes receipts/markers and is the future tick reader.
+if (( capture_activation && ! dry )); then
+  installer_source="${BASH_SOURCE[0]}"
+  [[ "$installer_source" == /* ]] || installer_source="$PWD/$installer_source"
+  [[ "$installer_source" == "${ROOT}/scripts/operator/install_supervision_cron_20260916.sh" &&
+     -f "$installer_source" && ! -L "$installer_source" ]] \
+    || { echo "ERROR: capture requires the regular canonical installer source; unchanged" >&2; exit 3; }
+  installer_sha256="$(sha256sum "$installer_source" | awk '{print $1}')"
+  install_id="$(in_ctr python3 "${ROOT}/scripts/vidya/adapters/host_supervision_activation.py" preflight \
+    --root "$ROOT" --installer "$installer_source" --installer-sha256 "$installer_sha256" \
+    --registry "${ROOT}/scripts/coordination/observer_registry.json" --backup-dir "$BACKUP_DIR")" \
+    || { echo "ERROR: activation capture preflight refused; unchanged" >&2; exit 3; }
+fi
 
 LINE_HUB=""
 if [[ "$mode" == "all" ]]; then
@@ -195,8 +222,35 @@ if (( dry )); then
   exit 0
 fi
 
-backup="${BACKUP_DIR}/crontab.bak-$(date -u +%Y%m%dT%H%M%SZ)"
-printf '%s\n' "$current" > "$backup"
+if (( capture_activation )); then
+  backup="${BACKUP_DIR}/crontab.bak-$(date -u +%Y%m%dT%H%M%SZ)-${install_id}"
+  if ! in_ctr bash -c 'set -euo pipefail; set -o noclobber; printf "%s\n" "$2" > "$1"' _ "$backup" "$current"; then
+    echo "ERROR: cannot preserve previous crontab; crontab unchanged" >&2; exit 4
+  fi
+else
+  backup="${BACKUP_DIR}/crontab.bak-$(date -u +%Y%m%dT%H%M%SZ)"
+  printf '%s\n' "$current" > "$backup"
+fi
 printf '%s\n' "$new" | crontab -
 echo "installed; previous crontab saved to ${backup}"
-crontab -l | grep -F -e "$MARK_FW" -e "$MARK_HUB"
+if (( ! capture_activation )); then
+  crontab -l | grep -F -e "$MARK_FW" -e "$MARK_HUB"
+  exit 0
+fi
+if ! selected="$(crontab -l | grep -F -e "$MARK_FW" -e "$MARK_HUB")"; then
+  echo "INSTALLATION MAY HAVE BEEN APPLIED; selected cron readback failed. Cron was not rolled back; preserve this installer report and inspect before retrying." >&2
+  exit 5
+fi
+printf '%s\n' "$selected"
+mapfile -t selected_entries <<<"$selected"
+capture=(python3 "${ROOT}/scripts/vidya/adapters/host_supervision_activation.py" capture-install
+  --root "$ROOT" --install-id "$install_id" --supervisor-pin "$pin_sha"
+  --installer "$installer_source" --installer-sha256 "$installer_sha256"
+  --registry "${ROOT}/scripts/coordination/observer_registry.json" --backup "$backup")
+for entry in "${selected_entries[@]}"; do
+  capture+=(--selected-cron-entry "$entry")
+done
+if ! in_ctr "${capture[@]}"; then
+  echo "INSTALLATION SUCCEEDED; activation receipt capture failed. Cron was not rolled back; preserve this installer report and inspect before retrying." >&2
+  exit 5
+fi

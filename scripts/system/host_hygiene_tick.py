@@ -48,8 +48,11 @@ WHAT ONE TICK DOES.
   DEFER. It is re-checked between heavy steps, so a window that opens mid-run stops the run.
   A heavy phase starved for 3 days raises `host-hygiene-heavy-starved`.
 
-It deletes nothing. Its only side effects: files under logs/hygiene/, alarm_channel.py calls, and
-relaunching an opted-in daemon that is down.
+The default tick deletes nothing. Its side effects are files under logs/hygiene/,
+alarm_channel.py calls, and relaunching an opted-in daemon that is down. A prospective
+HYGIENE_OPENCODE_EVENTS=1 duty additionally requires an owner-reviewed scheduled registry
+handover. It invokes the existing event-only reaper once every 1800 seconds, independently
+of daily heavy work and behind the CPU-region gate. See opencode-event-duty-handover.md.
 
 Usage:  host_hygiene_tick.py tick [--force-heavy] [--dry-run]   # --dry-run: print alarms, no relaunch
         host_hygiene_tick.py status                             # print state.json
@@ -60,8 +63,11 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import fcntl
+import importlib.util
 import json
+import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -69,6 +75,7 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+CODE_ROOT = HERE.parent.parent
 ROOT = Path(os.environ.get("HYGIENE_ROOT") or HERE.parent.parent)
 STATE_DIR = Path(os.environ.get("HYGIENE_STATE_DIR") or ROOT / "logs" / "hygiene")
 LLM = "/mnt/raid0/llm"
@@ -99,6 +106,11 @@ ALARM = ROOT / "scripts" / "coordination" / "alarm_channel.py"
 REGISTRY = ROOT / "scripts" / "coordination" / "observer_registry.json"
 LOG_MAX_BYTES = 5 * 2**20
 HISTORY_KEEP = 14
+# Cadence is the inherited 1800-second invariant; timeout is a subsystem tunable.
+EVENT_INTERVAL_S = 1800
+EVENT_TIMEOUT_S = 900
+EVENT_ALARM = "opencode-event-duty"
+EVENT_CAPABILITY = "LR8_ONCE_STATUS_V1"
 
 GROWERS = [
     "/home/node/.codex",
@@ -168,6 +180,29 @@ class Tick:
             pass
         self.state["heartbeat_at"] = now_iso()
         write_json(self.state_path, self.state)
+        self.capture_activation_heartbeat()
+
+    def capture_activation_heartbeat(self) -> None:
+        """Optional future installer marker only; never capture legacy/default ticks."""
+        if self.dry_run:
+            return
+        pending = ROOT / "logs/hygiene/host-supervision-activation/pending"
+        try:
+            if not any(p.is_file() and not p.is_symlink() for p in pending.glob("*.json")):
+                return  # No adapter import, lock, sync, native write or marker consumption.
+            spec = importlib.util.spec_from_file_location(
+                "_epyc_host_supervision_activation",
+                CODE_ROOT / "scripts/vidya/adapters/host_supervision_activation.py")
+            if spec is None or spec.loader is None:
+                raise ImportError("published activation adapter is unavailable")
+            adapter = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(adapter)
+            receipts = adapter.capture_pending_heartbeat(ROOT, self.state_path,
+                                                        self.state["heartbeat_at"])
+            if receipts:
+                self.log(f"activation-heartbeat: captured {len(receipts)} operational receipt(s)")
+        except Exception as exc:  # A failed optional receipt cannot change tick liveness.
+            self.log(f"activation-heartbeat capture failed; preserve pending marker: {exc}")
 
     # -- alarms (emit-once lives in alarm_channel.py; we only track what WE raised)
     def raise_alarm(self, key: str, severity: str, message: str, evidence: dict | None = None) -> None:
@@ -326,6 +361,9 @@ def keeper(t: Tick, registry_path: Path = REGISTRY, root: Path = ROOT) -> None:
         return
     for row in reg.get("observers", []):
         rt = row.get("runtime") or {}
+        # Scheduled rows have no daemon to relaunch, including a malformed mixed handover.
+        if rt.get("mode") == "scheduled":
+            continue
         if not rt.get("relaunch_if_down"):
             continue
         rid = row["id"]
@@ -403,6 +441,129 @@ def backups(t: Tick, status: Path = BACKUP_STATUS) -> None:
                       "(It silently skipped 2026-08-03..10-03.)")
     else:
         t.clear_alarm(key, "claude-backups fresh")
+
+
+def _event_daemon_copies(proc_root: Path = Path("/proc")) -> list[int]:
+    """Strict read-only identity scan. Unreadable live entries are uncertainty.
+
+    This is a preflight, not an atomic exclusion of the unchanged daemon. The
+    owning session must stop that daemon and verify its PID before handover.
+    """
+    hits = []
+    inspected = 0
+    for entry in proc_root.iterdir():
+        if not entry.name.isdigit() or int(entry.name) == os.getpid():
+            continue
+        try:
+            argv = (entry / "cmdline").read_bytes().split(b"\0")
+        except OSError:
+            if entry.exists():
+                raise
+            continue  # exited during the read
+        inspected += 1
+        if any(Path(a.decode(errors="replace")).name == "opencode_event_reaper.sh"
+               for a in argv[:3] if a):
+            hits.append(int(entry.name))
+    if not inspected:
+        raise OSError("process scan inspected no other process")
+    return hits
+
+
+def event_duty(t: Tick, registry_path: Path = REGISTRY, root: Path = ROOT) -> None:
+    """Inactive by default; the daily heavy phase never controls event cadence."""
+    if os.environ.get("HYGIENE_OPENCODE_EVENTS") != "1":
+        return
+    def refuse(message: str) -> None:
+        t.raise_alarm(EVENT_ALARM, "warning", message)
+
+    try:
+        reg = json.loads(registry_path.read_text())
+        rows = [r for r in reg["observers"] if r.get("id") == "opencode_event_reaper"]
+        if len(rows) != 1:
+            raise ValueError("expected exactly one opencode reaper row")
+        row = rows[0]
+        rt = row["runtime"]
+        census = _load_census()
+        if census.check_runtime_well_formed({"observers": [row]}):
+            raise ValueError("invalid scheduled runtime shape")
+        expected_log = str(t.state_dir / "opencode_event_reaper.log")
+        if (rt.get("mode") != "scheduled" or rt.get("scheduler") != "host_hygiene_tick"
+                or rt.get("restart_on_stale") is not False
+                or rt.get("relaunch_if_down") is not False
+                or rt.get("log") != expected_log or rt.get("start_argv")
+                or row.get("script") != "scripts/system/opencode_event_reaper.sh"):
+            raise ValueError("scheduled owner handover is incomplete")
+        if not math.isfinite(rt["max_age_s"]):
+            raise ValueError("scheduled log freshness limit is not finite")
+        script = root / row["script"]
+        with script.open() as source:
+            capability_source = source.read(262144)
+        if EVENT_CAPABILITY not in capability_source:
+            raise ValueError("deployed canonical reaper lacks once-status capability")
+    except (OSError, ValueError, KeyError, TypeError, AttributeError, ImportError, OverflowError) as exc:
+        refuse(f"event-duty handover refused: {exc}")
+        return
+    last = t.state.get("opencode_event_last_attempt_epoch")
+    if last is not None:
+        if (not isinstance(last, (int, float)) or isinstance(last, bool)
+                or last < 0 or last > time.time() or not math.isfinite(last)):
+            refuse("event-duty cadence state is invalid or in the future")
+            return
+        if time.time() - last < EVENT_INTERVAL_S:
+            return
+    try:
+        copies = _event_daemon_copies()
+    except OSError as exc:
+        refuse(f"event-duty daemon observation is blind: {exc}")
+        return
+    if copies:
+        refuse(f"event-duty daemon is still present: pids={copies}; owner handover required")
+        return
+    if t.dry_run:
+        t.log("event-duty DRY-RUN would run once-status after the CPU gate")
+        return
+    # Immediately before execution; a closed gate neither consumes cadence nor clears alarms.
+    opened, why = heavy_gate()
+    if not opened:
+        t.log(f"event-duty deferred: {why}")
+        return
+    t.state["opencode_event_last_attempt_epoch"] = time.time()
+    env = dict(os.environ, EPYC_ROOT=str(root),
+               REAPER_ONCE_LOCK=str(t.state_dir / ".opencode-event.lock"))
+    cp = run(["/bin/bash", str(script), "once-status"], timeout=EVENT_TIMEOUT_S, env=env)
+    result = {"at": now_iso(), "state": "failed", "returncode": None}
+    if cp is not None:
+        result["returncode"] = cp.returncode
+        # Bounded, single terminal marker; reject missing, duplicate or contradictory output.
+        output = cp.stdout[-8192:]
+        matches = re.findall(r"^LR8_ONCE_STATUS_V1 state=(present|absent|unobservable) "
+                             r"prune_rc=([0-9]{1,3})$", output, re.M)
+        if (len(cp.stdout) <= 8192 and len(matches) == 1
+                and output.rstrip().splitlines()[-1]
+                == f"{EVENT_CAPABILITY} state={matches[0][0]} prune_rc={matches[0][1]}"):
+            state, prune_rc = matches[0]
+            if int(prune_rc) <= 255 and cp.returncode == int(prune_rc) == 0:
+                result["state"] = state
+        result["output_tail"] = output[-2000:]
+    t.state["opencode_event_result"] = result
+    result_path = t.state_dir / "opencode_event_result.json"
+    try:
+        write_json(result_path, result)
+        # Atomic replacement: failed writes cannot freshen a partially written census log.
+        if result["state"] != "failed":
+            write_json(Path(expected_log), result)
+    except OSError as exc:
+        result["state"] = "failed"
+        result["storage_error"] = str(exc)
+        t.log(f"event-duty result/log write failed: {exc}")
+        try:
+            write_json(result_path, result)
+        except OSError as record_exc:
+            t.log(f"event-duty failure record write failed: {record_exc}")
+    if result["state"] in ("failed", "unobservable"):
+        refuse(f"event-duty {result['state']}: {result}")
+    else:
+        t.clear_alarm(EVENT_ALARM, f"event-duty confirmed {result['state']}")
 
 
 # --------------------------------------------------------------------------- heavy gate
@@ -587,6 +748,7 @@ def tick(force_heavy: bool = False, dry_run: bool = False, state_dir: Path = STA
         disk_free(t)
         keeper(t)
         backups(t)
+        event_duty(t)
         heavy(t, force=force_heavy)
     finally:
         t.flush()
