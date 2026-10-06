@@ -41,6 +41,28 @@ NODEIDS = (
     "tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift",
     "tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority",
 )
+APP_NODEIDS = (
+    "tests/test_analysis_report_provenance.py::test_mf_vbs_manifest_hashes_the_same_bytes_it_parsed",
+    "tests/test_analysis_report_provenance.py::test_eval_discriminability_manifest_hashes_the_same_bytes_it_parsed",
+    "tests/test_analysis_report_provenance.py::test_mf_vbs_edited_call_bearing_numerator_uses_intersection",
+    "tests/test_analysis_report_provenance.py::test_mf_vbs_zero_denominators_are_unknown_json_values",
+    "tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_eval]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_mf]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_eval]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_mf]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_eval]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_mf]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_eval]",
+    "tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_mf]",
+    "tests/test_eval_suite_discriminability.py::test_error_rows_excluded_from_brittleness_flip",
+    "tests/test_eval_suite_discriminability.py::test_error_dominated_run_excluded_from_run_spread",
+    "tests/test_eval_suite_discriminability.py::test_error_dominated_gate_is_configurable",
+    "tests/test_eval_suite_discriminability.py::test_brittleness_unmeasured_single_run",
+    "tests/test_eval_suite_discriminability.py::test_cli_main_writes_report",
+    "tests/unit/test_stat_tests.py::test_wilson_degenerate_denominator",
+    "tests/unit/test_stat_tests.py::test_wilson_published_values",
+    "tests/unit/test_stat_tests.py::test_calibration_metric_bundle_concrete_values",
+)
 
 ROOT_READS = (
     "scripts/ci/ni08_run_hosted_capture.py",
@@ -76,6 +98,10 @@ APP_READS = (
     "src/llm_primitives/stat_tests.py",
     "src/llm_primitives/__init__.py",
     "uv.lock",
+    "tests/test_analysis_report_provenance.py",
+    "tests/test_analysis_report_snapshot_sealing.py",
+    "tests/test_eval_suite_discriminability.py",
+    "tests/unit/test_stat_tests.py",
 )
 
 
@@ -145,47 +171,74 @@ def main() -> int:
     install_log, _environment_sha = _install_locked_minimal_set(capture_root)
     manifest = _context_manifest(app_root, capture_root)
 
+    os.environ.update({"PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1",
+                       "PYTHONDONTWRITEBYTECODE": "1",
+                       "PYTHONHASHSEED": "0",
+                       "PYTHONUNBUFFERED": "1"})
+    os.environ["EPYC_ORCHESTRATOR_SOURCE_ROOT"] = str(app_root)
+    os.environ["NI08_NATIVE_FIXTURE_CAPTURE_DIR"] = str(ROOT / "ni08-native-fixtures")
+    reads = ([ROOT / name for name in ROOT_READS] + [app_root / name for name in APP_READS]
+             + [manifest, install_log, capture_root / "environment.json"])
+    carrier = _load_native_carrier()
+
+    app_junit = capture_root / "app-original-junit.xml"
+    app_native_output = capture_root / "app-native"
+    app_argv = [sys.executable, "-m", "pytest", "-q", f"--junitxml={app_junit}", *APP_NODEIDS]
+    app_record = carrier.capture_fixture_execution(
+        argv=app_argv, cwd=app_root, junit=app_junit, output=app_native_output,
+        repositories={"root": str(ROOT), "app": str(app_root)},
+        read_paths=reads, selections=list(APP_NODEIDS))
+
     junit = capture_root / "original-junit.xml"
     native_output = capture_root / "native"
     argv = [sys.executable, "-m", "pytest", "-q", f"--junitxml={junit}", *NODEIDS]
-    reads = ([ROOT / name for name in ROOT_READS] + [app_root / name for name in APP_READS]
-             + [manifest, install_log, capture_root / "environment.json"])
-    os.environ["EPYC_ORCHESTRATOR_SOURCE_ROOT"] = str(app_root)
-    os.environ["NI08_NATIVE_FIXTURE_CAPTURE_DIR"] = str(ROOT / "ni08-native-fixtures")
-    carrier = _load_native_carrier()
     record = carrier.capture_fixture_execution(
         argv=argv, cwd=ROOT, junit=junit, output=native_output,
         repositories={"root": str(ROOT), "app": str(app_root)},
         read_paths=reads, selections=list(NODEIDS),
         generated_output_paths=["ni08-native-fixtures/mf-bundle.zip",
                                 "ni08-native-fixtures/eval-bundle.zip"])
-    cases = record.get("summary", {}).get("cases", [])
-    expected_names = [node.rsplit("::", 1)[1] for node in NODEIDS]
-    actual_names = [case["name"] for case in cases]
-    counts = record.get("summary", {}).get("counts", {})
-    exact_cases = (len(cases) == len(NODEIDS) and sorted(actual_names) == sorted(expected_names)
-                   and counts == {"passed": len(NODEIDS), "failure": 0, "error": 0,
-                                  "skipped": 0, "collected": len(NODEIDS),
-                                  "executed": len(NODEIDS)})
+    def exact_cases(capture: dict, selections: tuple[str, ...]) -> bool:
+        cases = capture.get("summary", {}).get("cases", [])
+        expected_names = [node.rsplit("::", 1)[1] for node in selections]
+        actual_names = [case["name"] for case in cases]
+        counts = capture.get("summary", {}).get("counts", {})
+        return (len(cases) == len(selections) and sorted(actual_names) == sorted(expected_names)
+                and counts == {"passed": len(selections), "failure": 0, "error": 0,
+                               "skipped": 0, "collected": len(selections),
+                               "executed": len(selections)})
+
+    app_exact = exact_cases(app_record, APP_NODEIDS)
+    root_exact = exact_cases(record, NODEIDS)
     validation = {"schema": "epyc.ni08.hosted_validation/v1",
-                  "receipt_sha256": record["receipt_sha256"],
-                  "fixture_execution_conformant": record["fixture_execution_conformant"],
-                  "exact_selected_cases": exact_cases, "case_count": len(cases)}
-    if record["fixture_execution_conformant"] is True and exact_cases:
+                  "app_receipt_sha256": app_record["receipt_sha256"],
+                  "app_fixture_execution_conformant": app_record["fixture_execution_conformant"],
+                  "app_exact_selected_cases": app_exact,
+                  "app_case_count": len(app_record.get("summary", {}).get("cases", [])),
+                  "root_receipt_sha256": record["receipt_sha256"],
+                  "root_fixture_execution_conformant": record["fixture_execution_conformant"],
+                  "root_exact_selected_cases": root_exact,
+                  "root_case_count": len(record.get("summary", {}).get("cases", []))}
+    captures_ok = (app_record["fixture_execution_conformant"] is True and app_exact
+                   and record["fixture_execution_conformant"] is True and root_exact)
+    if captures_ok:
         sys.path.insert(0, str(ROOT))
         sys.path.insert(0, str(ROOT / "scripts/vidya"))
         from adapters.ci_conformance import native_rows, project_ci_conformance
         from claim_tuple import grade
-        native = native_rows(native_output / "receipt.json")
-        if len(native) != 1:
-            raise RuntimeError("conformant native receipt did not yield exactly one tuple")
-        q, t, _reasons = grade(project_ci_conformance(native[0]))
-        validation["shared_verifier_grade"] = {"Q": q, "T": t}
-        if (q, t) != ("Judged", "Located"):
-            raise RuntimeError("fixture receipt grade differs from existing verifier ceiling")
+        grades = {}
+        for label, output in (("app", app_native_output), ("root", native_output)):
+            native = native_rows(output / "receipt.json")
+            if len(native) != 1:
+                raise RuntimeError(f"{label} native receipt did not yield exactly one tuple")
+            q, t, _reasons = grade(project_ci_conformance(native[0]))
+            grades[label] = {"Q": q, "T": t}
+            if (q, t) != ("Judged", "Located"):
+                raise RuntimeError(f"{label} fixture receipt grade differs from existing ceiling")
+        validation["shared_verifier_grades"] = grades
     _write_once(capture_root / "validation.json",
                 (json.dumps(validation, sort_keys=True, separators=(",", ":")) + "\n").encode())
-    if record["fixture_execution_conformant"] is not True or not exact_cases:
+    if not captures_ok:
         raise SystemExit("native fixture capture is nonconformant; original artifacts retained")
     return 0
 

@@ -17,11 +17,11 @@ changes are private. The APP producer and package source hashes are:
 | `src/llm_primitives/__init__.py` | `cdee7bcf079e3023de6da551cd376e9e6db339d0ac52853eba054e3d3d6ccff9` |
 | `uv.lock` | `7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3` |
 
-ROOT is the isolated proposal at `f82f9b48c589d48703c9615f44e2016705899d12` before this recipe
-is added. It descends from current pinned ROOT `9955bd4a35dfe002c82e02f8bade0b8dcdcbf09d`; the
-private ancestors include the SC80 source commits `b294c9698f2f328a3fb028dac085735955ac9b57`
-and `f82f9b48c589d48703c9615f44e2016705899d12`. Do not substitute the ignored ledger or other
-workspace state.
+ROOT is the isolated proposal branch `codex/ni08-vbs1-evaldisc-wire-root-20261006`; its current
+reviewed source base is `d60228b9f61f81c3a5713074c8f6f8bbf2fe6a40`. It descends from the current
+published ROOT line and preserves the SC80 source corrections. The exact final ROOT capture commit
+and manifest digest are recorded in the capture's pre-dispatch source map; do not substitute the
+ignored ledger or other workspace state.
 
 The exact producer bytes above are loaded from an isolated temporary APP checkout by
 `test_analysis_producer_roundtrip.py`. The test verifies those bytes before import. It now pins
@@ -35,7 +35,8 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `915e0a089a3273d056c9efd5ce92e04f7d87badfe3462ea814c2a6e4443091de` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `4284fe4306c190e5c4c0d98545752ae83e8b6989811c62fdb60c888a22a4c77d` |
+| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `42ce7d77daf6bf6d404c5cf96be358157e073382f703a5859074b16e766712d2` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
 | `scripts/vidya/adapters/_analysis_report_provenance.py` | `15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e` |
@@ -58,6 +59,10 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 | `tests/vidya/test_citation_gate.py` | `48c2326df76b93828f7ef5680589b8616e0e33c53d5fadf50b67e83ef3e8d439` |
 | `tests/vidya/test_claim_tuple.py` | `93a01202da69951afd170d61f527abd7e21c52853d8f6c429ccf5265aa4b2a6b` |
 | `tests/vidya/test_ingest_sources.py` | `b8ba17a255997189b8119468c730b9830ff1d059da77e92148206deabfbd90d1` |
+| APP `tests/test_analysis_report_provenance.py` | `f9becce57813ff7bb04f8c74d46aec1e566f194be069f0343bbcff7324ece1be` |
+| APP `tests/test_analysis_report_snapshot_sealing.py` | `7a89576ec674bf94c2764f5bc997784a4abce736e8f2609c27d4b621820e423c` |
+| APP `tests/test_eval_suite_discriminability.py` | `9d2f4b78d1d288ea80a9f920c5d0764cad4b0060a56764dfd61e1b975ec5a591` |
+| APP `tests/unit/test_stat_tests.py` | `a512050a8fe09694ec058acaab66657dc80adca57a5f826aade8aa1a7db81850` |
 
 ## Minimal locked runner environment
 
@@ -85,7 +90,7 @@ fixture, grading and carrier files below.
 
 ## Bounded selected cases
 
-Run these exact, non-wildcard pytest node IDs; write JUnit and command output only under a fresh
+Run these exact, non-wildcard ROOT pytest node IDs; write JUnit and command output only under a fresh
 directory outside both checkouts:
 
 ```text
@@ -118,26 +123,63 @@ tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_a
 The two actual-writer tests call APP `load_trajectories` / `summarize` / `_seal_report` and
 `load_rows` / `build_report` / `_seal_report`, then ROOT `native_rows`, projection, CLI ingestion,
 and `claim_tuple.grade()`. They assert resulting ledger support grades equal the one shared grader.
-The other cases cover retained input/source snapshots, path escape, cached-native binding, external
+The other ROOT cases cover retained input/source snapshots, path escape, cached-native binding, external
 input locators, native denominators, report category/schema, citation bounds including a forged
 matching ledger ID, and CLI `unknown` exit 0 versus `dangling` exit 3. Expected collected identities
 are these 24 named node IDs; require exactly 24 collected, executed, and passed, with zero skips,
 failures, or errors.
 
+Run this exact APP test selection separately from the APP checkout to cover the actual writer and
+its existing controls:
+
+```text
+tests/test_analysis_report_provenance.py::test_mf_vbs_manifest_hashes_the_same_bytes_it_parsed
+tests/test_analysis_report_provenance.py::test_eval_discriminability_manifest_hashes_the_same_bytes_it_parsed
+tests/test_analysis_report_provenance.py::test_mf_vbs_edited_call_bearing_numerator_uses_intersection
+tests/test_analysis_report_provenance.py::test_mf_vbs_zero_denominators_are_unknown_json_values
+tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_eval]
+tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_mf]
+tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_eval]
+tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_mf]
+tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_eval]
+tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_mf]
+tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_eval]
+tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_mf]
+tests/test_eval_suite_discriminability.py::test_error_rows_excluded_from_brittleness_flip
+tests/test_eval_suite_discriminability.py::test_error_dominated_run_excluded_from_run_spread
+tests/test_eval_suite_discriminability.py::test_error_dominated_gate_is_configurable
+tests/test_eval_suite_discriminability.py::test_brittleness_unmeasured_single_run
+tests/test_eval_suite_discriminability.py::test_cli_main_writes_report
+tests/unit/test_stat_tests.py::test_wilson_degenerate_denominator
+tests/unit/test_stat_tests.py::test_wilson_published_values
+tests/unit/test_stat_tests.py::test_calibration_metric_bundle_concrete_values
+```
+
+The APP selection binds the same-byte parse/write boundary, edit/execution intersection and strict
+unknown denominators; it also exercises private snapshots, duplicate-path idempotence, conflicting
+bytes, retained snapshot mismatch and symlink refusal for both producers. Error-row filtering,
+one-run unknown stability and existing confidence-interval regressions remain covered. Require
+exactly 20 APP cases collected, executed and passed, with zero skips, failures or errors. The APP
+JUnit identity includes pytest's exact `_seal_eval` and `_seal_mf` parameter IDs.
+
 ## Capture and grade boundary
 
-Run `python scripts/ci/ni08_run_hosted_capture.py "$APP" "$CAPTURE"` from the ROOT checkout
-after creating a fresh parent directory for `$CAPTURE`. The driver checks the APP SHA, installs the
-hashlocked minimal dependency file and records package versions/install-log digest, writes the
-Git-object source-context manifest, and calls the existing ROOT
-`scripts/ci/native_conformance.py` carrier. The carrier binds both clean Git SHAs, runner Python,
-exact selected identities, JUnit bytes, command output, dependency/source-context manifest,
-explicit source/test/grade/carrier readset, and terminal status. The driver sets
+The exact-branch workflow `.github/workflows/ni08-vbs1-evaldisc-native.yml` checks out its own
+commit and the pinned APP source, initializes a retained status artifact before setup, creates a
+Python 3.13.15 virtual environment, and uploads the result directory even after a failed capture.
+The driver installs the hashlocked minimal dependency file and records package versions/install-log
+digest, writes the Git-object source-context manifest, and calls the existing ROOT
+`scripts/ci/native_conformance.py` carrier once for APP tests and once for ROOT tests. Each carrier
+receipt binds both clean Git SHAs, runner Python, exact selected identities, JUnit bytes, command
+output, dependency/source-context manifest, explicit source/test/grade/carrier readset, and terminal
+status. The driver sets
 `EPYC_ORCHESTRATOR_SOURCE_ROOT="$APP"` and asks the carrier to attach exactly two generated-output
 bundles: `ni08-native-fixtures/mf-bundle.zip` and `ni08-native-fixtures/eval-bundle.zip`. Each
 contains the synthetic raw inputs, producer-authored report, report-adjacent input/source snapshots,
 and a per-member hash manifest. The driver refuses an existing generated-output directory so these
-outputs cannot overwrite a prior capture. No new grader or carrier is introduced.
+outputs cannot overwrite a prior capture. It requires exactly one existing `ci_conformance`
+projection per receipt, both graded `Judged/Located` through the same `claim_tuple.grade()` function.
+No new grader or carrier is introduced.
 
 The test itself verifies each measurement projection through `claim_tuple.grade()` and actual CLI
 ingestion. The receipt, if conformant, can separately be checked through the existing
