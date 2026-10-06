@@ -1,0 +1,210 @@
+name: NI75 exact executor registry-failure native conformance
+on:
+  push:
+    branches: [codex/ni75-fallback-ci-20261006]
+    paths: [.github/workflows/ni75-executor-fallback-validation.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ni75-fallback-validation-20261006
+  cancel-in-progress: false
+env:
+  ROOT_SHA: 2dff56e6c9263fe982b12b91eab0552e50610635
+  APP_SHA: fa1eb43a2c4431d695e5c4339373ecbf3b96aed6
+  APP_PARENT_SHA: 405a5e7c162480c6cbc5919ecfa626850c08c7e0
+  LOCK_SHA: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout exact recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout exact APP candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: fa1eb43a2c4431d695e5c4339373ecbf3b96aed6
+          path: app
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout unchanged native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: 2dff56e6c9263fe982b12b91eab0552e50610635
+          path: producer
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+      - name: Set up reviewed uv
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+      - name: Establish private scope and exact source custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          scope="$RUNNER_TEMP/ni75-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$scope" && test ! -L "$scope"
+          mkdir -m 700 "$scope"
+          mkdir -m 700 "$scope/originals" "$scope/cache" "$scope/tmp" "$scope/cache/install-tmp"
+          printf 'NI75_SCOPE=%s\nUV_PROJECT_ENVIRONMENT=%s/venv\nUV_CACHE_DIR=%s/cache\nTMPDIR=%s/tmp\n' "$scope" "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$ROOT_SHA"
+          test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C app rev-parse HEAD^)" = "$APP_PARENT_SHA"
+          expected="$(printf '%s\n' scripts/lib/executor.py tests/unit/test_executor_registry_failure_paths.py | LC_ALL=C sort)"
+          actual="$(git -C app diff-tree --no-commit-id --name-only -r HEAD | LC_ALL=C sort)"
+          test "$expected" = "$actual"
+          test "$(git diff --name-only HEAD^ HEAD)" = .github/workflows/ni75-executor-fallback-validation.yml
+          test "$(sha256sum app/scripts/lib/executor.py | cut -d' ' -f1)" = 5745c4769cffd7281051b5ecf33b6229a89856adca35eba6b8d94b4cdb399f4b
+          test "$(sha256sum app/tests/unit/test_executor_registry_failure_paths.py | cut -d' ' -f1)" = bada830d384b7b8fd08837c6a1e54e9e0e2d8a67e3465021209c198371bf5fab
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          cp .github/workflows/ni75-executor-fallback-validation.yml "$scope/originals/workflow.yml"
+          git -C app ls-tree -r --full-tree HEAD > "$scope/originals/app-ls-tree.txt"
+          git -C app diff --binary HEAD^ HEAD > "$scope/originals/app-candidate.diff"
+          printf '%s\n' "$HOME" > "$scope/originals/home-before.txt"
+          python - "$scope/originals/context.json" <<'PYCONTEXT'
+          import json,os,pathlib,sys
+          facts=dict(line.split(':',1) for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if ':' in line)
+          scope=pathlib.Path(os.environ['RUNNER_TEMP'])/('ni75-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+          mounts=pathlib.Path('/proc/self/mountinfo').read_text()
+          assert not any('/mnt/raid0/llm' in line or '/workspace/repos' in line for line in mounts.splitlines())
+          (scope/'originals/mountinfo-before.txt').write_text(mounts)
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({'app_sha':os.environ['APP_SHA'],'app_parent':os.environ['APP_PARENT_SHA'],'root_sha':os.environ['ROOT_SHA'],'scope_path':str(scope),'scope_mode':oct(scope.stat().st_mode&0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'production_mounts_absent':True,'synthetic_RAM_override':False,'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'HOME':os.environ['HOME'],'synthetic_owned_declarations':'Mock return paths only; no directories, models, kernels, symlinks or binaries materialized','expected_cases':6,'scope':'Exact six new failure/success unit cases; no production capacity, serving, linkage or deployment claim'},sort_keys=True)+'\n')
+          PYCONTEXT
+      - name: Install frozen dependencies off-host
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          cd app
+          set +e
+          TMPDIR="$NI75_SCOPE/cache/install-tmp" timeout --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev --no-install-project > "$NI75_SCOPE/originals/install.stdout" 2> "$NI75_SCOPE/originals/install.stderr"
+          rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$rc" > "$NI75_SCOPE/originals/install-status.json"
+          test "$rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYDEPS' > "$NI75_SCOPE/originals/dependencies.json"
+          import importlib.metadata,json,platform,pytest
+          assert pytest.__version__=='9.0.3'
+          print(json.dumps({'python':platform.python_version(),'packages':sorted((d.metadata['Name'],d.version)for d in importlib.metadata.distributions())},sort_keys=True))
+          PYDEPS
+      - name: Retain setup originals
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni75-setup-${{ github.run_id }}
+          path: ${{ env.NI75_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Capture exact six cases using unchanged native producer
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYREADS'
+          import os,pathlib,subprocess
+          w=pathlib.Path(os.environ['GITHUB_WORKSPACE']);s=pathlib.Path(os.environ['NI75_SCOPE'])
+          paths=[w/'.github/workflows/ni75-executor-fallback-validation.yml']
+          # Whole tracked Python readset plus declared configuration covers conftests
+          # and imports; historical reports are excluded, with no runtime claim.
+          for repo in ('app','producer'):
+              r=w/repo
+              names=subprocess.check_output(['git','-C',str(r),'ls-files','-z'],text=True).split('\0')
+              names=[n for n in names if n.endswith('.py') or (repo=='app' and (n in {'uv.lock','pyproject.toml','pytest.ini','setup.cfg'} or (n.startswith('orchestration/') and '/' not in n[len('orchestration/'):] and n.endswith(('.yaml','.yml','.json')))))]
+              for n in names:
+                  if n:
+                      p=r/n
+                      if p.is_symlink():continue
+                      assert p.is_file(),str(p)
+                      paths.append(p)
+          paths.extend(p for p in (s/'originals').iterdir() if p.is_file())
+          (s/'originals/native-read-paths.txt').write_text(''.join(str(p)+'\n'for p in dict.fromkeys(paths)))
+          PYREADS
+          mapfile -t paths < "$NI75_SCOPE/originals/native-read-paths.txt"
+          reads=()
+          for p in "${paths[@]}"; do reads+=(--read-path "$p"); done
+          selection=tests/unit/test_executor_registry_failure_paths.py
+          set +e
+          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$GITHUB_WORKSPACE/app" --junit "$NI75_SCOPE/originals/generated.xml" --output "$NI75_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" --select "$selection" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI75_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$GITHUB_WORKSPACE/app" -o cache_dir="$NI75_SCOPE/cache/pytest" --basetemp="$NI75_SCOPE/tmp/pytest" --junit-prefix=ni75 "$selection" --junitxml="$NI75_SCOPE/originals/generated.xml" > "$NI75_SCOPE/originals/producer.stdout" 2> "$NI75_SCOPE/originals/producer.stderr"
+          rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$rc" > "$NI75_SCOPE/originals/producer-status.json"
+          NI75_PRODUCER_RC="$rc" "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYVERIFY'
+          import json,os,pathlib,sys,xml.etree.ElementTree as ET
+          sys.path.insert(0,str(pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'producer'))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows,project_ci_conformance
+          from claim_tuple import grade
+          b=pathlib.Path(os.environ['NI75_SCOPE'])/'originals';receipt=b/'native/receipt.json'
+          r,digest=read_receipt(receipt);rows=native_rows(receipt)
+          assert r['repositories']=={'app':os.environ['APP_SHA'],'producer':os.environ['ROOT_SHA'],'recipe':os.environ['GITHUB_SHA']}
+          assert r['selections']==['tests/unit/test_executor_registry_failure_paths.py']
+          assert int(os.environ['NI75_PRODUCER_RC'])==0 and r['exit_code']==0
+          assert r['fixture_execution_conformant'] is True and r['diagnostic']==''
+          assert r['summary']['counts']=={'passed':6,'failure':0,'error':0,'skipped':0,'collected':6,'executed':6}
+          x=ET.fromstring((b/'native/original-junit.xml').read_bytes());assert len(list(x.iter('testcase')))==6
+          assert len(rows)==1
+          q,t,reasons=grade(project_ci_conformance(rows[0]));assert(q,t)==('Judged','Located')
+          (b/'shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_rows':len(rows),'receipt_digest':digest,'counts':r['summary']['counts'],'scope':'Exact six unit cases; no production capacity/runtime claim'},sort_keys=True)+'\n')
+          PYVERIFY
+      - name: Retain native originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni75-native-${{ github.run_id }}
+          path: ${{ env.NI75_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Independently retain unchanged-source and absent-path postchecks
+        if: always() && env.NI75_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
+          for repo in app producer; do
+            git -C "$repo" status --porcelain=v1 --untracked-files=all > "$NI75_SCOPE/originals/$repo-poststatus.txt"
+            test ! -s "$NI75_SCOPE/originals/$repo-poststatus.txt"
+            git -C "$repo" diff --exit-code HEAD > "$NI75_SCOPE/originals/$repo-postdiff.txt"
+          done
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          test "$HOME" = "$(cat "$NI75_SCOPE/originals/home-before.txt")"
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test ! -e /owned-declaration && test ! -L /owned-declaration
+          python - <<'PYPOST'
+          import json,os,pathlib,stat
+          s=pathlib.Path(os.environ['NI75_SCOPE']);mounts=pathlib.Path('/proc/self/mountinfo').read_text()
+          assert not any('/mnt/raid0/llm' in line or '/workspace/repos' in line for line in mounts.splitlines())
+          (s/'originals/mountinfo-after.txt').write_text(mounts)
+          for p in (s/'originals',*(s/'originals').rglob('*')):
+              st=p.lstat();assert st.st_uid==os.getuid()and not p.is_symlink()
+              assert stat.S_IMODE(st.st_mode)==(0o700 if p.is_dir()else 0o600),(str(p),oct(st.st_mode))
+          (s/'originals/postchecks.json').write_text(json.dumps({'app_source_unchanged':True,'producer_unchanged':True,'lock_unchanged':True,'host_paths_absent':True,'production_mounts_absent':True,'declared_mock_paths_absent':True,'no_kernel_or_model_materialization':True},sort_keys=True)+'\n')
+          PYPOST
+      - name: Retain independent postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni75-postcheck-${{ github.run_id }}
+          path: ${{ env.NI75_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
