@@ -58,6 +58,6 @@ The older citation scan at `as_of=2026-10-06T06:54:00Z` on the `98d46d1e` checko
 - Current index validator: **PASS (exit 0)**. Current citation gate: **PASS (exit 0, 0 blockers)** after the AK-PM13 historical record-discussion correction. The earlier failed citation gate is preserved as history, separate from the current passing receipt. Current screen: `# dived=888 at_risk=326 A=163 B=102 C=94`.
 - Five consumer/history patches: **APPLIED** in the owning lane (`consumer_patches_applied: 5` in `metadata-application-root-receipt.json`).
 
-This is the prepared report content for root’s durable filing and final wrap; commit and push identifiers belong in the final wrap record.
+Root filed and reviewed this report. Actual commit and promotion identifiers are recorded in the owning progress report.
 
 Current index custody: synchronized base `97f3dcae04e29abb485271190867633a1a6ed7cc`; 1,932 entries; exactly 30 reviewed target differences; 1,902 non-target blocks equal synchronized main byte-for-byte. Index SHA `e67455cd898e520d829703b0ccb3ba2ccfe5da6183aebc6c8f5201a50d1a927d`. Peer entries absent from original candidate: 12.
