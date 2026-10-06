@@ -590,6 +590,9 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       PROJECTS; `claim_tuple.grade()` decides.
 
 - [ ] **VB-COPYSPEC — adapter for copy-spec results, and re-grade the 2026-07-30 ngram retraction claim's scope.** The retraction `intake-1153#record` measured non-copy prompts with crippled defaults; it must not gate copy-heavy decisions. Wire a producer-written `belief_measurements` vector at copy-spec eval completion (`phase1` and `phase2`), capturing acceptance rate, mean draft length, and throughput per arm (P / ngram-mod / ngram-only / P2) and per implementation (CPU frontdoor, CPU worker, GPU 27B if available). Create a strict adapter that projects only post-hook rows into the existing speculative-decoding `ClaimTuple` ladder, binding model/device/server/request identity, prompt composition (% copied), all-arm run-level locator, and authority boundary (candidate-only, no promotion until operator review). Done when the adapter passes 20 tests and the first copy-spec arm emits a non-zero tuple.
+  - *(2026-10-06, workspace-ec)* First results now exist: P1 and width sweep (`artifacts/copyspec-20261006/p1-summary.md`, `artifacts/copyspec-20261006/width-summary.md`); the adapter should ingest both, including the ngram-only 32/85 divergence as a flagged arm.
+
+- [ ] **VB-YARN-KSHIFT-AB — adapter rows for the YaRN mscale A/B (N/Y/YM identity + MTP acceptance) and the K-shift H1-H3 / Jet-Long T1-T3 test results.** Owner: workspace-ec. (filed 2026-10-06) Source table row in `scripts/vidya/adapters/README.md`; evidence under `artifacts/yarn-ctx-20261006/`. Done when each arm emits a tuple with model/device/build-sha identity, and the CTX-1 FAIL verdict grades via `claim_tuple.grade()` (no new grading rule).
 
 - [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by
       HARNESS-1; distinct producer from the already-wired `inf70_roofline_ledger.py`). Each arm emits a
