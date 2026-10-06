@@ -1,0 +1,174 @@
+name: VB-THESIS-2 source adapter capture
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-source-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ROOT_SOURCE_PIN: 9891c1979d4580512aeb6451850b8bd0dca86055
+      RESEARCH_SOURCE_PIN: 1bace97dc655ab5896291b4571781e53b821d9a3
+      RESEARCH_SCORE_SHA256: 544c1277d1eb00e9f685e40490385644573417f813a9989dacff83a7cdb4350f
+      CAPTURE_DIR: ${{ runner.temp }}/vb-thesis2-source-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - name: Checkout exact workflow source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+
+      - name: Checkout frozen ROOT source
+        uses: actions/checkout@v4
+        with:
+          ref: 9891c1979d4580512aeb6451850b8bd0dca86055
+          path: root-source
+          persist-credentials: false
+
+      - name: Checkout pinned UFH-13 producer source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-inference-research
+          ref: 1bace97dc655ab5896291b4571781e53b821d9a3
+          path: research-source
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install existing hermetic test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pytest pyyaml
+
+      - name: Run selected thesis adapter and dispatcher regression
+        id: selected-tests
+        env:
+          UFH13_RESEARCH_ROOT: ${{ github.workspace }}/research-source
+          ROOT_SOURCE: ${{ github.workspace }}/root-source
+          RECIPE_SOURCE: ${{ github.workspace }}/recipe
+          RESEARCH_SOURCE: ${{ github.workspace }}/research-source
+        run: |
+          set -euo pipefail
+          mkdir -p "$CAPTURE_DIR"
+          test "$(git -C "$ROOT_SOURCE" rev-parse HEAD)" = "$ROOT_SOURCE_PIN"
+          test "$(git -C "$RESEARCH_SOURCE" rev-parse HEAD)" = "$RESEARCH_SOURCE_PIN"
+          test "$(sha256sum "$RESEARCH_SOURCE/scripts/benchmark/thesis_ufh13/score.py" | cut -d' ' -f1)" = "$RESEARCH_SCORE_SHA256"
+          test -z "$(git -C "$ROOT_SOURCE" status --porcelain --untracked-files=all)"
+          test -z "$(git -C "$RESEARCH_SOURCE" status --porcelain --untracked-files=all)"
+          python --version > "$CAPTURE_DIR/python-version.txt" 2>&1
+          python -m pip freeze > "$CAPTURE_DIR/dependencies.txt"
+          cd "$ROOT_SOURCE"
+          set +e
+          python -m pytest -q \
+            tests/vidya/test_ufh13_thesis_adapter.py \
+            tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end \
+            tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift \
+            tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption \
+            --junitxml="$CAPTURE_DIR/junit.xml" \
+            > "$CAPTURE_DIR/pytest.stdout" 2> "$CAPTURE_DIR/pytest.stderr"
+          test_rc=$?
+          set -e
+          printf '%s\n' "$test_rc" > "$CAPTURE_DIR/pytest.exit-code"
+          export TEST_EXIT_CODE="$test_rc"
+          python - <<'PY' > "$CAPTURE_DIR/source-manifest.json"
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+
+          root = Path(os.environ["ROOT_SOURCE"])
+          research = Path(os.environ["RESEARCH_SOURCE"])
+          recipe = Path(os.environ["RECIPE_SOURCE"])
+          root_paths = [
+              "scripts/vidya/adapters/ufh13_thesis.py",
+              "scripts/vidya/cli.py",
+              "scripts/vidya/ingest_sources.py",
+              "scripts/vidya/claim_tuple.py",
+              "scripts/vidya/adapters/README.md",
+              "handoffs/active/vidya-belief-substrate-program.md",
+              ".github/workflows/tests.yml",
+              "pytest.ini",
+              "tests/vidya/test_ufh13_thesis_adapter.py",
+              "tests/vidya/test_ingest_sources.py",
+              "tests/vidya/ufh13_thesis_fixtures.py",
+          ]
+          research_paths = [
+              "scripts/benchmark/thesis_ufh13/score.py",
+              "scripts/benchmark/thesis_ufh13/records.py",
+              "scripts/benchmark/thesis_ufh13/run_thesis.py",
+          ]
+          def git(path, *args):
+              return subprocess.run(["git", "-C", str(path), *args], check=True,
+                                    text=True, stdout=subprocess.PIPE).stdout.strip()
+          def sha(path, name):
+              return hashlib.sha256((path / name).read_bytes()).hexdigest()
+          def blob(path, name):
+              return git(path, "rev-parse", f"HEAD:{name}")
+          report = {
+              "schema": "vb-thesis2-source-capture/v1",
+              "workflow": os.environ["GITHUB_WORKFLOW"],
+              "workflow_ref": os.environ["GITHUB_WORKFLOW_REF"],
+              "workflow_sha": os.environ["GITHUB_WORKFLOW_SHA"],
+              "recipe": {
+                  "commit": git(recipe, "rev-parse", "HEAD"),
+                  "tree": git(recipe, "rev-parse", "HEAD^{tree}"),
+                  "workflow_blob": blob(recipe, ".github/workflows/vb-thesis2-source-capture.yml"),
+                  "workflow_file_sha256": sha(recipe, ".github/workflows/vb-thesis2-source-capture.yml"),
+              },
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "root": {
+                  "commit": git(root, "rev-parse", "HEAD"),
+                  "tree": git(root, "rev-parse", "HEAD^{tree}"),
+                  "status_porcelain": git(root, "status", "--porcelain", "--untracked-files=all"),
+                  "files": {name: {"blob": blob(root, name), "sha256": sha(root, name)}
+                            for name in root_paths},
+              },
+              "research": {
+                  "commit": git(research, "rev-parse", "HEAD"),
+                  "tree": git(research, "rev-parse", "HEAD^{tree}"),
+                  "status_porcelain": git(research, "status", "--porcelain", "--untracked-files=all"),
+                  "files": {name: {"blob": blob(research, name), "sha256": sha(research, name)}
+                            for name in research_paths},
+              },
+              "native_readset": ["belief_measurements.jsonl", "run_manifest.json", "records.jsonl"],
+              "records_policy": "hash exact sibling bytes; never parse or emit record content",
+              "selected_test_nodes": [
+                  "tests/vidya/test_ufh13_thesis_adapter.py (entire module)",
+                  "tests/vidya/test_ingest_sources.py::test_source_ingests_a_fixture_end_to_end",
+                  "tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift",
+                  "tests/vidya/test_ingest_sources.py::test_every_source_has_an_end_to_end_fixture_or_a_named_exemption",
+              ],
+              "fixture_research_root_env": "UFH13_RESEARCH_ROOT",
+              "fixture_research_commit": os.environ["RESEARCH_SOURCE_PIN"],
+              "grade_authority": "scripts/vidya/claim_tuple.py::grade via existing to_frames",
+              "test_exit_code": int(os.environ["TEST_EXIT_CODE"]),
+              "test_output": {
+                  "junit_sha256": sha(Path(os.environ["CAPTURE_DIR"]), "junit.xml"),
+                  "stdout_sha256": sha(Path(os.environ["CAPTURE_DIR"]), "pytest.stdout"),
+                  "stderr_sha256": sha(Path(os.environ["CAPTURE_DIR"]), "pytest.stderr"),
+                  "dependencies_sha256": sha(Path(os.environ["CAPTURE_DIR"]), "dependencies.txt"),
+              },
+          }
+          print(json.dumps(report, indent=2, sort_keys=True))
+          PY
+
+      - name: Preserve original selected-test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vb-thesis2-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb-thesis2-source-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Return selected test result
+        if: always()
+        env:
+          CAPTURE_DIR: ${{ runner.temp }}/vb-thesis2-source-${{ github.run_id }}-${{ github.run_attempt }}
+        run: test "$(cat "$CAPTURE_DIR/pytest.exit-code")" = 0
