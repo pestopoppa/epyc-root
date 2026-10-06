@@ -241066,3 +241066,102 @@
     scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
     human_verification: false
     empirical_reproduction: false
+- id: intake-1923
+  arxiv_id: null
+  url: https://github.com/Enntity/sparkglm
+  source_type: repo
+  title: "SparkGLM: GLM-5.3-Flash on two DGX Sparks (Atlas engine, opinionated vLLM serving)"
+  authors: ["Enntity (GitHub org)", "data-angel (primary committer, per PR history)"]
+  categories: [speculative_decoding, moe_optimization, kv_cache, quantization, hardware_optimization, inference_serving, benchmark_methodology]
+  novelty: medium
+  relevance: high
+  credibility_score: null   # repo with empirical claims but no peer review; author-reported only, single-site measurements
+  discovered_via: input
+  verdict: worth_investigating
+  ingested_date: '2026-10-06'
+  verification: stage1-unverified
+  techniques:
+    - "DFlash2 block drafter (incoai/GLM-5.3-Flash-DFlash2) verified by the Atlas engine, adaptive verify width set from the drafter's own confidence"
+    - "NVFP4 (NVIDIA 4-bit) weight format with FP8-latent KV cache"
+    - "Expert-parallel + tensor-parallel split of one MoE checkpoint across two physically separate DGX Spark (GB10) nodes joined by one ConnectX-7 200G RoCE cable"
+    - "Drafter propose step itself split across both nodes (not just the target forward)"
+    - "One-shot RDMA all-reduce reusing existing collective infra to cut a synchronization round"
+    - "L2 prefetch of routed-expert decode weight rows a few pipeline stages ahead of use"
+    - "Reduced host/device sync: no host read-back of expert routing offsets for 9-32 row batches"
+    - "Prefix caching with a disk tier (up to 48 GB/Spark) retaining the 16 most recent conversations' recurrent state"
+    - "Shortest-first prefill queue ordering; history-independent first draft token"
+  reported_results:
+    - "Multi-turn 30-48K tokens, TTFT turn 2+ (median): 0.67 s vs 17.6 s baseline (prefix-cache hit)"
+    - "Cold 61K / 125K prompt TTFT: 25.0 / 49.1 s"
+    - "Single-stream prose decode: 40.2-44.2 tok/s (release 9b8160e3; prior release 32.8-34.5 tok/s)"
+    - "RigMark decode, code/prose/structured (thinking on, low effort): 65.7 / 36.3 / 91.6 tok/s"
+    - "RigMark prefill TTFT 8K/32K/64K: 3.28 / 12.35 / 23.71 s"
+    - "Four concurrent ~204K-token sessions: 12/12 exact answers"
+    - "Decode step cut PR #24: +1.9% single stream, +4.1% two streams, +5.2% four streams (author states ~2% noise margin); greedy text and logprob hash unchanged (8c75d2886794)"
+    - "Checkpoint footprint: 204 GB NVFP4 weights + 2 GB drafter + 16 GB converted overlay, ~230 GB free required per Spark"
+    - "KV pool: ~600K tokens total at GPU_MEMORY_UTILIZATION=0.88 (up to 4x512K-context requests), ~1.13M tokens at 0.91"
+    - "Short-code concurrency at 6 streams: author's own Atlas run 62.0 tok/s vs a third-party engine (RiNGSiDE) 97.3 tok/s on the same task class -- Atlas behind here, not ahead"
+    - "Quality probe: 11/12 on two-hop needles"
+  notes: |
+    Operator framed this as "another example of massive performance results obtained with less variable
+    hardware than ours." THIS CLAIM DOES NOT SURVIVE A READ OF THE REPO'S OWN docs/LIMITATIONS.md, which
+    is unusually candid for a benchmark repo and documents meaningful, acknowledged variance:
+    - "results may vary based on firmware, drivers, cables, and cooling" (author's own hedge)
+    - vLLM/Mia comparison runs "were not alternated with the Atlas runs" (no interleaved A/B -- exactly the
+      noise-window discipline this project treats as mandatory, feedback_autopilot_noise_window_not_contention.md)
+    - greedy decoding "not yet reproducible across request histories" (context-dependent non-determinism)
+    - long prompts had reproducibility bugs "from kernel normalization bugs" before 2026-09-30 (i.e. a
+      correctness defect, not just noise, shipped and was later fixed)
+    - 6-stream short-code concurrency: own number (62.0) vs a competitor's (97.3) on the same task class --
+      the repo's single clean "we're ahead" framing is not uniform across all workloads
+    What IS genuinely lower-variance about this hardware class, read from the source (no determinism/clock
+    claims were found anywhere in README/INSTALL-MANUAL/LIMITATIONS -- this is an inference from the
+    hardware class, not a quoted claim, and must be labelled as such):
+    - DGX Spark (GB10) is a fixed-SKU benchtop/workstation SoC (arm64, unified CPU+GPU memory, single thermal
+      and power envelope per the vendor's reference design), which removes two of OUR documented noise
+      sources (shared-host contention per feedback_pinned_gpu_host_threads_still_degrade_cpu_floor_9x.md,
+      and page-cache/NUMA-interleave interaction per feedback_page_cache_defeats_numa_interleave.md) simply
+      by not having multiple NUMA nodes or a discrete PCIe GPU sharing a host with other tenants.
+    - No evidence was found that the authors lock GPU clocks, pin CPU affinity, or control thermals
+      explicitly -- INSTALL-MANUAL.md contains no such steps. The apparent "less variable" framing more
+      likely reflects a single-tenant, fixed-topology small form factor than any active discipline we
+      could port. Our approximable analog: NUMA pinning (already practiced, feedback_verify_live_affinity_not_just_topology_hash.md)
+      and the THP shim (project_thp_shim_keep_and_launch_variance.md) are already our version of "remove
+      topology-driven variance"; there is no new lever here beyond what we already do.
+    This repo is a different model family (GLM-5.3-Flash NVFP4, MoE) and a different hardware class (2x
+    DGX Spark GB10, arm64, unified memory, 200G RoCE interconnect) from TensorFold (intake candidate not
+    yet filed as of this writing -- see /mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md, which
+    covers the SAME GB10 hardware via TensorFold's own Spark numbers, rows G/G' in that report).
+    Bytes-per-forward and tau (tokens/forward) could NOT be normalized to forwards/s or %-of-bandwidth
+    with the fetched material: GLM-5.3-Flash's active-parameter count (MoE) is not stated in README/
+    LIMITATIONS, and no no-speculation baseline decode rate is given, so tau cannot be backed out the way
+    TensorFold's report did for HyperQwen/NInfer/TensorFold itself. A dive would need to pull
+    docs/REPRODUCE.md and docs/CARDS or similar for the active-expert count and a serial (non-DFlash2)
+    decode number before this entry's numbers can be cited as forwards/s or %-of-peak-bandwidth in any
+    plan or handoff. GB10 bandwidth context from TensorFold's own measurement (not this repo): nominal
+    273 GB/s, TensorFold-measured streaming ceiling 237 GB/s per Spark; this repo uses TWO Sparks with
+    expert+tensor parallelism and a 200G RoCE link, so the effective per-forward bandwidth budget is
+    neither simply 2x237 (most expert weight bytes are local to one Spark; only activations cross the
+    200G link, which is far slower than either Spark's own HBM path) nor 237 (cross-box MoE routing adds
+    nonzero inter-Spark traffic). This is exactly the kind of multi-device roofline question we have not
+    had to answer yet (we run single-GPU + single-CPU-node), and is the most directly novel piece of this
+    source relative to TensorFold.
+  cross_references:
+    chapters: []
+    handoffs:
+      - deepseek-v41-flash-evaluation.md
+      - dflash2-block-drafter-experimental-build.md
+      - cpu-decode-roofline-program.md
+    experiments: []
+    intake_entries: []
+    intake_entry_notes:
+      - "No existing intake-NNN entry found for TensorFold (ashhart/TensorFold) itself as of 2026-10-06; the comparison in this entry's notes cites /mnt/raid0/llm/tmp/tensorfold-research-20261004/REPORT.md directly, not an intake id. Flag to the operator: TensorFold should probably get its own intake entry too, independent of this one."
+  recommended_actions:
+    - "[unverified] Dive docs/REPRODUCE.md and any model card for GLM-5.3-Flash's total/active parameter count, to compute bytes-per-forward and back out tau the way the TensorFold report did, before citing any tok/s number as a bandwidth-normalized result."
+    - "[unverified] Read the Atlas engine's verify-kernel source (PR #11 'faster verify step' and PR #24 'decode step cut') directly rather than via PR summaries, to confirm whether the L2-prefetch-for-expert-rows and reduced-host-sync techniques are row-invariant multi-row GEMV in the TensorFold #1 sense, or a narrower MoE-specific optimization that doesn't generalize to dense verify rounds."
+    - "[unverified] Compare the adaptive-verify-width-from-drafter-confidence mechanism against our own DS41 draft_n_max=2 hand-pick (cpu-decode-roofline-program.md) and the TensorFold #5 'draft depth from costs measured at startup' finding -- these look like independent discoveries of the same lever and should be reconciled in one place rather than two handoffs."
+    - "[unverified] The FP8-latent KV cache is a direct analog of the kvu16b quantized-KV work; a dive should check whether Atlas's KV layout gives any implementation detail (e.g. how it avoids the full-cache-to-f16 conversion our gfx90a path does for 3+ rows) that ports to MI210."
+    - "[unverified] Flag to operator: is a two-node, expert+tensor-parallel GPU topology (SparkGLM's core architecture) worth modeling even in the abstract, given we have exactly one MI210? Likely not actionable now, but the interconnect-vs-local-bandwidth tradeoff question is conceptually reusable if we ever add a second GPU."
+  integration_disposition: awaiting_dive
+  disposition_evidence:
+    - "Stage-1 only: fetched README, LIMITATIONS.md, INSTALL-MANUAL.md, and two PR summaries via WebFetch. No primary source code read, no claim_anchors recorded, no operator dive selection yet. Per the unverified contract, none of reported_results may be quoted in a plan or handoff until a Stage-2 dive promotes this entry."
