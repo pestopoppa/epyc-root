@@ -1,0 +1,59 @@
+name: AP62 invocation-log source conformance
+on:
+  push:
+    branches: [codex/ni08-ap62-capture-20261006]
+permissions:
+  contents: read
+jobs:
+  ap62-native-source-control:
+    name: request-log-snapshot-concurrency-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      APP_PIN: 578865fb633d09839547a54f6bf9378b0b934dd6
+      ORCHESTRATOR_MOCK_MODE: '1'
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize retained outcome before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ap62-native/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ap62-native/result/status.json"
+      - name: Checkout the exact ROOT recipe and verifier
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout the reviewed APP source proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 578865fb633d09839547a54f6bf9378b0b934dd6
+          path: app
+          persist-credentials: false
+      - name: Set up the accepted Python patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated runner environment
+        run: python -m venv "$RUNNER_TEMP/ap62-native/venv"
+      - name: Capture bounded synthetic controls through the existing carrier
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/ap62-native/venv/bin/python" root/scripts/ci/run_ap62_native_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/ap62-native/result/capture" > "$RUNNER_TEMP/ap62-native/result/driver.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/ap62-native/result/driver.log"
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/ap62-native/result/status.json"
+          exit "$rc"
+      - name: Preserve status, original JUnit, receipt, validation, and source artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ap62-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ap62-native/result/
+          if-no-files-found: error
+          retention-days: 90

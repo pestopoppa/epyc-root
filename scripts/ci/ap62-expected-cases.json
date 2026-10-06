@@ -1,0 +1,75 @@
+{
+  "schema": "epyc.ap62.expected_cases/v1",
+  "app": [
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_interleaved_requests_each_see_only_their_own_invocations",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_interleaved_requests_each_see_only_their_own_invocations"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_durable_record_contains_only_its_own_requests_tool_calls",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_durable_record_contains_only_its_own_requests_tool_calls"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_no_tool_request_after_a_tool_request_records_nothing",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_no_tool_request_after_a_tool_request_records_nothing"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_failing_tool_still_scopes_and_cleans_up",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_failing_tool_still_scopes_and_cleans_up"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_registry_log_is_bounded_after_many_requests",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_registry_log_is_bounded_after_many_requests"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_registry_log_default_cap_is_finite",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_registry_log_default_cap_is_finite"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_registry_log_can_be_disabled",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_registry_log_can_be_disabled"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_malformed_cap_override_falls_back_to_default",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_malformed_cap_override_falls_back_to_default"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_clear_invocation_log_still_works",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_clear_invocation_log_still_works"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_get_invocation_log_returns_a_snapshot",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_get_invocation_log_returns_a_snapshot"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_snapshot_serializes_concurrent_ring_writes[append]",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_snapshot_serializes_concurrent_ring_writes[append]"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_snapshot_serializes_concurrent_ring_writes[clear]",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_snapshot_serializes_concurrent_ring_writes[clear]"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_request_paths_do_not_read_the_process_global_log",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_request_paths_do_not_read_the_process_global_log"
+    },
+    {
+      "classname": "tests.unit.test_invocation_log_request_scope",
+      "name": "test_route_guard_detects_calls_but_ignores_comments_strings_and_request_local_log",
+      "nodeid": "tests/unit/test_invocation_log_request_scope.py::test_route_guard_detects_calls_but_ignores_comments_strings_and_request_local_log"
+    }
+  ]
+}
