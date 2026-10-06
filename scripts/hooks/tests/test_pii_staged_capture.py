@@ -150,7 +150,8 @@ def test_perf_period_number_is_allowed_only_in_public_period_column(repo, width)
 
 def test_all_seven_public_perf_period_cells_are_allowed(repo):
     name = "research/perf.md"
-    content = _perf_table_rows([_digit_run(12), _digit_run(13), "71", "82", "93", "104", "115"])
+    content = _perf_table_rows([_digit_run(12), _digit_run(13), _digit_run(12), _digit_run(13),
+                                _digit_run(12), _digit_run(13), _digit_run(12)])
     (repo / name).write_text(content)
     git(repo, "add", "--", name)
 
@@ -215,9 +216,25 @@ def test_perf_period_exception_does_not_exempt_number_in_other_column(repo):
     "| sampled-period fraction | observed periods | `DSO` | `symbol` |\n| - | --- | --- | --- |\n| 50.02% | " + _digit_run(12) + " | runtime | kernel |\n",
     _perf_table(_digit_run(14)),
     "plain perf period " + _digit_run(12) + "\n",
-])
+], ids=["period-only", "bad-separator", "fourteen-digit", "prose"])
 def test_perf_period_exception_requires_exact_schema_and_12_or_13_digits(repo, content):
     name = "research/perf.md"
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_perf_period_exception_does_not_leak_into_adjacent_unrelated_table(repo):
+    name = "research/perf.md"
+    content = _perf_table(_digit_run(12)) + (
+        "| customer | record id | DSO | symbol |\n"
+        "| --- | --- | --- | --- |\n"
+        "| customer one | " + _digit_run(12) + " | runtime | kernel |\n"
+    )
     (repo / name).write_text(content)
     git(repo, "add", "--", name)
 
