@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import subprocess
 import sys
 import time
@@ -183,16 +184,85 @@ def _verify(evid, tap, *extra):
 def test_prepare_writes_a_runnable_script(tmp_path):
     out = tmp_path / "p04"
     assert m.main(["prepare", "--out", str(out)]) == 0
-    run_sh = (out / "evidence" / "run.sh").read_text()
+    evidence = out / "evidence"
+    run_sh = (evidence / "run.sh").read_text()
     run_lines = [ln for ln in run_sh.splitlines() if "opencode run" in ln and not ln.startswith("#")]
     assert len(run_lines) == 1
     assert "--format json" in run_lines[0] and "--auto" not in run_lines[0]
+    assert "< \"$EVID/prompt.txt\"" in run_sh
+    assert m.TASK_PROMPT not in run_lines[0]
+    assert (evidence / "prompt.txt").read_text(encoding="utf-8") == m.TASK_PROMPT
     for var in ("EPYC_HARNESS_CARD_VERSION", "EPYC_MODEL_ROLE", "EPYC_BUILD_INFO",
                 "EPYC_ENABLE_THINKING"):
         assert f"${{{var}:?" in run_sh
     assert subprocess.run(["bash", "-n", str(out / "evidence" / "run.sh")]).returncode == 0
     # Before the fix the fixture test fails.
     assert not m.check_fixture(out / "repo")["ok"]
+
+
+def test_generated_run_script_passes_exact_unicode_prompt_only_on_stdin(tmp_path, monkeypatch):
+    unit = 'café 雪 — "quoted" \'apostrophe\' \\ path\n'
+    prompt = "Preserve this exactly:\n" + unit * 5000 + "finish"
+    assert len(prompt.encode("utf-8")) > 128 * 1024
+    monkeypatch.setattr(m, "TASK_PROMPT", prompt)
+    out = tmp_path / "p04-special"
+    assert m.main(["prepare", "--out", str(out)]) == 0
+    evidence = out / "evidence"
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    capture = tmp_path / "opencode-capture.json"
+    fake_opencode = fake_bin / "opencode"
+    fake_opencode.write_text(
+        f"#!{sys.executable}\n"
+        "import json, os, pathlib, sys\n"
+        "args = sys.argv[1:]\n"
+        "if args == ['--version']:\n"
+        "    print('1.18.31')\n"
+        "elif args and args[0] == 'run':\n"
+        "    pathlib.Path(os.environ['FAKE_OPENCODE_CAPTURE']).write_text(\n"
+        "        json.dumps({'argv': args, 'stdin': sys.stdin.buffer.read().decode('utf-8')}),\n"
+        "        encoding='utf-8')\n"
+        "    print(json.dumps({'sessionID': 'synthetic-session'}))\n"
+        "elif args and args[0] == 'export':\n"
+        "    print('{}')\n"
+        "else:\n"
+        "    raise SystemExit(f'unexpected fake opencode argv: {args!r}')\n",
+        encoding="utf-8",
+    )
+    fake_opencode.chmod(0o755)
+    fake_node = fake_bin / "node"
+    fake_node.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+    fake_node.chmod(0o755)
+    fake_python = fake_bin / "python3"
+    fake_python.write_text(
+        f"#!{sys.executable}\n"
+        "import os, sys\n"
+        "if (len(sys.argv) > 2 and sys.argv[1].endswith('hs4_p04_acceptance.py')\n"
+        "        and sys.argv[2] == 'verify'):\n"
+        "    raise SystemExit(0)\n"
+        "os.execv(sys.executable, [sys.executable, *sys.argv[1:]])\n",
+        encoding="utf-8",
+    )
+    fake_python.chmod(0o755)
+    env = {
+        **os.environ,
+        "PATH": f"{fake_bin}:{os.environ['PATH']}",
+        "FAKE_OPENCODE_CAPTURE": str(capture),
+        "EPYC_HARNESS_CARD_VERSION": "synthetic-card",
+        "EPYC_MODEL_ROLE": "synthetic-role",
+        "EPYC_BUILD_INFO": "synthetic-build",
+        "EPYC_ENABLE_THINKING": "false",
+        "EPYC_ORCHESTRATOR_BASE_URL": "http://127.0.0.1:8000/v1",
+        "EPYC_USER_ID": "synthetic-user",
+    }
+    proc = subprocess.run(
+        ["bash", str(evidence / "run.sh")], env=env, capture_output=True, text=True
+    )
+    assert proc.returncode == 0, proc.stderr
+    recorded = json.loads(capture.read_text(encoding="utf-8"))
+    assert recorded["argv"] == ["run", "--format", "json", "--title", "hs4-p04-acceptance"]
+    assert recorded["stdin"] == prompt
+    assert (evidence / "prompt.txt").read_bytes() == prompt.encode("utf-8")
 
 
 def test_verify_passes_and_writes_sc86_beliefs(tmp_path):
