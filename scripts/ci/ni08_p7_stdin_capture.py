@@ -41,6 +41,7 @@ ROOT_READS = (
     "scripts/ci/ni08_p7_stdin_capture.py",
     INSTALL_REQUIREMENTS,
     EXPECTED_CASES_PATH,
+    "scripts/ci/ni08_p7_collected_nodeids.txt",
     "pytest.ini",
     "tests/conftest.py",
     "scripts/harness/hs4_p04_acceptance.py",
@@ -54,8 +55,11 @@ ROOT_READS = (
     "harness/opencode-plugin/config/opencode.env",
     "harness/opencode-plugin/config/opencode.jsonc.template",
     "harness/opencode-plugin/config/opencode.subagents.jsonc.template",
+    "harness/opencode-plugin/package.json",
     "harness/opencode-plugin/scripts/lint-config.ts",
     "harness/opencode-plugin/src/config-lint.ts",
+    "harness/opencode-plugin/src/index.ts",
+    "harness/opencode-plugin/src/lib.ts",
 )
 CARRIER_READS = (
     "scripts/ci/native_conformance.py",
@@ -172,10 +176,35 @@ def main() -> int:
         expected_case_rows = case_manifest.get("cases")
         expected_identities = [(row.get("classname"), row.get("name"))
                                for row in expected_case_rows or []]
+        provenance = case_manifest.get("provenance") or {}
+        if (provenance.get("source_commit") != "79eeb5ea71f27937ffaa08cc9e707b12d7d36f15"
+                or provenance.get("test_bodies_executed") is not False
+                or provenance.get("test_modules_imported") is not True
+                or provenance.get("module_level_code_executed") is not True):
+            raise RuntimeError("case manifest collection provenance is invalid")
+        source_hashes = provenance.get("source_paths_sha256") or {}
+        if set(source_hashes) != set(SELECTIONS):
+            raise RuntimeError("case manifest source hash set differs from selected test modules")
+        for source in SELECTIONS:
+            if hashlib.sha256(regular_repo_file(recipe, source).read_bytes()).hexdigest() != source_hashes[source]:
+                raise RuntimeError(f"case manifest source hash differs: {source}")
+        collected_nodeids = regular_repo_file(
+            recipe, "scripts/ci/ni08_p7_collected_nodeids.txt")
+        if hashlib.sha256(collected_nodeids.read_bytes()).hexdigest() != provenance.get(
+                "captured_nodeids_sha256"):
+            raise RuntimeError("captured collection node-id digest differs")
+        collected_identities = []
+        for line in collected_nodeids.read_text(encoding="utf-8").splitlines():
+            module, separator, name = line.partition("::")
+            if not separator or not name or not module.endswith(".py"):
+                raise RuntimeError("captured collection contains a malformed node id")
+            classname = module.removesuffix(".py").replace("/", ".")
+            collected_identities.append((classname, name))
         if (case_manifest.get("count") != EXPECTED_CASES
                 or len(expected_identities) != EXPECTED_CASES
                 or any(not all(identity) for identity in expected_identities)
-                or len(set(expected_identities)) != EXPECTED_CASES):
+                or len(set(expected_identities)) != EXPECTED_CASES
+                or Counter(collected_identities) != Counter(expected_identities)):
             raise RuntimeError("frozen expected JUnit identity manifest is invalid")
 
         freeze = result / "pip-freeze.txt"

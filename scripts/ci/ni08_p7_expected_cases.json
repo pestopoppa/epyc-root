@@ -553,7 +553,24 @@
       "name": "test_summarize_reads_every_verdict"
     }
   ],
-  "collector": "pytest 9.1.1 --collect-only (no tests executed)",
+  "collector": "pytest 9.1.1 --collect-only; test bodies not run; test modules imported and module-level code executed",
   "count": 138,
+  "provenance": {
+    "captured_nodeids_path": "scripts/ci/ni08_p7_collected_nodeids.txt",
+    "captured_nodeids_sha256": "ce7c5aa47502cc4bbef43ae0ff65e2a3b624ffe1286f10bd1b68109d606ef2d8",
+    "collection_argv": "pytest --collect-only (complete argv and working-directory record were not preserved)",
+    "collection_runtime": "pytest 9.1.1; Python version not preserved in collection record",
+    "independent_static_check": "AST parse of the three test modules confirmed every manifest identity base names an existing top-level test function; parameterized suffix expansion is preserved from the collected-nodeid artifact and is not claimed as independently reconstructed by AST.",
+    "module_level_code_executed": true,
+    "side_effect_audit": "No complete before/after filesystem, process, or network audit was preserved; absence of side effects is unknown.",
+    "source_commit": "79eeb5ea71f27937ffaa08cc9e707b12d7d36f15",
+    "source_paths_sha256": {
+      "tests/harness/test_hs19a_acceptance.py": "f4ba61650634c7d7068a2a13967ba76f09d36bfd215d05268a3c31912a092767",
+      "tests/harness/test_hs4_p04_acceptance.py": "df1357d45876235c2e7b578bc6c06dd78921a62e238ff6481d11ac830afec42d",
+      "tests/harness/test_task_delegation_probe.py": "12a6b0a4527d4a5e497c726bd351f17d086625406a997e2b9939089b90fad65d"
+    },
+    "test_bodies_executed": false,
+    "test_modules_imported": true
+  },
   "schema": "ni08-p7-expected-junit/v1"
 }

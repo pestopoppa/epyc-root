@@ -7,6 +7,7 @@ on:
       - scripts/ci/ni08_p7_stdin_capture.py
       - scripts/ci/ni08_p7_stdin_capture_requirements.txt
       - scripts/ci/ni08_p7_expected_cases.json
+      - scripts/ci/ni08_p7_collected_nodeids.txt
 permissions:
   contents: read
 jobs:
