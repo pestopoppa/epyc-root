@@ -1,0 +1,412 @@
+{
+  "app_paths": [
+    {
+      "git_blob": "b4fe6ccada3a1aee3e08aa860045a78d8b85c7b1",
+      "path": "pyproject.toml",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "git_blob": "e95b9f13aca14cbc5e18c869f172e927ba3acfa4",
+      "path": "scripts/autopilot/evals/dtap/cases.json",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431"
+    },
+    {
+      "git_blob": "9ba20a793ad53f9b9a575dcccb909875baa0c4e8",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-benign-001.done.json",
+      "sha256": "11dcd345b23f30da2e56a72107df1d9f67ac57982ec20975a4aadede1493b97c"
+    },
+    {
+      "git_blob": "8daa353e6b022273d34ed8b2bc44062810dc2848",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-direct-social-scoring-010.compliant.json",
+      "sha256": "1bbdf7b3e854faa489f042678f569e5350c426a758e5f1e743bb9140f0f5c8a8"
+    },
+    {
+      "git_blob": "d1e3f70972218fb0291bb5a310cf52669968cf3a",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-direct-social-scoring-010.compromised.json",
+      "sha256": "88a4fab7b8c873b6ac0f7cfc6146a07aa6488e56aa0241a3d5345e74f637a3e7"
+    },
+    {
+      "git_blob": "37dff46a88a33f384dfa43ae7f4197ee4514e58e",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-direct-general-ai-restrictions-001.compliant.json",
+      "sha256": "7a8f34d40ee15f22efcfba9e3cdd30ecaf8a6b4b233e416ae762fe16cc955c4e"
+    },
+    {
+      "git_blob": "a923e3b15aa9b60332c94ad7b327e92b2f65d9d3",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-direct-general-ai-restrictions-001.compromised.json",
+      "sha256": "ea83ac12dd1098ad4dd8b0bc07c7d91f9243165a5f2a784ce205e47e84d158ae"
+    },
+    {
+      "git_blob": "3ada0c4d358ba46dd2fa9d7062b7ccf20999c204",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-general-ai-restrictions-004.compliant.json",
+      "sha256": "34b310f032afee59f3ab85615e9cce59a48533023503e69d710dd887d3d0ce70"
+    },
+    {
+      "git_blob": "9ee3b6000411c84a017f87dd84d55546c4a16919",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-general-ai-restrictions-004.compromised.json",
+      "sha256": "28207e174b80354e61da3d04119423a2b2521df50661018718780acfd01ba8d2"
+    },
+    {
+      "git_blob": "ce6ad2a8f89897a3dceb4e5138971fbd3008be90",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-misinfo-001.compliant.json",
+      "sha256": "2336652f88073d9e1929a0dd87216e929806822b76e021cba102e5a159c78b83"
+    },
+    {
+      "git_blob": "fd00db7426689146219661e635ad6046c4f3ffc6",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-misinfo-001.compromised.json",
+      "sha256": "5049e4f2baa683570c456e7e598b298d2e93a79935eece464925d1f21bc884fb"
+    },
+    {
+      "git_blob": "20755525a91b54164e03c40d8e30b90d12ff718a",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-social-scoring-003.compliant.json",
+      "sha256": "6a082919669e3b948e49b87fd6b31d1021a0a48b7fbb884cc5b78e5ab5d29533"
+    },
+    {
+      "git_blob": "75a5e558361fe9432c5006e46187a8c63b92a239",
+      "path": "scripts/autopilot/evals/dtap/fixtures/crm-malicious-indirect-social-scoring-003.compromised.json",
+      "sha256": "4eb930162928f60245244b78a68afcfc12ea0ab936eb4b092e7806a73938d806"
+    },
+    {
+      "git_blob": "281f7ecbe310aea5f2cdc4d9edc1bdaead4447ef",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-benign-analyst-review-001.done.json",
+      "sha256": "09b817737b9f197644a472d8511397efa749f60dbcfd9f5c7a8a37a6f0bc01ce"
+    },
+    {
+      "git_blob": "08bd2ea80823d5381cbadf8e11f33b497e43b3fc",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-benign-trade-execution-001.done.json",
+      "sha256": "bb3f095b6676c8b74e4b8f8bf2dd64fd9e70f594b1a0424dc8a3835924fd5ec9"
+    },
+    {
+      "git_blob": "ae2ca190b03b57a9988959b4087567df99e27ccf",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-001.compliant.json",
+      "sha256": "f1febba1c4d81f6115bca5c5bfce922827b7b5033277af6d4aeaf83f27f06241"
+    },
+    {
+      "git_blob": "3a8bc09c04f0f892a52f4bc36b4dc940a818ac1e",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-001.compromised.json",
+      "sha256": "fe34d2469219b0b53584746d6b9c3586769d6688a5d3dc460aee671afcd9454f"
+    },
+    {
+      "git_blob": "70f363bf5e682e21042bbaf4ec1d8babaa8c7f3d",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-004.compliant.json",
+      "sha256": "7d2145198c88bd6583e6dd378ae53497290a934b9af02e4da6b47b9db5901014"
+    },
+    {
+      "git_blob": "8c8f8cf522f131bbd5268cd5a566c91be2586750",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-004.compromised.json",
+      "sha256": "4c3ad481249325b1b1c6bafed0daa74298d82ef15febf992a372958a9dc95a6e"
+    },
+    {
+      "git_blob": "6ea1b9e57624ca21ad4c4d41aff4b4b172b44bbd",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-005.compliant.json",
+      "sha256": "deb56949290703c35c76f554183110540f7d1963d7119b0f04743771ab3a866c"
+    },
+    {
+      "git_blob": "6ba251f9d5ac3bff5a9b865b69c00da69be2a760",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-churning-005.compromised.json",
+      "sha256": "9856a78e8c4733413f203ec35e2a3807f59ca5cd79bc03c606d9f240c90346c1"
+    },
+    {
+      "git_blob": "02db4bcdcc7a1c1a3cb139d3ec77fa9bce04e22b",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-fake_security_alert-007.compliant.json",
+      "sha256": "7df01aa1ca989730fed5cd5ace46554d0bab102e19be886dbf851ad764a11723"
+    },
+    {
+      "git_blob": "ee513a89f9734e73f42b20fd7044e3d1a07c41c9",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-direct-fake_security_alert-007.compromised.json",
+      "sha256": "296acbb26d8895d960225bd73446567cec697ae8d2fa46f60bc9e5ce79503b4e"
+    },
+    {
+      "git_blob": "64bb7eaace54fab68be702176dfc143c6a908f91",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-002.compliant.json",
+      "sha256": "641628c9411077e62ee292f6c98b40af7682a0932def135a48f7055cbf20554f"
+    },
+    {
+      "git_blob": "2de104ea4ed87af6c643678216270592929e2b6e",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-002.compromised.json",
+      "sha256": "3a427d1f961639ee8c292c07241062982a62f749803be360125b2a365fa4e6f1"
+    },
+    {
+      "git_blob": "fd14939e7ef0d9145915a244b72a39b0ba5aa8fe",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-003.compliant.json",
+      "sha256": "283968eb0359e1d163298f4cc05823797e02fc7172f2d7ee5935b6e59b6278d4"
+    },
+    {
+      "git_blob": "37ff7873340e3317a227436c40d0933725e279bd",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-003.compromised.json",
+      "sha256": "ac2e37f62307f9e4335a0d0cc56c1e10e4a6504077648e011eddde0e5b0cda0d"
+    },
+    {
+      "git_blob": "3f26476cbddf6a0313347fe68804f32242c52487",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-012.compliant.json",
+      "sha256": "82667b20c26070fe6fa95e2b20a17f1e965df40578e599294416abadbc676dd3"
+    },
+    {
+      "git_blob": "d32f5c0a1ce7fb591d393376c68f9d173d3027eb",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-action-reversal-012.compromised.json",
+      "sha256": "c40d661bb4a52eaaeab21fe783bac2374c40fa6ee042b760eb86e76d14679fff"
+    },
+    {
+      "git_blob": "261fd2fe566954fe485bf2ff486fd6304b38c896",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-data-exfiltration-004.compliant.json",
+      "sha256": "3fb1a09b7e0749e3c5c873f6c8ffe6f8b6f94f76ff4cc2cb4df685439dca2ce2"
+    },
+    {
+      "git_blob": "027b16d5e6f833696dac489506bdc7e6b3620549",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-data-exfiltration-004.compromised.json",
+      "sha256": "fa28f4ddf4de52148ef3b6cc2ba097b74e24173e377398b2225689f858505305"
+    },
+    {
+      "git_blob": "0eea004dda9d5a2150e546abf47f7dd011896155",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-quantity-inflation-014.compliant.json",
+      "sha256": "117936ee68caec7a95fb6b5cf392f68d2284605f7bea40998936a7d387c2ad5a"
+    },
+    {
+      "git_blob": "a78266a30844af0cc021af2c5e49caeb2ec20f99",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-quantity-inflation-014.compromised.json",
+      "sha256": "e5c214f81fa23827c9c0fa4326e0493fbe4bd78e4c84985dff29887bdeafc4b4"
+    },
+    {
+      "git_blob": "8ccdbf41b3d2f812f52e939359263227d1a31cf8",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-symbol-substitution-007.compliant.json",
+      "sha256": "ced257e01ea87db35a1dcba5c0cf6a64150d4a6dcdc5999e69202906de9edfab"
+    },
+    {
+      "git_blob": "cb4be89686d145f90febc4b9de9aff953703acfb",
+      "path": "scripts/autopilot/evals/dtap/fixtures/finance-indirect-symbol-substitution-007.compromised.json",
+      "sha256": "26fbdd61fc628e1fefb145e3a4d283775a764a75a16e014d5e3de07ce17ffc74"
+    },
+    {
+      "git_blob": "a1294e4f0af6e21b86c5d0bee46710b1dbf75b81",
+      "path": "scripts/autopilot/evals/dtap/harness/__init__.py",
+      "sha256": "15b5fd1bfe480ab12e8b6058e0c035141e5aef8833ade80f5455b6f6ac3417bc"
+    },
+    {
+      "git_blob": "3cad5298861c373971b1fad4fc332d3ebc76de11",
+      "path": "scripts/autopilot/evals/dtap/harness/__main__.py",
+      "sha256": "d4af4c8e0291ca7680651d95324369589bc32729c8c7f5b3ed9c0caee8de9621"
+    },
+    {
+      "git_blob": "c2c10caf41b1d536cd1366ddea74101dc6d0726c",
+      "path": "scripts/autopilot/evals/dtap/harness/attest.py",
+      "sha256": "7b18b07bfe582db29408c0756e6a4f5fc7509f547240932aaa3a2d49772f3fd9"
+    },
+    {
+      "git_blob": "a4b2e7504faec13be1e8523d545a42e61237e07b",
+      "path": "scripts/autopilot/evals/dtap/harness/base_judge.py",
+      "sha256": "f645a99ed4f5a3566488c826f7740aab549bfdb3e01ec78a39b84e9fa2f269be"
+    },
+    {
+      "git_blob": "7f684b44bca8d7e0c5bb4fde78b64cc44bc33bf8",
+      "path": "scripts/autopilot/evals/dtap/harness/cli.py",
+      "sha256": "c1852d0567e7ce5cda73d94d32467d39260c0e810363351b4a9117cba31cd5a5"
+    },
+    {
+      "git_blob": "85aca79e68be8baaebf8f87ab7d8865bc9eb360f",
+      "path": "scripts/autopilot/evals/dtap/harness/endpoint.py",
+      "sha256": "46dcf10d412339f1984d5ea5dbef5c270a97b9794b83a75ae4d5efa8fb7f0a76"
+    },
+    {
+      "git_blob": "9220c4969fd72e1b1bb29b13a5c58a245f4e0d94",
+      "path": "scripts/autopilot/evals/dtap/harness/env_state.py",
+      "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f"
+    },
+    {
+      "git_blob": "3c1591ae7ea494b1da39fe40764ae647210b1fd2",
+      "path": "scripts/autopilot/evals/dtap/harness/judge_guard.py",
+      "sha256": "b911cc4f978778e1f8b10d5a1c938faaacc312438cda1bacf4633b712d065216"
+    },
+    {
+      "git_blob": "ebda452563b29f046ba2f03639fc87f5521f493a",
+      "path": "scripts/autopilot/evals/dtap/harness/outcomes.py",
+      "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00"
+    },
+    {
+      "git_blob": "98aed88bc884e59e9b3d7e14c9fb7b0f9d83ed35",
+      "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+      "sha256": "f219e78dea02d1d34e19a07783e05c6096e72d93f6b4438014d50f9bedd73c28"
+    },
+    {
+      "git_blob": "d05e12aaebd44a2fb042ecc96015e3dfade23b04",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/__init__.py",
+      "sha256": "c2316b355ada0e9f99dd536da4e752d1ccc0859af8c1b82e53814c81fccf7534"
+    },
+    {
+      "git_blob": "5548c939dba4440eaf5b9d782a06e28454261d35",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/finance.py",
+      "sha256": "9d402265a6c5efd359f5af3385076d141efa70ea5101aa639eea2f6f0668dc56"
+    },
+    {
+      "git_blob": "fceb529f286d4c1a5b3c1075193b2d8371ff6ca6",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/gmail.py",
+      "sha256": "4d5c7f45951f54302567c42cb4c4a64346637fec502264c92c0e25afb201d145"
+    },
+    {
+      "git_blob": "eb538ccfea12de50ba8e210d049f858f602a61df",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/paypal.py",
+      "sha256": "244d4cdbad6cc65d67c16ba321fc80d33ca4111cf6b9ce5b5adf810213ad2ef0"
+    },
+    {
+      "git_blob": "ba341ae79daf3188714f46dc362de92967c9b650",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/salesforce.py",
+      "sha256": "b730f48e6f4e2ee7c4150978ba1ff98d1fa307e7bbef9a18e8fee0ebe0238cf8"
+    },
+    {
+      "git_blob": "c4e74ed319037607d1ccb09c2fe65c6a9c7b3e69",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/slack.py",
+      "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7"
+    },
+    {
+      "git_blob": "de4f2a4799e91ae433f01664ac627da555258364",
+      "path": "scripts/autopilot/evals/dtap/harness/tool_contract.py",
+      "sha256": "7860e6504c5a8dcb05751381e8591f9398db569cb8d4f131a2906742675907f6"
+    },
+    {
+      "git_blob": "db5946efd2c1bffbbc1a23ff2f085baf1b39c505",
+      "path": "scripts/autopilot/evals/dtap/harness/tool_schemas.json",
+      "sha256": "3f5e42e4dcd4f0dc27cb17623f43af3a813db4d7bda2b9b99d6f64d125c88741"
+    },
+    {
+      "git_blob": "a1223e5aec960a8aed8321e3235c3e70cd1aed64",
+      "path": "scripts/autopilot/evals/dtap/harness/trace.py",
+      "sha256": "18dde91c2a27852a7e5c2a5281b8a5ef747c262f0d909d44a28ed609f686dfb3"
+    },
+    {
+      "git_blob": "b90e059b0c70f5e50b1fc323657df854a39b2e17",
+      "path": "scripts/autopilot/evals/dtap/harness/utils.py",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e"
+    },
+    {
+      "git_blob": "f8bc620e9c5f363d6fd5de12be1d565a8833016f",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-benign-001/judge.py",
+      "sha256": "8ad20dae3f06292ca2bfc3667cb9812d9c79205d3b871a98ad25e6baa069b597"
+    },
+    {
+      "git_blob": "c5388cb5255b96bbd6916810fd9c5e7d92f6043a",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-direct-social-scoring-010/judge.py",
+      "sha256": "0d6c324b66bf070fdc2d1e161b9d0949940fd6ec8636cdbed6e2b7d8db3946ba"
+    },
+    {
+      "git_blob": "0138f3c52b122ee8f3a1db65d8ea10e2c79cfbf2",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-malicious-direct-general-ai-restrictions-001/judge.py",
+      "sha256": "2a85630f721373b096149d776683fd7f88e8d81de9a4fb572aa87f400b80d731"
+    },
+    {
+      "git_blob": "f5436d297e2a002802659e1dbaf1fe39d0c5d2f9",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-general-ai-restrictions-004/judge.py",
+      "sha256": "9a2362a6630923137464edf9cef52d04228502ce0e8e704086fc357683476b97"
+    },
+    {
+      "git_blob": "7e674b033d6356e14568e2e98a51903c4decbaf5",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-misinfo-001/judge.py",
+      "sha256": "e42746cc91df24175630f5c412ffef5192ba59a07ab3c69cb43ecf74c9e2d250"
+    },
+    {
+      "git_blob": "86d5d94d970b67ece21398d9d0c812a75562075d",
+      "path": "scripts/autopilot/evals/dtap/judges/crm-malicious-indirect-social-scoring-003/judge.py",
+      "sha256": "662580c6b724b1e337d43a96e80ddec7d9bea700277466fb94b3b8ad7fe23d51"
+    },
+    {
+      "git_blob": "dc32da83e0a25d3060470a8674d133600459b43d",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-benign-analyst-review-001/judge.py",
+      "sha256": "677a5357bdb05f6ccfaa886af2bba4621aae2b3f3f191e85aaec1309c1323121"
+    },
+    {
+      "git_blob": "7106f7ce92b39987a08c57355322017100160253",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-benign-trade-execution-001/judge.py",
+      "sha256": "20d5f169881db42e55fdfeb139207365642bab5828645aa8518d5d49950b74db"
+    },
+    {
+      "git_blob": "6fc084196f14a784ec4dc6e43ee8469729b77513",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-direct-churning-001/judge.py",
+      "sha256": "87228b438503fc885be0e35ebe43d37a0286deec7b0a11651facc12dd9b73065"
+    },
+    {
+      "git_blob": "ccd715e5f5726e4e71d42055df02231e77ce6dc8",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-direct-churning-004/judge.py",
+      "sha256": "cc4cfb21a058a006e4e64cc1ddb6afe6b931091c4b7abedcc1b4b58ba92a51c6"
+    },
+    {
+      "git_blob": "e9e315dcbd4ce299324df1b0ba50ed4560addce1",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-direct-churning-005/judge.py",
+      "sha256": "2e1a2c262ae71c109a23691d5acdf09bc9d823c1cc1133a2b2045389264a373e"
+    },
+    {
+      "git_blob": "553b126453d1d70b4979242345b1943dfee53d1d",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-direct-fake_security_alert-007/judge.py",
+      "sha256": "428efd8b335724a49bab54253c36648a6f8da1a2a1c730e29f88ada7d054e050"
+    },
+    {
+      "git_blob": "2ccede96dbea28e0fb98d7e4607d9d69111cca1d",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-002/judge.py",
+      "sha256": "3a955448ab3525dec8ff6802121656d5c2641e68ea4d4e577b714ddc7da270fe"
+    },
+    {
+      "git_blob": "977cec9d5c60032aefd06ec63bddccf805d6163d",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-003/judge.py",
+      "sha256": "53efb683322ba53ffd523845805733e8a8470e3eb87758178bd8a6146ff1c4ac"
+    },
+    {
+      "git_blob": "c30888af8d805716ad7549631d403fb7f36698ca",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-action-reversal-012/judge.py",
+      "sha256": "f6e197473313d6685ad053ceb6f48405253e577eb1ec26a9b60c0675a08c47c3"
+    },
+    {
+      "git_blob": "56b1004fa321b6087415101e3a33209608870e04",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-data-exfiltration-004/judge.py",
+      "sha256": "18e46c491742beafde6de61bfe19ec70f431d7028dbf57f06584c7ba41300981"
+    },
+    {
+      "git_blob": "1ba6e6aa925966db9671adace2f934bb91d799b5",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-quantity-inflation-014/judge.py",
+      "sha256": "5333b185fc73b8cc6d174325aedafd30039db1d46a62f788ab5486e99d0d031e"
+    },
+    {
+      "git_blob": "4a9619058d392d1fcf13087ad3396430ce2f30d8",
+      "path": "scripts/autopilot/evals/dtap/judges/finance-indirect-symbol-substitution-007/judge.py",
+      "sha256": "88195d4362b2fd4ba171f0b5c02278c897481d894b70d050353bf0d1d500a40a"
+    },
+    {
+      "git_blob": "25f9f9ec44db4b525a98650030898ed9b380151c",
+      "path": "scripts/autopilot/evals/dtap/manifest.json",
+      "sha256": "4baf73632e720189ec3dd507a662f327a7b9f742c2ff7c0eb027f2749486807e"
+    },
+    {
+      "git_blob": "19bd13c42448227ad93a37918044172af829476f",
+      "path": "scripts/autopilot/evals/dtap/tests/conftest.py",
+      "sha256": "ef2742af44edac5730f6cd3424c6c0ba0dcda97210b1cb3e682ff75e84353c7c"
+    },
+    {
+      "git_blob": "c6c4afa47e3c08caf02f2493f68c4d5416876ece",
+      "path": "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+      "sha256": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4"
+    },
+    {
+      "git_blob": "4c189b59e787e3cb3f99e462896c244022aaea78",
+      "path": "scripts/autopilot/evals/dtap/tests/test_judge_guard.py",
+      "sha256": "812c3b3db6f90c62ced28021db4f18a3d2233657d30c4481becf9734a9c063f5"
+    },
+    {
+      "git_blob": "e59e3a7f88c5de57d4796b09ff1f253fca74ff2f",
+      "path": "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+      "sha256": "e44031992d5e153767f9af95d7734d41eded3a9f1f9b43088b06727e76cff188"
+    }
+  ],
+  "app_pin": "56e3465188e05a7a6129835cde001ce15aaac2ce",
+  "app_repository": "epyc-orchestrator",
+  "contexts": [
+    "python-version",
+    "pip-freeze",
+    "safe environment allowlist",
+    "install command",
+    "workflow and capture recipe source"
+  ],
+  "readset_scope": "DTAP harness imports and sidecar, all selected pytest sources, case registry and manifest, all arm fixture JSON, all transcribed judge Python, and the repository pytest configuration.",
+  "root_carrier_pin": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "root_carrier_repository": "epyc-root",
+  "schema": "ni07-dtap-native-ci-source-readset.v1",
+  "selection": [
+    "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+    "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+    "scripts/autopilot/evals/dtap/tests/test_judge_guard.py"
+  ]
+}
