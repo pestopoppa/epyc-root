@@ -53,7 +53,7 @@
 | EVL-48 | fable5 window2 findings 05c mi210 lever cate | [fable5-window2-findings-05c-mi210-lever-category-matrix.md](fable5-window2-findings-05c-mi210-lever-category-matrix.md) | L2 — quantize_q8_1 requant kill (L14 done: 4b6434a9, DEAD) | — |
 | EVL-49 | reboot gated inventory and staging | [reboot-gated-inventory-and-staging.md](reboot-gated-inventory-and-staging.md) | S-04 — refresh the E5 Stage-B readiness verification (14 days stale), then S-05's corrected re-measurement grid | INF-06, INF-07, RTG-46 |
 | EVL-50 | conversational memory eval instruments | [conversational-memory-eval-instrument.md](conversational-memory-eval-instrument.md) | CME-3 — carry the BEAM harness-defect note on every BEAM number quoted outside the SC68 tuple | EVL-10 |
-| EVL-51 | intake re-verification | [intake-reverification.md](intake-reverification.md) | IRV-4 — finish the corrective plan, then file the reviewed 22 re-dives and 8 demotions under IRV-5/6 | — |
+| EVL-51 | intake re-verification | [intake-reverification.md](intake-reverification.md) | IRV-5/6 — file and validate the reviewed 22 source updates and 8 demotions under the corrective plan | — |
 
 ## Cross-domain
 

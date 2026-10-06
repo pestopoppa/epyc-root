@@ -1,0 +1,172 @@
+{
+  "candidate_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+  "current_base_commit": "f6feb6516577c951a848fcf3d32769ece84cee64",
+  "current_base_sha256": "c4a1f0e6efe01c1a29bc5ed0783819289f956f541e90d1f2559dcc02249aa4a2",
+  "historical_base_sha256": "df73fae60a0ddf63b141359e096f622f698d366b5e07b45755fb4c4c18565b30",
+  "non_target_blocks_byte_identical": true,
+  "non_target_bytes_sha256": "49ef9a74d5bc1fccc55c326b59e16f1a17b724959e268c95e4b32170ca0ea2e4",
+  "prepared_at": "2026-10-06T09:12:53.275662+00:00",
+  "preserved_peer_entry_ids": [
+    "intake-1924"
+  ],
+  "reviewed_scoped_candidate_sha256": "155324b3309aff41aca4516be4837dfcf61e590ff96c630668b07cdf0245fc74",
+  "reviewed_target_blocks_byte_identical": true,
+  "schema": "epyc.intake-index-byte-rebase/v1",
+  "source_event_manifest_sha256": "c16c9617508aeddf10c68b0f9b087c566a543ffb4de34527cde21431eeb51398",
+  "source_manifest_role": "Immutable historical reviewed event manifest; full-index application binding lives in this receipt. Exact frame batch must be replayed, not regenerated.",
+  "status": "prepared_byte_checks_passed_no_native_run",
+  "target_blocks": {
+    "intake-1028": {
+      "current_base_sha256": "fa07bc7ab611bee9b2995d682355c67a07d37b87cb6b46fd8b9f324dda2e7b93",
+      "reviewed_current_sha256": "c34d54f81b31d93f5e7f850fea6a296126f8cc5e60fd7533421c1b3d5bb58852"
+    },
+    "intake-1051": {
+      "current_base_sha256": "157e3d2e349bc3d5dc611c87bc4c0f4db09360614e6c1f5c08587d686d669bf7",
+      "reviewed_current_sha256": "a71e494d048ec5852dfbd748341c999cdd76e100d98675f4765028793b2fc398"
+    },
+    "intake-1052": {
+      "current_base_sha256": "ce04911db1dca4c384204ebdf08919621a063bd9b84543595976c766bdfce851",
+      "reviewed_current_sha256": "fb3de92dbe77858d44e1a129c3ed75b82c3cb9516fd980b5906df917df9adc3f"
+    },
+    "intake-1087": {
+      "current_base_sha256": "06441d0e8dafb77874e8785cc43caa33a7a0a4b1e74d41a74eff76eb02896767",
+      "reviewed_current_sha256": "0c40f7df920055f6b3bdfdbf6c19301aed4903fc08532210b74e8898edaa7540"
+    },
+    "intake-1239": {
+      "current_base_sha256": "ff581cf6038c39d50615d1fb3b4de1225acd5a833fe8e82654d92b921b0973c2",
+      "reviewed_current_sha256": "4d862c0da1a6ae03c43ced939ea065a5a811a35cede2a07242bf3bb769c74591"
+    },
+    "intake-1240": {
+      "current_base_sha256": "5d3b2f0ff177898a39aae1f5a6803b87aacfe8d94f177fc90dc7733deb56252e",
+      "reviewed_current_sha256": "730795a893aff96099c344ae165c180069101bbbe0cb5ba7c96d0ccd14361324"
+    },
+    "intake-1248": {
+      "current_base_sha256": "b0b2c5e27fe9c510c843a7ea1506f108ee0a053245b1e19152cfe38740ca202c",
+      "reviewed_current_sha256": "0e9b741af7ef8b8f49f930780e6b2d0233e39ab1e12da80d106720a82d6a2121"
+    },
+    "intake-272": {
+      "current_base_sha256": "17a5d0655dc9d66ab241cb5dbf39daf3ca04669d97a01f36ea9e3db9a4a3c11e",
+      "reviewed_current_sha256": "636e182e749fb25cb1a5637cf324dbc66b932728a83a34e87363733490b5223e"
+    },
+    "intake-664": {
+      "current_base_sha256": "107f0f78ebfadc98e7e66079fa69592229504411c0bf070cc9f1f235feed0925",
+      "reviewed_current_sha256": "bc1d59d3d099a04d7f967b55b70521eefab15ad8dffcb5142a797415b4d5a569"
+    },
+    "intake-667": {
+      "current_base_sha256": "c77258d6eb407138a9e0f724ca987619d1889d5cfb08b037e2f520d64baf2dc2",
+      "reviewed_current_sha256": "470cf8b469a855170732c1d663dbf29149f6ffef89ac0087488223038d2942b8"
+    },
+    "intake-896": {
+      "current_base_sha256": "507ba283bf971b63911f4adebd997afcf0bf0ee486348180e42a9d2592867ddd",
+      "reviewed_current_sha256": "3b74504eaa822d29d066cedebfa523e6f912270abcd82ebea5b9a94b12adfcd8"
+    },
+    "intake-961": {
+      "current_base_sha256": "2c5b4f9bfada6e7eac5c155a892fd414c84c10804d1fd8c881cb8fbe08864c8e",
+      "reviewed_current_sha256": "57e34d755c84bc4db1db1e2e8e22ce922ae0799a11090eb069ccd8d8e304bef7"
+    },
+    "intake-962": {
+      "current_base_sha256": "ac2ff0f33d91206eabea07afc27fb4f778dfe801e90ebb50d5b5c24759e690fc",
+      "reviewed_current_sha256": "90104a13cdbfdfd77c31328513a8f3ad512ba74033e2b94d922d1df06c4f9e93"
+    },
+    "intake-963": {
+      "current_base_sha256": "8d3527e74efb4e6dca09ec6580879f758e2e61deeb3d6dc939e0e78b9d1d2922",
+      "reviewed_current_sha256": "b14c5fd1c71f843872fd77b1cb4603fb04a571ff7417a694f99df97f6e8d8bda"
+    },
+    "intake-966": {
+      "current_base_sha256": "cdd280e4c45d49dab6ad5b58c17ffef68ec662c8bce7a9f841b37a45edb9686c",
+      "reviewed_current_sha256": "0ae5e58ac5c70d721e4f8b99b0878185925b9b1c52eec071f6e6ed2a91b6a5dc"
+    },
+    "intake-967": {
+      "current_base_sha256": "0380d63765d5908c743f645ad7ce5dace1827628b9d21345ec312f4d7b72f1ab",
+      "reviewed_current_sha256": "439ab9f60a17d5380defa680a6134f1911bd2125f5c56fb3a26cf0bcfd14a70b"
+    },
+    "intake-968": {
+      "current_base_sha256": "2b80d06aabb2eb8c3aa937c6f11d9fa17e4173797724ccda0f2556dbaa406ced",
+      "reviewed_current_sha256": "dff37c89e83a5c2132d740881070a0a9b74cf5563f3c4317f44710c5025a044a"
+    },
+    "intake-972": {
+      "current_base_sha256": "a85c9d7c576d7e8cb899e33d77ba896be616b5e4d24151a641225e3477889de7",
+      "reviewed_current_sha256": "3485ab25f305b752a89cc5fdb42d69aad3c3c7702c189b7e80abae62efff30f4"
+    },
+    "intake-974": {
+      "current_base_sha256": "9d882a320439869973a3ad8cad2da399c14f94ff2d5c38d3931d841762aab402",
+      "reviewed_current_sha256": "1b20c6d026c4f3c7e0ac36cbad961c32af69ac9cfac31b0dff03052d175295b0"
+    },
+    "intake-975": {
+      "current_base_sha256": "edd020632088df1b15b751f79d5cbadc9c5b388ef748b7cb5c832588c13de007",
+      "reviewed_current_sha256": "b39a08db12ed6763a4314303e5907397e5565d5db0e2a94793a24d6675624de4"
+    },
+    "intake-976": {
+      "current_base_sha256": "4686c165275ec11092d89fc4aa75ca5522094d920d6ffdcd1f61f02868225053",
+      "reviewed_current_sha256": "a2603b5d4b8927a959a1fcb0eb8ab8412ceaccd543150470ba116dae8d9f9764"
+    },
+    "intake-978": {
+      "current_base_sha256": "c9cdea21764d7d733e6027da86134c8164b8a74279cfb0344b9e6f36cfdd2aa1",
+      "reviewed_current_sha256": "f70449fbae582c62b73923579324a087fa20a5c3bf732da87b5299f09c55d791"
+    },
+    "intake-979": {
+      "current_base_sha256": "94e157bce2da6382e19f5e258b7d0158b740b98834b03536f2a870ba19817b79",
+      "reviewed_current_sha256": "ae7387f636fa8a3900d0092f2e9c864bbed5686dd41bce102c7405eabd0ab857"
+    },
+    "intake-980": {
+      "current_base_sha256": "b1cf95eda37b7a6006e3a6dc495345d21f88231da8805e84d756c0491a1d08f1",
+      "reviewed_current_sha256": "5b0815d2e7fe3d2ac09235cd7e20131668046d97b830ab3b807726f70796ed75"
+    },
+    "intake-981": {
+      "current_base_sha256": "6f0d31a50c1d7104b67f74cd392a555f8ee33e8861485474986717c9fa785cfc",
+      "reviewed_current_sha256": "297b1d0c6eb6425fde3bccc44ac35d9e4d35e590310843789f0dee44214d58a7"
+    },
+    "intake-982": {
+      "current_base_sha256": "8e6c9f698e748d0d9860fddde653f83c4df9dd35ab55dbb29e2fc138e632d7dc",
+      "reviewed_current_sha256": "c134bc2e610825aba204a981267b3232c56986ce87da897fcbba7085560757b3"
+    },
+    "intake-983": {
+      "current_base_sha256": "1da5f3307579da082f1b3a2476b512b0e159919bdd2db5bacad1b7b1becdcaa4",
+      "reviewed_current_sha256": "59d9b1ff002458207ffb91f06987df8d6e3e80569b6711bcd32257cdb33291e4"
+    },
+    "intake-984": {
+      "current_base_sha256": "9fd93ba6208f9629c83a3a30e91aaa80561ad0d0c47e4768839c94b03a6bddbc",
+      "reviewed_current_sha256": "775b1fb4e3b260247dbfb3a00c9e89f58eac33bd5a2176c5d2cce2a214cfac82"
+    },
+    "intake-985": {
+      "current_base_sha256": "f9078e03fd7479699b0a110e6f6b499ea3df1370d0bf614eeb391dc5ce03c5f6",
+      "reviewed_current_sha256": "634aa5865597c538a5c26288e467d4ee24234eb3d6e59109ad27b9ac1a6aab12"
+    },
+    "intake-989": {
+      "current_base_sha256": "7510bf89e391ef796398db1cb11ade466ed2972e3a16e877ae4f0f128622807d",
+      "reviewed_current_sha256": "aa4e56f3018bf27783a1ec075c950a8cac09ee4fe2d358f6398543fe69a9d934"
+    }
+  },
+  "target_ids": [
+    "intake-1028",
+    "intake-1051",
+    "intake-1052",
+    "intake-1087",
+    "intake-1239",
+    "intake-1240",
+    "intake-1248",
+    "intake-272",
+    "intake-664",
+    "intake-667",
+    "intake-896",
+    "intake-961",
+    "intake-962",
+    "intake-963",
+    "intake-966",
+    "intake-967",
+    "intake-968",
+    "intake-972",
+    "intake-974",
+    "intake-975",
+    "intake-976",
+    "intake-978",
+    "intake-979",
+    "intake-980",
+    "intake-981",
+    "intake-982",
+    "intake-983",
+    "intake-984",
+    "intake-985",
+    "intake-989"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "status": "approved corrective plan; execution and code patches remain gated",
+  "authorization": "Operator instruction 2026-10-06: proceed processing re-dives and demotions",
+  "plan_path": "research/intake-stage3-plan-2026-10-06-reverification.md",
+  "plan_sha256": "394d6d4da9a1650e35fcb53a375bfbc115415bd43da05e3d0e811b6afa6ac930",
+  "source_index_or_ledger_applied": false,
+  "current_tests_executed": false,
+  "files": [
+    {
+      "path": "recommendation-reconciliation-79.json",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v3/recommendation-reconciliation-79.v3.proposed.json",
+      "sha256": "6d3b548dc4977b986411ad211e8d43d3caf6db964b98b55fd06028d2e353a9fc"
+    },
+    {
+      "path": "source-wiring.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v4/source-wiring-v4.patch",
+      "sha256": "c80e6a325139eed6b84c27a936bff4cae26b4038cc41e3a13e82d3c8a88a717a"
+    },
+    {
+      "path": "schema-custody-addendum.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v4/schema-custody-addendum-v4.patch",
+      "sha256": "dae9c60f968fd32df63c90b35cab8670d47901f961a8110c7d40f664cdf36f9f"
+    },
+    {
+      "path": "consumer-corrections.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/consumer-patch/consumer-corrections-exact.patch",
+      "sha256": "796aec264504be74e4d052a8e3543f60054896411e1b9185417b417f3b61ca28"
+    },
+    {
+      "path": "operational-context-corrections.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/wrap-checkpoint-patches/operational-context-rationale-corrections.v2.patch",
+      "sha256": "9dc6d7fc6b1cb9f1fd3d7196289e6ff0ff43ec045efbdcc8b8da7592881d9a58"
+    },
+    {
+      "path": "historical-six-corrections.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/historical-six-citation-repair/historical-six-citation-repair.patch",
+      "sha256": "7d824358b09deeca1cd96a068838c7aa820dbfa8d747bfbc3417f5bb3d02b14c"
+    },
+    {
+      "path": "source-rationale-corrections.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/consumer-rationale-979-980-984/consumer-rationale-corrections.patch",
+      "sha256": "a84ae27f96c84e3c526ac7f54afb4ac708b0b12607786e3f657df4ede0c98ece"
+    },
+    {
+      "path": "historical-five-corrections.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/historical-five-source-citation-repair/historical-five-source-citation-repair.patch",
+      "sha256": "3de5f7c271ac821cb3b1553eba149f4d5d08aa3b81df5d8d5a5649c7c7f6bd40"
+    },
+    {
+      "path": "index-rebase-receipt.json",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/durable-replay-proposed/index-rebase-f6feb6516/index-rebase-receipt.json",
+      "sha256": "b3efffc2f0d41487dcff0b8fb9c17840beb81075f83be629133c5e39e93624db"
+    },
+    {
+      "path": "descriptor-review.json",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/durable-replay-proposed/independent-review-descriptor-v3.json",
+      "sha256": "98e1e69c0d4cadd313946811de26f35cb1b431548aa2f0f7e9cb5a89c08969e4"
+    },
+    {
+      "path": "current-validation-input-bindings.json",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/root-validation-prepared/input-bindings.json",
+      "sha256": "0bdd3feff035d4442342d32a8d70e31ccac002caaaddbc4804c7b86df9fd27ce"
+    },
+    {
+      "path": "plan-preparation-receipt.json",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v5/IRV-4-corrective-stage3-filing-plan.v5.receipt.json",
+      "sha256": "9d1feffa602b45c83381ce30a9306f09a98b5b2a7c27127188787d1430daa667"
+    }
+  ]
+}

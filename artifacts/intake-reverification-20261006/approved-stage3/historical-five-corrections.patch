@@ -1,0 +1,78 @@
+diff --git a/handoffs/archived/research-evaluation-index-history-through-2026-06-19.md b/handoffs/archived/research-evaluation-index-history-through-2026-06-19.md
+--- a/handoffs/archived/research-evaluation-index-history-through-2026-06-19.md
++++ b/handoffs/archived/research-evaluation-index-history-through-2026-06-19.md
+@@ -144,6 +144,8 @@
+ 
+ - [ ] Bullet-vs-narrative consolidation A/B test: run CF Phase 2a eval suite with two compaction summary formats (structured narrative vs flat bullet-point). Tests whether context rot shuffled finding (intake-273) has signal for reasoning tasks. Low cost, high signal. (→ Package C)
+ - [ ] Documentation-stripped ablation: replicate intake-272 methodology on our repos. Strip all `.md`, run evals with vs without thin-map agent files. Isolates whether our agent files provide value beyond existing documentation. (→ Package B or standalone)
++
++**Source clarification — 2026-10-06:** The preceding task text and unchecked state remain historical. The reviewed v3 paper removes documentation *after* generating the context file and *before* evaluating agents: `.md` files, example code, and `docs/` contents; it excludes Claude Code from that experiment for cost reasons (paper v3, Figure 12 and adjacent text). The proposed EPYC `.md`-only ablation is a local variant, not an exact replication. No EPYC benefit or universal benefit from shorter context is established (`intake-272#03`).
+ - [ ] `task_relevance` as candidate 5th signal in `segment_helpfulness()`: prototype semantic similarity (all-MiniLM-L6-v2, CPU) between segment text and current task description. Depends on bullet-vs-narrative results before shipping. (Design only until Package C data)
+ 
+ ### P6 — REPL Turn Efficiency (from intake-295/301)
+diff --git a/handoffs/archived/routing-and-optimization-index-history-through-2026-08-10.md b/handoffs/archived/routing-and-optimization-index-history-through-2026-08-10.md
+--- a/handoffs/archived/routing-and-optimization-index-history-through-2026-08-10.md
++++ b/handoffs/archived/routing-and-optimization-index-history-through-2026-08-10.md
+@@ -400,7 +400,7 @@
+ **Updated 2026-04-06**: Phase 2c ByteRover enhancement (intake-267) adds compound retention scoring (access_count, importance_score, maturity_tier with hysteresis) to `segment_helpfulness()`. Design documented in handoff. Implementation after Package C — uses Package C Δ_k ground truth for weight calibration.
+ 
+ ### 9. Instruction Budget ↔ PromptForge Mutations
+-intake-272 (ETH Zurich) shows context files increase inference cost by 20%+ without improving success rates. Every PromptForge mutation that adds instructions must be evaluated against instruction overhead (AP-16). AP-17 provides the corrective mechanism — structural pruning to reduce instruction load. Agent files should target ≤400 words of toolchain-only instructions (intake-271). This constrains both `prompt_mutation` and `code_mutation` species: quality gains that come with >15% instruction overhead increase should be scrutinized.
++**Historical source reading:** intake-272#record (ETH Zurich) was summarized here as showing “context files increase inference cost by 20%+ without improving success rates.” **Corrected 2026-10-06 against current arXiv v3:** LLM-generated files have no significant success effect (p=.87/.37); developer-written files show an author-reported +2.4% average resolution-rate difference versus no file (p=.21, not significant), and outperform LLM-generated files (p=.038) (`intake-272#00`). Reported cost increases are 20%/23% for LLM-generated files and about 19% for developer-written files on CTXbench; p=.0126 belongs to the developer cost comparison (`intake-272#01`). These are author results, not an EPYC cost or success prediction. Every PromptForge mutation that adds instructions must be evaluated against instruction overhead (AP-16). AP-17 provides the corrective mechanism — structural pruning to reduce instruction load. Agent files should target ≤400 words of toolchain-only instructions (intake-271). This constrains both `prompt_mutation` and `code_mutation` species: quality gains that come with >15% instruction overhead increase should be scrutinized.
+ 
+ ### 10. GEPA ↔ Multiple Subsystems
+ `autopilot-continuous-optimization.md` P10 (GEPA PromptForge Integration) and `meta-harness-optimization.md` Tier 2b/MH-4 (GEPA as search algorithm) evaluate the same technique from two perspectives. Autopilot owns implementation (AP-18–21: DSPy signature wrapping, optimize_anything, Full Program Adapter). Meta-harness evaluates whether GEPA's Pareto-frontier selection outperforms our current top-1 selection as a search algorithm. Results from either inform the other. Source: 2026-04-12 research intake (intake-327/345/240).
+diff --git a/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md b/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md
+--- a/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md
++++ b/handoffs/completed/meta-harness-optimization-completed-through-2026-05-28.md
+@@ -142,8 +142,9 @@
+   - Key technique: Progressive disclosure, context firewalls (sub-agent isolation), instruction budget management, back-pressure loops
+   - Reported results: TerminalBench-2 rank delta of ~28 positions from harness alone (same Opus 4.6 model)
+   - Delta from current approach: Our PromptForge does mutation but lacks systematic back-pressure loops feeding specific failure signals to harness components. The instruction budget concept (14-22% token overhead) is not tracked in our eval tower.
+-- **[intake-272] "Evaluating AGENTS.md" (arXiv:2602.11988)** — ETH Zurich
+-  - Relevance: Context files increase inference cost by 20%+ (both arms; ~19% even developer-provided, p=0.0126). CORRECTED 2026-08-20 vs v2 -- NO significant success-rate reduction; +2.4% for developer-provided files
++- **[intake-272#record] "Evaluating AGENTS.md" (arXiv:2602.11988)** — ETH Zurich; dated source-reading history
++  - Historical relevance reading, corrected 2026-08-20 vs v2: “Context files increase inference cost by 20%+ (both arms; ~19% even developer-provided, p=0.0126). NO significant success-rate reduction; +2.4% for developer-provided files.”
++  - Source correction 2026-10-06 against v3: no significant success effect for LLM-generated files (p=.87/.37); developer-written files show an author-reported +2.4% average resolution-rate difference (p=.21, not significant), and outperform LLM-generated files (p=.038) (`intake-272#00`). Separate cost increases are 20%/23% for LLM-generated files and about 19% for developer-written files on CTXbench; p=.0126 is the cost test (`intake-272#01`). These author results do not establish local thin-map optimality. Existing action rationale and historical completion remain unchanged.
+   - Key technique: Empirical evaluation of AI-generated vs human-written agent context files on SWE-bench
+   - Delta from current approach: Direct threat to PromptForge code mutations that add instructions. Our thin-map architecture may be optimal, but needs empirical validation. **Action**: add instruction token budget tracking to eval tower; consider "minimal context" ablation in PromptForge.
+ - **[intake-338] "Agent Lightning"** (Microsoft Research) — Zero-code agent optimization
+diff --git a/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md b/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md
+--- a/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md
++++ b/handoffs/completed/agent-file-prose-compression-completed-through-2026-07-30.md
+@@ -396,4 +396,6 @@
+   the 6 role files kept + refreshed; `agents/commands/wrap-up.md` validation coverage remains
+   a wishlist item (tracked here, low priority)
+ 
+-- [x] `/doctor` behaviour re-sourced from the Codex CLI and current manual ✅ 2026-07-29: it generates a local diagnostic report for installation, configuration, authentication, runtime, Git, terminal, app-server, and thread-inventory health; its CLI exposes `--json`, `--summary`, and `--all` report modes. It does **not** document skill or `CLAUDE.md` rewriting. The post's four-step dedupe/trim/migrate/report-before-changing description remains invented and is struck from intake-896.
++- [x] `/doctor` behaviour re-sourced from the Codex CLI and current manual ✅ 2026-07-29: it generates a local diagnostic report for installation, configuration, authentication, runtime, Git, terminal, app-server, and thread-inventory health; its CLI exposes `--json`, `--summary`, and `--all` report modes. It does **not** document skill or `CLAUDE.md` rewriting. The post's four-step dedupe/trim/migrate/report-before-changing description remains invented and is struck from intake-896#record.
++
++**Source clarification — 2026-10-06:** The completed 2026-07-29 task above records a separate Codex CLI/manual investigation; it is not evidence of the vendor post's implementation. The reviewed post mentions a generic `/doctor` for rightsizing skills and `CLAUDE.md`, but provides no implementation mechanism (`intake-896#03`). Its fabricated dedupe/trim/migrate/audit/index/traversal/report-before-changing workflow remains withdrawn. The completed task and its dated outcome are preserved.
+diff --git a/handoffs/completed/mi210-speed-campaign-summary.md b/handoffs/completed/mi210-speed-campaign-summary.md
+--- a/handoffs/completed/mi210-speed-campaign-summary.md
++++ b/handoffs/completed/mi210-speed-campaign-summary.md
+@@ -59,18 +59,20 @@
+ 
+ ## Research Intake Update — 2026-07-08: KernelBench Seeded Fuzzing (rec-007)
+ 
+-**Source**: KernelBench (**intake-664**, arXiv:2502.10517) — id corrected 2026-08-10; see the correction below for what the original citation conflated
++**Source record history**: KernelBench (**intake-664#record**, arXiv:2502.10517) — id corrected 2026-08-10; see the corrections below for what the original citation conflated
+ 
+ > **⚠ CORRECTION 2026-07-22 (MI-KB-1 scoping, verified vs intake index):** This row is a THREE-WAY conflation. The real **KernelBench** is Stanford ScalingIntelligence **arxiv:2502.10517** — a kernel-*generation* benchmark (LLM writes CUDA/DSL kernels for PyTorch programs; metric `fast_p`), confirmed via intake-660/661. It is NOT `arxiv 2606.20128` (a separate seeded-fuzzing / "correctness-illusion" kernel paper) and NOT `intake-797` (the unrelated "Externalization in LLM Agents" review, arxiv 2604.08224). The "9/9 seeded-fuzzing" headline below belongs to the 2606.20128 paper, not KernelBench. MI-KB-1 was scoped against the REAL KernelBench: no CPU backend + gfx942/950-only AMD path (not our gfx90a) → decline the harness; methodology already covered by `test-backend-ops` + `kernel_eval.sh`. Full analysis: `epyc-inference-research/docs/design/kernelbench-step3-regression-guard-scoping.md`.
+ 
+-**Key finding**: Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.
++**Historical rec-007 finding, withdrawn as a KernelBench result:** “Seeded fuzzing for kernel correctness catches 9/9 buggy kernels, passes 15/15 controls. Provides fine-grained kernel-level benchmarking substrate.” This source audit does not verify that result from the separate fuzzing paper.
+ 
+-**Applicability to EPYC**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
++**Historical applicability rationale, withdrawn for KernelBench**: Directly applicable as step 3 in the four-step experimental kernel workflow (Pull → Build → **Validate no regressions** → Deploy). KernelBench's seeded fuzzing methodology can serve as a regression guard for v7 candidate validation, catching correctness regressions in experimental kernel builds before promotion.
+ 
+-**Action**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
++**Historical action rationale**: Evaluate KernelBench for integration into our experimental kernel validation pipeline. Particularly relevant for:
+ - iqk AVX-512 GEMM kernel regression testing
+ - GPU kernel validation before future production-kernel promotion
+ - Agentic ROCm kernel authoring loop (child handoff)
++
++**Source correction — 2026-10-06:** KernelBench is a kernel-generation benchmark: the paper has 250 tasks in three levels and current upstream has 270 reference Python tasks in four levels (`intake-664#00`). Paper `fast_p` divides correct, strictly-faster-than-p tasks by all tasks, including incorrect tasks; ties do not count in `fast_1` (`intake-664#01`). These CUDA-era author measurements do not establish a seeded-fuzzing regression guard or EPYC performance. The 9/9 and 15/15 headline and its original applicability rationale above are preserved as withdrawn historical provenance, not reinstated by fresh native support. MI-KB-1/MI-KB-2 outcomes and checkbox states below remain completed; no production run or reopened harness adoption is proposed.
+ 
+ - [x] **MI-KB-1** — evaluate KernelBench integration into experimental kernel validation pipeline (step 3 of four-step workflow) ✅ 2026-07-22
+ - [x] **MI-KB-2** — run KernelBench over current v6 production kernel to establish baseline ✅ 2026-08-11 —

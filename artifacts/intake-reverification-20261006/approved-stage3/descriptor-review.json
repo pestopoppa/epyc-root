@@ -1,0 +1,59 @@
+{
+  "status": "static_accept_for_root_owned_scratch_validation_not_application",
+  "reviewed_at": "2026-10-06T09:23:17.942170+00:00",
+  "preparation_receipt_sha256": "7c17def0fe9dad2290f3026f2a03d801fbf10f9156494d80b603b1aa704cee69",
+  "source_file_bindings": {
+    "ledger_write_lease.py": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4",
+    "materialize_reviewed_batch.py": "2c9cfc3b8e61e7629fcdd2cf296b636b9c35b4a23d9c5527b918b173c1acb8ab",
+    "native_correction_replay.py": "2af947286ed1b36c371774f5df014757b181d0ac6ed202ab6efe256dd64d8d3d",
+    "rebase_current_index.py": "d923f40284ef2bff55b13d1f60489b9cf7f7a9d6a1765e262bf3544cdc7c6b54",
+    "rebase_reviewed_batch.py": "b396ec7f49757f5a874b28f7273b3151debf4c2921c5bd58b8e197e8203be724",
+    "semantic_impact_audit.py": "594ff1ec8ed8b74c5e8b05249806f3db2a2c384aaed56b03e772a24b453cea11",
+    "test_ledger_write_lease.py": "732caeaa2f2b7ee711dfe9c1ce2dd2c6f84268807a2aaf112aa6e2b1355bafc7",
+    "test_native_correction_replay.py": "7b1e24ed2d4a7708e50b3fd2e7655d7d5d5b721263afe99cafbb0996cfb6d865",
+    "test_rebase_current_index.py": "693e81ae25c63527982ea16e932b0172c31625858d29748fd8237c7145b5ae5b"
+  },
+  "acceptable_patch_bindings": {
+    "ledger_write_lease.py.patch": "afc5ea5e7097c278cefc4823abcf91405f43399b2eb5a5ff943009884267e84c",
+    "native_correction_replay.py.patch": "6207993b27dbc347363ea329a8c4d2365f464122b010ef60cc94088285262a41",
+    "test_ledger_write_lease.py.patch": "f61868db728cf4024621261f5cd8de2c2682bbf38912ea8ef3ba3fe428123115",
+    "test_native_correction_replay.py.patch": "12446c33a760214ff241f1df699d37341253aac17e0428ddf8b4a56a0b9bbd8b",
+    "test_rebase_current_index.py.patch": "dc3058dfcd7063351829e9df53d4aafb3f0661a1d53aa5bfe5435c6529c1bea7",
+    "rebase_current_index.py.patch": "176cd58cd09facebe895180e5efc294efeb3c46c5b5e8517aaa5dea0c9975e7e",
+    "rebase_reviewed_batch.py.patch": "c4744f33bd3f940e2ff3365dac8adce1e516e9a0b44b7806684e044394b56e76",
+    "materialize_reviewed_batch.py.patch": "70cf32dae50dab90bd5e5429b6c5805ec01019dc3e623be2f394b2ab9c5ac6b3"
+  },
+  "test_counts": {
+    "replay": 8,
+    "lease": 5,
+    "actual_index_rebase_builder": 3,
+    "unique_total": 16,
+    "executed_by_reviewer": 0
+  },
+  "findings": [],
+  "static_evidence": [
+    "LeasedLedger retains native append, record encoding, head, cached sequence/link hash, future stamp and verify behavior; only descriptor read/write transport changes, torn repair/create refused.",
+    "Owned fd opened O_APPEND; pread reads same fd without opening inode, complete write loop and fsync preserve native newline encoding and chain cache. Path inode, lease state and SIGIO break are checked; no further append after break.",
+    "Replay inside protected region uses descriptor read facade and LeasedLedger, full fold before append and exact bytes before/after every append and final full-chain/fold comparison.",
+    "Malformed late-frame test now rebuilds bound reviewed ledger and asserts precise authority mismatch before any destination write.",
+    "Five lease fixtures include actual native Ledger append/read/verify acceptance, existing peer descriptor refusal, break refusal, path replacement and release."
+  ],
+  "index_custody": {
+    "observed_lane_head": "f6feb6516577c951a848fcf3d32769ece84cee64",
+    "observed_local_origin_main": "68acaf44458849ca4abd98b10ee7bfd01dc7ac5c",
+    "new_origin_index_sha256": "c4a1f0e6efe01c1a29bc5ed0783819289f956f541e90d1f2559dcc02249aa4a2",
+    "new_origin_index_equals_pinned_current_base": true,
+    "candidate_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+    "selected_target_blocks": 30,
+    "non_target_blocks_byte_preserved": 1890,
+    "peer_1924_byte_preserved": true
+  },
+  "remaining_application_prerequisites": [
+    "Root-owned actual 16 tests and frozen source V2/rebase validation receipts; all are currently unrun or unmaterialized for this proposal.",
+    "Actual ledger rebase/materializer builder coverage remains absent from the 16; synthetic replay peer fixture is not execution of those builders.",
+    "Current candidate cite-check/index-validator gates remain pending; historical gates cannot substitute.",
+    "Recheck current index/ledger prefixes immediately at root application boundary; observed local origin/main is newer but index bytes unchanged."
+  ],
+  "canonical_or_lane_writes": false,
+  "frozen_V2_changed": false
+}

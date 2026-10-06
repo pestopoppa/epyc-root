@@ -1,0 +1,40 @@
+{
+  "status": "scratch-only filed-plan payload proposed for main application; no handoff/index/wiki/ledger writes or jobs",
+  "proposed_destination": "research/intake-stage3-plan-2026-10-06-reverification.md",
+  "v5_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v5/IRV-4-corrective-stage3-filing-plan.v5.proposed.md",
+  "v5_sha256": "b3642fd2537ad75211c1cc56d0f58985ac12e89d1a2a015de70d5423cf5a0fdd",
+  "preserved_v4_path": "/mnt/raid0/llm/tmp/intake-reverify/filing-prep-v4/IRV-4-corrective-stage3-filing-plan.v4.proposed.md",
+  "preserved_v4_sha256": "9ca46fdc2451a9b50b28796cc7c08bb66972fe9f80c21408b8568188b197bd8c",
+  "checkpoint_commit": "028b5270344d27f6eef97b3bb7ff018d965bda42",
+  "promoted_main_commit": "0234875235b6eb86b2ae4a969ed7b406c159eaca",
+  "current_lane_index_prefix": "c4a1f0e6 (unchanged; no index filing)",
+  "current_index_candidate_sha256": "8fe60fa1d2a15105274ebeeaa5a44d2fda486b799fe9d55f9166f3744fd8655d",
+  "current_index_rebase_receipt_sha256": "b3efffc2f0d41487dcff0b8fb9c17840beb81075f83be629133c5e39e93624db",
+  "current_29_test_binding": "0bdd\u2026 (main-reported static binding; tests remain unrun)",
+  "source_wiring_patch_sha256": "c80e6a325139eed6b84c27a936bff4cae26b4038cc41e3a13e82d3c8a88a717a",
+  "schema_custody_patch_sha256": "dae9c60f968fd32df63c90b35cab8670d47901f961a8110c7d40f664cdf36f9f",
+  "consumer_and_history_patch_sha256s": [
+    "796aec264504be74e4d052a8e3543f60054896411e1b9185417b417f3b61ca28",
+    "9dc6d7fc6b1cb9f1fd3d7196289e6ff0ff43ec045efbdcc8b8da7592881d9a58",
+    "7d824358b09deeca1cd96a068838c7aa820dbfa8d747bfbc3417f5bb3d02b14c",
+    "a84ae27f96c84e3c526ac7f54afb4ac708b0b12607786e3f657df4ede0c98ece",
+    "3de5f7c271ac821cb3b1553eba149f4d5d08aa3b81df5d8d5a5649c7c7f6bd40"
+  ],
+  "checks": {
+    "all_five_consumer_history_patch_pins_present": true,
+    "source_wiring_and_schema_pins_present": true,
+    "current_and_historical_candidate_distinguished": true,
+    "authorization_scope_22_plus_8_and_17_outside": true,
+    "handoff_irv_checkpoint_and_evl_next_action_present": true,
+    "test_status_unrun_and_historical28_distinct": true,
+    "native_application_not_claimed": true,
+    "79_records_and_no_declines_retained": true
+  },
+  "pending_gates": [
+    "native current-prefix application/rebase",
+    "23+6 tests",
+    "current intake validation",
+    "current post-sync cite-check",
+    "main application of handoff/index/wiki patches"
+  ]
+}

@@ -1,0 +1,94 @@
+--- a/handoffs/active/internal-kb-rag.md
++++ b/handoffs/active/internal-kb-rag.md
+@@ -713,18 +713,9 @@
+       index**. Grep scores whatever the tree says today by construction; ColBERT scores whatever it was built
+       against. If the staleness delta is large, the operational argument settles this independently of any
+       accuracy result.
+-- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** Their
+-      semantics-preserving sharded-parallel execution reaches **7.6x at 32 shards** with byte-exact
+-      equivalence to sequential execution — and our 96-core EPYC 9655 is better suited to it than their
+-      setup, so 32 shards is not near our ceiling. Note also that **91% of their end-to-end latency is LLM
+-      GENERATION, not grep** (8.67 s total = 7.86 s generation + 0.81 s tool exec), so tool latency is not
+-      the thing to optimise and the index is not buying much latency either.
+-
+-_Caveat on the numbers above: everything except the two anchored abstract quotes came from a
+-summariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `intake-1239`. Re-verify before any
+-figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same
+-direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
+-whether the delta is the TRAINING RECIPE rather than the idea._
++- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** The current GrepSeek v2 paper describes SPCS over its raw 14 GB corpus without a learned dense-retrieval index (`intake-1239#00`; `dive-1239/source.txt:L108`), and a separate optional PACE strategy that adds compact auxiliary structure (16.8 GB total; `intake-1239#04`; `dive-1239/source.txt:L146`). Do not generalize “no learned dense-retrieval index” into “no index of any kind.” The reported 7.6x at 32 shards and 91% generation are paper-workload results; they do not establish a local speedup or headroom on our 96-core EPYC. Preserve the conditional adoption task and keep local implementation/equivalence testing open.
++
++_2026-10-06 source re-read: the current v2 scope above qualifies the earlier v1 introduction and summarizer-rendered HTML basis. The 0.5691 micro-F1 and seven-benchmark framing are historical; v2 reports macro 0.5226 across eight benchmarks, seven token-F1 plus BrowseComp-Plus judged accuracy, with five wins (`intake-1239#01`). The earlier “NO pre-computed index of any kind” premise is superseded by the SPCS/PACE distinction, and “entirely hardware-independent” does not establish a local hardware result. Corpus-size, indexing/staleness and latency arguments motivate KB-GS-1–3; they do not prove local ColBERT inferiority or a local speedup. Their arms, prebuilt human ground truth and staleness window remain unchanged. The predecessor arXiv:2605.05242 remains a historical companion lead; its training-recipe/paradigm comparison was not re-read here._
+ 
+ ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278#record)
+ 
+--- a/handoffs/active/autokernel-research-loop.md
++++ b/handoffs/active/autokernel-research-loop.md
+@@ -5426,13 +5426,7 @@
+ because the best-CONSTRUCTED ablation in the family now exists and it **cuts against building.**_
+ 
+ - [ ] **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`
+-      with an explicit `reopen_when`.** `intake-1248#record` §4.3 measures skill-free RL at Level 2 Fast_1
+-      **51.6%** versus **44.8%** with skills at 8B, and Level 3 **12.3%** versus **10.1%** — i.e. memory is
+-      NET NEGATIVE at the loose threshold — while skills dominate at Fast_2 / Fast_1.5, where the skill-free
+-      arm collapses to 2.1% and 0.0%. **The effect is threshold-conditional and its SIGN FLIPS between the
+-      8B and 14B model** on n=1 cells with zero dispersion, which is the signature of noise and which the
+-      paper has no data to rule out. `reopen_when`: a with/without-memory ablation appears with n>=5 repeats
+-      and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
++      with an explicit `reopen_when`.** Current arXiv v3 Table 2 (`intake-1248#01`; `dive-1248/source.txt:L149-L150,L176,L184`) is threshold- and model-conditional: at 8B Fast_1, skill-free Ablation 5 exceeds the full system at Level 2 (51.6% vs 44.8%) and Level 3 (12.3% vs 10.1%), but trails at Level 1 (25.4% vs 26.1%). Thus skill-free wins two of the three Fast_1 level cells at 8B. At 14B the full system exceeds Ablation 5 in all 12 level-by-threshold cells. The paper reports no per-cell sample count or dispersion; remove the former n=1, zero-dispersion, and noise-signature assertions. Preserve the conditional-negative scope and existing `reopen_when`: a with/without-memory ablation appears with n>=5 repeats and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
+ - [ ] **AK-PM-10 — Record that our §19.3 receipt rule is AHEAD of this literature, not behind it.** The
+       commissioned question was whether KLineage — the only paper in the family with VERIFIED in its title —
+       formalises skill-level verification warrants comparable to ours. Measured against our three
+@@ -5470,14 +5464,7 @@
+       `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured
+       (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
+       work elision or a timing artifact, not a kernel optimization.
+-- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.**
+-      `intake-1250#record` measures SGLang **4.78x isolated → 0.28%-0.87% end-to-end** and LMDeploy
+-      **1.36x isolated → 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,
+-      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel → +2.12% end-to-end vs
+-      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the
+-      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a
+-      deliverable. Zero compute — also read the three merged PRs, which contain the actual LLM-authored
+-      kernel source that survived real upstream review.
++- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.** The reviewed KForge v1 paper (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) reports isolated MoE-finalize speedups of 1.06x–1.43x across batch sizes and a separate +2.12% whole-workload throughput change against TensorRT-LLM, under a pinned 1500 MHz clock with the autotuner disabled. These use different operations, denominators, and baselines, so they do not establish a universal ~100x attenuation factor. Preserve the existing second-datum task and its zero-compute primary-PR reads: sglang#20778, lmdeploy#4345 and DLBlas#102. The previously recorded intake-1250 figures (SGLang 4.78x isolated versus 0.28%–0.87% end-to-end; LMDeploy 1.36x versus 2.03%–3.00%) remain dated companion reports, not proof supplied or re-verified by this KForge read. Record each operation, denominator and baseline separately; do not turn either source into a universal attenuation factor.
+ - [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
+       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector
+       WITHOUT the paper behind it. **That premise is FALSE.** `arXiv:2603.21331` (`intake-1246#record`,
+--- a/handoffs/active/agentic-rocm-kernel-authoring.md
++++ b/handoffs/active/agentic-rocm-kernel-authoring.md
+@@ -1086,16 +1086,7 @@
+       authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
+       HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
+ - [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
+-      build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should
+-      not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without
+-      running the kernel** — only coarse ordinal bins (8 log-half-octave) are tractable. Adopt the ordinal
+-      reward shape, a calibration metric (ECE or Brier) as a first-class ACCEPTANCE gate, and an explicit
+-      DEFERRAL policy so a surrogate must escape to real gfx90a measurement. **Decline the trained
+-      forecaster**: A100-conditioned with **zero cross-GPU transfer test performed**, despite its own
+-      released dataset spanning three GPU types. Note its baseline search BEATS the surrogate-enhanced
+-      search on **2 of 6** tasks by 5-7%, so any adoption needs the equal-budget baseline arm run alongside,
+-      never a single-arm demo. **Note-the-method-do-not-build-yet**: optimising the search budget of a loop
+-      we have not yet made trustworthy is premature while RVP-C2-8/C2-9 are open.
++      build, and decline the trained artifact.** GPU Forecasters v1 (`intake-1240#02`, `intake-1240#03`, `intake-1240#04`; `dive-1240/source.txt:L86,L131,L148`) says fine-grained numerical inference is difficult without execution; it does not establish that numeric prediction is impossible or that ordinal output is the only tractable method in general. Keep forecast accuracy separate from calibration: the tested RL rewards reduce ECE while increasing numerical forecast error, and the six-task search records three surrogate wins, one tie, and two surrogate losses to the baseline (about 5% and 7%). Preserve the existing ordinal reward shape, ECE or Brier as an ACCEPTANCE gate, and explicit DEFERRAL to real gfx90a measurement. Decline the trained forecaster: it is A100-conditioned, and the reviewed paper supplies no cross-GPU transfer test despite its dataset spanning three GPU types; no gfx90a transfer is established. Any future comparison needs the equal-budget baseline arm alongside, never a single-arm demo. Preserve **Note-the-method-do-not-build-yet** while the loop is not trustworthy and RVP-C2-8/C2-9 are open.
+ 
+ ### Recorded so it is not re-derived — a pattern, no longer an incident
+ 
+--- a/handoffs/active/engram-conditional-memory.md
++++ b/handoffs/active/engram-conditional-memory.md
+@@ -403,10 +403,12 @@
+ ### The three items worth acting on, all zero-training
+ 
+ - [ ] **EvolveR's gradient-free arm — the highest-value lead in the cluster, and it is on our side of the training line.** Its Table 4 shows principle distillation + retrieval with **RL DISABLED scoring 0.357, beating RL-only at 0.325**, and reaching **93.5% of the full system's 0.382** (Qwen2.5-3B). The citing paper presents EvolveR as the exhibit for "memory + RL is harmful"; EvolveR's own ablation shows its memory machinery *without gradients* outperforming pure RL. Same shape as our adopted ReasoningBank baseline (intake-988)
+-- [ ] **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** `SequenceMatcher >= 0.85` over stored reflections, no inference cost, no new capture. Measured 0.64 → 0.10 under the fix below (intake-989)
+-- [ ] **Programmatic feedback extraction** — parse tool output for concrete failure facts instead of asking the model to self-diagnose. Measured object-mention 0/121 → 134/156 (86%). **Rates do not transfer** — largely a weak-model artifact at n=2 environments — but the mechanism and the metric do (intake-989)
++- [ ] **RRR — pure log post-processing, computable RETROACTIVELY over traces we already have.** Reflexion v2 (`intake-989#03`; `dive-989/paper.txt:L380-L446`) defines RRR as post-hoc SequenceMatcher >=0.85 redundancy among reflections after the first, divided by |M|-1; this can avoid inference only when those reflection traces are available. Keep RRR separate from feedback extraction. The source's 15-trial original versus 10-trial mitigation budgets and its §4.4 7/8 versus §5.3 “none within 10” tension mean the reported change is not a same-budget causal estimate.
++- [ ] **Programmatic feedback extraction** — parse tool output for concrete failure facts instead of asking the model to self-diagnose. Reflexion v2 (`intake-989#03`, `intake-989#02`; `dive-989/paper.txt:L681-L694,L1494-L1547`) describes a trajectory parser that extracts “Nothing happens” responses and repeated identical actions, after which an LLM still explains each failure and writes a new plan. This is parser-plus-LLM, not zero-inference diagnosis replacement. Keep this task distinct from RRR; the 0/121 to 134/156 object-mention result remains paper-specific to selected frozen environments and is not a transferable local rate.
+ 
+ ### One threat assessed and dismissed, with its mechanism, so it is not re-raised
+ 
+ - [x] **"Dark Room" reward collapse does NOT threaten this line** ✅ 2026-08-03 (intake-990). The mechanism requires a **dense policy-dependent potential-difference shaping term with persistent within-group variance**; MemHarness has sparse +10/0 plus a **saturating** 0.1× format bonus plus SFT format cold-start, which is Dark Room's own **Proposition-2 SAFE class**. Decisively: **Dark Room's own non-collapsing baseline IS MemHarness's reward shape**, on the same verl-agent framework. What it *does* destabilise is measurement — 32-episode binomial noise floor ≈ **8.8 points**, its own cross-arm comparisons declared "DESCRIPTIVE", and an unexplained 8B (32.8) below 4B (49.5)
+ - [x] **Independent corroboration located, and scoped precisely** ✅ 2026-08-03 (intake-989). "Honest Lying" independently shows memory injection **can** drive below a no-memory control, via a controlled memory-**wipe** ablation, with no citation in either direction. That is corroboration for **claim A only** — it is **not** corroboration for the state-mismatch *mechanism*, which is write-side (confabulated self-diagnosis under binary feedback) versus read-side. A **fourth distinct mechanism**, not the same one
++
++**Source qualification 2026-10-06 (`intake-989#record`):** the checked 2026-08-03 outcome above remains historical; it does not establish independent-group/author independence or a bilateral no-citation relationship. The source reports a bounded memory-wipe comparison on selected frozen environments with unequal 15-trial original versus 10-trial mitigation budgets and an unresolved original-log versus §5.3 result tension. It proposes write-path confabulation but does not isolate write-side from read-side failure or establish a distinct fourth causal mechanism. This qualification changes the source rationale, not the completed checkbox or operational outcome.

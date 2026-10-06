@@ -11,13 +11,14 @@
   "last_compile": "2026-10-06T06:33:38Z",
   "last_touch": {
     "advanced": {
-      "added": 3,
-      "changed": 1,
+      "added": 0,
+      "changed": 5,
       "removed": 0
     },
-    "at": "2026-10-06T09:41:54Z",
+    "at": "2026-10-06T09:58:12Z",
     "scope_paths": [
       "handoffs/active/intake-reverification.md",
+      "handoffs/active/vidya-belief-substrate-program.md",
       "progress/2026-10/2026-10-06-filing_preparation.md",
       "progress/2026-10/2026-10-06-intake-reverify-main.md",
       "progress/2026-10/2026-10-06-wave2-review.md"
@@ -25,9 +26,9 @@
     "scope_types": []
   },
   "mode": "touch:scoped",
-  "scan_time": "2026-10-06T09:41:54Z",
+  "scan_time": "2026-10-06T09:58:12Z",
   "schema_version": 1,
-  "source_set_hash": "e84173a5f44531ab642c5943c26a6d03ee9f2020441aeb675967506addaa5137",
+  "source_set_hash": "a1b39aed4626bae1c03003781a24125a8083bfab1d4a5ea609fe165cc2ac0bd2",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -710,10 +711,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "1b1d01ae427575425fa5ec0fbbf3515248425c896c0df509432573a4664066cc",
-      "modified": "2026-10-06T09:41:37Z",
+      "content_hash": "279b8b2c0ac46c31ddf610868470f39fc02de40f1ed7e89c591e45e117f92d50",
+      "modified": "2026-10-06T09:57:55Z",
       "path": "handoffs/active/intake-reverification.md",
-      "size": 8429,
+      "size": 9285,
       "title": "Intake re-verification: past dives at risk from the WebFetch-digest read-depth gap",
       "type": "handoff-active"
     },
@@ -1422,10 +1423,10 @@
       "type": "handoff-active"
     },
     {
-      "content_hash": "a5ab2be89a7cb6fc7f1fbf9384828423dd7d2bef13568bc0c2e38d7b7b3873fa",
-      "modified": "2026-10-06T06:31:53Z",
+      "content_hash": "c6b15680cf75d96fc630e5a54dde530fed5e79c8db12a36969f06a957d94e582",
+      "modified": "2026-10-06T09:57:55Z",
       "path": "handoffs/active/vidya-belief-substrate-program.md",
-      "size": 281878,
+      "size": 291871,
       "title": "Vidya Belief-Substrate Program",
       "type": "handoff-active"
     },
@@ -9150,18 +9151,18 @@
       "type": "progress"
     },
     {
-      "content_hash": "e84346417c710afa6e19d4518b3722886db1776cffe4c981876e9c0bea92ccd8",
-      "modified": "2026-10-06T08:43:21Z",
+      "content_hash": "a3d9722fab77a079d9436d3a77a62376d65eea9caf347f0131604f2431ba3324",
+      "modified": "2026-10-06T09:57:55Z",
       "path": "progress/2026-10/2026-10-06-filing_preparation.md",
-      "size": 2367,
+      "size": 4407,
       "title": "Filing preparation \u2014 2026-10-06",
       "type": "progress"
     },
     {
-      "content_hash": "5589302f333ebe09c7f1963e4c1a01f6d31f62c1d4bb8b9fa563c4dd3be96f58",
-      "modified": "2026-10-06T08:42:59Z",
+      "content_hash": "ed82baa1db52d0d84aae279c37c3588b27581d9398c0abc931572481cf784b93",
+      "modified": "2026-10-06T09:57:55Z",
       "path": "progress/2026-10/2026-10-06-intake-reverify-main.md",
-      "size": 9078,
+      "size": 10476,
       "title": "2026-10-06 progress",
       "type": "progress"
     },
@@ -9238,10 +9239,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "f82d2170c91fa2cc16a9d8c437c77f1e61a8c18cf865d9c0449e8fb4cedcc6ae",
-      "modified": "2026-10-06T08:53:21Z",
+      "content_hash": "219f0261d095d1891e8457347757d857f0926baf5e593a4d722eada54db50f31",
+      "modified": "2026-10-06T09:57:55Z",
       "path": "progress/2026-10/2026-10-06-wave2-review.md",
-      "size": 1971,
+      "size": 4611,
       "title": "Wave2 independent review preparation \u2014 2026-10-06",
       "type": "progress"
     },

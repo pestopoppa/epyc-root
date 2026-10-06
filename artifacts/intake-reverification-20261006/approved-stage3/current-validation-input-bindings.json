@@ -1,0 +1,28 @@
+{
+  "files": {
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/.claude/skills/research-intake/scripts/validate_intake.py": "4a922aac1f72f6f340465e1c0b5f3d65bbc9fdae871682b857be405cff18ad9c",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/read-depth-guard-composition.patch": "3f2bb225dcb2a0ae2f54ba975af8d16d64015362d4fc2dcec714c22eaa32fbc1",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/root-validation-prepared/historical-index.snapshot.yaml": "df73fae60a0ddf63b141359e096f622f698d366b5e07b45755fb4c4c18565b30",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/root-validation-prepared/peer_inventory.py": "d9e53167a5643fda19725de7107b41833153a893483d5a7e2749591427039772",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/root-validation-prepared/run-root-current.sh": "c5e96100ff3692869581f93eae6eb87396d22f64f27974c5ea2ccb5d2147d4be",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/root-validation-prepared/validate_current.py": "0941ee126587b4abcb9776e62de9ad7d843ad42dbb48ef07c3bf7e7aa0902a08",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/adapters/research_intake.py": "16d62a85df95e47951d9e9f3424d0ee9d14a6f2b751b2be08c62eb9792c5261d",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/cli.py": "6c31bbc332a6d289f11587bc41992e57c07b21d50abf51b2d479e0116f964ca7",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/fold.py": "f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/frames.py": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/intake_assertion_kinds.py": "0615f1659fc60e9c46e33d3270f346ca39a399c7ec2b638b76436e255a63460f",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/ledger.py": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/ledger_write_lease.py": "f06c5aa7825ee0f9ac53ec3e1de16b826802dc3bfa646f3e117f7f082d83e8d4",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/materialize_reviewed_batch.py": "2c9cfc3b8e61e7629fcdd2cf296b636b9c35b4a23d9c5527b918b173c1acb8ab",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/native_correction_replay.py": "2af947286ed1b36c371774f5df014757b181d0ac6ed202ab6efe256dd64d8d3d",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/rebase_current_index.py": "d923f40284ef2bff55b13d1f60489b9cf7f7a9d6a1765e262bf3544cdc7c6b54",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/rebase_reviewed_batch.py": "b396ec7f49757f5a874b28f7273b3151debf4c2921c5bd58b8e197e8203be724",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/scripts/vidya/semantic_impact_audit.py": "594ff1ec8ed8b74c5e8b05249806f3db2a2c384aaed56b03e772a24b453cea11",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/tests/skills/test_research_intake_read_depth_scope.py": "2c7dee3c055c98b1d747fff7bbd99f2659969eaff27c4f1a7d5711d5ba9ad91a",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/tests/test_ledger_write_lease.py": "732caeaa2f2b7ee711dfe9c1ce2dd2c6f84268807a2aaf112aa6e2b1355bafc7",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/tests/test_native_correction_builders.py": "12bf3d55af3b4d668bd65748beaaa07e5216f9ec62a8fa7bc877e9041518c0e9",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/tests/test_native_correction_replay.py": "7b1e24ed2d4a7708e50b3fd2e7655d7d5d5b721263afe99cafbb0996cfb6d865",
+    "/mnt/raid0/llm/tmp/intake-reverify/durable-integration-68acaf444/tests/test_rebase_current_index.py": "693e81ae25c63527982ea16e932b0172c31625858d29748fd8237c7145b5ae5b"
+  },
+  "schema": "epyc.root-current-integration-bindings/v1"
+}
