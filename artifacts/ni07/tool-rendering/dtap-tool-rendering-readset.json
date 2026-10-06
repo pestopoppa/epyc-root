@@ -1,0 +1,139 @@
+{
+  "schema": "dtap-tool-rendering-readset.v2",
+  "sources": [
+    {
+      "git_blob": "e95b9f13aca14cbc5e18c869f172e927ba3acfa4",
+      "path": "scripts/autopilot/evals/dtap/cases.json",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "a4a4dbe4d264a1fc1572d5eff68314ce169d2990cfded1c5cfa6af6b69b44431"
+    },
+    {
+      "git_blob": "689adb241d2d742bdf81b18bb6fe9b3d76fa365d",
+      "path": "scripts/autopilot/evals/dtap/harness/runner.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "295cb5c7bfb48660b25c7e7ace52d227c13d5425060df64c86fa77936dabae58"
+    },
+    {
+      "git_blob": "183d33e60bba0fd965dfc3fe3e8f61dd9ec094a0",
+      "path": "scripts/autopilot/evals/dtap/harness/endpoint.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "68c49a884b1744ad295fa708271908232fbacc451b3b4f8f2954d631e87899ba"
+    },
+    {
+      "git_blob": "b90e059b0c70f5e50b1fc323657df854a39b2e17",
+      "path": "scripts/autopilot/evals/dtap/harness/utils.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "6d2f89775067d247ab790fd788fe39373ca8c55f3844da643e78da95002e325e"
+    },
+    {
+      "git_blob": "5548c939dba4440eaf5b9d782a06e28454261d35",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/finance.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "9d402265a6c5efd359f5af3385076d141efa70ea5101aa639eea2f6f0668dc56"
+    },
+    {
+      "git_blob": "fceb529f286d4c1a5b3c1075193b2d8371ff6ca6",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/gmail.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "4d5c7f45951f54302567c42cb4c4a64346637fec502264c92c0e25afb201d145"
+    },
+    {
+      "git_blob": "eb538ccfea12de50ba8e210d049f858f602a61df",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/paypal.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "244d4cdbad6cc65d67c16ba321fc80d33ca4111cf6b9ce5b5adf810213ad2ef0"
+    },
+    {
+      "git_blob": "ba341ae79daf3188714f46dc362de92967c9b650",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/salesforce.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "b730f48e6f4e2ee7c4150978ba1ff98d1fa307e7bbef9a18e8fee0ebe0238cf8"
+    },
+    {
+      "git_blob": "c4e74ed319037607d1ccb09c2fe65c6a9c7b3e69",
+      "path": "scripts/autopilot/evals/dtap/harness/shims/slack.py",
+      "pin": "7d3b840a6f5770679a55846931ceaf3d6d74e904",
+      "repository": "epyc-orchestrator",
+      "sha256": "bf7eaa3bf7cf276dbd450994a039c6496926b0291ec903eb6c87b1623edacab7"
+    },
+    {
+      "git_blob": "f031d3d12755bdd8b8d2957d9fd86200f981f713",
+      "path": "dt_arena/config/mcp.yaml",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "3e53eb4bdf62ae941ec9b811201e85562e5dc1767f0745f2a5257d70ecdcf4dc"
+    },
+    {
+      "git_blob": "72fbeed66a74d1bf73edb4771e90642b0089acba",
+      "path": "dt_arena/mcp_server/finance/server/tools/account.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "a13ba088943ab080f34f4764031e8a0180a0d82ec95f2acb9b86b60a0ce75dec"
+    },
+    {
+      "git_blob": "883add5232f978d62810c30b0fdd97c863e1a13b",
+      "path": "dt_arena/mcp_server/finance/server/tools/browsing.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "c3ac54366cfac1d7381f81d673d6199dbcbb6403097b206995cc0b73f1d33e82"
+    },
+    {
+      "git_blob": "0d56aacc7e0c35deb9e0331d1ba4f677230492b3",
+      "path": "dt_arena/mcp_server/finance/server/tools/social.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "f955fa8eeee2cb43b628a25feb6910556ca89d86de9c05e649896f610fb684cd"
+    },
+    {
+      "git_blob": "09a49f6cb7d8da28b8c9b8d217463cbc6d82cd55",
+      "path": "dt_arena/mcp_server/finance/server/tools/trading.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "db0dd418eed7c0699887a9c6b4b621c3aee9ea4debff1a17905580e7d6c289ca"
+    },
+    {
+      "git_blob": "17e9200fff60ed6c2f0e661ec3f83429f56e44fe",
+      "path": "dt_arena/mcp_server/finance/server/tools/utility.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "e8b40811967e43840f5eec654e082e75e544c79db266b31c6d8c4d5a2150a646"
+    },
+    {
+      "git_blob": "eea832678db198d8cffc430e567d531f68a0d915",
+      "path": "dt_arena/mcp_server/gmail/main.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "f1c169a82fe543df8bb47cbefe8a2a403a5d94c04f3eaf335a5073d78d922e0b"
+    },
+    {
+      "git_blob": "080b6e59b0e729ca4fd2abe3aed5392fe1ace31d",
+      "path": "dt_arena/mcp_server/paypal/main.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "cd60e6ce4515e452f41641453e7b0319f711ee834194a08e5a186d90a8dcca56"
+    },
+    {
+      "git_blob": "89df916f7aa9ef707773a00deddcc83003003f4c",
+      "path": "dt_arena/mcp_server/salesforce/main.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "9657a8dac3b3df63cf986c2f6684bc89aa28cf2f73cc12d061399887790173b3"
+    },
+    {
+      "git_blob": "7c0c75574f5ca7051ca601bc1fd26e2fcbabea72",
+      "path": "dt_arena/mcp_server/slack/main.py",
+      "pin": "e0323a521ba4ef88f8e14c1eccf68d0a3d19a458",
+      "repository": "DecodingTrust-Agent",
+      "sha256": "40d68afb3e9af09e5b0f05d93b7a86d8a3670ed5de30e41a3ef53e3338ff21be"
+    }
+  ],
+  "upstream_repository_local_readonly_path": "/mnt/raid0/llm/tmp/dtap-import-20260825"
+}

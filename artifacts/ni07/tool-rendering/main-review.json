@@ -1,0 +1,19 @@
+{
+  "owner": "codex-ni-main",
+  "accepted": true,
+  "scope": "static source map only; actual served route/template identity unknown",
+  "reopened_inventory_entries": 54,
+  "distinct_source_identities": 54,
+  "native_catalog_cases": 18,
+  "all_catalog_source_paths_pinned": true,
+  "upstream_tree_verified": true,
+  "mismatches": 0,
+  "tests_executed": 0,
+  "draft_document_sha256": "0ae7ef52281d78d1d56f554199f0819f41a41541e470521d436be6ed1eacab44",
+  "applied_document_sha256": "97daae5e4f4ee6c9d94f75c4a168f66d70ce5844c4caf99edfa60b57a0ce3b60",
+  "main_adjustments": [
+    "Status records static acceptance only",
+    "Transport approval distinguished from source/CI acceptance",
+    "All54inventory entries and every catalog source path independently reopened"
+  ]
+}

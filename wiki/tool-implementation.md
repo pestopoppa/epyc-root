@@ -1483,3 +1483,7 @@ The repository also added a CPU-claim admission guard around host code-index ref
 - [NI05-75 report](../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md) — registry-error fallback behavior and test boundary.
 - [NI05-76 report](../progress/2026-10/2026-10-06-ni76-code-index-admission.md) — exclusive CPU claim identity controls.
 - [NI05-78 report](../progress/2026-10/2026-10-05-ni78-direct-entry-refusal.md) — direct invocation refusal kept distinct from pytest execution.
+
+## Static tool-rendering paths — 2026-10-06
+
+The [accepted TU-HR static map](../docs/reference/tool-rendering-source-map.md) distinguishes prompt text from advertised native functions. DTAP currently sends message/generation fields and parses returned calls without advertising structured schemas; its live path returns generic tool results without applying service effects. Orchestrator default REPL mode and explicit client-native-tool mode differ, and backend forwarding support must be checked per route. For local GGUF serving, the loaded template and launch overrides own token rendering; registry kwargs alone do not identify template bytes. Eighteen public case catalogs and 54 exact source identities were reopened by MAIN. Actual served route/model/template identity remains unknown; [HR parent and live DTAP evaluation](../handoffs/active/tool-use-eval-contract.md) stay open. The isolated fake-transport contract fix is separately tracked as NI07-11.

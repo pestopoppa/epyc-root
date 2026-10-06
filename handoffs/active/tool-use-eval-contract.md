@@ -377,6 +377,8 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
 
 - [x] Candidate fix for the comment-only-REPL blocker: adopt the negative-constraint + stated-consequence pattern (one block, no narration, no comments, drop-consequence named) into the sentinel prompts. [intake-868] ✅ 2026-07-29 — orchestrator `e6b989b9` adds the explicit discard-and-score-incorrect consequence to every executable-only sentinel prompt; `tests/test_tool_sentinels.py` passes 8/8 with no AutoPilot restart or inference.
 
+- [ ] **TU-DTAP-NATIVE-TOOLS — Implement explicit native request/argument contracts before live state evaluation.** NI07-11 approved MEDIUM isolated source scope: public per-case callable schemas, explicit endpoint mode, immutable request contract identity and allowed-name/argument validation with fake HTTP transport CI. Preserve case/fixture/judge bytes and legacy dry-run behavior. Runtime service effects/model calls and TU-DTAP-2 acceptance remain separate.
+
 - [ ] **TU-DTAP-2 — Run the imported DTAP subset against a live local model under an inference grant.** Wire the disposable runner's live OpenAI-compatible endpoint mode to a real model, then add simulated-service environment effects (finance/gmail/slack/salesforce/paypal shims) so indirect-injection arms exercise environment state, not only tool calls. Keep harness, prompts, temperature, retries, and seeds fixed across arms; typed outcomes and trace replay already enforced by the runner. (Derived 2026-08-25 from the EVL-46 import; gated on an inference window.)
 
 ## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021)
@@ -404,6 +406,7 @@ The **parent** half is already implemented: `final_schema_validation` (2026-05-2
   **our** brittleness. The failure signature is greppable in existing traces: plausible-looking
   non-existent tool names (`GoTo(...)`, `GoToLocation(...)`, `goto_dresser()`). **Read-only audit, no
   inference.** Zero compute.
+  - [x] **TU-HR-1a — Map static tool request/render paths.** ✅ 2026-10-06 — MAIN accepted [source map](../../docs/reference/tool-rendering-source-map.md), [18-case native catalog and exact source custody](../../artifacts/ni07/tool-rendering/dtap-tool-rendering-readset.json), reopening all 54 inventory entries. Missing structured DTAP advertisement, explicit mode, backend forwarding differences and frozen GGUF template authority are mapped. Actual served route/model/template identity and live service effects remain unknown; TU-HR-1 and TU-DTAP-2 remain open.
 
 ## Research Intake Update — 2026-09-14 (intake-1346…1366)
 _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: intake-1351, 1352, 1353, 1355, 1362 — dive-verified. External numbers motivate contract items only; they gate nothing._
