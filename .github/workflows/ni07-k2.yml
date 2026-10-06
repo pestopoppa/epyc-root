@@ -1,0 +1,65 @@
+name: NI07 K2 pinned fixture conformance
+on:
+  push:
+    branches: [codex/ni07-ci-20261006]
+    paths:
+      - .github/workflows/ni07-k2.yml
+      - scripts/ci/ni07_k2_capture.py
+permissions:
+  contents: read
+jobs:
+  k2:
+    name: k2
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      ROOT_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      APP_PIN: ac668b9c2f08fbfac05b33822899a8083fa5855c
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_LOG_DIR: /dev/null
+      PYTHONUNBUFFERED: '1'
+      KB_RAG_QUERY_LENGTH_LOG: 'off'
+      NI07_INSTALL_COMMAND: python -m pip install pytest==8.4.2 numpy==2.3.2
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni07/result/k2"
+          printf '{"state":"setup_pending","job":"k2"}\n' > "$RUNNER_TEMP/ni07/result/k2/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout pinned existing native receipt producer
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_PIN }}
+          path: root
+          persist-credentials: false
+      - name: Checkout pinned application fixtures
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install only declared mock fixture dependencies
+        run: python -m pip install pytest==8.4.2 numpy==2.3.2
+      - name: Capture existing native fixture evidence
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          python recipe/scripts/ci/ni07_k2_capture.py
+      - name: Retain original receipt, JUnit and status on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni07-k2-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni07/result/k2/
+          if-no-files-found: error
