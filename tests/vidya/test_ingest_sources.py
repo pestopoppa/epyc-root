@@ -257,7 +257,10 @@ def test_every_source_has_an_end_to_end_fixture_or_a_named_exemption():
         "gfx90a-static-register",
         # Immutable native writer roundtrip and registered CLI dispatch:
         # test_evidence_durability_adapter.py.
-        "evidence-durability"}
+        "evidence-durability",
+        # The reports bind cross-repository producer/input bytes; the dedicated
+        # adapter tests exercise producer-shaped native envelopes and shared-grade CLI dispatch.
+        "verify-before-stop-measurement", "eval-suite-discriminability"}
 
 
 def test_every_wired_adapter_projects_through_a_registered_projection():
