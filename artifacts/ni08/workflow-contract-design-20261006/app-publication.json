@@ -1,0 +1,13 @@
+{
+  "previous_head": "26cb574fe97401c8976bfc4f757d0d37461a63f5",
+  "main_before": "26cb574fe97401c8976bfc4f757d0d37461a63f5",
+  "commit": "be8d46f61edcf5cb795d485b1a8171c562ee4971",
+  "paths": [
+    "docs/design/memory-write-decision-record-v1.md",
+    "docs/design/fuzzy-workflow-api-v0.md"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "design_only": true,
+  "live_reload": false
+}

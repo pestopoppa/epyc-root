@@ -1,0 +1,275 @@
+{
+  "source_pin": "ababa06c2f54d799fd9fbc356e5368f61a452260",
+  "source_files_verified": 92,
+  "exported_modules_verified": 44,
+  "modules": [
+    {
+      "harness": "agentfold",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "1055402c2648cc384dcf611912c11ceb6fe16715725461797e0ae5eb47812882"
+    },
+    {
+      "harness": "agentfold",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "9391abfe4e210489e70b83b9a1df803d313c6ef110b6d4464f307485b697e8f2"
+    },
+    {
+      "harness": "agentfold",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "5341cc3c75802ab857a1dd89aca5522f790e2214a4cd29d05348a79d3505c202"
+    },
+    {
+      "harness": "agentfold",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "75d023b2a5bdcb431459294a4142ae46203fa8408310645dc8381bfa78265e3a"
+    },
+    {
+      "harness": "aggagent",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "3377c8d11d56eda2e34187232f8f994e7d90ef971c0388d5447c0d82d6bdd117"
+    },
+    {
+      "harness": "aggagent",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "b5c5697635bbebe9e10df621147a0350bbd0424f0e7214576391a2cc699aefaa"
+    },
+    {
+      "harness": "aggagent",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "1ba1fef67eca590b57b35e0d5b28b503d85f048036feebf1e702b51b122e0336"
+    },
+    {
+      "harness": "aggagent",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "29ce6288b9dfdc213584a69f72b66b8ff574c526c112254b880060499880164c"
+    },
+    {
+      "harness": "deepagent",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "13f0578079cd195cc28057e7f8c3dac9486471dec4913253452246885ddbeb2c"
+    },
+    {
+      "harness": "deepagent",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "2b89b949088ac9193911479d7822e731fa81904971f1e9410f79eee41b9aaf28"
+    },
+    {
+      "harness": "deepagent",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "d320979238e46259a39db40680dc112594efecd389d2247be2479a531df9888a"
+    },
+    {
+      "harness": "deepagent",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "9b96742bb5b8b0f3104897ad1793c1d11f871ca9e3194a9663dd488f32ba8ce3"
+    },
+    {
+      "harness": "flash_searcher",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "826cccaa721da04d8511b23c91c1cad84f3dc83bf6a8e4d9f398ef4c74673aeb"
+    },
+    {
+      "harness": "flash_searcher",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "9391abfe4e210489e70b83b9a1df803d313c6ef110b6d4464f307485b697e8f2"
+    },
+    {
+      "harness": "flash_searcher",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "3cdd17756b5f484b370656c8a1559fcb32418e1f89f8c0ed4e973c5e9aaa20a2"
+    },
+    {
+      "harness": "flash_searcher",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "b997121d98a1db3f56576d0ea67721a183c9b9cd5bb41ba4927d80e2c14f8604"
+    },
+    {
+      "harness": "gam",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "dd5a9c67165612de63921e4ea2a976f463a979208449b6f7f7838738ea3ef46c"
+    },
+    {
+      "harness": "gam",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "9391abfe4e210489e70b83b9a1df803d313c6ef110b6d4464f307485b697e8f2"
+    },
+    {
+      "harness": "gam",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "3cdd17756b5f484b370656c8a1559fcb32418e1f89f8c0ed4e973c5e9aaa20a2"
+    },
+    {
+      "harness": "gam",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "b997121d98a1db3f56576d0ea67721a183c9b9cd5bb41ba4927d80e2c14f8604"
+    },
+    {
+      "harness": "hiagent",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "0571231b9fba573b8f0b395f4270c211bbd04d3194104735390b65de29ce5e94"
+    },
+    {
+      "harness": "hiagent",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "d26cdd4b8f571f08b3f00295ec3228434d16aff33c283af12a84d1a86d981222"
+    },
+    {
+      "harness": "hiagent",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "fa85cb7eab5f55f6e5c93d3446bf387e9f798d270027088b45c9988e01105eb8"
+    },
+    {
+      "harness": "hiagent",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "1554adf13204d4eaa4b42e6914d730908f8178cba894a88f271b71dfc9eac30d"
+    },
+    {
+      "harness": "memobrain",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "f30b159cb5972fdc343109933e8ad6563aa81402b8c40f300691812e0ba8ad05"
+    },
+    {
+      "harness": "memobrain",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "0d29b3c925e37e807c202a7fd4b4fbe8c46ab19bffaeafc33ce2424a0ce2bde9"
+    },
+    {
+      "harness": "memobrain",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "4c8c1e552daa520cf1b3b8ad69694587b5f13782bde25cded39eb28bc29585f4"
+    },
+    {
+      "harness": "memobrain",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "064b996564a194f0f79c195fe63001f42b6d7f90728886715b29f2cc503ace30"
+    },
+    {
+      "harness": "oagent",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "e712079c6fd5db5a7e5a944ed62eeed08909cd9b6f22c7a89246cb9912552fe2"
+    },
+    {
+      "harness": "oagent",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "bce22b96f681dc02959da004fc0a34daf3d3aa47a845f668c03f8ba751fc93c3"
+    },
+    {
+      "harness": "oagent",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "85f8fecfc8a0e53a3e1ea2ca13dcc5029341ffa4416ebf4c224befbfc2530ac8"
+    },
+    {
+      "harness": "oagent",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "b997121d98a1db3f56576d0ea67721a183c9b9cd5bb41ba4927d80e2c14f8604"
+    },
+    {
+      "harness": "plan_and_execute",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "826cccaa721da04d8511b23c91c1cad84f3dc83bf6a8e4d9f398ef4c74673aeb"
+    },
+    {
+      "harness": "plan_and_execute",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "31aa36df05067b5cfee02c413a42df73dac7eb5bc0d5f88620492d599617af78"
+    },
+    {
+      "harness": "plan_and_execute",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "3cdd17756b5f484b370656c8a1559fcb32418e1f89f8c0ed4e973c5e9aaa20a2"
+    },
+    {
+      "harness": "plan_and_execute",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "b997121d98a1db3f56576d0ea67721a183c9b9cd5bb41ba4927d80e2c14f8604"
+    },
+    {
+      "harness": "resum",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "8f2af5f2c10135d57a1b5905c5f4b35c15e588f7d0fb39d521060db09c23552c"
+    },
+    {
+      "harness": "resum",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "31aa36df05067b5cfee02c413a42df73dac7eb5bc0d5f88620492d599617af78"
+    },
+    {
+      "harness": "resum",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "3cdd17756b5f484b370656c8a1559fcb32418e1f89f8c0ed4e973c5e9aaa20a2"
+    },
+    {
+      "harness": "resum",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "b997121d98a1db3f56576d0ea67721a183c9b9cd5bb41ba4927d80e2c14f8604"
+    },
+    {
+      "harness": "roma",
+      "module": "memory",
+      "export": "MemoryStrategy",
+      "sha256": "290e13cf288588c227119b7df8334e7afad16320b60906d30e88744117508d95"
+    },
+    {
+      "harness": "roma",
+      "module": "planning",
+      "export": "PlanningStrategy",
+      "sha256": "75cb39df0500a4a1f5905e0482b6bbc7ea18ff87167f6c6268605b0c62ce898e"
+    },
+    {
+      "harness": "roma",
+      "module": "action",
+      "export": "ActionStrategy",
+      "sha256": "9634e65d18903b16ea4b70684c9d8c20829042f1b65b01e2749bc535c524ea79"
+    },
+    {
+      "harness": "roma",
+      "module": "tool_policy",
+      "export": "ToolPolicyStrategy",
+      "sha256": "2d792718785de1c8a68e34bb939527b9425de90157d2a37b83a3419e8a0dd358"
+    }
+  ],
+  "execution": false,
+  "performance_claim": false,
+  "license_scope": "JIT code only; no copying or adaptation",
+  "verified_at": "2026-10-06"
+}

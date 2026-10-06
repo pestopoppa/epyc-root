@@ -1,0 +1,9 @@
+{
+  "id": "workflows",
+  "title": "Workflows",
+  "port": 8100,
+  "path": "/workflows",
+  "owner_repo": "epyc-root",
+  "health_path": "/health",
+  "blurb": "author and validate saved orchestrator workflow drafts (data: epyc-orchestrator :8000 /dashboard/api/workflows; execution unavailable in v0)"
+}

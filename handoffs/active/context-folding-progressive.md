@@ -199,7 +199,7 @@ _Via `/research-intake` Stage-2 2026-07-29 (intake-913…932 batch): ACM (intake
   (multi-message rendering or in-band special tokens); move the live edit path off
   `int(len*0.8)` character offsets onto `session_log_records`; make compaction suffix-only.
   `intake-1318#02`. Zero compute.
-- [ ] **CF-HF-1 — Mine the 11 shipped `HarnessFactory` implementations as a same-interface
+- [x] **CF-HF-1 — Mine the 11 shipped `HarnessFactory` implementations as a same-interface
       reference set** (AgentFold `intake-155`, ReSum `intake-157` already local). MIT source
       reading only; no claims carried. `intake-1320#record`. Zero compute.
 
@@ -220,3 +220,5 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
 
 - [ ] **CF-PB-1 — Plan-boundary compaction trigger priced by local break-even.** Price a rewrite as re-prefill tokens (llama.cpp prefix-cache invalidation) vs per-request savings; SoL-Pi's formula structure ports, its 12.5 cache ratio does not. Note the `len(state.context) > 12000` OR-trigger (`graph/compaction.py:130`) dominates the 0.75 ratio today. If adopted, pass step progress INTO the summary request (SoL-Pi's own open #42 defect is exactly dropping it). Inference-gated. `intake-1350#04`.
 - [x] **CF-RX-1 — `_REPL_OUTPUT_RE` never matches.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `090c63d9`). `context_compression.py:188` looks for `<<<\/TOOL_OUTPUT>>>`; the real end marker is `<<<END_TOOL_OUTPUT>>>` (`repl_environment/types.py:18`); the `">>>" in content` fallback (`:205`) masks it. Fixed by building the regex from the `types.py` constants with `re.escape` (no import cycle; loading `context_compression` now also imports the `repl_environment` package). Note: it changes `classify_tool_output` results for delimited REPL output inside the default-off `context_compression` path. `intake-1350#record`.
+
+✅ 2026-10-06 CF-HF-1 accepted: [11-harness source comparison](../../docs/reference/harnessfactory-source-comparison-20261006.md), JIT pin `ababa06c2f54d799fd9fbc356e5368f61a452260`; 92 source hashes/44 interface exports independently verified by MAIN. JIT code MIT scope is separate from original AgentFold/ReSum code. Source structure only; no copied code, execution or performance claims.

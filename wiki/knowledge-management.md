@@ -3600,3 +3600,8 @@ The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-2026
 ### Native failure identity is scoped diagnostic metadata
 
 [Accepted journal source](../artifacts/ni08/failure-signatures-source-20261006/README.md) records machine gate categories and native comparable context at append, preserving unknown legacy rows. A repeated total is scoped to the folded journal, not a streak or root-cause verdict; supersession changes the read view without rewriting original snapshots. Compact typed negatives can replace long prose while preserving diagnostic identity. Synthetic21-case conformance does not establish live efficacy, hypothesis resolution or budget improvement.
+
+
+### Design records preserve source and execution boundaries
+
+The [M19/FW2 contract boundary](../artifacts/ni08/workflow-contract-design-20261006/README.md) distinguishes diagnostic memory-write confidence from calibrated enforcement and workflow authoring from execution. Opaque writer receipts preserve privacy; later calibration joins cannot mutate hashed originals. Workflow digests bind a precise semantic projection, with immutable saved revisions and explicit gate/fallback paths. [Eleven HarnessFactory implementations](../docs/reference/harnessfactory-source-comparison-20261006.md) share module seams while varying memory/control/action costs; common signatures are not compute or efficacy equivalence.

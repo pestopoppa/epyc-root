@@ -42,8 +42,8 @@ assumed to be the runtime.
   **Delivered 2026-09-17 (sketch half, zero inference): § *FW-1 sketch* below** — worked example = worker-failure
   routing (PAW-5 "tool-output classification"), loop block, derived GUI vocabulary + 11 lint rules, three forced
   decisions and two follow-ups. **Not yet done**: the mocked-GUI harness run (blocked on FW-4's write-side hook by
-  the FW-4 acceptance text, and on the operator's zero-inference constraint this session); FW-3 not yet citable.
-- [ ] **FW-2 — Record placement (no operator choice remains).** HS-4 §2 admits shell plugins only for
+  the FW-4 acceptance text, and on the operator's zero-inference constraint this session); FW-3 [prior-art survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md) is now citable; runtime acceptance remains open.
+- [x] **FW-2 — Record placement (no operator choice remains).** HS-4 §2 admits shell plugins only for
   configuration, so a harness plugin is excluded; the dashboard plane rule (`dashboard/README.md`, RTG-47,
   ratified 2026-08-10) puts every **page** on the hub `:8100` with a `dashboard/registry.json` entry, a
   `health_path` probe (`/health` is transport-only; `/api/health` is the freshness fold) and a freshness
@@ -53,7 +53,7 @@ assumed to be the runtime.
   `/v1` wait for the P0.4 freeze (HS-5b). Acceptance: a contract stub (schema + endpoint list) in
   `epyc-orchestrator` and a registry-row draft handed to the owning hub session — the drafting is this
   handoff's; the row write is the owner's.
-- [ ] **FW-3 — Survey prior art (≤1 day).** Flow-authoring UIs with LLM nodes (e.g. Dify/LangFlow-class) and
+- [x] **FW-3 — Survey prior art (≤1 day).** Flow-authoring UIs with LLM nodes (e.g. Dify/LangFlow-class) and
   compiled-function authoring (PAW playground) — what to borrow, what to refuse. No ingestion; a short note.
   Acceptance: the note lands in `docs/reference/harness-candidates/` (one file, named for this handoff) and
   FW-1 cites it.
@@ -233,7 +233,7 @@ drawn distinctly, because that is the arrow AutoKernel was missing).
 - **F-2 (follow-up, this handoff)**: the acceptance harness run. Prerequisites in order: FW-4 hook (the FW-4
   acceptance text says the harness refuses to run without it), then a mocked-GUI CLI run of the block over a frozen
   set of real `UNKNOWN`-class error strings pulled from the graph's failure records, with the direct-model baseline
-  PAW-5 asks for. FW-3 is not yet written, so the FW-3 citation the FW-3 acceptance requires is still owed.
+  PAW-5 asks for. FW-3 is complete: [prior-art survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md), including typed connectors, explicit failure paths, independent loop budgets and publishing/privacy boundaries. It supplies design rationale, not runtime or calibration evidence.
 
 ## Open Questions
 
@@ -241,3 +241,5 @@ drawn distinctly, because that is the arrow AutoKernel was missing).
   (§4 D-3 adds a concrete argument for the declarative answer: one `subflow` referenced six times.)
   (intake-847#record already points at the declarative answer: a graph the orchestrator executes durably, topology kept.)
 - How are fuzzy-node contracts versioned when the underlying model or compiled program changes?
+
+✅ 2026-10-06 MAIN accepted FW-2 [APP contract plus inert hub-row draft](../../artifacts/ni08/workflow-contract-design-20261006/README.md), APP `be8d46f61edcf5cb795d485b1a8171c562ee4971`, and FW-3 [official-documentation survey](../../docs/reference/harness-candidates/fuzzy-workflow-authoring-gui.md). No actual registry/nav/page or executor added. FW-1 runtime and VB-FW-1 prospective producer remain open.

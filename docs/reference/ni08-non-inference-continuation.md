@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **seventeen completed scoped tasks; AP failure-diagnostic source validation and additional source/design work continue**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **twenty-one completed scoped tasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -29,3 +29,5 @@ AP51/EV10d/EV10f design/docs are accepted: [current-source distinctions](ni08-ad
 LR8 runtime A/B is [concretely packaged](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md), recommendation B, still unapplied. Source/registry candidate rechecked; live PID/cron custody belongs to the executing owner boundary. No extra completion counted for packaging and no repeat of OP73 authorization.
 
 AP-ME4/AP-ME6 and VB-AP-ME-DIAGNOSTICS close after [native21/21 and byte-identical APPmain integration](../../artifacts/ni08/failure-signatures-source-20261006/README.md). Three existing flips:17 scoped NI08 completions (16 flips+1 added audit subtask). Native diagnostics remain ungraded and source conformance is observation only; per-operator offline context baseline and shared crossover-signal source screening are newly surfaced work.
+
+M19-RECORD scoped design, FW2 contract/draft, FW3 survey and CFHF1 source comparison accepted:21 scoped completions (19 existing checkbox flips+2 newly completed scoped subtasks). M19 parent/calibration and workflow runtime remain open. New VB-M19-WRITE/VB-AP-ME-CONTEXT/VB-ETVT2-DIAGNOSTICS enroll prospective source work before capture; AP1/3 and ETV source are under review, not complete.
