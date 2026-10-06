@@ -427,3 +427,8 @@ op-offload arm at -ub 512 exceeds ~158 tok/s on this file. `intake-1810#01`.
         research `3d3581e6` (operator decision): `scripts/benchmark/cpu_prefill_v8_regression_runner.py` is retired IN
         PLACE (`scripts/benchmark/deprecated/RETIRED_IN_PLACE.md`). It could not be moved, because an executed
         waiver hash-pins it and it resolves `bench_canonical.sh` relative to itself. A0 uses `canonical_recipe.py`.
+
+## Research Intake Update — 2026-10-06 (cafe-llama CUDA MoE expert cache, intake-1925)
+
+- [ ] **CAFE-7 — CONDITIONAL REBUILD R4: HIP port of the CUDA MoE expert cache for host-resident MoE (DS41, GLM-5.2 class).** Trigger: RT-5 skew >= 60% top-10% on >= 2 workloads and an accepted MI210 host-resident serving target. Port surface: six unmapped CUDA symbols (priority streams, cudaStreamQuery, cudaErrorNotReady, cudaPeekAtLastError, cudaErrorUnknown), the CPU/backend hooks, doorbell join check on hipHostMallocMapped. Evidence quality: the only comparable published number is +18.3% single GPU on an unstated host (author-reported, no variance). Sources register it for HIP although the doc says CUDA only; unbuilt, unverified. (intake-1925 claim 1)
+- [ ] **CAFE-8 — seed AK-F (moe-direct knobs), only after CAFE-7.** `GGML_CUDA_MOE_DIRECT_CPU_FRAC`, fill/evict/decay; no published data. (intake-1925 claim 2)

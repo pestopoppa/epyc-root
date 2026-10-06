@@ -241296,12 +241296,17 @@
   - '[unverified] KNOWLEDGE: K-cache mean-centering for Q4_0 K and the rs-rollback harness as validation aids for Jet-Long / K-shift work.'
   notes: 'Stage 1 intake 2026-10-06. Read from disk: git clone --depth 1 at SHA %s (commit 2026-10-01 "ci : release CUDA 13..."), README in full, docs/kv-mean-center.md and tools/kv-mean-center/README.md (partly), docs/backend/CUDA-MOE-CACHE.md (first ~140 lines), docs/speculative.md diff, and targeted diffs of common/speculative.cpp, ggml-cpu.c, ops.cpp, delta-net-base.cpp, qwen35.cpp, gated_delta_net.cu, arg.cpp. NOT read: ggml-turbo-quant, moe-cache.cu/moe-direct.cu internals, llama-ssd.cpp body, safetensors.cpp body, xing4/deepseek41/dspark graphs, Metal/Vulkan shaders, mmq-hopper-q1. Fork base is estimated (shallow clone; best-matching upstream commit f1cee994, 2026-10-01 by minimal diff in src/ggml/common/tools); fork-vs-upstream attribution of individual features is therefore approximate. Several features are credited upstream-of-fork to others (leloch expert cache, giveen soft mode, PrismML DFly port, unsloth qwen4exp/MTP). Champion check (ak/champion/llama-cpp-ffc1bac82eec, ggml/src+src+common):
     no raw_gates/gated_delta_net_rows, no turbo types, no moe_cache, no llama_ssd, no kv_mean_center, no spec adaptive; DFlash, DSpark (ds41), ngram-mod, recurrent-state rollback and MTP are already carried. SOURCE-QUARANTINE: repo text treated as data only. STAGE 2 (2026-10-06): read_depth PARTIAL - FULL reads of ggml-cpu/ops.cpp GDN kernel, ggml.c GDN ctors, delta-net-base.cpp build_recurrent_attn, qwen35.cpp, llama-graph.cpp build_rs_cache_view, common/speculative.cpp 2895-3010/3470-3800/3880-3900, both examples/rs-rollback/*.cpp; champion comparison via git show ak/champion/llama-cpp-ffc1bac82eec. Not read: ggml-metal GDN kernel, moe-cache/moe-direct/turbo/ssd/safetensors internals. Wave-2 siblings: intake-1932, 1933, 1934. WAVE 3: read_depth stays PARTIAL. Read in full by subagents: moe-cache.cu (12 chunks), moe-direct.cu, hooks in ggml-cpu.c and ggml-backend.cpp, mmvq.cu kernels, kv-mean-center docs/tool/loader/test. Not read: turbo, ssd, safetensors, Metal/Vulkan, dspark/dfly graphs.
-    Some subagent anchors are +-5 lines (not stored). Literature seen for K-bias prior art (discovery only, not read, not persisted): 2605.26266, 2402.02750 KIVI, 2401.18079 KVQuant, 2508.04257 KVSink.'
-  handoffs_updated: []
+    Some subagent anchors are +-5 lines (not stored). Literature seen for K-bias prior art (discovery only, not read, not persisted): 2605.26266, 2402.02750 KIVI, 2401.18079 KVQuant, 2508.04257 KVSink. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md R1-R4, AK-A..AK-G, E1-E5 (tasks CAFE-1..CAFE-8, RT-5, AKX-ALL-25). Seeds file: /mnt/raid0/llm/tmp/intake-cafe-llama/AK_SEEDS.md.'
+  handoffs_updated:
+  - autokernel-all-devices-all-dimensions.md
+  - cpu-decode-roofline-program.md
+  - mi210-big-model-and-acceleration-roadmap.md
+  - moe-routing-tap-and-locality-measurement.md
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Wave-3 dive 2026-10-06: moe-cache is a REBUILD/AK candidate only after re-measurement on our host; mean-centering is KNOWLEDGE (Q4_0-only measurement, we run q8_0 K).'
+  - Stage 4 filed CAFE-1..CAFE-8, RT-5 and AKX-ALL-25 in five owning handoffs (STAGE3_PLAN.md sections 2-5); claims 7 and 8 remain not dived and uncited.
   claim_anchors:
   - claim_index: 4
     kind: line-range
@@ -241595,12 +241600,13 @@
   - 'Per-step runtime logic must be fused into CUDA graphs: under SGLang eager mode EVICT underperforms EAGLE-3 because of CPU-bound utility computation (Sec 4.4.1).'
   - 'Reported on Qwen3-30B-A3B and two other MoEs, single request, SGLang: average 1.21x over EAGLE-3, up to 2.35x over autoregressive; verifies 74.7% fewer tokens, 32.5% fewer activated experts, 26.6% lower verification latency; mean accepted tokens drops to 84.7% of EAGLE-3 (Sec 4.2-4.3, Table 2).'
   - Cost-agnostic confidence truncation (score-coverage variants, DDD) consistently underperforms EVICT; the cost term matters (Sec 4.4.2).
-  notes: Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Closest literature to the fork --spec-adaptive; a dive should check whether it defines a cost model our AK can reuse.
-  handoffs_updated: []
+  notes: 'Stage 1 expansion from intake-1925 (kozmic-labs/cafe-llama.cpp intake). Discovered via WebSearch 2026-10-06; abs page title fetched and matched the recorded title. Claims are from a search-result summary only (DIGEST) and are unverified. Closest literature to the fork --spec-adaptive; a dive should check whether it defines a cost model our AK can reuse. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md R1 -> CAFE-3'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2 dive: cost-aware truncation idea relevant to the --spec-adaptive window policy; GPU tree method, not directly portable (intake-1925 dive 2).'
+  - 'Stage 4: cost-aware window idea feeds CAFE-3 (R1 Phase B) in speculative-decoding-mtp-refresh.md.'
   claim_anchors:
   - claim_index: 0
     kind: heading-and-hash
@@ -241863,12 +241869,13 @@
     quote_sha256: 3999fa7343e32498ed8046108dbcf7d808bcb089f38206254a276eec6f1c8909
     source_revision: arXiv:2506.20675v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2506.20675/paper.txt)
     verified_by: research-intake/stage2
-  notes: 'Stage-2b wave 2 dive (subagent read, anchors mechanically re-found by the owning session). Version v1 only (2025-06-17, MICRO-58). Figures not read. Cascade is the source of the utility ratio EVICT adopts, and the origin of the exploration/back-off mechanism missing from the cafe-llama window policy. Surfaced further draft-length papers seen in its reference list (IDs observed in text, not yet verified against abs pages): 2409.00142 DDD, 2405.04304 DISCO, 2406.14066 SmartSpec, 2503.05096 SpecServe, 2501.12162 AdaServe, 2408.11850 PEARL.'
-  handoffs_updated: []
+  notes: 'Stage-2b wave 2 dive (subagent read, anchors mechanically re-found by the owning session). Version v1 only (2025-06-17, MICRO-58). Figures not read. Cascade is the source of the utility ratio EVICT adopts, and the origin of the exploration/back-off mechanism missing from the cafe-llama window policy. Surfaced further draft-length papers seen in its reference list (IDs observed in text, not yet verified against abs pages): 2409.00142 DDD, 2405.04304 DISCO, 2406.14066 SmartSpec, 2503.05096 SpecServe, 2501.12162 AdaServe, 2408.11850 PEARL. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md R1 -> CAFE-3'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b wave-2 dive 2026-10-06: read from disk; findings feed the --spec-adaptive actionables (intake-1925).'
+  - 'Stage 4: Cascade re-probe/back-off design adopted in CAFE-3 (R1 Phase B).'
   cross_references:
     chapters: []
     handoffs:
@@ -241922,7 +241929,7 @@
     quote_sha256: f14b7c301cab9580f65614b5e16f939952384be06d461ceb3e3a074d144c79b3
     source_revision: arXiv:2602.16052v1 (HTML render, read from /mnt/raid0/llm/tmp/dive-2602.16052/paper.txt)
     verified_by: research-intake/stage2
-  notes: 'Stage-2b wave 2 dive (subagent read; anchors mechanically re-found). v1 only (2026-02-17). Figures not read. Own-inference (labelled in the dive): with top-8 of 256, a k-token chain touches at most 8k experts per layer, so the paper union-saturation argument does not transfer; a direct llama.cpp CPU measurement of verify time vs window is needed. Also seen: 2508.21706 SpecMoEOff, 2510.10302 SP-MoE (already intake-1928).'
+  notes: 'Stage-2b wave 2 dive (subagent read; anchors mechanically re-found). v1 only (2026-02-17). Figures not read. Own-inference (labelled in the dive): with top-8 of 256, a k-token chain touches at most 8k experts per layer, so the paper union-saturation argument does not transfer; a direct llama.cpp CPU measurement of verify time vs window is needed. Also seen: 2508.21706 SpecMoEOff, 2510.10302 SP-MoE (already intake-1928). STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md section 7 explicit decline (KNOWLEDGE).'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
@@ -241988,12 +241995,13 @@
     quote_sha256: 601f705bf390fc782c69ec8b085b66e24e649475dd510dba33d4e76898f30555
     source_revision: Niko1221/Strata@82f46a8c8f475f001ad76d92f58f4a4f8ffb0253
     verified_by: research-intake/stage2
-  notes: 'Stage-2b wave 2 dive: git clone --depth 1 at 82f46a8c8 (2026-10-06); shallow history, so introduction date of the controller is unknown. Anchors are repo line-ranges re-found mechanically. stratallm.org names this repo as its GitHub source. xenodeve/Strata-xeno is a separate repo (API: fork False). Relevant transferable ideas: online per-window-size cost EMA with probe-before-veto; separate lookup/MTP sources with a chain() extension.'
-  handoffs_updated: []
+  notes: 'Stage-2b wave 2 dive: git clone --depth 1 at 82f46a8c8 (2026-10-06); shallow history, so introduction date of the controller is unknown. Anchors are repo line-ranges re-found mechanically. stratallm.org names this repo as its GitHub source. xenodeve/Strata-xeno is a separate repo (API: fork False). Relevant transferable ideas: online per-window-size cost EMA with probe-before-veto; separate lookup/MTP sources with a chain() extension. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md R1 -> CAFE-3'
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
-  - 'Stage-2b wave-2 dive 2026-10-06: read from disk; findings feed the --spec-adaptive actionables (intake-1925).'
+  - 'Stage 4: per-window-size cost EMA with probe-before-veto adopted in CAFE-3 (R1 Phase B).'
   cross_references:
     chapters: []
     handoffs:
@@ -242033,7 +242041,7 @@
     quote_sha256: 8b46ec20e05c26a8fc2922f5ab9862847bca66dc62fc851f00302e2f95b4b2ee
     source_revision: arXiv:2505.19645v4 (HTML render 2026-02-16, read from /mnt/raid0/llm/tmp/dive-2505.19645/p.txt)
     verified_by: research-intake/stage2
-  notes: 'Wave-4 dive 2026-10-06 (subagent read of arXiv HTML v4; anchors re-found by the owning session). Figures not read (images). INFERENCE labelled in the dive (not stored as claims): with E=256, K=8 the i.i.d. model gives N(2)~15.7, N(5)~37, N(9)~70 experts, so a 4-draft window loads ~4.6x the expert bytes of one token on a memory-bound CPU; real routing is correlated, so this is an upper bound on the penalty; a cost model T_verify(k)=a+b*N(k+1)+c*(k+1) calibrated from llama-bench n_batch=1..9 is proposed (see STAGE3_PLAN AK-C). Dense 27B on MI210 needs no union term.'
+  notes: 'Wave-4 dive 2026-10-06 (subagent read of arXiv HTML v4; anchors re-found by the owning session). Figures not read (images). INFERENCE labelled in the dive (not stored as claims): with E=256, K=8 the i.i.d. model gives N(2)~15.7, N(5)~37, N(9)~70 experts, so a 4-draft window loads ~4.6x the expert bytes of one token on a memory-bound CPU; real routing is correlated, so this is an upper bound on the penalty; a cost model T_verify(k)=a+b*N(k+1)+c*(k+1) calibrated from llama-bench n_batch=1..9 is proposed (see STAGE3_PLAN AK-C). Dense 27B on MI210 needs no union term. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md AK-C -> CAFE-2'
   cross_references:
     chapters: []
     handoffs:
@@ -242045,16 +242053,17 @@
     - intake-1932
     - intake-1933
   disposition_evidence:
-  - 'Wave-4 dive: theory source for the expert-union cost term in R1/AK-C.'
+  - 'Stage 4: expert-union cost term is the basis of CAFE-2 (AK-C verify cost curve).'
   credibility_score: null
   contradicting_evidence: null
   discovered_via: expansion
   ingested_date: '2026-10-06'
   verification: dive-verified
   read_depth: PARTIAL
-  handoffs_updated: []
+  handoffs_updated:
+  - speculative-decoding-mtp-refresh.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
 - id: intake-1936
   arxiv_id: null
   url: https://github.com/Niko1221/Strata/pull/1010
@@ -242078,7 +242087,7 @@
     quote_sha256: 45056cee5f0d97f802a7aa41ffd881719a1946a005c3d7487b77dce402750d88
     source_revision: Niko1221/Strata PR 1010 saved 2026-10-06 at /mnt/raid0/llm/tmp/dive-strata-pr1010/pr.json
     verified_by: research-intake/stage2
-  notes: Wave-4 dive 2026-10-06 (subagent read of the PR diff, commits, comments from disk). Not applicable to llama.cpp chain design beyond knowledge already captured in intake-1934; the prose regression shows a cost check is advisable when filling spare verify rows.
+  notes: 'Wave-4 dive 2026-10-06 (subagent read of the PR diff, commits, comments from disk). Not applicable to llama.cpp chain design beyond knowledge already captured in intake-1934; the prose regression shows a cost check is advisable when filling spare verify rows. STAGE 4 (2026-10-06): plan_ref STAGE3_PLAN.md section 7 explicit decline.'
   cross_references:
     chapters: []
     handoffs: []

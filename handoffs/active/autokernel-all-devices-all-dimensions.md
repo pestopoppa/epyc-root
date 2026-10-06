@@ -366,6 +366,7 @@ landing alone closes no box below whose done-test needs a live run; those carry 
 - [ ] **AKX-ALL-22: first GPU campaign batch in a granted window.** After AKX-ALL-14..18. One GPU serving target,
   planner fed by the G2 profile, one candidate decided by G4 surfaces and the G5 gate, inside an AKX-ALL-15 window.
   Done when the batch's receipts show both claims, the residency proof, the window cycle and per-dimension verdicts.
+- [ ] **AKX-ALL-25: inject the cafe-llama seeds AK-A, AK-B, AK-C, AK-G (CPU) and AK-D (GPU, low priority).** One inbox note per lane with knob, kernel, expected effect, measurement (text in the Stage-3 plan of the cafe-llama intake). AK-E and AK-F are conditional and are NOT injected until their triggers fire (CAFE-7, KLD gap). Done when the planner has the seeds in its inbox and the CPU ones are scheduled in a window. (intake-1925)
 
 ## Dependencies and sequencing
 

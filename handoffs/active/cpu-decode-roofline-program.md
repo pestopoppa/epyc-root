@@ -3836,6 +3836,11 @@ _Run by ak-ds41-main in a DS41 pause window (`/mnt/raid0/llm/tmp/ds41-scope-2026
     rounds), then a paired per-item task-quality eval for the output change. Fold only if prefill gains and quality is
     within tolerance. Done when that verdict is ledgered.
 
+## Tasks filed 2026-10-06 — GDN raw gates and rows mode (cafe-llama intake-1925)
+
+- [ ] **CAFE-5 — REBUILD R2: GDN raw gates + state-rows mode for qwen35moe, CPU, np=1.** Port fork `ggml_gated_delta_net_rows` / `_set_raw_gates`, the CPU kernel branches and `build_rs_cache_view` / `build_rs_write_rows` and wire `qwen35moe.cpp` (the fork wires only qwen35). Rows mode only for np=1 (self-documented reorder hazard, fork llama-graph.cpp:3724+). Gates: P1 unit equivalence, P4/P5 rollback harness, P6 identity 100%, P7 >= +1.0% above floor on `serving:q38fn-...-cpu-t48-mtp-d4`. Do not touch the HIP kernel here. (intake-1925 claim 4)
+- [ ] **CAFE-6 — seeds AK-A (raw gates) and AK-B (rows mode) for the AK planner.** Knob, kernel, expected effect and measurement as in the Stage-3 plan; magnitude unknown, dispatch/barrier-bound. (intake-1925 claim 4)
+
 ## Axis E — restore the MTP head (speculative decoding), LAST
 
 **Facts (2026-09-02).** unsloth published the MTP heads on 2026-09-01 (repo revision `5d16c055`,

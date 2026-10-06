@@ -2,8 +2,8 @@
  "session_id": "intake-cafe-llama-ec-20261006",
  "started_at": "2026-10-06T00:00:00Z",
  "last_checkpoint": "2026-10-06T00:00:00Z",
- "stage": "stage3-draft",
- "phase": "stage2",
+ "stage": "stage4-complete",
+ "phase": "stage4",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-cafe-1006",
  "branch": "lane/ec-intake-cafe-1006",
  "topic": "kozmic-labs/cafe-llama.cpp fork (SHA 0ae77ef4914fcd6e78e0b13ab157ff3acccc9edf)",
@@ -50,7 +50,7 @@
    "ts": "2026-10-06T00:00:00Z",
    "verbatim": "It could be very relevant to the currently running claude inference sessions. I imagine there will be a number of insights we could distill and rebuild ourselves directly or inject as autokernel hypotheses",
    "disposition": "planned",
-   "plan_ref": null
+   "plan_ref": "STAGE3_PLAN.md R1-R4 and AK-A..AK-G; handoff tasks CAFE-1..CAFE-8, RT-5, AKX-ALL-25"
   },
   {
    "seq": 2,
@@ -58,7 +58,7 @@
    "ts": "2026-10-06T00:00:00Z",
    "verbatim": "All recommended with a cap of 10, and maximum four stage 2 waves",
    "disposition": "planned",
-   "plan_ref": null
+   "plan_ref": "STAGE3_PLAN.md section 0 (waves 1-4 executed) and section 1"
   },
   {
    "seq": 3,
@@ -66,7 +66,7 @@
    "ts": "2026-10-06T00:00:00Z",
    "verbatim": "Dive the 2 unselected claims too",
    "disposition": "planned",
-   "plan_ref": null,
+   "plan_ref": "STAGE3_PLAN.md AK-E, R4, AK-F, AK-G; CAFE-7, CAFE-8, RT-5",
    "note": "Operator option chosen in the coordinator's question. Superseded in framing by seq 4: these dives belonged to the original selection."
   },
   {
@@ -93,7 +93,15 @@
    "ts": "2026-10-06T00:00:00Z",
    "verbatim": "if there are no more stage 2 intake recommendations, proceed to stage 3",
    "disposition": "planned",
-   "plan_ref": "STAGE3_PLAN.md (wave 4 ran: 2 sources; then Stage 3 drafted, plan file only)"
+   "plan_ref": "STAGE3_PLAN.md (this plan); section 0"
+  },
+  {
+   "seq": 7,
+   "stage": 3,
+   "ts": "2026-10-06T00:00:00Z",
+   "verbatim": "proceed with stage 4. Once complete, have the subagent perform a /wrap-up of its work.",
+   "disposition": "planned",
+   "plan_ref": "Stage 4 implemented as STAGE3_PLAN.md; wrap-up performed per-task"
   }
  ],
  "prior_sessions": [
@@ -5129,5 +5137,18 @@
    "intake-1936 Strata PR 1010"
   ],
   "stage": "stage3-plan-drafted"
+ },
+ "stage4": {
+  "handoff_tasks_filed": [
+   "CAFE-1..CAFE-4 speculative-decoding-mtp-refresh.md",
+   "CAFE-5, CAFE-6 cpu-decode-roofline-program.md",
+   "RT-5 moe-routing-tap-and-locality-measurement.md",
+   "CAFE-7, CAFE-8 mi210-big-model-and-acceleration-roadmap.md",
+   "AKX-ALL-25 autokernel-all-devices-all-dimensions.md"
+  ],
+  "deviations": [
+   "AKX-ALL-23 was already taken at origin/main (QSA task); the plan's AKX-ALL-23 was filed as AKX-ALL-25 (24 also taken)",
+   "CAFE-1 and CAFE-3 provenance cites corrected to intake-1925 claim 3 (adaptive window); the plan had claim 4"
+  ]
  }
 }
