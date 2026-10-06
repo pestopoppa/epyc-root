@@ -1,0 +1,67 @@
+name: TOC-RD-1b staged PII perf period controls
+on:
+  push:
+    branches: [codex/toc-rd-1b-period-cells-20261006]
+    paths:
+      - .github/workflows/toc-rd-1b-pii-period.yml
+      - requirements-pii-capture.txt
+      - scripts/ci/toc_rd_1b_pii_period_capture.py
+      - scripts/ci/toc_rd_1b_expected_case_identities.json
+permissions:
+  contents: read
+jobs:
+  toc-rd-1b-pii-period-capture:
+    name: toc-rd-1b-pii-period-capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE_PIN: 64c245f3a71551028a56b760196e5429437c4f20
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      TOCRD1B_RUNNER_CONTEXT: ubuntu-latest
+      TOCRD1B_EXECUTION_CONTEXT: offhost-synthetic-staged-index-fixtures
+      TOCRD1B_INSTALL_COMMAND: python -m pip install --require-hashes -r recipe/requirements-pii-capture.txt
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/toc-rd-1b-pii-period/result"
+          printf '{"state":"setup_pending","job":"toc-rd-1b-pii-period-capture","exit_code":null}\n' > "$RUNNER_TEMP/toc-rd-1b-pii-period/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact staged-gate source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.SOURCE_PIN }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install hash-locked pytest closure
+        run: python -m pip install --require-hashes -r recipe/requirements-pii-capture.txt
+      - name: Capture original JUnit and native receipt
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/source"
+          python recipe/scripts/ci/toc_rd_1b_pii_period_capture.py
+      - name: Preserve status, original JUnit, contexts, and native receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: toc-rd-1b-pii-period-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/toc-rd-1b-pii-period/result/
+          if-no-files-found: error

@@ -5102,3 +5102,6 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [OpenCode prompt transport source acceptance](../artifacts/ni08/harness-stdin-source-20261006/README.md) audits all three current generators and moves HS4 to exact UTF-8 stdin. Hosted138/138 covers a long Unicode prompt and compatibility suites using fake tools; live shell/model efficacy and original r3 remain separate.
+
+
+2026-10-06: [Staged perf-period selector](../artifacts/ni08/pii-period-source-20261006/README.md) source is accepted by73/73 original synthetic controls; narrow exact table-cell exemption keeps account/secret refusals and historical bytes. Parent unredacted-fixture acceptance remains separate. GitNexus outputs from the replacement-worker scope-transfer incident are excluded; review uses independent Git/AST/native-original custody.
