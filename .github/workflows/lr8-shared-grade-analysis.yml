@@ -1,0 +1,45 @@
+name: LR8 original receipt shared grade analysis
+on:
+  push:
+    branches: [codex/lr8-grade-analysis-20261006]
+    paths:
+      - .github/workflows/lr8-shared-grade-analysis.yml
+      - scripts/ci/lr8_shared_grade_analysis.py
+permissions:
+  contents: read
+  actions: read
+jobs:
+  grade-original:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Initialize analysis status
+        run: |
+          mkdir -p "$RUNNER_TEMP/lr8-grade-analysis"
+          printf '%s\n' '{"state":"setup_pending"}' > "$RUNNER_TEMP/lr8-grade-analysis/status.json"
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+          path: carrier
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Reopen original and call unchanged shared grade
+        run: python recipe/scripts/ci/lr8_shared_grade_analysis.py
+      - name: Preserve analysis and unchanged original ZIP on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lr8-shared-grade-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/lr8-grade-analysis/
+          if-no-files-found: error
