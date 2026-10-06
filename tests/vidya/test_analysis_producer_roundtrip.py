@@ -213,10 +213,15 @@ def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, mo
                                                                     capsys):
     app_root, _, producer = _app_tree(tmp_path)
     source = tmp_path / "external-fixture/question_ledger.jsonl"
+    # MDE is intentionally unknown below two unique qids; q2 stays false in both runs.
     _jsonl(source, [
         {"suite": "synthetic", "qid": "q1", "correct": True, "error": False,
          "calibration_id": "run-a"},
+        {"suite": "synthetic", "qid": "q2", "correct": False, "error": False,
+         "calibration_id": "run-a"},
         {"suite": "synthetic", "qid": "q1", "correct": False, "error": False,
+         "calibration_id": "run-b"},
+        {"suite": "synthetic", "qid": "q2", "correct": False, "error": False,
          "calibration_id": "run-b"},
     ])
     inputs: list[dict] = []
@@ -233,10 +238,10 @@ def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, mo
     projected = {row["metric"]: eval_adapter.project(row) for row in native}
     assert set(projected) == {"pass_rate", "mde", "run_spread", "flip_rate"}
     assert all(row.category == report["category"] == "BASELINE" for row in projected.values())
-    assert projected["pass_rate"].reps == 2
-    assert projected["mde"].reps == 1
+    assert projected["pass_rate"].reps == 4
+    assert projected["mde"].reps == 2
     assert projected["run_spread"].reps == 2
-    assert projected["flip_rate"].reps == 1
+    assert projected["flip_rate"].reps == 2
     assert all(row.attestation_verified for row in projected.values())
     _assert_ingested_with_shared_grade(tmp_path, capsys, "eval-suite-discriminability",
                                        eval_adapter, report_path)
