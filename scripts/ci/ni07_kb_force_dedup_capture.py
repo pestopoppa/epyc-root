@@ -1,4 +1,4 @@
-"""Declare exact fixture source/config/context readset before native execution."""
+"""Declare exact fixture source/config readset before native execution."""
 import json
 import os
 import platform
@@ -6,9 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-CONTEXT_NAMES = {"AGENTS.md", "CLAUDE.md", "README.md"}
-CONFIG_SUFFIXES = {".cfg", ".ini", ".toml", ".yaml", ".yml"}
-CONFIG_NAMES = {"pytest.ini", "setup.cfg", "tox.ini"}
+CONFIG_NAMES = {"pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini"}
 SELECTIONS = [
     "tests/unit/test_kb_catalog_dependency.py",
     "tests/unit/test_colbert_lock_contract.py",
@@ -26,9 +24,7 @@ def tracked_inputs(repo):
         if not name:
             continue
         path = repo / name
-        is_workflow = ".github/workflows" in path.as_posix() and path.suffix.lower() in {".yml", ".yaml"}
-        is_config = path.name in CONFIG_NAMES or path.suffix.lower() in CONFIG_SUFFIXES
-        if path.suffix.lower() == ".py" or path.name in CONTEXT_NAMES or is_config or is_workflow:
+        if path.suffix.lower() == ".py" or path.name in CONFIG_NAMES:
             if not path.is_file():
                 raise RuntimeError(f"tracked declared input is missing: {path}")
             yield path.resolve()
