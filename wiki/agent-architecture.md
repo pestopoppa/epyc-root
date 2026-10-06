@@ -5070,3 +5070,7 @@ Delegation's compact loop telemetry and user-visible report are separate product
 - [Handoff index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives) — scratch boundaries and load-bearing markers.
 - [GitNexus compute claims](../docs/reference/gitnexus-compute-claims.md) — point-in-time admission and original native control counts.
 - [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP-13a/b source acceptance and remaining inference arms.
+
+## Source update — 2026-10-06: detector/fixer topology design
+
+[HG-9’s accepted design option](../docs/design/hg9-detect-repair-topology.md) reuses current role/escalation and typed host-action contracts. A future finding trigger must resolve objective evidence and current binding; a nonempty evidence reference alone is insufficient. Detection precedes repair recommendation, missing call costs remain absent and every rejected transition retains the incumbent. Current role names do not establish a small-model pool. Nine mocked boundaries are specifications, not executed tests. No selector or route was activated; detection/F1 and paired fix-acceptance gates remain in the [owning handoff](../handoffs/active/reviewer-escalation-and-human-gate-policy.md).

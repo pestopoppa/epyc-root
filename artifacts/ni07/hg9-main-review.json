@@ -1,0 +1,12 @@
+{
+  "owner": "codex-ni-main",
+  "accepted": true,
+  "scope": "source-backed design option only",
+  "source_files_reopened": 14,
+  "draft_files_reopened": 2,
+  "mismatches": 0,
+  "native_tests_executed": 0,
+  "draft_sha256": "20bb1ccb215bbc0681cc0bf07cffdf054d3971c770aa4847cbc56037d12c80a5",
+  "applied_document_sha256": "27370a92d21960e3b59942f63fa3a3b500a7a714323791c2a1371265ef2b97f7",
+  "runtime_routing_activated": false
+}

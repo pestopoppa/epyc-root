@@ -1,5 +1,7 @@
 # Reviewer Control Plane — Escalation & Human-Gate Policy (H7, stub-grade)
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-integrity-20261006/`; owned publication worktree `/mnt/raid0/llm/worktrees/codex-ni06-promote-root-k3-20261006/`.
+
 **Status**: stub — deliberately LAST (M4 "governed"); policies derive from H4/H5 evidence that does not exist yet
 **Created**: 2026-07-16 (Architect→Reviewer control-plane series; see index)
 **Categories**: agent_architecture, safety
@@ -44,6 +46,7 @@ Convert calibration evidence into policy: confidence thresholds from reliability
   - Step 1 (no inference): write the topology as a routing/escalation option AutoPilot can mutate (detector role
     pool, fixer role, trigger = "finding emitted"). Check the reuse of the existing escalation path and the TR role
     axis before designing anything new.
+  - [x] **HG-9 Step 1 source-backed topology contract** ✅ 2026-10-06 — MAIN accepted [the design option](../../docs/design/hg9-detect-repair-topology.md), with [immutable readset](../../artifacts/ni07/hg9-source-readset.md) and [review](../../artifacts/ni07/hg9-main-review.json). Existing roles/escalation, resolved objective evidence/current binding, deterministic incumbent fallback and nine future synthetic cases are mapped. Registry names do not prove small-model eligibility; no selector, route, model call or patch execution was activated. Step 2/3 gates remain open.
   - Step 2 (inference, after an EV-13b resume, see `eval-tower-verification.md`): measure detection F1 of the
     small-model pool on the Augment-v1 suite. This needs a judge-stable score first, because EV-6 failed at
     2.94pp on 2026-09-16.
