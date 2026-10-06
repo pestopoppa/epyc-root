@@ -1,0 +1,76 @@
+name: AP-ME1/3 synthetic diagnostics capture
+
+on:
+  push:
+    branches: [codex/ap-me1-me3-hosted-ci-proposal-20261006]
+    paths:
+      - .github/workflows/ap-me1-me3-capture.yml
+      - scripts/ci/ap_me1_me3_capture.py
+      - scripts/ci/ap_me1_me3_case_guard.py
+      - scripts/ci/ap_me1_me3_source_readset.json
+      - scripts/ci/ap_me1_me3_test_requirements.txt
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ap-me1-me3-synthetic-controls:
+    name: ap-me1-me3-synthetic-controls
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      RECIPE_PIN: ${{ github.sha }}
+      APP_PIN: 3dec5ccde33d9d1c1c8472187d581f5b5277ef74
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      AP_ME1_ME3_EXECUTION_CONTEXT: offline-native-journal-fixtures
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_LOG_DIR: /dev/null
+      ORCHESTRATOR_SERVING_CALLS_LOG: off
+      ORCHESTRATOR_COHERENCE_JUDGE_LOG: off
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/kernel-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ap-me1-me3/result"
+          printf '{"state":"setup_pending","job":"ap-me1-me3-synthetic-controls","exit_code":null}\n' > "$RUNNER_TEMP/ap-me1-me3/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout immutable native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout reviewed APP proposal
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install exact APP uv.lock pytest import closure
+        run: python -m pip install --no-deps --require-hashes -r recipe/scripts/ci/ap_me1_me3_test_requirements.txt
+      - name: Run collection-guarded controls and capture native receipt
+        run: python recipe/scripts/ci/ap_me1_me3_capture.py
+      - name: Retain native receipt, original JUnit, readset, and status on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ap-me1-me3-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ap-me1-me3/result/
+          if-no-files-found: error

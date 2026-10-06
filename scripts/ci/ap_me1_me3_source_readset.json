@@ -1,0 +1,388 @@
+{
+  "app_files": [
+    {
+      "path": "docs/reference/mutation-diagnostics.md",
+      "role": "selected-test-or-import-source",
+      "sha256": "ed98b38a16b63527f52494f00ab21249b9dce8871c876e0281cf0997117746a1"
+    },
+    {
+      "path": "pyproject.toml",
+      "role": "selected-test-or-import-source",
+      "sha256": "1d2e9183e25aea8c55e902bebaf2703b9578d974d723fcad7709614a54b00e5b"
+    },
+    {
+      "path": "scripts/autopilot/actions.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "ec8081e03590da7721caf2036d4c90a74b72a57a7e22391f70c5cdc2f33e51be"
+    },
+    {
+      "path": "scripts/autopilot/autopilot.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "f07d13af377d3f9b5da4bce1628301b1314017add62ab1bdf28742509b5f3c24"
+    },
+    {
+      "path": "scripts/autopilot/bsv_observe.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "3359af4ef777ec614323de3fa2c4d024464a060e4930b3f97a658d693bb412be"
+    },
+    {
+      "path": "scripts/autopilot/crossover_diagnostics.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "a7112a1a9902a414ce37a5d8cd1f7387993b194aabf60573b60b661639bb5c64"
+    },
+    {
+      "path": "scripts/autopilot/experiment_journal.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "4eee049b136ac3f79e42bfa4c7fc8a88084cef621f38c95e4dbae5d50c2ac6e8"
+    },
+    {
+      "path": "scripts/autopilot/journal_shards.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "path": "scripts/autopilot/journal_snapshot_create.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "9eef1a904d89a933155f52b4f494b2b0cc3da2241398f6de3507656d504c65b8"
+    },
+    {
+      "path": "scripts/autopilot/mutation_author_capture.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "ffb00bbb401232586627bf439c31da62f71679e345fe292d692e8700e556d2b1"
+    },
+    {
+      "path": "scripts/autopilot/mutation_pair_features.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "ef658669e34a37bcead6f08f947f84d73eb51c7508b402b4fe58c3e4b5695997"
+    },
+    {
+      "path": "scripts/autopilot/species/prompt_forge.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "33888fe8b2dfce87548e760c04901ab5789caaca15d5976d555ac18d09fb62ea"
+    },
+    {
+      "path": "scripts/autopilot/stm_generated_view.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "7f5b171a74586a2bb39b5e9d5deff1121e28c07bcc8bc86dedfaaed9ba56a49a"
+    },
+    {
+      "path": "src/autopilot_core/action_identity.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "path": "src/autopilot_core/authority_consent.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "50541fbda093e0560005a60195d3e8f82f95151aadf3cbab968d1842d5073022"
+    },
+    {
+      "path": "src/autopilot_core/baseline_ledger.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "ef0de6275807ec53fa4dc74abe30e3f1323c314efc52e11a4bc051a2f5a6cb55"
+    },
+    {
+      "path": "src/autopilot_core/infra_fingerprint.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "e89d2d3caa5a6ab314c7df47da59d5ebe97e80c7c25c66feb47082209f45abbd"
+    },
+    {
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "path": "src/autopilot_core/journal_snapshot_replay.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "c95b645f1ea69c93d7af138a8ea2b1ee17ce4f592662dbefd6b60f879bc54ebe"
+    },
+    {
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "path": "src/autopilot_core/pareto_math.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "path": "src/autopilot_core/tier_specs.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+    },
+    {
+      "path": "src/behavior_signature.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "5666e929ef58785751ce094b0b38575f06361dc42dbd246e697d5b35cd8336ef"
+    },
+    {
+      "path": "src/registry/kernel_paths.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066"
+    },
+    {
+      "path": "src/trace/__init__.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "d6978c32242961f757072076d161ac3def6f3c85f34f48280560bb0015f74356"
+    },
+    {
+      "path": "src/trace/emit.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "172727605332928b18c701e13c11301faf15debc2cf973216bf59109d5e8079c"
+    },
+    {
+      "path": "src/trace/harness_schema.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "a0251128d9a091a86b54def2021b052908e3baaa72966ca747437043bbc5384d"
+    },
+    {
+      "path": "src/trace/query.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "95311606a66c24be3cf430d7a986c40665e4ca7c172dd51d51d20e423a32fbd0"
+    },
+    {
+      "path": "src/trace/store.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "47c3420f14808b5f25261471bc3e8f4923ef7a2f17622fbe46a21fec23091320"
+    },
+    {
+      "path": "tests/unit/test_behavior_signature.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "d1b25c6e31d7cf52661bf0a562fa5d48b27dae96c93fa2a138b9ff850d0143ac"
+    },
+    {
+      "path": "tests/unit/test_bsv_observe.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "42134031c6d3188366cd50d669469750203dc7b27e8488ae702bbf7c37653c46"
+    },
+    {
+      "path": "tests/unit/test_failure_signatures.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "53432076f684b9af110abefd8ad674cd241b08f995cd8a47f2507d49be4a75be"
+    },
+    {
+      "path": "tests/unit/test_mutation_diagnostics.py",
+      "role": "selected-test-or-import-source",
+      "sha256": "558c93fa1f76ddca164b834341e741ff552609830e7b33d3c67552bf720bcbcd"
+    },
+    {
+      "path": "uv.lock",
+      "role": "selected-test-or-import-source",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ],
+  "app_repository": "pestopoppa/epyc-orchestrator",
+  "app_revision": "3dec5ccde33d9d1c1c8472187d581f5b5277ef74",
+  "app_uv_lock_sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3",
+  "carrier_native_conformance_path": "scripts/ci/native_conformance.py",
+  "carrier_native_conformance_sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e",
+  "carrier_revision": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+  "compatibility_control_scope": [
+    "existing native experiment-journal signature/scope append/reload and legacy-unknown behavior",
+    "existing shared BSV signature/diff and trace-schema persistence",
+    "existing BSV observe-only conflict calculation and no-overlap early return"
+  ],
+  "controls": [
+    {
+      "case": "test_default_off_no_capture_or_history_io",
+      "purpose": "Default-off writer/reader performs no capture or history I/O."
+    },
+    {
+      "case": "test_complete_unicode_metadata_no_raw_prompt_and_unknown_pins",
+      "purpose": "Unicode byte/character metrics remain correct; prompt body is absent and unknown pins remain null."
+    },
+    {
+      "case": "test_append_failure_reports_error_without_private_text",
+      "purpose": "Filesystem append failure is typed and does not leak private prompt text."
+    },
+    {
+      "case": "test_dispatch_pins_require_matching_native_trial",
+      "purpose": "Task/candidate context is pinned only when it matches the current native trial identity."
+    },
+    {
+      "case": "test_real_prompt_boundary_unchanged_and_capture_failure_cannot_mask_author[prompt]",
+      "purpose": "Actual prompt mutation method reaches author boundary unchanged with capture enabled or failed."
+    },
+    {
+      "case": "test_real_prompt_boundary_unchanged_and_capture_failure_cannot_mask_author[code]",
+      "purpose": "Actual code mutation method reaches author boundary unchanged with capture enabled or failed."
+    },
+    {
+      "case": "test_busy_author_capture_lock_is_typed_and_fake_author_still_runs",
+      "purpose": "Nonblocking busy writer lock returns typed busy while the author call continues."
+    },
+    {
+      "case": "test_native_anchor_deltas_jsonl_roundtrip_and_separate_bsv_policy",
+      "purpose": "Native question outcomes, anchor deltas, journal roundtrip, and separate BSV conflict policy."
+    },
+    {
+      "case": "test_suite_quality_proxy_pair_renders_proxy_label",
+      "purpose": "Suite-level quality-only outcomes remain explicitly proxy-labeled."
+    },
+    {
+      "case": "test_writer_and_reader_keep_question_and_proxy_anchor_classes_separate",
+      "purpose": "Writer/reader reject cross-class anchors even when sentinel labels coincide."
+    },
+    {
+      "case": "test_native_writer_unknown_scope_failed_verdict_and_disabled_no_mutation",
+      "purpose": "Disabled, unknown-comparability, and failed-verdict paths write no features."
+    },
+    {
+      "case": "test_bsv_no_overlap_keeps_original_early_return",
+      "purpose": "Existing BSV no-overlap fast-path semantics are unchanged."
+    },
+    {
+      "case": "test_real_crossover_context_caller_preserves_negative_evidence",
+      "purpose": "Actual action-context caller retains negative evidence and adds only diagnostics."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[scope]",
+      "purpose": "Native scope mismatch yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[anchor]",
+      "purpose": "Missing/mismatched anchor identity yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[legacy]",
+      "purpose": "Legacy row without native feature record yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[corrupt]",
+      "purpose": "Corrupted record excluded."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[excluded]",
+      "purpose": "Explicitly excluded donor yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[regression]",
+      "purpose": "Regressed sentinel evidence yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[version]",
+      "purpose": "Unsupported feature version yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[scope_version_bool]",
+      "purpose": "Boolean schema version is not accepted as exact integer."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[anchor_excluded]",
+      "purpose": "Excluded anchor yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[bool_trial]",
+      "purpose": "Boolean row trial ID is rejected."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[signature_bool_trial]",
+      "purpose": "Boolean trial ID in signature is rejected."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[signature_shape]",
+      "purpose": "Malformed native signature shape yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[stale_revision]",
+      "purpose": "Stale baseline revision yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[stale_era]",
+      "purpose": "Stale measurement era yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[stale_infra]",
+      "purpose": "Stale infrastructure digest yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[stale_comparability]",
+      "purpose": "Unverified current comparability yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[missing_error_scope]",
+      "purpose": "Missing native JournalEntry.error_scope yields no pair."
+    },
+    {
+      "case": "test_pair_unknown_or_ineligible_never_reconstructs[stale_error_scope_core]",
+      "purpose": "Self-consistent cached feature with stale native error_scope core yields no pair."
+    }
+  ],
+  "new_control_count": 31,
+  "not_included_or_asserted": [
+    "main trial producer execution or inference",
+    "model or endpoint calls",
+    "live journal or host runtime data",
+    "grading/ClaimTuple creation or authority",
+    "performance/efficacy/promotion claim",
+    "tests outside explicit selections"
+  ],
+  "recipe_files": [
+    {
+      "path": ".github/workflows/ap-me1-me3-capture.yml",
+      "role": "hosted-runner-recipe",
+      "sha256": "7b4604cf6b65828e5df68e79cf101ddb92b4331c97dabbaa1c1c47f8f55ed3f9"
+    },
+    {
+      "path": "scripts/ci/ap_me1_me3_capture.py",
+      "role": "hosted-runner-recipe",
+      "sha256": "07ec0580c2e9ef48be71f76ceee787a5f9d75e3723d7d1067ba1bfd8ca61300f"
+    },
+    {
+      "path": "scripts/ci/ap_me1_me3_case_guard.py",
+      "role": "hosted-runner-recipe",
+      "sha256": "7e90cd513b6da592924d43e50c7b3ab421a467624caa5b320aab44bb8023ddaa"
+    },
+    {
+      "path": "scripts/ci/ap_me1_me3_test_requirements.txt",
+      "role": "hosted-runner-recipe",
+      "sha256": "ff33a42f9b04daadf4c0586c135f47ec8f9d2ee14ea89e719b45ad3e7f41dcf8"
+    }
+  ],
+  "recipe_revision": "bound by hosted workflow github.sha and native receipt repository identity",
+  "root_carrier_repository": "pestopoppa/epyc-root",
+  "root_proposal_provenance": {
+    "base_repo": "/mnt/raid0/llm/epyc-root",
+    "base_revision": "f5a316b64ac4078df0afc7d6e67a62645564037c",
+    "excluded_stale_observation": "Shared /workspace ROOT HEAD db398a70ddefd9b71fd4cd7c06a3f34c21b3fa97 and linked worktree codex-ni06 were not used as proposal checkout.",
+    "proposal_branch": "codex/ap-me1-me3-hosted-ci-proposal-20261006",
+    "proposal_checkout": "standalone no-hardlinks clone with independent .git common directory"
+  },
+  "schema": "epyc.ap_me1_me3.source_readset.v1",
+  "scope": "prospective synthetic hosted test execution; source identity and readset only",
+  "selections": [
+    "tests/unit/test_mutation_diagnostics.py",
+    "tests/unit/test_failure_signatures.py",
+    "tests/unit/test_behavior_signature.py",
+    "tests/unit/test_bsv_observe.py"
+  ],
+  "test_dependency_artifact_hashes_from_uv_lock": {
+    "iniconfig": [
+      "sha256:c76315c77db068650d49c5b56314774a7804df16fee4402c1f19d6d15d8c4730",
+      "sha256:f631c04d2c48c52b84d0d0549c99ff3859c98df65b3101406327ecc7d53fbf12"
+    ],
+    "packaging": [
+      "sha256:00243ae351a257117b6a241061796684b084ed1c516a08c48a3f7e147a9d80b4",
+      "sha256:b36f1fef9334a5588b4166f8bcd26a14e521f2b55e6b9de3aaa80d3ff7a37529"
+    ],
+    "pluggy": [
+      "sha256:7dcc130b76258d33b90f61b658791dede3486c3e6bfb003ee5c9bfb396dd22f3",
+      "sha256:e920276dd6813095e9377c0bc5566d94c932c33b27a3e3945d8389c374dd4746"
+    ],
+    "pygments": [
+      "sha256:6757cd03768053ff99f3039c1a36d6c0aa0b263438fcab17520b30a303a82b5f",
+      "sha256:81a9e26dd42fd28a23a2d169d86d7ac03b46e2f8b59ed4698fb4785f946d0176"
+    ],
+    "pytest": [
+      "sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9",
+      "sha256:b86ada508af81d19edeb213c681b1d48246c1a91d304c6c81a427674c17eb91c"
+    ]
+  },
+  "test_dependency_versions_from_uv_lock": {
+    "iniconfig": "2.3.0",
+    "packaging": "26.0",
+    "pluggy": "1.6.0",
+    "pygments": "2.20.0",
+    "pytest": "9.0.3"
+  }
+}
