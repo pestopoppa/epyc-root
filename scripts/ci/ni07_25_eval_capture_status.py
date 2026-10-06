@@ -29,6 +29,11 @@ LOCKED_FIXTURE_PACKAGES = {
     "httpcore": "1.0.9",
     "idna": "3.11",
     "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0",
+    "attrs": "26.1.0",
+    "jsonschema-specifications": "2025.9.1",
+    "referencing": "0.37.0",
+    "rpds-py": "0.30.0",
 }
 
 
@@ -122,8 +127,9 @@ def main() -> int:
                     "declared_dependencies": LOCKED_FIXTURE_PACKAGES,
                     "dependency_basis": (
                         "The selected module's Python import closure uses stdlib project modules, "
-                        "httpx and PyYAML; pytest plus exact APP uv.lock versions for those "
-                        "packages and pytest's fixture closure are installed."
+                        "httpx, PyYAML and jsonschema; pytest plus exact APP uv.lock versions "
+                        "for those packages, jsonschema's runtime closure and pytest's fixture "
+                        "closure are installed."
                     ),
                     "selected_test": SELECTION,
                     "expected_case_count": 9,

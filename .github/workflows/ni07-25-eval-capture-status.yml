@@ -24,7 +24,8 @@ jobs:
         python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0
         pluggy==1.6.0 Pygments==2.20.0 httpx==0.28.1 anyio==4.13.0
         certifi==2026.2.25 h11==0.16.0 httpcore==1.0.9 idna==3.11
-        PyYAML==6.0.3
+        PyYAML==6.0.3 jsonschema==4.26.0 attrs==26.1.0
+        jsonschema-specifications==2025.9.1 referencing==0.37.0 rpds-py==0.30.0
     steps:
       - name: Initialize outcome artifact before setup
         run: |
