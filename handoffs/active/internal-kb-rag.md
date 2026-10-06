@@ -815,7 +815,7 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       Carry forward as a known no-op: PyLate sets `pad_token_id` to the MASK id (103), so a K2
       completion that blindly honours a declared pad id would change behaviour. Harmless today, since
       our loader pads with the tokenizer's own `[PAD]` and slices by `attention_mask`.
-- [ ] **K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** **HALF LANDED 2026-08-23**,
+- [x] **K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** ✅ 2026-10-06 — remaining tokenizer scope owned/accepted by `codex-ni-main` as NI06-03: source `9d3a338a`, APP main `2a98c6f0`, original synthetic native CI37424571462 TRUE15/15. **HALF LANDED 2026-08-23**,
       `epyc-orchestrator` `4e5e84c0` — deliberately **not ticked**, because only the `embedding_dim`
       half shipped.
       **Shipped (the K9 escalation from hygiene to blocker)**: `_stamp_meta()` writes `embedding_dim`
@@ -826,7 +826,7 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       swallowed by `encode()`'s broad `except` (`colbert_encoder.py:411-417`) and reported as an
       ordinary miss. Mutation-tested with controls: a 128-index against a 64-encoder raises, while
       matching / unstamped / unknown widths do not.
-      **Remaining scope**: the **tokenizer sha256 is still not stamped**. `index_meta` carries
+      **Historical remaining scope (closed by NI06-03)**: the tokenizer sha256 was not stamped. `index_meta` carried
       `prefix_convention`, `query_prefix`, `document_prefix`, `encoder_model_dir`,
       `encoder_model_file`, `doc_max_tokens`, `query_max_tokens`, `embedding_dim` and `stamped_at` —
       nothing that would catch a same-dim, same-directory tokenizer swap. That is not hypothetical:
@@ -834,6 +834,13 @@ whether the delta is the TRAINING RECIPE rather than the idea._
       `tokenizer.json` files differ (see **H6**), so a swap in that direction is invisible to every
       key now stamped. The same non-vacuous verification bar applies — a test that passes both before
       and after the change proves nothing.
+      **Completed implementation**: loader hashes the exact parsed byte buffer; refresh/load failures
+      clear its cached identity. New catalogs stamp `tokenizer_sha256`; known stamps must match both
+      loaded bytes and current file before query encoding or encoding-writer mutation. Tests mutate
+      the same path, remove the file, disagree with the cache and preserve rows/stamps on refusal.
+      Legacy unstamped catalogs retain compatibility; removal requires no model load. MAIN verified
+      all 3,325 Git input bindings and two sealed runner contexts. This does not measure retrieval
+      quality, run an encoder, migrate an index or deploy a process.
 
 ### Corpus figures look stale (Z, flag only — may belong to KB-WM-*)
 

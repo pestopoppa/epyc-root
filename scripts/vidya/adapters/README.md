@@ -111,6 +111,12 @@ shifted, not by how much, so the text is carried and never weighed.
 
 ## Writing one
 
+NI06 prospective source enrollment (2026-10-06, before capture):
+
+| source | class | scope / absence rules | producer / adapter |
+|---|---|---|---|
+| NI06 graph freshness, reader-B schema and tokenizer identity fixture executions | verifier (existing CI command carrier) | Bind reviewed ROOT/APP source pins, selected tests, complete declared Python import readset, recipe/harness, runner dependency inventory, original argv/JUnit/status and source snapshots before execution. Synthetic graphs, fake primitives/loaders and temporary SQLite/tokenizer bytes only. Preserve failed/null originals. No live inference, embeddings, performance, migration, deployment, host graph or whole-suite warrant; no retrospective tuple or new ladder. MAIN must reopen original custody before acceptance. | Existing `scripts/ci/native_conformance.py` + `scripts/vidya/adapters/ci_conformance.py`; `VB-NI06-CI-WIRE` |
+
 1. **Find the tuple in the source.** Do not invent elements. What is missing must stay missing:
    it grades the claim down, which is a true statement about the measurement.
 
