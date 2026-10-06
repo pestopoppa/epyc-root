@@ -1,4 +1,4 @@
-name: NI07 S9 pinned fixture conformance
+name: NI07 catalog dependency pinned fixture conformance
 on:
   push:
     branches: [codex/ni07-ci-20261006]
@@ -8,13 +8,13 @@ on:
 permissions:
   contents: read
 jobs:
-  s9:
-    name: s9
+  catalog:
+    name: catalog
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
       ROOT_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
-      APP_PIN: 7825ab0948a30b294135a085dca261ba9abfaede
+      APP_PIN: efd67c526acedca69e15059846d86fa7bf63084f
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       ORCHESTRATOR_MOCK_MODE: '1'
@@ -25,8 +25,8 @@ jobs:
     steps:
       - name: Initialize outcome artifact before setup
         run: |
-          mkdir -p "$RUNNER_TEMP/ni07/result/s9"
-          printf '{"state":"setup_pending","job":"s9"}\n' > "$RUNNER_TEMP/ni07/result/s9/status.json"
+          mkdir -p "$RUNNER_TEMP/ni07/result/catalog"
+          printf '{"state":"setup_pending","job":"catalog"}\n' > "$RUNNER_TEMP/ni07/result/catalog/status.json"
       - name: Checkout exact recipe
         uses: actions/checkout@v4
         with:
@@ -60,6 +60,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ni07-s9-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/ni07/result/s9/
+          name: ni07-catalog-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni07/result/catalog/
           if-no-files-found: error
