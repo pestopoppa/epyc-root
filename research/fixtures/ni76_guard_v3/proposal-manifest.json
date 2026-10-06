@@ -3,12 +3,12 @@
   "app_base": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1",
   "files": {
     "implementation.patch": {
-      "sha256": "74707e7d3d7013fe8ac1d461e6d8f4b4d1b404169094fbc607a592a948b96cef",
-      "size": 13761
+      "sha256": "9e428dc58dba0be2507f48b288202d2a3d4df873d805ddf2312b0079fb83b29a",
+      "size": 13819
     },
     "app.patch": {
-      "sha256": "9241ec70bdd153751c8909c216546c7c59b2e275063f7ccfd083e32765b32036",
-      "size": 13186
+      "sha256": "6e52e1131dd67879b3ee55e962f485e1a86f43ffb6238a267163954419b8cd11",
+      "size": 13244
     },
     "hosted-controls.py": {
       "sha256": "5580399907cccbb156e3f77ec64e0d8c7148dd6f2b1f2c68927a8c62926f3f82",
@@ -19,8 +19,8 @@
       "size": 1071
     },
     "root/scripts/gitnexus-guard.py": {
-      "sha256": "8ec8ef2e690f94bc6b9968de34b1508c1aca35848752913ad313b4211cf8c61f",
-      "size": 8393
+      "sha256": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+      "size": 8449
     },
     "root/scripts/gitnexus-patch.js": {
       "sha256": "6c8052d3d055a24361cfb221b1927359759b12ed7d16b763f422ff55ca666d98",
@@ -35,8 +35,8 @@
       "size": 683
     },
     "app/scripts/gitnexus-guard.py": {
-      "sha256": "8ec8ef2e690f94bc6b9968de34b1508c1aca35848752913ad313b4211cf8c61f",
-      "size": 8393
+      "sha256": "d7838230cca52804fbcc8a2952ef373d21268bd57c98a59b2fac5682cceb763d",
+      "size": 8449
     },
     "app/scripts/gitnexus-writer.py": {
       "sha256": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",

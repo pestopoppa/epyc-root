@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      RECIPE_PARENT: 5269f3f52bf133716d98bfdde5ef5afcdf4a8c3c
+      RECIPE_PARENT: 705186e620f58b656b1b3f9843f53cc131bd5839
       ROOT_BASE: e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1
       APP_BASE: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
-      MANIFEST_SHA: 1a49c473e0df909b1385674bad1acf50a027f4eef253967ebbfad82a62307181
+      MANIFEST_SHA: d2d881059869022124374b014b746ab58c4c73112ea86beb2e6c1e2667e16d86
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -72,7 +72,7 @@ jobs:
           a=Path(os.environ['assets']);m=json.loads((a/'proposal-manifest.json').read_text())
           assert m['root_base']==os.environ['ROOT_BASE'] and m['app_base']==os.environ['APP_BASE']
           import subprocess
-          expected={'.github/workflows/ni76-native-enrollment.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json','research/fixtures/ni76_guard_v3/hosted-controls.py','research/fixtures/ni76_guard_v3/test_native_controls.py','research/fixtures/ni76_guard_v3/implementation.patch','research/fixtures/ni76_guard_v3/app.patch','research/fixtures/ni76_guard_v3/root/scripts/gitnexus-guard.py','research/fixtures/ni76_guard_v3/app/scripts/gitnexus-guard.py'}
+          expected={'.github/workflows/ni76-native-enrollment.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json','research/fixtures/ni76_guard_v3/implementation.patch','research/fixtures/ni76_guard_v3/app.patch','research/fixtures/ni76_guard_v3/root/scripts/gitnexus-guard.py','research/fixtures/ni76_guard_v3/app/scripts/gitnexus-guard.py'}
           actual=set(subprocess.check_output(['git','diff','--name-only',os.environ['RECIPE_PARENT'],'HEAD'],text=True).splitlines())
           assert actual==expected, ('unexpected recipe changed paths',sorted(actual^expected))
           for name,entry in m['files'].items():

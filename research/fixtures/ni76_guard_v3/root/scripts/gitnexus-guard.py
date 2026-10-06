@@ -102,8 +102,10 @@ def open_identity(path):
         fd = os.open(name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=root_fd)
         try:
             opened = os.fstat(fd)
-            if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
-                deny("opened lock is not single-link regular")
+            if not stat.S_ISREG(opened.st_mode):
+                deny("opened lock is not regular")
+            if opened.st_nlink != 1:
+                deny("opened lock is not single-link")
             if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
                 deny("lock path changed during open")
             if opened.st_uid != os.getuid():

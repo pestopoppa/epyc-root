@@ -17,7 +17,7 @@
 +exec /usr/bin/python3 -I "$HERE/gitnexus-writer.py" --repo app -- "$@"
 --- /dev/null
 +++ b/scripts/gitnexus-guard.py
-@@ -0,0 +1,215 @@
+@@ -0,0 +1,217 @@
 +#!/usr/bin/python3
 +"""Fail-closed proof that GitNexus is inside a live region-lock owner tree."""
 +import json
@@ -122,8 +122,10 @@
 +        fd = os.open(name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=root_fd)
 +        try:
 +            opened = os.fstat(fd)
-+            if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
-+                deny("opened lock is not single-link regular")
++            if not stat.S_ISREG(opened.st_mode):
++                deny("opened lock is not regular")
++            if opened.st_nlink != 1:
++                deny("opened lock is not single-link")
 +            if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
 +                deny("lock path changed during open")
 +            if opened.st_uid != os.getuid():
