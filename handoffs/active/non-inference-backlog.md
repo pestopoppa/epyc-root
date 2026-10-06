@@ -14,11 +14,11 @@
 
 ## Start here
 
-- **Next:** The NI05 scoped queue is complete (79/79); continue the separately owned NIB2 program below.
+- **Next:** NI05 is complete (79/79) and the selected NI06/NI07 implementation queue is complete (35/35). LR-6a host activation is accepted; prepare LR-8 event-duty/alarm integration below without changing the running daemon.
 - **Then:** NIB2-71 rescue disposition; NIB2-77 ownership audit; NIB2-83 existing-evaluation error classification.
 - **Operator-held:** NIB2-65, NIB2-66, NIB2-73f.
-- **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (LR-6a host cron re-pin plus post-restart census), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
-- **Leak robustness (2026-10-04 supplement):** LR-6a is operator-held (LR-9a ratified 2026-10-04, `ae06680f`). LR-8 follows LR-6a. LR-10 belongs to workspace-ec.
+- **Also open:** NIB2-18 and NIB2-46 (gated), NIB2-67 (only under disk pressure), NIB2-71, NIB2-78c (dormant; graph install decision required), NIB2-88 (post-restart relaunch census; host cron installation is complete), and NIB2-89 (opt-in restart code already present; bus supervisor operator-held DOWN, D9/runtime scope retained).
+- **Leak robustness:** LR-6a accepted 2026-10-06 with a post-install heartbeat; LR-8 is now available for bounded source preparation. LR-9a was ratified 2026-10-04 (`ae06680f`). LR-10 belongs to workspace-ec.
 - **Standing:** bus_supervisor stays DOWN (operator ruling 2026-09-23). Do not relaunch it without a new operator go.
 
 
@@ -333,22 +333,12 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
       and the other bare-`mkdtemp` sites. ✅ 2026-10-04 (research `440b5b5c`, merged `01a19f24`)
 - [x] **LR-6** — `scripts/system/host_hygiene_tick.py`, launched by `hub_supervisor.sh once`: a free-space alarm
       (`host-disk-free-low`, two-sample), a daemon keeper (`relaunch_if_down`), claude-backups freshness and the daily
-      grower ranking. ✅ 2026-10-04 (root `913585ff`). It is **inactive until LR-6a**.
-  - [ ] **LR-6a** (operator, host-only) — **re-pin the host supervision cron.** The host crontab runs a pinned copy of
-        `hub_supervisor.sh` (OP-9 option B), so the tick goes live only after
-        `bash scripts/operator/install_supervision_cron_20260916.sh --all` runs **on the host**. It cannot run from the
-        container: attempted 2026-10-04 and failed. Operator queue row prepared. Close it with a `host_hygiene_tick`
-        heartbeat line in its log after the re-pin.
-        2026-10-06 — operator chose 2A: preview and install approved. Host execution remains required;
-        no activation or heartbeat is claimed from chat approval, and bus_supervisor remains DOWN.
-        - [x] **LR-6a-PREP — prepare the approved host activation package.** ✅ 2026-10-06 — MAIN reviewed the fixed installer/helper bytes and independently derived the minimal canonical registry projection; [host launcher and limits](../../artifacts/operator/decisions/OP73-host-activation-20261006/README.md). Static preparation only. Host execution and fresh heartbeat remain the unchecked parent gate; no bus launch or post-restart reaper acceptance.
+      grower ranking. ✅ 2026-10-04 (root `913585ff`). Activated by LR-6a on 2026-10-06; first heartbeat 16:56:01 UTC.
+  - [x] **LR-6a** (operator, host-only) — **re-pin the host supervision cron.** ✅ 2026-10-06 — operator executed approved option 2A on the host; installation recorded 16:54:22 UTC, first `host_hygiene_tick` heartbeat 16:56:01 UTC. MAIN verified the exact registry projection, four pinned supervisor files, saved cron/backup records and fresh state/log; [separate operational acceptance and limits](../../artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/README.md). All 34 unrelated nonempty cron lines and fleet-watch entry were preserved. Original pre-heartbeat installation report is unchanged. No independent current-live-host-crontab inspection, forced tick, daemon restart, post-restart reaper recovery or bus launch is claimed.
+        - [x] **LR-6a-PREP — prepare the approved host activation package.** ✅ 2026-10-06 — MAIN reviewed the fixed installer/helper bytes and independently derived the minimal canonical registry projection; [host launcher and limits](../../artifacts/operator/decisions/OP73-host-activation-20261006/README.md). Static preparation only; the parent now separately records operator host execution and a fresh heartbeat. No bus launch or post-restart reaper acceptance.
 - [x] **LR-7** — the DS41 load-bearing worktrees are declared with git locks: `root-main-epyc-root-repo` and
       `research-ds41-run10`. ✅ 2026-10-04 (INF-77 DS41-C113a)
-- [ ] **LR-8** — **merge the periodic cleanups into one tick, after LR-6a.** The standalone
-      `opencode_event_reaper.sh` daemon and the report-only `codex_retention_reaper.py` run each become a
-      `host_hygiene_tick.py` duty, so there is one scheduler, one heartbeat and one alarm channel. The keeper already
-      relaunches the reaper (NIB2-88). Keep the reaper's scope exactly as approved: opencode's `event` table in idle
-      sessions only. Deferred until LR-6a, because until then the tick does not run at all.
+- [ ] **LR-8** — **merge the periodic cleanups into one tick.** LR-6a is accepted; isolated non-inference source preparation is now available. Fresh source review finds the report-only `codex_retention_reaper.py` is already a daily heavy-phase duty with the CPU-region interlock; do not duplicate it or enable apply. The remaining gap is the standalone `opencode_event_reaper.sh` loop: integrate its existing `once` duty, preserving the 1800-second cadence and fail-closed present/unobservable VACUUM guard; unify failure/blind alarms and adjust the keeper/registry contract consistently. Scope remains only opencode's `event` table in idle sessions, never sessions/messages/parts or harness transcripts. Keep the current daemon running until a reviewed owning-session runtime handover. Published tick source is consumed by the refreshed read-only view, so preparation must remain inactive by default to prevent dual schedulers. [Activation evidence and bounded next step](../../artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/README.md).
 - [x] **LR-9** — **harness state and session transcripts are never cleanup targets** (operator hard rule 2026-10-04:
       Claude/Codex backup logs and transcripts *"should NOT BE TOUCHED UNDER ANY CIRCUMSTANCES. They are historical
       transcripts used by a root filesystem project far more senior to anything performed in this project repo"*,
@@ -386,6 +376,7 @@ moving their parents to the completed ledger.
         `/mnt/raid0/llm/tmp/opencode-reaper.pid`. `host_hygiene_tick.py`'s keeper (root `913585ff`) relaunches every
         registry row marked `relaunch_if_down`, which today is this reaper. Once the host cron re-pin (LR-6a) is done,
         that keeper does this item's job: close it then, with a census showing the reaper relaunched after a restart.
+      - 2026-10-06: LR-6a installation and first heartbeat are accepted. The tick observed the reaper already `running_current`, not relaunched after a restart; this parent remains unchecked until that distinct recovery evidence exists.
 - [ ] **NIB2-89** (LOW): **generalise the bus supervisor's H-4 self-restart to every registered daemon.** From NIB2-81
       (✅ 2026-09-23): remedy (a) (`daemon_provenance.sh`) and remedy (b) (the registry `runtime` field, the
       `observer_census.py --live` census and the `restart_on_stale` path) landed. Its own "Remaining" line also

@@ -1,0 +1,141 @@
+{
+  "schema": "epyc.operational-host-acceptance.v1",
+  "observed_at": "2026-10-06T17:04:23.968405+00:00",
+  "operator_statement": "I executed the command manually in the root filesystem",
+  "source_pin": "00e1820bcd957e905797b3a1b9e4d9dc53a550b0",
+  "reviewer": "codex-ni-main",
+  "status": "accepted",
+  "closed_task": "LR-6a",
+  "grade": "ungraded operational receipt; no ClaimTuple or scientific warrant",
+  "installation": {
+    "recorded_at": "2026-10-06T16:54:22Z",
+    "cron_installed": true,
+    "registry_matches_exact_reviewed_projection": true,
+    "unrelated_nonempty_cron_lines_preserved": 34,
+    "fleet_watch_entry_preserved": true,
+    "raw_crontab_retained_privately": true,
+    "current_live_host_crontab_independently_read": false
+  },
+  "heartbeat": {
+    "first_observed_at": "2026-10-06T16:56:01+00:00",
+    "latest_captured_state_at": "2026-10-06T16:56:01+00:00",
+    "after_installation": true,
+    "reaper_state": "running_current",
+    "reaper_pid": 2052506,
+    "heavy_phase": "deferred; CPU regions q0/q1/q2/q3 occupied"
+  },
+  "pinned_supervisor_files": [
+    {
+      "relative_path": "scripts/dashboard/hub_supervisor.sh",
+      "sha256": "b61234fb8bd53ba22d57824cae3c2ed1c2a5c8025a3dd3133c7cc3247cbd3fb3",
+      "matches_pinned_git_blob": true
+    },
+    {
+      "relative_path": "scripts/dashboard/hub_launch_spec.py",
+      "sha256": "dc60201be7087906125b424fe17318bec51718da82dc6c303dade89694fe0d50",
+      "matches_pinned_git_blob": true
+    },
+    {
+      "relative_path": "scripts/dashboard/refresh_hub_view.sh",
+      "sha256": "b35f2b47f38642159d1f02aba4eb34514ef0bedf420afec5fe679e41cc69a9d3",
+      "matches_pinned_git_blob": true
+    },
+    {
+      "relative_path": "scripts/coordination/daemon_provenance.sh",
+      "sha256": "0b2def46c83858dfe3363adf49c89631b73f136fd4eab7fbe5256eee15184342",
+      "matches_pinned_git_blob": true
+    }
+  ],
+  "retained_native_evidence": [
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/activation-report-00e1820bcd957e905797b3a1b9e4d9dc53a550b0.txt",
+      "sha256": "8de82bddf54fac382f9a4cc817f4fc1215f0dbdd8ff7e917eb44b936b709315c",
+      "size_bytes": 1103
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-root/logs/crontab.bak-20261006T165422Z",
+      "sha256": "a154e227d42f3b88d0433f8081599f55e7cac194bd1ce9003924e7a10b802dba",
+      "size_bytes": 3058
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/crontab-after-00e1820bcd957e905797b3a1b9e4d9dc53a550b0.txt",
+      "sha256": "245a862a6d299512066b36bd3645b2c68f7432071c6d33db2c7349937bc088ea",
+      "size_bytes": 3058
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/cron-preview-00e1820bcd957e905797b3a1b9e4d9dc53a550b0.txt",
+      "sha256": "c39fd1041e54aeb784bbf50142df4bac44af6d8fd592188acea9a4f88426aac4",
+      "size_bytes": 3473
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/cron-apply-00e1820bcd957e905797b3a1b9e4d9dc53a550b0.log",
+      "sha256": "c057e261744294fd33808a48bbe2ad78c2b789fea17517c7c5a25449a0e4f062",
+      "size_bytes": 4029
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/registry-apply-00e1820bcd957e905797b3a1b9e4d9dc53a550b0.log",
+      "sha256": "f27b2a092fac4a4b28725214b7744b3f465b1269a0218a8689c8d9a8bc83eca1",
+      "size_bytes": 890
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/dashboard-report/host-activation-20261006/observer_registry.before-20261006T165422Z-44ca416c2c80.json",
+      "sha256": "44ca416c2c802b871e6ed9b999aef1ff8f6bac09116845899b06dedef339e028",
+      "size_bytes": 25984
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-root/scripts/coordination/observer_registry.json",
+      "sha256": "8dfdabfc383585eb840cf2b6212cf15c739cd3cdf8553763ec123c5e78f1c35b",
+      "size_bytes": 27760
+    },
+    {
+      "path": "/mnt/raid0/llm/ops/hub-supervisor/00e1820bcd957e905797b3a1b9e4d9dc53a550b0/SHA256SUMS",
+      "sha256": "073ad75785ba44658a19619647ad6ed4e172cfa2370ad9119b32b7afeb3827ee",
+      "size_bytes": 417
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-root/logs/hygiene/state.json",
+      "sha256": "ddf0a3ec420f3af3e3ad4a9f6ef7c24b4b75f6c90a06b1b48ed08ecab354848d",
+      "size_bytes": 155
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-root/logs/hygiene/host_hygiene.log",
+      "sha256": "5d93c27d69a48e6e5c43ca6226839da51ce4c3133d3a20076ec30d48065b96b4",
+      "size_bytes": 519
+    },
+    {
+      "path": "/mnt/raid0/llm/epyc-root/logs/hub_supervisor.hygiene_tick",
+      "sha256": "10b7cb87071cd8dd2afeb4ac3f92c3c2fa68d74e55055545db090cb286a07969",
+      "size_bytes": 11
+    }
+  ],
+  "published_excerpts": [
+    {
+      "path": "artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/supervision-cron-entries.txt",
+      "sha256": "ade94db699bcfc52b3a7c0df8a7ef83d461fdbb11ec9bdb0e41cf50dd5aff9b4",
+      "size_bytes": 608
+    },
+    {
+      "path": "artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/observed-hygiene-state.json",
+      "sha256": "ddf0a3ec420f3af3e3ad4a9f6ef7c24b4b75f6c90a06b1b48ed08ecab354848d",
+      "size_bytes": 155
+    },
+    {
+      "path": "artifacts/operator/decisions/OP73-host-activation-20261006/acceptance/first-hygiene-tick.log",
+      "sha256": "5d93c27d69a48e6e5c43ca6226839da51ce4c3133d3a20076ec30d48065b96b4",
+      "size_bytes": 519
+    }
+  ],
+  "limits": [
+    "Posthoc MAIN inspection; not a prospective graded write-side tuple.",
+    "Original installation report remains unchanged with activation_verified=pending; this separate receipt adds heartbeat acceptance.",
+    "Container launcher refused host execution; actual installation was performed by the operator.",
+    "No independent current live host crontab getter or wrapper --verify-activation success is claimed.",
+    "First tick is not post-restart recovery, alarm persistence, heavy-scan completion or blanket subsystem acceptance.",
+    "No restart, forced tick, inference, serving/kernel change, harness cleanup or bus launch performed by MAIN."
+  ],
+  "remaining_tasks": {
+    "LR-8": "Ready for isolated non-inference source preparation; bound event-table once duty, 1800-second cadence/interlocks and unified alarms; runtime handover must avoid dual schedulers.",
+    "NIB2-88": "Requires genuinely observed post-restart relaunch census; still unchecked.",
+    "VB-HOST-SUPERVISION-ACTIVATION": "Prospective write-side adapter remains unchecked; bootstrap records ungraded."
+  }
+}
