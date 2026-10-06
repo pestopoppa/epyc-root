@@ -49,16 +49,16 @@ jobs:
           python-version: '3.13'
       - name: Install isolated pytest dependency
         env:
-          NI07_INSTALL_COMMAND: python -m pip install pytest==9.1.1
-        run: python -m pip install pytest==9.1.1
+          NI07_INSTALL_COMMAND: python -m pip install pytest==8.4.2
+        run: python -m pip install pytest==8.4.2
       - name: Capture bounded fake-transport and fixture regressions
         if: always()
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}
           NI07_ROOT_PIN: ${{ env.ROOT_PIN }}
           NI07_APP_PIN: ${{ env.APP_PIN }}
-          NI07_INSTALL_COMMAND: python -m pip install pytest==9.1.1
-          PYTHONPATH: ${{ github.workspace }}/app
+          NI07_INSTALL_COMMAND: python -m pip install pytest==8.4.2
+          PYTHONPATH: ${{ github.workspace }}/app:${{ github.workspace }}/app/scripts/autopilot/evals/dtap
         run: python recipe/scripts/ci/ni07_dtap_capture.py
       - name: Retain original request, JUnit, logs, source readset, context, and status
         if: always()
