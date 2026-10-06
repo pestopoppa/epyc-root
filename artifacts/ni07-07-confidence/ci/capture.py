@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Capture one exact APP fixture selection through the pinned ROOT carrier."""
+"""Capture exact APP fixtures through the pinned ROOT native carrier."""
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import platform
@@ -13,13 +14,8 @@ from pathlib import Path
 ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_PIN = "b087a506317ba2422f5d14b790655e13e5ea032f"
 SELECTION = "tests/unit/test_confidence_expectation.py"
-APP_READSET = (
-    "pyproject.toml",
-    "src/__init__.py",
-    "src/typed_decisions/__init__.py",
-    "src/typed_decisions/types.py",
-    "src/typed_decisions/confidence_expectation.py",
-    "tests/unit/test_confidence_expectation.py",
+CONFIG_NAMES = {"pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini", "uv.lock"}
+APP_GRADING_SPECS = (
     "orchestration/grading_specs/answer_quality.yaml",
     "orchestration/grading_specs/routing_optimality.yaml",
     "orchestration/grading_specs/synthesis_coherence.yaml",
@@ -38,6 +34,37 @@ def _pin(path: Path, expected: str, label: str) -> None:
         raise RuntimeError(f"{label} has tracked worktree changes")
 
 
+def _tracked_python_and_config(repo: Path) -> set[Path]:
+    names = (
+        subprocess.check_output(["git", "-C", str(repo), "ls-files", "-z"])
+        .decode()
+        .split("\0")
+    )
+    selected: set[Path] = set()
+    for name in names:
+        if not name:
+            continue
+        relative = Path(name)
+        if relative.suffix.lower() != ".py" and relative.name not in CONFIG_NAMES:
+            continue
+        path = repo / relative
+        if path.is_symlink() or not path.is_file():
+            raise RuntimeError(f"tracked source/config is not a regular file: {path}")
+        selected.add(path.resolve())
+    return selected
+
+
+def _load_native_reader(conformance: Path):
+    spec = importlib.util.spec_from_file_location(
+        "ni07_native_conformance", conformance
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError(f"cannot load pinned native reader: {conformance}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def main() -> int:
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     recipe = workspace / "recipe"
@@ -50,6 +77,8 @@ def main() -> int:
     try:
         _pin(root, ROOT_PIN, "ROOT carrier")
         _pin(app, APP_PIN, "APP candidate")
+        recipe_pin = os.environ["GITHUB_SHA"].lower()
+        _pin(recipe, recipe_pin, "recipe")
         install_command = os.environ["NI07_RC10_INSTALL_COMMAND"]
         junit = result / "original-junit.xml"
         os.environ["NI07_RC10_APP_ROOT"] = str(app)
@@ -71,6 +100,7 @@ def main() -> int:
                     "install_command": install_command,
                     "root_pin": ROOT_PIN,
                     "app_pin": APP_PIN,
+                    "recipe_pin": recipe_pin,
                     "selection": SELECTION,
                     "environment": {
                         key: os.environ.get(key)
@@ -91,20 +121,28 @@ def main() -> int:
             + "\n",
             encoding="utf-8",
         )
-        harness = recipe / "artifacts/ni07-07-confidence/ci/reader_pytest.py"
-        workflow = recipe / ".github/workflows/ni07-07-rc10.yml"
+
+        carrier_workflow = root / ".github/workflows/ni06.yml"
+        recipe_workflow = recipe / ".github/workflows/ni07-07-rc10.yml"
         conformance = root / "scripts/ci/native_conformance.py"
-        inputs = [
-            freeze,
-            environment,
-            Path(__file__).resolve(),
-            harness,
-            workflow,
-            conformance,
-            app / SELECTION,
-            *(app / relative for relative in APP_READSET),
-        ]
-        repos = {"root": root, "recipe": recipe, "app": app}
+        source_union = (
+            _tracked_python_and_config(root)
+            | _tracked_python_and_config(app)
+            | _tracked_python_and_config(recipe)
+        )
+        declared = source_union | {
+            carrier_workflow.resolve(),
+            recipe_workflow.resolve(),
+            conformance.resolve(),
+            *[app / relative for relative in APP_GRADING_SPECS],
+            freeze.resolve(),
+            environment.resolve(),
+        }
+        if not carrier_workflow.is_file() or not recipe_workflow.is_file():
+            raise RuntimeError("required carrier/recipe workflow is absent")
+        declared = {path.resolve() for path in declared}
+
+        repos = {"root": root, "app": app, "recipe": recipe}
         argv = [
             sys.executable,
             str(conformance),
@@ -117,12 +155,56 @@ def main() -> int:
         ]
         for label, repo in repos.items():
             argv.extend(["--repo", f"{label}={repo}"])
-        for path in dict.fromkeys(inputs):
+        for path in sorted(declared, key=str):
             argv.extend(["--read-path", str(path)])
-        argv.extend(["--select", SELECTION, "--", sys.executable, str(harness)])
+        argv.extend(
+            [
+                "--select",
+                SELECTION,
+                "--",
+                sys.executable,
+                "-m",
+                "pytest",
+                "-o",
+                "addopts=",
+                "--noconftest",
+                "-p",
+                "no:cacheprovider",
+                "-q",
+                SELECTION,
+                f"--junitxml={junit}",
+            ]
+        )
+
         status["state"] = "running"
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
         exit_code = subprocess.call(argv, cwd=app)
+        receipt_path = result / "native/receipt.json"
+        if not receipt_path.is_file():
+            raise RuntimeError("native carrier did not produce its original receipt")
+        native = _load_native_reader(conformance)
+        record, _ = native.read_receipt(receipt_path)
+        actual_rows = record["readset"]
+        actual_paths = [Path(item["name"]).resolve() for item in actual_rows]
+        if len(actual_paths) != len(set(actual_paths)) or set(actual_paths) != declared:
+            missing = sorted(map(str, declared - set(actual_paths)))
+            extra = sorted(map(str, set(actual_paths) - declared))
+            raise RuntimeError(
+                f"native readset differs from exact source union: missing={missing}; extra={extra}"
+            )
+        expected_repos = {
+            "root": ROOT_PIN,
+            "app": APP_PIN,
+            "recipe": recipe_pin,
+        }
+        if record["repositories"] != expected_repos or record["selections"] != [
+            SELECTION
+        ]:
+            raise RuntimeError(
+                "native receipt repository pins or test selection differ"
+            )
+        if exit_code == 0 and record["fixture_execution_conformant"] is not True:
+            raise RuntimeError("zero exit contradicts native fixture receipt")
         status.update(
             state="passed" if exit_code == 0 else "failed", exit_code=exit_code
         )
