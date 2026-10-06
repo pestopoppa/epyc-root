@@ -113,10 +113,10 @@
   "provenance": {
     "identity_derivation": "static Python AST inspection of test_* methods and enclosing unittest classes; no project import, pytest collection, or test execution",
     "module_level_code_executed": false,
-    "source_commit": "82619ca6f73d840107eaa0c5132652b010cbd9ed",
+    "source_commit": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
     "source_paths_sha256": {
-      "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py": "58c44e33f9f74e5c481533779b3c211d4ac7158ffc0eca9fff03ca588be4b52d",
-      "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py": "daa80b0f17b150d14f803a4fd9e67122d5cdba4bed563bedb3de4fcf09dd1093"
+      "scripts/kernel_rnd/autokernel/test_c5_rocm_oracle.py": "43defaae36cb08189c670ca5cad9b9522f143c3631bd9ed6d40127b99ec42ee8",
+      "scripts/kernel_rnd/autokernel/test_c5_seed_corpus.py": "3e597ef49b206b9da3f6562758dc8207dfa4dd0e10f4e00bcd02830e126b5a9f"
     },
     "source_repository": "pestopoppa/epyc-inference-research",
     "test_bodies_executed": false,

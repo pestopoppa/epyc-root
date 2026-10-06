@@ -13,7 +13,7 @@ from collections import Counter
 from pathlib import Path
 from typing import Any
 
-RESEARCH_PIN = "82619ca6f73d840107eaa0c5132652b010cbd9ed"
+RESEARCH_PIN = "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6"
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_PIN = "70096b763939a43409a1f1827ab633d62425a6c1"
 PYTHON_PIN = "3.13.15"
