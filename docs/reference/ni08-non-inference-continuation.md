@@ -122,3 +122,10 @@ Remaining verified source queues are prospectively enrolled: VB-AP60-CONFORMANCE
 ## Newly unlocked C5 policy restoration
 
 MAIN independently verified the recovered policy blob against its original commit and authenticated GitHub contents API. The private four-file source proposal preserves the exact bytes, all policy IDs/claims/SHA and seed/workload data while restoring an explicit versioned Research carrier. C5-POLICY-PATH and VB-C5-POLICY-CONFORMANCE are enrolled before capture; full28-method default-loader/refusal verification remains pending. This needs engineering, not replacement policy approval. NI08 remains50 completed scopes.
+
+
+## Remaining-source preparation boundary
+
+The report successor is approved for one hosted synthetic capture after MAIN independently verifies3,316 source/config Git blobs,89 explicit reads,40 actual producer-copy inputs,25 hash-locked wheel versions and all original58 case identities. The preceding failed capture remains NULL with collection/source errors and provides no acceptance. NI08 stays **50 completed scopes**.
+
+[HS4-P6 shared exploration contract](../design/hs4-p6-shared-exploration-source-contract-20261006.md) is accepted source preparation: current standalone MCP lacks a REPL context resolver, and the actor’s outline tool needs compatibility treatment beside the four named shared tools. HS4-P6-SOURCE and its prospective VB companion are enrolled as newly valuable non-inference work. Active catalog changes remain inference-gated. Private observer fixes now bind originally captured start ticks and suppress restart after unconfirmed exit; VB-OBS1-CONFORMANCE is enrolled before synthetic verification. No protected source merge or host action is approved. These preparations add no completion; whole-backlog exhaustion remains unproved.

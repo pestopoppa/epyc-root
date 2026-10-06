@@ -551,3 +551,6 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 
 
 | C5 recovered historical policy carrier source controls | existing native CI verifier | Exact previously published c8cec policy bytes, portable repo-relative default verification and identity/refusal controls; same policy authority and source-only observation. | VB-C5-POLICY-CONFORMANCE; private source accepted, recipe pending MAIN binding |
+
+| Coordinator observer prospective source controls | existing native CI verifier | Synthetic activation/source/process/lock identity and confirmed-exit controls with exact prospective native binding; no host action or deployment warrant. Protected source merge requires exact D9 acknowledgement. | VB-OBS1-CONFORMANCE; private source and verification recipe under MAIN review |
+| Shared explicit-root exploration source controls | existing native CI verifier | Existing path/read-root/knowledge fences, bounded pure service and compatible REPL adapters; exact source and synthetic original controls. No catalog, live search/model or new read authority. | VB-HS4-P6-SOURCE-CONFORMANCE; source contract accepted, implementation open |
