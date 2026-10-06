@@ -25,6 +25,12 @@ def git(repo: Path, *args: str) -> str:
     return subprocess.check_output(["git", "-C", str(repo), *args], text=True).strip()
 
 
+def assert_clean_tracked(repo: Path, label: str) -> str:
+    if git(repo, "status", "--porcelain", "--untracked-files=no"):
+        raise ValueError(f"{label} checkout has tracked changes")
+    return git(repo, "rev-parse", "HEAD")
+
+
 def sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -130,6 +136,13 @@ def main() -> int:
     status_path = output_root / "status.json"
     status = {"schema": "ni07-14-tu-led1a-ci-status.v1", "state": "preparing", "exit_code": None}
     try:
+        recipe_pin = assert_clean_tracked(recipe, "recipe")
+        if recipe_pin != os.environ.get("GITHUB_SHA"):
+            raise ValueError("recipe checkout does not match triggering GITHUB_SHA")
+        root_pin = assert_clean_tracked(root, "ROOT carrier")
+        app_pin = assert_clean_tracked(app, "APP")
+        if root_pin != ROOT_PIN or app_pin != os.environ.get("NI07_APP_PIN"):
+            raise ValueError("APP or ROOT checkout differs from the approved preflight pin")
         if git(root, "rev-parse", "HEAD") != ROOT_PIN:
             raise ValueError("native-conformance carrier checkout is not the approved pin")
         inventory_path = recipe / READSET_REL
@@ -144,7 +157,6 @@ def main() -> int:
                 or inventory.get("recipe_repository") != "epyc-root"):
             raise ValueError("source readset repository identities are inconsistent")
         app_pin = inventory["app_pin"]
-        recipe_pin = git(recipe, "rev-parse", "HEAD")
         app_closure_rows = inventory.get("app_python_config_closure", [])
         root_rows = inventory.get("root_carrier_files", [])
         recipe_rows = inventory.get("recipe_files", [])
