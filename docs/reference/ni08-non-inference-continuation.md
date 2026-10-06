@@ -80,3 +80,5 @@ These are existing task identities or already filed prospective source companion
 | C5-5 | Exact existing eight-seed problem-ID join is a source-only candidate; source/fixture proposal still needed | No SOL bound port, benchmark or kernel change |
 
 R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.
+
+2026-10-06 preparation boundary: P7 and period-cell source verification now have prospective VB/source-table enrollment before capture. MAIN requested exact expanded-case checks and complete input binding before isolated execution. The running tally remains **41**, with no pending proposal counted.

@@ -136,3 +136,7 @@ Applied the guard's canonical pipeline-remediation string, independently proved 
 ## Discovery boundary
 
 MAIN surfaced the newly verified source queue in the continuation index as it unlocked: P7, TOC source, prospective analysis writers/adapters, SC80 and RAW-anchor design, P6 source contract, HS19d.P0 non-frozen portions, and C5-5 candidate. These are preparations/known next actions, not extra completions or a global exhaustion claim. Whole-backlog screening now re-resolves all classes rather than trusting keyword categories.
+
+## Prospective P7 and period-cell verification enrollment
+
+MAIN enrolled VB-HS4-P7-CONFORMANCE and VB-PII-PERIOD-CONFORMANCE in the source table and owning handoff before first capture. Source review is complete for P7 stdin generation and the narrowly bounded period-cell selector; recipes still require exact-case and complete input-binding corrections before hosted execution. No completion counted, historical originals unchanged, no shared-host project execution or privacy authority.
