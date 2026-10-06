@@ -11,7 +11,6 @@ import hashlib
 import importlib.util
 import json
 import os
-import shutil
 import sys
 from pathlib import Path
 
@@ -22,6 +21,9 @@ sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 from adapters import eval_suite_discriminability as eval_adapter  # noqa: E402
 from adapters import verify_before_stop as mf_adapter  # noqa: E402
+import claim_tuple as ct  # noqa: E402
+import cli  # noqa: E402
+from ledger import Ledger  # noqa: E402
 
 
 _APP_SHA256 = {
@@ -31,6 +33,8 @@ _APP_SHA256 = {
         "6e3e8e688b74b857d7023e10361ca5c13334f8facbb69cae6a37c3df1648de35",
     "src/llm_primitives/stat_tests.py":
         "d0886ef1b32498475d804b9597347d2934b3dc0553224c0443a98654436af2dc",
+    "src/llm_primitives/__init__.py":
+        "cdee7bcf079e3023de6da551cd376e9e6db339d0ac52853eba054e3d3d6ccff9",
 }
 
 
@@ -61,10 +65,7 @@ def _app_tree(tmp_path: Path) -> tuple[Path, object, object]:
     mf_path = _copy_exact(app_root, temp_root, "scripts/analysis/mf_vbs1_verify_before_stop.py")
     eval_path = _copy_exact(app_root, temp_root, "scripts/analysis/eval_suite_discriminability.py")
     _copy_exact(app_root, temp_root, "src/llm_primitives/stat_tests.py")
-    package_init = app_root / "src/llm_primitives/__init__.py"
-    package_target = temp_root / "src/llm_primitives/__init__.py"
-    package_target.parent.mkdir(parents=True, exist_ok=True)
-    shutil.copyfile(package_init, package_target)
+    _copy_exact(app_root, temp_root, "src/llm_primitives/__init__.py")
     sys.path.insert(0, str(temp_root))
     return temp_root, _load_module(mf_path, "captured_mf_vbs1_producer"), \
         _load_module(eval_path, "captured_eval_discriminability_producer")
@@ -75,7 +76,30 @@ def _jsonl(path: Path, rows: list[dict]) -> None:
     path.write_bytes(b"".join((json.dumps(row, sort_keys=True) + "\n").encode() for row in rows))
 
 
-def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, monkeypatch):
+def _assert_ingested_with_shared_grade(tmp_path, capsys, source, adapter, report_path):
+    ledger_path = tmp_path / f"{source}.ledger.jsonl"
+    rc = cli.main(["--ledger", str(ledger_path), "--json", "ingest", source,
+                   "--path", str(report_path), "--as-of", "2026-10-06T12:00:00Z"])
+    assert rc == 0
+    receipt = json.loads(capsys.readouterr().out)
+    assert receipt["refused"] == []
+    assert receipt["rows_projected"] > 0
+    native_rows = adapter.native_rows(report_path)
+    expected = {}
+    for native in native_rows:
+        tup = adapter.project(native)
+        expected[f"clm_{tup.measurement_id}"] = ct.grade(tup)[:2]
+    records = Ledger(ledger_path).read_all()
+    supports = [record.frame for record in records
+                if record.frame["frame_type"].endswith("evidence_supports_claim/v1")]
+    assert len(supports) == len(expected)
+    for frame in supports:
+        assert frame["assertion"]["grade"] == dict(zip(("Q", "T"),
+                                                           expected[frame["assertion"]["claim_id"]]))
+
+
+def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, monkeypatch,
+                                                                       capsys):
     app_root, producer, _ = _app_tree(tmp_path)
     results = app_root / "data/bep_sandbox/synthetic/results.jsonl"
     trace_a = app_root / "data/bep_sandbox/synthetic/traces/a.jsonl"
@@ -106,9 +130,12 @@ def test_actual_mf_producer_snapshot_round_trips_through_root_adapter(tmp_path, 
     assert all(row.date == "" and row.extra["role_model"] is None for row in projected)
     assert all(row.attestation_verified for row in projected)
     assert len(report["native_provenance"]["inputs"]) == 3
+    _assert_ingested_with_shared_grade(tmp_path, capsys, "verify-before-stop-measurement",
+                                       mf_adapter, report_path)
 
 
-def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, monkeypatch):
+def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, monkeypatch,
+                                                                    capsys):
     app_root, _, producer = _app_tree(tmp_path)
     source = tmp_path / "external-fixture/question_ledger.jsonl"
     _jsonl(source, [
@@ -136,3 +163,5 @@ def test_actual_eval_producer_snapshot_round_trips_with_native_reps(tmp_path, mo
     assert projected["run_spread"].reps == 2
     assert projected["flip_rate"].reps == 1
     assert all(row.attestation_verified for row in projected.values())
+    _assert_ingested_with_shared_grade(tmp_path, capsys, "eval-suite-discriminability",
+                                       eval_adapter, report_path)
