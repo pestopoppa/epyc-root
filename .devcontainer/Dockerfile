@@ -203,7 +203,8 @@ RUN echo "node ALL=(root) NOPASSWD: ALL" > /etc/sudoers.d/yolo \
 
 # Global CLI tools baked into the image so they survive container rebuilds.
 RUN --mount=type=cache,target=/root/.npm \
-  npm install -g gitnexus@1.6.1 markdownlint-cli@0.49.1
+  npm install -g gitnexus@1.6.1 markdownlint-cli@0.49.1 \
+    opencode-ai@1.18.31
 
 # ruff (Python linter) baked in — apt has no ruff on questing 25.10, so install
 # via uv to a system dir the node user can execute (survives container rebuilds).

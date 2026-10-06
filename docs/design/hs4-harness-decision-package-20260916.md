@@ -185,6 +185,17 @@ All rows below are OBSERVATION grade under MEASUREMENT.md. None of them may rank
 - served models at production `enable_thinking`;
 - columns: pass@1, input tokens per attempt, prefix-cache hit share, and prefill tokens per solved task (`intake-1363#02`).
 
+**Additional external context filed after the decision (2026-09-17; context only, not selection evidence):**
+
+- `intake-1444#00` covers 30 budget-matched harnesses across 12 model–problem pairs and more than 3.1M rollouts. `intake-1444#03` reports the strongest observed adaptive policy's 85.75% score against single-harness commitment at 82.49% in the paper's setting; the claim is about that allocation result, not a universal or OpenCode-specific ranking. `intake-1444#record` records that the strongest fixed harness does not survive Holm correction, that matching is within each model–problem pair, and that there is no third-party replication.
+- `intake-1457#00` states that no search structure is consistently most efficient. `intake-1457#03` gives normalized convergence AUC 0.780 for the adaptive fluid-search method versus 0.718 for the best fixed beam. `intake-1457#record` records that no significance test was reported and distinguishes convergence efficiency from final outcome (r=0.40). This is not a harness comparison and does not rank HS-4 candidates.
+- `intake-1451#03` reports post-hoc Bayesian optimization matching or exceeding the final score on 13 of 15 intermediate programs by tuning exposed constants. This is methodological context for the exposed-knob confound named by HS-E1; it is not a direct test of OpenCode, this stack, or a user-facing-shell candidate.
+- `intake-1450#record` discusses the SwarmResearch reproduction repository. Its record states that it has no EvoX/CORAL per-task baseline scores and no per-commit cost data, so the cited 13/15 claim cannot be checked from that release. Treat “unverifiable” as an evidence limitation, not as an independently reproduced result.
+
+The canonical-ledger citation check succeeds, but uncovered claim references remain UNKNOWN; a successful cite check does not supply a graded selection warrant.
+
+These records post-date the OpenCode decision and do not alter its evidence matrix, ranking, or recommendation. No result above supplies selection evidence for OpenCode or another shell.
+
 ## 6. Recommendation
 
 **Option A — OpenCode.** Name pi (B) as the minimal-import alternative.

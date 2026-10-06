@@ -47,3 +47,7 @@ AUD13 and AUD14 accepted:31 scoped completions (26 existing checkbox flips+5 sco
 MF-VBS2-SRC and VB-MFVBS-VERIFIER accepted after original9/9 integrity review and byte-identical APPmain publication:33 scoped completions (27 existing flips+6 scoped additions). [Bounded source acceptance](../../artifacts/ni08/batch-verifier-source-20261006/README.md); parent BEP remeasurement remains open.
 
 Newly verified remaining work: VB-MFVBS-1 and VB-EVALDISC-1 lack adapters, and both writers omit native input/source identities needed for a strict claim projection. VB-MFVBS1-PROV and VB-EVALDISC1-PROV are enrolled before capture; private implementation is under MAIN review. Old aggregates remain descriptive, no reconstruction. These preparations add no completions; wider source eligibility audit remains open.
+
+## Harness source boundary — MAIN acceptance
+
+Applied the verified container package pin and HS-E1 dated external-context addendum after manual LOW-risk review. Two existing checkboxes close; NI08 is now **35 scoped completions (29 existing flips + 6 scoped additions)**. Canonical citation check passed, unknown claim coverage remains unknown, no container build or selection warrant. Published HS-OD-4 options preserve actual explicit vision rejection and distinguish generation budgets from rendered tool text; its parent remains unchecked pending operator API-contract choice. Card/pin-freeze/P0 split remain under separate review.

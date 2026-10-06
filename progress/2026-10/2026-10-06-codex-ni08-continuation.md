@@ -116,3 +116,7 @@ APP main e2d3a670 integrates exactly three source/test files. Edit instructions 
 ## Newly unlocked prospective analysis wiring
 
 MAIN reviewed source-gap proposals against ROOT280decd/APPe2d3a670: two standing read-side adapters have no Source registration, and their old deterministic writers omit input-byte/source identities. Enrolled VB-MFVBS1-PROV/VB-EVALDISC1-PROV immediately in the existing source table and Belief Substrate owner handoff before any native capture. Private additive writer/adapter preparation is authorized; historical identityless JSON is not backfilled, shared grading rule remains unchanged, no metric-body/denominator changes. No completion counted. The broader task audit now checks all provisional classes because zero-inference tasks with already-met triggers had been excluded by text classification.
+
+## Harness source boundary — MAIN acceptance
+
+Applied the verified container package pin and HS-E1 dated external-context addendum after manual LOW-risk review. Two existing checkboxes close; NI08 is now **35 scoped completions (29 existing flips + 6 scoped additions)**. Canonical citation check passed, unknown claim coverage remains unknown, no container build or selection warrant. Published HS-OD-4 options preserve actual explicit vision rejection and distinguish generation budgets from rendered tool text; its parent remains unchecked pending operator API-contract choice. Card/pin-freeze/P0 split remain under separate review.

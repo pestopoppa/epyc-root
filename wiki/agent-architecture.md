@@ -5089,3 +5089,5 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 ### 2026-10-06 batch verifier reporting
 
 [Accepted source and nine original controls](../artifacts/ni08/batch-verifier-source-20261006/README.md) distinguish syntax-only checks from owner-command success and snapshot the command once for both verification and reporting. The edit rider requests a real acceptance check before FINAL, with honest failure/unknown reporting. Model-authored postconditions stay inert. Native conformance covers an explicitly isolated helper boundary and actual temporary sandbox modules; full-graph semantic acceptance and BEP efficacy remain open.
+
+2026-10-06 source checkpoint: [HS-E1 dated context and container pin](../artifacts/ni08/harness-source-review-20261006/README.md) accepted without inference or selection warrant. [HS-OD-4 API generation-budget decision](../docs/design/hs-od-4-max-tokens-decision-prep-20261006.md) remains with the operator.
