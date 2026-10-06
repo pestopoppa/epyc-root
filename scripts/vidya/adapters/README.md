@@ -478,14 +478,17 @@ Wiring the **write** side is cheap and permanent. Retrofitting the **read** side
 2026-10-06 NI05-75 completed after MAIN review and publication: original CI37406900511 at recipee1c234b527900c8096032122eaa3c844fd837356 passes all six focused executor fallback cases with no skips/failures/errors. APPfa1eb43a2c4431d695e5c4339373ecbf3b96aed6 changes only get_binary_paths registry-load failure handling: one patchable load attempt, unchanged legacy names, stripped explicit override precedence, otherwise CPU kernel-store resolution with KernelPathError propagated before any Popen. Successful registry delegation/custom names remain unchanged. Original native TRUE6/6 is captured prospectively through unchanged producer2dff56e6 and existing shared grader; MAIN independently reopens all original ZIP/readset/context/fixture/postcheck evidence before acceptance. Three private nonexistent ambient overrides permit eager configuration imports; each fallback test explicitly clears/sets the CPU override and no kernel/model process is launched or store directory materialized. Prior original CI37406127191 remains NULL/exit4/noJUnit before collection, with zero projected rows; original HIGH-impact negative query CI37361379823 remains unchanged ordinary evidence, and the operator approved its10-node/one-direct/three-module repair scope. No production capacity, binary linkage, deployment, inference noninterference or whole-suite pass is claimed. Scoped published completion tally78/78; larger parent programs and standing rules remain open.
 
 
-Prospective consumers/source contracts enrolled before these follow-on implementations:
+Consumers/source contracts enrolled before implementation (acceptance recorded inline):
 
 | Source | Existing carrier | Scope | Hook/task |
 |---|---|---|---|
 | Standalone BSV native-outcome input integrity (accepted NI07-17) | existing native CI verifier | Strict boolean/ID/alias/native disposition acceptance/refusal; no new grading ladder or inference/quality warrant | OriginalCI37454712581 TRUE38/38 accepted through existing native carrier; bsv_paired_report.py, VB-BSV-INPUT-STRICT / NI07-17 |
 | Lab KB collection-time catalog dependency (accepted NI07-18) | existing document/artifact dependency identity | Strict original completed-writer record/null unknown, before query/backend; no frozen query snapshot | OriginalCI37454908617 TRUE19/19 source conformance accepted; run_job.py, VB-KB-LAB-CONTEXT / NI07-18 |
 | Tool-call repair log minimization (accepted NI07-19) | existing native CI verifier | Synthetic no-payload sentinel plus unchanged parser/outcome/counter facts; no global-rate warrant | OriginalCI37456098288 TRUE149/149 accepted through existing native carrier; code_utils.py, VB-TOOL-REPAIR-LOG / NI07-19 |
-
-| Optional declared query-expansion refusal (prospective NI07-20) | existing native CI verifier | Fake/temp supported absence/false and unsupported true/malformed refusal before constructor; no new grading ladder or model/quality claim | colbert_encoder.py, VB-K2-QUERY-EXPANSION-REFUSAL / NI07-20 |
-
+| Optional declared query-expansion refusal (accepted NI07-20) | existing native CI verifier | Fake/temp supported absence/false and unsupported true/malformed refusal before constructor; no new grading ladder or model/quality claim | OriginalCI37456357367 TRUE24/24 accepted through existing native carrier; colbert_encoder.py, VB-K2-QUERY-EXPANSION-REFUSAL / NI07-20 |
 | DCP render-time source identity (prospective NI07-21) | existing native CI verifier | Injected old/new body, bound-hash refusal before rendering; valid bound/unbound compatibility; no quality/serialized-prompt budget claim | context_discovery.py, VB-DCP-RENDER-IDENTITY / NI07-21 |
+
+| Source | Existing carrier | Scope | Hook/task |
+|---|---|---|---|
+| Hermetic research producer-backed tests (prospective NI07-22) | existing native CI verifier | Pinned three producer families/24synthetic cases and unchanged generic suite; no production hash/ladder/skip relaxation | tests.yml/KV test helper, VB-CI-RESEARCH-PRODUCERS / NI07-22 |
+| DCP hit-span-preserving policy candidate (prospective NI07-23) | existing native CI verifier | Pure budget-mode/source/range facts only; no AST-complete context/live quality/activation | context_assembly.py, VB-DCP-HIT-SPAN-POLICY / NI07-23 |
