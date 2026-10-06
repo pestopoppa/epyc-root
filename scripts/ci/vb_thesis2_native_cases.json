@@ -1,0 +1,49 @@
+{
+  "schema": "epyc.ufh13_thesis.selected_cases.v1",
+  "source_commit": "9891c1979d4580512aeb6451850b8bd0dca86055",
+  "cases": [
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_actual_producer_rows_project_through_shared_measurement_grade"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_none_native_metric_stays_omitted"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_source_is_defaultless_and_registered_once_in_existing_cli"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_pilot_manifest_is_refused"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_missing_or_malformed_manifest_source_pin_is_refused[commit0]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_missing_or_malformed_manifest_source_pin_is_refused[aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_missing_or_malformed_manifest_source_pin_is_refused[AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_missing_or_malformed_manifest_source_pin_is_refused[not-a-commit]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_native_iso_date_and_shared_scored_reps[date]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_native_iso_date_and_shared_scored_reps[naive-date]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_native_iso_date_and_shared_scored_reps[reps]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_shared_native_verdict_rule_and_prereg[verdict]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_shared_native_verdict_rule_and_prereg[rule]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_sidecar_requires_shared_native_verdict_rule_and_prereg[prereg]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_manifest_preregistration_is_preserved_and_must_match_rows"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_duplicate_json_member_and_nonfinite_value_are_refused"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[duplicate-id]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[mixed-run]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[mixed-suite]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-category]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-reps-basis]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-locator]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_mixed_or_non_native_sidecar_unit_is_refused[wrong-record-path]"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_duplicate_measurement_id_is_refused"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_records_digest_mismatch_and_symlink_are_refused"],
+    ["tests.vidya.test_ufh13_thesis_adapter", "test_records_change_during_hash_read_is_refused"],
+    ["tests.vidya.test_ingest_sources", "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"],
+    ["tests.vidya.test_ingest_sources", "test_every_source_has_an_end_to_end_fixture_or_a_named_exemption"],
+    ["tests.vidya.test_ingest_sources", "test_source_ingests_a_fixture_end_to_end[ufh13-thesis-measurement]"]
+  ],
+  "provenance": {
+    "method": "static AST read of pytest test definitions and literal parameters; no host import, collection, or test execution",
+    "selected_modules": [
+      "tests/vidya/test_ufh13_thesis_adapter.py",
+      "tests/vidya/test_ingest_sources.py"
+    ],
+    "source_paths_sha256": {
+      "tests/vidya/test_ufh13_thesis_adapter.py": "bbdefde11623bc402db7d1390673c69c380477b9838ea188e820ed5e701ebe90",
+      "tests/vidya/test_ingest_sources.py": "c50eb891ef168fc091ccb0a8d5dd8dae508b6f8dce8e555498bd02dab5ccba98"
+    },
+    "test_bodies_executed": false,
+    "test_modules_imported": false,
+    "module_level_code_executed": false
+  }
+}
