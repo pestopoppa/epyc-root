@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      ROOT_PIN: 29a0aec659b9080ece417483d25b82abbfab438f
+      ROOT_PIN: fb62fafe14b9424bc4fb2e47fb42d586e423820e
       APP_PIN: 62db79be0bf9a4cdc8341ec48d8d240a14458288
       EPYC_SERVING_CALLS_SOURCE_SHA256: a528b20c6d106e9d5ce4c3a2f95919103bed44bad30cabb863491d768ad1214c
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
