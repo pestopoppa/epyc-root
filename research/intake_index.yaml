@@ -245049,7 +245049,7 @@
   - claim_index: 6
     effect: narrowed
     note: 46.1 ms / 22.0 steps/s are README-stated; the derived bandwidth-vs-latency interpretation is the integrator computation, not a source claim.
-  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; @d2721ecbd16f4a10b968b2755fc374da3c539502 (2026-10-06 14:13 +0300, README v5.2)). 2026-10-06 dive: headline 93/177 tok/s is for the 5-of-512 healed checkpoint (a different, lower-capability model than the 10-expert Q38FN we serve), counts accepted speculative tokens (~3.9 per step), and its 1,008 tok/s at 64 streams is the best prompt class; the like-for-like 10-expert number on the same kit is the hibrid48 ~120 tok/s (README-stated). Independent 10-expert official-NVFP4 TP2 median is 53.7 (intake-1948).'
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; @d2721ecbd16f4a10b968b2755fc374da3c539502 (2026-10-06 14:13 +0300, README v5.2)). 2026-10-06 dive: headline 93/177 tok/s is for the 5-of-512 healed checkpoint (a different, lower-capability model than the 10-expert Q38FN we serve), counts accepted speculative tokens (~3.9 per step), and its 1,008 tok/s at 64 streams is the best prompt class; the like-for-like 10-expert number on the same kit is the hibrid48 ~120 tok/s (README-stated). Independent 10-expert official-NVFP4 TP2 median is 53.7 (intake-1948). STAGE-2 CLOSE-OUT DECLINES (operator all-recommended policy; recommended-and-dived items done in waves 1-4; remainder declined 2026-10-06): ai-muninn Part 46 baseline post (setup already carried by intake-1958); MiaAI-Lab PR #45 / draft-vocab tool (README-level evidence read in 1950/1956; tool is code, no new number); ashhart/TensorFold upstream engine (engine not a technique, no byte-floor docs found in intake-1959); llama-benchy (benchmark tool, carries no Q38FN data); myllmbox/Qwen3.8-Flash-Next-hibrid48 HF card (its ~10% slower claim is already anchored in intake-1937); Intel W4A16-AutoRound card (upstream of 1939, no speed claims needed); TheRock supported-GPUs / nightly page (long-term MI210 horizon only; revisit when a ROCm 10.x migration is scoped); NVIDIA forum thread 382522 (aggregator of already-dived threads); jschmied remaining ~45 unread notes (prefill-investigation, TODO etc.: no decode byte accounting expected).'
   read_depth: PARTIAL
   depends_on:
   - entry: intake-1939
@@ -247005,7 +247005,7 @@
   - claim_index: 7
     effect: narrowed
     note: Hardware facts confirmed in report; collective latency figures are estimates.
-  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; cd839d0b62f6c737178a0c2037733420e0524ebf). Do not read 24.5 -> 52.1 as MTP alone raising bandwidth efficiency: it is 2.13x tokens per step at ~same bytes. NCCL settings: PyNCCL over RoCE v2 on CX7, IB_GID_INDEX=3, one HCA per node by default; no interconnect bandwidth measured in the README.'
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; cd839d0b62f6c737178a0c2037733420e0524ebf). Do not read 24.5 -> 52.1 as MTP alone raising bandwidth efficiency: it is 2.13x tokens per step at ~same bytes. NCCL settings: PyNCCL over RoCE v2 on CX7, IB_GID_INDEX=3, one HCA per node by default; no interconnect bandwidth measured in the README. CROSS-CHECK AGAINST OUR OWN RECORD (2026-10-06, Stage-3 drafting): handoffs cpu-decode-roofline-program.md B10 (2026-09-05) already measured reduced-vocabulary MTP drafting on our CPU and closed it NO-GO: the draft head (q6_K output.weight 521 MB) is ~4-5% of the token because it stays L3-resident between draft steps (derived 260 GB/s), a 64k slice ceilings at +3.0-3.9%, id-prefix slice coverage 97.95% is break-even on alpha; upstream #25187 measured +1.4%. The Spark +9.6-21.5% gains do NOT transfer to our CPU; the earlier Stage-2 sentence that the head is ~20% of our step bytes is retracted.'
   notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Read README.md sections: MTP table, reduced-vocab drafting, concurrency sweep, defaults (lines ~1-140, 655-830, 985-1060); docs/CLAUDE/fable5-1-report.md lines 1-160 (bandwidth model). Greps over whole repo for bandwidth/bytes. Not read: CHANGELOG body, bench/*.py, patches, NCCL ground-truth section (report L341), rest of fable5-1 report, docs/bench/rerun-20260916.md. No raw result files exist beyond README tables (repo has bench scripts, no result JSON).'
   cross_references:
     chapters: []
@@ -247067,11 +247067,34 @@
 
     monotonic 0→4 (25.9 / 43.4 / 52.6 / 59.1 / 65.8 tok/s)'
   - 'Additional anchored statement (index added by integrator): Combined 201 GB/s with two concurrent kernels sharing DRAM. Source passage: contending with the concurrent router GEMM for DRAM (201 GB/s combined, the standalone rate)'
+  - 'Wave-4 correction marker: the det-231 220 GB/s calibration derivation IS in notes/determinism-investigation.md (L5882-5990); see dive_corrections.'
+  - 'The 220 GB/s calibration (''det-231'') is a 62-second probe of one decode-shaped bf16 GEMV with no model loaded: 218.6-219.7 GB/s, max/min 1.01x, 0 of 31 s below midpoint; the earlier det-201 bwprobe (2560x10240 bf16 GEMV) read 212.8-215.0 GB/s at M=1 and 206.2-206.8 at M=4 (78% of 273). So 220 = 80.6% of spec and is a GEMV-read figure, not a copy/stream roof.'
+  - '220 GB/s is conservative as an attainable-DRAM figure: kernels in the live model reach higher (FP8 lm_head effective ~234 GB/s at M=4; HC combine_norm 234, standalone K1 225), a plain 218.5 GB/s read+write copy was measured on GB10, and an independent GB10 effort (cudafast contest) reports a 235.8-237.6 GB/s streaming roof (86% of 273); a reporter''s 64 MB device copy reads 239-242 GB/s. Using ~236 instead of 220 lowers every floor by ~6.8% (K=3 floor 45.3 -> 42.2 ms, ratio 1.21 -> ~1.30).'
+  - 'Measured expert-union (live router capture, all 48 layers, top-10 ids): 4 verify rows -> 26.6 distinct experts/layer (n=69,648 calls, median 27) vs 38.8 under independent uniform routing (ratio 0.69); 8 rows -> 47.3 vs 74.7 (0.63); 16 rows (c=4 verify) -> 82.5 vs 138.6 (0.60); drafter 1 row -> 10.0; drafter 4-row absorb -> 35.7 vs 38.8 (0.92, nearly independent). Verify-window routing is therefore strongly positively correlated, and more so at larger windows, while the drafter''s absorb of already-verified tokens is not.'
+  - Only R=4, 8, 16 (target) and R=1, 4 (drafter) were ever captured. The K=5 (6-row) union of ~37.2 is a log-log interpolation (exponent 0.83 between 4->26.6 and 8->47.3), and no capture exists for R=2,3,5,6,7. The same interpolation is what the repo's K=5 floor (52.9-54.4 ms) rests on.
+  - 'Marginal cost of one more verify row is dominated by new experts: each extra row adds ~4.9 distinct experts x 48 layers (~3.3 ms/row), about 2x a draft step, so two-thirds of a draft position''s marginal cost sits in the verify rows. Measured cycle time vs K (code/prose, prod config, 2 starts) is near-linear at +4.8 ms per added draft: K=2 49.5-49.8/51.2-51.6; K=3 54.7-55.4/56.9; K=4 59.3-59.7/61.6; K=5 64.5-65.0/67.2-68.0; K=6 69.2-69.5/72.2-72.9; K=7 73.4-75.5/76.6-77.5 ms.'
+  - 'Byte inventory per verify cycle at K=3 (fp32 GDN state, 09-24 config): target FP8 dense 2,551 MiB; BF16 leftovers 1,912 MiB (HC mixers 1,209, shared experts 450, router 120); FP8 lm_head 606 MiB read ONCE per verify (not per row); routed experts E x 48 x 2.637 MiB; GDN state 108 MiB read plus 108-432 MiB written; QSA ~50 MiB at any context; drafter 739-828 MiB per cycle (MTP dense BF16 173 MiB x3, NVFP4 draft head 45 x3, experts). Floor parts at 220 GB/s: dense 21.3, experts 16.1, lm_head 2.9, drafter 3.8, GDN 1.0, QSA 0.2 = 45.2 ms.'
+  - 'lm_head accounting: target FP8 head [248320x2560] is one GEMM per verify cycle regardless of row count (636 MB weights, floor 2,890 us, measured 2,730 us at M=4 = 0.94x; 2.68 ms/step in the trace). The drafter shares the target lm_head object (the copy is deleted at load) but drafts through a 32k-row NVFP4 slice (~45 MiB) per draft step, so draft-side head bytes scale with K but are ~18% of a draft step. TF EXL3 notes confirm the same shape (1 to 16 rows cost the same as 1 row at the DRAM floor; lm_head 1,733 us at 16 rows).'
+  - 'GDN state accounting after RecoverSSM: verify reads 3 MiB/layer, the commit kernel reads+writes the whole fp32 state of every layer (72 MiB per 12-layer launch in 330 us = 224 GB/s, the DRAM floor), 324 MiB/step = 1.54 ms at 220 GB/s vs a 216 MiB / 1.03 ms floor; the verify kernel itself reads at only 145-148 GB/s (latency-bound, a 4-token dependent chain per CTA). The pre-RecoverSSM write-back of 4 full fp32 snapshots (12 MiB/layer/step written, 7.5 MiB never read) dirtied the 24 MiB L2 and cost ~40 us/layer = ~1.5 ms/step in the next kernels.'
+  - 'Step-time breakdown that sits above the byte floor (K=3, warm): profiled step 55.0 ms, GPU busy 52.7, idle 2.4 ms (4%); after RecoverSSM the node trace gives step 54.23 / busy 51.68 / idle 2.55. Category ratios vs floor: MoE grouped GEMM 18.2 vs ~16.9 (1.08), FP8 blockwise 16.3 vs 15.1 (1.08), BF16 GEMM/GEMV 16.7 vs ~11.6 (1.44), GDN update 1.5 vs 1.0; ~5.3 ms other. Gap decomposition at 55.0 vs 45.2 = 9.8 ms: BF16 GEMMs ~5 ms (2 kernel choice, rest MoE-overlap DRAM contention and drafter M=1 GEMVs), MoE+FP8 ~2.5, idle 2.4, GDN ~0.5. Routed MoE sits on aux streams (20.7 ms) but only 4.6 ms overlaps, so the step is essentially serial.'
+  - 'Launch/idle/sync overhead is small and mostly already priced: critical-path small kernels 3.5 ms/step (2.11 ms <5 us, 1.42 ms 5-20 us), GPU idle (union of streams) 1.8 ms/step of which ~0.6 ms is eager-GDN launch gaps; fusion prize 1-1.5 ms (2-3%). A host sync per verify cycle costs <=~0.8 ms (+0.13..0.8 ms in the one stable-sign cell); async scheduling has nothing to hide at ~64 ms GPU cycles (no-async -0.6..-1.9% c=1, later 3-start rerun null). TensorFold''s own single-stream path is 97.6% GPU-busy (idle 0.29 ms/token) with graphs and 88.3% eager (+9.9-11.0% per token).'
+  - 'Cold-start and paging overhead is separate from steady state: fresh server 59.6-60.1 ms/step vs warm prod 53.7 (warm fresh-server 54.9); cost is ~0.2 ms per major PLE fault per step (27-32 faults = ~6 ms, 11%) because the GPU faults the ~30 pages itself, serially, ~150 us each. The MADV_WILLNEED + POPULATE_READ readahead fix cuts cold steps by 1.4-4.1 ms and leaves warm unchanged. Byte-wise the PLE is negligible (16 rows x 160 B = 2,560 B/token); it is a latency, not a bandwidth, term.'
+  - 'Measured-vs-floor ratio is flat in K, not growing: my recomputed floor (calibrated to the repo''s K=3 45.2 and K=5 52.9-54.4) vs the kcost2 cycle times gives code 1.19-1.22x and prose 1.23-1.26x for K=1..7; the repo itself states K=5 ''about where K=3 was (1.20x)'' and a warm-corrected 1.15-1.2x. Deeper drafting adds bytes and time in proportion; the unexplained ~8-11 ms/cycle is nearly fixed.'
+  - 'Concurrency amortizes dense/lm_head/shared bytes but not expert or state bytes: K=3 c=1 cycle 54.2-54.4 ms vs c=4 cycle 99.6 ms (1.83x time for 4x rows); c=4 measured 99.6-105 ms/cycle; c=16 aggregate prose 161.9-165.0 tok/s (max-num-seqs 16); code c=4 K=5 144.3-144.7 tok/s. My c=4 K=3 floor from the ledger (E(16)=82.5, state x4, QSA x4, drafter dense shared) is ~83 ms/cycle (4 x 2.53 tokens -> ~121 tok/s floor vs ~101 measured, ratio 1.20). The note''s byte model attributes ~20% of per-token bytes to experts at c=1 and ~80% at c=16 for the older fp8head checkpoint.'
+  - 'Is the 0.60-0.69 union ratio explained by routing skew (popular experts) alone? No: skew alone would need an absurd distribution. Fitting independent-but-skewed expert probabilities (lognormal sigma) to the R=4 point (26.6) requires sigma ~2.16 (max/min ~2e6) and then predicts only 43.7 at R=8 and 69 at R=16, while the repo''s own coverage probe measured max/min 3.7x and p90/p10 1.8x (layer-summed, prompt tokens, MTP off). So within-window token-to-token correlation (consecutive tokens share experts) is required. A cross-request decomposition at R=16: 4 independent requests of 26.6 give 98.4 under uniform popularity (0.71 of independent), the measured 82.5 is a further 0.84x from cross-request overlap/skew.'
+  - 'Timing corroborates the captured union independently: at the calibrated 220 GB/s, a floor built with INDEPENDENT routing exceeds the measured cycle for K>=5 (K=5 66.0 vs 64.5-65.0; K=7 79.0 vs 73.4-75.5 ms), which is impossible unless DRAM delivers >220 GB/s; with measured/interpolated unions the floor stays below the measured cycle at every K (ratio 1.19-1.22). At ~236 GB/s the independent floor (K=5 61.5) no longer contradicts, so this corroboration is only strong at the repo''s own 220 calibration.'
+  - 'Achieved GB/s by kernel class (single GB10, L2 flushed, author-measured): FP8 qkvz 190.7-floor ratio 1.04 (~212 GB/s), FP8 lm_head ~234, HC combine_norm 234, gate_mix 219, finalizeMoeRouting 224, doActivation 270 (L2-assisted), RecoverSSM commit 224, GDN verify 145-148 (latency-bound), HC K1 225 but K2/K3 164 (compute-limited), TF EXL3 expert kernel 192-214 (87-95% of 224), TF dense EXL3 linear 160-205, k/v 0.8 MB 45-48 (latency), GDN in_proj_ba 96x2560 22 GB/s (launch-bound), TF fp16 HC mixes 203-239. Mid-size reads carry a ~roughly fixed per-kernel overhead in the live sequence (out_proj 15.7 MB = 1.34x floor in-model vs 1.10x standalone).'
+  - 'A single GB10 already reaches ~93-177 tok/s aggregate on this model family without a second node: vLLM prod c=4 code K=5 144.3-144.7, prose c=16 161.9-165.0; TensorFold EXL3 3.05 bpw (about half the weight bytes) c=4 code greedy 239.5 tok/s and single-stream 77-81; third-party single-Spark claims (not re-measured): myllmbox 73 single-stream / 288 at 16 streams, MiaAI-TF 62.4 single / 119.3 at 5. At the ledger''s floor, a K=5 cycle with 5.1 accepted tokens (a figure claimed by myllmbox for code) is ~94 tok/s at 220 GB/s and ~117 at the 273 spec roofline on ONE Spark; the repo''s measured K=5 code single-stream is 65.7-68.4 with a 80-82 tok/s byte ceiling at 4.35 accepted.'
+  - 'Engine-level levers that remain, per the authors'' own ranking, are small: kernel headroom ~10% split over three families of <=5% each (expert kernel <=~4%, dense EXL3 linear <=~5%, launch-bound GDN a/b ~1.7%); the remaining large decode levers are bytes (HC fp16 mixes 1.25 GB per forward on EXL3; BF16 leftovers 1,912 MiB on the vLLM stack = ~8%) and fewer forwards per token (acceptance, confidence-stop depth, concurrency). Weight-changing levers were declared out of scope by the user for the TF/EXL3 work.'
   reported_results:
   - '1x GB10 K=5 greedy code c=1: 68.1-68.4 tok/s (14.63-14.68 ms/tok, accept 4.37); sampled 58.8-61.4; prose 42.2-42.4.'
   - '1x GB10 aggregate: code c=4 144.3-144.7 tok/s; prose c=8 122-123, c=16 162-165.'
   - Plain-decode floor 31.8 tok/s at 220 GB/s; MTP floor ~80 tok/s single-stream on code (K=5).
   - 'Verify cycle K=3: floor 45.2 ms, measured 54-59 ms.'
+  - K=3 floor 45.2 ms vs measured 59.2 (09-24 config), 55.0 profiled, 54.2-54.4 after RecoverSSM, 54.9 warm unprofiled; ratio 1.31 -> 1.20.
+  - 'kcost2 cycle ms code K=2..7: 49.7, 55.1, 59.5, 64.8, 69.4, 74.5; prose 51.4, 56.9, 61.6, 67.6, 72.6, 77.1.'
+  - 'Expert union (target): R=4 26.6 (n=69,648), R=8 47.3, R=16 82.5; drafter R=1 10.0, R=4 35.7.'
+  - 'Calibration: 220 GB/s = det-231 62 s GEMV probe 218.6-219.7 (det-201 earlier 212.8-215.0 M=1, 206.2-206.8 M=4).'
   claim_anchors:
   - claim_index: 0
     kind: line-range
@@ -247177,6 +247200,419 @@
     quote_sha256: 13a38774c46328388c4d333d69f026c2a919bf12d019d1e94973da9ad74accd4
     source_revision: 9b3fd4c
     verified_by: research-intake/stage2b
+  - claim_index: 15
+    kind: line-range
+    locator: notes/determinism-investigation.md:L5961 @ 9b3fd4c
+    quote: '| decode-shaped bf16 GEMV | **218.6 – 219.7 GB/s** | 66–80 | 224–233 |'
+    quote_sha256: b8b22f3c7b5720e137c85e7d4b389ac78761408d727c08c5176a7f995f3a5d91
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 15
+    kind: line-range
+    locator: notes/determinism-investigation.md:L4229 @ 9b3fd4c
+    quote: '| M=1 (c=1 decode shape) | **212.8 / 214.2 / 215.0** | ~211 |'
+    quote_sha256: a643dacbc77429c1d542705a5a0035345ca691ba035525756a2ea7abc09093a3
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 15
+    kind: line-range
+    locator: notes/speed-of-light.md:L15 @ 9b3fd4c
+    quote: '- Floor = bytes / 220 GB/s, our measured bandwidth (det-231). At the 273 GB/s spec sheet every floor drops ~20 %.'
+    quote_sha256: e4558aab26c93857fb0bd6d708541deda2946fb0d21b882c9e1943f406373155
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 16
+    kind: line-range
+    locator: notes/speed-of-light.md:L122 @ 9b3fd4c
+    quote: '| FP8 lm_head [248320×2560], M=4 | 2,729.7 | 2,890 | **0.94** (effective ~234 GB/s: our 220 GB/s is slightly conservative) |'
+    quote_sha256: 6045cb2ee4d5b7da9990fde9832e4a683c0101bf014548efc0af15c16e14f449
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 16
+    kind: line-range
+    locator: notes/cudafast-contest-survey.md:L39 @ 9b3fd4c
+    quote: '* Their independent streaming roof: **235.8–237.6 GB/s, 86 % of the theoretical 273** — an outside'
+    quote_sha256: 47c2d2001f00d1a0fa5d5a33ba48a141971feb071090f07b2cb6c04d5b0bf7eb
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 16
+    kind: line-range
+    locator: notes/determinism-investigation.md:L5892 @ 9b3fd4c
+    quote: '| **64 MB device copy** | 239–242 GB/s | **239–242 GB/s (no change)** |'
+    quote_sha256: 3a686f8c1877a55648bc04736a1d49b2e9bc385af5455c84a3edab64c127b845
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 17
+    kind: line-range
+    locator: notes/speed-of-light.md:L78 @ 9b3fd4c
+    quote: '| 4 (c=1 verify batch), n = 69,648 calls | **26.6** (median 27) | 38.8 |'
+    quote_sha256: ec8edd8f0a4f6610a0101bd1c878942b92d10616f111dff90e4626e115388885
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 17
+    kind: line-range
+    locator: notes/speed-of-light.md:L79 @ 9b3fd4c
+    quote: '| 8 | 47.3 | 74.7 |'
+    quote_sha256: e34163fc1aaa11a85a34f67a30fded3046c2ced10dd5ce0b7e5431f85743fbe0
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 17
+    kind: line-range
+    locator: notes/speed-of-light.md:L80 @ 9b3fd4c
+    quote: '| 16 (c=4 verify) | 82.5 | 138.6 |'
+    quote_sha256: 203eca5e0137859afff762d0cfc724fbdc17a8bcb37de27afe96c7572a4ee0d3
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 17
+    kind: line-range
+    locator: notes/speed-of-light.md:L82 @ 9b3fd4c
+    quote: '| drafter, 4 rows (its prefill of the verified tokens) | 35.7 | 38.8 |'
+    quote_sha256: c730e4654cbe6f2a6015da4b88908dc77a7623d1423a8a03b6ff696819040286
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 18
+    kind: line-range
+    locator: notes/speed-of-light.md:L1300 @ 9b3fd4c
+    quote: '- **Distinct experts at 6 rows: ~37.2 per layer**, interpolated on the measured sub-linear curve (4 → 26.6, 8 → 47.3;'
+    quote_sha256: 31715ede59cb74e946a4cc149a8fea1cc8d800e425fc64c4dec9f70078e1a77b
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 18
+    kind: line-range
+    locator: notes/speed-of-light.md:L48 @ 9b3fd4c
+    quote: '- The routing capture used by det-198 (`/opt/llm/calib/capture`) no longer exists. **Step 2 must log live MoE'
+    quote_sha256: c7026a3d06f3469fe769245d1b8a0fb10711374b3de421de30bcda9e38f01193
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 19
+    kind: line-range
+    locator: notes/speed-of-light.md:L1000 @ 9b3fd4c
+    quote: '| extra verify rows (MoE) | ~3.3/row | **new:** verify does *not* grow little with M. Each extra row adds ~4.9 distinct experts × 48 layers, about 2× a draft step. Two-thirds of a draft position''s marginal cost sits here | — | A+B |'
+    quote_sha256: a560932ebf1c3c12e3dcba9d918d7ed506bb71ffe491efbd7ab0d8780bd6faac
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 19
+    kind: line-range
+    locator: notes/speed-of-light.md:L2192 @ 9b3fd4c
+    quote: '| code, ms per cycle | 49.5 / 49.8 | 54.7 / 55.4 | 59.7 / 59.3 | 64.5 / 65.0 | 69.5 / 69.2 | 73.4 / 75.5 |'
+    quote_sha256: 2636f07dda7364ccb8cf2027ad0b3fb0e45ab51907990d6bdf2f902d0b9ce34b
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 19
+    kind: line-range
+    locator: notes/speed-of-light.md:L2193 @ 9b3fd4c
+    quote: '| prose, ms per cycle | 51.2 / 51.6 | 56.9 / 56.9 | 61.6 / 61.6 | 67.2 / 68.0 | 72.9 / 72.2 | 77.5 / 76.6 |'
+    quote_sha256: fbee316f2afd894320cd6df6936b8aa4fffa9018f79071fd069a1cf3276f7cf4
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 20
+    kind: line-range
+    locator: notes/speed-of-light.md:L21 @ 9b3fd4c
+    quote: '| target FP8 dense | 2,551 MiB |'
+    quote_sha256: 0ba2a975df669e5f0ccc40b2f19b9dc25877a02ea6e06abe951ce83d0616eeb2
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 20
+    kind: line-range
+    locator: notes/speed-of-light.md:L22 @ 9b3fd4c
+    quote: '| target BF16 leftovers (+ norms, scales) | 1,912 MiB, of which hyper-connection mixers 1,209, shared experts 450, router 120 |'
+    quote_sha256: b02caef46c26320508efbc50184faa16818502d4a0e28dc123396b13ebdb6b6d
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 20
+    kind: line-range
+    locator: notes/speed-of-light.md:L27 @ 9b3fd4c
+    quote: '| drafter, per cycle | 739–828 MiB (MTP dense BF16 173 MiB × 3, draft head 45 × 3, experts) |'
+    quote_sha256: 5fbc7f235a56253c1bb4af06b017f180d831d71badab170d18f54a4579689880
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 20
+    kind: line-range
+    locator: notes/speed-of-light.md:L25 @ 9b3fd4c
+    quote: '| GDN state | 108 MiB read; 108–432 MiB written (1 or 4 speculative positions) |'
+    quote_sha256: 49950410b9af532156278a6b596c08f05e32c16985958ea58738ccf19983c52f
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 21
+    kind: line-range
+    locator: notes/speed-of-light.md:L998 @ 9b3fd4c
+    quote: '| lm_head (FP8, 248k rows) | 2.68 | weight read required. Post-GEMM logit work is only 53 µs/step (greedy); a fused argmax epilogue would save ≤ 35 µs; top-20 for sampled is exact in distribution but not bit-identical | ≤ 0.07 % greedy, ≤ 0.3 % sampled (unmeasured) | A+B |'
+    quote_sha256: 6632215fbbd7bcf268aa128875d371847e35044047983a95a01a3ca5b0c7d94a
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 21
+    kind: line-range
+    locator: notes/quantizing-the-mtp-drafter.md:L141 @ 9b3fd4c
+    quote: '    eagle_model.lm_head = target_lm_head'
+    quote_sha256: 6d841086bc80cee3bb514c4bfd6975d834682a2c75a6951762b0cc4a810f0211
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 21
+    kind: line-range
+    locator: notes/speed-of-light.md:L122 @ 9b3fd4c
+    quote: '| FP8 lm_head [248320×2560], M=4 | 2,729.7 | 2,890 | **0.94** (effective ~234 GB/s: our 220 GB/s is slightly conservative) |'
+    quote_sha256: 6045cb2ee4d5b7da9990fde9832e4a683c0101bf014548efc0af15c16e14f449
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 21
+    kind: line-range
+    locator: notes/speed-of-light.md:L3782 @ 9b3fd4c
+    quote: '  1–16 rows cost the same as one row (160–230 GB/s: the DRAM floor) — single-stream decode has nothing to gain here.'
+    quote_sha256: 82ead4898694237fdc327da0361228bd07c004123032b3168c1c1a25542b9e4f
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 22
+    kind: line-range
+    locator: notes/speed-of-light.md:L717 @ 9b3fd4c
+    quote: '    72 MiB per 12-layer launch in 330 µs = **224 GB/s, the DRAM floor.** My estimate had counted only the replay'
+    quote_sha256: bfae61052653e7266cc5326774822fd1a8cbf8225b95dad8113837ea1d767471
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 22
+    kind: line-range
+    locator: notes/speed-of-light.md:L720 @ 9b3fd4c
+    quote: '- **What is left on the GDN state path:** verify (read 3 MiB per layer) plus commit (read + write) moves 324 MiB'
+    quote_sha256: d3e02703a412fc0840a0e95f2128edb8ca7cf6151555d8bc19e27749b37ed659
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 22
+    kind: line-range
+    locator: notes/speed-of-light.md:L726 @ 9b3fd4c
+    quote: '  - **(b) Verify bandwidth:** the verify reads at 145 GB/s (23.1 µs per layer). At the floor it saves'
+    quote_sha256: aae4fea2812b8aa421672e8e32ea18e52d4b61604b461887ecd0f2d0431b695e
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 22
+    kind: line-range
+    locator: notes/speed-of-light.md:L557 @ 9b3fd4c
+    quote: '  written in 42 µs, faster than DRAM. The lines sit dirty in the 24 MiB L2, and the next kernels pay their'
+    quote_sha256: 93c4bf807580e1d5901aaeadac0055514a377649db6fc7dc137c037530f8ad00
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 23
+    kind: line-range
+    locator: notes/speed-of-light.md:L173 @ 9b3fd4c
+    quote: '**The GPU is not idle:** busy (union of all streams) is 52.7 ms of the 55.0 ms step, so idle is 2.4 ms (4 %). This'
+    quote_sha256: 3ae9216e0442fc0e6e067bd5343c64cd597e4c0add7f05186e700dc28f20bdce
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 23
+    kind: line-range
+    locator: notes/speed-of-light.md:L181 @ 9b3fd4c
+    quote: '| **BF16 GEMM (cuBLAS `cutlass_80_wmma` 32-thread blocks, 424 calls) + gemv** | **16.7** | ~11.6 (target 9.1 + drafter 2.5) | **1.44** |'
+    quote_sha256: 4e306a27f26b1ac88b9ac2e996b5a477a8f4201755f69eeaccd2bb47971243c5
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 23
+    kind: line-range
+    locator: notes/speed-of-light.md:L236 @ 9b3fd4c
+    quote: '- BF16 GEMMs ≈ 5 ms, of which ≈ 2 ms is kernel choice and the rest is MoE-overlap contention and drafter M=1 GEMVs;'
+    quote_sha256: 9df449c7b599d015335a8b34e78d30ffbd2a50718924f46a2ad8f6796a8cd46f
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 23
+    kind: line-range
+    locator: notes/speed-of-light.md:L703 @ 9b3fd4c
+    quote: '| step | 55.53 | 54.23 | **−1.29** (A/B §4t: −1.3) |'
+    quote_sha256: f2d0cbcac7b354a0ed6a468d7f2c6fe52a6c47589fa966a0f0511b75c64a793d
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 24
+    kind: line-range
+    locator: notes/speed-of-light.md:L522 @ 9b3fd4c
+    quote: '- **GPU idle (union of streams): 1.8 ms/step.** About 0.6 ms is launch gaps in the eager GDN section (~6 gaps per'
+    quote_sha256: 9842979b17c6e04f48f040d3e0bb7b54336ccb01f60d742fddb034bb1ac9b213
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 24
+    kind: line-range
+    locator: notes/speed-of-light.md:L1956 @ 9b3fd4c
+    quote: '- **At or below the hypothesis range** (+0.5…+1.5 ms per cycle predicted): the one cell with a stable sign gives'
+    quote_sha256: d8165031f160580cf3f115b41b58f02ac04b8e0fc1932ea71bb8533263955a59
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 24
+    kind: line-range
+    locator: notes/speed-of-light.md:L2996 @ 9b3fd4c
+    quote: '| S1 one stream, graphs (default) | 12.094 / 12.190 | 82.7 / 82.0 | **97.6 %** | 0.29 ms | 25.6 + 1.44 graph replays |'
+    quote_sha256: 985349a9a7c053d1913ab646552dd1d55846e57582742960887c33a5b91c67db
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 25
+    kind: line-range
+    locator: notes/speed-of-light.md:L374 @ 9b3fd4c
+    quote: '| warm prod (hours up) | 47.7 (100 %) | ~0 | 53.7 |'
+    quote_sha256: abb9e990a85d32d539f41409a464609e3761514fc2e5bbf968ec88df8bf6bc07
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 25
+    kind: line-range
+    locator: notes/speed-of-light.md:L380 @ 9b3fd4c
+    quote: '- **Cost:** ≈ 0.2 ms per major fault per step, linear across the configurations. That is 6 ms/step (11 %) in the'
+    quote_sha256: 5203778064a9e8e9a2fc5c81ac8f01db9131d58314718d9b5190255d41f677a3
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 25
+    kind: line-range
+    locator: notes/speed-of-light.md:L461 @ 9b3fd4c
+    quote: '- **Warm fresh-server baseline: 54.9 ms/step**, close to warm prod''s 53.7. The speed-of-light gap is therefore ~10 ms,'
+    quote_sha256: 76c290a5e0b29ca571c67c6b43522b64bc98d268a05c4fdf25a732e954026a82
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 25
+    kind: line-range
+    locator: notes/ple-access-pattern.md:L14 @ 9b3fd4c
+    quote: '| useful bytes per token | **2,560** |'
+    quote_sha256: 7b3d0ea2070338992e66c2585bd0d135715ec5ee6aa0c6a9e0e558aed1f2b47a
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 26
+    kind: line-range
+    locator: notes/speed-of-light.md:L1311 @ 9b3fd4c
+    quote: '- The ratio is about where K=3 was (1.20×, §4t): deeper drafting added bytes and time in proportion. The per-token floor'
+    quote_sha256: 1e472ccbfabf9f0ef38dd1278a36a1b72436bff12330979709c27a527862fa3f
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 26
+    kind: line-range
+    locator: notes/speed-of-light.md:L1313 @ 9b3fd4c
+    quote: '- Caveat: the measured cycle includes the cold PLE pages of a first-pass probe (≈7 %, §5l), so the warm ratio is lower,'
+    quote_sha256: 84a513e5fbcbb9aa29f0231298dff6fd2bfce1bfe4585cd36a12cc6e42fa8aa0
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 26
+    kind: line-range
+    locator: notes/speed-of-light.md:L1309 @ 9b3fd4c
+    quote: '| prose (2.83 accepted) | 52.9–54.4 ms | 24.2 × 2.83 = 68.5 ms | 1.26–1.29× | 18.7–19.2 ms |'
+    quote_sha256: 528f029c5ac325511af89fa26de420fbeca053e40374c5cc449fb1af429d4ab7
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 27
+    kind: line-range
+    locator: notes/speed-of-light.md:L644 @ 9b3fd4c
+    quote: '| rssm (2 starts) | 21.44–21.46 | 2.53 | 54.24–54.29 | 99.99 | 99.61 |'
+    quote_sha256: a5c347bdd6c9e78ff42f413c03a8f88f535f80e9bd8959cba7d2ad8063bdd3ea
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 27
+    kind: line-range
+    locator: notes/speed-of-light.md:L1908 @ 9b3fd4c
+    quote: '| prose c=4 / 8 / 16 aggregate | "~100 / 110 at 16 / 32" (old stack) | 83.6, 123.1, **161.9** / 80.8, 122.2, **165.0** tok/s | c=16 **out (below 180–260)** |'
+    quote_sha256: ec113aa7fca1490832085a3976782959801d91c79c2e9bb469c3fee02549812c
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 27
+    kind: line-range
+    locator: notes/model-and-memory-budget.md:L35 @ 9b3fd4c
+    quote: QSA 0.59, `lm_head` 0.59, shared_expert 0.44. **The experts are 20% of it at c=1 and ~80% at
+    quote_sha256: 253c0a1c74fc6b2eb0c70ae888b2db45d578044e859ed3692b5687ed720bb314
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 28
+    kind: line-range
+    locator: notes/the-field.md:L1609 @ 9b3fd4c
+    quote: '| skew | max/min **3.7×**, p90/p10 **1.8×** |'
+    quote_sha256: f257eeabbb3ae59eb71f1d4e6981a92544ea8c21d9235a20c7b435ec42c7b923
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 28
+    kind: line-range
+    locator: notes/the-field.md:L1608 @ 9b3fd4c
+    quote: '| experts with ≤ 10,000 assignments | **0 of 512** |'
+    quote_sha256: 28d62e957e5b7668d595a1700ada5c9de27b3ec74e9ace4fc9b168f089165b21
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 28
+    kind: line-range
+    locator: notes/speed-of-light.md:L42 @ 9b3fd4c
+    quote: '- **The decisive unknown is E.** Near-independent routing puts us at ~1.1× the floor, so only fewer bytes help:'
+    quote_sha256: 8af8deab1c1333c0aa1b42a86a5eff88cf11dbaee195e909fba81b948de614fc
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 29
+    kind: line-range
+    locator: notes/speed-of-light.md:L37 @ 9b3fd4c
+    quote: '| 39.3 (independent routing) | 53–55 | 20.9–21.6 | 1.1× |'
+    quote_sha256: 9c9f96122bed889ee081fdc54d40a02dd83fa713029c1723244a3a83c17217c1
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 29
+    kind: line-range
+    locator: notes/speed-of-light.md:L3247 @ 9b3fd4c
+    quote: '`grouped_kernel` 32.3 % (13.8 ms; ~5-row windows touch ~45–50 experts a layer),'
+    quote_sha256: 3f3aa8069b35f9e17f0b552e8f064b3a895e8fbda18f5dc1e21d14e9ffe8171f
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 30
+    kind: line-range
+    locator: notes/speed-of-light.md:L1689 @ 9b3fd4c
+    quote: '| `doActivation` (159): GEMM1 out → SwiGLU | 132 MB | 0.49 ms | 270 GB/s | 2.0 % |'
+    quote_sha256: 091beb83d43cee21c823ae10da01984ad82ab5d5fabd56bc4dadb0c31cc46ea9
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 30
+    kind: line-range
+    locator: notes/speed-of-light.md:L3403 @ 9b3fd4c
+    quote: '   expert): grouped kernel 211 / 196 / 203 / 210 / 214 / 204 / 192 GB/s at 1 / 2 / 4 / 8 / 16 / 32 / 64 rows; the'
+    quote_sha256: 0f9d77f5d5eb71ba5c7dd1d551bb46b9b0653139412fde7711655b5b117a6e0c
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 30
+    kind: line-range
+    locator: notes/speed-of-light.md:L275 @ 9b3fd4c
+    quote: '| `out_proj` / `o_proj` | 15.7 MB | 96.1 | 71.5 | 1.34 |'
+    quote_sha256: 8c6430532a07ee8b2c9944532e60cb3fb67654eb017fe2ccb11619e629a5b817
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 31
+    kind: line-range
+    locator: notes/speed-of-light.md:L1620 @ 9b3fd4c
+    quote: '| code c=4, tok/s | 143.56 / 142.86 | 142.70 / 143.51 | null |'
+    quote_sha256: d15ae4a7512eaf40f41163726a2d52dcef51af196d7f2c771adb3f47bf0e0c24
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 31
+    kind: line-range
+    locator: notes/speed-of-light.md:L2791 @ 9b3fd4c
+    quote: '| decode c=4 aggregate, code greedy | 239.5 tok/s | 200.2 tok/s |'
+    quote_sha256: dfc54972542bc07bf50e6148e38e901b630772d8a61d3ce517d8165bcd38f1f0
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 31
+    kind: line-range
+    locator: notes/the-field.md:L2260 @ 9b3fd4c
+    quote: '| decode, 4 / 5 streams | prose 106.7 / 119.3 aggregate | prose 80.8–83.6 (4); code 144.3–144.7 (4) | — |'
+    quote_sha256: 72181db84d17d95d88588a5b1ec3ce80027040f55f2037da982a7882d57b5e4c
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 31
+    kind: line-range
+    locator: notes/the-field.md:L31 @ 9b3fd4c
+    quote: '    GPU weights            ~62.5 GB'
+    quote_sha256: b288b322510f0449e13e61281c1ee7ce29497f65e3da8f0c57e8166c7482919d
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 32
+    kind: line-range
+    locator: notes/speed-of-light.md:L3413 @ 9b3fd4c
+    quote: 'Conclusion: every big decode cost is weight streaming at 75–95 % of DRAM; the kernel-side headroom is ~10 % at best,'
+    quote_sha256: ee8011ba6099ec537d683f13ff9b96510833dbe8d5bbe9eb165e1eae38b6bfef
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 32
+    kind: line-range
+    locator: notes/speed-of-light.md:L3418 @ 9b3fd4c
+    quote: '- **User, same day:** "we are not optimizing by changing weights but by making engine faster" — the FP8'
+    quote_sha256: 037409652778e5792e47ded67c5f026dc70fb368537b4b71594ca04f9b33bb9e
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
+  - claim_index: 32
+    kind: line-range
+    locator: notes/speed-of-light.md:L43 @ 9b3fd4c
+    quote: the BF16 leftovers at 8 bits save ~0.95 GiB/cycle ≈ −8 % (the INT8/MXFP8 lever, now sized);
+    quote_sha256: d8deacb8ddce45d7a9c75c41bcefa93929751fb45a61611cf2f4cf11616141d1
+    source_revision: 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff
+    verified_by: research-intake/stage2b
   claim_corrections:
   - claim_index: 0
     effect: narrowed
@@ -247220,8 +247656,65 @@
   - claim_index: 13
     effect: unaffected
     note: Combined 201 GB/s with two concurrent kernels sharing DRAM.
-  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff (git clone --depth 1, 2026-10-06); notes/speed-of-light.md sha256[:12]=2ec6d82133d3; README.md ad6b93ae97bf). This repo is single-GB10 (TP=1) with a DIFFERENT checkpoint (NVFP4 experts, FP8 dense, BF16 mixers/shared experts, 4.84B dense params, PLE table mmap) and speculation K=5. It contains NO 2-node or interconnect data, so it cannot by itself validate the 93-177 tok/s 2x Spark numbers; it does show why single-stream tok/s > bytes-per-token floor is not a physics violation (speculation amortizes weight bytes across accepted tokens, and batching amortizes across streams). DECLINED surfaced sources (wave 3 stop-early, no new physics): jschmied the-field.md remainder (same repo, not a separate source); llama-benchy (benchmark tool, no Q38FN data).'
-  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1942). Read notes: Read WHOLE: README.md, speed-of-light.md L1-310 (step 1-3c) and L630-745 (4s-4w), plus 5aa head, 5ad, 5g, 5q, 5az, 5bg, plus single-stream-limit.md head and the-field.md excerpts. NOT read line-by-line: speed-of-light.md L310-630, L745-1031 (except grep), L1060-1296, L1317-1669, L1710-1890, L1963-3243, L3263-3393, L3422-4079 (grep-scanned for GB/s only). No multi-Spark, TP2 or interconnect measurement exists in this repo (grep for RoCE/NCCL/QSFP/TP2 found none); it is single-GB10 only. Section 4u L696-L728 and 5g L1031 verified read.'
+  - claim_index: 14
+    effect: unaffected
+    note: correction marker
+  - claim_index: 15
+    effect: unaffected
+    note: Both det entries are in determinism-investigation.md (the probe script gpuflip.py itself is not in the repo; bwprobe.py is, notes/data/bwprobe.py.txt). Author measurement on one box, kernel 6.17.0-1031; the audit note says the box now runs another kernel and was not re-probed.
+  - claim_index: 16
+    effect: unaffected
+    note: The 236 roof is a repo-quoted third-party figure (cudafast-contest-survey.md), the 239-242 is a reporter's figure quoted in det-231; the 218.5 is TF midm_bench read+write copy on the authors' own GB10. The 6.8% scaling is my arithmetic.
+  - claim_index: 17
+    effect: unaffected
+    note: 'Summary table in the note; the raw capture (/opt/llm/calib, fncap.jsonl holds only run metadata) is not in the repo so counts cannot be re-derived. Traffic mix = c=1 essays, c=4 and the agent loop, so the rows are a population average, not a per-prompt-type distribution. Independent column recomputes exactly (512*(1-(1-10/512)^R): 38.8, 74.7, 138.6).'
+  - claim_index: 18
+    effect: unaffected
+    note: The authors flag this themselves. My ledger interpolates R=2,3,5,6,7 the same way (piecewise log-log through R=1:10, 4:26.6, 8:47.3, 16:82.5); those cells are derived, not measured.
+  - claim_index: 19
+    effect: unaffected
+    note: Author measurement (kcost2). My ledger floor marginal per K is 4.1-4.4 ms (draft step 244 MiB = 1.2 ms + ~5 new experts = 3.0-3.3 ms), so the marginal per-draft cost runs at ~1.1x floor; the cycle gap (8-11 ms) is a near-fixed per-cycle term, not a per-K term.
+  - claim_index: 20
+    effect: unaffected
+    note: I recomputed the part sums from the MiB (21.27 + 16.05 + 2.89 + 3.82 + 1.00 + 0.24 = 45.3 ms); they close with the authors' 45.2. Sizes come from safetensors headers (author-derived, reproducible by tools/sol/*.py, not run here).
+  - claim_index: 21
+    effect: unaffected
+    note: The 'draft and target share ONE lm_head' note predates the NVFP4 slice; it is correct about sharing, and the slice is separate (§5 findings). Post-GEMM logit work is only 53 us/step (greedy). Older notes (4 head reads per step at ~25 ms step) describe the pre-slice stack and should not be mixed into the current ledger.
+  - claim_index: 22
+    effect: unaffected
+    note: Author node-trace measurements. Prod since 09-28 uses a bf16 SSM state (halves these bytes); the floor model keeps the fp32 figure (210 MiB), so my ledger GDN column is the floor-model number, with 324 MiB the fp32 RecoverSSM actual.
+  - claim_index: 23
+    effect: unaffected
+    note: Author profiling (torch profiler / nsys node trace), not independent. Warm unprofiled step 54.9 ms = ~9.7 ms above the 45.2 floor (1.21x); the cold-start window is ~59-60 ms.
+  - claim_index: 24
+    effect: unaffected
+    note: vLLM numbers are author-measured; the TF idle numbers come from the same authors' nsys duty-cycle probe on TensorFold 0.6.0 EXL3, a different engine and checkpoint (EXL3 3.05 bpw), so they bound launch overhead on GB10 generally, not on the Q38FN NVFP4 stack.
+  - claim_index: 25
+    effect: unaffected
+    note: Author measurements, multiple starts per arm. This is a restart/paging artifact specific to the 47.7 GiB FP8 PLE table beside 72 GB of weights on a 128 GB unified-memory box; our Q38FN (PLE n-gram table) would meet the analogue only if the table is not resident.
+  - claim_index: 26
+    effect: narrowed
+    note: Ratio per K is MY derivation (floor from the ledger, cycle from kcost2). The repo only states K=3 (1.20-1.31x depending on date/config) and K=5 (1.21-1.29x). The kcost2 stack is the 09-28 prod config while the 45.2 floor used the 09-24 fp32-state config, so absolute ratios carry ~+-0.03 of config skew.
+  - claim_index: 27
+    effect: narrowed
+    note: Measured cycle times are author data; the c=4 floor is my arithmetic extrapolation (drafter experts at 4 rows x 4 requests assumed ~35 each, ~2.637 MiB/expert). The 20%/80% split is from an older fp8head note and is a rough share, not recomputed here.
+  - claim_index: 28
+    effect: narrowed
+    note: The decomposition and the sigma fit are MY analysis on the repo's summary numbers, not repo claims; the layer-summed coverage skew hides per-layer skew (the repo says so), the R=8/16 batches mix distinct requests and traffic types, and the capture traffic mix is unknown. Treat as direction, not a magnitude.
+  - claim_index: 29
+    effect: narrowed
+    note: 'My arithmetic combining repo numbers (E_indep recomputed analytically, kcost2 cycles). A second, TensorFold-side cross-check: its EXL3 grouped expert kernel took 13.8 ms/round at ~200-224 GB/s, i.e. ~33-37 experts/layer at 1.76 MB each, consistent with a measured-like union for ~4.5-row rounds and NOT with its own prose estimate of ''~45-50 experts'' for ~5-row windows (which would need ~275 GB/s).'
+  - claim_index: 30
+    effect: unaffected
+    note: All author measurements on the authors' GB10 across vLLM/TensorFold; ncu has no DRAM byte counters on GB10, so prefill GB/s derive from launch grids and shapes, decode ones from weight bytes / kernel time.
+  - claim_index: 31
+    effect: narrowed
+    note: Single-GB10 figures are author-measured; the 5.1-accepted floor line is my arithmetic. The repo contains no multi-Spark, TP2 or interconnect measurement of its own, so it cannot say what TP2 adds; its only dual-Spark data are the repo-quoted MiaAI figures (64 tok/s single-stream; k-curve 25.9/43.4/52.6/59.1/65.8) and a per-node weight table (~62.5 GB weights/node under TP2).
+  - claim_index: 32
+    effect: unaffected
+    note: Restates and extends earlier claim 8 with the specific byte and percentage items. Author judgement.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff (git clone --depth 1, 2026-10-06); notes/speed-of-light.md sha256[:12]=2ec6d82133d3; README.md ad6b93ae97bf). This repo is single-GB10 (TP=1) with a DIFFERENT checkpoint (NVFP4 experts, FP8 dense, BF16 mixers/shared experts, 4.84B dense params, PLE table mmap) and speculation K=5. It contains NO 2-node or interconnect data, so it cannot by itself validate the 93-177 tok/s 2x Spark numbers; it does show why single-stream tok/s > bytes-per-token floor is not a physics violation (speculation amortizes weight bytes across accepted tokens, and batching amortizes across streams). DECLINED surfaced sources (wave 3 stop-early, no new physics): jschmied the-field.md remainder (same repo, not a separate source); llama-benchy (benchmark tool, no Q38FN data). || WAVE-4 (2026-10-06, full read of speed-of-light.md remainder + the-field.md; byte ledger at /mnt/raid0/llm/tmp/intake-q38fn-cluster/dive-1951w4/byte_ledger.md): (1) Wave-1 claim 0 said the det-231 derivation was not in the repo notes: it IS, in notes/determinism-investigation.md (det-201 L4200-4243, det-231 L5882-5990); verdict for claim 0 upgrades from PARTIAL to CONFIRMED (author-measured, one box, 62 s, GEMV-shaped, no copy control on our box). (2) The README/notes label plain decode as ''6.6 GiB/token''; the stated floors (31.5 ms @220, 25.4 ms @273) correspond to 6.93 GB = 6.45 GiB, and the listed components sum to 6,335 MiB (6.19 GiB) before ~260 MiB of GDN state + QSA; 6.6 GiB would give 32.2 ms. A ~2% labelling slip, not a physics issue. (3) TensorFold''s ''about 45-50 experts a layer at ~5-row windows'' is an author estimate that is inconsistent with its own timing (13.8 ms/round at 200-224 GB/s implies ~33-37 experts at 1.76 MB each); do not cite it as a measurement. (4) The ''K=5 floor ~53-54 ms'' rests on an interpolated 6-row union; my recomputation reproduces 54.0 but it is not a capture. (5) Wave-1 claim 6 attributed ~5 ms/cycle to mid-size per-kernel overhead; later sections resolved ~1.3 ms of it (GDN state write-back into dirty L2, fixed by RecoverSSM) and re-bound the rest (idle ~2.5, small-kernel critical path 3.5 in 4m, BF16 kernel/contention).'
+  notes: 'Stage-2b wave 4 (dive-surfaced from intake-1942). Read notes: Read WHOLE: README.md, speed-of-light.md L1-310 (step 1-3c) and L630-745 (4s-4w), plus 5aa head, 5ad, 5g, 5q, 5az, 5bg, plus single-stream-limit.md head and the-field.md excerpts. NOT read line-by-line: speed-of-light.md L310-630, L745-1031 (except grep), L1060-1296, L1317-1669, L1710-1890, L1963-3243, L3263-3393, L3422-4079 (grep-scanned for GB/s only). No multi-Spark, TP2 or interconnect measurement exists in this repo (grep for RoCE/NCCL/QSFP/TP2 found none); it is single-GB10 only. Section 4u L696-L728 and 5g L1031 verified read. || wave-4: PARTIAL (speed-of-light.md and the-field.md FULL; named notes FULL; many other notes not read)'
   cross_references:
     chapters: []
     handoffs:
@@ -247237,7 +247730,7 @@
   ingested_date: '2026-10-06'
   verification: dive-verified
   read_depth: PARTIAL
-  reader_should_conclude: 'Single-GB10 reaches 68 tok/s code and ~145-165 tok/s aggregate (c=4-16) at ~220-234 GB/s achievable bandwidth, so reported 2x Spark 93-177 tok/s is explained by MTP acceptance (4.4 on code) and batching, not by exceeding bandwidth. Do NOT carry: any claim about interconnect or 2-node scaling from this repo (none exists); the K=5 floor (80 tok/s) as measured (it is an interpolated estimate); MiaAI dual numbers (second-hand); acceptance figures from code prompts as general (prose is 2.8).'
+  reader_should_conclude: 'Use the repo''s byte ledger and its MEASURED sub-linear expert-union curve (26.6 distinct experts at 4 verify rows vs 38.8 independent; 47.3 vs 74.7 at 8; 82.5 vs 138.6 at 16) as a prior and the measured-cycle/floor ratio of ~1.2 (flat in K) as the overhead model, and conclude that the 93-177 tok/s class on a 273 GB/s Spark is explained by bytes-per-token (speculation amortizing dense/lm_head bytes over R rows, concurrency, and ~50% smaller 3-bit packs) rather than by a physics violation. Do NOT carry over: (1) the raw routing counts as re-derivable (the capture is not in the repo, it is author-measured on one traffic mix at c=1/c=4/agent, not on Q38FN-with-PLE-and-our-prompts); (2) the interpolated R=2,3,5,6,7 unions (including K=5''s 37.2) as measurements; (3) 220 GB/s as a hardware roof (it is a GEMV probe; copy/stream roofs read 236-242, in-kernel 234); (4) the ''6.6 GiB'' label; (5) TensorFold''s ''45-50 experts'' remark; (6) any multi-Spark/TP2 scaling claim, since this repo contains no multi-node measurement; (7) my skew-vs-correlation split and c=4 floor, which are derived estimates from summary numbers.'
   recommended_actions:
   - 'Adopt the floor method: per-cycle byte ledger with measured distinct-expert union E(rows) (4->26.6, 8->47.3, 16->82.5 of 512 experts top-10) and divide by measured attainable BW; apply to our CPU Q38FN (446.8 GB/s read-sum) to bound MTP tok/s. [operator-review candidate; proposed disposition: adopt_patterns]'
   - 'Use their sub-linear expert-union exponent (~0.83) to estimate expert bytes for our K=2..5 verify batches on EPYC before building more spec-dec. [operator-review candidate; proposed disposition: worth_investigating]'
@@ -247246,7 +247739,7 @@
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - Per-step byte-accounting method for GB10 with measured attainable bandwidth (~220 GB/s of 273) and floor-vs-measured ratios; the reference method for our own roofline ledger; no repo action before Stage 3.
+  - 'Wave 4 full GB10 byte ledger: measured expert-union curve (0.69/0.63/0.60 of independent at 4/8/16 rows), attainable 220 GB/s probe provenance, measured/floor ratio flat 1.19-1.22 across K; prior for our own bytes/step measurement; no repo action before Stage 3.'
 - id: intake-1952
   arxiv_id: null
   url: https://ai-muninn.com/en/blog/qwen38-flash-next-nvfp4-dgx-spark-vllm-recipe
@@ -247725,7 +248218,7 @@
   - claim_index: 6
     effect: narrowed
     note: Our inference from two sources; the vocab-size and draft-architecture mismatch is a fact, the transfer of gain is untested.
-  dive_corrections: 2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5). The headline 1.12x is an average over 7 tasks for a 128k-vocab dense Llama-3-8B with a 1-layer EAGLE-2 draft. Do not carry it, or the 49% LM-head share, as expected numbers for a 250K-vocab MTP head.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5). The headline 1.12x is an average over 7 tasks for a 128k-vocab dense Llama-3-8B with a 1-layer EAGLE-2 draft. Do not carry it, or the 49% LM-head share, as expected numbers for a 250K-vocab MTP head. CROSS-CHECK AGAINST OUR OWN RECORD (2026-10-06, Stage-3 drafting): handoffs cpu-decode-roofline-program.md B10 (2026-09-05) already measured reduced-vocabulary MTP drafting on our CPU and closed it NO-GO: the draft head (q6_K output.weight 521 MB) is ~4-5% of the token because it stays L3-resident between draft steps (derived 260 GB/s), a 64k slice ceilings at +3.0-3.9%, id-prefix slice coverage 97.95% is break-even on alpha; upstream #25187 measured +1.4%. The Spark +9.6-21.5% gains do NOT transfer to our CPU; the earlier Stage-2 sentence that the head is ~20% of our step bytes is retracted.'
   notes: 'Stage-2b wave 2 (dive-surfaced from intake-1956). Read notes: Read abstract, intro, Sec 3 (bottleneck and method), Sec 4.2-4.3 and tables 1-2 by text search and targeted reading; Sec 4.4 quality tables, Sec 4.5 Medusa table, related work and appendix only skimmed via grep. Hardware used for timings not recorded.'
   cross_references:
     chapters: []
@@ -247896,7 +248389,7 @@
   - claim_index: 8
     effect: unaffected
     note: README tables.
-  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; b7c5da1a9e7448a14b480deee66eda3799b1eb43). Reduced-vocab gain is bounded by how many bytes the draft head is of the whole step: on one Spark it is 3x1.18 = 3.5 GiB of a step that the byte model puts near the wall; gain at x1 is +14-21%, +8-9% at x8 (shrinks with batching), not a multiplicative speedup. Acceptance is preserved only because vocab ranked by frequency; 65k-balanced and non-English vocab variants showed acceptance loss (see 1950). DECLINED surfaced source (stop-early): MiaAI-Lab single-Spark TensorFold-line repos beyond intake-1959.'
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; b7c5da1a9e7448a14b480deee66eda3799b1eb43). Reduced-vocab gain is bounded by how many bytes the draft head is of the whole step: on one Spark it is 3x1.18 = 3.5 GiB of a step that the byte model puts near the wall; gain at x1 is +14-21%, +8-9% at x8 (shrinks with batching), not a multiplicative speedup. Acceptance is preserved only because vocab ranked by frequency; 65k-balanced and non-English vocab variants showed acceptance loss (see 1950). DECLINED surfaced source (stop-early): MiaAI-Lab single-Spark TensorFold-line repos beyond intake-1959. CROSS-CHECK AGAINST OUR OWN RECORD (2026-10-06, Stage-3 drafting): handoffs cpu-decode-roofline-program.md B10 (2026-09-05) already measured reduced-vocabulary MTP drafting on our CPU and closed it NO-GO: the draft head (q6_K output.weight 521 MB) is ~4-5% of the token because it stays L3-resident between draft steps (derived 260 GB/s), a 64k slice ceilings at +3.0-3.9%, id-prefix slice coverage 97.95% is break-even on alpha; upstream #25187 measured +1.4%. The Spark +9.6-21.5% gains do NOT transfer to our CPU; the earlier Stage-2 sentence that the head is ~20% of our step bytes is retracted.'
   notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Read README.md lines 1-262 and 320-335 plus greps; CHANGELOG 2026-09-09 entry (lines 455-500) and decode-wall entry (~1015-1030); grep of docs/*. Not read: rest of README (config, FP8 KV, vision, Spanish), most of CHANGELOG, overnight docs body, scripts, patches. docs/fable51-max.md (byte model) is referenced but absent from the repo. No raw result JSON in repo (logs/sweep-*.jsonl referenced, not present). README now carries a banner pointing to a newer TensorFold recipe.'
   cross_references:
     chapters: []
