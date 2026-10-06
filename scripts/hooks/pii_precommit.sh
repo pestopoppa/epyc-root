@@ -78,7 +78,7 @@ SECRET_PATTERNS=(
   $'ghu_[A-Za-z0-9]{36}\tsecret\tGitHub user-to-server token'
   $'github_pat_[A-Za-z0-9_]{70,100}\tsecret\tGitHub fine-grained PAT'
   $'xox[baprs]-[A-Za-z0-9-]{10,72}\tsecret\tSlack token'
-  $'-----BEGIN[[:space:]]+(RSA|DSA|EC|OPENSSH|PGP|ENCRYPTED)?[[:space:]]?PRIVATE[[:space:]]+KEY-----\tsecret\tprivate key (PEM block)'
+  $'-----BEGIN[[:space:]]+(RSA|DSA|EC|OPENSSH|ED25519|PGP|ENCRYPTED)?[[:space:]]?PRIVATE[[:space:]]+KEY-----\tsecret\tprivate key (PEM block)'
   $'sk-[A-Za-z0-9]{20,}\tsecret\tgeneric API key prefixed sk-'
   $'sk-ant-api03-[A-Za-z0-9_-]{80,}\tsecret\tAnthropic API key'
   $'AIza[0-9A-Za-z_-]{35}\tsecret\tGoogle API key'

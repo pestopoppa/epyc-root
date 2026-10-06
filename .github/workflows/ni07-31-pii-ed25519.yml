@@ -1,0 +1,67 @@
+name: NI07-31 staged PII ED25519 header gate
+on:
+  push:
+    branches: [codex/ni07-31-pii-ed25519-20261006]
+    paths:
+      - .github/workflows/ni07-31-pii-ed25519.yml
+      - scripts/ci/ni07_31_pii_ed25519_capture.py
+permissions:
+  contents: read
+jobs:
+  pii-ed25519-capture:
+    name: pii-ed25519-capture
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SOURCE_PIN: 77d0e5de9624ca8ebd4ce2cfcdbbc240bb470642
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      NI31_RUNNER_CONTEXT: ubuntu-latest
+      NI31_EXECUTION_CONTEXT: offhost-synthetic-staged-index-fixtures
+      NI31_INSTALL_COMMAND: >-
+        python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0
+        pluggy==1.6.0 Pygments==2.20.0
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni07-31-pii-ed25519/result"
+          printf '{"state":"setup_pending","job":"pii-ed25519-capture","exit_code":null}\n' > "$RUNNER_TEMP/ni07-31-pii-ed25519/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout exact staged-gate source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.SOURCE_PIN }}
+          path: source
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Install pinned pytest closure
+        run: python -m pip install pytest==9.0.3 iniconfig==2.3.0 packaging==26.0 pluggy==1.6.0 Pygments==2.20.0
+      - name: Capture original JUnit and native receipt
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/source"
+          python recipe/scripts/ci/ni07_31_pii_ed25519_capture.py
+      - name: Preserve status, original JUnit, contexts, and native receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni07-31-pii-ed25519-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni07-31-pii-ed25519/result/
+          if-no-files-found: error

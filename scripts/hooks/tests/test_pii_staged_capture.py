@@ -74,6 +74,32 @@ def test_actual_gate_original_boolean_and_shared_frames(repo, secret):
     assert "sample.txt" not in display and body(True).strip() not in display
 
 
+@pytest.mark.parametrize("key_type", ["RSA", "OPENSSH", "ED25519"])
+def test_private_key_header_is_blocked_from_staged_blob(repo, key_type):
+    header = "-----BEGIN " + key_type + " " + "PRIVATE KEY-----"
+    name = "synthetic_key.txt"
+    (repo / name).write_text(header + "\nsynthetic test key material\n")
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_ed25519_metadata_without_private_key_header_passes(repo):
+    name = "synthetic_metadata.txt"
+    (repo / name).write_text("key algorithm: ED25519; no private key material\n")
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+
+    assert code == 0
+    assert record["pii_staged_policy_check_passed"] is True
+
+
 @pytest.mark.parametrize("staged_secret", [False, True])
 def test_partial_stage_uses_original_index_not_worktree(repo, staged_secret):
     path = stage(repo, staged_secret)
