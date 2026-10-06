@@ -30,7 +30,6 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
-import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -166,9 +165,37 @@ def live_entry_ids() -> set[str]:
 
 
 def key_claim_counts(index_path: Path = INDEX) -> dict[str, int | None]:
-    """Return exact `key_claims` list lengths; malformed or duplicate rows stay unknown."""
+    """Return exact `key_claims` list lengths; malformed or duplicate rows stay unknown.
+
+    PyYAML is optional for callers that only use the stdlib wiki/citation helpers. Without it,
+    precise claim-index bounds remain unknown and citation behavior stays backward compatible.
+    """
     try:
-        entries = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+        import yaml
+    except ImportError:
+        return {}
+
+    class UniqueKeyLoader(yaml.SafeLoader):
+        pass
+
+    def construct_unique_mapping(loader, node, deep=False):
+        mapping = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            try:
+                duplicate = key in mapping
+            except TypeError as exc:
+                raise yaml.YAMLError("unhashable YAML mapping key") from exc
+            if duplicate:
+                raise yaml.YAMLError(f"duplicate YAML mapping key: {key!r}")
+            mapping[key] = loader.construct_object(value_node, deep=deep)
+        return mapping
+
+    UniqueKeyLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_unique_mapping)
+    try:
+        raw = index_path.read_bytes()
+        entries = yaml.load(raw.decode("utf-8"), Loader=UniqueKeyLoader)
     except (OSError, UnicodeError, yaml.YAMLError):
         return {}
     if not isinstance(entries, list):

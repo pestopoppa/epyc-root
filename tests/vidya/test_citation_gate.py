@@ -116,6 +116,19 @@ def test_precise_out_of_range_claim_is_blocking_dangling():
     assert "outside resolved entry" in v.notes[0]
 
 
+def test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id():
+    frames = build("110", {0: ("Hinted", "Located", False),
+                           99: ("Verified", "Located", False)})
+    (v,) = gate_text("see intake-110#99", frames, claim_counts={"110": 1})
+    assert v.status == "dangling"
+    assert v.claims == []
+
+
+def test_zero_claim_entry_marks_precise_zero_dangling():
+    (v,) = gate_text("see intake-110#00", [], claim_counts={"110": 0})
+    assert (v.status, v.resolved) == ("dangling", "110")
+
+
 def test_precise_out_of_range_uses_resolved_merge_survivor_count():
     frames = build("110", {0: ("Hinted", "Located", False)})
     (v,) = gate_text("see intake-797#01", frames, live={"110"}, redirects={"797": "110"},
@@ -139,6 +152,18 @@ def test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown(tmp
         "- id: intake-100\n  key_claims: [duplicate]\n")
     counts = cg.key_claim_counts(index)
     assert counts == {"100": None, "101": None, "102": 0}
+
+
+def test_duplicate_yaml_key_in_entry_is_unknown_not_last_value(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [first]\n  key_claims: [second]\n")
+    assert cg.key_claim_counts(index) == {}
+
+
+def test_unhashable_yaml_mapping_key_preserves_unknown_counts(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [first]\n  ? [bad, key]\n  : value\n")
+    assert cg.key_claim_counts(index) == {}
 
 
 # --- the states a citer can act on ------------------------------------------------------
