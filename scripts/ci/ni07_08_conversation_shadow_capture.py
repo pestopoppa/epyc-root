@@ -48,14 +48,14 @@ def main() -> int:
             ).strip(),
             "install_command": os.environ["NI07_08_INSTALL_COMMAND"],
             "declared_dependencies": [
-                "pytest==8.4.2", "numpy==2.3.2", "PyYAML==6.0.2",
+                "pytest==8.4.2", "PyYAML==6.0.2",
                 "jsonschema==4.25.1", "httpx==0.28.1",
             ],
             "dependency_basis": (
                 "Static import closure: pytest runs the selected module; jsonschema is used by "
                 "the typed-decision JSON runner; httpx is imported by typed_decisions.native "
-                "through package initialization; numpy and PyYAML are pinned fixture-environment "
-                "dependencies matching the reviewed minimal typed-decision CI environment."
+                "through package initialization; PyYAML is pinned as the reviewed minimal "
+                "fixture-environment configuration dependency. No native sampling or network call runs."
             ),
             "selected_test": SELECTION,
             "environment": {key: os.environ.get(key) for key in (
