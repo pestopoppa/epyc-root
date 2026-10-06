@@ -1,0 +1,33 @@
+{
+  "base_commit": "e7846b1a17397e4830b2fe8f05a3aa555c8fa887",
+  "files": [
+    {
+      "path": "handoffs/active/rocm-verify-profile-backend.md",
+      "before_sha256": "50e7f12de67b8d762413a2320310ec9c1fb48b168ff8c0b2fac6ab9d13f8b182",
+      "after_sha256": "32670805f35d16fa024b9c62cc17016e59fd48284e2acaac47456bb0ee219b6b"
+    },
+    {
+      "path": "wiki/benchmark-methodology.md",
+      "before_sha256": "9505fac2fefaf52d67341f0f27de503945eca5d02096ce6e6ac53224fd55495d",
+      "after_sha256": "34c42b1508aeefd596dd34620e3bf59232b50af7e335d5bc7600f4ae65e95029"
+    },
+    {
+      "path": "handoffs/active/architect-model-selection-bench.md",
+      "before_sha256": "3a7c97cd8e1aa54bcef82af6ec11b3f6bff4cdd63e03d4189d839ac7cb1f28e3",
+      "after_sha256": "f8cc0e30d8fdbc4937a58a853ddd9c9ac45b0a2e6244bb3b795bb51fbe5d96bf"
+    },
+    {
+      "path": "wiki/agent-architecture.md",
+      "before_sha256": "7c6ac1f5db06f0f22996176649bebf4286c516880314bd8ca724598a2d325c85",
+      "after_sha256": "8c7efcf914163e08fb9cdc9ac7ef1f8f4c204be355669fb9f50eace1092e5171"
+    }
+  ],
+  "scope": "draft only; 6 correction rows plus direct intake-972 lineage exposure",
+  "constraints": [
+    "No handoff/wiki writes.",
+    "PerfCodeBench public availability alone does not trigger reopening.",
+    "272 source version is arXiv v3; +2.4% is authored percent, not inferred pp.",
+    "Fast_p threshold means speedup > p; denominator is all tasks.",
+    "New intake citations are precise #NN or #record."
+  ]
+}

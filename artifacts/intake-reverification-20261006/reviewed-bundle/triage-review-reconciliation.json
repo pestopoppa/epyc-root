@@ -1,0 +1,50 @@
+{
+  "status": "passed local mechanical integrity checks; this does not approve filing or native application",
+  "assertions": {
+    "352_final_reviewed_IDs_equal_partition_union": true,
+    "all_352_dispositions_equal_reviewed_partition_class": true,
+    "all_352_flags_and_screen_statuses_equal_at_risk_tsv": true,
+    "final_counts": {
+      "RE-DIVE": 22,
+      "KEEP": 322,
+      "DEMOTE": 8
+    },
+    "screened_flag_counts": {
+      "A": 143,
+      "AC": 38,
+      "B": 90,
+      "C": 71,
+      "AB": 10
+    },
+    "screened_verification_counts": {
+      "dive-verified": 319,
+      "dive-overturned": 33
+    },
+    "screened_verdict_counts": {
+      "new_opportunity": 3,
+      "worth_investigating": 106,
+      "adopt_component": 23,
+      "adopt_patterns": 181,
+      "already_integrated": 8,
+      "not_applicable": 16,
+      "superseded": 15
+    },
+    "intake_1580_final_class": "KEEP",
+    "intake_1580_original_class_provenance": "root confirmed initial proposal RE-DIVE; no pre-review reason reconstructed",
+    "consumer_map_reference_rows": 1163,
+    "consumer_map_entry_rows": 352,
+    "active_dependency_unchecked_checkbox_tasks": 62,
+    "active_dependency_noncheckbox_dependency_rows": 63,
+    "all_352_source_citation_contexts_retained": true,
+    "no_canonical_write": true
+  },
+  "input_hashes": {
+    "triage-1.json": "ddd2c64523906b1bb616d93fdbaa51e7654e02326c87b149d4271a548bc175aa",
+    "triage-2.json": "2bbb7ea5ac2f921a14704d9632183575ebec237c3b899823246141101977e900",
+    "consumers/triage-3.json": "fad3591c2075448df161b2653e683f4a7a04371e05ae41bdd107e0ab11e4d2c9",
+    "at_risk.tsv": "8be0c85dd0747b8ec5cb9241392a893530b725148d6db2fab7442f55dbcd5086",
+    "consumers/consumer_map.json": "6a049f80de28c15959d711be45ecabfba211930a54af1fba2d4a2876e289e348",
+    "consumers/active-dependencies.tsv": "9998aafdb1fab2b4b9eb1ff507da54c760dba3bc98064590ef6f10ebde0a21ec"
+  },
+  "bundle_triage_sha256": "402598de87a232ec5d486fc14812188396461378d66793bce80eca5b8c284180"
+}

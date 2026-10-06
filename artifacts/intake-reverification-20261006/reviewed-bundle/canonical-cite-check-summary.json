@@ -1,0 +1,374 @@
+{
+  "source_path": "/mnt/raid0/llm/tmp/intake-reverify/canonical-cite-check.json",
+  "source_sha256": "6070141896a70f85ea5c56723ab4439800be369f5b6b6e9fbd258a121db5594b",
+  "summary": {
+    "blocking": 0,
+    "by_status": {
+      "conflicted": 0,
+      "dangling": 0,
+      "ok": 1503,
+      "overturned": 0,
+      "record": 840,
+      "review": 216,
+      "unknown": 819,
+      "weak": 4
+    },
+    "citations": 3382,
+    "documents": 189
+  },
+  "blocking_verdicts": [
+    {
+      "claims": [
+        {
+          "claim_id": "clm_intake_249_00",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_01",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_02",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_03",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_04",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_05",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_249_06",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        }
+      ],
+      "entry": "249",
+      "how": "direct",
+      "notes": [],
+      "path": "handoffs/active/harness-selection-and-integration.md",
+      "resolved": "249",
+      "status": "weak"
+    },
+    {
+      "claims": [
+        {
+          "claim_id": "clm_intake_248_00",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_01",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_02",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_03",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_04",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        }
+      ],
+      "entry": "248",
+      "how": "direct",
+      "notes": [],
+      "path": "handoffs/blocked/swarm-dataset-distillation.md",
+      "resolved": "248",
+      "status": "weak"
+    },
+    {
+      "claims": [
+        {
+          "claim_id": "clm_intake_248_00",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_01",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_02",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_03",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_248_04",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        }
+      ],
+      "entry": "248",
+      "how": "direct",
+      "notes": [],
+      "path": "wiki/autonomous-research.md",
+      "resolved": "248",
+      "status": "weak"
+    },
+    {
+      "claims": [
+        {
+          "claim_id": "clm_intake_237_00",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_01",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_02",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_03",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_04",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_05",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        },
+        {
+          "claim_id": "clm_intake_237_06",
+          "con": "Q0/T0",
+          "next_actions": [
+            "raise traceability to Located: record a claim_anchors entry with the exact span, and its hash and source revision"
+          ],
+          "outcome": "abstain",
+          "pro": "Hinted/T0",
+          "reasons": [
+            "no conjunctive-reading support path clears Hinted/Located (best pro is Hinted/T0)"
+          ],
+          "status": "weak"
+        }
+      ],
+      "entry": "237",
+      "how": "direct",
+      "notes": [],
+      "path": "wiki/ssm-hybrid.md",
+      "resolved": "237",
+      "status": "weak"
+    }
+  ],
+  "note": "Full original gate output is retained in preserved scratch copy; this compact view includes all blocking and weak findings only."
+}

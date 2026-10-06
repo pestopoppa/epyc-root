@@ -1,0 +1,1424 @@
+{
+  "status": "mechanical source collection; draft dispositions separate and provisional",
+  "source_ids": [
+    "intake-272",
+    "intake-664",
+    "intake-667",
+    "intake-967",
+    "intake-972",
+    "intake-896",
+    "intake-974",
+    "intake-975",
+    "intake-976",
+    "intake-978",
+    "intake-1028",
+    "intake-1087",
+    "intake-1239",
+    "intake-1240",
+    "intake-1248",
+    "intake-979",
+    "intake-980",
+    "intake-982",
+    "intake-983",
+    "intake-984",
+    "intake-985",
+    "intake-989"
+  ],
+  "artifacts": [
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/proposed_entry_update.json",
+      "sha256": "45818eb222d978361f9c8f06359cc64bbea93e693ed10e9f93274072af6faddb"
+    },
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/quotes.json",
+      "sha256": "612a543c0402f85ac097c4ebc251337908bfb31ddd8899609427f15d68970441"
+    },
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/result.json",
+      "sha256": "225c12ef4159720ba912cfb7ff8a33c4f756822c395f8c375b0c940e919bf1ee"
+    },
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/second-reader.json",
+      "sha256": "325e5ba6e173ae718caba74d5adf854ca7cfa31e41247ee1023ab3265fbf40ba"
+    },
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/entry.yaml",
+      "sha256": "17a5d0655dc9d66ab241cb5dbf39daf3ca04669d97a01f36ea9e3db9a4a3c11e"
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/proposed_entry_update.json",
+      "sha256": "362cb380713856cfa671eb2472c352d1f8819824d1a2a1952dd9c4ec8f8965fa"
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/quotes.json",
+      "sha256": "eb23a280df7a4dbf25686c70d6ad115dc1e29b3dbce3ec13bc5259fcdb95cc97"
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/result.json",
+      "sha256": "bca37dfe9f7313e48185c26b9759497e54dbe95c94df2257460a3150efda1012"
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/entry.yaml",
+      "sha256": "107f0f78ebfadc98e7e66079fa69592229504411c0bf070cc9f1f235feed0925"
+    },
+    {
+      "intake_id": "intake-667",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-667/proposed_entry_update.json",
+      "sha256": "5393d5466d871bf0b3501cbef91642420e0c7c87e7fa137d0588235100e10fcb"
+    },
+    {
+      "intake_id": "intake-667",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-667/quotes.json",
+      "sha256": "c5aa2b4bf8030d656b7e4a3da43f6e704236abafaf2f0c300c424617fd07b9e8"
+    },
+    {
+      "intake_id": "intake-667",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-667/result.json",
+      "sha256": "e2aa4c9e32f0fcc48b4ac2e559179864bb394010d62571770321f1043f755fbb"
+    },
+    {
+      "intake_id": "intake-667",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-667/entry.yaml",
+      "sha256": "e14cb9e4bf69c73464830388c4a7a7f2f1721eb33c2645fc1bccde00687c6471"
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/claim-coverage-patch-delta.json",
+      "sha256": "9d27f6f4e0a61c0594ca30f9a9386803cd5972cfdad2b908ab082ce2ab19a2fe"
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/proposed_entry_update.json",
+      "sha256": "5ab4da38734e15c8d1b4b9b3931b37a1f769a3fddb51e3d3d538820d404daedb"
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/quotes.json",
+      "sha256": "07abfd6787a9661eb8e5ba51cb8a0c94a99a8e4547dd27b17783daf027c495cf"
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/result.json",
+      "sha256": "1246926b4cac674990637b644d059fecead1b64b336e919f3a308e237749920a"
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/entry.yaml",
+      "sha256": "c02f0cf44447c1a2d66e456fad1fd41d7fd9d23654672b82c0b707ceac4a218d"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/claim-coverage-patch-delta.json",
+      "sha256": "57d88b1fe58c97d04cb2a07473651522bac71580625103a3a8c566f523ab60b6"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/mercury-eval-provisional-entry.json",
+      "sha256": "fe728ad13070d79f7f293691f4944543138a8b926006c96a91c1d625f1c24224"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/mercury-eval-source-packet.json",
+      "sha256": "7643deab796a77eabc8a7b54e6452b5ff01f084ddbcee2890dc8a9be7b4ea882"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/proposed_entry_update.json",
+      "sha256": "b390e73ae366bafd8de9c4b0d0ebb6dc324830808d025b330c147525d2c6db4c"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/quotes.json",
+      "sha256": "e2d1a78bddc75a2de8741168e918f62179fdceadb17ee977e59fcc111c892ae7"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/result.json",
+      "sha256": "88fd9b9433c4ad856ea6e654e455d5051a1124de1168cf3aae7ed22ed635d0a3"
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/entry.yaml",
+      "sha256": "8c33d7bd59e1e39e4a66027cd8dc6023c984386c6e68aa1d8b7c3b1b5a576296"
+    },
+    {
+      "intake_id": "intake-896",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-896/result.json",
+      "sha256": "1138428720b5eb64e5895ef7e911b4cb8646a5304ef0597e0e7346458b206cdb"
+    },
+    {
+      "intake_id": "intake-896",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-896-proposed_entry_update.json",
+      "sha256": "c589c0e2287f86ca49f8a6a5dac5c523cd3e05e44ebfd6936cb97c22af2e5348"
+    },
+    {
+      "intake_id": "intake-974",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-974/result.json",
+      "sha256": "1a37b91f905bfcad2de92214cc3e815564b19b300f4450c195aba8ca5d5a6895"
+    },
+    {
+      "intake_id": "intake-974",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-974-proposed_entry_update.json",
+      "sha256": "9a3e4dcbacc90fc409f4131c0d0077c1589d36d111f51bd0ea778c017ffb588b"
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/inventory-counts.json",
+      "sha256": "e2fcbb6e58a9275bffe066eb7f8b7cf0e3fa4bf52e6305a4809e07e08856f214"
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/repo-api.json",
+      "sha256": "20febee11e7c07ce9d935f4424a8b40c2db3759c2328f46aacb93608babe5889"
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/repo-contents.json",
+      "sha256": "693a69e19e27e0b400a568e0cbdd65c28fbf7fe4291e3aa199ea2d57ff508e62"
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/result.json",
+      "sha256": "391b1925a2b55066ad99167c0acc78fb4a1e61588d12bdb86796be0b44b1846b"
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-975-proposed_entry_update.json",
+      "sha256": "844cd1acc12fe1832f4a57b0ee6d9a3702620cff236398c4242213708b070a13"
+    },
+    {
+      "intake_id": "intake-976",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-976/result.json",
+      "sha256": "52a0f1bdd2e0e0f2b7820655cc1f7f6f06265309753ecbb746a57a095d20ec4c"
+    },
+    {
+      "intake_id": "intake-976",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-976-proposed_entry_update.json",
+      "sha256": "506ac2d821c96e555d1c3004f518df8b33bc0f64e635b7132bd85d3e95503c8d"
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/mle-bench-api.json",
+      "sha256": "665c8851398e2ca0743b0297ef7bb47f2b27ac5b357b36e2c088f5e6d4866244"
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/mle-bench-main.json",
+      "sha256": "39e7d6edbd42a27fcd8e2181940c8fe517bc4998d833d4d116a7c0368eb79d0a"
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/mleevolve-api.json",
+      "sha256": "32b0c788fd8346a421069f7441e1b1b10939a8b7cd2e3f61f95b0f9f209917ca"
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/result.json",
+      "sha256": "fc4a17e9a635d1ffd0fd63744c4e36275ddc46a11122b0ad00f991f04ded838a"
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/consumers/intake-978-proposed_entry_update.json",
+      "sha256": "f0f587223e4c884a7c63bda3d12038d9886b049ca968779bcd1749a49dc034c1"
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/mechanical-check.json",
+      "sha256": "77999e2ce5faa6609e1581d8c8472c2c3963159ee98ee892eb1cab25d6b161d7"
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/pr.json",
+      "sha256": "8820edd358033be1428daa5fbbfadc6a812e868fd9b3d332b4fde2954a498f97"
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/proposed_entry_update.json",
+      "sha256": "ce775bd3cae150f60d7bd74bb16524baf711f850576ee7b0fe1a18538a59933f"
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+      "sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a"
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/scan-receipt.json",
+      "sha256": "dc5fc875961f719605864102c35a3042fb4a70dc95e09264e2e43c2db8fb017c"
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/mechanical-check.json",
+      "sha256": "4b528e5e44a564b48378ca81f8e57d2e7263a6cca07aced99096f933e0f99346"
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/proposed_entry_update.json",
+      "sha256": "3efc740483a0f8bd3899a989e5fbefdc76db55ff4ddd8707f732e2e39ad1dac9"
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05"
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/scan-receipt.json",
+      "sha256": "6c5bcbbb8bf1fab239d0b6fecac5db950bcb3f1639dabb178b2788dd9bf51187"
+    },
+    {
+      "intake_id": "intake-1239",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/mechanical-check.json",
+      "sha256": "fee62aa120d96c0622492cad7636ed200c2b26a8a9aec19cf50e5da7211c7a02"
+    },
+    {
+      "intake_id": "intake-1239",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+      "sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d"
+    },
+    {
+      "intake_id": "intake-1239",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+      "sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec"
+    },
+    {
+      "intake_id": "intake-1239",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/scan-receipt.json",
+      "sha256": "aceed07001edfeff50698f091c922c4d4d0be15ed59398f8f3eaae4598d6d503"
+    },
+    {
+      "intake_id": "intake-1240",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/mechanical-check.json",
+      "sha256": "77999e2ce5faa6609e1581d8c8472c2c3963159ee98ee892eb1cab25d6b161d7"
+    },
+    {
+      "intake_id": "intake-1240",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/proposed_entry_update.json",
+      "sha256": "c3032b88de9ab202a3352ca6f8f27ce7f2c578472a3349504b757b4f98267fb5"
+    },
+    {
+      "intake_id": "intake-1240",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/result.json",
+      "sha256": "ac017e8368180c50fab0534907ec953e9d9b5b16ac487b9ba2372f5f9f2edd58"
+    },
+    {
+      "intake_id": "intake-1240",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/scan-receipt.json",
+      "sha256": "2250ee6cedd47937e8bbfccd35e18f280481d69dcad48d6aa4c78771e63e34d7"
+    },
+    {
+      "intake_id": "intake-1248",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/mechanical-check.json",
+      "sha256": "4b528e5e44a564b48378ca81f8e57d2e7263a6cca07aced99096f933e0f99346"
+    },
+    {
+      "intake_id": "intake-1248",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/proposed_entry_update.json",
+      "sha256": "a3c56813f007854cb4d5ce0b2db12749ed2a7099a52ca117a70e5c7acaff455c"
+    },
+    {
+      "intake_id": "intake-1248",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/result.json",
+      "sha256": "d0b6bf7e2b64a96a549606dc104b33c5820c7c6beaa11798e2718c725fcdd59e"
+    },
+    {
+      "intake_id": "intake-1248",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/scan-receipt.json",
+      "sha256": "3612bb548ef1d97e0e962f38e4dbc1269814dda3f11f4a4c4feb7ee59180eccb"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/consumer-corrections.json",
+      "sha256": "8aa84dd825cd9e052553ecc6cc94fbb792830c8177e43684372d3d95efcfcc68"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/derived-actionables.json",
+      "sha256": "a500da831caafc4aea422c437a452f837301f21252094cfd266447a340a05725"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/entry.json",
+      "sha256": "6f5ca92f819949b4203d64f29fd3009cd59f2fb45f25cf8dc06535f55e94a359"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/proposed_entry_update.json",
+      "sha256": "a57bc3b5fb12c7f850ef6cfb40b974332b63e99f34db2b51da79c0dcc2ed86d5"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/result.json",
+      "sha256": "4afa8977da7f3b3af333e4be421b50bf93216bfd9f52d74dc905c031094e521f"
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/validation.json",
+      "sha256": "ded6096a5ba11c4bb2a78bbf9e93155d2b93b9b53f22d3be6a222d2a88245321"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/consumer-corrections.json",
+      "sha256": "03735562e7ccc621f481cfce0e2fdc130948b5df2a70abd2d5994867c921ad11"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/derived-actionables.json",
+      "sha256": "6d3ab0621e88f6988f1dd8c1746d7fbf9279ee2fad63735b2406a39780baf6d2"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/entry.json",
+      "sha256": "4ac1cbbed5818b0cc48d3646c86b28427d2a902e68e67b8d0bc0f4ddf5e665e0"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/proposed_entry_update.json",
+      "sha256": "80af31e575d7f9202cf78ffca06b1990c7ccfbf4ec22b48d8d3fda1531aca7a3"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/result.json",
+      "sha256": "8fe3b3ed61df8d7b40efc7c9d142f7454b12383ceb888ccdd31356035a273318"
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/validation.json",
+      "sha256": "ef24a81aa518cdc2fec44a9d6768c578e3728827d4a3e0807c01d0124f217549"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/consumer-corrections.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/derived-actionables.json",
+      "sha256": "7488081315948b03769c7f248cd2e808886db2cbabb8b48cb790958d7ad2e11a"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/entry.json",
+      "sha256": "0ee9fe51b151cd9e6c06d61f2fcf8584b06669f35eb060b5a72e3cd7013654e7"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+      "sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.polarity-corrected.json",
+      "sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.pre-polarity-review.json",
+      "sha256": "7dadf282d7dfb2e60a657881c05e705b08d417c59fa509dd555814861d6cce05"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/result.json",
+      "sha256": "35e3cb41beb5a91f025df8766b88c360bdb19909957e773a1a9d8df203c83091"
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/validation.json",
+      "sha256": "667a607b09f0bafe9fe9d326f8f8af7e7637364071ba1a079a2c3ccf3fd01128"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/consumer-corrections.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/derived-actionables.json",
+      "sha256": "4fc9ea56f5c1704d1ddd4e23a76be3cf548c555f0caba30f590255150c6cf0fd"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/entry.json",
+      "sha256": "431adb3f9b7818422dead9db440182705790b7a8359d349818305a4b75656685"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/proposed_entry_update.json",
+      "sha256": "baeb9db74afbfb28ed1a3648105abfb0139c1dda5821902adc0aed9cacc118df"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/result.json",
+      "sha256": "47292b2ce8f1b5d84ae2bca95c0487771887ecb5ec4a07102826f167441b3b66"
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/validation.json",
+      "sha256": "6cd91723d8d020e2721c28c09c79f550af021d1d576ca53c7b66d070761cb4c6"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/consumer-corrections.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/derived-actionables.json",
+      "sha256": "b017aec5fd7d401ddf82002ebd00abbf1bf1815a7b780494bc139199eb445394"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/doi.json",
+      "sha256": "a752070fc90da166ed4a740bf18fb9d30136a29c607ed45bac3cf3c760fdcdaf"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/entry.json",
+      "sha256": "982b40ea47b910bcb88b381b8f71912b7e2c6db9e10b9d2159764c19604263d7"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/proposed_entry_update.json",
+      "sha256": "9f40f44bf7ebc8bb5e416bcf491c84e32b975e5830767bfca169f63ca4350f28"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/result.json",
+      "sha256": "325dfa85298d5d61add64e697460a4367808cd1d4095569113952d1ace66b38c"
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/validation.json",
+      "sha256": "fadf91fafc5e7d6a5a3d1184f75f055dd53697b7c69f7007c48516c8a7a1bde8"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/consumer-corrections.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-api.json",
+      "sha256": "3a0c98b066c10806480cc320781407c0cdcad93178fe88c43b6782f34d83c37d"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/derived-actionables.json",
+      "sha256": "5694359a2aa43a09be6ac70eb2c39b2d14920fcf293af22dd4588eb395e539b9"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/entry.json",
+      "sha256": "1acbd2701db83c20ab54c42ecf4b7576fd330fe8b9c91a59cc2490d8826391f2"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-revision.json",
+      "sha256": "67dbdcfc3e47890df35fddace08d6dd0703d127ecc3e4e7e3930e6beebca5c1c"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/proposed_entry_update.json",
+      "sha256": "b2f885303b5e1cd66046524443d82b6551ae93860b85acff252c447d906f007a"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/result.json",
+      "sha256": "bc5fb94137ade1ace0f0627089c23281eb951b638ea57801f03dc07783a84f03"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/sources-surfaced.json",
+      "sha256": "5142efff36a4a012c48724ce02956fe8879a5bb941750768ef2803d4f493a4ba"
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/validation.json",
+      "sha256": "568f32707f76744523d34577069e10e6a276dd6c11d5a646a175fdf32f483f90"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/consumer-corrections.json",
+      "sha256": "305a6a3b0725a86d259c33cbe79a6882c96a0916901aa721c02504ca856552d8"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/derived-actionables.json",
+      "sha256": "57d069216919eaab7fa437f7224d1b892765d09847d418ae323012add904ad4a"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/entry.json",
+      "sha256": "3f5d69bdc8dd094db52b2563687e83eec0f9e99d4c932b08350cb84ff428a976"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/proposed_entry_update.json",
+      "sha256": "19ba3f57a94f2976dc7eac8855b40e205fbcce0214c847504c96d42c20019749"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/proposed_entry_update.pre-review.json",
+      "sha256": "65239982cc99db9973a9fb45b177dbbb5a4771431ca3bd31c5f0656acfd620c3"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/repair-receipt.json",
+      "sha256": "8972eb4dee64082c653eb99c7dbede1306df1addfe6da252562cfaf37f57fd74"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/result.json",
+      "sha256": "ae7b9d552b1b8a1d399a8c25164da60dd6970a1b27df7a33b2a60133291b8e1c"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/sources-surfaced.json",
+      "sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/validation.json",
+      "sha256": "6bbb0ddfd4bb7c4326fc13ffc53948370c83c3fd74aec38c1e9ae1fefadcec5d"
+    }
+  ],
+  "recommendation_and_action_records": [
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/result.json",
+      "packet_sha256": "225c12ef4159720ba912cfb7ff8a33c4f756822c395f8c375b0c940e919bf1ee",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "ledger_id": "IRV272-A1",
+        "source": "§4.2 Tables2/3 andAppendixA.5 Table6 ofcurrentv3",
+        "action": "Narrow existing index cost/success/directive metadata to exact source/arm andcurrentversion, preserving dated prior correction history.",
+        "proposed_owner": "handoffs/active/intake-reverification.md",
+        "terminal_mapping": "IRV-5 existing corrective work; native index fields proposed only."
+      }
+    },
+    {
+      "intake_id": "intake-272",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-272/result.json",
+      "packet_sha256": "225c12ef4159720ba912cfb7ff8a33c4f756822c395f8c375b0c940e919bf1ee",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "ledger_id": "IRV272-A2",
+        "source": "Existing captured bare/claim citation contexts",
+        "action": "Owning session reviews each current272 consumer for blanketcost/success/minimality wording and names exact corrective filings inStage3 plan; no new research reproduction is implied.",
+        "proposed_owner": "handoffs/active/intake-reverification.md",
+        "terminal_mapping": "IRV-4 concrete consumer correction plan / IRV-7 report."
+      }
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/result.json",
+      "packet_sha256": "bca37dfe9f7313e48185c26b9759497e54dbe95c94df2257460a3150efda1012",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Correct intake664 scoped claims/read evidence",
+        "disposition": "existing IRV-5 corrective work, proposed patch only"
+      }
+    },
+    {
+      "intake_id": "intake-664",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-664/result.json",
+      "packet_sha256": "bca37dfe9f7313e48185c26b9759497e54dbe95c94df2257460a3150efda1012",
+      "field_path": "$.derived_actionables_ledger[1]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Review live RVP relevance of task-specific shortcut",
+        "disposition": "existing RVP-C2-3; no inference that KernelBench sampling proves separate ggml source behavior"
+      }
+    },
+    {
+      "intake_id": "intake-667",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-667/result.json",
+      "packet_sha256": "e2aa4c9e32f0fcc48b4ac2e559179864bb394010d62571770321f1043f755fbb",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Correct scoped current intake claims",
+        "disposition": "existingIRV5 proposed only"
+      }
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/result.json",
+      "packet_sha256": "1246926b4cac674990637b644d059fecead1b64b336e919f3a308e237749920a",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Correct currentversion claimscope andtitle",
+        "disposition": "existingIRV5 proposal"
+      }
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/result.json",
+      "packet_sha256": "1246926b4cac674990637b644d059fecead1b64b336e919f3a308e237749920a",
+      "field_path": "$.derived_actionables_ledger[1]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Use invariants as controller candidate",
+        "disposition": "existingresearchlead only, no new uncheckedtask or implementation"
+      }
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/entry.yaml",
+      "packet_sha256": "c02f0cf44447c1a2d66e456fad1fd41d7fd9d23654672b82c0b707ceac4a218d",
+      "field_path": "$[0].recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] REGISTER ARGUS as a controller candidate alongside EvoEngineer, KernelFoundry, K-Search, Xe-Forge and GEAK."
+    },
+    {
+      "intake_id": "intake-967",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-967/entry.yaml",
+      "packet_sha256": "c02f0cf44447c1a2d66e456fad1fd41d7fd9d23654672b82c0b707ceac4a218d",
+      "field_path": "$[0].recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ESTABLISH code availability, licence and gfx90a reachability before it enters any A/B plan."
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/mercury-eval-provisional-entry.json",
+      "packet_sha256": "fe728ad13070d79f7f293691f4944543138a8b926006c96a91c1d625f1c24224",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Ingest-and-dive advertisedcurrentevaluator asdistinctsource",
+        "recommendation": "preparedcorrectivescope; main/operatorselectfinalfiling"
+      }
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/mercury-eval-source-packet.json",
+      "packet_sha256": "7643deab796a77eabc8a7b54e6452b5ff01f084ddbcee2890dc8a9be7b4ea882",
+      "field_path": "$.entry.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Ingest-and-dive advertisedcurrentevaluator asdistinctsource",
+        "recommendation": "preparedcorrectivescope; main/operatorselectfinalfiling"
+      }
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/result.json",
+      "packet_sha256": "88fd9b9433c4ad856ea6e654e455d5051a1124de1168cf3aae7ed22ed635d0a3",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Narrow oldrepo licensing scope; documentcurrent advertisedharness andmetric drift",
+        "disposition": "existingIRV5 proposal, mainreviews nativepatch and existing consumer rationale; no new rejectedsource"
+      }
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/result.json",
+      "packet_sha256": "88fd9b9433c4ad856ea6e654e455d5051a1124de1168cf3aae7ed22ed635d0a3",
+      "field_path": "$.derived_actionables_ledger[1]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "action": "Bind paper vs currentEval scoring before anydecision",
+        "disposition": "source-specificclaimcorrection only; no benchmark authorized orclaimed"
+      }
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/entry.yaml",
+      "packet_sha256": "8c33d7bd59e1e39e4a66027cd8dc6023c984386c6e68aa1d8b7c3b1b5a576296",
+      "field_path": "$[0].recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] REJECT Mercury as a harness on the licence gate. Ingest as lineage evidence only."
+    },
+    {
+      "intake_id": "intake-972",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/entry.yaml",
+      "packet_sha256": "8c33d7bd59e1e39e4a66027cd8dc6023c984386c6e68aa1d8b7c3b1b5a576296",
+      "field_path": "$[0].recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] PERSIST the lineage finding in cross_references on every affected entry - the apparent field-wide consensus that efficiency scores must be normalized against a reference distribution is HALF ONE LINEAGE."
+    },
+    {
+      "intake_id": "intake-896",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-896/result.json",
+      "packet_sha256": "1138428720b5eb64e5895ef7e911b4cb8646a5304ef0597e0e7346458b206cdb",
+      "field_path": "$.proposed_native_fields.dive_actionables_ledger[0]",
+      "field": "dive_actionables_ledger",
+      "verbatim": {
+        "direction": "Knowledge-only: retain the six source-grounded context-engineering shifts and CLAUDE.md guidance; preserve the >80% number as an unverified vendor observation; limit /doctor to the generic purpose stated in this post. No new task is implied by this source re-read.",
+        "owner": "knowledge-only; no handoff task owner",
+        "compute_dependency": "none",
+        "disposition": "knowledge_only",
+        "reason": "This re-read settles the correct filing and scopes the withdrawn /doctor fabrication without adding a load-bearing source or operational task."
+      }
+    },
+    {
+      "intake_id": "intake-974",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-974/result.json",
+      "packet_sha256": "1a37b91f905bfcad2de92214cc3e815564b19b300f4450c195aba8ca5d5a6895",
+      "field_path": "$.proposed_native_fields.derived_actionables_ledger",
+      "field": "derived_actionables_ledger",
+      "verbatim": "Knowledge-only: preserve the failure-ladder and CGRE as adoption candidates; no local performance claim follows. Keep RLPF as a measurement caution pending run-revision provenance. No new task proposed by this read."
+    },
+    {
+      "intake_id": "intake-975",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-975/result.json",
+      "packet_sha256": "391b1925a2b55066ad99167c0acc78fb4a1e61588d12bdb86796be0b44b1846b",
+      "field_path": "$.proposed_native_fields.derived_actionables_ledger",
+      "field": "derived_actionables_ledger",
+      "verbatim": "Knowledge-only: keep the task corpus as a possible later benchmark candidate, gated on operator-reviewed task/source licensing and an explicit ROCm/HIP adaptation plan if MI210 CUDA-equivalent tasks are desired. No experiment or adoption recommendation follows from this read."
+    },
+    {
+      "intake_id": "intake-976",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-976/result.json",
+      "packet_sha256": "52a0f1bdd2e0e0f2b7820655cc1f7f6f06265309753ecbb746a57a095d20ec4c",
+      "field_path": "$.proposed_native_fields.derived_actionables_ledger",
+      "field": "derived_actionables_ledger",
+      "verbatim": "Knowledge-only: retain repeated-run/statistical testing and performance-sensitive test generation as candidate evaluation patterns. Do not claim validation on EPYC kernels from this Python function-level study. No new operational task proposed."
+    },
+    {
+      "intake_id": "intake-978",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-978/result.json",
+      "packet_sha256": "fc4a17e9a635d1ffd0fd63744c4e36275ddc46a11122b0ad00f991f04ded838a",
+      "field_path": "$.proposed_native_fields.derived_actionables_ledger",
+      "field": "derived_actionables_ledger",
+      "verbatim": "Knowledge-only: preserve graph cross-branch references, progressive explore/exploit scheduling, memory and planner/coder separation as candidate patterns for review. No EPYC applicability result or benchmark action is established."
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+      "packet_sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 0,
+        "original_action": "[dive-verified] Use this as the negative reference for autokernel C6: a purpose-built, professionally structured execution sandbox that nonetheless ships seccomp=unconfined. Our C6 acceptance criteria should name syscall confinement explicitly rather than treating \"runs in a container\" as sandboxed.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "handoffs/active/autokernel-research-loop.md",
+          "handoffs/active/architect-model-selection-bench.md",
+          "handoffs/active/master-handoff-index.md",
+          "autokernel-research-loop.md",
+          "agent-collab-rnd-harness.md",
+          "architect-model-selection-bench.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+      "packet_sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a",
+      "field_path": "$.derived_actionables_ledger[1]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 1,
+        "original_action": "[dive-verified] Harvest the controller/dispatcher/worker/job-store split as a design comparator for AutoKernel's owned-scope candidate execution, including the SQL idempotency migration, which is the mechanism for not double-running a submitted job after a controller restart.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "handoffs/active/autokernel-research-loop.md",
+          "handoffs/active/architect-model-selection-bench.md",
+          "handoffs/active/master-handoff-index.md",
+          "autokernel-research-loop.md",
+          "agent-collab-rnd-harness.md",
+          "architect-model-selection-bench.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+      "packet_sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a",
+      "field_path": "$.derived_actionables_ledger[2]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 2,
+        "original_action": "[dive-verified] Record that reproducing the paper's tables would additionally require pulling worker and controller images from an external registry and reconfiguring this host to cgroup v1 — a host-boot change that is operator-only. Do not represent the reproduction path as unblocked by this PR.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "handoffs/active/autokernel-research-loop.md",
+          "handoffs/active/architect-model-selection-bench.md",
+          "handoffs/active/master-handoff-index.md",
+          "autokernel-research-loop.md",
+          "agent-collab-rnd-harness.md",
+          "architect-model-selection-bench.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1028",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+      "packet_sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a",
+      "field_path": "$.derived_actionables_ledger[3]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 3,
+        "original_action": "[decline] Do not deploy any part of this stack. Nothing in our work requires MLE-Bench grading, and the deployment cost is a host reboot plus an external image dependency.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "handoffs/active/autokernel-research-loop.md",
+          "handoffs/active/architect-model-selection-bench.md",
+          "handoffs/active/master-handoff-index.md",
+          "autokernel-research-loop.md",
+          "agent-collab-rnd-harness.md",
+          "architect-model-selection-bench.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "packet_sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05",
+      "field_path": "$.derived_actionables_ledger[0]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 0,
+        "original_action": "[unverified] Record in agentic-rocm-kernel-authoring.md that KForge is NOT a gfx90a lead and must not be cited as cross-platform evidence: four vendors and six programming models are CLAIMED, AMD gets one sentence and zero experiments, and there is no pass-rate table for any platform. A negative result worth writing down precisely because the cluster keeps producing papers whose AMD support is declarative.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "agentic-rocm-kernel-authoring.md",
+          "autokernel-research-loop.md",
+          "rocm-verify-profile-backend.md",
+          "mi210-mfma-compute-bound-paths.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "packet_sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05",
+      "field_path": "$.derived_actionables_ledger[1]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 1,
+        "original_action": "[unverified] Add the cross-platform-translation prompting strategy as an explicit named mechanism in autokernel-research-loop.md §6.5 for converting a 'reimplement'-class oracle into a candidate port — supply the oracle's source as reference context rather than treating 'reimplement' as pure from-scratch authoring cost. File as a HYPOTHESIS with an explicit note that KForge supplies ZERO evidence for it.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "agentic-rocm-kernel-authoring.md",
+          "autokernel-research-loop.md",
+          "rocm-verify-profile-backend.md",
+          "mi210-mfma-compute-bound-paths.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "packet_sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05",
+      "field_path": "$.derived_actionables_ledger[2]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 2,
+        "original_action": "[unverified] Adopt the five-state execution taxonomy as the T0 failure-classification enum. Cheap, schema-only, and consistent with the project's classify-failures-by-reason discipline.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "agentic-rocm-kernel-authoring.md",
+          "autokernel-research-loop.md",
+          "rocm-verify-profile-backend.md",
+          "mi210-mfma-compute-bound-paths.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "packet_sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05",
+      "field_path": "$.derived_actionables_ledger[3]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 3,
+        "original_action": "[unverified] Cite the Table I -> Table II attenuation (per-kernel 1.06x-1.43x -> +2.12% end-to-end vs TensorRT-LLM, CV < 0.1%) as external corroboration for the §9.4 wall-share promotion rule, and as a calibration caution against the K1/K5 banded ceilings being read as end-to-end deliverables.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "agentic-rocm-kernel-authoring.md",
+          "autokernel-research-loop.md",
+          "rocm-verify-profile-backend.md",
+          "mi210-mfma-compute-bound-paths.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-1087",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1087/result.json",
+      "packet_sha256": "8c85a34ae3180a737475d49213dae728b0c6a43cdc86731b4bfc9934c6647f05",
+      "field_path": "$.derived_actionables_ledger[4]",
+      "field": "derived_actionables_ledger",
+      "verbatim": {
+        "original_action_index": 4,
+        "original_action": "[unverified] Do NOT add KForge to the AgentKernelArena controller A/B list: no code, no artifact statement, no AMD evaluation. ARGUS already occupies that slot with real MI300X numbers.",
+        "disposition": "preserve-existing-owner-outcome; no automatic closure",
+        "owner_bindings": [
+          "agentic-rocm-kernel-authoring.md",
+          "autokernel-research-loop.md",
+          "rocm-verify-profile-backend.md",
+          "mi210-mfma-compute-bound-paths.md"
+        ],
+        "next_action": "Owning session reviews corrected evidence against original approved task identity; no new task or closure inferred."
+      }
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/entry.json",
+      "packet_sha256": "6f5ca92f819949b4203d64f29fd3009cd59f2fb45f25cf8dc06535f55e94a359",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADOPT all five cheap monitor rules for the AutoKernel C6 layer: whole search tree, named threat model, mean@k aggregation, assume monitor-awareness, preserve CoT."
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/entry.json",
+      "packet_sha256": "6f5ca92f819949b4203d64f29fd3009cd59f2fb45f25cf8dc06535f55e94a359",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] DECLARE AN EXPLICIT FPR BUDGET rather than claiming safety."
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/entry.json",
+      "packet_sha256": "6f5ca92f819949b4203d64f29fd3009cd59f2fb45f25cf8dc06535f55e94a359",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] AUDIT OUR OWN eval fan-out and scorer paths for HARNESS-LEVEL answer leakage, which is DEVELOPER-SIDE and would not be caught by any agent-side monitor."
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/proposed_entry_update.json",
+      "packet_sha256": "a57bc3b5fb12c7f850ef6cfb40b974332b63e99f34db2b51da79c0dcc2ed86d5",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Preserve existing C6 whole-tree, named threat, aggregation, awareness, reasoning and FPR controls; their kernel effectiveness requires local evidence."
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/proposed_entry_update.json",
+      "packet_sha256": "a57bc3b5fb12c7f850ef6cfb40b974332b63e99f34db2b51da79c0dcc2ed86d5",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Correct rationale scope and omit unread numeric legends; no duplicate implementation task."
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/result.json",
+      "packet_sha256": "4afa8977da7f3b3af333e4be421b50bf93216bfd9f52d74dc905c031094e521f",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Preserve completed whole-tree, threat-specific, aggregation, awareness, CoT and FPR-budget rules in existing C6 owner.",
+        "disposition": "already-owned-completed; no new implementation task",
+        "owner": "handoffs/active/rocm-verify-profile-backend.md",
+        "grounding": "Existing checked2026-08-11 outcomes read; source supports rationale at ML-engineering scope, kernel benefit remains hypothesis."
+      }
+    },
+    {
+      "intake_id": "intake-979",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/result.json",
+      "packet_sha256": "4afa8977da7f3b3af333e4be421b50bf93216bfd9f52d74dc905c031094e521f",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Apply narrowly scoped source-rationale prose corrections only after owning-session review.",
+        "disposition": "proposed consumer correction",
+        "grounding": "Remove universal effects, unread numeric legends and measured-kernel implication."
+      }
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/entry.json",
+      "packet_sha256": "4ac1cbbed5818b0cc48d3646c86b28427d2a902e68e67b8d0bc0f4ddf5e665e0",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADOPT the harness-level/task-level taxonomy as the checklist for auditing our own eval fan-out - specifically the harness-level half, which is developer-side."
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/entry.json",
+      "packet_sha256": "4ac1cbbed5818b0cc48d3646c86b28427d2a902e68e67b8d0bc0f4ddf5e665e0",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] RECORD the retraction of the freeze-causation framing so it is not restated."
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/proposed_entry_update.json",
+      "packet_sha256": "80af31e575d7f9202cf78ffca06b1990c7ccfbf4ec22b48d8d3fda1531aca7a3",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Preserve existing infrastructure leakage audits using the harness-level/task-level taxonomy."
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/proposed_entry_update.json",
+      "packet_sha256": "80af31e575d7f9202cf78ffca06b1990c7ccfbf4ec22b48d8d3fda1531aca7a3",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Retain freeze-causation retraction and label paper/blog case counts separately; do not imply categorical monitor invisibility."
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/result.json",
+      "packet_sha256": "8fe3b3ed61df8d7b40efc7c9d142f7454b12383ceb888ccdd31356035a273318",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Preserve completed scorer/prompt/filesystem audit outcomes.",
+        "disposition": "already-owned-completed; no reopened or duplicate task",
+        "owner": "handoffs/active/scoring-infra-standardization.md",
+        "grounding": "Existing checked2026-08-12 outcomes read; taxonomy motivates infrastructure audits."
+      }
+    },
+    {
+      "intake_id": "intake-980",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-980/result.json",
+      "packet_sha256": "8fe3b3ed61df8d7b40efc7c9d142f7454b12383ceb888ccdd31356035a273318",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Replace categorical monitor-invisibility language and retain artifact-specific audit counts.",
+        "disposition": "proposed consumer correction",
+        "grounding": "Source audits trace-visible answer adoption; harness-side origin does not imply invisibility."
+      }
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/entry.json",
+      "packet_sha256": "0ee9fe51b151cd9e6c06d61f2fcf8584b06669f35eb060b5a72e3cd7013654e7",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] PREPARE as a MEASUREMENT decision package (human-only boundary): paired CI estimators per Sec A.3 WITH the mandatory small-K correction."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/entry.json",
+      "packet_sha256": "0ee9fe51b151cd9e6c06d61f2fcf8584b06669f35eb060b5a72e3cd7013654e7",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] DO NOT add bootstrapping - Sec E proves the closed form, the bootstrap and the sign test agree."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/entry.json",
+      "packet_sha256": "0ee9fe51b151cd9e6c06d61f2fcf8584b06669f35eb060b5a72e3cd7013654e7",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] RECORD the scope limit: pairing does not remove environment drift. Adopt WITH intake-939 affine correction or not at all."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/entry.json",
+      "packet_sha256": "0ee9fe51b151cd9e6c06d61f2fcf8584b06669f35eb060b5a72e3cd7013654e7",
+      "field_path": "$.recommended_actions[3]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] NEVER count this as independent corroboration of intake-939 - same lab, direct co-author."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Prepare a human-only measurement decision package for paired estimators with stated population, independence, finite-K and normal-approximation assumptions."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Remove the blanket prohibition on bootstrapping; AppendixE binary sign-test relation uses approximations."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Preserve machine-drift controls with their own evidence and intake939 dependency; do not infer an author mandate for a particular drift-correction method."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[3]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Keep same-lab methodology separate from independent corroboration."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.polarity-corrected.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Prepare a human-only measurement decision package for paired estimators with stated population, independence, finite-K and normal-approximation assumptions."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.polarity-corrected.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Remove the blanket prohibition on bootstrapping; AppendixE binary sign-test relation uses approximations."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.polarity-corrected.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Preserve machine-drift controls with their own evidence and intake939 dependency; do not infer an author mandate for a particular drift-correction method."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.polarity-corrected.json",
+      "packet_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+      "field_path": "$.recommended_actions[3]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Keep same-lab methodology separate from independent corroboration."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.pre-polarity-review.json",
+      "packet_sha256": "7dadf282d7dfb2e60a657881c05e705b08d417c59fa509dd555814861d6cce05",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Prepare a human-only measurement decision package for paired estimators with stated population, independence, finite-K and normal-approximation assumptions."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.pre-polarity-review.json",
+      "packet_sha256": "7dadf282d7dfb2e60a657881c05e705b08d417c59fa509dd555814861d6cce05",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Remove the blanket prohibition on bootstrapping; AppendixE binary sign-test relation uses approximations."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.pre-polarity-review.json",
+      "packet_sha256": "7dadf282d7dfb2e60a657881c05e705b08d417c59fa509dd555814861d6cce05",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Preserve machine-drift controls with their own evidence and intake939 dependency; do not infer an author mandate for a particular drift-correction method."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.pre-polarity-review.json",
+      "packet_sha256": "7dadf282d7dfb2e60a657881c05e705b08d417c59fa509dd555814861d6cce05",
+      "field_path": "$.recommended_actions[3]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Keep same-lab methodology separate from independent corroboration."
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/result.json",
+      "packet_sha256": "35e3cb41beb5a91f025df8766b88c360bdb19909957e773a1a9d8df203c83091",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Prepare scoped paired variance/CI method with finite-K component correction and bootstrap/sign-test assumptions for a measurement decision package.",
+        "disposition": "human-amendment-only candidate; no method deployed or constitution edited",
+        "owner": "handoffs/active/architect-model-selection-bench.md",
+        "grounding": "AppendixA.2/A.3 andE; existing integration preserved, exact-equivalence claim corrected."
+      }
+    },
+    {
+      "intake_id": "intake-982",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/result.json",
+      "packet_sha256": "35e3cb41beb5a91f025df8766b88c360bdb19909957e773a1a9d8df203c83091",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Keep environment-drift control as separately warranted design; do not require unread intake939 affine mechanism on Wang authority.",
+        "disposition": "knowledge correction; existing dependency preserved",
+        "grounding": "Source models data/prediction/total noise, not independently named machine drift."
+      }
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/entry.json",
+      "packet_sha256": "431adb3f9b7818422dead9db440182705790b7a8359d349818305a4b75656685",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADD the gold-sanity gate for machine-generated tests: inject, apply gold, run the native runner, discard on gold-failure, retry at higher temperature, judge last."
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/entry.json",
+      "packet_sha256": "431adb3f9b7818422dead9db440182705790b7a8359d349818305a4b75656685",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] PRESERVE THE ORDER. Gate before judge is the finding; the judge endorsed all six named invalid cases."
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/entry.json",
+      "packet_sha256": "431adb3f9b7818422dead9db440182705790b7a8359d349818305a4b75656685",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] CARRY 61.9% (n=105) as the citable rate, not 28.5%."
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/result.json",
+      "packet_sha256": "47292b2ce8f1b5d84ae2bca95c0487771887ecb5ec4a07102826f167441b3b66",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Retain existing RA-9 gold-sanity gate before judge and existing security-review consumption.",
+        "disposition": "already-owned/completed; no duplicate schema or implementation",
+        "owner": "handoffs/active/reviewer-typed-artifacts.md",
+        "grounding": "Source procedure and existing operator-approved/completed outcome retained."
+      }
+    },
+    {
+      "intake_id": "intake-983",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-983/result.json",
+      "packet_sha256": "47292b2ce8f1b5d84ae2bca95c0487771887ecb5ec4a07102826f167441b3b66",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Do not import unavailable code or extrapolate61.9% to all generated tests.",
+        "disposition": "knowledge-only scoped rationale",
+        "grounding": "AppendixA data/code available upon reasonable request;11-task experiment,105 decisive checks."
+      }
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/entry.json",
+      "packet_sha256": "982b40ea47b910bcb88b381b8f71912b7e2c6db9e10b9d2159764c19604263d7",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] RECORD as a second independent instance of the stored-denominator/fresh-numerator anti-pattern, alongside intake-974. Cite in MEASUREMENT.md era handling."
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/entry.json",
+      "packet_sha256": "982b40ea47b910bcb88b381b8f71912b7e2c6db9e10b9d2159764c19604263d7",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] CARRY the vanishing-margin observation: an asymptotic penalty for correct-but-slow provides no gradient near the reference."
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/proposed_entry_update.json",
+      "packet_sha256": "9f40f44bf7ebc8bb5e416bcf491c84e32b975e5830767bfca169f63ca4350f28",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Retain the stored-reference ratio as a measurement hazard example with unverified isolation/training-runtime placement explicit; no constitution edit without operator amendment."
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/proposed_entry_update.json",
+      "packet_sha256": "9f40f44bf7ebc8bb5e416bcf491c84e32b975e5830767bfca169f63ca4350f28",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Record that the margin between incorrect and arbitrarily slow correct code vanishes as runtime tends to infinity; it does not vanish near the reference runtime."
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/proposed_entry_update.json",
+      "packet_sha256": "9f40f44bf7ebc8bb5e416bcf491c84e32b975e5830767bfca169f63ca4350f28",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] Treat intake939 coexistence as requiring a paired primary-source comparison, not settled by this paper alone."
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/result.json",
+      "packet_sha256": "325dfa85298d5d61add64e697460a4367808cd1d4095569113952d1ace66b38c",
+      "field_path": "$.derived_actionables[0]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Retain stored-reference ratio as a comparison hazard, with load/placement limitations explicit.",
+        "disposition": "knowledge-only negative-example candidate; no measurement-constitution amendment",
+        "grounding": "Eq4 anddataset explanation; actual drift not observed in this review."
+      }
+    },
+    {
+      "intake_id": "intake-984",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/result.json",
+      "packet_sha256": "325dfa85298d5d61add64e697460a4367808cd1d4095569113952d1ace66b38c",
+      "field_path": "$.derived_actionables[1]",
+      "field": "derived_actionables",
+      "verbatim": {
+        "action": "Correct reward geometry and preserve separate-read requirement for comparison to intake939.",
+        "disposition": "source/index prose correction proposed; no new kernel/training work",
+        "grounding": "M/t-1 gap=M/t tends to0 at unbounded t; derivative=-M/t² and nonzero at t=M."
+      }
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/entry.json",
+      "packet_sha256": "1acbd2701db83c20ab54c42ecf4b7576fd330fe8b9c91a59cc2490d8826391f2",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADOPT as the open substitute for test construction. Screen candidate task sets with the shipped per-problem TPR/TNR before spending compute on them."
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/entry.json",
+      "packet_sha256": "1acbd2701db83c20ab54c42ecf4b7576fd330fe8b9c91a59cc2490d8826391f2",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] RECORD the scope limit: the optimization half remains ours to build."
+    },
+    {
+      "intake_id": "intake-985",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/result.json",
+      "packet_sha256": "bc5fb94137ade1ace0f0627089c23281eb951b638ea57801f03dc07783a84f03",
+      "field_path": "$.source_verdict_dependencies_actions",
+      "field": "source_verdict_dependencies_actions",
+      "verbatim": "Preserved unchanged."
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/entry.json",
+      "packet_sha256": "3f5d69bdc8dd094db52b2563687e83eec0f9e99d4c932b08350cb84ff428a976",
+      "field_path": "$.recommended_actions[0]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADOPT RRR as a retroactive diagnostic over existing agent traces - pure log post-processing, zero inference cost."
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/entry.json",
+      "packet_sha256": "3f5d69bdc8dd094db52b2563687e83eec0f9e99d4c932b08350cb84ff428a976",
+      "field_path": "$.recommended_actions[1]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] ADOPT programmatic feedback extraction in place of model self-diagnosis wherever tool output carries the concrete failure fact."
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/entry.json",
+      "packet_sha256": "3f5d69bdc8dd094db52b2563687e83eec0f9e99d4c932b08350cb84ff428a976",
+      "field_path": "$.recommended_actions[2]",
+      "field": "recommended_actions",
+      "verbatim": "[review candidate] DO NOT transfer the harm RATES - largely a weak-model artifact at n=2 environments."
+    },
+    {
+      "intake_id": "intake-989",
+      "packet_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-989/result.json",
+      "packet_sha256": "ae7b9d552b1b8a1d399a8c25164da60dd6970a1b27df7a33b2a60133291b8e1c",
+      "field_path": "$.source_verdict_dependencies_actions",
+      "field": "source_verdict_dependencies_actions",
+      "verbatim": "Preserved unchanged."
+    }
+  ]
+}

@@ -1,0 +1,375 @@
+{
+  "status": "scratch-only compact evidence bundle; no canonical source/handoff/index writes",
+  "as_of": "2026-10-06",
+  "source_base": "origin/main 98d46d1e2184ab0a229a1e25b5f8ec20e2d92ad6",
+  "raw_preservation_manifest": "/mnt/raid0/llm/tmp/intake-reverify/original-lane-artifacts-preserved.sha256.json",
+  "raw_preservation_manifest_sha256": "3ec0c5abd002abf3539cf0a12cde27ef00b83cc38235e900ae06d4e6123699d0",
+  "triage_counts": {
+    "RE-DIVE": 22,
+    "KEEP": 322,
+    "DEMOTE": 8
+  },
+  "triage_rows": 352,
+  "consumer_provenance_counts": {
+    "at_risk_ids": 352,
+    "references": 1163,
+    "checkbox_task_lines": 62,
+    "dependency_lines": 63,
+    "entries": 352
+  },
+  "files": [
+    {
+      "path": "PLAN-baseline.md",
+      "bytes": 25632,
+      "sha256": "7e2a08aa188e360a4aeb159d34068438d9717e9ab09a552ffd9d25feb67bb29f"
+    },
+    {
+      "path": "PLAN-current-approved-checkpoint.md",
+      "bytes": 26147,
+      "sha256": "a76a7fdf85d896af8b84f4921aedd93e2c98a9b80a1ee38730be3319014b59a0"
+    },
+    {
+      "path": "actionables-reconciliation.json",
+      "bytes": 103845,
+      "sha256": "9423cc07a693b1aad47afa8243cb1421cdaab737b09a7830daa6f767d40abc9d"
+    },
+    {
+      "path": "actionables-reconciliation.md",
+      "bytes": 6193,
+      "sha256": "b140058d1f7bdfc7a489ab53c067c674f8948b439b6fa46e8acdb537cda4fc91"
+    },
+    {
+      "path": "actionables-source-records.json",
+      "bytes": 72648,
+      "sha256": "01e63548e76eab6201f2842ea73802a89376aaaad49bdf6fac0a8be23d923713"
+    },
+    {
+      "path": "actionables-task-bindings.json",
+      "bytes": 31353,
+      "sha256": "34fe1a240cb32f31a98da578a6dc28c45395d767a8859600fe238a667974ddc4"
+    },
+    {
+      "path": "active-dependencies.tsv",
+      "bytes": 145995,
+      "sha256": "9998aafdb1fab2b4b9eb1ff507da54c760dba3bc98064590ef6f10ebde0a21ec"
+    },
+    {
+      "path": "candidate-index-manifest.json",
+      "bytes": 8217,
+      "sha256": "e76767276e96c6382b5aa7832ea9aa3d1bbdae1b4a7f9d98c60bd23edeedf815"
+    },
+    {
+      "path": "canonical-cite-check-summary.json",
+      "bytes": 12955,
+      "sha256": "97765d3f5220c39654c852dce6b9eec44e6fbd3dc3f7e9674ac0675ffd859c9e"
+    },
+    {
+      "path": "combined-refresh-failed-before-append.exit",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    {
+      "path": "combined-refresh-failed-before-append.stderr",
+      "bytes": 1136,
+      "sha256": "7ce52130069dba320b89f7f62a40fb12063fa768a93df00f2afb7079a8dbd68d"
+    },
+    {
+      "path": "consumer-citation-checkbox-provenance-352.json",
+      "bytes": 3618651,
+      "sha256": "fe90b8732c1cc6ed83c5c61d37f4110c4fd1842835b60eb01968293b1ecf880f"
+    },
+    {
+      "path": "consumer-corrections-exact.patch",
+      "bytes": 12098,
+      "sha256": "796aec264504be74e4d052a8e3543f60054896411e1b9185417b417f3b61ca28"
+    },
+    {
+      "path": "consumer-corrections.manifest.json",
+      "bytes": 1497,
+      "sha256": "0aa90a08f0b033c9d6f359544eb6b375a462c924288d1709fb3c8e9729acfeb0"
+    },
+    {
+      "path": "helper-root-tests.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "helper-root-tests.stderr",
+      "bytes": 3102,
+      "sha256": "5742c3233900873fb6c817b08ba244e9ff3af6019a48224635f94d196c87ae4d"
+    },
+    {
+      "path": "helper-root-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "native-slot-mapping-audit.json",
+      "bytes": 29843,
+      "sha256": "01fd2ac1c090c12cd08fb0c66198ae79960d7504b239055f246cbc9c9787c627"
+    },
+    {
+      "path": "native-verification-repair-receipt.json",
+      "bytes": 2451,
+      "sha256": "f5ab8f48b3421ca467ca257997adcc5f33d41cb15b8d7d4a711c8f56029518f0"
+    },
+    {
+      "path": "operational-context-evidence-map-corrections.patch",
+      "bytes": 21533,
+      "sha256": "d74847af9aaccebbb2a163331d740b52bd1078c9d2b410d8cf21a8f71817ab4d"
+    },
+    {
+      "path": "operational-context-evidence-map-receipt.json",
+      "bytes": 1366,
+      "sha256": "891f2e2142779f66ea611d94f99360883786d98ab0ebc31ab6c5fcb0bbe35aaa"
+    },
+    {
+      "path": "operational-context-evidence-map.base.json",
+      "bytes": 32206,
+      "sha256": "a12275b352efa6b88213c0fca62006336f434e27145a74791431dd9aea342050"
+    },
+    {
+      "path": "operational-context-evidence-map.candidate.json",
+      "bytes": 45123,
+      "sha256": "1d3a217ac3df01cf25f7f2eda184c6c9b2fd92155d09141828189b08b2751590"
+    },
+    {
+      "path": "portable-test-19-methods.patch",
+      "bytes": 12590,
+      "sha256": "dfdf26ea62c90b3596bf092c86ba5e7d64175e9f791a4dd58916a9187a831603"
+    },
+    {
+      "path": "progress-2026-10-06-current.md",
+      "bytes": 5875,
+      "sha256": "096230263f7dd9f7c5f95248662a12996cfdf0109f875583e9a3de5b2528a42f"
+    },
+    {
+      "path": "record-status-input-bindings.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "record-status-input-bindings.stdout",
+      "bytes": 190,
+      "sha256": "e67838ca90529767ceb61cf6194c3a2f490f80582d973dcb56b254c67f398442"
+    },
+    {
+      "path": "record-status-proposed-28-tests.patch",
+      "bytes": 19588,
+      "sha256": "675e3cb9afe347b26c1ca9b26654a6879a112955d248834fcbc7f1f44fd6e49c"
+    },
+    {
+      "path": "record-status-tests.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "record-status-tests.stderr",
+      "bytes": 1314,
+      "sha256": "8fd9f8d5cfb90125767336b91c32bba32ae214708f8b424c53ada8fe0e01efed"
+    },
+    {
+      "path": "record-status-tests.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "source-manifest-amendment-receipt.json",
+      "bytes": 2124,
+      "sha256": "1fcbf88db58b09aabe863df79dcb8bf783177838ab11ce18fbf12bac3524f901"
+    },
+    {
+      "path": "source-manifest-binding-repair-receipt.json",
+      "bytes": 2469,
+      "sha256": "f12727eab40428830434409d150a2486e6ab2efc8a8651ff782ef506779ad8d8"
+    },
+    {
+      "path": "source-warrant-refresh-manifest.proposed.json",
+      "bytes": 894362,
+      "sha256": "12448182b5122e510b6c6462015f17babc8f1cc84a0fdbe97d998eb2095c6d64"
+    },
+    {
+      "path": "source-wiring.draft.md",
+      "bytes": 2338,
+      "sha256": "59b5e0cc84db1c1c1df946e0d0d87ebbe421902718aae7356a5f3fe44c2d6742"
+    },
+    {
+      "path": "surfaced-sources-artifact-locator-receipt.json",
+      "bytes": 953,
+      "sha256": "1a9c7d3201bcd23e91e7d310662409603f98d1f7fbd2c27db48c172718f85888"
+    },
+    {
+      "path": "surfaced-sources-artifact-locators.patch",
+      "bytes": 53040,
+      "sha256": "282b4e4e7cbd272f69cd4a1ca84d38b2ea318e125728f1758eb1c3811b2ff64b"
+    },
+    {
+      "path": "surfaced-sources.consolidated.base.json",
+      "bytes": 29026,
+      "sha256": "a15299a10be1eafd6738e65d31b2e0177d6656c20e3631d3f0247d1e36a4ac15"
+    },
+    {
+      "path": "surfaced-sources.consolidated.base.md",
+      "bytes": 8995,
+      "sha256": "d8ab21c8cb4039f495fd46fc028b95a619217a326d124641d7a780958acf7fcc"
+    },
+    {
+      "path": "surfaced-sources.consolidated.candidate.json",
+      "bytes": 62047,
+      "sha256": "4c75d872475a13f807c5517de6797491119affdc8a87df725eb23b5f40340826"
+    },
+    {
+      "path": "surfaced-sources.consolidated.candidate.md",
+      "bytes": 18051,
+      "sha256": "c13454d2bb496c049d420423ab3e7a0cd3731dde6280b9cd1762b03ff140f301"
+    },
+    {
+      "path": "triage-352-reviewed.json",
+      "bytes": 462732,
+      "sha256": "60a398940956c0a4bfef8e462e274ff8a815de53db7b706675ec6689594b71a3"
+    },
+    {
+      "path": "triage-keep-reason-3-delta.json",
+      "bytes": 11978,
+      "sha256": "815501e5bea5e9d37b80d3b9bc332b9a406ca09b09880b36c05eaa88a62a0e08"
+    },
+    {
+      "path": "triage-review-reconciliation.json",
+      "bytes": 1997,
+      "sha256": "109e78ecfd2ba9ccfeeb3aea70ebabc7cc5947835dd7746cc52bc8d755dc57a5"
+    },
+    {
+      "path": "triage1-before-main-review.txt",
+      "bytes": 22421,
+      "sha256": "47a1f564a532d06fb26022e112f01b1fa533fb5925362e808deaba301bf351f0"
+    },
+    {
+      "path": "triage1-main-review.md",
+      "bytes": 1831,
+      "sha256": "32eedf3eb8d98c8f1c8218a788fdd1ea751e2f538395bdbc843e4be8a3ab44e5"
+    },
+    {
+      "path": "triage1-review-revisions.txt",
+      "bytes": 3188,
+      "sha256": "bcaa578a9344cb3607385ced2c780cd230cd925daf368091c05058f08a306c08"
+    },
+    {
+      "path": "triage1-reviewed-judgments.txt",
+      "bytes": 22794,
+      "sha256": "cb9ae3e7dff10ef3a2b979a6b5fb5200be5197b5d65598c049e636de597080bf"
+    },
+    {
+      "path": "wave1-anchor-repair-delta.json",
+      "bytes": 7897,
+      "sha256": "dad35393864f4a3aff5ad58acfc7f6bafe46650169b8c8eb31c2c0c03a686030"
+    },
+    {
+      "path": "surfaced-sources-status-correction.patch",
+      "bytes": 55088,
+      "sha256": "8d797d7245987eb456127bbfb1c5fed8ac86b09e928acb8342d0c8aa80297d33"
+    }
+  ],
+  "known_review_override_ids": [
+    "intake-1580"
+  ],
+  "unknown_original_reason_policy": "no reconstructed reason where no saved original revision exists",
+  "screen_flags": {
+    "A": 143,
+    "AC": 38,
+    "B": 90,
+    "C": 71,
+    "AB": 10
+  },
+  "verification_at_screen": {
+    "dive-verified": 319,
+    "dive-overturned": 33
+  },
+  "verdict_at_screen": {
+    "new_opportunity": 3,
+    "worth_investigating": 106,
+    "adopt_component": 23,
+    "adopt_patterns": 181,
+    "already_integrated": 8,
+    "not_applicable": 16,
+    "superseded": 15
+  },
+  "consumer_correction_patch_sha256": "796aec264504be74e4d052a8e3543f60054896411e1b9185417b417f3b61ca28",
+  "consumer_correction_lane_apply_check": "pass; patch not applied",
+  "plan_progress_draft_patch_sha256": "f75cc8f8403783544aca46e55860242a9e96cedf0840f5e4c24ed77bb2d22814",
+  "full_native_combined_validation": "pending; previous run failed pre-append and is preserved",
+  "portable_28_test_patch": "applied in isolated scratch only; unrun; not applied to owning lane/canonical data",
+  "triage_reconciliation_receipt_sha256": "109e78ecfd2ba9ccfeeb3aea70ebabc7cc5947835dd7746cc52bc8d755dc57a5",
+  "failed_preflight": {
+    "manifest_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.failed-before-append.json",
+    "manifest_sha256": "209d57edc55ba64cffbbbc7a0c0b63327d6ffcf77b6d3a056f5c1b8009ec03f3",
+    "failure_receipt_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/root-full-refresh.stderr",
+    "failure_exit_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/root-full-refresh.exit",
+    "failure_point": "preflight before append; stale intake-664 CURRENT-text hash"
+  },
+  "repaired_manifest": {
+    "path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.json",
+    "sha256": "12448182b5122e510b6c6462015f17babc8f1cc84a0fdbe97d998eb2095c6d64",
+    "canonical_json_sha256": "6df776280c02bfef08c0fe482929d4ecd755cf3f7ba0ea1c36240f4403714bbf",
+    "receipt_path": "/mnt/raid0/llm/tmp/intake-reverify/source-manifest-binding-repair-receipt.json",
+    "receipt_sha256": "f12727eab40428830434409d150a2486e6ab2efc8a8651ff782ef506779ad8d8",
+    "binding_check": "110/110 candidate claim-text bindings; 109 target records unchanged, one CURRENT binding repaired"
+  },
+  "portable_test_patches": [
+    {
+      "path": "portable-test-19-methods.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/portable-test-patch/test_intake_warrant_correction.portable.patch",
+      "sha256": "dfdf26ea62c90b3596bf092c86ba5e7d64175e9f791a4dd58916a9187a831603",
+      "scope": "19 method/portable helper correction; prepared, not run"
+    },
+    {
+      "path": "record-status-proposed-28-tests.patch",
+      "source_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/record-status-proposed/portable-tests.patch",
+      "sha256": "675e3cb9afe347b26c1ca9b26654a6879a112955d248834fcbc7f1f44fd6e49c",
+      "scope": "28-case record-status proposal applied only in isolated scratch; unrun; not applied to owning lane/canonical data; root validation job queued"
+    }
+  ],
+  "triage_reason_repair": {
+    "status": "root-approved reason/evidence-only repair; classifications/counts/flags unchanged",
+    "pre_repair_triage_sha256": "402598de87a232ec5d486fc14812188396461378d66793bce80eca5b8c284180",
+    "repair_delta_path": "/mnt/raid0/llm/tmp/intake-reverify/triage-keep-reason-3-delta.json",
+    "repair_delta_sha256": "815501e5bea5e9d37b80d3b9bc332b9a406ca09b09880b36c05eaa88a62a0e08",
+    "target_ids": [
+      "intake-1579",
+      "intake-1581",
+      "intake-1840"
+    ],
+    "target_count": 3,
+    "counts_unchanged": {
+      "KEEP": 322,
+      "RE-DIVE": 22,
+      "DEMOTE": 8
+    }
+  },
+  "operational_context_rationale_correction": {
+    "candidate": "operational-context-evidence-map.candidate.json",
+    "candidate_sha256": "1d3a217ac3df01cf25f7f2eda184c6c9b2fd92155d09141828189b08b2751590",
+    "patch_sha256": "d74847af9aaccebbb2a163331d740b52bd1078c9d2b410d8cf21a8f71817ab4d",
+    "status": "scratch-only; task IDs/open states/ratification preserved; companion fields explicitly pending source gate"
+  },
+  "surfaced_source_artifact_locators": {
+    "candidate_json_sha256": "bff12896742a9187fe3323b0c41e52e40b1ca3b1e8287aade71a11843c4ced6b",
+    "candidate_markdown_sha256": "0a99de4a0984a94f52c98b0a5b4e4048b093f8bad79ecc938db609a6862b9fca",
+    "patch_sha256": "282b4e4e7cbd272f69cd4a1ca84d38b2ea318e125728f1758eb1c3811b2ff64b",
+    "status": "17 companions remain unfetched pending operator selection; associated primary packet hashes are not companion fingerprints"
+  },
+  "root_validation_queue": {
+    "session": "48536",
+    "queued_from": "2026-10-06 06:54 UTC",
+    "status_as_of": "2026-10-06 07:04 UTC",
+    "resource": "CPU 0-95; queues q0-q3 held by autokernel-experimental-serving",
+    "portable_28_case_patch": "unstarted; outputs empty",
+    "combined_full_native_run": "unstarted; outputs empty",
+    "no_process_interference": true,
+    "source_gate": "pending operator source-selection choice; scope approval is not selection"
+  },
+  "source_selection_status": "Stage-2b not completed; 17 identities comprise 6 same-work companions, 10 distinct sources/artifacts, 1 journal edition; Mercury_Eval had a provisional relevant read; discovery fetch is distinct from selected full dive; source fingerprints remain known/unknown as recorded",
+  "source_selection_correction_patch": {
+    "path": "surfaced-sources-status-correction.patch",
+    "sha256": "8d797d7245987eb456127bbfb1c5fed8ac86b09e928acb8342d0c8aa80297d33"
+  }
+}

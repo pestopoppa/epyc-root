@@ -1,0 +1,121 @@
+{
+  "checkbox_flips": 3,
+  "checks": {
+    "index-check.log": "515eb57159279b179530c71fa981bb4745191d619b4e8ad04cd143cf6748ca85",
+    "index-regeneration.log": "c19a6d4320f9856b3534aa2fa7b9d1aa32314684d249eb7a9177ab72ae44ee27",
+    "lane-check.log": "212f74f06d3aed23d4d1eb364ed30702c52d1a8db19fcee130a085b3f73b56c5",
+    "main-wrap.pid": "5f7984a8de5a32330d0a4d3cfc3e67017833fa4b83ba8af57e7779af6f1f981d",
+    "readme-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "synchronized-base.txt": "f7d66b47785709da6a1fd3ac7003948d9c954354c7b59f3a991d1bc1e65a30b7",
+    "wiki-incremental.json": "9f5ac464f831763f353c8c57be9f6aba692f59ba326cea6ab88a5a030945cd0b",
+    "wiki-scoped-touch.json": "0203329b03916c87c7db1b0a3b946d4369b82dbff20d59c8d0e0fc466fa5792b",
+    "wiki-scoped-touch.stderr": "efd7a9b29ac553ca4bc236845021dd814b238d18772489e0c43c6e7920d80090"
+  },
+  "explicit_applicability_declines": 0,
+  "index_check_exit": 0,
+  "lane_check_exit": 0,
+  "new_tasks": 0,
+  "readme_warnings": [],
+  "retained_raw_files": [
+    {
+      "bytes": 25632,
+      "path": "PLAN.md",
+      "sha256": "7e2a08aa188e360a4aeb159d34068438d9717e9ab09a552ffd9d25feb67bb29f"
+    },
+    {
+      "bytes": 19610,
+      "path": "at_risk.tsv",
+      "sha256": "8be0c85dd0747b8ec5cb9241392a893530b725148d6db2fab7442f55dbcd5086"
+    },
+    {
+      "bytes": 3262152,
+      "path": "canonical-cite-check.json",
+      "sha256": "6070141896a70f85ea5c56723ab4439800be369f5b6b6e9fbd258a121db5594b"
+    },
+    {
+      "bytes": 1653,
+      "path": "checkpoint-irv1-4.patch",
+      "sha256": "92b7cea8e6a9090f08a12cbbe616bbb1d2a5cd213488b5c5e500f35280f5de9c"
+    },
+    {
+      "bytes": 1754001,
+      "path": "citations.json",
+      "sha256": "060416acff2ba21497359598b4df0b145f4e766f1e603f04f850a60651005e08"
+    },
+    {
+      "bytes": 5946937,
+      "path": "consumer_map.json",
+      "sha256": "6a049f80de28c15959d711be45ecabfba211930a54af1fba2d4a2876e289e348"
+    },
+    {
+      "bytes": 82532,
+      "path": "demotion-rehearsal-broad-diagnostic.json",
+      "sha256": "e3ada8c9693171183d6a15ecced817b25f0f5ba95222075599ab5f10ba9f2c00"
+    },
+    {
+      "bytes": 394,
+      "path": "demotion-rehearsal-receipt.pending.json",
+      "sha256": "877d2175504f7bd2508930f13f35333c395a0724401259cb7c300f25af786c00"
+    },
+    {
+      "bytes": 24564,
+      "path": "demotion-rehearsal-retractions.jsonl",
+      "sha256": "f4c781ae226a2ffc12aee18f24b08cc955b06b735c957a00e904f4981e17b3f1"
+    },
+    {
+      "bytes": 17697,
+      "path": "demotion-targets.json",
+      "sha256": "a20254297a2f4658489e5f29d7d9f605007adc36317d806a09214e209702b7a7"
+    },
+    {
+      "bytes": 471,
+      "path": "index-next-action.proposed.txt",
+      "sha256": "8a024ede0d695b6a31ea219f92b342e37abcb5fcb80196fbd828b7a85b1a177c"
+    },
+    {
+      "bytes": 1151,
+      "path": "input-sha256s.txt",
+      "sha256": "f04b0fb15119926a67e8ce8c65215b675340802227daea117d21dbdc73add198"
+    },
+    {
+      "bytes": 415895,
+      "path": "triage-partition-1.json",
+      "sha256": "ddd2c64523906b1bb616d93fdbaa51e7654e02326c87b149d4271a548bc175aa"
+    },
+    {
+      "bytes": 124322,
+      "path": "triage-partition-2.json",
+      "sha256": "2bbb7ea5ac2f921a14704d9632183575ebec237c3b899823246141101977e900"
+    },
+    {
+      "bytes": 428925,
+      "path": "triage-partition-3-consumer-report.json",
+      "sha256": "fad3591c2075448df161b2653e683f4a7a04371e05ae41bdd107e0ab11e4d2c9"
+    },
+    {
+      "bytes": 8907,
+      "path": "triage-summary.json",
+      "sha256": "0d7d1e8f3235524ff36ad3bcbd1d61ec28663813cfc8f02af1e9e426ccdaa626"
+    },
+    {
+      "bytes": 11049583,
+      "path": "triage.json",
+      "sha256": "c65d08f19a26ade0b00f86e88b7af19792bafd4c4591d10212f188bd479a4021"
+    },
+    {
+      "bytes": 353962,
+      "path": "triage.tsv",
+      "sha256": "e9b1eac32934637f09a56df123abe7932966d23eb84a9739063c44f8b14d95f1"
+    }
+  ],
+  "retained_scratch_reason": "Retain primary-source artifacts, pinned repositories, immutable ledger snapshots,\nreview packets and failed/passing rehearsal receipts for IRV-4\u20137 corrective filing.\nThe operator requested wrap-up while this task continues. Cleanup must preserve\nthese load-bearing inputs until corrections and their durable report are filed.\n",
+  "scope": "IRV-1\u20133 checkpoint; corrections and demotions remain unapplied",
+  "source_wiring": "Native correction implementation is still being validated; filing remains IRV-4\u20137.",
+  "synchronized_base": "f6d8a4254ab310e0fa6b3bda5e0523ed5af73526",
+  "wiki_touch_scope": [
+    "handoffs/active/intake-reverification.md",
+    "progress/2026-10/2026-10-06-intake-reverify-main.md",
+    "progress/2026-10/2026-10-06-filing_preparation.md",
+    "progress/2026-10/2026-10-06-wave2-review.md"
+  ]
+}

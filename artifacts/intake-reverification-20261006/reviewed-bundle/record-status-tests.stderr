@@ -1,0 +1,14 @@
+test_bad_late_entry_zero_appends (test_record_status.RecordStatusTests.test_bad_late_entry_zero_appends) ... ok
+test_default_frame_bytes_unchanged (test_record_status.RecordStatusTests.test_default_frame_bytes_unchanged) ... ok
+test_exact_unicode_text_binding (test_record_status.RecordStatusTests.test_exact_unicode_text_binding) ... ok
+test_explicit_source_claim_frames_unchanged (test_record_status.RecordStatusTests.test_explicit_source_claim_frames_unchanged) ... ok
+test_fresh_ordinary_ingest_no_status_warrant (test_record_status.RecordStatusTests.test_fresh_ordinary_ingest_no_status_warrant) ... ok
+test_malformed_metadata_adapter_validator_agree (test_record_status.RecordStatusTests.test_malformed_metadata_adapter_validator_agree) ... ok
+test_status_suppresses_both_directions_preserves_siblings_history (test_record_status.RecordStatusTests.test_status_suppresses_both_directions_preserves_siblings_history) ... ok
+test_uncertain_stays_existing_grade_rule (test_record_status.RecordStatusTests.test_uncertain_stays_existing_grade_rule) ... ok
+test_withdraw_accepts_status_claim_without_fresh_warrant (test_record_status.RecordStatusTests.test_withdraw_accepts_status_claim_without_fresh_warrant) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.006s
+
+OK

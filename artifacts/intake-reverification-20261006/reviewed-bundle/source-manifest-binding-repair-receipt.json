@@ -1,0 +1,50 @@
+{
+  "status": "mechanical scratch manifest repair; canonical apply not authorized",
+  "base_candidate_sha256": "6ddb74acd628c37cb2a5f51df05670b80b497a26ab47b06b1849adb920da773a",
+  "failed_preflight_manifest_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.failed-before-append.json",
+  "failed_preflight_manifest_sha256": "209d57edc55ba64cffbbbc7a0c0b63327d6ffcf77b6d3a056f5c1b8009ec03f3",
+  "repaired_manifest_path": "/mnt/raid0/llm/tmp/intake-reverify/source-warrant-refresh-manifest.proposed.json",
+  "repaired_manifest_sha256": "12448182b5122e510b6c6462015f17babc8f1cc84a0fdbe97d998eb2095c6d64",
+  "pre_repair_canonical_json_sha256": "fd6734e5088810e76766d5dec713b4d30f3bc8b79bdf1a1918d3229160900ca8",
+  "post_repair_canonical_json_sha256": "6df776280c02bfef08c0fe482929d4ecd755cf3f7ba0ea1c36240f4403714bbf",
+  "target_binding_check": {
+    "target_count": 110,
+    "matched_before": 109,
+    "mismatched_before": 1,
+    "matched_after": 110,
+    "mismatched_after": 0,
+    "all_candidate_text_bindings_verified": true,
+    "only_mismatch": {
+      "entry_id": "intake-664",
+      "claim_id": "clm_intake_664_01",
+      "claim_index": 1,
+      "candidate_current_text_sha256": "e5dc57b2708246549e79a25b0c5f3bab10a8ac86902abb66dba81eecfc55db5f",
+      "manifest_current_text_sha256": "459ffb377374e1c2cd6b2dcd7350df5f7fe448fdc0678521ed0bf5a2b98cb05f",
+      "matched_before_repair": false
+    }
+  },
+  "target_record_delta": {
+    "unchanged_records": 109,
+    "records_with_single_current_binding_change": 1,
+    "changed_target_fields": [
+      {
+        "entry_id": "intake-664",
+        "claim_index": 1,
+        "field": "current_claim_text_sha256",
+        "before": "459ffb377374e1c2cd6b2dcd7350df5f7fe448fdc0678521ed0bf5a2b98cb05f",
+        "after": "e5dc57b2708246549e79a25b0c5f3bab10a8ac86902abb66dba81eecfc55db5f"
+      }
+    ],
+    "old_target_ids_assertion_hashes_directions_reasons_preserved": true
+  },
+  "candidate_index_sha256_unchanged": true,
+  "preserved_failed_run": {
+    "status": "FAILED_BEFORE_APPEND",
+    "exit_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/root-full-refresh.exit",
+    "exit_value": "1",
+    "stderr_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/root-full-refresh.stderr",
+    "stdout_path": "/mnt/raid0/llm/tmp/intake-reverify/helper/root-full-refresh.stdout",
+    "preflight_error": "withdrawal old/current assertion scope binding does not match",
+    "no_append": true
+  }
+}

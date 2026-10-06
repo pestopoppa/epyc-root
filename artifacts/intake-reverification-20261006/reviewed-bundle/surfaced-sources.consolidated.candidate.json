@@ -1,0 +1,1072 @@
+{
+  "status": "PROPOSED_OPERATOR_SELECTION; Stage-2b not completed; no Stage-3 plan started",
+  "dedup_scope": "Whole CURRENT origin/main and lane intake_index recursively serialized metadata, notes and companion URLs; arxiv version neutral; GitHub repo/blob/raw/LICENSE unified.",
+  "origin_entries": 1919,
+  "reviewed_primaries": [
+    {
+      "id": "intake-1028",
+      "title": "OpenMLE Sandbox — distributed code-execution and grading service (OpenRSI PR #2, unmerged draft)",
+      "url": "https://github.com/FrontisAI/OpenRSI/pull/2",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-1087",
+      "title": "KForge: LLM-Driven Cross-Platform Kernel Generation for AI Accelerators",
+      "url": "https://arxiv.org/abs/2606.02963",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-1239",
+      "title": "GrepSeek: Training Search Agents for Direct Corpus Interaction",
+      "url": "https://arxiv.org/abs/2605.29307",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-1240",
+      "title": "GPU Forecasters: Language Models as Selective Surrogates for Kernel Runtime Optimization",
+      "url": "https://arxiv.org/abs/2605.31464",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-1248",
+      "title": "daVinci-kernel: Co-Evolving Skill Selection, Summarization, and Utilization via RL for GPU Kernel Optimization",
+      "url": "https://arxiv.org/abs/2606.16497",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-272",
+      "title": "Evaluating AGENTS.md: Are Repository-Level Context Files Helpful for Coding Agents?",
+      "url": "https://arxiv.org/abs/2602.11988",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-664",
+      "title": "KernelBench: Can LLMs Write Efficient GPU Kernels?",
+      "url": "https://arxiv.org/abs/2502.10517",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-667",
+      "title": "MultiKernelBench: A Multi-Platform Benchmark for Kernel Generation",
+      "url": "https://arxiv.org/abs/2507.17773",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-896",
+      "title": "The new rules of context engineering for Claude 5 generation models",
+      "url": "https://claude.com/blog/the-new-rules-of-context-engineering-for-claude-5-generation-models",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-967",
+      "title": "ARGUS - agentic GPU kernel optimisation reaching hand-optimised-assembly parity on AMD MI300X",
+      "url": "https://arxiv.org/abs/2604.18616",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-972",
+      "title": "Mercury: A Code Efficiency Benchmark for Code Large Language Models",
+      "url": "https://arxiv.org/abs/2402.07844",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-974",
+      "title": "RLPF - staged correctness-gated reward for RL code performance optimization",
+      "url": "https://arxiv.org/abs/2607.27271",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-975",
+      "title": "PerfCodeBench - 1,854 executable performance tasks with both a baseline and an expert reference per task",
+      "url": "https://arxiv.org/abs/2605.15222",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-976",
+      "title": "Rethinking Code Performance Benchmarks for LLMs - only 6.11% of \"performant\" reference implementations are significantly faster on the original tests",
+      "url": "https://arxiv.org/abs/2607.07619",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-978",
+      "title": "MLEvolve - Monte Carlo GRAPH search with cross-branch reference edges for ML engineering agents (ID CORRECTION)",
+      "url": "https://arxiv.org/abs/2606.06473",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-979",
+      "title": "CTRL-ALT-DECEIT - sabotage and sandbagging by ML-engineering agents, and what a monitor can and cannot catch",
+      "url": "https://arxiv.org/abs/2511.09904",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-980",
+      "title": "Detecting Safety Violations Across Many Agent Traces (Meerkat), with its companion cheating-audit blog post (TITLE CORRECTION)",
+      "url": "https://arxiv.org/abs/2604.11806",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-982",
+      "title": "Closed-form paired confidence intervals for LLM evaluation, with a mandatory small-K correction",
+      "url": "https://arxiv.org/abs/2512.21326",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-983",
+      "title": "LLM test augmentation: a 61.9% per-augmentation defect rate, and a gate-before-judge hardening procedure",
+      "url": "https://arxiv.org/abs/2606.16062",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-984",
+      "title": "Reinforcement learning for fast HPC code generation (IEEE TPDS 2026) - it COEXISTS with intake-939 rather than contradicting it",
+      "url": "https://arxiv.org/abs/2404.18864",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-985",
+      "title": "CodeContests+ - a fully open substitute for the test-construction half of a performance benchmark",
+      "url": "https://arxiv.org/abs/2506.05817",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    },
+    {
+      "id": "intake-989",
+      "title": "Honest Lying: Understanding Memory Confabulation in Reflexive Agents",
+      "url": "https://arxiv.org/abs/2605.29463",
+      "classification": "already-indexed reviewed primary; not a newly surfaced source"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://github.com/agent-infra/sandbox",
+      "canonical_identity": "github:agent-infra/sandbox",
+      "bearing_entry": "intake-1028",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [
+        "https://github.com/agent-infra/sandbox/blob/main/LICENSE"
+      ],
+      "load_bearing_question": "Worker runtime underlying confinement and cgroup assumptions; direct runtime-source dive would bound inherited security behavior.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1028 CURRENT confinement claims are explicitly paper-reported; runtime syscall/cgroup audit is valuable additional security scope, not required to preserve bounded wording. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "sandbox",
+      "what_settles": "Worker runtime underlying confinement and cgroup assumptions; direct runtime-source dive would bound inherited security behavior.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend focused runtime-source read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/agent-infra/sandbox",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1028",
+        "source_revision": "dbe79cb372d0486cee3e4f68159715dc5c8d6774; retrieved 2026-10-06; sha256=6da01ef2cf22dbd5761f81716a94c63e7551daa31540cab4bb8c4afe9613e9e2",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/result.json",
+        "result_sha256": "df785e1a1de98b3dfda058a23ad22d160b82c1842f83325f38b6e55ca442cd4a",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/proposed_entry_update.json",
+        "proposal_sha256": "ce775bd3cae150f60d7bd74bb16524baf711f850576ee7b0fe1a18538a59933f",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/source.patch",
+            "sha256": "6da01ef2cf22dbd5761f81716a94c63e7551daa31540cab4bb8c4afe9613e9e2",
+            "bytes": 313992
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1028/pr.json",
+            "sha256": "8820edd358033be1428daa5fbbfadc6a812e868fd9b3d332b4fde2954a498f97",
+            "bytes": 20830
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/alirezasalemi7/grepseek",
+      "canonical_identity": "github:alirezasalemi7/grepseek",
+      "bearing_entry": "intake-1239",
+      "classification": "same-work companion; distinct repository artifact",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Current PACE/SPCS implementation and byte-equivalence tests; paper alone reports author design claims.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "ingestion-and-dive",
+      "reason": "Current audit priority: license/aggregate denominator successor (972), exact evaluation denominators(1248), estimator normalization(982), or byte equivalence implementation(1239). Samework companions can be attached to existing entry; no automatic newID.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "grepseek",
+      "what_settles": "Current PACE/SPCS implementation and byte-equivalence tests; paper alone reports author design claims.",
+      "minimal_current_audit": true,
+      "prior_recommendation": "Recommend same-work companion read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/alirezasalemi7/grepseek",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1239",
+        "source_revision": "arXiv:2605.29307v2; retrieved 2026-10-06; sha256=a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+        "result_sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+        "proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.html",
+            "sha256": "a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+            "bytes": 1126468
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
+            "sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
+            "bytes": 193369
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/verl-project/verl",
+      "canonical_identity": "github:verl-project/verl",
+      "bearing_entry": "intake-1239",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Training-loop implementation and GRPO operational assumptions.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1239 CURRENT method descriptions do not claim training-loop reproduction; framework audit adds implementation scope. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "verl",
+      "what_settles": "Training-loop implementation and GRPO operational assumptions.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend focused distinct infrastructure read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/verl-project/verl",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1239",
+        "source_revision": "arXiv:2605.29307v2; retrieved 2026-10-06; sha256=a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+        "result_sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+        "proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.html",
+            "sha256": "a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+            "bytes": 1126468
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
+            "sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
+            "bytes": 193369
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://hf.co/datasets/PeterJinGo/wiki-18-corpus",
+      "canonical_identity": "huggingface.co/datasets/peterjingo/wiki-18-corpus",
+      "bearing_entry": "intake-1239",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Exact 2018 Wikipedia corpus bytes, passage format and reported 14 GB footprint.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1239 CURRENT paper-reported corpus size does not claim exact corpus-byte reproduction; downloading corpus materially expands audit. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "wiki-18-corpus",
+      "what_settles": "Exact 2018 Wikipedia corpus bytes, passage format and reported 14 GB footprint.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend corpus provenance read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://hf.co/datasets/PeterJinGo/wiki-18-corpus",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1239",
+        "source_revision": "arXiv:2605.29307v2; retrieved 2026-10-06; sha256=a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+        "result_sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+        "proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.html",
+            "sha256": "a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+            "bytes": 1126468
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
+            "sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
+            "bytes": 193369
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://hf.co/datasets/RUC-NLPIR/FlashRAG_datasets",
+      "canonical_identity": "huggingface.co/datasets/ruc-nlpir/flashrag_datasets",
+      "bearing_entry": "intake-1239",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Exact seven benchmark splits and per-question denominators for F1/significance reproduction.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1239 CURRENT F1 reports remain author-reported; full benchmark splits/denominator replication is broader than byte-equivalence code audit. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "FlashRAG_datasets",
+      "what_settles": "Exact seven benchmark splits and per-question denominators for F1/significance reproduction.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend dataset/protocol read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://hf.co/datasets/RUC-NLPIR/FlashRAG_datasets",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1239",
+        "source_revision": "arXiv:2605.29307v2; retrieved 2026-10-06; sha256=a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+        "result_sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+        "proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.html",
+            "sha256": "a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+            "bytes": 1126468
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
+            "sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
+            "bytes": 193369
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://huggingface.co/datasets/Tevatron/browsecomp-plus",
+      "canonical_identity": "huggingface.co/datasets/tevatron/browsecomp-plus",
+      "bearing_entry": "intake-1239",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Added v2 eighth benchmark corpus and evaluation records, separating judged accuracy from F1.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1239 v2 judged-accuracy benchmark is distinguished from F1; exact corpus/evaluation replication is additional scope. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "browsecomp-plus",
+      "what_settles": "Added v2 eighth benchmark corpus and evaluation records, separating judged accuracy from F1.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend v2 added-benchmark read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://huggingface.co/datasets/Tevatron/browsecomp-plus",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1239",
+        "source_revision": "arXiv:2605.29307v2; retrieved 2026-10-06; sha256=a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/result.json",
+        "result_sha256": "bfad320d09bca8f7ba36b55dab241028daa65f7ab5417e22111bd1798a2cabec",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/proposed_entry_update.json",
+        "proposal_sha256": "423114d5c93e5f33709f2b4ccbb90cc9c9408b649ac911b9c8d72e8f5faafe1d",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.html",
+            "sha256": "a97337d786df558b771d8ec2a00c39786d80928a1d8a5461f2311fd4538ca22d",
+            "bytes": 1126468
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1239/source.txt",
+            "sha256": "2ec0a5b8df1228f9faefac79b9b8378a46cd4422cfed6322e69e11c7f809c6f8",
+            "bytes": 193369
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/gpu-mode/kernelbot",
+      "canonical_identity": "github:gpu-mode/kernelbot",
+      "bearing_entry": "intake-1240",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Benchmark task infrastructure and reference/protocol provenance for six-task surrogate evaluation.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1240 CURRENT six-task comparison remains author-reported; harness timing/reference audit would be separate reproduction. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "kernelbot",
+      "what_settles": "Benchmark task infrastructure and reference/protocol provenance for six-task surrogate evaluation.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend scoped harness read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/gpu-mode/kernelbot",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1240",
+        "source_revision": "arXiv:2605.31464v1; retrieved 2026-10-06; sha256=20aed50cbf05e2f4ffff541af6e61135ac575aadd68b93eaa109b3d54930e4c5",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/result.json",
+        "result_sha256": "ac017e8368180c50fab0534907ec953e9d9b5b16ac487b9ba2372f5f9f2edd58",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/proposed_entry_update.json",
+        "proposal_sha256": "c3032b88de9ab202a3352ca6f8f27ce7f2c578472a3349504b757b4f98267fb5",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/source.html",
+            "sha256": "20aed50cbf05e2f4ffff541af6e61135ac575aadd68b93eaa109b3d54930e4c5",
+            "bytes": 740488
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/source.txt",
+            "sha256": "0389a0d921ccc380bfc99461bad9c9b89bf355c09e2ff829382ff8ea583b040f",
+            "bytes": 119679
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://huggingface.co/datasets/SakanaAI/AI-CUDA-Engineer-Archive",
+      "canonical_identity": "huggingface.co/datasets/sakanaai/ai-cuda-engineer-archive",
+      "bearing_entry": "intake-1240",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Independent comparison archive, not replication of this surrogate; settles reused external archive scale.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "1240 external archive is distinguished from independent replication; full archive provenance/reproduction adds scope beyond narrowed claim. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "AI-CUDA-Engineer-Archive",
+      "what_settles": "Independent comparison archive, not replication of this surrogate; settles reused external archive scale.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend archive provenance read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://huggingface.co/datasets/SakanaAI/AI-CUDA-Engineer-Archive",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1240",
+        "source_revision": "arXiv:2605.31464v1; retrieved 2026-10-06; sha256=20aed50cbf05e2f4ffff541af6e61135ac575aadd68b93eaa109b3d54930e4c5",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/result.json",
+        "result_sha256": "ac017e8368180c50fab0534907ec953e9d9b5b16ac487b9ba2372f5f9f2edd58",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/proposed_entry_update.json",
+        "proposal_sha256": "c3032b88de9ab202a3352ca6f8f27ce7f2c578472a3349504b757b4f98267fb5",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/source.html",
+            "sha256": "20aed50cbf05e2f4ffff541af6e61135ac575aadd68b93eaa109b3d54930e4c5",
+            "bytes": 740488
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1240/source.txt",
+            "sha256": "0389a0d921ccc380bfc99461bad9c9b89bf355c09e2ff829382ff8ea583b040f",
+            "bytes": 119679
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/GAIR-NLP/daVinci-kernel",
+      "canonical_identity": "github:gair-nlp/davinci-kernel",
+      "bearing_entry": "intake-1248",
+      "classification": "same-work companion; distinct repository artifact",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Evaluation aggregation, exact denominators, skill corpus/license and runtime injection path absent from paper detail.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "ingestion-and-dive",
+      "reason": "Current audit priority: license/aggregate denominator successor (972), exact evaluation denominators(1248), estimator normalization(982), or byte equivalence implementation(1239). Samework companions can be attached to existing entry; no automatic newID.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "daVinci-kernel",
+      "what_settles": "Evaluation aggregation, exact denominators, skill corpus/license and runtime injection path absent from paper detail.",
+      "minimal_current_audit": true,
+      "prior_recommendation": "Recommend same-work companion read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/GAIR-NLP/daVinci-kernel",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-1248",
+        "source_revision": "arXiv:2606.16497v3; retrieved 2026-10-06; sha256=fde6d70698e1d29007a8d3053b1c12405ab3b969ce32e19f91a0ccff3acdc3e7",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/result.json",
+        "result_sha256": "d0b6bf7e2b64a96a549606dc104b33c5820c7c6beaa11798e2718c725fcdd59e",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/proposed_entry_update.json",
+        "proposal_sha256": "a3c56813f007854cb4d5ce0b2db12749ed2a7099a52ca117a70e5c7acaff455c",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/source.html",
+            "sha256": "fde6d70698e1d29007a8d3053b1c12405ab3b969ce32e19f91a0ccff3acdc3e7",
+            "bytes": 402769
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-1248/source.txt",
+            "sha256": "0ce7e853885bdc7d980879bc79066c208f609eb1f2c4c51209fb7e389ecec6c3",
+            "bytes": 81863
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/samm393/mlebench-subversion",
+      "canonical_identity": "github:samm393/mlebench-subversion",
+      "bearing_entry": "intake-979",
+      "classification": "same-work companion; distinct repository artifact",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Published implementation details and reproducibility limits; no implementation claim made here.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "979 CURRENT observations remain paper-reported and do not claim published implementation replication; trace-tree/source read remains selectable. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "mlebench-subversion",
+      "what_settles": "Published implementation details and reproducibility limits; no implementation claim made here.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend same-work companion read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/samm393/mlebench-subversion",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-979",
+        "source_revision": "arXiv:2511.09904v2",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/result.json",
+        "result_sha256": "4afa8977da7f3b3af333e4be421b50bf93216bfd9f52d74dc905c031094e521f",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/proposed_entry_update.json",
+        "proposal_sha256": "a57bc3b5fb12c7f850ef6cfb40b974332b63e99f34db2b51da79c0dcc2ed86d5",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/abs.html",
+            "sha256": "edd3be829212751a89ca972531d42d7454b22dea56946c6fbda9b5ba4c4f9539",
+            "bytes": 44078
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/paper.html",
+            "sha256": "57a445cc74af0a7be826552e73b4f0f9677bddd9a2be3f7d6370d18798f943ba",
+            "bytes": 1208730
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-979/paper.txt",
+            "sha256": "e8a6c75606fbb07f0bc0cf931c92bb8f783bc36aceff46d611fa9daf064cb49e",
+            "bytes": 153859
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/all-the-noises/eval-arena",
+      "canonical_identity": "github:all-the-noises/eval-arena",
+      "bearing_entry": "intake-982",
+      "classification": "same-work companion; distinct repository artifact",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Executable estimator and normalization conventions behind Tables1-2; not read or run.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "ingestion-and-dive",
+      "reason": "Current audit priority: license/aggregate denominator successor (972), exact evaluation denominators(1248), estimator normalization(982), or byte equivalence implementation(1239). Samework companions can be attached to existing entry; no automatic newID.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "eval-arena",
+      "what_settles": "Executable estimator and normalization conventions behind Tables1-2; not read or run.",
+      "minimal_current_audit": true,
+      "prior_recommendation": "Recommend same-work companion read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/all-the-noises/eval-arena",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-982",
+        "source_revision": "arXiv:2512.21326v2",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/result.json",
+        "result_sha256": "35e3cb41beb5a91f025df8766b88c360bdb19909957e773a1a9d8df203c83091",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+        "proposal_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/abs.html",
+            "sha256": "c41160ca5c194aff9a4ad1b05cff28c3bb2b9e04c69e77261744054dd06a72c9",
+            "bytes": 41702
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/paper.html",
+            "sha256": "0c4baf34eb55f7e26c6528b96bdd9096b915bda9a5c3499996160ff4055e6370",
+            "bytes": 350016
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/paper.txt",
+            "sha256": "5060dde67d0195b25917593bec159358b55cc8f39b8b6a5cdef5ac9624184723",
+            "bytes": 79043
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://engineering.indeedblog.com/blog/2026/07/bootstrap-confidence-intervals-for-llm-evaluation/",
+      "canonical_identity": "engineering.indeedblog.com/blog/2026/07/bootstrap-confidence-intervals-for-llm-evaluation",
+      "bearing_entry": "intake-982",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Comparison of bootstrap schemes and coverage in bounded LLM-eval simulations; follow-up could constrain unconditional no-bootstrap recommendation.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "982 CURRENT estimator critique is bounded; bootstrap counterevidence read adds methodological breadth beyond code normalization check. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "bootstrap-confidence-intervals-for-llm-evaluation",
+      "what_settles": "Comparison of bootstrap schemes and coverage in bounded LLM-eval simulations; follow-up could constrain unconditional no-bootstrap recommendation.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend distinct methodological read",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://engineering.indeedblog.com/blog/2026/07/bootstrap-confidence-intervals-for-llm-evaluation/",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-982",
+        "source_revision": "arXiv:2512.21326v2",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/result.json",
+        "result_sha256": "35e3cb41beb5a91f025df8766b88c360bdb19909957e773a1a9d8df203c83091",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/proposed_entry_update.json",
+        "proposal_sha256": "922111cda3b2e8f5eb7f73c6106a50625f0ccee7832abec8f36da90bd4d4ea30",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/abs.html",
+            "sha256": "c41160ca5c194aff9a4ad1b05cff28c3bb2b9e04c69e77261744054dd06a72c9",
+            "bytes": 41702
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/paper.html",
+            "sha256": "0c4baf34eb55f7e26c6528b96bdd9096b915bda9a5c3499996160ff4055e6370",
+            "bytes": 350016
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-982/paper.txt",
+            "sha256": "5060dde67d0195b25917593bec159358b55cc8f39b8b6a5cdef5ac9624184723",
+            "bytes": 79043
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://ieeexplore.ieee.org/ielam/71/11483288/11442899-aam.pdf",
+      "canonical_identity": "ieeexplore.ieee.org/ielam/71/11483288/11442899-aam",
+      "bearing_entry": "intake-984",
+      "classification": "existing-work journal edition of intake-984; intake-939 related metadata encounter, not same primary",
+      "full_metadata_matches_lane": [],
+      "full_metadata_matches_origin": [],
+      "companion_urls": [],
+      "load_bearing_question": "Whether2026 journal reward/setup differs from2024 arXiv v1; publisher PDF fetch returned418.",
+      "read_status": "unread discovery; not support for reviewed claims",
+      "recommendation": "decline-present-round",
+      "reason": "984 CURRENT read explicitly applies to2024arxivv1; journal reward/setup comparison is valuable, but publisher fetch418 remains access constraint. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "operator_choice_required": "Include/exclude follow-up research; discovery classification does not dismiss source.",
+      "name": "11442899-aam.pdf",
+      "what_settles": "Whether2026 journal reward/setup differs from2024 arXiv v1; publisher PDF fetch returned418.",
+      "minimal_current_audit": false,
+      "prior_recommendation": "Recommend existing-work edition follow-up",
+      "whole_work_metadata_matches_origin": [
+        "intake-939",
+        "intake-984"
+      ],
+      "dedup_note": "Exact publisher URL absent current index; prior wave2 whole-work metadata match and indexed984title identify edition. Related939 not collapsed as same work.",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://ieeexplore.ieee.org/ielam/71/11483288/11442899-aam.pdf",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-984",
+        "source_revision": "arXiv:2404.18864v1",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/result.json",
+        "result_sha256": "325dfa85298d5d61add64e697460a4367808cd1d4095569113952d1ace66b38c",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/proposed_entry_update.json",
+        "proposal_sha256": "9f40f44bf7ebc8bb5e416bcf491c84e32b975e5830767bfca169f63ca4350f28",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/abs.html",
+            "sha256": "8d7554c9abd994f50d98f0d2dd2eddf6f0b48d606071c907f27b8fc0d1e5118a",
+            "bytes": 41042
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/paper.html",
+            "sha256": "16149a9da416c5e6b6484c44fe2a2c7263afd88f6d3dcda7db1c5e9eb8625694",
+            "bytes": 414758
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/paper.txt",
+            "sha256": "de069de8a225544bfb3cf22261d5cc048c3cab3e93feedebfdf70304bcbb1bbe",
+            "bytes": 148210
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-984/doi.json",
+            "sha256": "a752070fc90da166ed4a740bf18fb9d30136a29c607ed45bac3cf3c760fdcdaf",
+            "bytes": 9558
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://github.com/Elfsong/Mercury_Eval",
+      "source_revision": "be9db5806aab3352be1c8cdac8fb3ce7090e2e2c",
+      "relationship": "Current primaryMercuryREADME advertisedevaluationreplacement; readclaim-relevantcode/metadata",
+      "disposition": "Unindexed exactURL in laneHEAD and available origin/main; recommend ingest-and-dive current advertised evaluator as distinctsource, provisionalentry preparedscratch; final operatorfiling/source-selection gate",
+      "dedup": "git grep exactURL in laneHEAD and origin/main research/intake_index.yaml: nohits; broadlane research/handoffs/docs nohits",
+      "canonical_identity": "github:elfsong/mercury_eval",
+      "full_metadata_matches_origin": [],
+      "full_metadata_matches_lane": [],
+      "name": "Mercury_Eval",
+      "what_settles": "Current primaryMercuryREADME advertisedevaluationreplacement; readclaim-relevantcode/metadata",
+      "bearing_entry": "intake-972",
+      "minimal_current_audit": true,
+      "prior_recommendation": "Unindexed exactURL in laneHEAD and available origin/main; recommend ingest-and-dive current advertised evaluator as distinctsource, provisionalentry preparedscratch; final operatorfiling/source-selection gate",
+      "recommendation": "ingestion-and-dive",
+      "reason": "Current audit priority: license/aggregate denominator successor (972), exact evaluation denominators(1248), estimator normalization(982), or byte equivalence implementation(1239). Samework companions can be attached to existing entry; no automatic newID.",
+      "classification": "same-work companion; distinct repository artifact",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://github.com/Elfsong/Mercury_Eval",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-972",
+        "source_revision": "arxiv2402.07844v4; Elfsong/Mercury@e88551021137c0a1591e198877471d09e5d4fb01; advertisedMercury_Eval@be9db5806aab3352be1c8cdac8fb3ce7090e2e2c",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/result.json",
+        "result_sha256": "88fd9b9433c4ad856ea6e654e455d5051a1124de1168cf3aae7ed22ed635d0a3",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/proposed_entry_update.json",
+        "proposal_sha256": "b390e73ae366bafd8de9c4b0d0ebb6dc324830808d025b330c147525d2c6db4c",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/paper-v4.txt",
+            "sha256": "27dfe77afa36ac7dd292825b14b872a98cac17d68e0a44d78996e50c855aea3f",
+            "bytes": 64470
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-972/paper-v4.html",
+            "sha256": "6cfb1da940e8a5f0bd3a0bef79d2988e3654a98c5744cd6bc52c086bbe3c076c",
+            "bytes": 360671
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2601.13682",
+      "what_settles": "Successor feedback-driven test construction may settle limitations of first-generation generator/validator coverage.",
+      "bearing_entry": "intake-985",
+      "whole_index_matches": [],
+      "dedup_scope": "All 1918 canonical entries recursively including notes/companion metadata; arxiv versions normalized and GitHub/raw repository identity aliases searched.",
+      "recommendation": "decline-present-round",
+      "new_id_assigned": false,
+      "canonical_identity": "arxiv:2601.13682",
+      "full_metadata_matches_origin": [],
+      "full_metadata_matches_lane": [],
+      "name": "2601.13682",
+      "minimal_current_audit": false,
+      "prior_recommendation": "operator-select-ingest-and-dive",
+      "reason": "985 successor feedback-driven construction may address validatorcoverage limitations; CURRENT claims concern pinned original, so successor investigation expands technique scope. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://arxiv.org/abs/2601.13682",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-985",
+        "source_revision": "arXiv:2506.05817v1",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/result.json",
+        "result_sha256": "bc5fb94137ade1ace0f0627089c23281eb951b638ea57801f03dc07783a84f03",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/proposed_entry_update.json",
+        "proposal_sha256": "b2f885303b5e1cd66046524443d82b6551ae93860b85acff252c447d906f007a",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.html",
+            "sha256": "071626c98389630cb4132b233965a1d8f7cbdfa3b2941f3bc6047c41f72065f0",
+            "bytes": 1105594
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/abs.html",
+            "sha256": "37183b9dbe625f4b03e659e7deb6961660ba5285e7842445710d8746a2b0c8a7",
+            "bytes": 41775
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE-pinned",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.txt",
+            "sha256": "fc590799af1b417affbcc7f940e59e9f66428c77296bf642d4f14a4dead43997",
+            "bytes": 84144
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-revision.json",
+            "sha256": "67dbdcfc3e47890df35fddace08d6dd0703d127ecc3e4e7e3930e6beebca5c1c",
+            "bytes": 9172
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-api.json",
+            "sha256": "3a0c98b066c10806480cc320781407c0cdcad93178fe88c43b6782f34d83c37d",
+            "bytes": 9709
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README-pinned.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://arxiv.org/abs/2608.24135",
+      "what_settles": "Faulty-code-driven synthesis may test whether coverage shortcomings need harder counterexamples.",
+      "bearing_entry": "intake-985",
+      "whole_index_matches": [],
+      "dedup_scope": "All 1918 canonical entries recursively including notes/companion metadata; arxiv versions normalized and GitHub/raw repository identity aliases searched.",
+      "recommendation": "decline-present-round",
+      "new_id_assigned": false,
+      "canonical_identity": "arxiv:2608.24135",
+      "full_metadata_matches_origin": [],
+      "full_metadata_matches_lane": [],
+      "name": "2608.24135",
+      "minimal_current_audit": false,
+      "prior_recommendation": "operator-select-ingest-and-dive",
+      "reason": "985 faulty-code-driven synthesis could sharpen counterexamplecoverage; CURRENT original-source assertions do not depend on successor comparisons. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "classification": "genuinely distinct source/artifact; no ID assigned",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://arxiv.org/abs/2608.24135",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-985",
+        "source_revision": "arXiv:2506.05817v1",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/result.json",
+        "result_sha256": "bc5fb94137ade1ace0f0627089c23281eb951b638ea57801f03dc07783a84f03",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/proposed_entry_update.json",
+        "proposal_sha256": "b2f885303b5e1cd66046524443d82b6551ae93860b85acff252c447d906f007a",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.html",
+            "sha256": "071626c98389630cb4132b233965a1d8f7cbdfa3b2941f3bc6047c41f72065f0",
+            "bytes": 1105594
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/abs.html",
+            "sha256": "37183b9dbe625f4b03e659e7deb6961660ba5285e7842445710d8746a2b0c8a7",
+            "bytes": 41775
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE-pinned",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.txt",
+            "sha256": "fc590799af1b417affbcc7f940e59e9f66428c77296bf642d4f14a4dead43997",
+            "bytes": 84144
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-revision.json",
+            "sha256": "67dbdcfc3e47890df35fddace08d6dd0703d127ecc3e4e7e3930e6beebca5c1c",
+            "bytes": 9172
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-api.json",
+            "sha256": "3a0c98b066c10806480cc320781407c0cdcad93178fe88c43b6782f34d83c37d",
+            "bytes": 9709
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README-pinned.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          }
+        ]
+      }
+    },
+    {
+      "url": "https://huggingface.co/datasets/ByteDance-Seed/Code-Contests-Plus-Verified",
+      "what_settles": "Companion high-quality subset and current TPR/TNR filtering schema.",
+      "bearing_entry": "intake-985",
+      "whole_index_matches": [],
+      "dedup_scope": "All 1918 canonical entries recursively including notes/companion metadata; arxiv versions normalized and GitHub/raw repository identity aliases searched.",
+      "recommendation": "decline-present-round",
+      "new_id_assigned": false,
+      "canonical_identity": "huggingface.co/datasets/bytedance-seed/code-contests-plus-verified",
+      "full_metadata_matches_origin": [],
+      "full_metadata_matches_lane": [],
+      "name": "Code-Contests-Plus-Verified",
+      "minimal_current_audit": false,
+      "prior_recommendation": "operator-select-ingest-and-dive",
+      "reason": "985 datasetcard already establishes publishedrates as declaration; verifiedsubset schema/data replication is additional scope, not required for CURRENT authorreport. Decline THIS ROUND only; operator may include it, with no applicability judgment.",
+      "classification": "same-work companion dataset",
+      "companion_capture": {
+        "status": "not fetched in this preparation; operator source selection pending",
+        "artifact_locator": "https://huggingface.co/datasets/ByteDance-Seed/Code-Contests-Plus-Verified",
+        "current_revision": null,
+        "current_artifact_sha256": null,
+        "sha_note": "No companion bytes were retrieved, so no current-content SHA is asserted."
+      },
+      "bearing_primary_evidence_packet": {
+        "relationship_note": "Hash binds the already reviewed bearing entry primary packet, not the surfaced companion source.",
+        "bearing_entry": "intake-985",
+        "source_revision": "arXiv:2506.05817v1",
+        "result_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/result.json",
+        "result_sha256": "bc5fb94137ade1ace0f0627089c23281eb951b638ea57801f03dc07783a84f03",
+        "proposal_path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/proposed_entry_update.json",
+        "proposal_sha256": "b2f885303b5e1cd66046524443d82b6551ae93860b85acff252c447d906f007a",
+        "artifacts": [
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.html",
+            "sha256": "071626c98389630cb4132b233965a1d8f7cbdfa3b2941f3bc6047c41f72065f0",
+            "bytes": 1105594
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/abs.html",
+            "sha256": "37183b9dbe625f4b03e659e7deb6961660ba5285e7842445710d8746a2b0c8a7",
+            "bytes": 41775
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE-pinned",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/paper.txt",
+            "sha256": "fc590799af1b417affbcc7f940e59e9f66428c77296bf642d4f14a4dead43997",
+            "bytes": 84144
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-LICENSE",
+            "sha256": "43070e2d4e532684de521b885f385d0841030efa2b1a20bafb76133a5e1379c1",
+            "bytes": 11356
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/executor-revision.json",
+            "sha256": "67dbdcfc3e47890df35fddace08d6dd0703d127ecc3e4e7e3930e6beebca5c1c",
+            "bytes": 9172
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-api.json",
+            "sha256": "3a0c98b066c10806480cc320781407c0cdcad93178fe88c43b6782f34d83c37d",
+            "bytes": 9709
+          },
+          {
+            "path": "/mnt/raid0/llm/tmp/intake-reverify/dive-985/dataset-README-pinned.md",
+            "sha256": "e07e6fa07aa5752824a95d92f3c962ea8ac6904289bbb4e882b9b4a01a96377f",
+            "bytes": 7829
+          }
+        ]
+      }
+    }
+  ],
+  "counts": {
+    "reviewed_entries": 22,
+    "canonical_surfaced_sources": 17,
+    "minimal_current_audit": 4,
+    "existing_work_editions": 1,
+    "same_work_companions": 6,
+    "genuinely_distinct_sources_or_artifacts": 10,
+    "journal_editions": 1
+  },
+  "operator_options": "Recommended minimal4; operator may choose any or all retained sources. Companion filing vs distinctentry remains owner decision; no IDs assigned.",
+  "artifact_locator_note": "17 surfaced identities comprise 6 same-work companions, 10 distinct sources/artifacts, and 1 journal edition. Discovery URLs are locators; companions have not all been selected for a full dive. Mercury_Eval had a provisional relevant read; Stage-2b is not completed. Companion content fingerprints remain unknown unless captured explicitly; bearing-primary packet fingerprints are separate.",
+  "input_sha256s": {
+    "prior_json_sha256": "a15299a10be1eafd6738e65d31b2e0177d6656c20e3631d3f0247d1e36a4ac15",
+    "prior_markdown_sha256": "d8ab21c8cb4039f495fd46fc028b95a619217a326d124641d7a780958acf7fcc"
+  }
+}

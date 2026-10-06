@@ -1,0 +1,168 @@
+{
+  "scope": "Triage KEEP wording only; 12 matching rows checked, 3 false generic reasons repaired. Existing 352 classifications and 22 primary RE-DIVE source-read count unchanged. No native record, claim, anchor, status or FULL/PARTIAL warrant change.",
+  "source_triage_sha256": "fad3591c2075448df161b2653e683f4a7a04371e05ae41bdd107e0ab11e4d2c9",
+  "deltas": [
+    {
+      "id": "intake-1579",
+      "class_before": "KEEP",
+      "class_after": "KEEP",
+      "flags": "AC",
+      "native_claim_anchor_count": 0,
+      "old_reason": "KEEP — C-only noisy keyword flag; no live load-bearing consumer; claim anchors and source-read evidence reviewed.",
+      "new_reason": "KEEP — AC flags retained. Native 2026-09-25 primary-code reconciliation against intake-1584/1585 confirms bounded route/focus selection, host checks and attributed fallbacks; the companion reran all 30 synthetic offline checks. Routing has the fuller prepared-action envelope; focus dispatch is narrower. No coding-quality gain, live-provider accuracy or self-training result is established. This synthesis has no native claim_anchors; its evidence is the explicit reconciliation and pinned companion audits.",
+      "evidence": [
+        {
+          "kind": "native-source-reconciliation",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:183332::intake-1579.dive_corrections",
+          "excerpt": "2026-09-25 reconciled against intake-1584 and intake-1585. Thirty offline checks reran successfully but use synthetic responses. ACP metadata does not create generic command execution, and external provider loops remain provider-owned."
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1584",
+          "url": "https://github.com/codejunkie99/keel",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:183799::intake-1584.dive_corrections",
+          "excerpt": "2026-09-25 code-path audit at git 9f7fcf1f5008a0c804f9715676790c7b1ea409b6. Fresh unpinned route selection and embedded focus enforcement are implemented. The full PreparedAction envelope is route-specific; authorization is separate, route preconditions are empty, focus uses a narrower recheck, and receipts lack a complete replay tuple.",
+          "claim_anchor_locators": [
+            "crates/engine/src/sessions.rs:482-501",
+            "crates/engine/src/workflow.rs:79-109",
+            "crates/engine/src/workflow.rs:102-109"
+          ]
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1585",
+          "url": "https://github.com/codejunkie99/jev-engineering",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:183898::intake-1585.dive_corrections",
+          "excerpt": "2026-09-25 Stage-2 dive at git d938c516df5d82f1492501902ed8c434cd91158c. Node v22.23.2 reran the pinned script and all 30 checks passed. They use synthetic and mocked responses, perform no live provider call or business action, and measure no semantic accuracy, calibration, or coding outcome.",
+          "claim_anchor_locators": [
+            "jev-engineering.md:107-115",
+            "README.md:34"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intake-1581",
+      "class_before": "KEEP",
+      "class_after": "KEEP",
+      "flags": "AC",
+      "native_claim_anchor_count": 0,
+      "old_reason": "KEEP — C-only noisy keyword flag; no live load-bearing consumer; claim anchors and source-read evidence reviewed.",
+      "new_reason": "KEEP — AC flags retained. Native 2026-09-25 reconciliation against intake-1589/1590/1591 confirms the frozen Qwen3-8B serving/cache implementation, a checkpoint containing 18,887,680 total head parameters, and exactly reproduced default-head JevBench macro accuracy 0.3397184899 and ECE 0.3379224320. Original three-stage training, headline latency and specialized-head outcomes remain unreproduced. This synthesis has no native claim_anchors; use the pinned repository, model and benchmark companions rather than the JavaScript-only article front door.",
+      "evidence": [
+        {
+          "kind": "native-source-reconciliation",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:183492::intake-1581.dive_corrections",
+          "excerpt": "2026-09-25 reconciled against intake-1589 through intake-1591. Corrected the head from rounded 20M-each framing to 18,887,680 total; confirmed serving/cache code; found no original training pipelines or launch-run artifacts; exactly reproduced JevBench macro accuracy 0.3397184899 and ECE 0.3379224320 for the default head."
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1589",
+          "url": "https://github.com/Contrastive-LM/CLM",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:184315::intake-1589.dive_corrections",
+          "excerpt": "2026-09-25 Stage-2 audit at bb42c6c5bf914fd449bed2f6ca65be80602cb1f7. Frozen-base serving, two projection heads, cosine scoring, typed candidate construction, and independent vector-cache namespaces are implemented. Launch quality/latency charts and original training pipelines have no raw run artifacts in the repository. Git history was rewritten, though the exact result commit resolves.",
+          "claim_anchor_locators": [
+            "src/clm/schema.py:3",
+            "README.md:373"
+          ]
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1590",
+          "url": "https://huggingface.co/Contrastive-LM/CLM-v0.1-8B",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:184405::intake-1590.dive_corrections",
+          "excerpt": "2026-09-25 structural audit at HF e939398d4556fcd9400c76fa8c5a513202f42b0a. The file is 75,557,149 bytes, SHA-256 b2b4a8c9c2d39263eff78a351eb909a342ce9b3bf21a3f07c1d1bf15f1c4eda5, and contains two 9,443,840-parameter heads. It excludes base-model weights.",
+          "claim_anchor_locators": [
+            "README.md:30 and checkpoint inventory",
+            "README.md:113 and checkpoint inventory"
+          ]
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1591",
+          "url": "https://huggingface.co/datasets/Praveenrajus/jev-bench",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:184525::intake-1591.dive_corrections",
+          "excerpt": "2026-09-25 Stage-2 recomputation joined all 22,773 predictions to all 22 test sets, reproduced every accuracy exactly and every ECE within 1.12e-16, and found zero errors. Published macro is unweighted by configuration; record-weighted accuracy/ECE are 0.3215210995/0.3589582479. Run provenance omits resolved base and head Hub revisions and a full environment lockfile.\n\n2026-09-25 Stage-4 closeout: vendor benchmark and latency values remain descriptive until a sealed local task-specific gate reproduces them with model, data, timing, and row-level receipts.",
+          "claim_anchor_locators": [
+            "README.md:200",
+            "results/clm-8b/vs_jev/compare.md:25 plus raw-prediction recomputation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "intake-1840",
+      "class_before": "KEEP",
+      "class_after": "KEEP",
+      "flags": "AC",
+      "native_claim_anchor_count": 0,
+      "old_reason": "KEEP — C-only noisy keyword flag; no live load-bearing consumer; claim anchors and source-read evidence reviewed.",
+      "new_reason": "KEEP — AC flags retained. Native Stage-2 correction and the preserved GitHub PR JSON confirm suffix drafting was merged as 2c19d96777939dd3473eabfacbe1948a3ea0b4be on 2025-11-03. PR-body Specbench/Blazedit H200 TPOT tables and the author comment reporting about 1.5 ms speculation plus 0.4 ms cache update at concurrency 64 are descriptive author reports, not EPYC reproduction or evidence for temperature>0 acceptance. This record has no native claim_anchors; evidence is the PR body/comments and merged metadata, with intake-1835 as the paper companion.",
+      "evidence": [
+        {
+          "kind": "native-source-reconciliation",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:230261::intake-1840.dive_corrections",
+          "excerpt": "2026-10-03 Stage 2 (with intake-1835): CONFIRMED merged; temperature>0 NOT-FOUND."
+        },
+        {
+          "kind": "companion-source-read",
+          "entry": "intake-1835",
+          "url": "https://arxiv.org/abs/2411.04975",
+          "locator": "/mnt/raid0/llm/worktrees/intake-reverify-20261006/research/intake_index.yaml:229871::intake-1835.dive_corrections",
+          "excerpt": "2026-10-03 Stage 2: CONFIRMED; temperature>0 NOT-FOUND-IN-SOURCE.",
+          "claim_anchor_locators": [
+            "§4.1",
+            "§3 Hybrid",
+            "App B.1 Table 4",
+            "§3",
+            "§4 setup",
+            "§4.3"
+          ]
+        },
+        {
+          "kind": "preserved-primary-pr-read",
+          "reader_operation": "Read preserved primary PR body, merged metadata, and all 41 comment bodies; static documentary check only, no code/benchmark execution.",
+          "pr_fields": {
+            "html_url": "https://github.com/vllm-project/vllm/pull/25784",
+            "merged_at": "2025-11-03T17:23:32Z",
+            "merge_commit_sha": "2c19d96777939dd3473eabfacbe1948a3ea0b4be"
+          },
+          "overhead_comment_hits": [
+            {
+              "array_index": 24,
+              "url": "https://github.com/vllm-project/vllm/pull/25784#issuecomment-3391936295",
+              "body_excerpt": "At concurrency=64 the total cache update time per step is ~0.4ms and the total speculation time per step is ~1.5ms. To verify, I set the `suffix_decoding_max_tree_depth` to 32 instead o"
+            },
+            {
+              "array_index": 26,
+              "url": "https://github.com/vllm-project/vllm/pull/25784#issuecomment-3392778125",
+              "body_excerpt": "At concurrency=64 the total cache update time per step is ~0.4ms and the total speculation time per step is ~1.5ms. To verify, I set the `suffix_decoding_max_tree_depth` to 32 instead o"
+            },
+            {
+              "array_index": 27,
+              "url": "https://github.com/vllm-project/vllm/pull/25784#issuecomment-3393471087",
+              "body_excerpt": "At concurrency=64 the total cache update time per step is ~0.4ms and the total speculation time per step is ~1.5ms. To verify, I set the `suffix_decoding_max_tree_depth` to 32 instead o"
+            },
+            {
+              "array_index": 38,
+              "url": "https://github.com/vllm-project/vllm/pull/25784#issuecomment-3523155004",
+              "body_excerpt": "At concurrency=64 the total cache update time per step is ~0.4ms and the total speculation time per step is ~1.5ms. To verify, I set the `suffix_decoding_max_tree_depth` to 32 instead o"
+            }
+          ],
+          "artifacts": [
+            {
+              "path": "/mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/papers/vllm_pr25784.json",
+              "sha256": "0b56d4d68f8cb0a0d83e3a2f8c4ccae9f4eaa5c40cec5f9df6f18d4fe9d4a2c4"
+            },
+            {
+              "path": "/mnt/raid0/llm/tmp/intake-3090-labd-20261003/raw/papers/vllm_pr25784_comments.json",
+              "sha256": "82723b473546e10078dfabf5f12126f8a6f1dfdfd3ad3ec7bb8f63f5e50f94a8"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining_matching_rows": "772/779/1425/1489/1603/1608/1882/1883/1884: flags/anchor wording supported by native entries; unchanged.",
+  "application": "Root approval and application only. Preserve first-pass artifact; regenerate compact bundle hashes after applying reason/evidence replacements."
+}
