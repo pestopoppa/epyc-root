@@ -63,6 +63,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import fcntl
+import importlib.util
 import json
 import math
 import os
@@ -74,6 +75,7 @@ import time
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+CODE_ROOT = HERE.parent.parent
 ROOT = Path(os.environ.get("HYGIENE_ROOT") or HERE.parent.parent)
 STATE_DIR = Path(os.environ.get("HYGIENE_STATE_DIR") or ROOT / "logs" / "hygiene")
 LLM = "/mnt/raid0/llm"
@@ -178,6 +180,29 @@ class Tick:
             pass
         self.state["heartbeat_at"] = now_iso()
         write_json(self.state_path, self.state)
+        self.capture_activation_heartbeat()
+
+    def capture_activation_heartbeat(self) -> None:
+        """Optional future installer marker only; never capture legacy/default ticks."""
+        if self.dry_run:
+            return
+        pending = ROOT / "logs/hygiene/host-supervision-activation/pending"
+        try:
+            if not any(p.is_file() and not p.is_symlink() for p in pending.glob("*.json")):
+                return  # No adapter import, lock, sync, native write or marker consumption.
+            spec = importlib.util.spec_from_file_location(
+                "_epyc_host_supervision_activation",
+                CODE_ROOT / "scripts/vidya/adapters/host_supervision_activation.py")
+            if spec is None or spec.loader is None:
+                raise ImportError("published activation adapter is unavailable")
+            adapter = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(adapter)
+            receipts = adapter.capture_pending_heartbeat(ROOT, self.state_path,
+                                                        self.state["heartbeat_at"])
+            if receipts:
+                self.log(f"activation-heartbeat: captured {len(receipts)} operational receipt(s)")
+        except Exception as exc:  # A failed optional receipt cannot change tick liveness.
+            self.log(f"activation-heartbeat capture failed; preserve pending marker: {exc}")
 
     # -- alarms (emit-once lives in alarm_channel.py; we only track what WE raised)
     def raise_alarm(self, key: str, severity: str, message: str, evidence: dict | None = None) -> None:

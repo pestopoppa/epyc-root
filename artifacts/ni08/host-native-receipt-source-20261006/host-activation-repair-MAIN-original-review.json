@@ -1,0 +1,39 @@
+{
+  "reviewed_at": "2026-10-06T19:23:18.229277+00:00",
+  "independent_git_map_sha256": "c70cb8ccb59d4d6f93adb566b7bb2aa58c0f10da81bf0fc383c19e5cef10b136",
+  "run": 37518161327,
+  "artifact": 11438222138,
+  "zip_sha256": "63bd9712c00a91e9a84685237aafd8de2b36b828ff425587b0d7847eb742f20b",
+  "zip_bytes": 33671321,
+  "members": 3088,
+  "git_bindings": 3077,
+  "alias_bindings": 12,
+  "runner_asserted_contexts": 2,
+  "native_readset": 3079,
+  "counts": {
+    "collected": 81,
+    "executed": 81,
+    "passed": 81,
+    "failure": 0,
+    "error": 0,
+    "skipped": 0
+  },
+  "receipt_file_sha256": "97828e0e6a04cd8bf945363d70a5c3eb04b7509efa8f892716e802d013a757c9",
+  "receipt_self_sha256": "3c424fee10f9d0de814b37fc82c6968c599b6d5770dae1fcc3c4d93fef2416c3",
+  "originals_unchanged": true,
+  "static_integrity_accepted": true,
+  "shared_grade_executed_by_MAIN": false,
+  "shared_grade_pending_offhost": false,
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "shared_grade_analysis_sha256": "6458a14458c3043bab462bf21f4c8847fb8da89847887d2e78b42584a48e1a5e",
+  "same81case_identities_as_failed_predecessor": true,
+  "operational_rows_graded": false,
+  "production_source_unchanged_after_test_only_repair": true
+}

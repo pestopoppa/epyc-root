@@ -1,0 +1,28 @@
+{
+  "reviewed_at": "2026-10-06T19:17:43.772998+00:00",
+  "independent_git_map_sha256": "923026723d8442748978e6d10ab982b98b0dedaa48d1e2f8ac58b1ff41eae7fd",
+  "run": 37517488001,
+  "artifact": 11437409404,
+  "zip_sha256": "8fc6106055e07d0a711769f4d1319a53dd32c665b9d9c165fd194fce939554bd",
+  "zip_bytes": 33556752,
+  "members": 3087,
+  "git_bindings": 3077,
+  "alias_bindings": 12,
+  "runner_asserted_contexts": 2,
+  "native_readset": 3079,
+  "counts": {
+    "collected": 81,
+    "executed": 81,
+    "passed": 76,
+    "failure": 5,
+    "error": 0,
+    "skipped": 0
+  },
+  "receipt_file_sha256": "04950239090c09e58ed495f5ef79640b2bca76d55b34eaea8c76978dd26c04b8",
+  "receipt_self_sha256": "8e8fe31abc115d53acf1a625051118edf563a656911377f24b85013e70829b0d",
+  "originals_unchanged": true,
+  "static_integrity_accepted": true,
+  "native_conformance_accepted": false,
+  "shared_grade_executed_by_MAIN": false,
+  "shared_grade_not_emitted_due_to_false_native": true
+}

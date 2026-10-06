@@ -3581,3 +3581,7 @@ LR-8 source is inactive by default and has MAIN-reviewed hosted native88/88 conf
 ### Current AutoKernel lane metadata is not owner identity
 
 The [2026-10-06 frozen-clone audit](../artifacts/ni08/nib77-ownership-audit-20261006/README.md) binds33 current lane registrations. Campaign IDs and loop status do not identify a session owner. The historical187-count manifest has no lane roster, so current registrations cannot establish154 retirements. Record ownership at future lane creation; clean/old paths and read-side guesses cannot authorize cleanup.
+
+### Prospective host activation records
+
+[Nativewriter/callback source](../docs/reference/host-supervision-activation-receipts.md) is accepted with81/81 synthetic controls. It writes installation and eligible subsequent heartbeat dependency records only after future explicit capture, preserving consumed markers and source/cron/state integrity. Operational records remain ungraded; existing outer CI conformance grades Judged/Located. First eligible state/sync calls do not prove first physical heartbeat or power-loss recovery; OP73 bootstrap remains unchanged.
