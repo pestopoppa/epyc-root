@@ -589,6 +589,8 @@ the only projection on disk was a 2026-08-09 demo. The engine was complete and h
       direction, tamper refusal, pre-hook refusal, and absence of private grading logic. The adapter
       PROJECTS; `claim_tuple.grade()` decides.
 
+- [ ] **VB-COPYSPEC — adapter for copy-spec results, and re-grade the 2026-07-30 ngram retraction claim's scope.** The retraction `intake-1153#record` measured non-copy prompts with crippled defaults; it must not gate copy-heavy decisions. Wire a producer-written `belief_measurements` vector at copy-spec eval completion (`phase1` and `phase2`), capturing acceptance rate, mean draft length, and throughput per arm (P / ngram-mod / ngram-only / P2) and per implementation (CPU frontdoor, CPU worker, GPU 27B if available). Create a strict adapter that projects only post-hook rows into the existing speculative-decoding `ClaimTuple` ladder, binding model/device/server/request identity, prompt composition (% copied), all-arm run-level locator, and authority boundary (candidate-only, no promotion until operator review). Done when the adapter passes 20 tests and the first copy-spec arm emits a non-zero tuple.
+
 - [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by
       HARNESS-1; distinct producer from the already-wired `inf70_roofline_ledger.py`). Each arm emits a
       token-weighted rate with a `pred_n>=16` floor, per-node placement, build id, artifact SHA,

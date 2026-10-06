@@ -459,3 +459,13 @@ _Via `/research-intake` Stage-4 (intake-916/917/932 lineage, AREX-Base as the co
       of vLLM `AsyncScheduler` subclassing plus LMCache tiering, we do not serve on vLLM, and its
       systems contribution is precisely the part our PCIe4 link erodes. This row is how we get its
       algorithmic content for free. [intake-1282#record]
+
+## Research Intake Update — 2026-10-06 (Copy-Spec Evaluation)
+
+- [ ] **COPYSPEC-P1 — copy/prompt-lookup speculation re-evaluation, phase 1+2 full-host window.** Script `/mnt/raid0/llm/tmp/copy-spec-eval-20261006/phase1.sh`; survey `SURVEY.md` there. Arms P / ngram-mod(n-min 4)+MTP / ngram-only / P2. Measure acceptance rate, mean draft length, and throughput on production CPU server. Done when all arms complete on a canonical production-shaped prompt set and the results are recorded with run digests and timestamps.
+
+- [ ] **COPYSPEC-WIDTH — if P1 shows matches, the per-impl n_max change (raise the server draft cap to max across impls, truncate per impl) goes on the CHAMPION branch for v11 via the champion fold; never on production.** Done when the decision is recorded: either "no matches → P1 closed" or "cap raised to N → champion carries per-impl truncation at {M1, M2, M3}".
+
+- [ ] **COPYSPEC-27B — the GPU 27B leg (ngram + DFlash2) after AK GPU run 2 frees the MI210.** Coordinate timing with workspace-89's `AK_GPU_RUN2_READY` / `AK_GPU_RUN2_PARKED` handoff flags. Done when the 27B Q8_0 GPU benchmark completes on the production-shaped prompt set and the results are recorded with GPU utilization, memory, and per-arm acceptance/throughput.
+
+- [ ] **COPYSPEC-RECIPE — on v11 promotion, update the canonical :8070/:8083 recipes (registry + launch manifest + codified recipes) to the winning spec-type chain.** Done when `model_registry.yaml`, the orchestrator launch manifest, and `measurement/protocols/canonical_recipes.md` carry the operator-approved spec-type composition and its acceptance-rate calibration note.

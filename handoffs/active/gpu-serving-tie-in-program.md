@@ -278,6 +278,10 @@ config change with a rehearsed rollback, never a rebuild.
     </details>
 - [x] **P2-5m (NEW 2026-07-29; free, do at next P-SHED-1 touch) — shape A1 reporting per-role so it doubles as carve-out cost evidence.** Arm A1 already measures exactly the residual contention any SMT carve-out would need priced (GPU host threads on SMT siblings of 88-95 vs Q1B tenants on the physical cores). Archiving A1 **per-role** rather than aggregate means the reservation decision reuses it **free** instead of commissioning a second campaign. Also, independent of everything above: **P-SHED-1 should pin every q3 co-tenant state PER ARM as a declared input** — hidden arm differences confound A1 whichever tenant they involve (this is the one residual from P2-5h that survives on independent grounds). ✅ 2026-07-29 — research `38fb11ec` requires an A0/A1 per-role rate, completion/error, and latency archive plus an arm-specific co-tenant lifecycle/residency manifest; P2-5h's separate corpus/pricing repair remains open.
 
+- [ ] **KVU-16g — first-prompt TTFT cost attribution.** Measure the latency tax from first-prompt KV cache initialization on the :8083 GPU slot (production Qwen3.8-27B + DFlash2 draft) at various batch sizes and context lengths. Done when the per-request TTFT breakdown is recorded in `artifacts/gpu-block-*/` and a recommendation is made: either keep the current prefill-stall trade-off or implement the operator-approved amortization strategy.
+
+- [ ] **YARN-E1-MEM — attribute the +15 GiB KFD overshoot seen in both YaRN E1 arms (long prefill).** Reuse the KVU-16h allocator shim and phase-replay runner on the A0 and A1 launch lines, and compare the E1 build (champion `9a3f1392a`) against W `b0ba1d427`, which carries the arena fix. Coordinate with yarn-context-extension-research.md YARN-E1-MEM for timing. Done when the overshoot is attributed per phase, and A1's peak is either re-measured ≤ 55 GiB or the gap is named with its fix.
+
 ## Dependency graph
 
 ```
