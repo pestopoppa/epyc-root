@@ -39,7 +39,7 @@ NODEIDS = (
     "tests/vidya/test_claim_tuple.py::test_category_must_be_one_of_autokernels_three",
     "tests/vidya/test_claim_tuple.py::test_each_source_class_has_exactly_one_ladder",
     "tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift",
-    "tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_authority",
+    "tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority",
 )
 
 ROOT_READS = (

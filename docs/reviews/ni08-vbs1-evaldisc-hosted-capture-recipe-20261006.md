@@ -35,7 +35,7 @@ ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit
 |---|---|
 | `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
 | `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `4015592474594952750664116560fdbecf4b886ff427158f3480cef847c43828` |
+| `scripts/ci/ni08_run_hosted_capture.py` | `915e0a089a3273d056c9efd5ce92e04f7d87badfe3462ea814c2a6e4443091de` |
 | `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
 | `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
 | `scripts/vidya/adapters/_analysis_report_provenance.py` | `15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e` |
@@ -112,7 +112,7 @@ tests/vidya/test_citation_gate.py::test_cite_check_cli_blocks_out_of_range_claim
 tests/vidya/test_claim_tuple.py::test_category_must_be_one_of_autokernels_three
 tests/vidya/test_claim_tuple.py::test_each_source_class_has_exactly_one_ladder
 tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift
-tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_authority
+tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority
 ```
 
 The two actual-writer tests call APP `load_trajectories` / `summarize` / `_seal_report` and
