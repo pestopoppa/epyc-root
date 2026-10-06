@@ -1,0 +1,40 @@
+{
+  "generated_output_sha256": null,
+  "git_bound_source_entries": 3332,
+  "junit_counts": {
+    "collected": 87,
+    "error": 0,
+    "executed": 87,
+    "failure": 0,
+    "passed": 87,
+    "skipped": 0
+  },
+  "junit_identities_valid": true,
+  "native_diagnostic": "",
+  "native_proposition": true,
+  "original_exit_code": 0,
+  "readset_entries": 3334,
+  "repositories": {
+    "app": "62db79be0bf9a4cdc8341ec48d8d240a14458288",
+    "recipe": "f5c28dd7415fbef6f39a45d6fbaaa991d84d157b",
+    "root": "fb62fafe14b9424bc4fb2e47fb42d586e423820e"
+  },
+  "scenario": "serving",
+  "selected": [
+    "tests/vidya/test_serving_call_adapter.py",
+    "tests/vidya/test_ingest_sources.py"
+  ],
+  "zip_sha256": "f6e017c28669ee7e3710898535734ea8d55455b34b62b6fe7774898434da34c9",
+  "receipt_file_sha256": "9def96af7612765b946e65aefef48b64f4ed48e0232475ef02eb9386e56b4690",
+  "receipt_self_sha256": "ee3f4951c1836c580b16ef7d27c0b45632cc4b2f60a4a16ef53f61bae2f6cb3e",
+  "api_artifact_id": 11402161894,
+  "api_zip_members_reopened": 3342,
+  "api_zip_size": 16465161,
+  "source_main": "af27797fac9fc37d525f8c9a9cf91e50d89973f6",
+  "recipe_main": "a25b92e7403af48da69b9fb6a2f0c560137596c0",
+  "native_shared_grade": {
+    "Q": "Judged",
+    "T": "Located"
+  },
+  "scope": "Synthetic source/reader contracts only; no live timing, aggregate or judge-verdict warrant."
+}

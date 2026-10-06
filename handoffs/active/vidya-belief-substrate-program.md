@@ -2237,7 +2237,7 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 from the workspace-89 prefill-share analysis). The write side is LIVE since 2026-10-03T04:59Z (orch 9a0d38e0 on main, API reload); the launch sidecar goes live at each server's next stack launch. Strict adapter steps:
   - discover `logs/serving_calls/serving_calls.jsonl*`;
   - refuse lines whose `record_sha256` does not re-derive, or whose schema is not `serving_call.v1`;
-  - project each `timings` metric (`prompt_ms`, `predicted_ms`, `prompt_per_second`, `predicted_per_second`, `cache_n`, `draft_n_accepted/draft_n`) plus `queue.pre_dispatch_wait_ms` into `ClaimTuple`, with unit and `metric_direction` fixed by the schema (ms and wait: `lower_better`; t/s and acceptance: `higher_better`).
+  - project each `timings` metric (`prompt_ms`, `predicted_ms`, `prompt_per_second`, `predicted_per_second`, `draft_n_accepted/draft_n`) plus `queue.pre_dispatch_wait_ms` into `ClaimTuple`, with unit and `metric_direction` fixed by the schema (ms and wait: `lower_better`; t/s and acceptance: `higher_better`).
 
   Rules for what gets projected:
   - Carry `server.argv_sha256`, `server.binary_realpath`, `server.model_path`, `provenance.orch_commit` and `provenance.run_id` as identity, never graded.
@@ -2246,7 +2246,9 @@ RI-16's routing `stage_ms` is covered by VB-ROUTE-LAT above, not by a new task.
 
   Grading: `Judged/Located` via `claim_tuple.grade()`; no new ladder and no backfill.
 
-  Decide before writing the adapter: should window aggregates (per-role prefill share, queue-wait distribution) be a second producer, or a projection over a sealed window manifest? A per-call tuple cannot carry a share.
+  Remaining window-aggregate design: seal native window membership and denominators before consumption; decide whether these are a separate producer or a projection over that sealed manifest. The accepted per-call reader emits no share. `cache_n` is validated native metadata, not a projected metric without an established improvement direction.
+
+  - [x] **VB-SERVE-TIMING-READER — implement bounded strict per-call reader/join contracts.** ✅ 2026-10-06 — [Reader contract](../../docs/reference/serving-call-reader-contract.md), original CI37443323928 TRUE87/87, exact tested source promoted mainaf27797f. No organic/window timing claim; parent remains open.
 
   Era row ST1 (`scope: serving_timing`) is in `epyc-orchestrator/orchestration/instrument_eras.yaml` (orch 4e23e553). This is the read side of VB-SERVING-DF2's first producer.
 
@@ -2607,7 +2609,7 @@ NI38 bounded offline score preparation accepted 2026-10-05: original CI373453069
 
 ## MAIN-reviewed JEV refinement — 2026-10-06 (VB-SERVE-TIMING-1)
 
-Include a synthetic fixture for the already-defined typed judge-to-serving-call join (`request_id == call_id`), retaining native task/caller identity. Test unmatched and repeated IDs, record-hash/schema mismatch, absent timings and absent launch identity. Keep typed `record_llm_calls` accounting separate from server queue/placement/timing records; never double-count one inference. Use the native server record for serving metrics.
+Include a synthetic fixture for the already-defined typed judge-to-serving-call join (`serving.caller.parent_request_id == judge.call_id`), retaining native task/caller identity. Test unmatched and repeated IDs, record-hash/schema mismatch, absent timings and absent launch identity. Keep typed `record_llm_calls` accounting separate from server queue/placement/timing records; never double-count one inference. Use the native server record for serving metrics.
 
 Preserve the original absence rules: skip absent timings, never invent zeros, and leave absent server identity unscoped rather than inferring a launch or rejecting an otherwise valid unscoped observation. An ID match is necessary for a join, not proof of grading quality or complete provenance. This is offline reader/fixture preparation; change neither the Claude-owned judge producer nor its calibration, and keep window aggregation as the original separate decision. The shared grader alone determines warrant; add no source class or ladder.
 
@@ -2646,3 +2648,5 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 - [ ] **VB-NI07-UTM-READOUT — preserve native synthetic memory conformance readout at execution.** Prospectively capture declared generated-output bytes/hash alongside original native CI source/fixture/JUnit/context custody. Reopen case/rubric/per-case hashes, store versus parser dispositions and each denominator; retain null human semantic gold, unassessed source/privacy/scope/freshness/poisoning/manipulation and unmeasured reader accuracy/calibration. Existing CI carrier/shared grading only; no new source class, retrospective record, live memory or human-gold warrant. MAIN owns acceptance after original review.
 
 - [ ] **VB-DTAP-FAILURE-LEDGER — preserve prospective per-run failure/usage reporting identities.** Wire the additive native ledger writer before consumption: original outcome/trace and explicit pair identities, terminal timeout basis, source-known unavailable usage and unmeasured verification/no-valid-call semantics. Reuse existing native reporting/CI/dependency carriers and shared grading, never equate a timeout integrity receipt with task grading. Source/API review and synthetic original custody acceptance required; no live endpoint/model run or new ladder.
+
+  - [x] **VB-NI07-CI-SERVING — ingest accepted original serving-reader fixtures.** ✅ 2026-10-06 — [Original CI37443323928](../../artifacts/ni07/run-37443323928/README.md) TRUE87/87;3332pinned Git bindings plus2contexts,3342API ZIP members reopened. Existing shared Judged/Located observation,3new canonical frames; original FALSE unchanged. No live timing or window/quality warrant.
