@@ -1,0 +1,61 @@
+{
+  "reviewed_at": "2026-10-06T23:11:37.435824+00:00",
+  "review": "PASS",
+  "implementation_accepted": false,
+  "run": 37544676995,
+  "attempt": 1,
+  "artifact": 11450196009,
+  "recipe_pin": "f759a23db280ed927b1f70a16187cfab6f7a1d04",
+  "pins": {
+    "app": "cfcf3768716de888a971bf66489397f5b91241df",
+    "root": "f759a23db280ed927b1f70a16187cfab6f7a1d04"
+  },
+  "zip_bytes": 1812820,
+  "zip_sha256": "91f0345e73c32fb4b801cac684bd7008d1178548a639297ddcdad7b4a0a8f104",
+  "members": 97,
+  "context_sha256": "f697a03fbba4f539646714915979e2ce4a0ad582fcf3c7e30efea75686bef372",
+  "context_sources": {
+    "app": 2218,
+    "root": 1089
+  },
+  "native_reviews": {
+    "app": {
+      "native_value": null,
+      "exit_code": 4,
+      "diagnostic": "unnamed JUnit case",
+      "counts": null,
+      "testcase_nodes": 3,
+      "junit_failure": 0,
+      "junit_error": 3,
+      "junit_skipped": 0,
+      "readset_files": 41,
+      "receipt_file_sha256": "2da99668338b6e2cd0485ba1a8871ec7f3c2e6643a5237a39c04d4ef767d1850",
+      "receipt_self_sha256": "0b451dbf11dda9af318b9bc32d826786717487ce6784b8879c3da8b7f40b35ab"
+    },
+    "root": {
+      "native_value": null,
+      "exit_code": 1,
+      "diagnostic": "generated output capture failed: [Errno 2] No such file or directory: '/home/runner/work/epyc-root/epyc-root/root/ni08-native-fixtures/mf-bundle.zip'",
+      "counts": {
+        "collected": 38,
+        "error": 0,
+        "executed": 38,
+        "failure": 9,
+        "passed": 29,
+        "skipped": 0
+      },
+      "testcase_nodes": 38,
+      "junit_failure": 9,
+      "junit_error": 0,
+      "junit_skipped": 0,
+      "readset_files": 41,
+      "receipt_file_sha256": "1fbb0c0b8631d43ffe09a0deb4d9bd21a913c66fa06d673b7fa8086957244863",
+      "receipt_self_sha256": "c344ab93332e2bd773cabef3a381b92ae4f78c3b88f64764b1eae02367cb2462"
+    }
+  },
+  "originals_unchanged": true,
+  "MAIN_project_execution": false,
+  "MAIN_grade_execution": false,
+  "scope": "MEDIUM: prospective analysis writer snapshots/strict adapters + citation claim bounds; existing metric math/shared ladder and live scopes remain unchanged.",
+  "job_identity": "github_job_112545706415"
+}

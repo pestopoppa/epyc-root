@@ -563,6 +563,7 @@ _FILE_SOURCES = (
     "memento-lora", "pareval", "eval-tower-band", "fanout-outcome",
     "research-sweep-g1", "research-sweep-g234", "autopilot-journal", "sealed-manifest",
     "mhs-guard-verdicts", "mhs-guard-ops",
+    "verify-before-stop-measurement", "eval-suite-discriminability",
     "autopilot-reproposal-rate", "reviewer-fa", "typed-decisions-measurement",
     "ufh13-thesis-measurement",
     "ak-actor-seat",

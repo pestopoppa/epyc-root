@@ -1,0 +1,68 @@
+{
+  "reviewed_at": "2026-10-06T23:46:51.438171+00:00",
+  "review": "PASS",
+  "implementation_accepted": true,
+  "run": 37547833505,
+  "attempt": 1,
+  "artifact": 11450444521,
+  "recipe_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+  "pins": {
+    "app": "cfcf3768716de888a971bf66489397f5b91241df",
+    "root": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92"
+  },
+  "zip_bytes": 2583672,
+  "zip_sha256": "26c6b2ba76c048e4588d96a7bff0fd12dbd20a3954748c0f732726ce4116290c",
+  "members": 210,
+  "context_sha256": "20e2f80efb2568339c9160d9257bb2e25aee4d2e07b248d754d8d550cce5c47d",
+  "context_sources": {
+    "app": 2218,
+    "root": 1098
+  },
+  "native_reviews": {
+    "app": {
+      "native_value": true,
+      "exit_code": 0,
+      "diagnostic": "",
+      "counts": {
+        "collected": 20,
+        "error": 0,
+        "executed": 20,
+        "failure": 0,
+        "passed": 20,
+        "skipped": 0
+      },
+      "testcase_nodes": 20,
+      "junit_failure": 0,
+      "junit_error": 0,
+      "junit_skipped": 0,
+      "readset_files": 96,
+      "receipt_file_sha256": "50ba1c83ea7c98b26f7ef78cb4d5163c725dad268f5d98f8bc99a9496c0b37a5",
+      "receipt_self_sha256": "8bcca8e049a1c405cf5be28cdefc0a905745f790f65a7526605a810bf771175f"
+    },
+    "root": {
+      "native_value": true,
+      "exit_code": 0,
+      "diagnostic": "",
+      "counts": {
+        "collected": 38,
+        "error": 0,
+        "executed": 38,
+        "failure": 0,
+        "passed": 38,
+        "skipped": 0
+      },
+      "testcase_nodes": 38,
+      "junit_failure": 0,
+      "junit_error": 0,
+      "junit_skipped": 0,
+      "readset_files": 96,
+      "receipt_file_sha256": "37411034a5df51a92d446064adee48f7ee2d48e84769a93449fdad51e4e39e87",
+      "receipt_self_sha256": "287180561ac6c4a0f41f883525b1f5d615a1743b7fc380031175c428abc5562a"
+    }
+  },
+  "originals_unchanged": true,
+  "MAIN_project_execution": false,
+  "MAIN_grade_execution": false,
+  "scope": "MEDIUM: prospective analysis writer snapshots/strict adapters + citation claim bounds; existing metric math/shared ladder and live scopes remain unchanged.",
+  "job_identity": "github_job_112556005487"
+}

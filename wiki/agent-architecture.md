@@ -5118,3 +5118,7 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 ### C5 portable evidence carrier — 2026-10-06 source boundary
 
 The recovered historical C5 policy is now carried byte-exactly in Research and verified through an explicit repository-relative no-follow loader. [Source acceptance and original28/28](../artifacts/ni08/c5-policy-path-source-20261006/README.md) bind the default positive and tamper/missing/symlink/hardlink/traversal refusal controls; external absolute authorities retain their verifier. Offline source conformance supplies no SOL/kernel or live deployment warrant.
+
+### Prospective report identities and citation bounds — 2026-10-06
+
+[Analysis writer/reader source acceptance](../artifacts/ni08/analysis-report-source-20261006/README.md) wires source-bound verify-before-stop/discriminability reports through the existing carrier and grade; legacy identityless outputs are refused. Original58/58 include actual producer round trips. Citation checks now resolve exact key-claim bounds before native ledger status while malformed/unavailable bounds stay unknown. No historical warrants or live effectiveness are inferred.

@@ -1079,7 +1079,7 @@ between plan and apply, so this wave takes the next free block, SC65–SC68.*
       contains a fabricated citation; the only pass is "unresolved, no entry". Fixture data:
       gptzero.me/news/neurips (read) and 2412.13176 as the F9 seed, cited from intake-1386.
       (intake-1386#01, #05)
-- [ ] **SC80 (S3-VID-06) — cite-check: an out-of-range claim index is dangling, not unknown.**
+- [x] **SC80 (S3-VID-06) — cite-check: an out-of-range claim index is dangling, not unknown.**
       intake-NNN#NN with NN ≥ the entry's key_claims count must return status dangling (blocking, exit
       3), distinct from unknown (claims not yet ingested). Today both return unknown, non-blocking
       (citation_gate.py). Fixtures: in range and ingested → graded; in range, not ingested → unknown;
@@ -1766,13 +1766,13 @@ Codex's sign-off before it lands** (shared files).
 
 ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24)
 
-- [ ] **VB-MFVBS-1 — author the read-side adapter for the verify-before-stop measurement.** Producer:
+- [x] **VB-MFVBS-1 — author the read-side adapter for the verify-before-stop measurement.** Producer:
   orch `scripts/analysis/mf_vbs1_verify_before_stop.py` (`86471b1f`), deterministic JSON with n,
   denominator and Wilson CI per rate. `@register("verify-before-stop-measurement")`, re-hash at the
   boundary, `Source(...)` row in `scripts/vidya/ingest_sources.py`. Carry the three source-table cautions
   (one day / one role / one voluntarily-stopping task; the rider never asks for verification; forced stops
   outside the voluntary denominator). Project, do not grade.
-- [ ] **VB-EVALDISC-1 — author the read-side adapter for the eval-suite discriminability audit.**
+- [x] **VB-EVALDISC-1 — author the read-side adapter for the eval-suite discriminability audit.**
   Producer: orch `scripts/analysis/eval_suite_discriminability.py` (`eval_suite_discriminability_report.v1`).
   Locator = report × suite × metric. Reports older than orch `8a829233` must have their
   `run_unstable`/`brittle`/flip_rate claims refused wherever an input run was error-dominated (RTG-16);
@@ -1782,8 +1782,8 @@ Codex's sign-off before it lands** (shared files).
 
 Current APP e2d3a670 source review finds no read-side Source registration for either producer. The MF aggregate drops input content/source identities; EvalDisc v1 records paths but no byte/source binding. Deterministic historical JSON does not supply a missing original warrant. The existing caution/direction/denominator rules remain; no new ladder or historical identity reconstruction is authorized.
 
-- [ ] **VB-MFVBS1-PROV — capture verify-before-stop report provenance at its native writer.** Bind exact parsed input bytes and preserved snapshot/manifest, original report/source schema and revision, stable native record identity and corpus scope before the strict VB-MFVBS-1 adapter. Preserve all metric bodies and denominators; unknown stays unknown. Historical identityless output remains descriptive and is refused for ClaimTuple projection. Validate writer/reader controls in isolated native CI through the existing shared grade only; no actual BEP run or efficacy claim.
-- [ ] **VB-EVALDISC1-PROV — capture discriminability report provenance at its native writer.** Bind exact selected input bytes/snapshots, original report/source schema/revision and record identity before the strict VB-EVALDISC-1 adapter. Preserve current error filtering, native denominators and metric direction. No lexical ordering of Git hashes or guessed legacy era; missing original identities are refused. Existing observation carrier/shared grade only, no historical backfill or experiment run.
+- [x] **VB-MFVBS1-PROV — capture verify-before-stop report provenance at its native writer.** Bind exact parsed input bytes and preserved snapshot/manifest, original report/source schema and revision, stable native record identity and corpus scope before the strict VB-MFVBS-1 adapter. Preserve all metric bodies and denominators; unknown stays unknown. Historical identityless output remains descriptive and is refused for ClaimTuple projection. Validate writer/reader controls in isolated native CI through the existing shared grade only; no actual BEP run or efficacy claim.
+- [x] **VB-EVALDISC1-PROV — capture discriminability report provenance at its native writer.** Bind exact selected input bytes/snapshots, original report/source schema/revision and record identity before the strict VB-EVALDISC-1 adapter. Preserve current error filtering, native denominators and metric direction. No lexical ordering of Git hashes or guessed legacy era; missing original identities are refused. Existing observation carrier/shared grade only, no historical backfill or experiment run.
 
 ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat)
 
@@ -2819,3 +2819,5 @@ UFH-13 reader source accepted2026-10-06: [MAIN original29/29 source/custody revi
 - [ ] **VB-HS4-P6-SOURCE-CONFORMANCE — bind the shared exploration core’s source verification prospectively.** Exact reviewed APP/Research caller and fence identities, pure explicit-root service, compatible REPL adapters, bounded synthetic traversal/symlink/read-cap controls and original source/JUnit/carrier artifacts. Existing native carrier/shared grade only; no active MCP catalog change, semantic-index rebuild, embedding/model invocation, live task rerun or new read authority. Parent P6 catalog-growth acceptance remains separate.
 
 2026-10-06 MAIN acceptance: VB-C5-POLICY-CONFORMANCE completed after exact source publication and independently reviewed original28/28; [bounded acceptance](../../artifacts/ni08/c5-policy-path-source-20261006/README.md). Historical policy bytes and existing grader unchanged; no SOL/GPU/runtime warrant.
+
+2026-10-06 MAIN source acceptance: the two prospective report writers/readers and SC80 completed after originalROOT38/38+APP20/20 and byte-identical APP publication. [Bounded source/evidence](../../artifacts/ni08/analysis-report-source-20261006/README.md); legacy reports refused, existing metric/shared-grade authority unchanged.

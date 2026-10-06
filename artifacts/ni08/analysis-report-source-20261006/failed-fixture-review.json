@@ -1,0 +1,68 @@
+{
+  "reviewed_at": "2026-10-06T23:38:50.696991+00:00",
+  "review": "PASS",
+  "implementation_accepted": false,
+  "run": 37547429999,
+  "attempt": 1,
+  "artifact": 11451485835,
+  "recipe_pin": "963e8487fbe170e8da11bbd8705115e75947a9ef",
+  "pins": {
+    "app": "cfcf3768716de888a971bf66489397f5b91241df",
+    "root": "963e8487fbe170e8da11bbd8705115e75947a9ef"
+  },
+  "zip_bytes": 2571246,
+  "zip_sha256": "de3ee980e9231a44ea2f985ed490edce92e030d19e644390c085db37ec00b941",
+  "members": 209,
+  "context_sha256": "28bd69508ec3debfe8be3795136c3535e76ac210cc9cbe185c867cacb1ba5fb0",
+  "context_sources": {
+    "app": 2218,
+    "root": 1098
+  },
+  "native_reviews": {
+    "app": {
+      "native_value": true,
+      "exit_code": 0,
+      "diagnostic": "",
+      "counts": {
+        "collected": 20,
+        "error": 0,
+        "executed": 20,
+        "failure": 0,
+        "passed": 20,
+        "skipped": 0
+      },
+      "testcase_nodes": 20,
+      "junit_failure": 0,
+      "junit_error": 0,
+      "junit_skipped": 0,
+      "readset_files": 96,
+      "receipt_file_sha256": "fb4cd664701b2a411b058a7cf86733b3f74a753e5a90863402375032f1f20730",
+      "receipt_self_sha256": "e8bb4d659941f2ceada5a2d021359070008990d3ac9687bdccca88df7cf6503f"
+    },
+    "root": {
+      "native_value": null,
+      "exit_code": 1,
+      "diagnostic": "generated output capture failed: [Errno 2] No such file or directory: '/home/runner/work/epyc-root/epyc-root/root/ni08-native-fixtures/eval-bundle.zip'",
+      "counts": {
+        "collected": 38,
+        "error": 0,
+        "executed": 38,
+        "failure": 1,
+        "passed": 37,
+        "skipped": 0
+      },
+      "testcase_nodes": 38,
+      "junit_failure": 1,
+      "junit_error": 0,
+      "junit_skipped": 0,
+      "readset_files": 96,
+      "receipt_file_sha256": "77ba3d8327817de9a7f53f603f83dbf39559a828b0a4f09328aafacc254dc6ba",
+      "receipt_self_sha256": "171ca2ff7952233aa10be76c4e414b0d946bd41d2881c46558e4235efff1f589"
+    }
+  },
+  "originals_unchanged": true,
+  "MAIN_project_execution": false,
+  "MAIN_grade_execution": false,
+  "scope": "MEDIUM: prospective analysis writer snapshots/strict adapters + citation claim bounds; existing metric math/shared ladder and live scopes remain unchanged.",
+  "job_identity": "github_job_112554665541"
+}

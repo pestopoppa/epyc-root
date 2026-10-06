@@ -1,0 +1,1104 @@
+{
+  "expected_generated_contexts": [
+    "source-context.json",
+    "environment.json",
+    "dependency-install.log"
+  ],
+  "expected_generated_outputs": [
+    "ni08-native-fixtures/mf-bundle.zip",
+    "ni08-native-fixtures/eval-bundle.zip"
+  ],
+  "expected_junit_cases": {
+    "app": [
+      {
+        "classname": "tests.test_analysis_report_provenance",
+        "name": "test_mf_vbs_manifest_hashes_the_same_bytes_it_parsed"
+      },
+      {
+        "classname": "tests.test_analysis_report_provenance",
+        "name": "test_eval_discriminability_manifest_hashes_the_same_bytes_it_parsed"
+      },
+      {
+        "classname": "tests.test_analysis_report_provenance",
+        "name": "test_mf_vbs_edited_call_bearing_numerator_uses_intersection"
+      },
+      {
+        "classname": "tests.test_analysis_report_provenance",
+        "name": "test_mf_vbs_zero_denominators_are_unknown_json_values"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_snapshots_are_private_and_identical_paths_deduplicate[_seal_eval]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_snapshots_are_private_and_identical_paths_deduplicate[_seal_mf]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_eval]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_mf]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_eval]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_mf]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_eval]"
+      },
+      {
+        "classname": "tests.test_analysis_report_snapshot_sealing",
+        "name": "test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_mf]"
+      },
+      {
+        "classname": "tests.test_eval_suite_discriminability",
+        "name": "test_error_rows_excluded_from_brittleness_flip"
+      },
+      {
+        "classname": "tests.test_eval_suite_discriminability",
+        "name": "test_error_dominated_run_excluded_from_run_spread"
+      },
+      {
+        "classname": "tests.test_eval_suite_discriminability",
+        "name": "test_error_dominated_gate_is_configurable"
+      },
+      {
+        "classname": "tests.test_eval_suite_discriminability",
+        "name": "test_brittleness_unmeasured_single_run"
+      },
+      {
+        "classname": "tests.test_eval_suite_discriminability",
+        "name": "test_cli_main_writes_report"
+      },
+      {
+        "classname": "tests.unit.test_stat_tests",
+        "name": "test_wilson_degenerate_denominator"
+      },
+      {
+        "classname": "tests.unit.test_stat_tests",
+        "name": "test_wilson_published_values"
+      },
+      {
+        "classname": "tests.unit.test_stat_tests",
+        "name": "test_calibration_metric_bundle_concrete_values"
+      }
+    ],
+    "root": [
+      {
+        "classname": "tests.vidya.test_analysis_producer_roundtrip",
+        "name": "test_actual_mf_producer_snapshot_round_trips_through_root_adapter"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_producer_roundtrip",
+        "name": "test_actual_eval_producer_snapshot_round_trips_with_native_reps"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_immutable_input_snapshot_is_required_and_rechecked"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_report_bytes_and_retained_inputs_are_reverified_at_projection[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_report_bytes_and_retained_inputs_are_reverified_at_projection[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_mf_cached_metric_key_must_match_native_selection"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_identity_free_legacy_report_is_refused[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_identity_free_legacy_report_is_refused[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_unknown_native_fields_are_refused[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_unknown_native_fields_are_refused[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_category_must_be_producer_authored_diagnostic_baseline[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_category_must_be_producer_authored_diagnostic_baseline[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_producer_source_changes_preserve_snapshot_bound_historical_rows[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_producer_source_changes_preserve_snapshot_bound_historical_rows[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_snapshot_path_escape_is_refused"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_external_input_original_locator_is_metadata_only"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_zero_denominator_rate_is_omitted_while_defined_rates_remain"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[date_range]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[role_model]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_eval_metric_reps_use_each_native_denominator"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_eval_cached_suite_and_metric_must_match_bound_report"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_cli_dispatch_uses_shared_grade_only[vbs]"
+      },
+      {
+        "classname": "tests.vidya.test_analysis_report_adapters",
+        "name": "test_cli_dispatch_uses_shared_grade_only[eval]"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_precise_in_range_but_uningested_claim_stays_unknown"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_precise_out_of_range_claim_is_blocking_dangling"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_zero_claim_entry_marks_precise_zero_dangling"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_malformed_key_claims_count_preserves_unknown"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_duplicate_yaml_key_in_entry_is_unknown_not_last_value"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_unhashable_yaml_mapping_key_preserves_unknown_counts"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_cite_check_cli_keeps_in_range_uningested_unknown_nonblocking"
+      },
+      {
+        "classname": "tests.vidya.test_citation_gate",
+        "name": "test_cite_check_cli_blocks_out_of_range_claim"
+      },
+      {
+        "classname": "tests.vidya.test_claim_tuple",
+        "name": "test_category_must_be_one_of_autokernels_three"
+      },
+      {
+        "classname": "tests.vidya.test_claim_tuple",
+        "name": "test_each_source_class_has_exactly_one_ladder"
+      },
+      {
+        "classname": "tests.vidya.test_ingest_sources",
+        "name": "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"
+      },
+      {
+        "classname": "tests.vidya.test_ingest_sources",
+        "name": "test_every_dispatched_adapter_declares_its_authority"
+      }
+    ]
+  },
+  "host_project_execution": false,
+  "manual_blast_radius": "MEDIUM: prospective analysis writer snapshots/strict adapters + citation claim bounds; existing metric math/shared ladder and live scopes remain unchanged.",
+  "pins": {
+    "app": "cfcf3768716de888a971bf66489397f5b91241df",
+    "root": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92"
+  },
+  "recipe_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+  "review": "PASS",
+  "schema": "ni08-main-predispatch-source-binding/v1",
+  "source_context_bytes": 655994,
+  "source_context_count": {
+    "app": 2218,
+    "root": 1098
+  },
+  "source_context_sha256": "20e2f80efb2568339c9160d9257bb2e25aee4d2e07b248d754d8d550cce5c47d",
+  "tracked_file_count": 93,
+  "tracked_files": [
+    {
+      "bytes": 2381,
+      "git_blob": "164c6ca4b419020504b5cc9109cdd7915d495948",
+      "mode": "100644",
+      "path": ".github/workflows/ni08-vbs1-evaldisc-native.yml",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "316da11d254a3b8f236bd8b79ce4892a28f8cb9bd60d57db49c3eec28cb5f626"
+    },
+    {
+      "bytes": 22424,
+      "git_blob": "bc52c187351be57e3c267fb94fb932a7e7f2b4b4",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_run_hosted_capture.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "8a672e398a297af2170e0384e72b050c9f5204d765f8a31022bc6f33d7b3e66f"
+    },
+    {
+      "bytes": 15863,
+      "git_blob": "6a32da85e358bb7f6baa4928bacb0f50db1c5532",
+      "mode": "100644",
+      "path": "scripts/ci/ni08-hosted-expected-cases.json",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "a44a0a89e2486f7e285d170ba39051581cdcaef3a4ee8caa162c7cc76142bc15"
+    },
+    {
+      "bytes": 2658,
+      "git_blob": "344c861a00c6885f0a3b81f90712c3fc40cb4496",
+      "mode": "100644",
+      "path": "scripts/ci/ni08_source_context.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df"
+    },
+    {
+      "bytes": 2743,
+      "git_blob": "acf2c5986791fbc0914c38d89b4b888344d40354",
+      "mode": "100644",
+      "path": "scripts/ci/ni08-hosted-requirements.txt",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "33a1e8171af0969205422bcc38a8a922ac78116e5a473f11a1ac839f35f4311c"
+    },
+    {
+      "bytes": 16627,
+      "git_blob": "a9b220949a3b82c5aa9b573cc57094550cabc661",
+      "mode": "100644",
+      "path": "docs/reviews/ni08-vbs1-evaldisc-hosted-capture-recipe-20261006.md",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "cb6d6fe77d9ce6ada8b7f501939bfdb103bc27ded5bba87d4f4aee92eec5e1c0"
+    },
+    {
+      "bytes": 2260,
+      "git_blob": "b5a521ef4debe7ad105830f5fa27bbf9c2168dcd",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/ci_conformance.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c"
+    },
+    {
+      "bytes": 244823,
+      "git_blob": "e5c633571051f9955f66a49a7afe7143d103da13",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/README.md",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "b2ca24a53690daeda3b24732842517cd43c4e6b316f41ae745164a6751421ba6"
+    },
+    {
+      "bytes": 9432,
+      "git_blob": "3a7379df0e62cfec7026928a7da3a952e6698a73",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/_analysis_report_provenance.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e"
+    },
+    {
+      "bytes": 12327,
+      "git_blob": "012ed6ccc5730ee51d319e3ec991960fa7a18ce2",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/verify_before_stop.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "31e54f1bd0531b3830338ced032ff6a62ac14ceb1c2ec2f9440d635e80960049"
+    },
+    {
+      "bytes": 19956,
+      "git_blob": "48c497a2dcf72cd124deb2201bc2daed32678a9c",
+      "mode": "100644",
+      "path": "scripts/vidya/adapters/eval_suite_discriminability.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "55941937d92ec10e2255f9a9ea1014b8aa88204ee00bc77810a302b4dbbf14db"
+    },
+    {
+      "bytes": 40447,
+      "git_blob": "309af769e45245fd1452482eb2e0592a86a4a79f",
+      "mode": "100644",
+      "path": "scripts/vidya/claim_tuple.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe"
+    },
+    {
+      "bytes": 25488,
+      "git_blob": "1d444850ce84b429351c0884769bae0b0023d5a5",
+      "mode": "100644",
+      "path": "scripts/vidya/ingest_sources.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "a5df8ea9e1bec516f32fa2548e7b9bf71c8c068e041771b7fc226cec3cc0a2a7"
+    },
+    {
+      "bytes": 39027,
+      "git_blob": "6c0297ccb1b0c9bb8608c06f0daeecea265e6a54",
+      "mode": "100644",
+      "path": "scripts/vidya/cli.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "2473890f7bea92ec2d3732cbd99f572ca201fd471e76dfc48f4104405c776a50"
+    },
+    {
+      "bytes": 15057,
+      "git_blob": "4764fe8eb0f6dce3a1f48fa17842e9715210ef07",
+      "mode": "100644",
+      "path": "scripts/vidya/citation_gate.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "14bcad1be3ea81496abe7f92403eeb0a99b5f4d26ee55fe9d633ece5a78bb8e0"
+    },
+    {
+      "bytes": 15129,
+      "git_blob": "aa523f1d960d2ec55ec18bd74f5dcfaa46187ca3",
+      "mode": "100644",
+      "path": "scripts/vidya/wiki_dependents.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "023feb86f1bd8611ef405504fb9ff815578e0ceaf59376cc8281bdc745c208e2"
+    },
+    {
+      "bytes": 5909,
+      "git_blob": "e7c93a39804c3e1cf8107f7801c8c32a23f0b45b",
+      "mode": "100644",
+      "path": "scripts/vidya/canonical.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434"
+    },
+    {
+      "bytes": 8539,
+      "git_blob": "de0f8cf3d4e3e9c27238e6311622b63c7f8edd01",
+      "mode": "100644",
+      "path": "scripts/vidya/lattice.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2"
+    },
+    {
+      "bytes": 44566,
+      "git_blob": "01938146e0d94642759ce77c3abfb34f6c748e31",
+      "mode": "100644",
+      "path": "scripts/vidya/fold.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab"
+    },
+    {
+      "bytes": 18491,
+      "git_blob": "24ec142ddfbbf13742a60bc25a2bdbc4c188c39a",
+      "mode": "100644",
+      "path": "scripts/vidya/gate.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "01a87a9927d4553e2008bdeed7a04728515ba49a885082cfbc7bcfcb2cd91b6b"
+    },
+    {
+      "bytes": 10240,
+      "git_blob": "47e485d913271b72c9aaf1d9dfb526294ef0fd14",
+      "mode": "100644",
+      "path": "scripts/vidya/frames.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749"
+    },
+    {
+      "bytes": 14329,
+      "git_blob": "299792d3f909181cf973415511a3bc5ff8a90765",
+      "mode": "100644",
+      "path": "scripts/vidya/ledger.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09"
+    },
+    {
+      "bytes": 999,
+      "git_blob": "7c8d00f842e6f53bd495ed80263720255da50e03",
+      "mode": "100644",
+      "path": "tests/conftest.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a"
+    },
+    {
+      "bytes": 14459,
+      "git_blob": "46f5d5a28ccfffcd074a15f321005441e89791ba",
+      "mode": "100644",
+      "path": "tests/vidya/test_analysis_producer_roundtrip.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "6697e376b5b2972db0e24649c38429b39afa012a2bbbcf44289a30f090a2f01e"
+    },
+    {
+      "bytes": 17192,
+      "git_blob": "070f40fc97860f59f113434f06128634374beff1",
+      "mode": "100644",
+      "path": "tests/vidya/test_analysis_report_adapters.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "830e26a56c70a3c0160eea341dd82697594c8ea891b620cc995328364fe60b94"
+    },
+    {
+      "bytes": 13465,
+      "git_blob": "2311f160e9718414c3b23f1137098ab92fe9fe0f",
+      "mode": "100644",
+      "path": "tests/vidya/test_citation_gate.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "5f24e4c032a80a1e83142d1fbd6c7489ed5074619299a5dfa48f8df9046de5d5"
+    },
+    {
+      "bytes": 14555,
+      "git_blob": "e6994270b96c321a2de0e40a13af3445672f912e",
+      "mode": "100644",
+      "path": "tests/vidya/test_claim_tuple.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "93a01202da69951afd170d61f527abd7e21c52853d8f6c429ccf5265aa4b2a6b"
+    },
+    {
+      "bytes": 26565,
+      "git_blob": "204c6ade16b7e572db2705fa96d9026c068ec614",
+      "mode": "100644",
+      "path": "tests/vidya/test_ingest_sources.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "3d312fd4fcffec85ea3653aa821c32c825ba84d035311c005c0e32b7c998a687"
+    },
+    {
+      "bytes": 19249,
+      "git_blob": "d2d7bd90f86cffa23c51db803288641c5c6fe461",
+      "mode": "100644",
+      "path": "scripts/ci/native_conformance.py",
+      "repo": "root",
+      "repo_pin": "0f79a93573ebef36f334c3bbd1c5db0c85fd5c92",
+      "sha256": "2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e"
+    },
+    {
+      "bytes": 36208,
+      "git_blob": "9cfbdbe604fcc29ce03ad748659f7adec85b5b98",
+      "mode": "100644",
+      "path": "scripts/analysis/eval_suite_discriminability.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6e3e8e688b74b857d7023e10361ca5c13334f8facbb69cae6a37c3df1648de35"
+    },
+    {
+      "bytes": 26234,
+      "git_blob": "a45ed1eef34b39012fdff48922abc7bb2e28e8d1",
+      "mode": "100644",
+      "path": "scripts/analysis/mf_vbs1_verify_before_stop.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "7463afeab66a20c274314e5f0a85472e271dc7e12e10f052b874039d4c0b44da"
+    },
+    {
+      "bytes": 4019,
+      "git_blob": "2430372f2d6f1cdba0503a82816a941f5e01e800",
+      "mode": "100644",
+      "path": "scripts/autopilot/journal_shards.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "d7ed426ccc3972b6950f23a1af0e26ae6ed5e3e9dde7e6401f963cd63923adda"
+    },
+    {
+      "bytes": 19049,
+      "git_blob": "faba05796e424014a3291d92432927c6fc28fed4",
+      "mode": "100755",
+      "path": "scripts/autopilot/paired_stats.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "c81001fb4c01713247f4edfe1a99667a207d0e35aec501448fc4ce269fccff80"
+    },
+    {
+      "bytes": 4047,
+      "git_blob": "ff893046a8e7d2598657b950e9e41449f358d25f",
+      "mode": "100644",
+      "path": "src/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "16e20bce77e6470646b90def0e3d653a3bd9fb024b484f7cd034f96ff8a0a5f8"
+    },
+    {
+      "bytes": 3904,
+      "git_blob": "27c9fe394da9d9ea2f2f4b64d254bf99fa8aaa37",
+      "mode": "100644",
+      "path": "src/autopilot_core/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "41f85161a3c6290350f3d78fead1d7847d70bc086eb56e3c3a8a3b21fbdd3faa"
+    },
+    {
+      "bytes": 6706,
+      "git_blob": "de768dfce1199a1011a30d1db8db78ec5820e605",
+      "mode": "100644",
+      "path": "src/autopilot_core/action_identity.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "3d7b4c9e6b4cad81889fc4875a722502b2d2851c9d0904a3deba0b56a212071c"
+    },
+    {
+      "bytes": 14483,
+      "git_blob": "25e224dd700087aa4f8acc545c9505434df50bf7",
+      "mode": "100644",
+      "path": "src/autopilot_core/journal_reconstruction.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "668bba11abe976869881ff2bcdbbc20cdea06148995026c72c405ce0bc5f004f"
+    },
+    {
+      "bytes": 7883,
+      "git_blob": "82adbc3dab68470570ec8fe0edf62d238ff8b093",
+      "mode": "100644",
+      "path": "src/autopilot_core/learning_exclusions.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6c4148b843b16f4f21100cf236b158cb549bed797d9dddc63a7125be21645e68"
+    },
+    {
+      "bytes": 18893,
+      "git_blob": "d01f62fdf7fe4ab31621ae3ff3483b68bf3ef1a6",
+      "mode": "100644",
+      "path": "src/autopilot_core/measurement_guards.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "e1affedd1f1ba34d712c8f206585eb8a8f9a85b817040d68016a5f83cc0987c4"
+    },
+    {
+      "bytes": 11966,
+      "git_blob": "5dce1594af423b7a91e7eec916741fb39de02854",
+      "mode": "100644",
+      "path": "src/autopilot_core/multitier_decision.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "4860f66eee4076d5e24ca2b68de408dd449471b9659c0fcab80fdc8a2cc6787e"
+    },
+    {
+      "bytes": 5839,
+      "git_blob": "91f3e59e0918c93004ad4a4f61fe1d384eb48d78",
+      "mode": "100644",
+      "path": "src/autopilot_core/pareto_math.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "a8af55cc5a7927a896584e6b2a3f8da63e3cc17aeee5ef7cd4b63a1a17cf59d6"
+    },
+    {
+      "bytes": 11863,
+      "git_blob": "19d3813492f3b26807db22daad491fc1bf470e05",
+      "mode": "100644",
+      "path": "src/autopilot_core/rlvr_tiers.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "b08f66d65cf26ddbb487e6a4555e5ad076e74de191f1ecebe1666469fed97e26"
+    },
+    {
+      "bytes": 29215,
+      "git_blob": "5086b05f9e7517b1c8b7a9b3934f2b57da5f0356",
+      "mode": "100644",
+      "path": "src/autopilot_core/sequential_verdict.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "5df38f8d03a7f569f8a0bdf39345a6ab3bf6e06b903c25fb9c6bacd93297611d"
+    },
+    {
+      "bytes": 30706,
+      "git_blob": "c16b5dcf974724686aaba10e3b862498920ef651",
+      "mode": "100644",
+      "path": "src/autopilot_core/tier_specs.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "89ee24c066c8bed1b18a4c6c577fef530a447abd3db9fbf0fd308974ea18d095"
+    },
+    {
+      "bytes": 1280,
+      "git_blob": "aaf34b3443d3b174455238333a7319bb45456053",
+      "mode": "100644",
+      "path": "src/backends/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6e4c4f1fba779a86819e693df18268e2880d3cd77529ae9bbc106989e9dedcf9"
+    },
+    {
+      "bytes": 9406,
+      "git_blob": "ccfe409f8f73dc78526fd5d3f011d91d2c71f39a",
+      "mode": "100644",
+      "path": "src/backends/anthropic.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "4797b591f37add6d311b3d14cef9e88a1dd8818722faa58e010b02631bcd4a45"
+    },
+    {
+      "bytes": 9729,
+      "git_blob": "c71b76a450e6f2c9d14839b6d9937ec1add450a8",
+      "mode": "100644",
+      "path": "src/backends/context_overflow.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "5c18c272fc528c359f46d527a9d70413d244069b6fd92049d4999d2352553c84"
+    },
+    {
+      "bytes": 86575,
+      "git_blob": "533ceb6331ed7a062a4d0960ef0a3f15b1c2619c",
+      "mode": "100644",
+      "path": "src/backends/llama_server.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "cef546d0009917416d544f5e52814def1d71644e06970a5be6c92145f0533e62"
+    },
+    {
+      "bytes": 10484,
+      "git_blob": "e09b17402c489f532e3330011dbe529a904f6bfe",
+      "mode": "100644",
+      "path": "src/backends/openai.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "129ef11391df6e4be4cb6e99c4bde67374ae075af0d072951ae47e3ee5e8b8b0"
+    },
+    {
+      "bytes": 9403,
+      "git_blob": "f736d2246f10ea455057301e080850e5d3bb0e69",
+      "mode": "100644",
+      "path": "src/backends/protocol.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "18d26e35e01da077389fabfd3f5d843fda6604a41cb1fd5fc54aa80d850fe07d"
+    },
+    {
+      "bytes": 32794,
+      "git_blob": "70b716d10df5c3df74d42da80a9853accc43028c",
+      "mode": "100644",
+      "path": "src/backends/serving_calls.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "a528b20c6d106e9d5ce4c3a2f95919103bed44bad30cabb863491d768ad1214c"
+    },
+    {
+      "bytes": 45964,
+      "git_blob": "90c83b49ed877c1615661f4a3ac188efac02d644",
+      "mode": "100644",
+      "path": "src/config/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "bd0a888d06c952e0899093233241029b6cac2b6c2e1d605fea4b56878fe04d17"
+    },
+    {
+      "bytes": 69648,
+      "git_blob": "a846546e725d448cbf9321fba84c2128905ccaf3",
+      "mode": "100644",
+      "path": "src/config/models.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "9ff0f384f74ffd315be19311f52b32cb9db78a2209248a9040dc7a9b185576b7"
+    },
+    {
+      "bytes": 8532,
+      "git_blob": "64f122cf6a2d7f0d29baac9bcc955029ec8f9cf5",
+      "mode": "100644",
+      "path": "src/config/validation.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "dc33a052fb1e0962b3546336017d239929a36a8942502a7aa99da064b20e32da"
+    },
+    {
+      "bytes": 1231,
+      "git_blob": "11e3b7c80df1a6f921d467f7a924d287e1ac28dc",
+      "mode": "100644",
+      "path": "src/env_parsing.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "2626fb2c47012c56a7f7e99fe03f088977f9b061c77bcd1edf0dfa1e12b7d52f"
+    },
+    {
+      "bytes": 8665,
+      "git_blob": "afb08a74cae8a69d856075851048560906e66292",
+      "mode": "100644",
+      "path": "src/exceptions.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "5149fe8b548384ad3619ea39b36226ba4980ba03c61298c53ab27b571a62db77"
+    },
+    {
+      "bytes": 71,
+      "git_blob": "c832399dd165f9e7a9aae0a97864e389cb3feb2b",
+      "mode": "100644",
+      "path": "src/inference/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "4fe8bf6f73be03cc345849789ca7b16e995aee469bc0e17f8c24ed44ab23bc8e"
+    },
+    {
+      "bytes": 31243,
+      "git_blob": "9c634a0d4abcc495d66c347eb1aee420c988588c",
+      "mode": "100644",
+      "path": "src/inference/model_server.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "d968d7af47a9904c15ee0cd5009b78abebc2e9e2d9c280a0707650880d1d1df9"
+    },
+    {
+      "bytes": 1926,
+      "git_blob": "d4b73aae48b0d3f94edd0464d3f18a2562335a41",
+      "mode": "100644",
+      "path": "src/llm_primitives/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "cdee7bcf079e3023de6da551cd376e9e6db339d0ac52853eba054e3d3d6ccff9"
+    },
+    {
+      "bytes": 24265,
+      "git_blob": "19462176d46fb746c8d1f960c60a165e60ca7ceb",
+      "mode": "100644",
+      "path": "src/llm_primitives/backend.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "cceeaa03e7f7e03371f634f049ca3e86b711fa171cc653f6e261af50cad2d743"
+    },
+    {
+      "bytes": 1590,
+      "git_blob": "1d7c03f6b1d06731b0215baac95f04c8042bfeb1",
+      "mode": "100644",
+      "path": "src/llm_primitives/config.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "3ec665e25cc474fb7f3052b0d3169200697738d9ce9bb8862dbcb575878a10d5"
+    },
+    {
+      "bytes": 1971,
+      "git_blob": "ce2bf86800d7d021f051cf5ea8d749850129226e",
+      "mode": "100644",
+      "path": "src/llm_primitives/cost_tracking.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "94794e6c2cd20de3775a8dd085b01a2e60feca366989856bef784e40135f7017"
+    },
+    {
+      "bytes": 88613,
+      "git_blob": "43e5ae929cf579516510aaa4b5e57c39b6ae7077",
+      "mode": "100644",
+      "path": "src/llm_primitives/inference.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "d22b9653615ecf6b46fd3821bfb62b9fcfb24e725fe091db9b2154346666b1bf"
+    },
+    {
+      "bytes": 3737,
+      "git_blob": "44ca255bbc98616b0ea68496c2e783d21b98ee86",
+      "mode": "100644",
+      "path": "src/llm_primitives/mock.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "b8e304c4b4b8fe3bad127165fb1a43896832260493b49a33e9df3fea5ce7bdc6"
+    },
+    {
+      "bytes": 734,
+      "git_blob": "3bd5515a953a61bb64a45e53d108cadeb88e255b",
+      "mode": "100644",
+      "path": "src/llm_primitives/persona.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "f78a6741dca6c44e746104600ece8f8a3df7453e5415a4cc65634a1d56c7f330"
+    },
+    {
+      "bytes": 59420,
+      "git_blob": "e0a8ecf791d5b7217e4f02e2e867b77a4f82bd9f",
+      "mode": "100644",
+      "path": "src/llm_primitives/primitives.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6111549ee50a29eb06efa744ae01ca53a1f205ebf89d6fa22ab4f56ca9388399"
+    },
+    {
+      "bytes": 11509,
+      "git_blob": "2b03a8720db93e188256e94516a5a67320e5c008",
+      "mode": "100644",
+      "path": "src/llm_primitives/stat_tests.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "d0886ef1b32498475d804b9597347d2934b3dc0553224c0443a98654436af2dc"
+    },
+    {
+      "bytes": 3274,
+      "git_blob": "e428f8e4d83673a9c0f56b31bacd5c87064e31d7",
+      "mode": "100644",
+      "path": "src/llm_primitives/stats.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "48893a575027dc7315851155af3c5cd2ee2cbcfbd6a0e7b07b1cdeb52bc82df6"
+    },
+    {
+      "bytes": 6214,
+      "git_blob": "260c44371bf9e06346b4e03acaa2bbd046c03cd9",
+      "mode": "100644",
+      "path": "src/llm_primitives/teleport.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "c8e42785b24378929f9cf94522cb530aa62ec08a4f12b38b5beaef2ffbb79c2d"
+    },
+    {
+      "bytes": 4041,
+      "git_blob": "cde1426b1286f5436e3c63ebbb3ae6fe5bfa4933",
+      "mode": "100644",
+      "path": "src/llm_primitives/tokenizer.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "a8bd406cebc7e62ea8a2e2b9ae398f54916003c93e8e74c5a287cbaf6be04a99"
+    },
+    {
+      "bytes": 1765,
+      "git_blob": "e00b4687af879c77a892a8608663bbd43676ddcd",
+      "mode": "100644",
+      "path": "src/llm_primitives/tokens.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "352905c58f38480a05ba865fcf9aeeb64813fda9d4679de51a49959f322c2c8a"
+    },
+    {
+      "bytes": 2373,
+      "git_blob": "b53760399d436db4346620493815ea5f974840fb",
+      "mode": "100644",
+      "path": "src/llm_primitives/types.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6ac137723f9541bd270a3b9bba684f102595ac24b620d8db1eab7e656c96e7fc"
+    },
+    {
+      "bytes": 234,
+      "git_blob": "1547a47f34f78cc5d3fabbcda57ff6505700449e",
+      "mode": "100644",
+      "path": "src/model_server.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "5185d36cb8484590605c127ec2382b94af5e6175ade8fff05e2110c0229c489b"
+    },
+    {
+      "bytes": 80,
+      "git_blob": "287333a63889217a52c0082a7e316dc64670ee1f",
+      "mode": "100644",
+      "path": "src/registry/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "50ddc75e291c2caaae688bbe94c4f3144a5751eb11e0a65ee35b5632ea3a9c6d"
+    },
+    {
+      "bytes": 6472,
+      "git_blob": "6bb3dad23130a763dc4c456c7c432a9535536f30",
+      "mode": "100644",
+      "path": "src/registry/kernel_paths.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "f5cd510ad2887a6276350c8939147ce66ba78a8eab573d42ee120094c0795066"
+    },
+    {
+      "bytes": 58953,
+      "git_blob": "81d056260371f0da2f097aa1a184ee8c892e3f9c",
+      "mode": "100644",
+      "path": "src/registry/model_descriptors.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "ba868c939eba8ebc1274bd2d05bcff865c702fcdef1e3d6ec7184833aad44f69"
+    },
+    {
+      "bytes": 38229,
+      "git_blob": "0bddc98c3a27c40d4e117783f70808f22551fc4f",
+      "mode": "100644",
+      "path": "src/registry/registry_loader.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "c4a4bf71f0f90384ffb64c673897c9fd496889e4e395a2e3eaf94933550ed18b"
+    },
+    {
+      "bytes": 133311,
+      "git_blob": "22a04ef5aba708f2f351acf740573eaba9f659f0",
+      "mode": "100644",
+      "path": "src/registry/stack_priors.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "188e4093675afc23308ad1c3b8afd0c4d104f9626d6658ae78849b3ab90fca7f"
+    },
+    {
+      "bytes": 238,
+      "git_blob": "c68c5918b94e4a54a07a7c6642d92365480bf656",
+      "mode": "100644",
+      "path": "src/registry_loader.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "81f3dc46dea4af9eb8df9adb4a73d2e900e1d040d107a73a04053f8ea72b77be"
+    },
+    {
+      "bytes": 31024,
+      "git_blob": "59432d52c3c5ebb661c336f70627267073cfa4cb",
+      "mode": "100644",
+      "path": "src/roles.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "408f10be964705638562ec9a6d0e1cd56b26ac849fdb964e8bac0c9a7fe4be61"
+    },
+    {
+      "bytes": 90,
+      "git_blob": "f96855d4e4b4689a8ee2a07618ca5ecef12d45d7",
+      "mode": "100644",
+      "path": "src/runtime/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "8ac7118ea6f4f3134f219d094b325f74006c47a2f220b8a6b04b2355d021f4e0"
+    },
+    {
+      "bytes": 2026,
+      "git_blob": "7a764c79a96d60a59b627cd1cbc73b08a5c6c4e2",
+      "mode": "100644",
+      "path": "src/runtime/git_head.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "f87a64e1f27716026f4d91aa508f4bfa6731939dbe0ef8713d41a3d658a86b01"
+    },
+    {
+      "bytes": 520,
+      "git_blob": "e81d5c94b0479ae82472dfceec8393cd8f8286d2",
+      "mode": "100644",
+      "path": "src/scheduling/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "a65b963b3d38ca2d680827bfe3debe3e7d91095ea50723c5c40ce6b19dd0df51"
+    },
+    {
+      "bytes": 3898,
+      "git_blob": "9a2b4017e2438ea01050e90c496e12b406b0a0f2",
+      "mode": "100644",
+      "path": "src/scheduling/gate_observation.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "9beb0986cd902292f322176d2f3aaa534ea83a3f5840ecca838dcf07a850d470"
+    },
+    {
+      "bytes": 4396,
+      "git_blob": "cb4581714cc4a1631dea833865fc322f2181cc6f",
+      "mode": "100644",
+      "path": "src/workload_model.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "6fff754ce59a70edf28159fa13e071d8b2ea38bef97968cca6508a54924a315f"
+    },
+    {
+      "bytes": 16,
+      "git_blob": "d4839a6b14c11e64143d1d200c2d4733595ffc6c",
+      "mode": "100644",
+      "path": "tests/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "5a4ef7228eb6275e41b652d5233c660120d669a26440b7af4b804b2b92c30108"
+    },
+    {
+      "bytes": 13851,
+      "git_blob": "3b87111c6bc4ec1f8c8840d204e337e12ae00851",
+      "mode": "100644",
+      "path": "tests/conftest.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "48312d00152f362b340374097e096c5341a6fdbaf9c48573b08fb64143f7b524"
+    },
+    {
+      "bytes": 5103,
+      "git_blob": "e3461d9ca28cf1f20719e1e1474c6f46d0f68b6a",
+      "mode": "100644",
+      "path": "tests/test_analysis_report_provenance.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "f9becce57813ff7bb04f8c74d46aec1e566f194be069f0343bbcff7324ece1be"
+    },
+    {
+      "bytes": 3109,
+      "git_blob": "a6a2e6a52392f78b9a69c89768c289e580374ba8",
+      "mode": "100644",
+      "path": "tests/test_analysis_report_snapshot_sealing.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "7a89576ec674bf94c2764f5bc997784a4abce736e8f2609c27d4b621820e423c"
+    },
+    {
+      "bytes": 15800,
+      "git_blob": "c96e8a7772120292a56a75d1391742f84a3ada33",
+      "mode": "100644",
+      "path": "tests/test_eval_suite_discriminability.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "9d2f4b78d1d288ea80a9f920c5d0764cad4b0060a56764dfd61e1b975ec5a591"
+    },
+    {
+      "bytes": 21,
+      "git_blob": "4a5d26360bce3309c1d761d1529117cec7d42e40",
+      "mode": "100755",
+      "path": "tests/unit/__init__.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "9a4a1d0d63dbdc242b4536d00334837ec3c459a6ee5f81ca31688ef48312559c"
+    },
+    {
+      "bytes": 9775,
+      "git_blob": "0521e7745c6b52f51bc50f14185d003568a08921",
+      "mode": "100644",
+      "path": "tests/unit/test_stat_tests.py",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "a512050a8fe09694ec058acaab66657dc80adca57a5f826aade8aa1a7db81850"
+    },
+    {
+      "bytes": 1099589,
+      "git_blob": "ef2306018773ff9a1e80389970d92f66fcf8d5b7",
+      "mode": "100644",
+      "path": "uv.lock",
+      "repo": "app",
+      "repo_pin": "cfcf3768716de888a971bf66489397f5b91241df",
+      "sha256": "7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3"
+    }
+  ]
+}

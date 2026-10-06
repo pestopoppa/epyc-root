@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **52 completed scoped tasks: 38 existing checkbox flips and 14 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **57 completed scoped tasks: 41 existing checkbox flips and 16 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -133,3 +133,7 @@ The report successor is approved for one hosted synthetic capture after MAIN ind
 ## C5 portable policy-path — MAIN acceptance
 
 [Exact policy/source and original28/28](../../artifacts/ni08/c5-policy-path-source-20261006/README.md) close the two pre-enrolled C5-POLICY-PATH/VB companions. Research main60443789 carries the unchanged historical policy bytes and reviewed versioned loader. **52 scoped completions (38 existing flips +14 additions)**. Other source queues and the full remaining-card eligibility audit continue; whole-backlog exhaustion is unproved.
+
+## Prospective report readers/writers and SC80 — MAIN acceptance
+
+[Original38/38+20/20, actual producer round trips and source publication](../../artifacts/ni08/analysis-report-source-20261006/README.md) close five bounded tasks: three existing flips and two pre-enrolled writer companions. **57 scoped completions (41 existing flips +16 additions)**. Historical identityless reports stay descriptive; live measurements and other source queues remain open. All-card source eligibility audit continues; backlog exhaustion is unproved.

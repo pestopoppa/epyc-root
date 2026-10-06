@@ -1,0 +1,58 @@
+name: NI08 VBS1 and EvalDisc native fixture capture
+on:
+  push:
+    branches: [codex/ni08-vbs1-evaldisc-wire-root-20261006]
+permissions:
+  contents: read
+jobs:
+  ni08-native-source-fixtures:
+    name: source-writer-adapter-and-citation-fixtures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      APP_PIN: cfcf3768716de888a971bf66489397f5b91241df
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize retained outcome before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni08-native/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/ni08-native/result/status.json"
+      - name: Checkout the exact recipe and ROOT source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout the exact APP writer and test source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Set up the accepted Python patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated runner environment
+        run: python -m venv "$RUNNER_TEMP/ni08-native/venv"
+      - name: Capture APP and ROOT synthetic controls through the existing native carrier
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/ni08-native/venv/bin/python" root/scripts/ci/ni08_run_hosted_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/ni08-native/result/capture" > "$RUNNER_TEMP/ni08-native/result/driver.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/ni08-native/result/driver.log"
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/ni08-native/result/status.json"
+          exit "$rc"
+      - name: Preserve status, both original JUnit files, native receipts and generated synthetic bundles
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni08-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni08-native/result/
+          if-no-files-found: error
+          retention-days: 90

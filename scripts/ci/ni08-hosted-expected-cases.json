@@ -1,0 +1,298 @@
+{
+  "app": [
+    {
+      "classname": "tests.test_analysis_report_provenance",
+      "name": "test_mf_vbs_manifest_hashes_the_same_bytes_it_parsed",
+      "nodeid": "tests/test_analysis_report_provenance.py::test_mf_vbs_manifest_hashes_the_same_bytes_it_parsed"
+    },
+    {
+      "classname": "tests.test_analysis_report_provenance",
+      "name": "test_eval_discriminability_manifest_hashes_the_same_bytes_it_parsed",
+      "nodeid": "tests/test_analysis_report_provenance.py::test_eval_discriminability_manifest_hashes_the_same_bytes_it_parsed"
+    },
+    {
+      "classname": "tests.test_analysis_report_provenance",
+      "name": "test_mf_vbs_edited_call_bearing_numerator_uses_intersection",
+      "nodeid": "tests/test_analysis_report_provenance.py::test_mf_vbs_edited_call_bearing_numerator_uses_intersection"
+    },
+    {
+      "classname": "tests.test_analysis_report_provenance",
+      "name": "test_mf_vbs_zero_denominators_are_unknown_json_values",
+      "nodeid": "tests/test_analysis_report_provenance.py::test_mf_vbs_zero_denominators_are_unknown_json_values"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_snapshots_are_private_and_identical_paths_deduplicate[_seal_eval]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_eval]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_snapshots_are_private_and_identical_paths_deduplicate[_seal_mf]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_snapshots_are_private_and_identical_paths_deduplicate[_seal_mf]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_eval]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_eval]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_mf]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_conflicting_duplicate_input_path_refuses_without_overwriting[_seal_mf]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_eval]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_eval]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_mf]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_existing_snapshot_mismatch_refuses_instead_of_replacing[_seal_mf]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_eval]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_eval]"
+    },
+    {
+      "classname": "tests.test_analysis_report_snapshot_sealing",
+      "name": "test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_mf]",
+      "nodeid": "tests/test_analysis_report_snapshot_sealing.py::test_symlinked_snapshot_root_is_refused_without_chmod_target[_seal_mf]"
+    },
+    {
+      "classname": "tests.test_eval_suite_discriminability",
+      "name": "test_error_rows_excluded_from_brittleness_flip",
+      "nodeid": "tests/test_eval_suite_discriminability.py::test_error_rows_excluded_from_brittleness_flip"
+    },
+    {
+      "classname": "tests.test_eval_suite_discriminability",
+      "name": "test_error_dominated_run_excluded_from_run_spread",
+      "nodeid": "tests/test_eval_suite_discriminability.py::test_error_dominated_run_excluded_from_run_spread"
+    },
+    {
+      "classname": "tests.test_eval_suite_discriminability",
+      "name": "test_error_dominated_gate_is_configurable",
+      "nodeid": "tests/test_eval_suite_discriminability.py::test_error_dominated_gate_is_configurable"
+    },
+    {
+      "classname": "tests.test_eval_suite_discriminability",
+      "name": "test_brittleness_unmeasured_single_run",
+      "nodeid": "tests/test_eval_suite_discriminability.py::test_brittleness_unmeasured_single_run"
+    },
+    {
+      "classname": "tests.test_eval_suite_discriminability",
+      "name": "test_cli_main_writes_report",
+      "nodeid": "tests/test_eval_suite_discriminability.py::test_cli_main_writes_report"
+    },
+    {
+      "classname": "tests.unit.test_stat_tests",
+      "name": "test_wilson_degenerate_denominator",
+      "nodeid": "tests/unit/test_stat_tests.py::test_wilson_degenerate_denominator"
+    },
+    {
+      "classname": "tests.unit.test_stat_tests",
+      "name": "test_wilson_published_values",
+      "nodeid": "tests/unit/test_stat_tests.py::test_wilson_published_values"
+    },
+    {
+      "classname": "tests.unit.test_stat_tests",
+      "name": "test_calibration_metric_bundle_concrete_values",
+      "nodeid": "tests/unit/test_stat_tests.py::test_calibration_metric_bundle_concrete_values"
+    }
+  ],
+  "derivation": "ROOT pairs use pytest prepend-mode module path anchored at repo root and explicit ids declared on every selected parametrized ROOT function; APP pairs use exact selected node IDs with explicit sealing parameter IDs. No collection or execution used.",
+  "root": [
+    {
+      "classname": "tests.vidya.test_analysis_producer_roundtrip",
+      "name": "test_actual_mf_producer_snapshot_round_trips_through_root_adapter",
+      "nodeid": "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_mf_producer_snapshot_round_trips_through_root_adapter"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_producer_roundtrip",
+      "name": "test_actual_eval_producer_snapshot_round_trips_with_native_reps",
+      "nodeid": "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_eval_producer_snapshot_round_trips_with_native_reps"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_immutable_input_snapshot_is_required_and_rechecked",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_immutable_input_snapshot_is_required_and_rechecked"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_report_bytes_and_retained_inputs_are_reverified_at_projection[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_report_bytes_and_retained_inputs_are_reverified_at_projection[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_report_bytes_and_retained_inputs_are_reverified_at_projection[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_report_bytes_and_retained_inputs_are_reverified_at_projection[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_mf_cached_metric_key_must_match_native_selection",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_mf_cached_metric_key_must_match_native_selection"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_identity_free_legacy_report_is_refused[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_identity_free_legacy_report_is_refused[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_identity_free_legacy_report_is_refused[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_identity_free_legacy_report_is_refused[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_unknown_native_fields_are_refused[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_unknown_native_fields_are_refused[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_unknown_native_fields_are_refused[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_unknown_native_fields_are_refused[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_category_must_be_producer_authored_diagnostic_baseline[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_category_must_be_producer_authored_diagnostic_baseline[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_category_must_be_producer_authored_diagnostic_baseline[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_category_must_be_producer_authored_diagnostic_baseline[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_producer_source_changes_preserve_snapshot_bound_historical_rows[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_producer_source_changes_preserve_snapshot_bound_historical_rows[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_producer_source_changes_preserve_snapshot_bound_historical_rows[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_producer_source_changes_preserve_snapshot_bound_historical_rows[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_snapshot_path_escape_is_refused",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_snapshot_path_escape_is_refused"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_external_input_original_locator_is_metadata_only",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_external_input_original_locator_is_metadata_only"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_zero_denominator_rate_is_omitted_while_defined_rates_remain",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_zero_denominator_rate_is_omitted_while_defined_rates_remain"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[date_range]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[date_range]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[role_model]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_unbound_mf_scope_fields_cannot_be_supplied_by_report_envelope[role_model]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_eval_run_spread_with_one_eligible_run_is_omitted_even_if_cached_flag_is_false"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_eval_metric_reps_use_each_native_denominator",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_eval_metric_reps_use_each_native_denominator"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_eval_cached_suite_and_metric_must_match_bound_report",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_eval_cached_suite_and_metric_must_match_bound_report"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_cli_dispatch_uses_shared_grade_only[vbs]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_cli_dispatch_uses_shared_grade_only[vbs]"
+    },
+    {
+      "classname": "tests.vidya.test_analysis_report_adapters",
+      "name": "test_cli_dispatch_uses_shared_grade_only[eval]",
+      "nodeid": "tests/vidya/test_analysis_report_adapters.py::test_cli_dispatch_uses_shared_grade_only[eval]"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_precise_in_range_but_uningested_claim_stays_unknown",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_precise_in_range_but_uningested_claim_stays_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_precise_out_of_range_claim_is_blocking_dangling",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_precise_out_of_range_claim_is_blocking_dangling"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_zero_claim_entry_marks_precise_zero_dangling",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_zero_claim_entry_marks_precise_zero_dangling"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_malformed_key_claims_count_preserves_unknown",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_malformed_key_claims_count_preserves_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_duplicate_yaml_key_in_entry_is_unknown_not_last_value",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_duplicate_yaml_key_in_entry_is_unknown_not_last_value"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_unhashable_yaml_mapping_key_preserves_unknown_counts",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_unhashable_yaml_mapping_key_preserves_unknown_counts"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_cite_check_cli_keeps_in_range_uningested_unknown_nonblocking",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_cite_check_cli_keeps_in_range_uningested_unknown_nonblocking"
+    },
+    {
+      "classname": "tests.vidya.test_citation_gate",
+      "name": "test_cite_check_cli_blocks_out_of_range_claim",
+      "nodeid": "tests/vidya/test_citation_gate.py::test_cite_check_cli_blocks_out_of_range_claim"
+    },
+    {
+      "classname": "tests.vidya.test_claim_tuple",
+      "name": "test_category_must_be_one_of_autokernels_three",
+      "nodeid": "tests/vidya/test_claim_tuple.py::test_category_must_be_one_of_autokernels_three"
+    },
+    {
+      "classname": "tests.vidya.test_claim_tuple",
+      "name": "test_each_source_class_has_exactly_one_ladder",
+      "nodeid": "tests/vidya/test_claim_tuple.py::test_each_source_class_has_exactly_one_ladder"
+    },
+    {
+      "classname": "tests.vidya.test_ingest_sources",
+      "name": "test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift",
+      "nodeid": "tests/vidya/test_ingest_sources.py::test_every_source_is_a_cli_choice_and_the_literal_list_does_not_drift"
+    },
+    {
+      "classname": "tests.vidya.test_ingest_sources",
+      "name": "test_every_dispatched_adapter_declares_its_authority",
+      "nodeid": "tests/vidya/test_ingest_sources.py::test_every_dispatched_adapter_declares_its_authority"
+    }
+  ],
+  "schema": "epyc.ni08.expected_cases/v1"
+}

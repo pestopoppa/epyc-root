@@ -1,0 +1,15 @@
+{
+  "previous_head": "041ec98abba9c93c9b9cf75c07fa6a20ecdee775",
+  "main_before": "041ec98abba9c93c9b9cf75c07fa6a20ecdee775",
+  "source": "cfcf3768716de888a971bf66489397f5b91241df",
+  "commit": "00077b3a156dd18a1416ccc764e33c80afd89b32",
+  "paths": [
+    "scripts/analysis/eval_suite_discriminability.py",
+    "scripts/analysis/mf_vbs1_verify_before_stop.py",
+    "tests/test_analysis_report_provenance.py",
+    "tests/test_analysis_report_snapshot_sealing.py"
+  ],
+  "pushed": true,
+  "promoted": true,
+  "live_reload": false
+}

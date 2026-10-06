@@ -43,7 +43,7 @@ from fold import FoldResult  # noqa: E402
 from gate import Outcome, UsePolicy, evaluate  # noqa: E402
 from lattice import parse_grade  # noqa: E402
 from wiki_dependents import (  # noqa: E402
-    RECORD_REF, cited_refs, live_entry_ids, merge_redirects, resolve,
+    RECORD_REF, cited_refs, key_claim_counts, live_entry_ids, merge_redirects, resolve,
 )
 
 REPO = Path(__file__).resolve().parents[2]
@@ -118,11 +118,13 @@ def check_text(
     redirects: dict[str, str] | None = None,
     live: set[str] | None = None,
     by_entry: dict[str, list[str]] | None = None,
+    claim_counts: dict[str, int | None] | None = None,
 ) -> list[CitationVerdict]:
     """Apply `policy` to every intake citation in `text`."""
     redirects = merge_redirects() if redirects is None else redirects
     live = live_entry_ids() if live is None else live
     by_entry = claims_by_entry(fold_result) if by_entry is None else by_entry
+    claim_counts = key_claim_counts() if claim_counts is None else claim_counts
 
     verdicts: list[CitationVerdict] = []
     for num, claim_index in sorted(cited_refs(text), key=lambda r: (int(r[0]), r[1] or -1)):
@@ -147,6 +149,15 @@ def check_text(
                 path=path, entry=label, resolved=resolved, how=how, status="record",
                 notes=["reference discusses the index record, not its claims"]))
             continue
+
+        if claim_index is not None:
+            count = claim_counts.get(resolved)
+            if type(count) is int and claim_index >= count:
+                verdicts.append(CitationVerdict(
+                    path=path, entry=label, resolved=resolved, how=how, status="dangling",
+                    notes=[f"claim index {claim_index:02d} is outside resolved entry "
+                           f"intake-{resolved} key_claims range 0..{count - 1}"]))
+                continue
 
         candidates = by_entry.get(resolved, [])
         if claim_index is not None:
@@ -203,13 +214,14 @@ def iter_files(paths):
 def check_paths(paths, fold_result: FoldResult, policy: UsePolicy) -> list[CitationVerdict]:
     paths = list(paths) if paths else list(DEFAULT_PATHS)
     redirects, live = merge_redirects(), live_entry_ids()
+    claim_counts = key_claim_counts()
     by_entry = claims_by_entry(fold_result)
     out: list[CitationVerdict] = []
     for f in iter_files(paths):
         text = f.read_text(encoding="utf-8", errors="ignore")
         rel = str(f.relative_to(REPO)) if str(f).startswith(str(REPO)) else str(f)
         out.extend(check_text(text, fold_result, policy, path=rel, redirects=redirects,
-                              live=live, by_entry=by_entry))
+                              live=live, by_entry=by_entry, claim_counts=claim_counts))
     return out
 
 

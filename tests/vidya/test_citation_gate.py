@@ -5,6 +5,7 @@ These build real frames and fold them rather than mocking a FoldResult. The gate
 exactly where a test starts agreeing with a bug.
 """
 
+import json
 import sys
 from pathlib import Path
 
@@ -14,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts" / "vidya"))
 
 import citation_gate as cg  # noqa: E402
+import cli  # noqa: E402
+import wiki_dependents  # noqa: E402
 from fold import fold  # noqa: E402
 from frames import make_frame  # noqa: E402
 from gate import UsePolicy  # noqa: E402
@@ -52,13 +55,15 @@ def build(entry_num, claims, *, correction_on=None):
     return out
 
 
-def gate_text(text, frames, *, floor="Hinted/Located", live=None, redirects=None):
+def gate_text(text, frames, *, floor="Hinted/Located", live=None, redirects=None,
+              claim_counts=None):
     result = fold(frames, as_of=AT)
     policy = UsePolicy(use="test", floor=parse_grade(floor))
     return cg.check_text(text, result, policy, path="doc.md",
                          redirects=redirects or {},
                          live=live if live is not None else {"110", "896", "1000"},
-                         by_entry=cg.claims_by_entry(result))
+                         by_entry=cg.claims_by_entry(result),
+                         claim_counts=claim_counts)
 
 
 # --- identity ---------------------------------------------------------------------------
@@ -91,6 +96,101 @@ def test_precise_citation_of_the_refuted_claim_still_reports_it():
     frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
     (v,) = gate_text("per intake-896#03", frames)
     assert v.status == "overturned"
+
+
+def test_precise_in_range_citation_is_graded_when_ingested():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#00", frames, claim_counts={"110": 1})
+    assert v.status == "ok"
+
+
+def test_precise_in_range_but_uningested_claim_stays_unknown():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#01", frames, claim_counts={"110": 2})
+    assert v.status == "unknown"
+    assert v.status not in cg.BLOCKING
+
+
+def test_precise_out_of_range_claim_is_blocking_dangling():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#02", frames, claim_counts={"110": 2})
+    assert (v.status, v.resolved) == ("dangling", "110")
+    assert v.status in cg.BLOCKING
+    assert "outside resolved entry" in v.notes[0]
+
+
+def test_out_of_range_claim_is_dangling_even_if_ledger_has_forged_matching_id():
+    frames = build("110", {0: ("Hinted", "Located", False),
+                           99: ("Verified", "Located", False)})
+    (v,) = gate_text("see intake-110#99", frames, claim_counts={"110": 1})
+    assert v.status == "dangling"
+    assert v.claims == []
+
+
+def test_zero_claim_entry_marks_precise_zero_dangling():
+    (v,) = gate_text("see intake-110#00", [], claim_counts={"110": 0})
+    assert (v.status, v.resolved) == ("dangling", "110")
+
+
+def test_precise_out_of_range_uses_resolved_merge_survivor_count():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-797#01", frames, live={"110"}, redirects={"797": "110"},
+                     claim_counts={"110": 1})
+    assert (v.status, v.resolved, v.how) == ("dangling", "110", "merged")
+
+
+def test_malformed_key_claims_count_preserves_unknown():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#99", frames, claim_counts={"110": None})
+    assert v.status == "unknown"
+    assert v.status not in cg.BLOCKING
+
+
+def test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text(
+        "- id: intake-100\n  key_claims:\n    - first\n    - second\n"
+        "- id: intake-101\n  key_claims: malformed\n"
+        "- id: intake-102\n  key_claims: []\n"
+        "- id: intake-100\n  key_claims: [duplicate]\n")
+    counts = cg.key_claim_counts(index)
+    assert counts == {"100": None, "101": None, "102": 0}
+
+
+def test_duplicate_yaml_key_in_entry_is_unknown_not_last_value(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [first]\n  key_claims: [second]\n")
+    assert cg.key_claim_counts(index) == {}
+
+
+def test_unhashable_yaml_mapping_key_preserves_unknown_counts(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [first]\n  ? [bad, key]\n  : value\n")
+    assert cg.key_claim_counts(index) == {}
+
+
+def _cite_check_cli(tmp_path, monkeypatch, capsys, claim_index):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text("- id: intake-110\n  key_claims: [the claim]\n")
+    monkeypatch.setattr(wiki_dependents, "INDEX", index)
+    document = tmp_path / "consumer.md"
+    document.write_text(f"See intake-110#{claim_index}.\n")
+    ledger = tmp_path / "disposable-ledger.jsonl"
+    ledger.write_bytes(b"")
+
+    rc = cli.main(["--ledger", str(ledger), "--json", "cite-check", "--as-of", AT,
+                   str(document)])
+    report = json.loads(capsys.readouterr().out)
+    return rc, report["verdicts"][0]["status"]
+
+
+def test_cite_check_cli_keeps_in_range_uningested_unknown_nonblocking(
+        tmp_path, monkeypatch, capsys):
+    assert _cite_check_cli(tmp_path, monkeypatch, capsys, "00") == (0, "unknown")
+
+
+def test_cite_check_cli_blocks_out_of_range_claim(tmp_path, monkeypatch, capsys):
+    assert _cite_check_cli(tmp_path, monkeypatch, capsys, "01") == (3, "dangling")
 
 
 # --- the states a citer can act on ------------------------------------------------------
@@ -190,7 +290,8 @@ def test_citation_forms_are_all_gated(text, expected):
 def test_record_reference_is_not_graded_and_never_blocks():
     """The 3 documents that RECORDED the intake-896 fabrication were reported as resting on it."""
     frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
-    (v,) = gate_text("the description was struck from intake-896#record", frames)
+    (v,) = gate_text("the description was struck from intake-896#record", frames,
+                     claim_counts={"896": 0})
     assert v.status == "record"
     assert v.status not in cg.BLOCKING
     assert v.claims == []

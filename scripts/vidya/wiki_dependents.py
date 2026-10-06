@@ -164,6 +164,66 @@ def live_entry_ids() -> set[str]:
     return ids
 
 
+def key_claim_counts(index_path: Path | None = None) -> dict[str, int | None]:
+    """Return exact `key_claims` list lengths; malformed or duplicate rows stay unknown.
+
+    PyYAML is optional for callers that only use the stdlib wiki/citation helpers. Without it,
+    precise claim-index bounds remain unknown and citation behavior stays backward compatible.
+    """
+    index_path = INDEX if index_path is None else index_path
+    try:
+        import yaml
+    except ImportError:
+        return {}
+
+    class UniqueKeyLoader(yaml.SafeLoader):
+        pass
+
+    def construct_unique_mapping(loader, node, deep=False):
+        mapping = {}
+        for key_node, value_node in node.value:
+            key = loader.construct_object(key_node, deep=deep)
+            try:
+                duplicate = key in mapping
+            except TypeError as exc:
+                raise yaml.YAMLError("unhashable YAML mapping key") from exc
+            if duplicate:
+                raise yaml.YAMLError(f"duplicate YAML mapping key: {key!r}")
+            mapping[key] = loader.construct_object(value_node, deep=deep)
+        return mapping
+
+    UniqueKeyLoader.add_constructor(
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_unique_mapping)
+    try:
+        raw = index_path.read_bytes()
+        entries = yaml.load(raw.decode("utf-8"), Loader=UniqueKeyLoader)
+    except (OSError, UnicodeError, yaml.YAMLError):
+        return {}
+    if not isinstance(entries, list):
+        return {}
+    counts: dict[str, int | None] = {}
+    duplicate_ids: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        raw_id = entry.get("id")
+        match = re.fullmatch(r"intake-(\d+)", raw_id) if isinstance(raw_id, str) else None
+        if not match:
+            continue
+        number = str(int(match.group(1)))
+        if number in counts:
+            counts[number] = None
+            duplicate_ids.add(number)
+            continue
+        if number in duplicate_ids:
+            counts[number] = None
+            continue
+        claims = entry.get("key_claims")
+        counts[number] = (len(claims) if isinstance(claims, list)
+                          and all(isinstance(claim, str) for claim in claims) else None)
+    return counts
+
+
 def resolve(num: str, redirects: dict[str, str], live: set[str]) -> tuple[str | None, str]:
     """Return (resolved id, how). `how` is one of direct / merged / dangling."""
     if num in live:
