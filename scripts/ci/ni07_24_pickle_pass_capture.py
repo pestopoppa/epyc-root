@@ -129,6 +129,9 @@ def main() -> int:
             raise RuntimeError("runner context differs from reviewed recipe")
         if sys.version_info[:3] != (3, 13, 15):
             raise RuntimeError(f"Python is {sys.version_info[:3]}, expected (3, 13, 15)")
+        uv_version = subprocess.check_output(["uv", "--version"], text=True).strip()
+        if not uv_version.startswith("uv 0.8.15"):
+            raise RuntimeError(f"uv version is {uv_version!r}, expected uv 0.8.15")
         expected_pins = {
             "recipe": os.environ["GITHUB_SHA"],
             "carrier": os.environ["ROOT_CARRIER_PIN"],
@@ -143,13 +146,16 @@ def main() -> int:
         verify_locked_packages(app)
         freeze = result / "pip-freeze.txt"
         freeze.write_bytes(
-            subprocess.check_output([sys.executable, "-m", "pip", "freeze", "--all"])
+            subprocess.check_output(
+                ["uv", "pip", "freeze", "--python", sys.executable]
+            )
         )
         environment = result / "environment.json"
         environment.write_text(
             json.dumps(
                 {
                     "python": sys.version,
+                    "uv_version": uv_version,
                     "platform": platform.platform(),
                     "runner_context": os.environ["NI07_RUNNER_CONTEXT"],
                     "recipe_pin": git_head(recipe),
