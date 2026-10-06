@@ -312,6 +312,87 @@ is_benchmark_answer_line() {
   return 1
 }
 
+is_perf_period_table_cell() {
+  # Exempt one 12-13 digit value only in the exact public DS41/OAB
+  # `observed periods` column. This is a cell exception: no path, file, or
+  # whole-line bypass.
+  local blob_content="$1"
+  local lineno="$2"
+  awk -v target="$lineno" '
+    function trim(s) { sub(/^[[:space:]]+/, "", s); sub(/[[:space:]]+$/, "", s); return s }
+    function cells(s, a, n) {
+      if (s !~ /^\\|.*\\|$/) return 0
+      sub(/^\\|/, "", s); sub(/\\|$/, "", s)
+      n = split(s, a, "|")
+      for (i = 1; i <= n; i++) {
+        a[i] = trim(a[i])
+        sub(/^`+/, "", a[i]); sub(/`+$/, "", a[i])
+      }
+      return n
+    }
+    { lines[NR] = $0 }
+    END {
+      if (target < 3 || target > NR) exit 1
+
+      # Find the nearest separator in this contiguous pipe-table block. This
+      # supports every body row and makes a newer/unrelated table supersede an
+      # earlier matching header rather than inheriting its exception.
+      block_start = target - 1
+      while (block_start >= 1) {
+        if (!cells(lines[block_start], scratch)) break
+        block_start--
+      }
+      separator_line = 0
+      for (j = target - 1; j > block_start; j--) {
+        sn = cells(lines[j], sep_candidate)
+        if (sn == 0) break
+        is_separator = 1
+        for (k = 1; k <= sn; k++) {
+          part = sep_candidate[k]
+          sub(/^:/, "", part); sub(/:$/, "", part)
+          if (part !~ /^---+$/) is_separator = 0
+        }
+        if (is_separator) { separator_line = j; break }
+      }
+      if (!separator_line || separator_line - 1 <= block_start) exit 1
+
+      hn = cells(lines[separator_line - 1], h)
+      sn = cells(lines[separator_line], sep)
+      rn = cells(lines[target], row)
+      if (hn != 4 || hn != sn || hn != rn) exit 1
+      if (tolower(h[1]) != "sampled-period fraction" || tolower(h[2]) != "observed periods" ||
+          tolower(h[3]) != "dso" || tolower(h[4]) != "symbol") exit 1
+
+      # Every intervening body row must remain inside this same four-column
+      # table. A malformed row invalidates context for later rows.
+      for (j = separator_line + 1; j <= target; j++) {
+        if (cells(lines[j], body) != 4) exit 1
+      }
+
+      header = tolower(lines[target - 2])
+      rowtext = tolower(lines[target])
+      sensitive = tolower(header " " rowtext)
+      gsub(/_/, " ", sensitive)
+      if (sensitive ~ /(^|[^[:alnum:]])(account|card|customer|iban|routing|ssn)([^[:alnum:]]|$)/) exit 1
+
+      target_col = 2
+
+      # Require exactly one 12+ digit run in the row, as the complete value
+      # of a recognized period/sample cell. Other cells retain normal scanning.
+      long_re = "[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]"
+      for (i = 1; i <= rn; i++) {
+        copy = row[i]
+        count = gsub(long_re, "", copy)
+        if (count) {
+          total += count
+          if (i != target_col || (length(row[i]) != 12 && length(row[i]) != 13) || row[i] !~ /^[0-9]+$/) exit 1
+        }
+      }
+      exit (total == 1 ? 0 : 1)
+    }
+  ' <<< "$blob_content"
+}
+
 scan_blob() {
   local path="$1"
   local blob_content="$2"
@@ -376,6 +457,9 @@ scan_blob() {
         continue
       fi
       if is_benchmark_answer_line "$path" "$fullline"; then
+        continue
+      fi
+      if is_perf_period_table_cell "$blob_content" "$lineno"; then
         continue
       fi
       printf 'BLOCKED: %s:%s: [%s] %s — matched: %s\n' "$path" "$lineno" "$label" "$desc" "$(echo "$match" | head -c 80)" >&2

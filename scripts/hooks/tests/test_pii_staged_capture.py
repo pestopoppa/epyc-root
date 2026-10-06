@@ -111,6 +111,163 @@ def test_partial_stage_uses_original_index_not_worktree(repo, staged_secret):
     assert (receipt.parent / item["artifact"]["name"]).read_text() == body(staged_secret)
 
 
+def _digit_run(width):
+    return ("123456" + "789012" + "3456789")[:width]
+
+
+def _perf_table(period_value, dso="runtime", symbol="kernel"):
+    return _perf_table_rows([period_value], dso=dso, symbol=symbol)
+
+
+def _perf_table_rows(period_values, dso="runtime", symbol="kernel"):
+    body_rows = "".join(
+        "| 50.02% | " + value + " | " + dso + " | " + symbol + " |\n"
+        for value in period_values
+    )
+    return (
+        "| sampled-period fraction | observed periods | `DSO` | `symbol` |\n"
+        "| --- | --- | --- | --- |\n"
+        + body_rows
+    )
+
+
+@pytest.mark.parametrize("width", [12, 13])
+def test_perf_period_number_is_allowed_only_in_public_period_column(repo, width):
+    name = "research/perf.md"
+    expected = _perf_table(_digit_run(width))
+    (repo / name).write_text(expected)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 0
+    assert record["pii_staged_policy_check_passed"] is True
+    item = next(item for item in record["inputs"] if item["path"] == name)
+    assert (receipt.parent / item["artifact"]["name"]).read_text() == expected
+    tup = adapter.project(adapter.native_rows(receipt)[0])
+    assert grade(tup)[:2] == ("Judged", "Located")
+
+
+def test_all_seven_public_perf_period_cells_are_allowed(repo):
+    name = "research/perf.md"
+    content = _perf_table_rows([_digit_run(12), _digit_run(13), "71", "82", "93", "104", "115"])
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 0
+    assert record["pii_staged_policy_check_passed"] is True
+
+
+def test_perf_period_exception_does_not_exempt_account_value_in_same_table(repo):
+    name = "research/perf.md"
+    content = _perf_table(_digit_run(12), symbol="kernel account_id=" + _digit_run(12))
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_later_perf_table_row_with_account_label_still_blocks(repo):
+    name = "research/perf.md"
+    content = _perf_table_rows(["42", "73", "84", "95", "106", "117", _digit_run(12)],
+                               symbol="kernel account_id=" + _digit_run(12))
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+@pytest.mark.parametrize("label", ["account", "card", "customer", "iban", "routing", "ssn"])
+def test_perf_period_exception_rejects_sensitive_label_in_header_or_row(repo, label):
+    name = "research/perf.md"
+    content = _perf_table(_digit_run(12), symbol="kernel " + label)
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_perf_period_exception_does_not_exempt_number_in_other_column(repo):
+    name = "research/perf.md"
+    content = _perf_table("42", dso=_digit_run(12))
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+@pytest.mark.parametrize("content", [
+    "| Period | note |\n| --- | --- |\n| " + _digit_run(12) + " | perf |\n",
+    "| sampled-period fraction | observed periods | `DSO` | `symbol` |\n| - | --- | --- | --- |\n| 50.02% | " + _digit_run(12) + " | runtime | kernel |\n",
+    _perf_table(_digit_run(14)),
+    "plain perf period " + _digit_run(12) + "\n",
+])
+def test_perf_period_exception_requires_exact_schema_and_12_or_13_digits(repo, content):
+    name = "research/perf.md"
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_perf_table_exception_context_resets_at_blank_line(repo):
+    name = "research/perf.md"
+    content = _perf_table(_digit_run(12)) + "\n| 50.02% | " + _digit_run(12) + " | runtime | kernel |\n"
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_secret_in_valid_perf_period_row_still_blocks(repo):
+    name = "research/perf.md"
+    content = _perf_table(_digit_run(12), symbol="kernel token=" + "ghp_" + "Z" * 36)
+    (repo / name).write_text(content)
+    git(repo, "add", "--", name)
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 1
+    assert record["pii_staged_policy_check_passed"] is False
+
+
+def test_perf_period_exception_follows_staged_bytes_only(repo):
+    name = "research/perf.md"
+    staged = _perf_table(_digit_run(12))
+    path = repo / name
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(staged)
+    git(repo, "add", "--", name)
+    path.write_text(_perf_table(_digit_run(12), symbol="account_id=" + _digit_run(12)))
+
+    code, receipt = run(repo)
+    record, _ = capture.read_receipt(receipt)
+    assert code == 0
+    assert record["pii_staged_policy_check_passed"] is True
+    item = next(item for item in record["inputs"] if item["path"] == name)
+    assert (receipt.parent / item["artifact"]["name"]).read_text() == staged
+
+
 def test_selected_alternate_index(repo, tmp_path):
     alternate = tmp_path / "selected-index"
     shutil.copyfile(repo / ".git/index", alternate) if (repo / ".git/index").exists() else None
