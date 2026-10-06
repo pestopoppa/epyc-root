@@ -206,7 +206,7 @@ def ast_node_ids(source_root: Path, relative: str, selected_names: set[str],
     if exact_module and set(found) != selected_names:
         raise RuntimeError(f"test module has unbound test functions: {sorted(set(found) - selected_names)}")
     nodes = []
-    for name in sorted(found):
+    for name in sorted(selected_names):
         for case_id in found[name]:
             suffix = f"[{case_id}]" if case_id else ""
             nodes.append(f"{relative}::{name}{suffix}")
@@ -295,8 +295,9 @@ def main() -> int:
             raise RuntimeError("static AST-derived expanded case set differs from reviewed six cases")
         for case in manifest["cases"]:
             relative = case["nodeid"].split("::", 1)[0]
-            if case["classname"] != Path(relative).stem:
-                raise RuntimeError("JUnit classname is not the DTAP-root-relative import identity")
+            expected_classname = "tests." + Path(relative).stem
+            if case["classname"] != expected_classname:
+                raise RuntimeError("JUnit classname is not the DTAP-root-relative package identity")
         source_hashes = provenance["source_paths_sha256"]
         for relative, expected in source_hashes.items():
             if digest(tracked(source, relative)) != expected:
@@ -319,7 +320,7 @@ def main() -> int:
             "python_version": platform.python_version(), "platform": platform.platform(),
             "repositories": pins, "selections": list(SELECTED_NODES),
             "expected_cases": manifest["cases"], "dependency_versions": dependency_versions,
-            "dependency_basis": "Exact six-package APP uv.lock closure; installed with pip --no-deps --require-hashes in isolated venv.",
+            "dependency_basis": "Exact six-package APP uv.lock wheel closure; installed with --only-binary=:all: --no-deps --require-hashes in isolated venv; full installer output retained.",
             "settings": EXPECTED_ENV,
             "isolation": "Six synthetic/offline DTAP test cases only; no model, endpoint, network corpus, inference, benchmark, or live-host process/lock/proc observation.",
             "limits": ["no parent/global skill-store claim", "no grading ladder or scoring change",
@@ -348,7 +349,10 @@ def main() -> int:
         if not pre_status.is_file() or json.loads(pre_status.read_text(encoding="utf-8")) != {
                 "state": "setup_pending", "job": "tuadv-native-conformance", "exit_code": None}:
             raise RuntimeError("workflow pre-status artifact is missing or changed")
-        read_paths.extend((source_manifest, environment, pip_freeze, pre_status))
+        install_log = result / "pip-install.log"
+        if not install_log.is_file():
+            raise RuntimeError("pinned dependency installer log is missing")
+        read_paths.extend((source_manifest, environment, pip_freeze, pre_status, install_log))
         producer_argv = [
             sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
             "--cwd", str(work), "--junit", str(junit), "--output", str(native),
@@ -380,6 +384,7 @@ def main() -> int:
         counts_ok = counts == expected_counts
 
         originals = [*file_tree(native), junit, source_manifest, environment, pip_freeze,
+                     install_log,
                      result / "pre-status.json"]
         before = {str(path.relative_to(result)): digest(path) for path in originals}
         sys.path.insert(0, str(carrier))

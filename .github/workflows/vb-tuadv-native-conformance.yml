@@ -1,11 +1,12 @@
 name: VB TU-ADV-1 synthetic contract conformance
 on:
-  workflow_dispatch:
+  push:
+    branches: [codex/vb-tuadv1-native-capture-20261006]
 permissions:
   contents: read
 jobs:
   tuadv-native-conformance:
-    if: github.ref == 'refs/heads/codex/vb-tuadv1-native-recipe-20261006'
+    if: github.ref == 'refs/heads/codex/vb-tuadv1-native-capture-20261006'
     name: tuadv-native-conformance
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -58,10 +59,12 @@ jobs:
       - name: Create isolated Python environment
         run: python -m venv "$RUNNER_TEMP/vb-tuadv/venv"
       - name: Install exact APP-lock wheel closure
-        run: >-
-          "$RUNNER_TEMP/vb-tuadv/venv/bin/python" -m pip install
-          --disable-pip-version-check --no-deps --require-hashes
-          -r recipe/scripts/ci/vb_tuadv_native_requirements.txt
+        run: |
+          set -o pipefail
+          "$RUNNER_TEMP/vb-tuadv/venv/bin/python" -m pip install \
+            --disable-pip-version-check --only-binary=:all: --no-deps --require-hashes \
+            -r recipe/scripts/ci/vb_tuadv_native_requirements.txt \
+            2>&1 | tee "$RUNNER_TEMP/vb-tuadv/result/pip-install.log"
       - name: Capture original JUnit, source readset, native receipt and shared grade
         run: "$RUNNER_TEMP/vb-tuadv/venv/bin/python recipe/scripts/ci/vb_tuadv_native_capture.py"
       - name: Preserve every capture outcome and original

@@ -5,37 +5,37 @@
   "cases": [
     {
       "nodeid": "tests/test_adversarial_contract_fixtures.py::test_repeated_invalid_payload_is_typed_terminal_before_842_attempts",
-      "classname": "test_adversarial_contract_fixtures",
+      "classname": "tests.test_adversarial_contract_fixtures",
       "name": "test_repeated_invalid_payload_is_typed_terminal_before_842_attempts",
       "status": "passed"
     },
     {
       "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_oracle_and_skill_calls_are_independently_rejected[privileged-environment-read]",
-      "classname": "test_adversarial_contract_fixtures",
+      "classname": "tests.test_adversarial_contract_fixtures",
       "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[privileged-environment-read]",
       "status": "passed"
     },
     {
       "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_oracle_and_skill_calls_are_independently_rejected[skill-reuse-write]",
-      "classname": "test_adversarial_contract_fixtures",
+      "classname": "tests.test_adversarial_contract_fixtures",
       "name": "test_privileged_oracle_and_skill_calls_are_independently_rejected[skill-reuse-write]",
       "status": "passed"
     },
     {
       "nodeid": "tests/test_adversarial_contract_fixtures.py::test_privileged_and_skill_calls_are_rejected_atomically_as_one_response",
-      "classname": "test_adversarial_contract_fixtures",
+      "classname": "tests.test_adversarial_contract_fixtures",
       "name": "test_privileged_and_skill_calls_are_rejected_atomically_as_one_response",
       "status": "passed"
     },
     {
       "nodeid": "tests/test_adversarial_contract_fixtures.py::test_authorized_benign_tool_fixture_still_reaches_unchanged_judge",
-      "classname": "test_adversarial_contract_fixtures",
+      "classname": "tests.test_adversarial_contract_fixtures",
       "name": "test_authorized_benign_tool_fixture_still_reaches_unchanged_judge",
       "status": "passed"
     },
     {
       "nodeid": "tests/test_tool_contract.py::test_unknown_function_is_rejected_before_runner_records_accepted_call",
-      "classname": "test_tool_contract",
+      "classname": "tests.test_tool_contract",
       "name": "test_unknown_function_is_rejected_before_runner_records_accepted_call",
       "status": "passed"
     }
