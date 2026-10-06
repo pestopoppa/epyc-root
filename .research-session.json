@@ -1,8 +1,8 @@
 {
  "session_id": "intake-q38fn-cluster-ec-20261006",
  "started_at": "2026-10-06T19:00:00Z",
- "last_checkpoint": "2026-10-06T19:00:00Z",
- "stage": "stage1-complete",
+ "last_checkpoint": "2026-10-06T19:40:00Z",
+ "stage": "stage2-wave2-running",
  "phase": 5,
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-q38fn-cluster",
  "branch": "lane/ec-intake-q38fn-cluster",
@@ -5236,5 +5236,28 @@
     }
    }
   }
- ]
+ ],
+ "stage2": {
+  "waves": [
+   {
+    "wave": 1,
+    "dived": [
+     "intake-1937",
+     "intake-1938",
+     "intake-1939",
+     "intake-1940",
+     "intake-1941",
+     "intake-1942",
+     "intake-1943",
+     "intake-1944",
+     "intake-1945",
+     "intake-1948"
+    ],
+    "status": "persisted dive-verified",
+    "note": "cap 10 respected; intake-1946 (b12x) was dived concurrently and is counted in wave 2"
+   }
+  ],
+  "max_waves": 4,
+  "policy": "steering_ledger seq 1"
+ }
 }

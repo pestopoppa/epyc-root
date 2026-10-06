@@ -244883,10 +244883,13 @@
   discovered_via: input
   verdict: worth_investigating
   key_claims:
-  - 'v5.2 (README, repo @d2721ecb): 2x DGX Spark, RDMA, default checkpoint azampatti INT4-AutoRound (5 of 512 experts per token); 93.2 tok/s average / 176.8 peak at c=1 on a thinking-on request; 1,008 tok/s at 64 streams; prefill 3,939 tok/s at 128k; 0.36 s first token on a 1k prompt (all README-reported, unverified).'
-  - 'Engine: vLLM 0.30 with image patches, TP=2 (expert-parallel for the INT4 checkpoint), MTP speculative decode up to K=7 with dynamic depth, block verification, sampled drafts; one-shot RoCE all-reduce (b12x) up to 2 MB, NCCL above; full CUDA graphs.'
-  - 'The README itself states hibrid48 (the full 10-expert NVFP4 body) runs ~10% slower: ~120 tok/s at 1 stream, ~590 at 16, ~1,035 at 64.'
-  - 'Quality table (lm-eval, thinking on, 200-question subsets): INT4-AutoRound HumanEval 93.3, GSM8K 99.0, MMLU-Pro 82.9 vs hibrid48 95.7 / 98.0 / 84.9; +-3 pt sampling noise stated by the author.'
+  - The v5.2 headline (93.2 tok/s average, 176.8 peak, c=1, thinking-on) is reported as stated in the README; peak is the best 10-second window and the average is the figure of record; the repo contains no raw run logs for it, only the table.
+  - 'The 1,008 tok/s at 64 streams headline is the TypeScript-code prompt class (1,007.5); the mixed class at c=64 is 968.4 and long prose 699.5, so the headline picks the best prompt class. The README also still carries a stale v4 line (max-num-seqs: 12 tok/s per stream, 793 tok/s aggregate at 64) that contradicts the v5.2 table.'
+  - 'The default (fastest) checkpoint is NOT the original model: it routes 5 of 512 experts per token (the original routes 10) and the README itself says the full 10-expert body (hibrid48) is about 10% slower, ~120 tok/s at 1 stream.'
+  - 'Speculative decoding is the dominant multiplier: MTP up to K=7 (dynamic depth, sampled drafts, block verification) with ~5.1 accepted tokens per step on code and ~3.9 over a whole thinking-on request.'
+  - 'Interconnect: RoCE v2 over ConnectX-7, both halves of each port (dual rail), one-shot RoCE all-reduce for messages up to 2 MB; the README states the GB10 has no GPUDirect RDMA so large messages are bounced through host memory, and that cutting NCCL channels from 64 to 4 made the per-layer all-reduce 3x faster at 32-64 streams.'
+  - 'Quality is self-measured on 763 sampled questions with +-3 pt noise: INT4-AutoRound 93.3 HumanEval / 99.0 GSM8K / 82.9 MMLU-Pro vs hibrid48 95.7 / 98.0 / 84.9.'
+  - 'The engine step, not the token, is the unit: 1-stream decode step 46.1 ms on hibrid48 (K=5) and ~22 engine steps per second on v3; step time is ~46 ms although two nodes together stream far fewer bytes than 46 ms x 546 GB/s (see physics section) - the step is latency/collective bound, not bandwidth bound.'
   techniques:
   - expert-parallel MoE across 2 nodes
   - MTP draft with dynamic depth K<=7
@@ -244894,26 +244897,168 @@
   - GB10 skinny-GEMM plans
   - n-gram (PLE) table resident on GPU, half per box
   reported_results:
-  - 93.2 tok/s avg / 176.8 peak, c=1 thinking-on (README)
-  - peak 1,174 tok/s at c=64 (README per-prompt table)
-  notes: 'Stage-1 read: whole README, recipe.yaml, run.sh and patches/README.md cloned (depth 1) to /mnt/raid0/llm/tmp/intake-q38fn-cluster/repo @d2721ecbd16f4a10b968b2755fc374da3c539502. Operator dive policy: physics comparison against EPYC 9655 + MI210 (see steering ledger). Candidate first-principles gap drivers visible at Stage 1: (a) the default checkpoint cuts routed experts 10->5 (a different model from the one we serve), (b) MTP K up to 7 with ~3.9 accepted per step, (c) aggregate vs c=1 reporting, (d) 273 GB/s per node.'
+  - 93.2 tok/s avg / 176.8 peak, c=1, thinking-on, INT4-AutoRound 5-of-512, 2x DGX Spark TP2/EP over RoCE (README @d2721ec)
+  - aggregate peak 1,174.0 tok/s at c=64; averages mixed 968.4 / code 1,007.5 / prose 699.5 at c=64
+  - 'hibrid48 (10 experts, NVFP4): ~120 tok/s at 1 stream, ~590 at 16, ~1,035 at 64 (README-stated, ~10% below default)'
+  - prefill 3,939 tok/s at 128k tokens; first token 0.36 s at 1k
+  notes: 'Stage-1 read: whole README, recipe.yaml, run.sh and patches/README.md cloned (depth 1) to /mnt/raid0/llm/tmp/intake-q38fn-cluster/repo @d2721ecbd16f4a10b968b2755fc374da3c539502. Operator dive policy: physics comparison against EPYC 9655 + MI210 (see steering ledger). Candidate first-principles gap drivers visible at Stage 1: (a) the default checkpoint cuts routed experts 10->5 (a different model from the one we serve), (b) MTP K up to 7 with ~3.9 accepted per step, (c) aggregate vs c=1 reporting, (d) 273 GB/s per node. | DIVE 2026-10-06 read notes: Read from disk: README.md (whole), recipe.yaml (whole), run.sh (lines 1-330 whole), patches/README.md, tune-host.sh (head), first 60 lines of patches/gb10-skinny-gemm.patch. NOT read: setup.sh, lib.sh, view.sh, stop.sh, patches/hermes-chat.patch, patch body past line 60. No measurement was re-run (operator rule: no compute).'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
-  contradicting_evidence: null
+    intake_entries:
+    - intake-1939
+    - intake-1940
+    - intake-1941
+    - intake-1943
+    - intake-1945
+    - intake-1948
+  credibility_score: 2
+  contradicting_evidence:
+  - Independent forum measurements with the official 10-expert NVFP4 quant on 2x Spark TP2 give median 53.7 tok/s (peak 63.7) - roughly 0.45x of the kit headline and equal to our CPU (intake-1948).
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Stage 2 (2026-10-06) read the repo and re-checked headline numbers; no handoff edit permitted before Stage-3 approval; physics comparison recorded in INTAKE_STAGE2.md (out-of-repo scratch).
+  reader_should_conclude: Cite the kit for its system design (EP across 2 boxes, K<=7 MTP, one-shot RoCE all-reduce) and for the hibrid48 ~120 tok/s 10-expert single-stream figure; never cite 93/177 tok/s or 1,008 tok/s as a Q38FN (10-expert) speed or as a bandwidth-limited rate.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L48 @ d2721ec
+    quote: '| thinking-on request (pasture), c=1 | **93.2** tok/s average · **176.8** peak |'
+    quote_sha256: 444ce275cbbda339f04dff829498ba4626a3b62d1f0e2ad1b9e2734ac0892dc3
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L55-L56 @ d2721ec
+    quote: '**peak** = the best 10-s window measured at that concurrency)'
+    quote_sha256: 4924fa96bbb921b077a4bbbd12a0f5f61bdd5c1b2eb0a4ebc66bc764cd648882
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L64 @ d2721ec
+    quote: '| code (TypeScript) | 133.6 | 210.5 | 318.2 | 384.4 | 456.0 | 546.4 | 620.4 | 736.5 | 808.7 | 937.8 | 1,007.5 |'
+    quote_sha256: ebb147dba300b5aa6ffb3f3b1061547cea86fe471cdf22a09e07377261dda2e2
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L61 @ d2721ec
+    quote: '| mixed (code + explanation) | 100.4 | 155.3 | 244.2 | 289.2 | 335.2 | 413.2 | 483.9 | 603.5 | 718.0 | 881.1 | 968.4 |'
+    quote_sha256: 881d30b4c5be99a178b120dd527d41320a3f87c894ffe16ebdb83273643a8dc3
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L5-L6 @ d2721ec
+    quote: 5 of 512 experts per token, AutoRound int4
+    quote_sha256: 4ade18360afeb68101439dff423fd517922b96ec7d53e46e92f2fdfe7647a5a9
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L179 @ d2721ec
+    quote: '| the full 10-expert body, calibrated, NVFP4 output head | ~10 % slower (below), richer and more creative answers |'
+    quote_sha256: 5507cc02e0791f4469235c68f3812d44d5592fcac8876341a1274bf64757751e
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: README.md:L182 @ d2721ec
+    quote: 'hibrid48 runs ~10 % slower than the default: expect ~120 tok/s at 1 stream, ~590 at 16 and ~1,035 at 64.'
+    quote_sha256: c0e3b78d286290ce2fbabeb9b1e13ae1b66eb8c35b857b4ed145a4e6bbedc112
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L265-L266 @ d2721ec
+    quote: "acceptance ~5.1\n  on code, ~3.9 over a whole thinking-on request, cap 6.0."
+    quote_sha256: cf9b976eb132741aad62f39e90d94584f152f54085f873fa57254ccc294b311b
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L101-L103 @ d2721ec
+    quote: the GB10 has no GPUDirect RDMA, so each piece is copied through host memory
+    quote_sha256: 8a77d35aa2355f5cbe728539223cbe8fb1cb860e7e5e8815b62dd79a07dd4001
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: README.md:L103 @ d2721ec
+    quote: made the per-layer all-reduce 3× faster at 32–64 streams
+    quote_sha256: 5621d51d02f0c79c965f79e62a0e672cdaccce7b8e58211d72327aff6f8c8960
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: README.md:L81-L82 @ d2721ec
+    quote: Subsets of 200 carry about ±3 points of sampling noise
+    quote_sha256: 2390b305c541471a5b283c2107d7a1a95067c0a0699215981db5058819868a31
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: patches/README.md:L17 @ d2721ec
+    quote: 1-stream decode step 47.6 → 46.1 ms on hibrid48
+    quote_sha256: dc646cd3c6d7fc216d885736d36272e408610eb5d300f470a6704c668396c0c7
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: README.md:L116-L118 @ d2721ec
+    quote: 'Engine steps **17.7 → 22.0**
+
+      single-stream'
+    quote_sha256: cb1300294e0fcc7184afec4c4a317fb995825e2e616f17a61bff3bee4bf9b092
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: README.md:L258 @ d2721ec
+    quote: 12 tok/s per stream, 793 tok/s aggregate
+    quote_sha256: 3ec3033315f748df993290f8e7d38ee1abc9804ba4fcef7082529ba6b4438ae9
+    source_revision: myllmbox/qwen38-flash-next-cluster-recipe @d2721ecbd16f4a10b968b2755fc374da3c539502 (git clone --depth 1, 2026-10-06)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Stated as claimed (README table); NOT reproducible from the repo (no logs); the 93.2 is one thinking-on request ("pasture") at c=1, thinking-off averages at c=1 are 74-134 by prompt class.
+  - claim_index: 1
+    effect: narrowed
+    note: 1,008 = 1,007.5 code class at c=64 (README table); mixed 968.4, prose 699.5; stale v4 sentence says 793 aggregate at 64.
+  - claim_index: 2
+    effect: unaffected
+    note: Both the 5-of-512 statement and the hibrid48 ~10% slower statement are in the README; the model card for the checkpoint (intake-1939) is the primary source for the cut.
+  - claim_index: 3
+    effect: unaffected
+    note: Acceptance figures and K are stated in README lines 265-266 and recipe.yaml speculative-config K=7.
+  - claim_index: 4
+    effect: unaffected
+    note: As stated; independent corroboration of the dual-rail / one-shot all-reduce effect not found in this dive (b12x README is the code source, intake-1946).
+  - claim_index: 5
+    effect: unaffected
+    note: Table and noise statement present; author-run, not independent.
+  - claim_index: 6
+    effect: narrowed
+    note: 46.1 ms / 22.0 steps/s are README-stated; the derived bandwidth-vs-latency interpretation is the integrator computation, not a source claim.
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; @d2721ecbd16f4a10b968b2755fc374da3c539502 (2026-10-06 14:13 +0300, README v5.2)). 2026-10-06 dive: headline 93/177 tok/s is for the 5-of-512 healed checkpoint (a different, lower-capability model than the 10-expert Q38FN we serve), counts accepted speculative tokens (~3.9 per step), and its 1,008 tok/s at 64 streams is the best prompt class; the like-for-like 10-expert number on the same kit is the hibrid48 ~120 tok/s (README-stated). Independent 10-expert official-NVFP4 TP2 median is 53.7 (intake-1948).'
+  read_depth: PARTIAL
+  depends_on:
+  - entry: intake-1939
+    claim_index: 2
+    why: The claim that the default checkpoint routes 5 of 512 experts rests on the checkpoint card and config recorded in intake-1939; if that were retracted the speed comparison basis would change.
+  recommended_actions:
+  - 'Add a physics-normalised comparison row (tokens/s vs bytes-per-step roofline, per node) to the Q38FN ceiling program so external numbers are always compared on model variant, K, concurrency and bytes [operator-review candidate; proposed disposition: owning handoff: cpu-decode-roofline-program.md (draft)]'
+  - 'Check whether our llama.cpp MTP path can reach deeper draft depth (K>4) with cheap GDN state rollback, since their gain is almost entirely accepted tokens per step [operator-review candidate; proposed disposition: AutoKernel hypothesis / qwen38-flash-next-fp8-evaluation.md (draft)]'
+  - 'Evaluate the 5-of-10 expert cut as a quality/speed trade for our own Q38FN only through the operator (changes the model; healing recipe is KL self-distillation of the shared expert) [operator-review candidate; proposed disposition: operator decision package (no unilateral work)]'
 - id: intake-1938
   arxiv_id: null
   url: https://rocm.blogs.amd.com/ecosystems-and-partners/rocm-10.1-blog/README.html
@@ -244926,32 +245071,109 @@
   novelty: medium
   relevance: medium
   discovered_via: input
-  verdict: worth_investigating
+  verdict: superseded
   key_claims:
-  - 'Blog text (curl to disk, sha256 e0f20627ac38 first-12): release centres on hipFile fast-path I/O, NUMA-aware HIP host allocation, LLVM 24 (amdclang++ 23->24), ROCm CLI v1.0.0, AMD SMI replacing ROCm SMI, WSL2 tech preview, hipThreads.'
-  - The blog names no gfx90a / MI210 / CDNA2 item and gives no decode-throughput, FP8/FP4, rocWMMA, hipBLASLt or HIP-graph-capture change; library notes are limited to Composable Kernel (Radeon attention + more quantized GEMM dispatch types), MIGraphX (rocMLIRTriton backend) and rocSPARSE.
+  - 'Blog (AMD, 2026-10-05, vendor restatement of release notes) frames ROCm 10.1 as a data-movement release: hipFile async fast-path/batch-IO/IO-stats for storage-to-GPU (Instinct only per release notes) and NUMA-aware HIP host allocation (hipMemLocationTypeHostNuma in hipMemCreate). Nothing about MI210 decode bandwidth utilisation, HBM efficiency or kernel throughput.'
+  - 'Compiler: amdclang++ LLVM 23 -> 24; clang_major macro now 24; LTO partition caching speeds incremental rebuilds; blog warns to review build scripts keyed to compiler version and tools linking libLLVM.'
+  - 'Blog says the ROCm 10 ''next'' package layout is handled by the ROCm CLI; the blog itself does not mention gfx90a, MI210, rocBLAS, hipBLASLt or rocWMMA (grep of the saved text: zero hits).'
+  - 'Libraries named in blog: Composable Kernel (Radeon attention speedup, more quantized GEMM types in dispatcher), MIGraphX (rocMLIR -> rocMLIRTriton), rocSPARSE (ELL triangular solve). None targets CDNA2 LLM decode.'
+  - rocm-smi deprecation period complete -> amd-smi is the replacement; ROCm CLI v1.0.0 added.
+  - 'The blog repeats release-note items only: ROCm SMI is retired in favour of AMD SMI (deprecation period complete).'
+  - The blog frames ROCm 10.1 as a data-movement release (storage-to-GPU and host NUMA placement), not a compute-throughput release.
   techniques:
   - hipFile async fast-path
   - HIP virtual-memory host NUMA allocation
   - LLVM 24 LTO partition caching
-  notes: Tracking params stripped (term/utm_*). Fetched raw with curl; blog body read in full from disk. Support status for gfx90a must come from the 10.1.0 docs, not the blog (see expansion entry for rocm.docs.amd.com docs-10.1.0).
+  notes: 'Tracking params stripped (term/utm_*). Fetched raw with curl; blog body read in full from disk. Support status for gfx90a must come from the 10.1.0 docs, not the blog (see expansion entry for rocm.docs.amd.com docs-10.1.0). | DIVE 2026-10-06 read notes: Whole blog text read from disk (15.5 KB text; h2t output, one tool-output truncation re-read via grep/sed). Cross-checked against the ROCm 10.1.0 release notes in dive-1944.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1944
+  credibility_score: 3
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Blog is a vendor restatement of the 10.1.0 release notes with zero gfx90a/MI210/decode content (grep of saved text); the facts live in intake-1944 which supersedes it as the source.
+  reader_should_conclude: Nothing in this blog bears on MI210 decode bandwidth or on the Q38FN physics question. It is a vendor summary of data-movement (storage/NUMA host alloc) work; do not carry any performance claim from it. Use dive-1944 for ROCm-upgrade facts.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L61 (blog: LLVM 24)'
+    quote: The amdclang++ compiler advances from LLVM 23 to LLVM 24, delivering newer C++ language support and community optimization benefits.
+    quote_sha256: e24da872da0493fea9c2c02e9ce1e8c1e8c181361f86a92096f81d3fcb3ccc5d
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L63 (blog: upgrade note)'
+    quote: The clang_major version macro now reports 24 .
+    quote_sha256: 7449a1dcbb45956726a98f8c1d0e5c7a896e8105750ffbb9799cc2c8eeb306aa
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L51 (blog: next layout)'
+    quote: The rocm install command handles the new ROCm 10 “next” package layout out of the box
+    quote_sha256: df2ff2c3591eca7d3901290e6f2059d22d49244bc2b8a012bcee133b2ae4f6e7
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L39 (blog: AIS/hipFile)'
+    quote: The HIP runtime adds NUMA-aware host memory allocation, which places memory close to the compute that uses it.
+    quote_sha256: 192993ad291206641b4544faa5e65692b32740669fbb70f57d16f3cc4d8e5ecb
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L66 (blog: CK)'
+    quote: 'Composable Kernel: AMD’s library of optimized AI kernels speeds up attention on Radeon GPUs and brings more quantized matrix-multiply types to its kernel dispatcher.'
+    quote_sha256: 631fa63e9eb0329aa8af1c42d48385a6a7204d4c34a70e7d17671c918fc7cff0
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L70 (blog: SMI)'
+    quote: With the deprecation period for ROCm SMI ( rocm-smi ) now complete, AMD SMI ( amd-smi ) is its successor.
+    quote_sha256: c0f453d82a484d1775d6cc9d8dafaaa191147d661cfc11167b67e5dac83cc4f6
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: 'amd_rocm101.txt:L38 (blog: scope)'
+    quote: 'What limits your training run today: how fast the GPU computes, or how fast you can get data to it?'
+    quote_sha256: 99a59bfab583c4f9cb709bae9ea60c1aa28ae54569dab45bcedb15228222ac55
+    source_revision: retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: blog headline confirmed; hipFile listed 'Linux · Instinct' in release notes; no decode-efficiency content
+  - claim_index: 1
+    effect: unaffected
+    note: matches release notes/transition guide in dive-1944 (vendor restatement, not independent)
+  - claim_index: 2
+    effect: unaffected
+    note: absence verified by grep of blog text
+  - claim_index: 3
+    effect: unaffected
+    note: matches release notes/transition guide in dive-1944 (vendor restatement, not independent)
+  - claim_index: 4
+    effect: unaffected
+    note: matches release notes/transition guide in dive-1944 (vendor restatement, not independent)
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth FULL; retrieved 2026-10-06; amd_rocm101.html sha256[:12]=e0f20627ac38). Blog is a marketing restatement; no gfx90a content. The decision-relevant facts live in intake-1944 docs (see dive-1944/findings.json rocm_items).
+  read_depth: FULL
+  recommended_actions:
+  - 'Rebuild-time check: when we ever trial ROCm 10.x, grep build scripts for hardcoded clang major version / libLLVM links (clang_major now 24). [operator-review candidate; proposed disposition: knowledge-only; trigger-gated on any ROCm upgrade decision]'
+  verdict_justification: superseded by intake-1944 (the ROCm 10.1.0 release notes and compatibility matrix it restates); not out of scope, just displaced by the primary source.
 - id: intake-1939
   arxiv_id: null
   url: https://huggingface.co/azampatti/Qwen3.8-Flash-Next-125B-A5B-INT4-AutoRound
@@ -244967,27 +245189,145 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - Card states the checkpoint cuts routed experts from top-10 to top-5 and heals only the shared expert by KL self-distillation (14,667 examples); 125B total, 4.8B active vs 6.0B original.
-  - Card self-reports single-DGX-Spark speed ~67-70 tok/s vs ~57 tok/s for the original 10-expert model, and capability 49.3 vs 51.8 (own harness, trimmed mean of 6 runs).
-  - 'Weights: routed experts int4 GPTQ-Marlin g128, lm_head int4, attention/GDN/shared expert fp8, 49 GB fp8 n-gram table memory-mapped from disk.'
-  notes: 'Stage-1 read: card + config.json to disk (retrieved 2026-10-06). Lowers the per-token expert bytes by half vs the model we serve; quality cost self-reported ~2.5 capability points.'
+  - 'Routed experts per token: 5 (config.json num_experts_per_tok=5 of 512; original 10). Card and config agree. Healed checkpoint only; the MTP draft head is separately run at top-10 per FAST repo (draft-k10 folder).'
+  - 'Speed claim: ~67-70 tok/s (table) vs ~57 tok/s original on one Spark; intro says 64-70; the FAST repo README says 70-75 (b12x) and its yaml says solo 75.6 / 79.2 run.py. Three different ranges across author''s own pages; no config, K, concurrency or acceptance given on the card.'
+  - 'Quality: capability 49.3 vs 51.8 (trimmed mean of 6 runs, author harness, unnamed); text elsewhere in the same card says 47.6 (int8 head) / 46.6 (int4 head) and ''read it as 47'' -> internal inconsistency (49.3 table vs 47 text). Unhealed 41.8; SFT-healed 42.8. Tool use 91 vs 91-92; the FAST README instead says ~93 vs 89.'
+  - Healing = KL self-distillation of ONLY the shared expert (37.75M params; shared expert file 472 MB = 48 layers x 3 x 2560x1280 fp8, matches) from the top-10 model as teacher on 14,667 examples; all else frozen. Healed shared expert is what recovers 41.8 -> 47.6.
+  - 'Computed from config+index (not quoted): routed int4 g128 expert = 4,915,200 params = 2.554 MB (qweight 2.4576 MB + fp16 scales 76.8 KB + qzeros 19.2 KB); 512/layer = 1.307 GB/layer; 62.76 GB total routed. Shared expert fp8 9.83 MB/layer, 0.472 GB total. Attention+GDN fp8 ~2.68 GB (36 GDN layers 57.7M params each, 12 full-attn layers 49.8M each). Routers bf16 0.126 GB. lm_head int4 0.318 GB (file 330 MB; int8 would be 0.636 GB). PLE table fp8 52.26 GB on disk but only 16 rows x 160 B = 2.5 KB touched per token (card/table README). Repo total 130.84 GB incl. fast-fp8 dir (3.35 GB) and 52.26 GB PLE; main 67 shards 69.16 GB + extra_tensors 5.21 GB (embeddings 1.27 GB, MTP layer, vision: composition not itemised by me).'
+  - 'Active params 4.8B vs 6.0B: arithmetic checks out. Each routed expert 4.915M params x 48 layers = 236M per expert-slot; 5 fewer slots = 1.18B, equal to 6.0-4.8. So ''active'' counts only routed-expert reduction; it is a parameter count, not bytes (dense ~3.6 GB/token is the same for both variants).'
+  - 'Roofline (computed): dense stream per token ~3.59 GB (attn 2.68 + shared 0.47 + routers 0.13 + head 0.32) + routed K=5 0.613 GB = ~4.2 GB -> 65 tok/s ceiling at 273 GB/s with NO speculation and 100% efficiency; K=10 variant 4.82 GB -> 56.6 tok/s ceiling. The card''s ''original ~57'' sits at the no-spec ceiling, so it must be an MTP number below ceiling-with-MTP; the 5-expert gain is only 1.23 GB of ~4.8 GB (~13% bytes), consistent with 57->67-70 mostly via speculation+head+K10-draft effects, not bytes alone.'
+  notes: 'Stage-1 read: card + config.json to disk (retrieved 2026-10-06). Lowers the per-token expert bytes by half vs the model we serve; quality cost self-reported ~2.5 capability points. | DIVE 2026-10-06 read notes: Read FULL: card, config.json, upstream table README, tree listing (sizes), full safetensors index (224,454 tensor names; metadata total_size 175.3 GB for the pre-heal upstream index?), quantization_config head. NOT read: weight shards, quantization_config.json fully (94 KB), chat templates, fast-fp8 dir contents. README_upstream_hybrid.md is a 15-byte stub ("Entry not found") so the hybrid upstream card could not be read. Per-tensor byte sizes computed analytically from config, cross-checked by shared-expert file size (472.27 MB vs 471.86 MB calc) and lm_head file (330 MB vs 318 MB calc).'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
-  contradicting_evidence: null
+    intake_entries:
+    - intake-1937
+    - intake-1940
+    - intake-1945
+  credibility_score: 3
+  contradicting_evidence:
+  - Card 49.3 vs prose 47; FAST README tool use 93 vs 89 and speed 70-75 vs card 67-70.
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Model-variant fact (5 of 512 experts, healed) that explains part of the Spark headline; changing our served model is an operator decision, not a Stage-2 action.
+  reader_should_conclude: The 5-expert variant is a different (lossy, 2-5 pt capability) model that trims only ~13% of per-token bytes; its speed numbers are author-harness only and do not transfer to 10-expert Q38FN. Do not cite 4.8B active as a bytes figure or 67-70 tok/s as independent measurement.
+  reported_results:
+  - metric: tok/s one Spark
+    value: 67-70 (card table), 64-70 (intro), original ~57
+    setup: author harness, unspecified K/concurrency/thinking
+  - metric: capability
+    value: 49.3 vs 51.8 (also 47.6/46.6 in text)
+    setup: 6-run trimmed mean, author harness
+  - metric: tool use
+    value: 91 vs 91-92
+    setup: 3 trials
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: card.md intro
+    quote: Qwen3.8-Flash-Next with **5 routed experts per token instead of 10**, healed so it stays close to the
+    quote_sha256: bfae3350697e09256b6bc446abf6ba61df9c1c8ae7b17b7ca125a7957d33f85a
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: file-hash
+    locator: config.json text_config.num_experts_per_tok
+    quote: '"num_experts_per_tok": 5,'
+    quote_sha256: 08d85e6af207db30c6caa8169d2224fbf601d06d94fed9e9972766ebbc8a2765
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: card.md How it compares table
+    quote: '| Speed | ~67-70 tok/s | ~57 tok/s |'
+    quote_sha256: aab4c83c488908177b7954ac8e84a4aeb7dd7e943b2076584563c4097fa720d4
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: card.md How it compares table
+    quote: '| Capability | 49.3 | 51.8 |'
+    quote_sha256: 4877d51de01f8babb9932c581e4c9557bdb1ef01da6dbf0991db4cafdbf5d6c6
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: card.md How it compares
+    quote: Capability was measured over 6 runs with an int8 head at 47.6, and over 3 runs with the int4 head shipped
+    quote_sha256: 6c8eba2b10ec3148f9e22a34911320035ac364bebb2f421d65a56bbe89a280e1
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: card.md What was done to it
+    quote: 'training **only the shared
+
+      expert** (37.75M parameters, everything else frozen)'
+    quote_sha256: 166cfab0a1f5e8c52d4f61d980a01ee3184204081d4c7b98da0e0ff2c0834edb
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: card.md What was done to it
+    quote: pure KL self-distillation, the same model at top-10 acting as its own teacher
+    quote_sha256: bf08e6485ee19c3ddd7267ebc6e6c4505119742c971a0ba9256f56472672a470
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: card.md What is inside
+    quote: '| Attention and gated-delta projections, shared expert | blockwise fp8 e4m3 |'
+    quote_sha256: 9750696702fd5cefc07f3505daa17e8df3a453972f45b1f00f09d396188e3412
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: card.md lm_head para
+    quote: it is half the size and the head is read four times per decoding step
+    quote_sha256: 38976f211c7e1e6fad49c3ecfd91f86228d6c7f988687813bdecb52270f0321a
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: card.md intro
+    quote: It runs on **one DGX Spark (GB10, 128 GB)** at roughly 64-70 tokens/s.
+    quote_sha256: c8bcd25a14a5abebbde58a278b979370a25187775abe435648647adfb277ab66
+    source_revision: HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: config 5; card says 5; README of FAST repo and yaml agree
+  - claim_index: 1
+    effect: narrowed
+    note: author numbers only, no conditions; 3 ranges across author pages (64-70, 67-70, 70-75); not independent
+  - claim_index: 2
+    effect: narrowed
+    note: 49.3 vs 47.6/46.6 inconsistent within card; unnamed harness; FAST README says ~50 and tool use 93 vs 89
+  - claim_index: 3
+    effect: unaffected
+    note: as described; no hold-out or benchmark names given
+  - claim_index: 4
+    effect: unaffected
+    note: computed from config/tree; shared-expert file size matches calc
+  - claim_index: 5
+    effect: unaffected
+    note: 4.8B vs 6.0B is arithmetically right for routed slots only
+  - claim_index: 6
+    effect: narrowed
+    note: 'computed roofline by me; assumptions: fp8 attention sized by config, int4 routed incl scales; MTP/embedding/vision bytes excluded'
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth PARTIAL; HF azampatti/...AutoRound main, retrieved 2026-10-06; card.md sha256[:12]=3a81d9ddf728 config.json=6324d04f76d9 tree.json=7fcfaf151caf index_full.json=b9caad9aaf03). Index metadata total_size (175.3 GB) belongs to the unhealed upstream index structure and does not equal repo bytes (130.8 GB incl PLE); I used the tree listing for bytes. Card capability table (49.3) disagrees with its own prose (47).
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Use computed per-step byte budget (dense 3.59 GB + routed 2.554 MB x 48 x union-experts) for our CPU roofline of Q38FN; our K=10 path streams ~4.8 GB/token non-spec. [operator-review candidate; proposed disposition: roofline-input]'
+  - 'Top-5 expert cut + shared-expert-only KL heal is a model variant, not a kernel gain; test whether it is on our local weights path only if a quality-gated variant is wanted (costs ~2-5 capability points per author). [operator-review candidate; proposed disposition: trigger-gated follow-on]'
 - id: intake-1940
   arxiv_id: null
   url: https://github.com/azampatti/Qwen3.8-Flash-Next-Int4-FAST
@@ -245002,26 +245342,161 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - README reports ~70-75 tok/s on ONE DGX Spark (about 75 with the eugr b12x image), original ~57 tok/s; retrained speculative head accepts 75% of drafted tokens overall at temperature 0.5 (85% code, 63% prose, 89% long context).
-  - Documents an MTP drafter CUDA-graph stale-row bug at 3/5/6/7 concurrent requests and a presence_penalty / temperature 0.6 default that the author says speeds decode 10-20% on agent traffic.
-  notes: 'Stage-1 read: README only (raw.githubusercontent, main). Single-node figure is what makes the two-node 93 tok/s interpretable.'
+  - 'One-Spark claim: README 70-75 tok/s (70 own image, ~75 on Eugr b12x). In-repo measured numbers (yaml comments, author harness run.py, temperature 0.6 + presence_penalty 0.5, thinking on by default): serve.sh 71.7, solo b12x 75.6 at MTP4; 71.2/76.0/79.2 for MTP 3/4/5-7. So 70-75 is conservative against 79.2 but not independently reproduced.'
+  - 'Acceptance: 75% overall of drafted tokens at temp 0.5 (85% code, 63% prose, 89% long ctx); author harness, no raw logs in repo, K unspecified for this figure (serve.sh default MTP=3). Computed expected tokens/step assuming geometric acceptance p=0.75: K=3 -> 2.73, K=5 -> 3.29.'
+  - 'MTP stale-row bug: with 3,5,6,7 concurrent requests the MTP drafter replays a padded CUDA graph (rows ''read stale request ids''), one request drafts 1 token/step to turn end (3-5x slower per check script), output stays correct; fix in author''s mod clears QSA rows each step; tools/mtp_drafter_check.sh tests it (PASS/FAIL). Matters for benchmarks: any concurrent-stream aggregate quoted from an unpatched stack is deflated, not inflated.'
+  - 'Speculative config on one Spark (b12x solo recipe): method mtp, num_speculative_tokens 5 (b12x caps at 4; mod patches), model=draft-k10 (draft head run with top-10 experts, ''faster, free'' per serve.sh comment; target stays top-5), rejection_sample_method block, draft_sample_method greedy (changed from probabilistic 2026-09-25 as mitigation for a NaN-drafter-logit loop bug), VLLM_MTP_DRAFT_SCALE=2 (draft logits x2 to sharpen), medium chat template, temperature 0.6 default. serve.sh classic image default MTP=3, probabilistic draft, block verify.'
+  - 'Two-node: TP=2 + expert parallel on 2 GB10 with b12x RoCE all-reduce: 96.8 (MTP3) to 112.7 (MTP6) tok/s single-stream run.py; MTP5 109.2; 4 short concurrent requests 159 aggregate; 8 streams 320 aggregate (MTP6, batched 8192). Author says gap vs 2x of solo 75.6 is structural (unsplit host work, EP imbalance 58/42, extra passes). Scaling 1->2 nodes single stream = 1.45x (109.2/75.6), not 2x.'
+  - 'Install of two-node recipe: eugr-setup.sh copies mods flashnext-int4-b12x and fst-ep-local plus both yaml recipes into Eugr''s spark-vllm-docker mods/ and recipes/; run via run-recipe on head node; image vllm-node-b12x copied to worker; fst-ep-local makes each node load only its own experts (35 s vs ~235 s).'
+  - 'Quality in this repo: capability ~50 (6-run mean) vs 51.8, tool use ~93 vs 89 (Tool-Eval-Bench 69 scenarios x3); contradicts HF card (49.3/47.6; tool use 91 vs 91-92). Different author harness numbers on the two pages.'
+  notes: 'Stage-1 read: README only (raw.githubusercontent, main). Single-node figure is what makes the two-node 93 tok/s interpretable. | DIVE 2026-10-06 read notes: Read FULL: README, both yaml recipes (headers, defaults, commands), eugr-setup.sh grep, serve.sh spec/MTP sections, check.sh, bench.sh head, mtp_drafter_check.sh header, swift15 README head. NOT read: setup.sh fully, flashnext-int4-b12x/*.py patches, tools/*.py, fst-ep-local patch; the "Prunning/qwen38_flash_next/*" sweep reports referenced in yaml comments are not in the repo.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
-  contradicting_evidence: null
+    intake_entries:
+    - intake-1937
+    - intake-1939
+    - intake-1941
+  credibility_score: 3
+  contradicting_evidence:
+  - HF card capability 49.3/47.6 and tool use 91 vs this README ~50 / 93 vs 89; HF card speed 67-70 vs 70-75.
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Single-Spark and two-node author-harness numbers recorded (71.7-79.2 solo, 96.8-112.7 two-node single-stream); no repo action authorised before Stage 3.
+  reader_should_conclude: One-Spark ~70-79 tok/s is a speculative-decode number on a 5-expert model with a top-10 draft head and MTP depth 5, author-measured; two-node 97-113 single stream and 320 aggregate at 8 streams are consistent with 2x bandwidth plus batching, not a contradiction of physics. Do not carry 70-75 as 10-expert Q38FN performance.
+  reported_results:
+  - metric: one-Spark tok/s
+    value: 71.7 (serve.sh), 75.6 (b12x MTP4), 79.2 (b12x MTP5-7)
+    setup: author run.py, temp 0.6, 1 stream
+  - metric: two-node tok/s single stream
+    value: 96.8/103.9/109.2/112.7/110.8 at MTP 3/4/5/6/7
+    setup: TP2+EP, greedy draft, run.py
+  - metric: two-node aggregate
+    value: 159 (4 short streams), 320 (8 streams MTP6)
+    setup: batched 8192
+  - metric: acceptance
+    value: 75% overall (85/63/89)
+    setup: temp 0.5, own harness
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md L1-L5
+    quote: about 70-75 tokens/s. 125B parameters in total, **4.8B active per token**
+    quote_sha256: 7213f50c3dc76114a1c907ddf82211a45fcdf71f0f24c3beb759960cd96ea5cb
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md Settings
+    quote: "With it, setup pulls Eugr's b12x image (pinned to the build this model was validated on) and skips building\n  ours: about 75 tok/s instead of 70"
+    quote_sha256: b83cf2dae6741ec72b868af0477538189865b3998593d36d303d82bf8b6cfd5f
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README.md How it measures up
+    quote: 'At temperature 0.5 it gets 75% of its drafted tokens accepted overall
+
+      (85% code, 63% prose, 89% long context).'
+    quote_sha256: 6618677cfad79e3ba4581c2860572f71b2b6709d60f70365770e0214387244ec
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: README.md Using it
+    quote: 'the MTP drafter replayed a padded CUDA graph whose spare rows read stale request ids, and one
+
+      request would then draft at 1 token per step for the rest of its turn.'
+    quote_sha256: 278f30fc0c187b274e92f7b0adae7b10a1923ca0a93a0ac40361493b6469fb12
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: file-hash
+    locator: dive-1940/repo/qwen3.8-flash-next-int4-b12x-solo.yaml header
+    quote: 'num_speculative_tokens: 5          # needs the mod''s mtp-cap patch (b12x caps 4). 2026-09-27 sweep, run.py tok/s: 3 = 71.2, 4 = 76.0, 5-7 = 79.2 (8 refused by b12x)'
+    quote_sha256: 61a90a215bf769f54573ed2da6cba225680c0ce630d54bb78c763fb896348b58
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: file-hash
+    locator: solo yaml speculative-config
+    quote: '"draft_sample_method":"greedy"'
+    quote_sha256: b557e6ebb45f885a10ca74cfc80407ec1e981e3671a3ed5536665608c575cdad
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: file-hash
+    locator: 2-node yaml header
+    quote: 'Measured: MTP 3 = 97.8 tok/s (6 runs), MTP 4 ~104-105 (cluster default); solo b12x 75.6, serve.sh 71.7.'
+    quote_sha256: 177c0d55141ff170b4ced4d5fc3eaf42dc22b34c33cd994445254a3b13f19abc
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: file-hash
+    locator: 2-node yaml defaults
+    quote: 'run.py tok/s: 3 = 96.8, 4 = 103.9, 5 = 109.2, 6 = 112.7, 7 = 110.8; 4 short concurrent requests: 159 at 4-5 vs 143 at 6'
+    quote_sha256: 0228023e89d42d0828aa9601156a78821cd516f949beac7074553db13500b9c7
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: file-hash
+    locator: 2-node yaml max_num_batched_tokens
+    quote: 8192 = 320 tok/s
+    quote_sha256: f3a33c82b77efddf4fc543e107d162696e02715b38d0e075d0d5d0d9cc0d4a89
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: file-hash
+    locator: eugr-setup.sh
+    quote: cp "${RECIPES[@]}" "$EUGR_DIR/recipes/"
+    quote_sha256: ae628beae395a64ecaed2b42467a4dc652792d4064c0358cdaabd58ebaa45fbd
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: file-hash
+    locator: serve.sh L25
+    quote: 'MTP="${MTP:-3}"                                       # speculative decoding depth; 0 = off. 3 is the measured optimum'
+    quote_sha256: 65cfa063fa1b09829bad4673852f834e7c0c9e3c4e150ca8c562b21147058b0b
+    source_revision: git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 70-75 stated; yaml comments give 71.7-79.2 on author harness, not independent
+  - claim_index: 1
+    effect: narrowed
+    note: 75% stated only as README prose; no log/raw in repo; K unspecified
+  - claim_index: 2
+    effect: unaffected
+    note: described in README and tools/mtp_drafter_check.sh; fix commit referenced; not independently reproduced
+  - claim_index: 3
+    effect: unaffected
+    note: 'recipe text is explicit: K=5, draft-k10, block verify, greedy draft, scale 2'
+  - claim_index: 4
+    effect: narrowed
+    note: numbers present in yaml comments only; sweep reports (Prunning/...) not in repo
+  - claim_index: 5
+    effect: unaffected
+    note: eugr-setup.sh
+  - claim_index: 6
+    effect: unaffected
+    note: serve.sh default MTP=3 classic image
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth PARTIAL; git a2c5abc6f96ffdf804dc094f8656e99064b6025a (2026-10-06)). The HF card says 67-70 tok/s and the repo README says 70-75; the repo yaml itself shows up to 79.2 solo. All three on author harness.
+  read_depth: PARTIAL
+  depends_on:
+  - entry: intake-1939
+    why: The kit serves the intake-1939 checkpoint; its tok/s figures describe that 5-expert variant.
+  recommended_actions:
+  - 'Bytes/step for physics check: target verify of 1+K tokens unions experts (K=5, 6 tokens -> ~29 distinct experts/layer ~3.5 GB), dense 3.59 GB, 5 draft passes ~0.5 GB each => ~9.6 GB/step; at 3.29 tok/step and 79 tok/s => ~24 steps/s => ~230 GB/s ~ 85% of 273 GB/s peak (computed, rough). [operator-review candidate; proposed disposition: roofline-input]'
+  - 'Check whether our CPU MTP path uses a top-10 vs top-5 draft asymmetry and draft logit scaling; cheap probes of acceptance only. [operator-review candidate; proposed disposition: trigger-gated follow-on]'
+  - 'Note stale-row MTP-graph bug class when we benchmark concurrent streams with graph-padded drafters (applies to GPU path only). [operator-review candidate; proposed disposition: note]'
 - id: intake-1941
   arxiv_id: null
   url: https://github.com/Saren-Arterius/qwen3.8-Flash-DGX-AutoRound
@@ -245035,27 +245510,160 @@
   relevance: medium
   expanded_from: intake-1937
   discovered_via: expansion
-  verdict: worth_investigating
+  verdict: adopt_patterns
   key_claims:
-  - Upstream of the vllm_fp8_hybrid loader and fp8 n-gram table that the cluster kit consumes; README (33.6 KB) carries single-Spark launch recipes and measurements (unread beyond skim at Stage 1).
-  notes: 'Stage-1: README saved to disk; not yet read in full. Dive should record its single-Spark tok/s and any bandwidth accounting.'
+  - 'This is the ORIGINAL 10-expert model (Intel W4A16 AutoRound hybrid, int8 lm_head, fp8 side layers), one DGX Spark, vLLM, no b12x: single-stream ~50-60 tok/s at MTP=3 (headline). Table (thinking ON, MTP=3, 4 runs, SEQS=16, bench_qwen35.sh): Q&A 49.1+-2.6 (57.5 gen tok), Code 56.5+-3.1 (276), JSON 62.1+-0.7 (842), Math 55.5+-0.2 (64), LongCode 48.5+-2.8 (2048). Prompts 65-90 tokens, i.e. short context.'
+  - 'Thinking OFF, T=0, MTP=3, second run: bf16-draft 57.3/61.3/57.9 (Code/JSON/LongCode), int4 draft experts 59.1/62.6/60.3, int4 draft + 65k draft vocab (default) 62.0/66.0/62.4; draft acceptance ~87-88% of 3 (2.62-2.65 accepted); thinking-on acceptance ~70% (2.1 of 3).'
+  - 'Prose speed/acceptance far lower: English prose 40.4 tok/s at 44% accept, Cantonese 32.8 at 28%, Traditional Chinese 34.6 at 31%, Python+tests 62.5 at 86% (int8 shared head, thinking off, 600 tokens, 2026-09-10). Speed is strongly acceptance-dependent; the headline tables are the high-acceptance end.'
+  - 'Older generations in HOW-IT-WORKS (not the current stack): 17 tok/s without speculation, MTP=2 25-28 tok/s on prose (63% accept), up to 36 predictable (94%), 500k YaRN 25-28 tok/s; upstream NVFP4 25-28 tok/s; third-party jschmied aggregate ~267 tok/s at 48 streams (NVFP4). The 17 tok/s no-spec figure is the cleanest bandwidth-bound anchor on a 273 GB/s node (different weight format).'
+  - 'Bytes accounting given by the author: PLE touch 16 rows x 160 B = 2.5 KB/token; int8 head 616 MiB per draft step (full vocab), 320 MiB with 65,536-token draft vocab, 313 MiB int4 head; bf16 head 1.27 GiB; MTP experts bf16 ~4.7 GiB vs int4 -3.5 GiB; weights resident ~67.9 GiB. No total bytes/step or achieved GB/s is given. Author cites ~4% ceiling for head-shrinking tricks once Marlin is bandwidth-bound.'
+  - 'PLE table in the benchmark box is served from another machine''s RAM over RDMA (magi branch), 2-3% faster than local NVMe: a non-default setup behind the quoted table.'
+  - 'Computed by me (10 experts, K=3, int8 head): dense ~3.6 GB + int8 head extra 0.3 GB + routed for 4 verified tokens (union ~40 experts/layer upper bound ~4.9 GB, lower if overlap) + 3 draft passes (~0.5-1 GB each) => roughly 10-13 GB/step; ~60 tok/s at ~3.6 tok/step (87% accept) = ~16-17 steps/s => ~170-220 GB/s, ~65-80% of 273 GB/s. Rough; assumptions on union size and draft cost.'
+  - The README precision table keeps lm_head (shared with the MTP draft head) at int8 GPTQ-Marlin, unlike the int4 head in the azampatti checkpoint.
+  - docs/HOW-IT-WORKS.md states the n-gram (PLE) table is touched at 16 rows x 160 bytes = 2.5 KB per token, i.e. a negligible bandwidth term.
+  notes: 'Stage-1: README saved to disk; not yet read in full. Dive should record its single-Spark tok/s and any bandwidth accounting. | DIVE 2026-10-06 read notes: Read FULL: README.md (33.6 KB; patches 1-9 sections skimmed, tables/sec 10 read). Grepped docs/HOW-IT-WORKS.md for tok/s and bytes. NOT read in full: docs/HOW-IT-WORKS.md, docs/OPTIMIZATIONS.md, scripts/, src/, tools/, bench/decode_bench.py.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1937
+    - intake-1939
+    - intake-1948
+  credibility_score: 4
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Only 10-expert, one-Spark vLLM reference with acceptance-by-content data; anchor for like-for-like comparison with our CPU MTP numbers.
+  reader_should_conclude: The one-Spark 10-expert reference is ~50-62 tok/s (70-87% acceptance, short prompts); prose is 33-40. It is the like-for-like physics anchor. Do not carry 50-60 as long-context or prose performance, nor the 1.8x-vs-NVFP4 ratio.
+  reported_results:
+  - metric: single-stream decode tok/s MTP=3 thinking on
+    value: Q&A 49.1, Code 56.5, JSON 62.1, Math 55.5, LongCode 48.5
+    setup: 1 Spark, 10 experts, int4/int8/fp8, SEQS16, KV20g, 4 runs, PLE via RDMA
+  - metric: thinking off T=0
+    value: 62.0/66.0/62.4 Code/JSON/LongCode
+    setup: int4 draft + 65k draft vocab
+  - metric: prose
+    value: English 40.4 (44% acc), Chinese 32.8-34.6 (28-31%)
+    setup: thinking off, int8 head
+  - metric: aggregate
+    value: ~267 tok/s at 48 streams (third-party, NVFP4)
+    setup: not this stack
+  - metric: no spec
+    value: ~17 tok/s (older)
+    setup: HOW-IT-WORKS
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: README.md L1-L5
+    quote: '~50–60 tok/s
+
+      single-stream decode with MTP=3'
+    quote_sha256: 15e21bbb8d3c55c8f4b8c29636d5c71b4fc8b8fedfd2479616520b534550c834
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README Throughput table
+    quote: '| **[Code]** | 72 | 275.8 ± 2.2 | 4.89 ± 0.24 | 56.5 ± 3.1 |'
+    quote_sha256: 0804ad71479d4997fd2355820a2e4d33cdd5b688251451f315d45117f9f467d9
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: README Throughput table
+    quote: '| **[LongCode]** | 79 | 2048.0 ± 0.0 | 42.33 ± 2.53 | 48.5 ± 2.8 |'
+    quote_sha256: 70ed4e9d204eb18f2dd4d91a9e0efa142cca4d974aae4d9440825b960919d317
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: README Throughput note
+    quote: 'Draft acceptance with thinking on is ~70% (2.1 of 3); with `enable_thinking: false` it is ~87%'
+    quote_sha256: 60c9501fd1ddf7aca52f6c52877ec13d17dbaddc49ca6114875b6baf79f65d50
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: README Throughput intro
+    quote: another machine's RAM over RDMA
+    quote_sha256: f89f09385f0c83fe2ef476b538dc84ed812ba46c7d7ad27580b6ec0b5ec3c347
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: README sec 10 table
+    quote: '| Code / JSON / LongCode tok/s | 57.3 / 61.3 / 57.9 | 59.1 / 62.6 / 60.3 | **62.0 / 66.0 / 62.4** |'
+    quote_sha256: 4d7f56f55ab69e51eb3a7cefa3f6ae7027db499b9899a8e163d31aad822dbfe9
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: heading-and-hash
+    locator: README intro
+    quote: '**1.8× faster decode** than the NVFP4 recipe'
+    quote_sha256: edb3fde096d7911c4528ae542ec91c1531b788ada6b9894ff7bfa85b4b7cfc3c
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: heading-and-hash
+    locator: README sec 10
+    quote: (616 → 320 MiB read per draft step)
+    quote_sha256: a74dfaffed8c075e75756b2b318de4a47344b6db6386bf535d3c2f25f19f06e0
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: heading-and-hash
+    locator: README precision table
+    quote: '| lm_head (shared with MTP draft head) | **int8** GPTQ-Marlin (uint8b128) |'
+    quote_sha256: acb52d250074697f01e6edc0f02a5d9a45cb2001e81b1df5cab392cea2ea26c8
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: line-range
+    locator: docs/HOW-IT-WORKS.md L27-28
+    quote: '**16 rows × 160 bytes = 2.5 KB**'
+    quote_sha256: d083ca412af05ff0eea8adf3ad66017cd85f73ee233d5290f8b11fd23c7d5782
+    source_revision: git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: headline; 10-expert model; one Spark
+  - claim_index: 1
+    effect: unaffected
+    note: table present; 4 runs, thinking ON, short prompts
+  - claim_index: 2
+    effect: unaffected
+    note: acceptance 70% on / 87% off stated by author
+  - claim_index: 3
+    effect: unaffected
+    note: non-default PLE source disclosed
+  - claim_index: 4
+    effect: unaffected
+    note: table
+  - claim_index: 5
+    effect: narrowed
+    note: 1.8x vs NVFP4 asserted; NVFP4 25-28 appears only in older HOW-IT-WORKS measurements, so ratio mixes eras
+  - claim_index: 6
+    effect: unaffected
+    note: draft-head bytes stated
+  - claim_index: 7
+    effect: unaffected
+    note: int8 head here vs int4 in azampatti repo
+  - claim_index: 8
+    effect: unaffected
+    note: 2.5 KB/token table touch
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth PARTIAL; git 5e8ae8ab18cfd6ae034f2bb8919827a7caa4d763 (2026-09-21)). Headline 50-60 tok/s is thinking-on short prompts; prose is 33-40. PLE served via RDMA in the benchmark box.
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Use 10-expert one-Spark ~50-62 tok/s (70-87% acceptance, short prompts) as the like-for-like reference for our ~50-53 tok/s CPU MTP on 446 GB/s hardware; Spark matches per byte only when acceptance is high. [operator-review candidate; proposed disposition: roofline-input]'
+  - 'Probe 65k-token draft vocab (shrinks lm_head read in draft step) on our MTP path; author reports +3-5% with unchanged acceptance on English/code. [operator-review candidate; proposed disposition: trigger-gated follow-on]'
 - id: intake-1942
   arxiv_id: null
   url: https://github.com/vllm-project/vllm/pull/58863
@@ -245069,27 +245677,106 @@
   relevance: medium
   expanded_from: intake-1937
   discovered_via: expansion
-  verdict: worth_investigating
+  verdict: adopt_patterns
   key_claims:
-  - PR JSON fetched via the GitHub API (48.7 KB). Cluster README credits it (by @jschmied) as the mechanism that keeps recurrent-state rollback cheap at deep draft depth; relevance to our llama.cpp MTP path is the SSM rollback cost under K up to 7.
-  notes: 'Stage-1: metadata only; diff and discussion not yet read.'
+  - Native vLLM GDN spec decode snapshots the full recurrent state per draft position and reserves one Mamba block per draft position; RecoverSSM instead verifies from a read-only checkpoint, records a small fp32 per-token replay record [correction(V), normalized key(K), gate(1)], and after sampling replays only the accepted tokens to write state once; num_speculative_blocks=0.
+  - 'Gain comes from dropping the per-draft state write-back and so grows with K: measured K=3 and K=5; at K=2 PIECEWISE independent run saw c=1 decode 1.9-4% SLOWER.'
+  - 'GB10 MTP K=3 align: c=1 55.71-56.65 -> 54.37-54.38 ms per verify cycle (-1.3 to -2.3 ms, ~2-4%); c=4 105 -> ~99.7 ms (-5.2%); agent loop 1.31 -> 1.10 s/turn (-16%); KV tokens in same 4 GiB 75,678 -> 103,953 (+37%).'
+  - 'FULL graphs, MTP K=5: code c=1 14.72/14.70 vs 15.00/14.88 ms/tok (-1.1 to -2.1%). Other GPUs (lucifer1004): parity at C1, -1..-2% C2-C16, up to +17% at C32/C64.'
+  - Commit runs at the DRAM floor (224 GB/s) on GB10; GDN out_proj 101 -> 74 us.
+  - Replay record makes unified Mamba page ~6% larger; attention block 1,600 -> 1,664 tokens, slightly reducing prefix reuse. Commit is bit-identical to native per-token states after fix 514102a1db.
+  - 'Status: open, unmerged, with merge conflicts; a race in the split align commit was found and fixed (failed 9 of 12 runs before).'
+  notes: 'Stage-1: metadata only; diff and discussion not yet read. | DIVE 2026-10-06 read notes: PR is OPEN, not merged (mergeable_state unstable, mergify conflict notices 09-30 and 10-02). merge_commit_sha e2fd1c4b... in JSON is GitHub test-merge ref, not a real merge. Created 2026-09-26 by jschmied. Review-comments endpoint returned []. (read_depth set to PARTIAL by integrator: diff kernels not line-read; PR body + comments read)'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
-  contradicting_evidence: null
+    intake_entries:
+    - intake-1937
+  credibility_score: 4
+  contradicting_evidence:
+  - 'k3dani: K=2 PIECEWISE decode 1.9-4% slower; antoniocuegervas saw ~3% one-stream cost on PIECEWISE before FULL graph support.'
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - 'PR open and unmerged; our llama.cpp already rolls back GDN state in O(1) via rs_idx; trigger: PR merge with a K>=5 measurement showing >5% step gain, or our MTP depth K>4 probe showing state-write cost.'
+  reader_should_conclude: 'Do not claim GDN rollback is a major decode cost: measured benefit is 1-5% at K=3-5 on GB10, bigger only in KV capacity and high concurrency; PR is unmerged. Our llama.cpp already uses snapshot-per-token (same as vLLM native), so the issue exists in form of write-back/memory, not in correctness; no K=7 measurement exists in the PR.'
+  reported_results:
+  - setup: GB10 TP1 MTP K=3 align, vLLM
+    c1_ms_cycle: 55.7-56.7 native vs 54.4 RecoverSSM
+    c4: 105.1-105.4 vs 99.6-99.9
+  - setup: GB10 K=5 FULL graphs
+    code_c1_ms_per_tok: 14.72/14.70 vs PIECEWISE 15.00/14.88
+  - setup: K=2 PIECEWISE (k3dani)
+    c1: 1.9-4% slower
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: pr.json body, Purpose
+    quote: snapshots the full recurrent state after every draft position
+    quote_sha256: bac30a8b682018ca3acbf5483bae2825f4fde649f357da3155536d53396c7738
+    source_revision: PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: pr.json body
+    quote: The decode gain comes from dropping the per-draft state write-back, so it grows with the draft length
+    quote_sha256: 209b77e2923e1ced6b949d7294264b722fdb010fb8de55ca5bb015f9a20743dc
+    source_revision: PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: pr.json body, Test Result
+    quote: '| c=1 decode, ms per verify cycle | 55.71–56.65 | 54.37–54.38 | −1.3…−2.3 ms |'
+    quote_sha256: 35047ef9033d759c7940a33dc0b9bd026d1c4936f25c99c150d2e23a82834338
+    source_revision: PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: pr.json body
+    quote: at K=2 with PIECEWISE graphs @k3dani measured c=1 decode 1.9–4 % slower
+    quote_sha256: 36b696919066bf2323265c1b3b0b1f34c2e1a38d043e627c1ba5718149b530b5
+    source_revision: PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: pr.json body, Test Result node trace
+    quote: "the commit runs at the\n  DRAM floor (224 GB/s)"
+    quote_sha256: c49d3be11e2b15f03533fda773873fab35a99ee8823fe9d363abd01427922f49
+    source_revision: PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: diff + body
+  - claim_index: 1
+    effect: unaffected
+    note: author concedes K=2 regression; author never measured K=2, k3dani did
+  - claim_index: 2
+    effect: unaffected
+    note: author data (jschmied notes link); k3dani/antoniocuegervas independent reproduce direction smaller at c=1
+  - claim_index: 3
+    effect: unaffected
+    note: author + lucifer1004; no independent GB10 K=5 run
+  - claim_index: 4
+    effect: unaffected
+    note: author trace only
+  - claim_index: 5
+    effect: unaffected
+    note: see dive_corrections
+  - claim_index: 6
+    effect: unaffected
+    note: open per API 2026-10-06
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth PARTIAL; PR head a77830311b (updated 2026-10-04); pr.json sha256[:12] e06c4b5b75ca, pr.diff e6635ed5250e, comments a2f952cf57cf). Not merged (mergeable_state unstable). The headline c=1 speedup is only ~2-4% per cycle at K=3 and ~1-2% at K=5; the large effects are KV capacity (+37%) and high concurrency, not single-stream decode.
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Our llama.cpp path (src/llama-memory-recurrent.cpp seq_rm lines ~192-198, n_rs_seq) is the NATIVE per-token SNAPSHOT design: mem rows = mem_size*(1+n_rs_seq) (line 101) and rollback just sets an rs_idx (set_rs_idx). So rollback is O(1) pointer selection, but cost is paid as K+1 snapshot state writes per verify and K+1x recurrent-state memory. Measure per-verify state write bytes for Q38FN GDN layers at K=3..7 (state bytes x layers x K) against ~6B active weight bytes to see if write-back matters on CPU DRAM. [operator-review candidate; proposed disposition: probe (arithmetic first; no benchmark needed)]'
+  - 'RecoverSSM idea (store per-token (c,k,gate) records, replay accepted tokens once) is a candidate llama.cpp GDN spec-decode variant if state write-back is >5% of step at K>=5; gain bounded by vLLM evidence at 1-5% decode. [operator-review candidate; proposed disposition: trigger-gated follow-on]'
 - id: intake-1943
   arxiv_id: null
   url: https://docs.nvidia.com/dgx/dgx-spark/hardware.html
@@ -245102,27 +245789,90 @@
   relevance: high
   expanded_from: intake-1937
   discovered_via: expansion
-  verdict: worth_investigating
+  verdict: adopt_patterns
   key_claims:
-  - Official spec page lists 128 GB LPDDR5x unified memory, 256-bit interface, 273 GB/s, 2x QSFP (ConnectX-7), 1 PFLOP FP4 with sparsity. Companion page docs.nvidia.com/dgx/dgx-spark/spark-clustering.html (also saved) states up to 200 Gb/s per QSFP port and two independent PCIe Gen5 x4 NIC-to-SoC links.
-  notes: 'Stage-1: both pages curl-saved (hardware.html sha256 02675731cdfc first-12). Denominator source for the Physics comparison. Clustering page is folded in here to respect the expansion cap.'
+  - 'Official GB10 memory: 128 GB LPDDR5x unified, 256-bit interface, 273 GB/s (the spec lists 16 channels LPDDR5X 8533); this is a theoretical peak, no measured STREAM figure is given by NVIDIA on these pages.'
+  - 'Interconnect: 2x QSFP ports on a ConnectX-7 NIC, up to 200 Gb/s per port (25 GB/s); the NIC reaches the SoC over two independent PCIe Gen5 x4 links, so total NIC-to-SoC bandwidth is bounded by the PCIe links (computed: 2 x ~15.75 GB/s ~ 31.5 GB/s), i.e. 8-12x below one node memory bandwidth; no latency number is published.'
+  - 'Aggregate for two nodes: 2 x 273 = 546 GB/s of memory bandwidth, but tensor/expert-parallel decode needs a cross-node all-reduce each layer over a ~25 GB/s (one port) to ~31 GB/s link; the 546 GB/s is not a pooled bandwidth for a single token stream.'
+  notes: 'Stage-1: both pages curl-saved (hardware.html sha256 02675731cdfc first-12). Denominator source for the Physics comparison. Clustering page is folded in here to respect the expansion cap. | DIVE 2026-10-06 read notes: Both pages curl-saved and read as text from disk (hardware.html 4,978 bytes of text; spark-clustering.html 9,989 bytes). The pages state no interconnect latency and no sustained/measured memory bandwidth.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
+    intake_entries:
+    - intake-1937
   credibility_score: null
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Denominator citation for the physics comparison (273 GB/s per node, 200 Gb/s per port); no repo action.
+  reader_should_conclude: Cite for the 273 GB/s peak and 200 Gb/s per-port figures only; NVIDIA publishes neither measured memory bandwidth nor interconnect latency here, so do not quote a Spark efficiency or latency from it.
+  reported_results:
+  - 273 GB/s LPDDR5x peak per node (spec)
+  - 200 Gb/s per QSFP port (spec); two PCIe Gen5 x4 NIC links
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: hardware.html Specifications > Memory
+    quote: 128 GB LPDDR5x unified system memory, 256-bit interface, 4266 MHz, 273 GB/s bandwidth
+    quote_sha256: 9f86b2c04e9212379e0dd5545fee8c375f61dec8e3e6ca81c7aaa2c72d1ae948
+    source_revision: docs.nvidia.com/dgx/dgx-spark/hardware.html retrieved 2026-10-06 sha256:02675731cdfc
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: hardware.html GB10 details
+    quote: 'Memory Bandwidth : 273 GB/s'
+    quote_sha256: 3b40d985aa3b9b3dd53ffb5a7bb45e55797889fa44c27ca70a49755ba520f1f0
+    source_revision: docs.nvidia.com/dgx/dgx-spark/hardware.html retrieved 2026-10-06 sha256:02675731cdfc
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: hardware.html GB10 details
+    quote: 'Memory Channels : 16 channels (256 bit) LPDDR5X 8533'
+    quote_sha256: 25daecb580d29c2f79d2cc2a64b64a5d75bb2816b5e149905eee8d89e01124ee
+    source_revision: docs.nvidia.com/dgx/dgx-spark/hardware.html retrieved 2026-10-06 sha256:02675731cdfc
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: hardware.html Connectivity
+    quote: 2x QSFP Network connectors (ConnectX-7)
+    quote_sha256: 8ab73f033e9abc08655900b36de467086e824423fa382e711ed354d480b51593
+    source_revision: docs.nvidia.com/dgx/dgx-spark/hardware.html retrieved 2026-10-06 sha256:02675731cdfc
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: spark-clustering.html The QSFP Ports and Cables
+    quote: Each port provides up to 200 Gigabits per second (Gb/s)
+    quote_sha256: a803f4a18ef40f2c0365d43c86327f3b5bc14adfda9ab5ce02bf39799ef483ec
+    source_revision: docs.nvidia.com/dgx/dgx-spark/spark-clustering.html retrieved 2026-10-06 sha256:e054126b4203
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: spark-clustering.html PCIe topology
+    quote: it connects to the SoC through two independent PCIe Gen 5 x4 links
+    quote_sha256: 0170686c2c1449a6dc4cd6da89ac1be09df72b79834f866a9ff4cb3217a9b60d
+    source_revision: docs.nvidia.com/dgx/dgx-spark/spark-clustering.html retrieved 2026-10-06 sha256:e054126b4203
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 273 GB/s stated twice on the page.
+  - claim_index: 1
+    effect: unaffected
+    note: 200 Gb/s per port and x4 Gen5 links stated; the 31.5 GB/s total and the no-latency finding are computed / absence statements.
+  - claim_index: 2
+    effect: narrowed
+    note: Derived by the integrator from the two stated specs; not a source claim.
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth FULL; retrieved 2026-10-06; hardware.html sha256 02675731cdfc, spark-clustering.html sha256 e054126b4203). 2026-10-06: spec page gives theoretical bandwidth only; interconnect latency is not published by NVIDIA here (NOT-FOUND-IN-SOURCE).'
+  read_depth: FULL
+  recommended_actions:
+  - 'Use 273 GB/s peak per node and 546 GB/s two-node (not pooled) as the Spark denominators in every physics comparison; flag measured efficiency as unknown without an independent STREAM figure [operator-review candidate; proposed disposition: knowledge-only (physics table)]'
 - id: intake-1944
   arxiv_id: null
   url: https://rocm.docs.amd.com/en/docs-10.1.0/
@@ -245137,25 +245887,326 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - Compatibility-matrix text lists AMD Instinct MI210 (gfx90a), MI250/MI250X (gfx90a) and MI100 (gfx908) among the 10.1.0 Instinct devices; release notes pair vLLM 0.29.0 / SGLang 0.5.18 / PyTorch 2.14.0 framework support and list an MI210 KVM SR-IOV Ubuntu 26.04 line.
-  notes: 'Stage-1: release-notes (373 KB), compatibility-matrix, graph-safe and precision-support pages curl-saved; only keyword-skimmed.'
+  - '[REBUILD] gfx90a/MI210 SUPPORTED in 10.1 (and 10.0): MI210/MI250/MI250X (gfx90a, CDNA2) listed in the 10.1.0 compatibility-matrix device list, the release-notes supported-hardware table (MI200 Series / Instinct MI210 / gfx90a / CDNA 2), and the transition-guide architecture-package table (-gfx90a, tarball family gfx90a). No ''deprecated'', ''maintenance'', or ''end of support'' wording for gfx90a/CDNA2 was found in the 10.1.0 or 10.0.0 release notes (grep: deprecat/end of/maintenance hits are all unrelated components). MI100 (gfx908) is also still listed. Adopting 10.1 still means rebuilding our HIP kernels (new toolchain, new install tree).'
+  - '[KNOWLEDGE] Support caveat for MI200: the saved system-requirements page (NOTE: it is the ROCm 7.14.0 page, not a 10.1 page - header says ''ROCm Software 7.14.0''; no 10.1.0 system-requirements URL resolved) says MI200 supports all listed OSes except Debian 13, Rocky Linux 9, Oracle Linux 10/9/8. RHEL 8.10 and Debian 12 are MI-gen-limited and include MI210. The 10.1.0 compat matrix OS columns are flattened by html->text so per-GPU OS lists cannot be attributed with certainty; Ubuntu 22.04.5 (GA 5.15) and 24.04.5 (GA 6.8) appear for the Instinct block.'
+  - '[REBUILD] Minimum OS/kernel/driver: 10.1.0 matrix lists Ubuntu 26.04.1 (GA 7.0), 24.04.5 (GA 6.8), 22.04.5 (GA 5.15); amdgpu driver 31.60.0 / 31.50.0 / ... down to 30.10.2; MI200 firmware rows are flattened/ambiguous. Moving from ROCm 6.2 (older amdgpu 6.x driver) requires a driver/DKMS bump, which is host-level and operator-owned (reboots).'
+  - '[REBUILD] Driver: ''Supported AMD GPU Driver (amdgpu) versions'' lists 31.60.0 first; no gfx90a-specific driver minimum is stated in text we could attribute.'
+  - '[REBUILD] Compiler: ROCm 10.0.0 moved LLVM 23.0.0 -> 24.0.0 (10.0 notes, LLVM row) and 10.1 ships LLVM 24.0.0 (SPIRV-LLVM-Translator 24.0.0, ROCr 1.21.0). Blog: ''clang_major version macro now reports 24'' and ''review any code or build scripts keyed to a specific compiler version... tools that link directly against libLLVM''. Our ROCm 6.2 is LLVM 18-era (from knowledge, not in these docs) so the jump is ~6 majors; every ggml HIP/rocWMMA/MFMA TU must be recompiled and warnings/errors re-triaged.'
+  - '[REBUILD] Layout: ''next'' ROCm Core SDK installs to /opt/rocm/core-10.1 (legacy /opt/rocm-7.2/), packages amdrocm-{component}; amdrocm meta-package configures update-alternatives and backward-compatible symlinks for /opt/rocm/bin, /opt/rocm/lib. Anything hardcoding /opt/rocm-6.2 paths, LD_LIBRARY_PATH, or hipcc locations (our launchers set per-tree LD_LIBRARY_PATH) must be re-pinned; side-by-side install is possible via tarball format.'
+  - '[REBUILD] hipcc is folded into amdrocm-llvm (amdclang++, hipcc, flang); hipBLAS+rocBLAS+hipBLASLt+hipSPARSELt merged into one package amdrocm-blas; rocWMMA is now in amdrocm-ccl-dev/devel (with rocPRIM, rocThrust, hipCUB, libhipcxx); Composable Kernel is amdrocm-ck; ROCm SMI removed (use amd-smi); ROCm Bandwidth Test end-of-life (use TransferBench/RVS); rocALUTION/hipfort not in Core SDK. CMake find_package paths for rocBLAS/rocWMMA/hip may change - llama.cpp''s HIP CMake must be re-validated.'
+  - '[KNOWLEDGE] Per-arch package suffix -gfx90a (tarball family ''gfx90a'') exists, so a gfx90a-only install is possible.'
+  - '[KNOWLEDGE] rocBLAS/MIOpen/hipBLASLt gfx90a kernel DB changes: 10.1 MIOpen 3.6.1 pruned 12,907 ASM-GTC NHWC convolution find-database entries across gfx908/gfx90a/gfx942/gfx950 (conv only; irrelevant to llama.cpp). rocBLAS 5.7.0 gfx950 gemm now defaults to hipBLASLt (not gfx90a); gfx90a-relevant rocBLAS items are a syrk/herk OOB workspace fix (batch_count>65536) and a gemv/gemm m==1|n==1 speedup (arch-agnostic). hipBLASLt stays 1.4.1 and rocWMMA stays 2.2.1 with NO 10.1 changelog section; no gfx90a kernel-database pruning for rocBLAS/hipBLASLt/rocWMMA/CK appears in the 10.1 text. CK 1.3.0 changes are gfx1250/gfx11/gfx12/gfx950-focused; nothing for gfx90a/MFMA decode.'
+  - '[REBUILD] Known issue on gfx90a: with ROCm 7.14 or later, per-launch scratch-memory reclaim in the runtime degrades RCCL performance; workaround HSA_NO_SCRATCH_RECLAIM=1. Stated for RCCL (multi-GPU), but it is a runtime-wide behaviour on gfx90a that might touch any kernel using scratch (our single-MI210 path unmeasured) - if we ever move to 10.x, set/test that variable.'
+  - '[KNOWLEDGE] rocBLAS 5.7.0 fixes a gfx90a syrk/herk workspace overflow and dot/trsm batch>65535 issues; none touches llama.cpp GEMM paths (we use MMQ_MFMA and rocWMMA, not rocBLAS syrk).'
+  - '[KNOWLEDGE] FP8/FP4 on gfx90a: precision-support table has fp8 FNUZ only on CDNA3, fp8 OCP and fp4/fp6 only on CDNA4 (fp8 OCP also RDNA4); CDNA2 is crossed out for every fp4/fp6/fp8 row in the HIP C++ type table, the compute-unit table and the matrix-core table. CDNA2 matrix cores support int8, fp16, bf16, fp32, fp64 (not tf32). Confirms gfx90a has no hardware FP8; consistent with our MMQ_MFMA int8 + fp16 path.'
+  - '[KNOWLEDGE] Graph-safe table (10.1): rocBLAS full support (see details), hipBLAS full, Tensile full, hipBLASLt PARTIAL, rocPRIM full; Composable Kernel NOT graph-safe, rocWMMA NOT graph-safe, MIOpen NOT, rocThrust NOT. Table is arch-independent. Our HIP-graph path uses ggml''s own kernels (not CK/MIOpen) and hipBLAS/rocBLAS for any GEMM; rocWMMA being ''not graph-safe'' is a docs flag for the library''s host API (rocWMMA is header-only device code) and does not match our working rocWMMA FA + HIP-graph production use, so treat as a conservative doc label, not new evidence.'
+  - '[ALREADY-HAVE] HIP graphs: 10.0 adds HIP-graph per-node attribution in rocprofv3 (--hip-graph-trace) and stream-capture support for hipStreamWait/WriteValue32/64 (BatchMemOp as graph nodes). Already-have graph capture in production; the profiler attribution is [AK-HYPOTHESIS]-grade tooling: per-graph-node timing could expose which node dominates a captured decode graph on MI210 (unmeasured; needs a ROCm 10 profiler install and ROCprofiler-SDK works on gfx90a is not stated in text).'
+  - '[KNOWLEDGE] Framework gfx90a support in 10.1: PyTorch 2.14.0 (Linux; 2.13.0/2.12.0 ''Instinct GPUs only''), JAX 0.11.1/0.11.0/0.10.2 explicitly list gfx90a, TensorFlow 2.21/2.20 list gfx950/gfx942 (and 2.19.1 gfx90a in 10.0 only; 10.1 drops TF 2.19.1), ONNX Runtime 1.29.0 and MIGraphX 2.18 list gfx90a. vLLM 0.29.0 and SGLang 0.5.18 do NOT list gfx90a in their gfx lists. llama.cpp is not mentioned anywhere in the 10.0/10.1 docs (grep: zero hits).'
+  - '[KNOWLEDGE] The same vLLM/SGLang exclusion of gfx90a already holds in 10.0 (vLLM 0.27.0, SGLang 0.5.15); so gfx90a is ''supported hardware'' but second-tier for LLM-serving frameworks (llama.cpp is our own build either way).'
+  - '[REBUILD] rocm-smi is removed from the standard build in 10.1 (''no longer built or installed''); any of our monitoring/guard scripts that call rocm-smi (VRAM sampling, KFD checks) must move to amd-smi.'
+  - '[REBUILD] ABI: 10.0 bumped libamd_smi to SONAME libamd_smi.so.27 (consumers of .so.26 must relink) with removed APIs; rocsparse_indextype_u16 removed (10.0); hipCUB removed several deprecated iterators/macros (10.0); no libamdhip64/ggml-hip SONAME break is stated in the saved notes (absence of a statement, not proof of compatibility) - we must rebuild anyway for LLVM 24.'
+  - '[KNOWLEDGE] Versioning: legacy stream ended at ROCm 7.2.4 (2026-05-29); TheRock-based Core SDK began at 7.14.0 (2026-07-15), 10.0.0 (2026-08-26), 10.1.0 (2026-10-05). ROCm 6.2.0 was 2024-08-02 / 6.2.4 2024-11-06, so 6.2 -> 10.1 spans the whole 6.3..6.4..7.0-7.2 legacy line plus the TheRock re-platform.'
+  - '[KNOWLEDGE] Unsupported-GPU wording (from the 7.14 requirements page): ''HIP runtime might continue to run applications for an unsupported GPU, but prebuilt ROCm libraries are not officially supported and will cause runtime errors.'' gfx90a is on the supported side of that line in 10.1; the 10.1 notes also say non-listed GPUs may be community-enabled via TheRock nightlies.'
+  - '[KNOWLEDGE] hipBLASLt 1.4.1 and rocWMMA 2.2.1 are unchanged across 10.0 and 10.1 (version row only, no changelog section). If we adopt 10.x our rocWMMA FA kernels would see the same rocWMMA headers as 10.0 but compiled by a newer clang; performance delta of LLVM 24 vs 18 on MFMA/rocWMMA code is unmeasured.'
+  - '[AK-HYPOTHESIS] (unmeasured) LLVM 24 codegen + newer ROCr (1.21.0) on gfx90a could change MMQ_MFMA / rocWMMA FA / graph-launch overhead either way; the only way to know is a side-by-side experimental-branch build on a 10.1 tarball install (side-by-side supported by the tarball format, no root, no /opt/rocm change). Cheap probe candidate for the AK queue, but it is a toolchain-version axis not a decode-bandwidth lever, and any v11 promotion would need the usual four-step flow.'
+  - '[ALREADY-HAVE] MFMA int8/fp16/bf16 matrix cores on CDNA2, HIP graphs, rocWMMA FA are all in production on ROCm 6.2; 10.1 docs add no new gfx90a capability to adopt (no new CDNA2 dtype, no new graph feature).'
+  - '[KNOWLEDGE] Decode-efficiency/physics: NOTHING in the blog or the 10.0/10.1 docs bears on MI210 decode bandwidth utilisation. The closest items are hipFile/NUMA host allocation (storage->GPU and host NUMA placement; not HBM decode) and the RCCL scratch-reclaim note (multi-GPU collectives). No HBM bandwidth, no MFMA throughput, no flash-attention change for gfx90a.'
+  notes: 'Stage-1: release-notes (373 KB), compatibility-matrix, graph-safe and precision-support pages curl-saved; only keyword-skimmed. | DIVE 2026-10-06 read notes: Read from disk: 10.1.0 release notes (all gfx90a/MI210/deprecat/graph/LLVM/HIP/rocBLAS/MIOpen/CK/rocWMMA/hipBLASLt hits plus framework + hardware tables; NOT every component changelog line of the 129 KB text), compatibility matrix (OS/driver/framework sections; per-GPU OS columns are flattened by html->text and ambiguous), graph-safe page (full), precision-support (type tables for HIP C++/CU/matrix core; library per-type tables NOT read), transition guide (full), 10.0.0 release notes (grep + breaking-changes/HIP/LLVM/framework sections), version list (full), install/rocm page (grep for gfx90a/kernel/driver). NOT FOUND: a ROCm 10.1.0 ''system requirements'' page - docs-10.1.0/reference/system-requirements.html and install/prerequisites.html return 404; the saved rocm_reqs.* is the ROCm 7.14.0 page (header ''ROCm Software 7.14.0''), so its MI200 OS caveats are 7.14-era, not verified for 10.1. Docs/TheRock text for CDNA2 in the 10.x series: no deprecation wording.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1938
+  credibility_score: 5
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - 'gfx90a/MI210 supported in ROCm 10.1 with no deprecation wording; no decode-efficiency lever for gfx90a; migration is a full rebuild plus host driver bump. Trigger: operator decision to scope a v11 / ROCm 10.x experimental-branch build.'
+  reader_should_conclude: 'MI210/gfx90a is still officially SUPPORTED in ROCm 10.0 and 10.1 with no deprecation wording found, so there is no forced migration; but 10.1 gives no decode-efficiency lever for gfx90a (nothing on MFMA, rocWMMA, hipBLASLt, HBM bandwidth), and adoption means a full rebuild (LLVM 24, clang_major 24, /opt/rocm/core-10.1 layout, amdrocm-* packages, amd-smi, newer amdgpu driver). Do NOT carry: that vLLM/SGLang run on MI210 under 10.1 (their gfx lists exclude gfx90a), that rocWMMA is unusable with HIP graphs (docs label only), or any 7.14-page OS caveat as a 10.1 fact. Q38FN physics question: nothing in these sources bears on it.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: r101_compatibility-matrix.txt:L179 (compat matrix device list)
+    quote: AMD Instinct MI250X (gfx90a) AMD Instinct MI250 (gfx90a) AMD Instinct MI210 (gfx90a)
+    quote_sha256: b7b62f0bd52d48efdf66edc53846cf4cc14646dc90465759dd6cfeb521cdfe8f
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'r101_release-notes.txt:L602 (release notes: supported HW table (MI200 row))'
+    quote: 'AMD Instinct MI200 Series '
+    quote_sha256: dd113caac761ca1778841f85b8cdf43a051d33f773201d51b251e22f1d630726
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'rocm_reqs.txt:L274 (system reqs (7.14 page): MI200 OS caveat)'
+    quote: AMD Instinct MI200 Series GPUs support all Supported operating systems listed below except Debian 13, Rocky Linux 9, Oracle Linux 10, Oracle Linux 9, and Oracle Linux 8.
+    quote_sha256: e2b94f855cf93e1d8bc5d53085a4efca54db2e04b1e698ca29f1cad24a26846e
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: r101_compatibility-matrix.txt:L263 (10.1 compat matrix OS)
+    quote: 'Ubuntu 22.04.5 (kernel: GA 5.15)'
+    quote_sha256: 6f689e7b830fd0a8ed2434a9f984917da7f6c31474b722588fd6502212989489
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: r101_compatibility-matrix.txt:L298 (amdgpu driver)
+    quote: Supported AMD GPU Driver (amdgpu) versions
+    quote_sha256: b113eb7474e977db675621c0a2c5b6480e4bd63c88b6e45bdfddafb812181c2d
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: r100_release-notes.txt:L1175 (10.0 notes LLVM 23->24)
+    quote: 23.0.0 ⇒ 24.0.0
+    quote_sha256: b07bfd0bebd1c138121e01760602a28a3ca31a24054e07ba723a8b151b73dacb
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: r101_transition-guide.txt:L185 (transition guide install dir)
+    quote: '/opt/rocm/core-10.1 '
+    quote_sha256: 6c8e45c88d4464751e8a75309dac102400a1b7b2faf23d06e47c4dd0e87ee0bf
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: r101_transition-guide.txt:L372 (transition guide hipcc)
+    quote: HIPCC (now included in amdrocm-llvm )
+    quote_sha256: dd95491c629d5057615acfe58bd0113a5fc6c0bca5ea421cb4bfa7d9e9876324
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: r101_transition-guide.txt:L229 (transition guide blas merge)
+    quote: ROCm Core SDK packages are more consolidated than the legacy ROCm release
+    quote_sha256: 462811032a83bbf595f9dd3a2a27d446e5cb623345348816d4a95e1e7ba9c8ba
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: page-and-quote
+    locator: r101_transition-guide.txt:L337 (transition guide gfx90a pkg)
+    quote: AMD Instinct MI250X / MI250 / MI210
+    quote_sha256: 110edab3e3ec36f135856e47660fce8c16f2f92ab37b39f627075a6eccb9aa46
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 8
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1630 (MIOpen DB prune)
+    quote: Pruned ASM-GTC NHWC entries from the gfx908, gfx90a, gfx942, and gfx950 system find-databases
+    quote_sha256: 61cbeda19217f5a3a7281350af3fec6b7fd0ca8daedc7063b05b8af2bb7d6c0c
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 9
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1677 (RCCL scratch reclaim)
+    quote: On gfx90a (MI210/MI250/MI250X) with ROCm 7.14 or later, per-launch scratch-memory reclaim in the runtime degrades RCCL performance. Set HSA_NO_SCRATCH_RECLAIM=1 to restore performance.
+    quote_sha256: e872dc68f107e1d79711c76fae6b739a83be4309004799fe1ad797cdb0e23cd2
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 10
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1689 (rocBLAS gfx90a syrk fix)
+    quote: Fix out-of-bounds workspace access in Level 3 batched and strided-batched syrk and herk on gfx90a and gfx942
+    quote_sha256: 28e4914c34af675ec0a8bd2e08887dd4b04ff2bdc6a41e9246c0a496d3b4283d
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: page-and-quote
+    locator: 'r101_precision-support.txt:L248 (precision: FP8 hardware)'
+    quote: CDNA3 natively supports FP8 FNUZ (E4M3 and E5M2), which differs from the customized
+    quote_sha256: 2b9f59f664f145b17e51a8be0b659b5d532bb58e802b6a807741abd30b907ee4
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 11
+    kind: page-and-quote
+    locator: 'r101_precision-support.txt:L422 (precision: fp8 availability rule)'
+    quote: Even if a ROCm library indicates support for a particular data type, that type
+    quote_sha256: 999a3e0df2733209f18f9b692296dac363128f0364e646dc29b7b937b99dc189
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 12
+    kind: page-and-quote
+    locator: r101_graph-safe-support.txt:L163 (graph-safe definition)
+    quote: HIP graph-safe libraries operate safely in HIP execution graphs.
+    quote_sha256: 77a6453fc5e9ae4d21dddacf2baa500b94ec8eac28a12518e79940595873029a
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 12
+    kind: page-and-quote
+    locator: r101_graph-safe-support.txt:L227 (graph-safe legend)
+    quote: '⚠️: partial support'
+    quote_sha256: 35020cbe5ae3602df5c0ff537da0b8ac826aedd3ff9f2e0ae6d6583103943264
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 13
+    kind: page-and-quote
+    locator: r100_release-notes.txt:L420 (10.0 HIP graph profiling)
+    quote: 'HIP Graph per-node attribution: ROCprofiler-SDK and rocprofv3 now add full per-graph-node attribution for HIP graph kernels and memory copies.'
+    quote_sha256: ca729ac0aa4fd4d9377c1de9b8718af270893c64afb68381ed0a9199c5eb3a4c
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 14
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1235 (vLLM gfx list (no gfx90a))
+    quote: 0.29.0 ( gfx950, gfx942, gfx1200, gfx1201, gfx1100, gfx1101, gfx1102, gfx1152, gfx1151, gfx1150 GPUs only )
+    quote_sha256: a1e9472c493c0c953ac497eadbc097871a459a7f62daf60cb81e6d6498b0d5ad
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 14
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1239 (SGLang gfx list (no gfx90a))
+    quote: 0.5.18 ( gfx950, gfx942, gfx1200, gfx1201, gfx1100, gfx1101, gfx1102 GPUs only )
+    quote_sha256: dd1a53416f87e2d9c03da3f6f02fe187f1d342720d2fa3e7c0a6caf44dd35472
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 14
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1227 (JAX gfx90a)
+    quote: 0.11.1 ( gfx950, gfx942, gfx90a, gfx1200, gfx1201, gfx1100, gfx1101, gfx1102 GPUs only )
+    quote_sha256: c2de1a774f47703df59b943a03127aafb63aadcc965025fef94a01c86e05bc01
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 14
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1223 (PyTorch on Instinct)
+    quote: 2.13.0, 2.12.0 ( Instinct GPUs only )
+    quote_sha256: 66a5061b23ab41fcee9c7a3649c0420966dad1ec66e67acd121dbe57f2947cbf
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 15
+    kind: page-and-quote
+    locator: r100_release-notes.txt:L1067 (vLLM in 10.0 also lacks gfx90a)
+    quote: 0.27.0 ( gfx950, gfx942, gfx1200, gfx1201, gfx1100, gfx1101, gfx1102, gfx1152, gfx1151, gfx1150 GPUs only )
+    quote_sha256: 57eca4799d1b125becb3c65b8038b6b1a6cbb7219aaf853ad0cd1e177f9fc195
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 16
+    kind: page-and-quote
+    locator: r101_release-notes.txt:L1938 (SMI removed)
+    quote: ROCm SMI (rocm-smi-lib) is deprecated and, starting with this release, is no longer built or installed as part of the standard ROCm/TheRock build.
+    quote_sha256: bd26f96d1255f870648586e3d3cf3e793801aa98c98485bf141c4ab020503f20
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 17
+    kind: page-and-quote
+    locator: r100_release-notes.txt:L1219 (amd-smi SONAME break (10.0))
+    quote: The shared library SONAME is now libamd_smi.so.27 .
+    quote_sha256: a4e5b4d705e7defa49b51e951eb2d05ef1c2976e21ed258beaede7fa5ce1f112
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 18
+    kind: page-and-quote
+    locator: r101_transition-guide.txt:L178 (TheRock transition begins 7.14)
+    quote: The transition from the legacy ROCm release stream began with ROCm Core SDK 7.14.0
+    quote_sha256: be26f43142d7eddad3e2860adb838e5a99b0cf4bb0d2102bd7e7c727e0924129
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 19
+    kind: page-and-quote
+    locator: rocm_reqs.txt:L255 (unsupported-GPU wording)
+    quote: The HIP runtime might continue to run applications for an unsupported GPU, but prebuilt ROCm libraries are not officially supported and will cause runtime errors.
+    quote_sha256: 47fd6765778456da6a53cb00711f577576b89a7913c95fb16912a2ee655130b1
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  - claim_index: 20
+    kind: page-and-quote
+    locator: 'r101_release-notes.txt:L49 (10.1 component versions: hipBLASLt)'
+    quote: 'hipBLASLt '
+    quote_sha256: c8e4fbdb75287042f64b42fe20715b6c0c99510a3c615d021504e21745d29329
+    source_revision: 'ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119'
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 0
+  - claim_index: 1
+    effect: narrowed
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 1
+  - claim_index: 2
+    effect: narrowed
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 2
+  - claim_index: 3
+    effect: narrowed
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 3
+  - claim_index: 4
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 4
+  - claim_index: 5
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 5
+  - claim_index: 6
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 6
+  - claim_index: 7
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 7
+  - claim_index: 8
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 8
+  - claim_index: 9
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 9
+  - claim_index: 10
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 10
+  - claim_index: 11
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 11
+  - claim_index: 12
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 12
+  - claim_index: 13
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 13
+  - claim_index: 14
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 14
+  - claim_index: 15
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 15
+  - claim_index: 16
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 16
+  - claim_index: 17
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 17
+  - claim_index: 18
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 18
+  - claim_index: 19
+    effect: narrowed
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 19
+  - claim_index: 20
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 20
+  - claim_index: 21
+    effect: narrowed
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 4
+  - claim_index: 22
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 11
+  - claim_index: 23
+    effect: unaffected
+    note: vendor docs (primary source for ROCm facts; no independent corroboration); anchors map by anchor claim_index to rocm_items topic number 6
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; ROCm 10.1.0 docs (docs-10.1.0) retrieved 2026-10-06; sha256[:12]: release-notes 590961353871, compat-matrix d2320c60b002, graph-safe dad878ad9439, precision d91e5d5ac60e, index 63154066ffa5, transition-guide 33c8059a0bbc, install/rocm d75c19419b3f, 10.0 release-notes ce689dacc7cb, versions ad78b0a92d13, rocm_reqs(7.14 page) 09ed37682119). (a) intake-1944 header says 10.1.0 docs but the saved system-requirements page (rocm_reqs) is the 7.14.0 page; (b) the compatibility-matrix OS list is flattened so MI200-specific OS rows cannot be attributed; (c) ''rocWMMA not graph-safe'' in the graph-safe table conflicts in spirit with our working rocWMMA FA + HIP graphs, so it is a library-API label.'
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Do NOT migrate production ROCm 6.2 -> 10.1 for any decode-speed reason: no gfx90a-relevant change in hipBLASLt/rocWMMA/CK; the release is data-movement/tooling oriented. [operator-review candidate; proposed disposition: decline as a lever; KNOWLEDGE row in ROCm migration note]'
+  - 'Optional side-by-side probe: build llama.cpp-experimental against a 10.1 tarball (gfx90a family) and compare MMQ_MFMA/rocWMMA FA/HIP-graph decode vs production v10 under the canonical protocol; unmeasured upside from LLVM 24 only. [operator-review candidate; proposed disposition: AK-HYPOTHESIS, trigger-gated (needs operator OK for a second toolchain on disk; tarball install is non-root)]'
+  - 'Pre-wire rocm-smi -> amd-smi in session/health scripts before any ROCm 10 trial. [operator-review candidate; proposed disposition: REBUILD-adjacent housekeeping; low priority until a ROCm 10 trial is scheduled]'
+  verdict_justification: 'worth_investigating, monitor posture: REBUILD-class migration facts recorded with tags; no immediate lever for MI210 decode efficiency was found.'
 - id: intake-1945
   arxiv_id: null
   url: https://huggingface.co/Qwen/Qwen3.8-Flash-Next
@@ -245169,27 +246220,98 @@
   relevance: high
   expanded_from: intake-1937
   discovered_via: expansion
-  verdict: worth_investigating
+  verdict: adopt_patterns
   key_claims:
-  - Official card (65 KB) is the source for total/active parameters, experts per token, layer layout and MTP head; needed to compute bytes per token for both stacks.
-  notes: 'Stage-1: saved to disk; architecture numbers deferred to the dive.'
+  - Main text model computed at 125.74B params (dense 3.676B incl 36 GDN + 12 QSA layers, shared experts, routers, hyper-connection mixers, PLE proj; embed 0.636B; lm_head 0.636B; routed 120.80B = 48x512x4.9152M) matching card 125B.
+  - 'Active per token: 6.04B excl lm_head, 6.67B incl lm_head (card says 6B); routed active 2.359B = 10x48x4.9152M.'
+  - 'PLE n-gram table = 128 shards x 2,500,012 x 160 = 51.2B params (320,001,536 rows), matching card 51B; a token gathers 16 rows x160 = 2560 values (5 KB bf16): negligible bandwidth, but 102 GB in bf16 capacity.'
+  - 'MTP head: 1 layer with full 512-expert MoE = 2.52B routed + 0.09B dense = 2.6B (card says 4B; shapes give ~2.6B, the difference unexplained, possibly counts shared pieces)'
+  - 'Single-token decode bytes: BF16 13.34 GB; FP8 6.67; NVFP4 (nvidia, dense bf16) 9.95; hibrid48 9.04; INT4g128+fp8 5.53; GGUF IQ4_XS measured 4.16 (our dense 2.344 is 5.1 bpw avg on 3.676B params).'
+  - 'Our 1.296 GB routed term reproduced: 10x48x4.9152M=2.359B params; at IQ4_XS 4.25 bpw = 1.253 GB, at measured 2.70 MB/expert (=4.39 bpw) = 1.296 GB.'
+  - 'Verify window distinct experts/layer (uniform indep): k=10: R=1 10, R=4 38.8, R=6 57.2, R=8 74.7; k=5: 5, 19.7, 29.3, 38.7; expert bytes scale same factor (e.g. k=10,R=8 at NVFP4 9.92 GB, IQ4_XS 9.4 GB).'
+  - 'State: QSA KV 24,576 B/token bf16 (12 layers x 2 KV heads x256 x2(K,V) x2B); full 0.05/0.81/3.22 GB at 2k/32k/128k, but indexer_budget 2048 caps attended tokens so per-step KV read <=~50 MB; GDN state constant 113 MB fp32 + 2.2 MB conv per sequence.'
+  - 'Physics cross-check of hibrid48 claim: 2 Sparks aggregate 546 GB/s vs ~13.1 GB/step at MTP K=4 (5 rows, ~48 experts/layer, 6.4 GB experts + 7.35 dense + 0.36 head) = ~24 ms floor (41 steps/s) vs observed 45 ms (22 steps/s) x ~4.2 tok/step = 92 tok/s: consistent with physics at ~54% BW efficiency; it relies on 4+ accepted tokens/step on code, not on per-token bytes.'
+  notes: 'Stage-1: saved to disk; architecture numbers deferred to the dive. | DIVE 2026-10-06 read notes: Read config.json (full), weight-name index (full), tensor shapes via safetensors HEADER range requests (no weights) for layer0/3/1-PLE/mtp/lm_head/embed, tree sizes of all 3 repos, hibrid48 README (full), nvidia README (grep: params/quant sections only), Qwen README (architecture section + grep). Not read: benchmarks tables, nvidia 31MB index (LFS) and hf_quant_config ignore list beyond targets. Per-tensor quant classes in nvidia repo inferred from card text, not per-tensor header.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1937
+    - intake-1939
+  credibility_score: 4
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Architecture/bytes-per-step basis for the roofline (computed from config and safetensors headers, reproduces our measured 1.296 GB experts).
+  reader_should_conclude: 'Per-token bytes for this model are 4.2 GB (our GGUF) to 13.3 GB (BF16); Spark tok/s above ~50 come from MTP acceptance (~4.2 tok/step) and 2-box aggregate bandwidth, not from fewer bytes. Do NOT carry: the 4B MTP figure, the independent-uniform expert-union as measured fact (it is a computed upper-ish bound), or vendor tok/s as independently verified.'
+  reported_results:
+  - 'hibrid48: 22 steps/s, 92 tok/s c=1 (86-97), 546 tok/s c=32 on 2 DGX Spark, vendor-reported'
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: qwen_README.md Model Overview
+    quote: 'Number of Parameters: 125B with 6B activated, plus 51B n-gram embedding and 4B MTP'
+    quote_sha256: f1ea63dcf4cb8a1a19c148d4d9a9734ca007f1a1f0ff589229dcaf342cda8c30
+    source_revision: retrieved 2026-10-06 (HF raw/main)
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: file-hash
+    locator: qwen_README.md Model Overview
+    quote: 'Number of Activated Experts: 10 Routed + 1 Shared'
+    quote_sha256: 827d873fe837cbf44f38e87609289a7ad1a4194fbc4d031125a8b855167331c5
+    source_revision: retrieved 2026-10-06 (HF raw/main)
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: file-hash
+    locator: hy_README.md intro
+    quote: 'a 1.18 GiB bf16
+
+      matrix that speculative decoding reads about 5.4 times per step'
+    quote_sha256: 12a4c18bec815c7adfbfbd8e62eb530d4beff9deea9505c81a57682926b9a0e4
+    source_revision: retrieved 2026-10-06 (HF raw/main)
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: file-hash
+    locator: nv_README.md L186
+    quote: The routed MoE expert linear layers in the main language model use W4A4 NVFP4 with MSE-calibrated weight scales. Attention layers, shared experts, and other main-model layers remain in BF16.
+    quote_sha256: fb7dd5bafde976c42037b2c535bdc16caddb300b4056ba036be17af293e5a466
+    source_revision: retrieved 2026-10-06 (HF raw/main)
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: file-hash
+    locator: hy_README.md Measured
+    quote: '| c=1, thinking off | 22.1 | **92** (86–97) | 100 | 4.2–4.4 | 0.57 s |'
+    quote_sha256: 53fd96b73c72ed115d70851a4b8348255a26cd46a87dc527f2c46451a29feb4c
+    source_revision: retrieved 2026-10-06 (HF raw/main)
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 125.74B main; 51.2B PLE; MTP 2.6B computed vs 4B stated (PARTIAL on MTP)
+  - claim_index: 1
+    effect: unaffected
+    note: config num_experts_per_tok=10, 512 experts, moe_intermediate 640
+  - claim_index: 2
+    effect: narrowed
+    note: 1.18 GiB = 248320x2560x2B matches computed; 5.4 reads/step is vendor-side profile, not verifiable here
+  - claim_index: 3
+    effect: unaffected
+    note: 'vendor card; consistent with tree sizes (body 78.96GB: 67.95 routed NVFP4 at .5625 + bf16 dense ~9.5 incl embed/head; computed)'
+  - claim_index: 4
+    effect: narrowed
+    note: vendor measurement, self-reported, single prompt (1.2k-token code), acceptance 4.2-4.4; no independent corroboration
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; HF raw/main retrieved 2026-10-06; sha256[:12] qwen_README.md=35ca37ccc366, qwen_config.json=889658f2508e, qwen_model.safetensors.index.json=99e815241ef0, nv_README.md=e3ed0cb89950, nv_config.json=deef67a61f33, hy_README.md=546ede79558f, hy_config.json=4f6b54e0209b). Card param split: MTP stated 4B, tensor shapes give 2.6B (1 layer, 512 experts). Active 6B excludes lm_head (6.04B); with lm_head 6.67B. Hyper-connection mixers add 0.63B dense params (4 branches x 10240 width) which are often forgotten. Sibling hibrid48 size: body 76.1 GB + PLE NVFP4 28.8 GB + head 0.36 GB.'
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Use bytes_per_step.json for roofline: our CPU floor 4.16 GB/step at 446.8 GB/s = ~107 steps/s single-row ceiling; verify rows R multiply routed term (R=5,k=10: ~48 experts/layer, 6.1 GB at measured quants), so MTP gain is expert-union-limited. [operator-review candidate; proposed disposition: fold into cpu-decode-roofline-program handoff]'
+  - 'Route a measurement of actual per-layer distinct experts on a verify window from our own router traces to replace the independent-uniform assumption (real routing is correlated, lower union). [operator-review candidate; proposed disposition: trigger-gated probe]'
 - id: intake-1946
   arxiv_id: null
   url: https://github.com/local-inference-lab/b12x
@@ -245271,23 +246393,142 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - 'Independent community measurement, 2026-09-05, nvidia/Qwen3.8-Flash-Next-NVFP4 (the 10-expert official quant) on upstream vLLM nightly, 40 real prompts, thinking off: ONE Spark median 32.5 tok/s (peak 43.8); TWO Sparks TP2 median 53.7 (peak 63.7, 309 aggregate at 6 streams); FOUR Sparks median 40.5.'
-  - Reports that the 47.7 GB n-gram table does not fit beside the weights on one Spark and is read from disk, and that torch.compile autotune duplicates the table (about 24 GB per box at TP2).
-  notes: 'Stage-1 read: thread HTML curl-saved (sha256 recorded at dive). Forum post is self-reported, not independent in the sense of replicated; it is independent of the myllmbox author. Provides the 10-expert / official-quant comparison point missing from the cluster README.'
+  - '2x Spark TP2 (ConnectX) SPEED profile: median 53.7 tok/s, prose 37.2, count-to-100 PEAK 63.7 (the title''s 64), 309 aggregate at 6 streams; MTP3, thinking off, 40 real prompts, no prefix cache, nvidia NVFP4 checkpoint, table in unified memory.'
+  - The 64 tok/s headline is a count-to-100 peak; medians are 53.7 (SPEED) and 35.8 (CONTEXT profile, table on disk, peak 50.8). Author says peaks are reported separately on purpose.
+  - '1 Spark: median 32.5 (morning) then 43.9 after staged-gather patch + reduced-vocab MTP head (65,536 ids), prose 29; earlier peak 43.8; 194 aggregate at 6 streams. MTP4 on 1 Spark, 64% acceptance (README).'
+  - '4 Spark TP4+EP: median 40.5, peak 54.2, 262 aggregate at 6 -- SLOWER than 2 Sparks single-stream.'
+  - '4x RTX 3090 (W4A16 experts, PLE table on NVMe): 193 tok/s peak, 110 prose, single stream (post #23, author restatement, not independently run).'
+  - 'Third-party: m0l0 single Spark (downclocked 2 GHz) llama-benchy 34.6 tg single / 41.7 c2 / 55.1 c4 thinking off; 39/52/65 with medium thinking; tool-eval 89/100. clint25 TP2: SGLang 40.3 tok/s streaming decode, vLLM 38.55 (llama-benchy @259K 55.99 / 42.19).'
+  - 'Key design facts: 47.7 GB FP8 PLE n-gram table does not fit beside 124 GB NVFP4 weights on one Spark; table gather reads only 16 rows/token. Thinking-on raised measured tg (likely more repetitive/predictable tokens -> higher MTP acceptance), per m0l0 and author surprise.'
+  - No post gives bytes/token or bandwidth reasoning; all figures are speculative-decode tokens per second with MTP K=3-4 on a 6B-active MoE, not weights-per-token roofline.
+  notes: 'Stage-1 read: thread HTML curl-saved (sha256 recorded at dive). Forum post is self-reported, not independent in the sense of replicated; it is independent of the myllmbox author. Provides the 10-expert / official-quant comparison point missing from the cluster README. | DIVE 2026-10-06 read notes: All 28 posts read via Discourse JSON (?print=true) and saved as posts.txt. Two surfaced READMEs read via grep of headline tables only (PARTIAL for those): tonyd2wild TP1/TP2 repo and MiaAI-Lab Dual-Sparks repo (raw README, sha256[:12] 067b97dc3c2e / 2f5e8c0e60d7). No bandwidth reasoning appears anywhere in the thread.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
-  contradicting_evidence: null
+    intake_entries:
+    - intake-1937
+    - intake-1941
+  credibility_score: 3
+  contradicting_evidence:
+  - Independent users in-thread measure lower than author peaks (TP2 streaming 38.6-40.3; 1 Spark 34.6 tg), consistent with medians not peaks.
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Independent like-for-like 10-expert numbers (TP2 median 53.7, one-Spark median 32.5-43.9); decisive for the physics verdict; no repo action.
+  reader_should_conclude: The Spark numbers are MTP-assisted speculative decode on a 6B-active MoE with author-selected peak vs median; do not cite 64 or 177 as a baseline tok/s, do not treat aggregate (309 at 6 streams) as single-stream, and do not treat the 4x3090 193 peak as comparable. No bandwidth derivation exists in the thread.
+  reported_results:
+  - setup: 1 Spark, vLLM nightly 8a728663, FP8 KV, 262K, MTP4, piecewise graphs, table on disk, 40 prompts, thinking off
+    median: 32.5
+    prose: 21.7
+    peak: 43.8
+    agg6: 194
+  - setup: 1 Spark default 2026-09-05 evening (staged gather + reduced-vocab draft)
+    median: 43.9
+    prose: 29
+  - setup: 2 Spark TP2 CONTEXT (table on disk)
+    median: 35.8
+    peak: 50.8
+    agg6: 234
+  - setup: 2 Spark TP2 SPEED (table in unified mem, compile off, MTP3, 4096 chunks)
+    median: 53.7
+    prose: 37.2
+    peak: 63.7
+    agg6: 309
+    ttft_ms: 180
+  - setup: 4 Spark TP4+EP
+    median: 40.5
+    peak: 54.2
+    agg6: 262
+  - setup: 4x RTX 3090 W4A16, table on NVMe
+    peak: 193
+    prose: 110
+  - setup: MiaAI-Lab Dual-Spark README (TP2+EP, MTP3, draft vocab 47,149) prose, c=1..8 aggregate
+    values: 54.4/86.5/128.1/169.7/207.0 tok/s at x1/x2/x4/x6/x8 (surfaced, README read, grep of table)
+  - setup: 'MiaAI README MTP measured: MTP off vs MTP3, TP2+EP batch-1 greedy'
+    values: 24.5 -> 52.1 tok/s (2.13x), acceptance 72.8%, per-position 89/74.5/60%
+  - setup: tonyd2wild README 1 Spark MTP4
+    values: acceptance 64%, 3.56 tokens/step; eager no-MTP floor 15.4 tok/s; at c=1 20.6 tok/s per-stream row (table line 102, unlabelled in my grep)
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: 'post #1 (tonyd615)'
+    quote: 'SPEED (table in unified memory, torch.compile off with decode-only CUDA graphs, MTP3, 6 seqs, 4096-token prefill chunks): median 53.7, prose 37.2, peak 63.7, 309 aggregate at 6 streams'
+    quote_sha256: 6afe1af969d0ac496dbf96b79c4ea36b5b685925837d79e54e451727af0102d5
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: page-and-quote
+    locator: 'post #1'
+    quote: Peak numbers come from a count-to-100 prompt and are listed separately from the medians on purpose.
+    quote_sha256: cfbed7aca334e037f756ff7b393059b6f1a7e78b662931857adf221b42e98e8a
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 'post #1'
+    quote: Median 32.5 tok/s, prose 21.7, peak 43.8 single stream, 194 aggregate at 6 streams
+    quote_sha256: fbb1f63919799757c7caecfd090489e9dfc5eba68e2849cb7eac96e8c9aeabdb
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: page-and-quote
+    locator: 'post #23'
+    quote: 'Numbers, one Spark, 40-prompt harness, single stream: 43.9 tok/s median, 29 on prose'
+    quote_sha256: b646d3ba19f75a003f7d1059eca11b4b3f5a86267111c130d5d38c3a8276f257
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 'post #23'
+    quote: 'The same patch runs the model on 4x RTX 3090 (W4A16 experts, table on the NVMe): 193 tok/s peak, 110 prose'
+    quote_sha256: 4790f3d447a5d239d1a2760752323d62829b9a7e3e0dac83f42d5974fba11972
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: page-and-quote
+    locator: 'post #1'
+    quote: Median 40.5, peak 54.2, 262 aggregate at 6
+    quote_sha256: 13f39cdf0e7284066ec4bac59bae9b0f8bd045e7d88db3c1cf70b1ba847ba97d
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: page-and-quote
+    locator: 'post #5 (m0l0)'
+    quote: my throughput was even higher in the llama benchy part of the test (39/52/65 tps vs 35/42/55 without thinking)
+    quote_sha256: 0a79c633b847aec1f1f0ee6f40d3fb6fb066f5002a531c2f024a0a19aa695af2
+    source_revision: retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'in post #1 and title; author-only measurement (vendor-style restatement, no independent run of the 53.7 profile in thread)'
+  - claim_index: 1
+    effect: unaffected
+    note: median/peak distinction explicit
+  - claim_index: 2
+    effect: unaffected
+    note: morning stack numbers; superseded by 43.9
+  - claim_index: 3
+    effect: unaffected
+    note: author restatement
+  - claim_index: 4
+    effect: narrowed
+    note: quoted; no setup beyond post, peak=count-to-100 style
+  - claim_index: 5
+    effect: unaffected
+    note: see dive_corrections
+  - claim_index: 6
+    effect: unaffected
+    note: independent users give 35-55 tg on 1 Spark, 38-40 on TP2 SGLang/vLLM streaming; these are BELOW the author medians
+  dive_corrections: 2026-10-06 Stage-2 dive (read_depth FULL; retrieved 2026-10-06; topic.json sha256[:12]=62c1b4125981, topic.html 2ae78000112d; 28 posts). Headline 64 tok/s is a count-to-100 peak on 2 Sparks; the 40-prompt median is 53.7 and prose 37.2. MTP-off decode on TP2 is 24.5 tok/s (MiaAI README), so the 53.7 headline is ~2.1x speculative gain, not a bandwidth win. 4-Spark config is slower than 2-Spark.
+  read_depth: FULL
+  recommended_actions:
+  - 'Compare our CPU 50-53 tok/s only against Spark MEDIAN/prose numbers (37-54 TP2, 29-44 TP1) and MTP-off floors (15.4 1 Spark, 24.5 TP2), never the 64 peak or 93-177 aggregate; note our MTP prompt-set differs. [operator-review candidate; proposed disposition: fold into physics comparison note]'
+  - 'Measure acceptance-by-position on our Q38FN MTP K to compare with 89/74.5/60% (TP2) and 64% overall (TP1) from READMEs. [operator-review candidate; proposed disposition: probe (cheap, existing logs)]'
+  - 'Reduced-vocabulary MTP draft head (65,536 / 47,149 ids of 250K) is claimed as the largest single bandwidth lever in the draft step; evaluate for llama.cpp MTP head output projection. [operator-review candidate; proposed disposition: worth_investigating]'
