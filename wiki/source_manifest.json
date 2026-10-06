@@ -9,10 +9,22 @@
   },
   "kind": "project-wiki-source-manifest",
   "last_compile": "2026-10-06T04:24:42Z",
-  "mode": "touch",
-  "scan_time": "2026-10-06T04:24:42Z",
+  "last_touch": {
+    "advanced": {
+      "added": 0,
+      "changed": 1,
+      "removed": 0
+    },
+    "at": "2026-10-06T04:33:18Z",
+    "scope_paths": [
+      "progress/2026-10/2026-10-06-codex-ni-final-wrap.md"
+    ],
+    "scope_types": []
+  },
+  "mode": "touch:scoped",
+  "scan_time": "2026-10-06T04:33:18Z",
   "schema_version": 1,
-  "source_set_hash": "758e852923e71b307b96f1bee02f110b4441a13768f3f00c18a28e709ad3b39d",
+  "source_set_hash": "14eec6deb1685ba3d853951b94c68d29cd477fc8308a57c95df978ab823c74e3",
   "sources": [
     {
       "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
@@ -9111,10 +9123,10 @@
       "type": "progress"
     },
     {
-      "content_hash": "e67b4459004c6006873c0fc12a97be003679acaabf85276c57a5702c036597a4",
-      "modified": "2026-10-06T04:24:42Z",
+      "content_hash": "6f41ec462df389c1d82f54fb66bd01a361aa87f54e95944e27436fc4765763df",
+      "modified": "2026-10-06T04:32:32Z",
       "path": "progress/2026-10/2026-10-06-codex-ni-final-wrap.md",
-      "size": 13793,
+      "size": 15598,
       "title": "Codex non-inference final wrap \u2014 2026-10-06",
       "type": "progress"
     },

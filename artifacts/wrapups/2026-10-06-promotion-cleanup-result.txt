@@ -1,0 +1,1 @@
+REMOVED /mnt/raid0/llm/tmp/codex-final-promotion-20261006.CL7cjuh6/promote (branch (detached) kept; clean, landed in origin/main, idle 0.0 d)

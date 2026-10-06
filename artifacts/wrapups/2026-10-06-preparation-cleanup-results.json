@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/app-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/research-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/root-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/scratch-plan-main.json",
+    "kind": "file",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/wiki-autokernel-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/wiki-handoffs-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/wiki-hardware-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/wiki-progress-PREP",
+    "kind": "dir",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  },
+  {
+    "path": "/mnt/raid0/llm/tmp/codex-final-wrap-20261006/worktree-report.txt",
+    "kind": "file",
+    "verdict": "REMOVE",
+    "reason": "plain scratch",
+    "result": "trashed"
+  }
+]
