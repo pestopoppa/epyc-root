@@ -2,7 +2,7 @@
 
 **Category**: `context_extension`
 **Confidence**: inferred
-**Last compiled**: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive)
+**Last compiled**: 2026-10-06 (incremental root-wrap synthesis; prior compilation history: 2026-04-18 (+ 2026-05-20 incremental: intake-569 RoPE bounds + deep-dive))
 **Sources**: 23 documents (0 dedicated deep-dives, 5 cross-referenced deep-dives, 3 active handoffs, 15 intake entries)
 
 ## Summary
@@ -132,3 +132,17 @@ The practical path for EPYC is layered: YaRN for the 256K-to-1M extension case (
 - [intake-292](https://arxiv.org/abs/2503.06692) InftyThink -- Iterative reasoning with periodic summarization; ICLR 2026
 - [intake-293](https://arxiv.org/abs/2602.06960) InftyThink+ -- RL-enhanced iterative reasoning; +21pp AIME24; efficiency reward
 - [intake-294](https://arxiv.org/abs/2602.03249) Accordion-Thinking -- Fold/Unfold runtime toggle; 3x throughput; accuracy gap vanishes with RL
+
+## Incremental synthesis — 2026-10-06 root wrap
+
+**Confidence: mixed, with quality and memory gates reported separately.** The post-manifest Qwen3.8-27B GPU YaRN ×2 run matched the native arm at 128K/240K (10/10 needles) and retrieved 5/5 at both 400K and 500K. A2's negative control did not run, so discrimination beyond native length remains unshown. The run failed its memory gate: A1 peaked at 63.9 GiB against a 55 GiB limit, with a similar unexplained overshoot in A0. Memory attribution is the open dependency; this does not authorize static YaRN flags on production servers.
+
+The new CPU Qwen3.6-35B-A3B leg reached 323K with 5/5 retrieval; native and YaRN ×2 matched at 133K and 253K. At matched depth, YaRN's decode cost was at most 4%, while decode fell with depth in both arms and 8K append cost grew to about 600 seconds around 351K. DCA beat raw extrapolation in one-window 64K PPL runs, but DCA-vs-YaRN remains suggestive only and the CPU/GPU offset is unresolved.
+
+Sources: [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [KV unified stack rollout](../handoffs/active/kv-unified-stack-rollout.md).
+
+### Supplemental changed-source coverage — Oct 3–6
+
+The post-manifest CPU YaRN progress distinguishes native-window cost from extension quality: Qwen3.6-35B-A3B reached 323K with 5/5 tested needles; native and static YaRN ×2 matched at 133K and 253K, while static ×2 failed the native-window inertness rule (decode loss 1.3% at depth 0 and 7.6% at 34K; MTP acceptance 53% to 48%). Dynamic per-request YaRN/DCA remains the acceptable direction in that test record; it does not establish a general context-extension quality win. The GPU tie-in handoff adds only an open memory-attribution task for the +15 GiB E1 overshoot already recorded here, not a new result.
+
+Sources: [Oct 5 workspace-ec progress](../progress/2026-10/2026-10-05-workspace-ec.md), [Oct 6 workspace-ec progress](../progress/2026-10/2026-10-06-workspace-ec.md), [GPU serving tie-in program](../handoffs/active/gpu-serving-tie-in-program.md), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md).

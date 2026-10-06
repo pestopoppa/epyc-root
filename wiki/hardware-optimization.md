@@ -6061,3 +6061,38 @@ The prefill-share figures are log-derived analysis.
 - [2026-10-01 ak-ds41-main progress](../progress/2026-10/2026-10-01-ak-ds41-main.md) — the keeps after C84–C90 and the 8-keep gate.
 - [Prefill/decode share review](../docs/reviews/prefill-share-20261003.md) — the per-port verdict.
 - [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — V6R-4d.2.
+
+## Incremental update — 2026-10-06: AutoKernel fold evidence and low-bit routing
+
+**Measured/code-validated.** The 2026-10-04 champion ledger advanced the experimental champion to `b0ba1d427` through four folds. KVU-19 masked-block skip improved high-occupancy FA cases; on P3 v2 with three parked neighbours, drafted decode was 34.98 vs 15.74 tok/s and no-draft 21.53 vs 8.45 tok/s. The standing paired receipt against stored v10 was +0.61% decode with CI −0.20 to +1.41 and −0.21% prefill, so it did not establish a short-context serving gain. Held-out bundles remained out: an 8-keep bundle was +0.10% against a 4.533% floor and diverged, while the 14-keep Z bundle was −2.51% against the same floor; neither was folded. The Q38FN IQ4_NL/MXFP4 allowlist also remained out pending prefill and paired quality work.
+
+The first low-bit profile measured a Q8_0-to-Q4_K roofline gap (70.2% vs 46.5% for decode MMVQ; Q4_K MMVQ at M=8 was 9.4%). AutoKernel seed #1 then found a dispatch-cutover candidate: Q4_K/IQ4_XS at `ne11` 5–8 routed from MMVQ to MMQ, with single-run gains of +129% gemma-4-31B prefill and +37% / +15% 27B decode at 2k / 50k. This is n=1 candidate evidence, not a champion fold or confirmed gain.
+
+**Cross-model CPU transfer.** A Q38FN transfer check compared DS41 AutoKernel builds under a loaded host; 6/18 launches were excluded for foreign CPU use, leaving UD at n=1. The DS41 held-keep tip showed a pp256 regression of 29.4% (n=2) and pp5 regression around 6%; decode was inconclusive. A separate six-round same-build uniform-vs-UD IQ4_XS check found uniform about 25% faster on pp5 and tg128, while later PPL was 17.8% worse for uniform. The handoff keeps a paired per-item quality evaluation open; these results do not authorize a served-file change.
+
+**Gate/status.** EXL3-X0 found no 27B speed case under its preregistered +10% np1 rule: canonical Q4_K_M was −8.9% at np1, +7.1% at np4; production shape was +3.6% at ~2k and +0.4% at ~50k, with 11.36 GiB less VRAM. EXL3 integration stays parked for this 27B decision. The folded champion is experimental; production promotion requires a complete candidate and its gates.
+
+### Source References
+
+- [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md) — fold ledger, serving receipt, held-out candidates.
+- [AutoKernel research loop](../handoffs/active/autokernel-research-loop.md) — seed #1 route and single-run candidate results.
+- [EXL3 CPU and MI210 implementation](../handoffs/active/exl3-cpu-mi210-implementation.md) — preregistered X0 rule, results and open device-correctness gates.
+- [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — first LB1 profile and X0 result summary.
+- [Agent loop design](../docs/guides/agent-workflows/agent-loop-design.md) — campaign scope, Fable seed role and model-specific dispatch guidance.
+- [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — XFER-1/2 transfer outcomes and the open quality/file-selection gate.
+
+## Incremental synthesis — 2026-10-06 root wrap
+
+**Confidence: mixed.** The post-manifest AutoKernel update formalizes depth-aware coverage across CPU/GPU, prefill/decode and context dimensions, and adds campaign-autonomy gaps such as uncovered-route detection. Its new Q38FN note is a source-level hypothesis: `top_k=2048` is applied through a full-width mask and dense FA, so decode may remain O(n_kv); decode-vs-context is explicitly unmeasured. The separate CPU attention hypothesis proposes that Q-head parallelism may limit available workers, pending an at-depth occupancy profile.
+
+The post-manifest YaRN CPU leg supplies the relevant measurement: Qwen3.6-35B-A3B decode fell from 20.4 tok/s at 34K to 3.7 tok/s at 253K, while 8K-turn append cost rose about 30× by 351K. YaRN's matched-depth decode cost was at most 4%, so the observed depth curve belongs to attention-at-depth; it does not establish the proposed thread-occupancy explanation. The new DCA one-window comparison remains suggestive against raw extrapolation and inconclusive against YaRN. The post-baseline champion ledger records separate CPU/GPU candidate folds: correctness gates passed, while serving A/B effects were within measured floors or explicitly unpaired and not credible as gains. The Yfa CPU FA fp16-VKQ fix matched the KVU-19 FA harness, but that is a candidate validation result rather than a production-performance claim.
+
+Sources: [AutoKernel all-devices/all-dimensions](../handoffs/active/autokernel-all-devices-all-dimensions.md), [YaRN context-extension research](../handoffs/active/yarn-context-extension-research.md), [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md), [AutoKernel champion aggregate](../handoffs/active/autokernel-champion-aggregate.md).
+
+### Supplemental source evidence — Oct 3–6 changed files
+
+A separate fused-decoder investigation found a correctness blocker: Flash-Next fused decode diverged from graph execution at synthetic weight scale 0.05 across three RoPE configurations (logit NMSE 1.84; K/indexer 1.08/1.06), while scale 1.0 double-freed. Default synthetic weights matched (1.7e-11). The finding is layer-0 GDN/MoE/hyper-connection scope; the handoff says keep fused decode disabled pending root cause. A related Q38FN code read describes QSA top-k as a full-width mask followed by dense FA and characterizes per-token copy arithmetic (~29 KiB/context token/step) as computed, not measured; its depth curve remains unmeasured.
+
+The Oct 3 CPU quant research review separates measured speed from unresolved quality: local uniform IQ4_XS was +15.2% at N=1 before BIOS and +10.5% under clean placement versus UD-IQ4_XS, while the production MTP serving shape and file quality were still unmeasured. The DS41 lossless MXFP4 expert repack was estimated at at most +2%, below the stated 3.4–4.5% admission floor; it was retained as a quality option, not a decode-speed result. Follow-up IQ*_K/KS self-quant work for Q38FN is a gated proposal with download, port and quality requirements, not an executed measurement. The companion variant survey is a recommendation/derivation over that same evidence, not an independent benchmark.
+
+Sources: [CPU fused decoder blocks](../handoffs/active/cpu-fused-decoder-blocks.md), [Llama.cpp DSA contribution](../handoffs/active/llama-cpp-dsa-contribution.md), [CPU quant research](../docs/reviews/cpu-quant-research-20261003.md), [quant variant survey](../docs/reviews/quant-variant-survey-20261003.md), [IQK i-quant enablement](../handoffs/active/iqk-iquant-enablement.md), [MI210 Q8 dequant GEMV roofline](../handoffs/active/mi210-q8-dequant-gemv-roofline.md), [Oct 4 AK progress](../progress/2026-10/2026-10-04-ak-ds41-main.md), [Oct 5 AK progress](../progress/2026-10/2026-10-05-ak-ds41-main.md).

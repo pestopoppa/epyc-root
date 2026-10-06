@@ -1,0 +1,90 @@
+{
+  "pages": 9,
+  "appendices": 16,
+  "local_links": 138,
+  "resolved": 138,
+  "failures": [],
+  "minimum_unique_refs": 4,
+  "sections": [
+    {
+      "page": "agent-architecture.md",
+      "section": "## Incremental update \u2014 2026-10-06: harness isolation and bounded campaign comparison",
+      "unique_local_refs": 8
+    },
+    {
+      "page": "agent-architecture.md",
+      "section": "## Compiled Update \u2014 2026-10-06: future launcher references and retained reports cross ownership boundaries",
+      "unique_local_refs": 4
+    },
+    {
+      "page": "benchmark-methodology.md",
+      "section": "## Incremental update \u2014 2026-10-06: UFH14 harness measurements and evidence limits",
+      "unique_local_refs": 5
+    },
+    {
+      "page": "benchmark-methodology.md",
+      "section": "## Compiled Update \u2014 2026-10-06: accounting acceptance has a smaller scope than benchmark conformance",
+      "unique_local_refs": 8
+    },
+    {
+      "page": "benchmark-methodology.md",
+      "section": "## Compiled Update \u2014 2026-10-06: native fixture conformance has its own denominator and custody boundary",
+      "unique_local_refs": 7
+    },
+    {
+      "page": "benchmark-methodology.md",
+      "section": "## Compiled Update \u2014 2026-10-06: risk screens and validation gates have different denominators",
+      "unique_local_refs": 5
+    },
+    {
+      "page": "context-extension.md",
+      "section": "## Incremental synthesis \u2014 2026-10-06 root wrap",
+      "unique_local_refs": 6
+    },
+    {
+      "page": "hardware-optimization.md",
+      "section": "## Incremental update \u2014 2026-10-06: AutoKernel fold evidence and low-bit routing",
+      "unique_local_refs": 6
+    },
+    {
+      "page": "hardware-optimization.md",
+      "section": "## Incremental synthesis \u2014 2026-10-06 root wrap",
+      "unique_local_refs": 12
+    },
+    {
+      "page": "inference-serving.md",
+      "section": "## Incremental update \u2014 2026-10-06: unified-KV neighbour cost and masked-block skip",
+      "unique_local_refs": 5
+    },
+    {
+      "page": "inference-serving.md",
+      "section": "## Incremental synthesis \u2014 2026-10-06 root wrap",
+      "unique_local_refs": 12
+    },
+    {
+      "page": "knowledge-management.md",
+      "section": "## Compiled Update \u2014 2026-10-06: capture evidence at the write boundary",
+      "unique_local_refs": 8
+    },
+    {
+      "page": "knowledge-management.md",
+      "section": "## Compiled Update \u2014 2026-10-06: fix read-depth forward, audit past dives separately",
+      "unique_local_refs": 6
+    },
+    {
+      "page": "kv-cache.md",
+      "section": "## Incremental synthesis \u2014 2026-10-06 root wrap",
+      "unique_local_refs": 8
+    },
+    {
+      "page": "speculative-decoding.md",
+      "section": "## Incremental synthesis \u2014 2026-10-06 root wrap",
+      "unique_local_refs": 7
+    },
+    {
+      "page": "tool-implementation.md",
+      "section": "## Compiled Update \u2014 2026-10-06: repair narrow seams while preserving default refusals",
+      "unique_local_refs": 6
+    }
+  ]
+}

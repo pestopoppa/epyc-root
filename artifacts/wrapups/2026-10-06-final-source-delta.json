@@ -1,0 +1,1301 @@
+{
+  "baseline_manifest": "wiki/source_manifest.json",
+  "baseline_source_set_hash": "d8e32fd4600acd925666e7ec24a74ae40ec4ab34c78bd192bf2eb6c165fc1708",
+  "by_type": {
+    "docs": 13,
+    "handoff-active": 44,
+    "handoff-completed": 1,
+    "progress": 100
+  },
+  "current_source_set_hash": "758e852923e71b307b96f1bee02f110b4441a13768f3f00c18a28e709ad3b39d",
+  "drift": {
+    "added_count": 109,
+    "changed_count": 49,
+    "has_drift": true,
+    "removed_count": 0
+  },
+  "kind": "project-wiki-source-manifest",
+  "last_compile": "2026-10-03T12:13:20Z",
+  "mode": "changed-since-manifest:/mnt/raid0/llm/worktrees/codex-noninf-session-20261005/wiki/source_manifest.json",
+  "removed_count": 0,
+  "removed_sources": [],
+  "scan_time": "2026-10-06T04:24:42Z",
+  "schema_version": 1,
+  "source_set_hash": "c1dc68b631a13482f910ffadb47948f4a056cce07896b6f028c9994dd795e8df",
+  "sources": [
+    {
+      "content_hash": "e1b75817e1748d435f780a9d7e3cc9ed799f78100b699abc85abe1e5fb14b83a",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/CURRENT-CAMPAIGN.md",
+      "size": 36603,
+      "title": "Current campaign state",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "4e4e48c2df26f05ef28ec87088c61f2df245c569573c0b5606284d7d4af552af",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/agent-collab-rnd-harness.md",
+      "size": 13922,
+      "title": "Agent-Collaboration Harness for Kernel/Orchestration R&D",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3681d1c73e233a3fa58605bad648e6957ce09be3ff29c8684c81564f927a0a3e",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+      "size": 126036,
+      "title": "Agentic ROCm Kernel Authoring \u2014 MI210 Verify+Profile Harness",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "66c151018ca2009d16dfeb93895bfe3ff04ce4319ffc571cba381f7ebece4c9c",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "handoffs/active/agentic-serving-harness-fixes.md",
+      "size": 66979,
+      "title": "Agentic serving harness fixes \u2014 demonstrate on the 27B, generalize, then audit",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "a82d8bf94ffd879f69e696f87a36069b17def5b47d844b8147bf2c99595903fb",
+      "modified": "2026-10-06T02:59:25Z",
+      "path": "handoffs/active/autokernel-all-devices-all-dimensions.md",
+      "size": 39182,
+      "title": "AutoKernel on every device and every dimension: long-context surfaces, attention routes, GPU serving, profilers as planner inputs",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3af885f44a2f84cc2ad9243f6d996fab645d9d28a5c38269a30e370cbbd6f2c9",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/autokernel-champion-aggregate.md",
+      "size": 60231,
+      "title": "AutoKernel \u2014 the standing aggregate candidate (champion)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "0e97c435300b76d2c6fc965a8219257d99b6a473cddda239548ba3226a493f34",
+      "modified": "2026-10-05T19:53:24Z",
+      "path": "handoffs/active/autokernel-orchestrator-actor-backend.md",
+      "size": 62351,
+      "title": "AutoKernel \u2014 the orchestrator as planner/author backend",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "ac2ac1186c97f5cc497f72036fe15e1f8da2868a96ed8e9237ae7f8b9c6c0226",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/autokernel-research-loop.md",
+      "size": 491450,
+      "title": "AutoKernel \u2014 Autonomous System-Wide Kernel Research Loop",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "429493b256581e22efbe8776c4c1231b9ff22ea0cebfe1aebc3bf02deca9cfa6",
+      "modified": "2026-10-05T23:08:06Z",
+      "path": "handoffs/active/autokernel-unified-surface-program.md",
+      "size": 354903,
+      "title": "AutoKernel Unified-Surface Program \u2014 one champion, one accumulator, one runbook for CPU + GPU kernel work",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d265dc2e97ea332f4ebadd31a19a68619f1ca44f452a1b934ed9b1d6dafba03d",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "size": 471132,
+      "title": "CPU Decode Roofline Program \u2014 Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "c7a6af165f57e52fac5e4dc78efca8bfbe495eea14f45cc22f96ebffd491998b",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/cpu-fused-decoder-blocks.md",
+      "size": 26893,
+      "title": "CPU Fused Decoder Blocks (batch-1 decode megakernel)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "345856ce7421cab318dac8a36b1c044d770c0afff6d5a3764af300a8a989a5e6",
+      "modified": "2026-10-05T14:49:47Z",
+      "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+      "size": 142341,
+      "title": "DeepSeek-V4.1-Flash Evaluation (deepseek41)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "1b98df6086ed1241a19657e101e03a343668ca8aff24f3a2bf296f7cb76fd07b",
+      "modified": "2026-10-05T17:10:19Z",
+      "path": "handoffs/active/delegation-context-preassembly.md",
+      "size": 33659,
+      "title": "Delegation Context Pre-Assembly (Budget-Bounded)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "77437f78c9b24ca684a78e36b333c4a1f24f45d0cd73aa25a563ac0b004c4957",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/dflash2-block-drafter-experimental-build.md",
+      "size": 57742,
+      "title": "dFlash2 block drafter \u2014 experimental build + measured comparison vs MTP",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "c7c9e45de131f75f1af81a91f5852ce466b3c342b9487215ab7e27a9b7f9cf87",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/eval-tower-verification.md",
+      "size": 132383,
+      "title": "Eval Tower Verification Framework",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "8efaf1973c546cb835bc2faefe9e2e49442c47dc17eeee435f53c3cf14106db5",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/exl3-cpu-mi210-implementation.md",
+      "size": 45653,
+      "title": "EXL3 CPU and MI210 Implementation",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "9033e2084c496aa3cd188c80b0afabc6a49b5659016543e7534d1fe11397ead9",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "handoffs/active/gpu-serving-tie-in-program.md",
+      "size": 83244,
+      "title": "GPU Serving Tie-In Program \u2014 one fabric, two devices",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "2192c7d0d1a0451e9ebf249bd668eaec3184ce664ef67a84fdf49bd15ffec7eb",
+      "modified": "2026-10-05T09:15:18Z",
+      "path": "handoffs/active/harness-selection-and-integration.md",
+      "size": 64415,
+      "title": "Harness Selection & Integration \u2014 Orchestrator \u2194 User-Facing Harness",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d5dfbd0b6e3324c94b401a4ae4f127a9a9f07c80456664d940000c3c7794d36d",
+      "modified": "2026-10-05T14:46:32Z",
+      "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "size": 34099,
+      "title": "Heterogeneous CPU\u00d7GPU Slot Fabric + Dynamic Residency",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "b13cb4c4ec91c153f5000c0e54a7940e9f4d53b593691c45939e863e558e7e08",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "size": 81253,
+      "title": "Intake-Derived Work \u2014 2026-07-25 sweep",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "34a15c7dd0ad15447a131ebade4e447735e1950e4a46e503507bb422887f54fb",
+      "modified": "2026-10-06T04:07:49Z",
+      "path": "handoffs/active/intake-reverification.md",
+      "size": 6497,
+      "title": "Intake re-verification: past dives at risk from the WebFetch-digest read-depth gap",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "194aa0e6584a7136738bead92ce36e8a839c7855b54b93b5d1336e562c025390",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/iqk-iquant-enablement.md",
+      "size": 29038,
+      "title": "iqk IQ-quant Enablement \u2014 shipped in v8, residual research active",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "c481e2b4c80cadcc2c8ccece859cbc26abdba42955bf016c52417a38ef27873c",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "size": 55169,
+      "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "0bc1cf7b253e532531b8d856f40b384a3336477b2c847286eaadf60c4df9702f",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/kv-unified-stack-rollout.md",
+      "size": 125288,
+      "title": "Unified KV (`--kv-unified`) stack rollout and shared-pool serving",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "dcf026a5b7ecc7a4b2154fed520eeb9f1e87f5b4c36d58ffbc908981200e9cdb",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/learned-routing-controller.md",
+      "size": 134270,
+      "title": "Learned Routing Controller: MLP Distillation from Episodic Memory",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "848b8ca7da0c4e8bc80aa74f1099f32eef8710f1a86ed910faed30dfbee50682",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/llama-cpp-dsa-contribution.md",
+      "size": 28712,
+      "title": "llama.cpp DSA Contribution \u2014 DSA LANDED upstream (#23346); remaining CPU-perf sub-tracks (D2/D3)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "2ec14ae6d963f2875981f975981f855f67e8bdbdf2a8ffedeb23f0950b1a93c0",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/memento-block-reasoning-compression.md",
+      "size": 26282,
+      "title": "Memento: Block-Level Reasoning Compression with KV Cache Masking",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "40106ffb6e3f13cc24214a24d4bfa8e92326fbf219c562332c54abfe04ea9fed",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+      "size": 40195,
+      "title": "Handoff: MI210 single-stream roofline \u2014 Q8 dequant-GEMV kernel + batch-1 latency levers",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "9cc6969f1d00d6ad92b42269b063023080c536d12e11b68eb48498c5aab29595",
+      "modified": "2026-10-06T04:21:33Z",
+      "path": "handoffs/active/model-stack-single-source-update-pipeline.md",
+      "size": 87242,
+      "title": "Model Stack Single-Source Update Pipeline",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "caf925c43c1a22923d5c76b2e53b0416d730ad46fa2648b0e8edee798edf5c85",
+      "modified": "2026-10-06T04:21:33Z",
+      "path": "handoffs/active/non-inference-backlog.md",
+      "size": 98087,
+      "title": "Non-Inference Backlog \u2014 Round 2 (2026-05-19 audit refresh)",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "87af4c725475c5647f40a4968959327f734f8ee63aae8f438e150dc384fa7496",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/qwen38-27b-replace-qwen36.md",
+      "size": 47794,
+      "title": "Qwen3.8-27B \u2014 replace Qwen3.6-27B in production",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "239d3bdda2241c885db98f051ac1e0835bef3e04ab2bab92590c26eecdf1fc01",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/reasoning-compression.md",
+      "size": 96430,
+      "title": "Reasoning Compression for Inference Cost Reduction",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "06167c7b289b9f9062679fba69b8ef0318caca29ea71d40741bace25d1b64861",
+      "modified": "2026-10-05T09:56:41Z",
+      "path": "handoffs/active/repl-embedding-retrieval.md",
+      "size": 25122,
+      "title": "REPL Embedding Retrieval \u2014 hybrid search that returns pointers",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "2b644e1ea9b6c34c49c226b42046180a95b51eb70798ffb59c25fe7b2df81335",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/repl-session-memory-maturity.md",
+      "size": 38439,
+      "title": "REPL Session Memory \u2014 Maturity Deltas",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "3bee93c8d315bab6f38b27143aadbb77930443476e0ef98f90b73f65f8abcd89",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/routing-intelligence.md",
+      "size": 49531,
+      "title": "Routing Intelligence: Factual-Risk Rollout",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "2425f14edb1734e8fd02c25ee9ffb8d7418a53d2e6127e474eb5ac0333821f26",
+      "modified": "2026-10-05T09:42:42Z",
+      "path": "handoffs/active/scoring-infra-standardization.md",
+      "size": 44885,
+      "title": "Scoring Infrastructure Standardization + Tool-Use Eval Harness",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "a792811b7646aba67ef70b8d37f7ca5f0cbd8242a68a9925d0477a0699bef726",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/shape-keyed-contention-gating.md",
+      "size": 70422,
+      "title": "Shape-Keyed Contention Gating + Cross-Role Disjoint Placement",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "03b34597b4de0d9032c02095fe9a1228c3644327828a12e1a210269d5db06a2c",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "handoffs/active/speculative-decoding-mtp-refresh.md",
+      "size": 87699,
+      "title": "Speculative-Decoding / MTP Refresh",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "d7b4e15555f11bbe6bc8ed22e2e8755aea72435361dac9118ee4caeaa6c16297",
+      "modified": "2026-10-05T19:53:24Z",
+      "path": "handoffs/active/stack-change-governance-pipeline.md",
+      "size": 29787,
+      "title": "Stack Change Governance Pipeline",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "bddc28fc2a546f02b985336cdd6a85eaded6cb069d853523c77e820309a8f126",
+      "modified": "2026-10-05T16:47:02Z",
+      "path": "handoffs/active/tool-use-eval-contract.md",
+      "size": 69020,
+      "title": "Tool-Use Eval Contract \u2014 make autopilot trials actually exercise tools",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "f04a9e21153efeecdc89655821916a4ed27a78544690f15fd93f656aaa2190a8",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/typed-decision-plane.md",
+      "size": 79776,
+      "title": "Typed Decision Plane \u2014 one-pass typed decisions over the local stack",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "047a5f5576641b31a67990b77aa6c7d533d86160736c6d85f83c7cdc359ae19a",
+      "modified": "2026-10-05T05:49:23Z",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "size": 49730,
+      "title": "Unified Trace / Memory Service",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "68e3e76deaa2928b91ff7aca3479ff1b0301d62e33cfd4cc51806c05bb104d79",
+      "modified": "2026-10-06T04:21:33Z",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "size": 279205,
+      "title": "Vidya Belief-Substrate Program",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "c0f35796efe0ff2530fae304f9e1708835b35cbf795a5fc3e30e91bd2feddbc9",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "handoffs/active/yarn-context-extension-research.md",
+      "size": 34602,
+      "title": "YaRN Context Extension Research",
+      "type": "handoff-active"
+    },
+    {
+      "content_hash": "14166a989d797b8da9f1da542c19dda57cca5fe629f5157844f8abd3065a33f7",
+      "modified": "2026-10-06T04:21:33Z",
+      "path": "handoffs/completed/non-inference-backlog-ni05-2026-10-06.md",
+      "size": 33531,
+      "title": "NI05 bounded non-inference queue \u2014 completed 2026-10-06",
+      "type": "handoff-completed"
+    },
+    {
+      "content_hash": "b82c40056379dc7333a52a7bc5c976fcd92fa985a21aa40e5d2342bc57d04336",
+      "modified": "2026-10-05T05:49:24Z",
+      "path": "progress/2026-10/2026-10-03-ak-ds41-main.md",
+      "size": 11161,
+      "title": "2026-10-03 \u2014 ak-ds41-main",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c53736b624ddb0d35f0eff52cf28c0ffcbeb95897ca9780ed9a4e2bff30d8633",
+      "modified": "2026-10-05T05:49:24Z",
+      "path": "progress/2026-10/2026-10-03-decision-tools-intake.md",
+      "size": 2681,
+      "title": "Decision models and execution research intake",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d5d8b251b63bc016ea75f9994753ba44f1815ea29047248a515f2e986e310607",
+      "modified": "2026-10-05T05:49:24Z",
+      "path": "progress/2026-10/2026-10-03-workspace-ec.md",
+      "size": 41571,
+      "title": "2026-10-03 \u2014 workspace-ec (renamed from workspace-8d after the host reboot)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "972fbfaa1d81af0eb867c3b19c494e7927a13fe29e751c169bd86d6275555e2e",
+      "modified": "2026-10-05T05:49:24Z",
+      "path": "progress/2026-10/2026-10-04-ak-ds41-main.md",
+      "size": 23080,
+      "title": "2026-10-04 \u2014 ak-ds41-main",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b2471ce4fdd6f72ec4976a54ff35e7a7d7b6c413f3234e8f48eac531999021a1",
+      "modified": "2026-10-05T05:49:24Z",
+      "path": "progress/2026-10/2026-10-04-workspace-ec.md",
+      "size": 48894,
+      "title": "2026-10-04 \u2014 workspace-ec",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5ace111b591012e94da00ced7b21fad3b3684050782cf9769c91bd4947fb11d8",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "progress/2026-10/2026-10-05-ak-ds41-main.md",
+      "size": 9505,
+      "title": "2026-10-05 \u2014 ak-ds41-main",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a2e1aee5c63f5f4749d494ac5982fb19ab19d645bfbcc6eab4f464f08f6516ab",
+      "modified": "2026-10-05T07:24:56Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni-applicability.md",
+      "size": 1429,
+      "title": "VB-APPLICABILITY \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0abfcf43176fd1b91f33d96e8b20dd72728be1dda2562e6e612b183ffe245e16",
+      "modified": "2026-10-05T09:11:15Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni-gates.md",
+      "size": 1869,
+      "title": "2026-10-05 \u2014 NIB2-86 Makefile gate contract",
+      "type": "progress"
+    },
+    {
+      "content_hash": "862c15a16e79f93bd0834b934c4f9f40e299649f7ca1497ac75a59035552cd9b",
+      "modified": "2026-10-05T07:24:56Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni-ingest.md",
+      "size": 1511,
+      "title": "VB-INGEST-IDEMPOTENT \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5a996468a13e028a3e7fa0505156d29b8458506236597f69f4af132ae6d2ae56",
+      "modified": "2026-10-05T23:57:02Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni-main.md",
+      "size": 4524,
+      "title": "Codex non-inference progress \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "510b30c8daf1add1d2641057883fe2b4284f09b6dfef649a71ef35f316febaf2",
+      "modified": "2026-10-05T07:08:17Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni-promote.md",
+      "size": 1384,
+      "title": "SSU-F9c \u2014 shared promotion lease",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b4d3e8a63c171fef6d31858b9a430d8b2609405d7b2dfe6009da89f22d80f340",
+      "modified": "2026-10-05T09:11:15Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni16.md",
+      "size": 1814,
+      "title": "2026-10-05 \u2014 NI16 kernel-path override",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5c40385d6b6d4d4bb0a0562f3e93d8825a00631f250b96ba2b4f4c3e0f9311d4",
+      "modified": "2026-10-05T09:42:41Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni21.md",
+      "size": 1706,
+      "title": "NI21 \u2014 Static gate formatting cleanup",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5bd0ff4e27c1aa8aa277f750008d30a984ffcb7603923af1872f50e2b3ba2167",
+      "modified": "2026-10-05T10:52:16Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni27.md",
+      "size": 2249,
+      "title": "NI27 \u2014 Baseline authority seed process observation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2e1e2f352f690021d047fdea098862e649be357b266b7371051cb7f856f3df09",
+      "modified": "2026-10-05T21:22:30Z",
+      "path": "progress/2026-10/2026-10-05-codex-ni60-fixture-custody.md",
+      "size": 2182,
+      "title": "NI60 local embedding fixture validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4d655fd879a289dbe284313d4c831195d5090130d4d5d1cca9acef0670175cea",
+      "modified": "2026-10-05T18:09:02Z",
+      "path": "progress/2026-10/2026-10-05-codex-noninf.md",
+      "size": 39342,
+      "title": "2026-10-05 \u2014 Codex non-inference campaign",
+      "type": "progress"
+    },
+    {
+      "content_hash": "855eab211fb363f321729a0093aa55cc1528f6eaef8bdf9722e15b1fd4be4f29",
+      "modified": "2026-10-05T12:30:23Z",
+      "path": "progress/2026-10/2026-10-05-hsf3-source-map-ni32-proposal.md",
+      "size": 3411,
+      "title": "HSF-3 source-schema mapping and NI32 proposal \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c693965943b97e0478efa85feb9b12fe87b70b38e3246d4c7ecd8e349fd757d3",
+      "modified": "2026-10-05T09:09:26Z",
+      "path": "progress/2026-10/2026-10-05-hsod-5-image-sampling.md",
+      "size": 798,
+      "title": "2026-10-05 \u2014 HS-OD-5 image sampling controls",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1ece99bb98cd0802a5af6f0bb71eded650281ff6af7adae7142fe09a42bb3339",
+      "modified": "2026-10-05T09:09:26Z",
+      "path": "progress/2026-10/2026-10-05-hsod-6-disabled-repl-tools.md",
+      "size": 781,
+      "title": "2026-10-05 \u2014 HS-OD-6 tools with the REPL disabled",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cf34e32518ff224d48b301ab69839acad09bc386543dfb97a60b76588de0e54d",
+      "modified": "2026-10-05T20:42:26Z",
+      "path": "progress/2026-10/2026-10-05-ni-ci-review-checkpoint.md",
+      "size": 4302,
+      "title": "Non-inference CI review checkpoint \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "66bb02547421ef3c467f5eda939e204dc771bbf7e25dafba42fdf6067f23e50c",
+      "modified": "2026-10-05T08:09:24Z",
+      "path": "progress/2026-10/2026-10-05-ni01-kvq-native-statistics.md",
+      "size": 1851,
+      "title": "NI05-01 \u2014 KVQ native statistics compatibility",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b8dedb441cbb8bd716cbcb4154f4181f8e8e7cdcfc46b888525f43de5bb81eb6",
+      "modified": "2026-10-05T08:04:08Z",
+      "path": "progress/2026-10/2026-10-05-ni04-durability-checker.md",
+      "size": 1793,
+      "title": "NI05-04 \u2014 docs and handoff durability scan support",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3d0f83497b6fd08c380888e31250d850a1d2ffa69c5de947910aea029e33e8f7",
+      "modified": "2026-10-05T08:34:52Z",
+      "path": "progress/2026-10/2026-10-05-ni05-retryable-admission-sdk-validation.md",
+      "size": 3057,
+      "title": "NI05-05 \u2014 retryable admission and pinned SDK contract",
+      "type": "progress"
+    },
+    {
+      "content_hash": "612d379972a9f3d9bd667bebd091550bcb30811233cbe5662b0d6a19720d309e",
+      "modified": "2026-10-05T09:15:18Z",
+      "path": "progress/2026-10/2026-10-05-ni06-hs17-mcp-progress.md",
+      "size": 960,
+      "title": "2026-10-05 \u2014 NI06 / HS-17 MCP progress and timeout contract",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3a781f3b0c9e985c7c59a6f77030a857c957249937589b71255a35d75451762f",
+      "modified": "2026-10-05T09:58:03Z",
+      "path": "progress/2026-10/2026-10-05-ni08-temporary-runtime-flag-expiry-validation.md",
+      "size": 3765,
+      "title": "NI05-08 \u2014 temporary experiment flag expiry",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b8f516a31f9033a2426d93f8e99e0726f3a07968668caea3820ecb106e6f1e02",
+      "modified": "2026-10-05T14:46:32Z",
+      "path": "progress/2026-10/2026-10-05-ni10-explicit-client-class.md",
+      "size": 2193,
+      "title": "NI10 \u2014 Explicit self-reported client class",
+      "type": "progress"
+    },
+    {
+      "content_hash": "72fd7f84c9d6b03026cdb93e679f1edb4f217a810992d9f2d5201b5858f34585",
+      "modified": "2026-10-05T12:27:05Z",
+      "path": "progress/2026-10/2026-10-05-ni10-gap-census.md",
+      "size": 1893,
+      "title": "NI10 serving-call gap census \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "32efecf0e11ec5fe5f24d16bcdfcb36b454a9932043996bc984cd65cdb0cfc01",
+      "modified": "2026-10-05T10:22:29Z",
+      "path": "progress/2026-10/2026-10-05-ni10-session-gap.md",
+      "size": 2992,
+      "title": "NI05-10 / VB-GAP-DIST \u2014 prospective session-gap source",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1fd50cfa8e815ddd156fb761c3343dc84f18bff951aaa266c13119520784f8d5",
+      "modified": "2026-10-05T09:42:40Z",
+      "path": "progress/2026-10/2026-10-05-ni11-api-order-and-benchmark-collection-validation.md",
+      "size": 3479,
+      "title": "NI05-11 \u2014 API order and benchmark collection conditions verified",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3c96066f5fb6f7b145d35b4354b8b8500011fa89f047bcb63b4e2681768176a8",
+      "modified": "2026-10-05T12:30:23Z",
+      "path": "progress/2026-10/2026-10-05-ni12-research-pytest.md",
+      "size": 1044,
+      "title": "NI12/NIB2-87 \u2014 additive managed pytest dependency",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d27af3bde94f50aebffa41e55adb4674d857a0e7f2b273bc6c1995bb06d614af",
+      "modified": "2026-10-05T08:04:08Z",
+      "path": "progress/2026-10/2026-10-05-ni13-durability-native-projection.md",
+      "size": 2106,
+      "title": "NI05-13 \u2014 truthful native durability verifier projection",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3044fd02b154f18b34125fdf08724a3d9249d583d9ff347a7d631c359f2696d4",
+      "modified": "2026-10-05T09:01:57Z",
+      "path": "progress/2026-10/2026-10-05-ni14-session-lifecycle.md",
+      "size": 975,
+      "title": "2026-10-05 \u2014 HS-16 session lifecycle",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bbcfe8907faaf33a0e1067c0e3afa8d8a58f24802fd639618e0c911f4e0cd185",
+      "modified": "2026-10-05T07:53:52Z",
+      "path": "progress/2026-10/2026-10-05-ni15-ci-conformance.md",
+      "size": 2716,
+      "title": "NI05-15 \u2014 prospective CI fixture conformance capture",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e2782e76e68825cc5508ecaf60657d4df91d09668a1ddc42fdce59e09a0e30a1",
+      "modified": "2026-10-05T19:54:21Z",
+      "path": "progress/2026-10/2026-10-05-ni18-classification-complete.md",
+      "size": 1265,
+      "title": "NI05-18 bounded classification completion \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "c54d98c797b0756f59aa65a9492e4f0747ac0a99a1116b82e9691df9d6feb9eb",
+      "modified": "2026-10-05T15:22:03Z",
+      "path": "progress/2026-10/2026-10-05-ni18-fullscan-custody.md",
+      "size": 2955,
+      "title": "NI18 full-unit capture and classification checkpoint",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ae26504c6d3afeeae565ea09b2cd0729c633a640e4453b14cebcb46318d68667",
+      "modified": "2026-10-05T15:50:19Z",
+      "path": "progress/2026-10/2026-10-05-ni18-kv-slot-fixture-phase.md",
+      "size": 2261,
+      "title": "NI18 KV-slot fixture phase",
+      "type": "progress"
+    },
+    {
+      "content_hash": "25f8d8ac36f1b510f93b06119335c1215bcc15d249b92c666551a113c56f8dfb",
+      "modified": "2026-10-05T15:27:59Z",
+      "path": "progress/2026-10/2026-10-05-ni18-tmp-fixture-phase.md",
+      "size": 2048,
+      "title": "NI18 runner scratch-fixture phase",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e94547e051a06ed6a208a6e056fab04b3a3c8f0a4adaf3b98a0104ca47d6c261",
+      "modified": "2026-10-05T09:01:57Z",
+      "path": "progress/2026-10/2026-10-05-ni20-graph-dependency-contract-validation.md",
+      "size": 2179,
+      "title": "NI05-20 \u2014 supported graph dependency contract",
+      "type": "progress"
+    },
+    {
+      "content_hash": "09989bd93aecbae977f0cd3d3d95550a16208688bbb189fd89dfd702b4abc9ab",
+      "modified": "2026-10-05T09:20:56Z",
+      "path": "progress/2026-10/2026-10-05-ni22-refusal-marker-classifier.md",
+      "size": 1525,
+      "title": "NI22 \u2014 Refusal-marker classifier view",
+      "type": "progress"
+    },
+    {
+      "content_hash": "33cd4183f59fa78293b1f10a47b87a69110838a2a9cd78d0dd2881e1c3f35b51",
+      "modified": "2026-10-05T09:57:01Z",
+      "path": "progress/2026-10/2026-10-05-ni23-vb-ci-attachments.md",
+      "size": 2069,
+      "title": "NI23 \u2014 Prospective CI conformance output attachments",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5f5d4fe6fa04374cdd57ca2517d385101f60d76ba5abb902ced813e8d58b0e58",
+      "modified": "2026-10-05T09:57:01Z",
+      "path": "progress/2026-10/2026-10-05-ni24-package-a-health-preflight.md",
+      "size": 1282,
+      "title": "NI24 \u2014 Package A health preflight",
+      "type": "progress"
+    },
+    {
+      "content_hash": "abd3d3c58011f8f5a15cc7d4fa542dcc3fa159f2435f3fab9a17d7dbd888d6c3",
+      "modified": "2026-10-05T11:04:57Z",
+      "path": "progress/2026-10/2026-10-05-ni26-offline-cpu-cli-overrides.md",
+      "size": 3335,
+      "title": "NI05-26 \u2014 offline CPU command overrides",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b5b07c30536f462ebc54bf6319fa714954517a1a2da0168c26617247f662d0d5",
+      "modified": "2026-10-05T11:04:24Z",
+      "path": "progress/2026-10/2026-10-05-ni28-ggml-vacuity-guard.md",
+      "size": 2017,
+      "title": "NI28 \u2014 Real vacuity control for ggml linkage",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e94dfe6a1f844ec83044041303da0cbb040716077eccd410ef56a04abb598f46",
+      "modified": "2026-10-05T13:27:08Z",
+      "path": "progress/2026-10/2026-10-05-ni28-kernel-store-receipt.md",
+      "size": 2536,
+      "title": "NI28 kernel-store dependency receipt",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d2f90d5545f18056e1a4c0967b716b582c7b761d23291a01222cd67e88463c3c",
+      "modified": "2026-10-05T11:41:54Z",
+      "path": "progress/2026-10/2026-10-05-ni30-early-abort-cycle.md",
+      "size": 2254,
+      "title": "NI30 \u2014 Gate first-strike early-abort escalation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d11e1e7fedfd7369b16e8056070e0372d62d941d23c14092372ab892be09b615",
+      "modified": "2026-10-05T12:55:33Z",
+      "path": "progress/2026-10/2026-10-05-ni31-original-policy-custody.md",
+      "size": 2870,
+      "title": "NI05-31 \u2014 original public policy source custody",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f34216db77cef7e3cab369c727c3a237604e23ac5ad0d20f4556b431240c78f5",
+      "modified": "2026-10-05T12:19:29Z",
+      "path": "progress/2026-10/2026-10-05-ni31-staged-fixture-custody.md",
+      "size": 4832,
+      "title": "NI05-31 \u2014 staged native source-fixture custody",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e78d84c3b31d99362573d8907bcff0cd040d2b7d1f7b6311d68301df45e7724b",
+      "modified": "2026-10-05T14:47:23Z",
+      "path": "progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md",
+      "size": 3187,
+      "title": "NI32: synthetic schema boundaries and native integrity controls",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ac02d1e404c60ce27cdf0715f0ceb013a5d5b577f0d761c654fe8f8764a1cb39",
+      "modified": "2026-10-05T14:25:10Z",
+      "path": "progress/2026-10/2026-10-05-ni34-staged-pii-native-capture.md",
+      "size": 3947,
+      "title": "NI34: bounded staged PII sub-gate native capture",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b1a12f6b1c90bdc197cfe8ef4034f2d5884697c799326d72dc6778576c6ee063",
+      "modified": "2026-10-05T14:25:10Z",
+      "path": "progress/2026-10/2026-10-05-ni35-managed-tooling-check.md",
+      "size": 2495,
+      "title": "NI35 managed-tooling import receipt fixtures \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d04b6202d835eaff5795059b8cafa0562d2e9267fa64e1afe2cf8c9075f604b3",
+      "modified": "2026-10-05T14:55:21Z",
+      "path": "progress/2026-10/2026-10-05-ni36-dcp-report-cache.md",
+      "size": 2626,
+      "title": "NI36 delegation report-cache fixture validation \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "10665297889969eaea7b46a6c0531120bc85f0a8990664a04d557205e70d7b4e",
+      "modified": "2026-10-05T16:47:02Z",
+      "path": "progress/2026-10/2026-10-05-ni37-dtap-timeout-native-report.md",
+      "size": 4721,
+      "title": "NI37: DTAP timeout reporting and prospective native integrity",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1ee5f5d366c1d7e2771b188d1cbca42d09700157ba12840da39c3fa8e0c1b85f",
+      "modified": "2026-10-05T17:13:21Z",
+      "path": "progress/2026-10/2026-10-05-ni38-contextbench-score.md",
+      "size": 2440,
+      "title": "NI38 \u2014 offline ContextBench scorer custody",
+      "type": "progress"
+    },
+    {
+      "content_hash": "70f5999694a93fd651830c3babe4a3b809ce9d81aaffde91fa7a9425dbba9530",
+      "modified": "2026-10-05T17:03:46Z",
+      "path": "progress/2026-10/2026-10-05-ni40-repl-spill-fixture.md",
+      "size": 1923,
+      "title": "NI40 REPL spill filesystem fixture \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fad1225a9db2f8e751ce37f76548da37914bf2c507c5bbf3bc84f2763ea8cf57",
+      "modified": "2026-10-05T17:57:02Z",
+      "path": "progress/2026-10/2026-10-05-ni41-eval-scoring-extra.md",
+      "size": 1923,
+      "title": "NI41 optional scoring dependency \u2014 bounded acceptance",
+      "type": "progress"
+    },
+    {
+      "content_hash": "43bf17b21c44b084dfe1bb46dfb47fa5a9cde734c6a948bb797e346f2c5b2015",
+      "modified": "2026-10-05T17:03:46Z",
+      "path": "progress/2026-10/2026-10-05-ni42-optional-graph-fixtures.md",
+      "size": 2640,
+      "title": "NI42 optional graph module fixtures \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a683d58f300fbd35a33cf624bd809a9bef132915866649f9e5f48db1d0356ad9",
+      "modified": "2026-10-05T17:46:23Z",
+      "path": "progress/2026-10/2026-10-05-ni43-repl-filesystem-validation.md",
+      "size": 2211,
+      "title": "NI43 REPL filesystem fixtures \u2014 bounded acceptance",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ecb91cc4132ca68fb7dddfc5a4656027993553ba053b4aa8d2a86fd4c1cb5b6a",
+      "modified": "2026-10-05T17:47:00Z",
+      "path": "progress/2026-10/2026-10-05-ni44-qualified-idle-leaf.md",
+      "size": 3205,
+      "title": "NI44 \u2014 Qualified-idle observer leaf correction (2026-10-05)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dce7840142b0dbb42415af1e3ff6a2e199e15c8e59c884448ff2d027e66bd82b",
+      "modified": "2026-10-05T22:16:36Z",
+      "path": "progress/2026-10/2026-10-05-ni45-strategy-cli-fallback.md",
+      "size": 1819,
+      "title": "NI45 run 37378870278 custody boundary",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5924a5560ea246ed0279099f4dd77e4f184c0740473e297d619f9c83eb204f07",
+      "modified": "2026-10-05T18:11:30Z",
+      "path": "progress/2026-10/2026-10-05-ni46-vl-cache-fixture.md",
+      "size": 1039,
+      "title": "NI46 VL cache temporary-directory fixture \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8d14a7679cf5010b0c8ead6f835df2c3566f566e4a44a109a37258981b139e72",
+      "modified": "2026-10-05T18:11:30Z",
+      "path": "progress/2026-10/2026-10-05-ni47-oab-temp-fixture.md",
+      "size": 1031,
+      "title": "NI47 OAB owned temporary hold directory fixture \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "7cdf63a4af7ac58255d2a89cd116fc9a81c803f12bf1976064191a0d011c36b5",
+      "modified": "2026-10-05T18:11:30Z",
+      "path": "progress/2026-10/2026-10-05-ni48-openai-schema-description.md",
+      "size": 1061,
+      "title": "NI48 OpenAI request schema descriptions \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fcdfb893a38a40e268235d17c8bc93d066ea0cd2f5935170dda7a87c0cec0883",
+      "modified": "2026-10-05T18:11:30Z",
+      "path": "progress/2026-10/2026-10-05-ni49-pairwise-prompt-fixture.md",
+      "size": 1051,
+      "title": "NI49 pairwise holdout prompt temporary fixture \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "145161851fe7e906d3bc13f7d5148f98a74bd2af90a36cbf8fe21335f3844af4",
+      "modified": "2026-10-05T18:11:30Z",
+      "path": "progress/2026-10/2026-10-05-ni50-gpu-window-mock-fixtures.md",
+      "size": 990,
+      "title": "NI50 parked GPU-window mock fixtures \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "09b8de5196919201a75c7f04fbd818c8137cef53a0b8af6a346c810f3d65e3a8",
+      "modified": "2026-10-05T17:46:23Z",
+      "path": "progress/2026-10/2026-10-05-ni51-retired-observer-audit.md",
+      "size": 1891,
+      "title": "NI05-51 \u2014 OBS-10 current-consumer audit (2026-10-05)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "4559a39dd8a71f5b676f5d8cc50f4ef531b8d6c52e3e64a6cd3dec9cf561292c",
+      "modified": "2026-10-05T23:57:02Z",
+      "path": "progress/2026-10/2026-10-05-ni53-strategy-report-custody.md",
+      "size": 1970,
+      "title": "NI53 strategy report original custody",
+      "type": "progress"
+    },
+    {
+      "content_hash": "508ce419223972257e21c14960e4f3c3c8cc5f64312c39095a09471ed834fb5d",
+      "modified": "2026-10-05T19:28:53Z",
+      "path": "progress/2026-10/2026-10-05-ni54-executor-mocked-fixtures.md",
+      "size": 1785,
+      "title": "NI54 \u2014 executor mocked-construction fixtures",
+      "type": "progress"
+    },
+    {
+      "content_hash": "8b5b18efa4327392d3f950617732c4312627b3983a752c86915adefa4843c1fc",
+      "modified": "2026-10-05T19:28:53Z",
+      "path": "progress/2026-10/2026-10-05-ni55-claim-api-fixtures.md",
+      "size": 1844,
+      "title": "NI55 \u2014 claim API placement and optional CLI fixtures",
+      "type": "progress"
+    },
+    {
+      "content_hash": "08a52fb2b23c15939a7e04587fe9d45aacac7153453bc653e00e14ab67f8b357",
+      "modified": "2026-10-05T19:28:53Z",
+      "path": "progress/2026-10/2026-10-05-ni56-typed-replay-sentinel-fixture.md",
+      "size": 1656,
+      "title": "NI56 \u2014 typed replay live-database refusal sentinel",
+      "type": "progress"
+    },
+    {
+      "content_hash": "a4951f637fe32410e536fc4616ef1de19ecc05bbb3b1d430c815b30b896574aa",
+      "modified": "2026-10-05T21:00:55Z",
+      "path": "progress/2026-10/2026-10-05-ni57-fixture-batch.md",
+      "size": 1727,
+      "title": "NI57 routing-pool fixture closure \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "77cbaa649548f2f211bfe5c811a8d3ceedba12fd2f97d52b92271cc4f2a70376",
+      "modified": "2026-10-05T21:22:30Z",
+      "path": "progress/2026-10/2026-10-05-ni58-prompt-forge-fixture.md",
+      "size": 2177,
+      "title": "NI58 prompt-forge fixture closure \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e6df68c61ae6ef160c0fbfdc8ee287f6b2ea495ba16c89d2cf542b0c7cd7088d",
+      "modified": "2026-10-05T22:53:51Z",
+      "path": "progress/2026-10/2026-10-05-ni59-runner-scratch.md",
+      "size": 1633,
+      "title": "NI05-59 runner-scratch completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3d7c5c7bbc07ad767a711238ac05f6fb71dd90175f64786b525cd594b74396bc",
+      "modified": "2026-10-05T21:19:40Z",
+      "path": "progress/2026-10/2026-10-05-ni60-local-embedding-fixtures.md",
+      "size": 1987,
+      "title": "NI60 reviewed local embedding fixture completion \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "5942b59b257aec2a3519ce7672bce3eab54205b7652773f066854eec5ffe536d",
+      "modified": "2026-10-05T21:08:42Z",
+      "path": "progress/2026-10/2026-10-05-ni61-fixture-matrix.md",
+      "size": 2005,
+      "title": "NI61 bounded ONNX session-option fixture matrix \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "cfaa85326e71c05750e559d928508259b148ab647c7c8a5b0931b7b0c6efe4d6",
+      "modified": "2026-10-05T23:21:21Z",
+      "path": "progress/2026-10/2026-10-05-ni63-argv-capacity-child.md",
+      "size": 1599,
+      "title": "NI63 child import/capacity controls",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ab7b54ece2d099c3f05348834a29c1265463584ae0b0d3a5e0d1c40e20b378ff",
+      "modified": "2026-10-05T22:44:43Z",
+      "path": "progress/2026-10/2026-10-05-ni64-design-archive.md",
+      "size": 2698,
+      "title": "NI05-64 design-archive completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "dd941fa6e30ef0df16a941ce5bbb4bd1956c66556293589c4f3a1f7fe8a644d0",
+      "modified": "2026-10-05T22:48:22Z",
+      "path": "progress/2026-10/2026-10-05-ni65-q-scorer.md",
+      "size": 2680,
+      "title": "NI05-65 q-scorer completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ee4aabe2fc41b986c36e7081865dfe4297d72d19012389cdc7dbd374497a1dcb",
+      "modified": "2026-10-05T22:50:35Z",
+      "path": "progress/2026-10/2026-10-05-ni66-inference-lock.md",
+      "size": 2696,
+      "title": "NI05-66 inference-lock completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "1b7079b910ce6df838cf2979bea00d76aac74cedcaa8f18ddb5ef94aac5bc3ae",
+      "modified": "2026-10-05T23:08:05Z",
+      "path": "progress/2026-10/2026-10-05-ni67-junit-count-attribution.md",
+      "size": 1552,
+      "title": "NI67 JUnit exporter attribution",
+      "type": "progress"
+    },
+    {
+      "content_hash": "56c7421f31f3b71be7fa4c4b410c4bee762e3575bc6e9d0da5e0644678e8a749",
+      "modified": "2026-10-05T23:46:52Z",
+      "path": "progress/2026-10/2026-10-05-ni73-synthetic-oracle.md",
+      "size": 1367,
+      "title": "NI73 synthetic oracle controls",
+      "type": "progress"
+    },
+    {
+      "content_hash": "326813c16f37bb53c6ced08cafc7d2dad949735a2b22b516553f0aa177493011",
+      "modified": "2026-10-05T23:48:44Z",
+      "path": "progress/2026-10/2026-10-05-ni74-synthetic-vectors.md",
+      "size": 1248,
+      "title": "NI74 synthetic vectors controls",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f6e33b37b627d8c2080f6d1a420cc1b0863d0e3561432e71e215fd373e561066",
+      "modified": "2026-10-05T19:28:53Z",
+      "path": "progress/2026-10/2026-10-05-ni75-executor-impact.md",
+      "size": 3277,
+      "title": "NI75 \u2014 Executor kernel-store fallback impact (2026-10-05)",
+      "type": "progress"
+    },
+    {
+      "content_hash": "bb7efca0c77a1f22af8962c09889553ddeeeae9311249f9b829929ab8581e394",
+      "modified": "2026-10-05T22:56:43Z",
+      "path": "progress/2026-10/2026-10-05-ni77-meminfo-privacy.md",
+      "size": 1725,
+      "title": "NI05-77 meminfo-privacy completion",
+      "type": "progress"
+    },
+    {
+      "content_hash": "f3c52e09fa5b824b50e8ef5eb9391416961e401eafc34faf2e29d2e745bd66bf",
+      "modified": "2026-10-05T23:17:53Z",
+      "path": "progress/2026-10/2026-10-05-ni78-direct-entry-refusal.md",
+      "size": 952,
+      "title": "NI78 direct-entry refusal",
+      "type": "progress"
+    },
+    {
+      "content_hash": "fe3cb81e1cde763a0083222df6c15a6296d56e27005733cf6dea9dc39751955f",
+      "modified": "2026-10-05T13:02:50Z",
+      "path": "progress/2026-10/2026-10-05-obs12a-session-bus-interpreter.md",
+      "size": 978,
+      "title": "OBS-12a session-bus interpreter call sites",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e1be91acd2cd1a2813fef0e78031b818402d12a21166820c060724109a25b1d9",
+      "modified": "2026-10-05T13:18:06Z",
+      "path": "progress/2026-10/2026-10-05-ssuf13-followup-fixture-acceptance.md",
+      "size": 1443,
+      "title": "SSU-F13 follow-up fixture acceptance \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e43606e7ad40b24fdcafd4a95f6e80c414f7bb23a79a36ccac19563d9250396f",
+      "modified": "2026-10-05T12:19:29Z",
+      "path": "progress/2026-10/2026-10-05-ssuf13-repro.md",
+      "size": 2829,
+      "title": "SSU-F13 bounded reproduction attempt \u2014 2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "ce2255c63ebb8c364eabd50d5e19161a9a5c9ae0656652555128a4c867d68dfb",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "progress/2026-10/2026-10-05-workspace-ec.md",
+      "size": 7167,
+      "title": "2026-10-05 \u2014 workspace-ec",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2192747c7ac6b51e7058a260f7b84176385abc41185e875693ca94ddd8781086",
+      "modified": "2026-10-05T23:21:21Z",
+      "path": "progress/2026-10/2026-10-05.md",
+      "size": 34687,
+      "title": "2026-10-05",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e67b4459004c6006873c0fc12a97be003679acaabf85276c57a5702c036597a4",
+      "modified": "2026-10-06T04:24:42Z",
+      "path": "progress/2026-10/2026-10-06-codex-ni-final-wrap.md",
+      "size": 13793,
+      "title": "Codex non-inference final wrap \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
+      "content_hash": "b1e15bce958e547241822851aec4e6de09b124d3a37b6ce24e477260c8b16aa2",
+      "modified": "2026-10-06T03:07:35Z",
+      "path": "progress/2026-10/2026-10-06-codex-ni-main.md",
+      "size": 16677,
+      "title": "Codex non-inference progress \u2014 2026-10-06",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3df616f5325fa33c009265b53a4de164bef314e4c1e53e05d6b4ea8caa2cd364",
+      "modified": "2026-10-06T00:37:40Z",
+      "path": "progress/2026-10/2026-10-06-ni62-owned-kv-arithmetic.md",
+      "size": 1786,
+      "title": "NI62 owned kv-arithmetic validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "d2496f6fe940968f0ba09130c08c790b724011d7027c03bce264daef981160a1",
+      "modified": "2026-10-06T00:23:32Z",
+      "path": "progress/2026-10/2026-10-06-ni68-owned-system-card.md",
+      "size": 1769,
+      "title": "NI68 owned system-card validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "3d5b285833710f7f016c6e537eba44f5eece60438be1185520b8b93bdbaacf86",
+      "modified": "2026-10-06T00:26:34Z",
+      "path": "progress/2026-10/2026-10-06-ni69-owned-external-drafter.md",
+      "size": 1649,
+      "title": "NI69 owned external-drafter validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "e72207c5b5e91856c64e85e4f04b422ae18595dd9ca7b6590f7c959dcd54720e",
+      "modified": "2026-10-06T00:28:54Z",
+      "path": "progress/2026-10/2026-10-06-ni70-owned-priors-compiler.md",
+      "size": 1705,
+      "title": "NI70 owned priors-compiler validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "2af719c21819b1f31512cbaa296032f97f1e76bd29e4ed14c4a2f9b8985cb044",
+      "modified": "2026-10-06T00:32:15Z",
+      "path": "progress/2026-10/2026-10-06-ni71-owned-numa-readers.md",
+      "size": 1632,
+      "title": "NI71 owned numa-readers validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "74c3fec2432177c593cb5570c308d3bf9840d53356836e1a7210a3bf4bb533ce",
+      "modified": "2026-10-06T00:35:25Z",
+      "path": "progress/2026-10/2026-10-06-ni72-owned-speech-composition.md",
+      "size": 1658,
+      "title": "NI72 owned speech-composition validation",
+      "type": "progress"
+    },
+    {
+      "content_hash": "0298644baf4ae5fc668294f6a714f7d0cbb469a91d88b46374b7f8c66b61539b",
+      "modified": "2026-10-06T03:10:05Z",
+      "path": "progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md",
+      "size": 3686,
+      "title": "NI05-75 executor fallback native report",
+      "type": "progress"
+    },
+    {
+      "content_hash": "14f62eff2b39ecc4b85d05bfa5278b6da9e05390612c0b814be4eb0190f00b2d",
+      "modified": "2026-10-06T01:11:29Z",
+      "path": "progress/2026-10/2026-10-06-ni76-code-index-admission.md",
+      "size": 2377,
+      "title": "NI76 compute-claim admission",
+      "type": "progress"
+    },
+    {
+      "content_hash": "19f39eb33f3aae647cabb8ee00eb34f53fef372fd8ae38e7c03aac9d9fd88b0b",
+      "modified": "2026-10-06T02:42:42Z",
+      "path": "progress/2026-10/2026-10-06-workspace-ec.md",
+      "size": 2426,
+      "title": "2026-10-06 Wrap-up \u2014 workspace-ec",
+      "type": "progress"
+    },
+    {
+      "content_hash": "de79232f72bd78e68be4cab68504c3468ae55d9df9be62f827a37732aa25784d",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/design/autokernel-disk-hygiene-20260915.md",
+      "size": 34918,
+      "title": "AutoKernel Disk Hygiene: a design review",
+      "type": "docs"
+    },
+    {
+      "content_hash": "2dc02b35cd056278fd0a893b1ddbcaf1d6953ccec03e3ccfc2783ac4203f1128",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/design/fa-masked-block-skip-20261003-fold.md",
+      "size": 12652,
+      "title": "FOLD.md: FlashAttention masked-KV-block skip (upstream #28495, intake-1849#record, EPYC P3)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "d80caa4a38cdc3c6f38e38f144fb877debfafc9f29f1f916db7f8893ae03f822",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/design/ufh14-b1-timeout-stackchange-item-20261003.md",
+      "size": 6247,
+      "title": "STACKCHANGE item: per-role request timeouts cannot cover a full-context prefill (UFH14-B1 F1 / D1)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "ca791addc28e20f0f2c4ba4f8d643b6cc4e799f1db704b7bc700cff85bcdd58f",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/design/ufh14-b4-prefix-cache-policy-20261003.md",
+      "size": 41885,
+      "title": "UFH14-B4 \u2014 prefix-cache and `--cache-ram` policy per llama-server (design)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "fc063a3c567dc51aafa205bd7c221cb25b57e4972f1b89fd333f16c55c4936a9",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/guides/agent-workflows/agent-loop-design.md",
+      "size": 53131,
+      "title": "Designing an autonomous agent loop",
+      "type": "docs"
+    },
+    {
+      "content_hash": "78fef9ea12af2e646fc57705bca874cad28077935fa4e9887ce85b5577c3058e",
+      "modified": "2026-10-05T14:49:47Z",
+      "path": "docs/guides/agent-workflows/benchmark-analyst.md",
+      "size": 11270,
+      "title": "Benchmark Analyst Workflow",
+      "type": "docs"
+    },
+    {
+      "content_hash": "4a3ac93a724db7301aa5a90c6c9ff07ce00aa495cecce211e9fd6b6338951f23",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/guides/agent-workflows/cleanup-reference-check.md",
+      "size": 7006,
+      "title": "Cleanup reference check: \"unused\" includes environments and launchers",
+      "type": "docs"
+    },
+    {
+      "content_hash": "e45c057aac64c899435f85e3411b8cdb6c18b842b4b457fe57cec3ee9bdfed3d",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/guides/agent-workflows/handoff-index-authoring.md",
+      "size": 11472,
+      "title": "Handoff Index Authoring",
+      "type": "docs"
+    },
+    {
+      "content_hash": "d94142594546a3a9abc1ddc5f2c7127948bb08fc6ef06a6ee555c684620ceebd",
+      "modified": "2026-10-05T19:48:03Z",
+      "path": "docs/reference/agent-config/INCIDENT_LOG.md",
+      "size": 47528,
+      "title": "Incident Log \u2014 origin narratives behind agent-file rules",
+      "type": "docs"
+    },
+    {
+      "content_hash": "a3fee65dec7af2436d85125c00bfdd4293fea5231466a4525c459a8813719fbf",
+      "modified": "2026-10-06T01:11:29Z",
+      "path": "docs/reference/gitnexus-compute-claims.md",
+      "size": 3635,
+      "title": "GitNexus compute-claim admission",
+      "type": "docs"
+    },
+    {
+      "content_hash": "45b455353ea0394a45db2453d8c42d034ba36edcae71ab247e6542a4f3d591eb",
+      "modified": "2026-10-05T09:01:57Z",
+      "path": "docs/reference/harness-candidates/client-surface-audit.md",
+      "size": 16086,
+      "title": "Client Surface Audit \u2014 reusable instrument",
+      "type": "docs"
+    },
+    {
+      "content_hash": "d6de37928e62c5f43765a0155530c6d2a5e1c968822fdc0579e2397f83977db3",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/reviews/cpu-quant-research-20261003.md",
+      "size": 21037,
+      "title": "CPU quant research for DS41 and Q38FN \u2014 quality evidence, EXL3 re-derivation, CPU formats (2026-10-03)",
+      "type": "docs"
+    },
+    {
+      "content_hash": "70900c7be1f8f149879d6d8d5f654447b4ea9a028dc8f4519a01d1a2e5ab9503",
+      "modified": "2026-10-05T05:49:22Z",
+      "path": "docs/reviews/quant-variant-survey-20261003.md",
+      "size": 20478,
+      "title": "Quant-variant survey for the two CPU models: DS41 and Q38FN (2026-10-03)",
+      "type": "docs"
+    }
+  ],
+  "total_new": 158,
+  "writer_evidence_policy": {
+    "applies_to": "generated-wiki-article-writes",
+    "minimum_confidence": "verified",
+    "minimum_source_references": 3,
+    "policy_version": 1,
+    "requires_human_or_measured_review": true,
+    "requires_source_reference_section": true,
+    "requires_structural_lint": true
+  }
+}

@@ -1,0 +1,3 @@
+# APP documentation publication audit — 2026-10-06
+
+NI05-79 `SSU-DOC-STORE-DEFAULTS` was published from APP source commit `07b352d03346d42d75922f703f6c247949ee2d59`, promoted to APP main by merge `4a11e974be72e40e44291f69740208ae90d4252d`. The accepted change touched only `.env.example`, `README.md`, and `docs/SETUP.md`: kernel-store defaults and frozen production guidance are aligned, binary-path overrides are unset by default, diagnostic overrides remain available, and build/version examples use CPU-region admission and the experimental build's own library path. Original NI05-75 source and tests are unchanged. This was ordinary documentation/source verification; it creates no native tuple, test result, or performance warrant.

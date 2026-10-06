@@ -5032,3 +5032,41 @@ corpus was not scanned by this off-host validation.
 [KVQ record](../progress/2026-10/2026-10-05-ni01-kvq-native-statistics.md),
 [checker record](../progress/2026-10/2026-10-05-ni04-durability-checker.md),
 [projection record](../progress/2026-10/2026-10-05-ni13-durability-native-projection.md).
+
+## Incremental update — 2026-10-06: harness isolation and bounded campaign comparison
+
+**Measured.** The UFH14 F12 demonstration used four calls per arm: F1 removed timeouts, aborts and cold re-prefills, with 90–96% prompt-cache hits, while F2 made all four answers complete in-turn. Neither arm produced an exact keep; F2's median wall time was 3,880 s versus 4,640 s for F1, with mean factual errors 2.25 versus 1.75. One cxf1 call read the live campaign store, so the observed harness was not filesystem-isolated.
+
+**Code-read/offline.** Landlock isolation plus prefix warming/staggered starts and prefix-preserving compaction were implemented and offline-tested, then exercised in one-group-per-leg GPU runs. A3 moved cold prefill off the arms' critical path (TTFT 140–282 s to 0.3–9 s), but its warm leg was perturbed and used two warm requests; A3a remains open. A4 still re-prefilled about 32k tokens after compaction in both arms; A4a remains open. Agent-collaboration's checkpoint-allocation proposal is only proposed: it requires separate continuations per configuration, prefix-visible decisions, matched cost and untouched holdout, and returns unsupported when recorded trajectories cannot identify counterfactuals. It is not an activated allocator or a completed comparison.
+
+**Implementation/code-read.** The OpenCode 1.18.31 event hook has no separate end event; it sends a bounded `x_session_final` only on `session.deleted`. The orchestrator releases only a known, unexpired session on that signal and otherwise relies on TTL. Separate off-host fixtures also closed several client-boundary defects: unsupported image controls refuse before dispatch, disabled REPL plus tools refuses rather than exposing unexecutable calls, and queued MCP calls preserve progress/cancellation with a required client timeout. These are fixture/code results, not inference findings.
+
+The orchestrator added a FIFO ticket queue across role and global region locks plus gpu-quiet writer preference, gated OFF by default. The source reports 125 passed and 3 xfailed; a deterministic FIFO-off control and restart of both live AutoKernel loops remain open before enabling it.
+
+**Operational inference.** Harness quality can improve completion and cost without closing a model capability or factuality gap. Preserve transcript evidence, isolate each arm's filesystem/store and continuation, and score answer quality separately from anytime progress.
+
+### Source References
+
+- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — F12 results, contamination, offline A3/A4 status.
+- [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — observed arm counts and limits.
+- [Agent-collaboration R&D harness](../handoffs/active/agent-collab-rnd-harness.md) — proposed checkpoint-pruned allocation and support constraints.
+- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — shared-window interference and cleanup incidents; operational rules remain distinct from measured model results.
+- [Harness selection and integration](../handoffs/active/harness-selection-and-integration.md) — fixture-validated image controls, tool refusal and MCP progress/timeout behavior.
+- [Client surface audit](../docs/reference/harness-candidates/client-surface-audit.md) — pinned OpenCode lifecycle signal behavior.
+- [AutoKernel unified-surface program](../handoffs/active/autokernel-unified-surface-program.md) — FIFO region-lock implementation status and gates.
+- [AutoKernel disk hygiene design](../docs/design/autokernel-disk-hygiene-20260915.md) — harness transcript/state retention boundary.
+
+## Compiled Update — 2026-10-06: future launcher references and retained reports cross ownership boundaries
+
+A clean, idle worktree can remain required by a future launch. Cleanup must inspect process environments and argv, recent launcher/watchdog scripts, scheduled jobs, frozen campaign inputs and explicit KEEP markers, then apply the existing identity and trash-first checks. The October 4 removal of a worktree exported as `EPYC_ROOT_REPO` broke the next DS41 claim despite passing cwd/open-file checks. Scratch declarations make created paths enumerable; a declaration never overrides protected harness state. Claude/Codex transcripts, backups and other agent-harness state remain excluded, and the Codex retention reaper is report-only. The narrowly authorized OpenCode event-table reaper does not authorize another reaper.
+
+CPU admission for the project GitNexus wrappers now requires eight distinct single-link lock files, four GLOBAL and four build, with actual write flocks attributed to one live same-UID ancestor. Refusal precedes downstream mutation; the nontruncating writer lock survives child/exec and contention returns 75. This is point-in-time wrapper admission. It establishes neither continuous owner supervision nor canonical-index recovery: the host index remains untrusted. NI05-76's original native test has 103 descriptive controls within one testcase, not 103 independent testcases; public metadata excludes hashed private inputs and cannot independently reopen the entire proof.
+
+Delegation's compact loop telemetry and user-visible report are separate products. DCP-13 removes an unreachable `fetch_report` instruction and returns the retained full report on user cache hits; legacy entries lacking the full report miss that path. Native fixture acceptance covers the contract, not inference quality or live cache performance. The source-handoff changes do not close inference-dependent comparison arms.
+
+### Source References
+
+- [Cleanup reference check](../docs/guides/agent-workflows/cleanup-reference-check.md) — future references, protected harness state and the narrow exception.
+- [Handoff index authoring](../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives) — scratch boundaries and load-bearing markers.
+- [GitNexus compute claims](../docs/reference/gitnexus-compute-claims.md) — point-in-time admission and original native control counts.
+- [Delegation context preassembly](../handoffs/active/delegation-context-preassembly.md) — DCP-13a/b source acceptance and remaining inference arms.

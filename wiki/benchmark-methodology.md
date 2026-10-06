@@ -6639,3 +6639,86 @@ which is n=1 per arm on one CPU profile. That is not a production-profile number
 - [Routing intelligence](../handoffs/active/routing-intelligence.md) — RI-18 pre-registration and stopping rule.
 - [Non-inference backlog](../handoffs/active/non-inference-backlog.md) — NIB2-91.
 - [Canonical judge suite revamp](../handoffs/active/canonical-judge-suite-revamp.md) — CJ-17 renumbering.
+
+## Incremental update — 2026-10-06: UFH14 harness measurements and evidence limits
+
+**Measured observations.** UFH14-A1 compared F1 and F1+F2 on four calls per arm. F1 raised prompt-cache hits to 90–96% and removed client timeouts/aborts/cold re-prefills; F2 yielded 4/4 in-turn answers and a 3,880 s median versus F1's 4,640 s, but exact keeps were 0/4 in both arms and factual errors did not fall (2.25 vs 1.75). These are observations at n=4, not a superiority claim.
+
+UFH14-A2 used two repetitions per context on the production shape: DFlash2 ran 41.6, 40.4, 36.9 and 32.1 tok/s at roughly 2k, 16k, 50k and 80k context; no-draft fell from 29.6 to 18.5 tok/s. The MTP comparison used an earlier server shape, so the drafter comparison is confounded. UFH14-A3 had one group per leg: warming moved TTFT from 140–282 s to 0.3–9 s, but its warm leg used two warm requests and overlapped shared-GPU work, so decode-stall causality remains unresolved. UFH14-A4 also had a GPU run; both arms still re-prefilled about 32k tokens after compaction. Do not treat either as a completed fix: A3a and A4a remain open.
+
+**Code-read correction.** Existing INF-70 coherence labels supplied synthetic token IDs, disabling uniqueness/top/run checks; those labels support only word/ASCII rules and cannot establish “no garbage.” The corrected MTP gate uses paired byte identity first, then ground truth plus `degeneracy.v2` with real token IDs for divergent rows, with a paired judge for residual rows; without that judge the result is INCOMPLETE.
+
+**Code-read / planned.** The initial Landlock/A3/A4 implementations were offline-tested before their GPU runs. The follow-up measurement and prompt-diff tasks remain open; no general client policy follows from these small samples.
+
+### Source References
+
+- [Agentic serving harness fixes](../handoffs/active/agentic-serving-harness-fixes.md) — A1/A2/A3 measurements and open gates.
+- [2026-10-03 ak-ds41-main progress](../progress/2026-10/2026-10-03-ak-ds41-main.md) — independently summarized observation counts and confounds.
+- [Incident log](../docs/reference/agent-config/INCIDENT_LOG.md) — INC-20261003-subagent-gpu-tests-in-peer-window identifies contaminated calls.
+- [CPU decode roofline program](../handoffs/active/cpu-decode-roofline-program.md) — CLS-RECT corrects the coherence instrument and reports Q38FN transfer sample exclusions.
+- [2026-10-03 workspace-ec progress](../progress/2026-10/2026-10-03-workspace-ec.md) — coordinated window and live-service boundary context.
+
+## Compiled Update — 2026-10-06: accounting acceptance has a smaller scope than benchmark conformance
+
+The NI18 fullscan retained original receipts for all 895 selected unit modules: 826 TRUE, 57 FALSE and 12 NULL. Its recorded aggregate is 16,227 collected, 15,719 passed, 258 failures, 68 errors and 182 skips. This accepts source-correlated capture/accounting, not a passing whole suite. Preparing private runner-owned cache directories for argv-building fixtures does not simulate a live serving stack or change source policy. Separately, collection of all 2,286 research benchmark cases without collection errors closes the named collection defects; it does not establish whole-directory execution.
+
+DCP-10 score preparation adds deterministic macro file/span precision, recall and F1 over synthetic fixtures, preserving empty/error prediction denominators, explicit dispositions, inclusive range unions and packer provenance at 2k/4k/8k budgets. It acquires no official dataset and executes no discovery arms. The full ContextBench benchmark remains open. TU-TM-1 reports overall and finished-unit rates alongside timeout share and judged denominators, retaining non-timeout errors and undefined empty rates. Native typed timeout provenance includes recovered retries; benign and attack metric directions stay separate. Neither bounded implementation changes judges or creates historical write-side evidence.
+
+Evaluation archive completeness, offline SFT eligibility and off-policy RL eligibility remain different contracts. The October 4 EV-RI capture/reconnect repairs, TU-MH-1 paired real-harness driver and Memento S2-CGE-1 complete independently verified targets are filed work, not demonstrated execution or training gains. UTM query provenance alone cannot establish original token IDs, behavior logprobs or authoritative RL masks. Native fixture conformance projects through the existing shared grader; these additions introduce no grading ladder or scientific warrant.
+
+### Source References
+
+- [Model-stack update pipeline](../handoffs/active/model-stack-single-source-update-pipeline.md) — NI18 fullscan accounting and fixture boundaries.
+- [Scoring standardization](../handoffs/active/scoring-infra-standardization.md) — collection-only acceptance.
+- [Delegation preassembly](../handoffs/active/delegation-context-preassembly.md) — synthetic DCP-10 scorer preparation.
+- [Tool-use evaluation](../handoffs/active/tool-use-eval-contract.md) — TU-TM-1 accepted implementation and TU-MH-1 filed work.
+- [Evaluation tower](../handoffs/active/eval-tower-verification.md#research-intake-update--2026-10-04) — archive completeness and reconnect cost.
+- [Memento compression](../handoffs/active/memento-block-reasoning-compression.md) — S2-CGE-1 SFT contract.
+- [Unified trace memory](../handoffs/active/unified-trace-memory-service.md#evaluation-capture-versus-rl-eligibility--2026-10-04) — distinct consumer eligibility.
+
+The TD-30 coherence judge library and localhost typed endpoint are implemented and the endpoint was deployed by API reload. Calibration, champion-sidecar backend integration, consumer migration and instrument-era ratification remain open. The historical chat-client classifier near-no-op does not certify the new judge: implementation and endpoint availability establish neither calibrated quality nor a new accepted coherence instrument era.
+
+[Typed decision plane — coherence judge rollout](../handoffs/active/typed-decision-plane.md#coherence-judge-and-coherence_gate-rollout-filed-2026-10-04-workspace-ec) records these distinct boundaries.
+
+## Compiled Update — 2026-10-06: native fixture conformance has its own denominator and custody boundary
+
+**Confidence: verified** for the reviewed source behavior and the named original off-host fixture outcomes reported below. These are bounded implementation/integrity observations, not independent benchmark reproduction, live inference, model quality or production performance. The existing native verifier carrier and shared grader remain authoritative; this update introduces no grading rule or historical warrant.
+
+### Terminal timeouts and scoring exclusions require explicit denominators
+
+NI37's DTAP report distinguishes actual typed terminal timeout from recovered retries, HTTP 504, other errors and guessed message strings. Overall success uses every unit. Finished success excludes terminal timeouts only, retaining other errors; judged-only success is a separate descriptive rate. Empty denominators stay null. A primary native outcome must be boolean; a nonapplicable secondary outcome may remain null. Benign-task success is higher better, while attack success is lower better. The original synthetic five-unit proof has two successes, one terminal timeout and another error: overall **2/5**, finished **2/4**, timeout **1/5**, judged **2/3**. The captured safe proof was verified by main; its private inner capsule was reopened during CI, not independently by main. The named app and reader selections passed 112 and 82 cases. Those tests establish reporting integrity, not a live attack result. [NI37 source and original-evidence boundaries](../progress/2026-10/2026-10-05-ni37-dtap-timeout-native-report.md).
+
+NI38's offline ContextBench scorer closes the implementation gap behind the September scorer-reading warning above: it uses inclusive unions/deduplication, macro precision/recall/F1, retains errored or partial rows in the denominator with zero prediction contribution, and scores empty predictions zero. Caller-declared dispositions are not independently verified exclusions, and token-cost fields are candidate-cost estimates. Its fixture has one eligible task and 24 metric cells; the 12 scorer and 67 capture/ingestion fixture passes establish parser, aggregation and custody behavior. They do not establish the official 394-task corpus, published scores or scorer quality. [NI38 bounded scorer report](../progress/2026-10/2026-10-05-ni38-contextbench-score.md).
+
+### An exporter can exit successfully while the native count proposition remains indeterminate
+
+NI67 traced pinned pytest 9.0.3 successful `subTest` reports to their parent node IDs: suite statistics increment while XML retains the six parent testcase nodes. A fresh original command exited zero with suite count **12** and node count **6**; the strict native reader correctly returned **NULL with no rows**. A separate four-method selection, excluding the two subTest loops, passed **4/4** and projected true at Judged/Located. Attribution closes the exporter investigation; it does not turn the six-method selection into conformant evidence, rewrite the original XML or relax the producer's count grammar. [Exact source attribution and controls](../progress/2026-10/2026-10-05-ni67-junit-count-attribution.md).
+
+Similarly, the exhaustive NI18 sweep accounted for all 895 selected modules as **826 true / 57 false / 12 indeterminate**. That is complete capture/accounting, not a passing unit suite. All-skipped modules, missing JUnit and inconsistent summaries retain their distinct NULL reasons; a later scoped fixture repair cannot change the original outcome. [Original sweep accounting](../progress/2026-10/2026-10-05-ni18-fullscan-custody.md).
+
+### Public evidence subsets do not substitute for the complete original readset
+
+NI64–66 demonstrate the publication boundary: unchanged modules subsequently passed 16, 79 and two cases with complete private-original readback, but their public exports exclude explicitly hashed private source/context snapshots. Those public prefixes cannot independently reopen the native receipt. A derivative main review is an audit of the original evidence, not another receipt. New verbose node attribution also cannot identify the interrupted node or root cause of a historical missing-JUnit run. Preserve the original tested source identity, receipt file digest and embedded self-hash as separate fields; current-source parity does not rename the original receipt or grant a whole-current-main warrant. [Design-archive custody](../progress/2026-10/2026-10-05-ni64-design-archive.md), [q-scorer custody](../progress/2026-10/2026-10-05-ni65-q-scorer.md), [inference-lock custody](../progress/2026-10/2026-10-05-ni66-inference-lock.md).
+
+### Source References (2026-10-06 native fixture boundaries)
+
+- [NI37 DTAP report](../progress/2026-10/2026-10-05-ni37-dtap-timeout-native-report.md) — typed timeout/rate semantics, original synthetic safe proof and exact independent-readback limit.
+- [NI38 ContextBench report](../progress/2026-10/2026-10-05-ni38-contextbench-score.md) — macro/failure denominator contract and one-task synthetic scope.
+- [NI67 JUnit attribution](../progress/2026-10/2026-10-05-ni67-junit-count-attribution.md) — pinned upstream source trace, fresh 12/6 NULL and separate four-method conformance.
+- [NI18 original sweep](../progress/2026-10/2026-10-05-ni18-fullscan-custody.md) — all895 selection accounting and indeterminate cases.
+- [NI64 design archive](../progress/2026-10/2026-10-05-ni64-design-archive.md) — explicitly partial public custody and prospective/historical attribution distinction.
+- [NI65 q-scorer](../progress/2026-10/2026-10-05-ni65-q-scorer.md) — original source parity, digest distinction and public exclusions.
+- [NI66 inference lock](../progress/2026-10/2026-10-05-ni66-inference-lock.md) — two-case offline boundary and absence of any actual host-lock claim.
+## Compiled Update — 2026-10-06: risk screens and validation gates have different denominators
+
+The WebFetch-digest audit reports 352 at-risk entries out of 889 dives in the 2026-10-06 snapshot. “At risk” is the union of three review flags, not a failure count; the 191 missing-anchor, 100 digest-mention and 109 no-recorded-full-read counts overlap. The `at_risk_list.py` output is a triage input and must be regenerated from the current intake index before quoting a current denominator. Cited or decision-gating entries receive priority; a risk flag alone cannot overturn a claim or authorize bulk demotion.
+
+The accepted Stage-2 read-depth contract applies from 2026-10-07 (and for entries that declare `read_depth`), but code inspection shows the validator gate currently runs only for `dive-verified`; the schema also names `dive-overturned`. Legacy acceptance status is not retroactively re-certified, and the validator/code scope discrepancy remains for the handoff owner to reconcile. The nine unanchored WebFetch-digest entries in the 2026-10-06 batch were subsequently re-read against primary sources at `1c5183df9`; do not attribute the initial audit’s historical “patch unapplied” line to current state. The active handoff's seven tasks remain open with their owning sessions; this wrap did not regenerate the risk set, re-dive sources, change verdicts, or rewrite intake records.
+
+### Source References (2026-10-06 denominator and gate scope)
+
+- [Intake re-verification handoff](../handoffs/active/intake-reverification.md) — risk flags, denominator rule and triage sequence.
+- [Read-depth audit](../artifacts/intake-depth-audit-20261006/AUDIT.md) — historical 889-entry snapshot and overlapping flag counts.
+- [At-risk list generator](../.claude/skills/research-intake/scripts/at_risk_list.py) — current-index screen implementation.
+- [Intake validator](../.claude/skills/research-intake/scripts/validate_intake.py) — forward-only enforcement and legacy transition.
+- [Research-intake skill](../.claude/skills/research-intake/SKILL.md) — required source-read procedures.

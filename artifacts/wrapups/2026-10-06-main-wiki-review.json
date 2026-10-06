@@ -1,0 +1,199 @@
+{
+  "kind": "documentation-source-review",
+  "reviewer": "codex-ni-main",
+  "as_of": "2026-10-06T04:22:17.065031+00:00",
+  "adoption_confidence": "verified faithful source synthesis; no independently reproduced performance warrant",
+  "pages": [
+    {
+      "page": "wiki/agent-architecture.md",
+      "preimage_sha256": "343232af5bc318af5a22afb24f5f21be694119a60855dcaf6bd637255d39ac02",
+      "candidate_sha256": "7c6ac1f5db06f0f22996176649bebf4286c516880314bd8ca724598a2d325c85",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/agentic-serving-harness-fixes.md",
+        "../progress/2026-10/2026-10-03-ak-ds41-main.md",
+        "../handoffs/active/agent-collab-rnd-harness.md",
+        "../docs/reference/agent-config/INCIDENT_LOG.md",
+        "../handoffs/active/harness-selection-and-integration.md",
+        "../docs/reference/harness-candidates/client-surface-audit.md",
+        "../handoffs/active/autokernel-unified-surface-program.md",
+        "../docs/design/autokernel-disk-hygiene-20260915.md",
+        "../docs/guides/agent-workflows/cleanup-reference-check.md",
+        "../docs/guides/agent-workflows/handoff-index-authoring.md#scratch-roots--every-handoff-declares-where-its-scratch-lives",
+        "../docs/reference/gitnexus-compute-claims.md",
+        "../handoffs/active/delegation-context-preassembly.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/benchmark-methodology.md",
+      "preimage_sha256": "4fe5a2887343497187057a2c7f704efe0ed801c7a1a9dd438444b0037dab8220",
+      "candidate_sha256": "ea35c40516be04a32b523b6ef7e1b18392634ee30d05de0771375c719e53e160",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/agentic-serving-harness-fixes.md",
+        "../progress/2026-10/2026-10-03-ak-ds41-main.md",
+        "../docs/reference/agent-config/INCIDENT_LOG.md",
+        "../handoffs/active/cpu-decode-roofline-program.md",
+        "../progress/2026-10/2026-10-03-workspace-ec.md",
+        "../handoffs/active/model-stack-single-source-update-pipeline.md",
+        "../handoffs/active/scoring-infra-standardization.md",
+        "../handoffs/active/delegation-context-preassembly.md",
+        "../handoffs/active/tool-use-eval-contract.md",
+        "../handoffs/active/eval-tower-verification.md#research-intake-update--2026-10-04",
+        "../handoffs/active/memento-block-reasoning-compression.md",
+        "../handoffs/active/unified-trace-memory-service.md#evaluation-capture-versus-rl-eligibility--2026-10-04",
+        "../handoffs/active/typed-decision-plane.md#coherence-judge-and-coherence_gate-rollout-filed-2026-10-04-workspace-ec",
+        "../progress/2026-10/2026-10-05-ni37-dtap-timeout-native-report.md",
+        "../progress/2026-10/2026-10-05-ni38-contextbench-score.md",
+        "../progress/2026-10/2026-10-05-ni67-junit-count-attribution.md",
+        "../progress/2026-10/2026-10-05-ni18-fullscan-custody.md",
+        "../progress/2026-10/2026-10-05-ni64-design-archive.md",
+        "../progress/2026-10/2026-10-05-ni65-q-scorer.md",
+        "../progress/2026-10/2026-10-05-ni66-inference-lock.md",
+        "../handoffs/active/intake-reverification.md",
+        "../artifacts/intake-depth-audit-20261006/AUDIT.md",
+        "../.claude/skills/research-intake/scripts/at_risk_list.py",
+        "../.claude/skills/research-intake/scripts/validate_intake.py",
+        "../.claude/skills/research-intake/SKILL.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/context-extension.md",
+      "preimage_sha256": "b895ea536fa46c3c3288f6c09277d3d4145ff3752c5d693d25eb308aea385d11",
+      "candidate_sha256": "5cf4d1a0837fb7bf3c2dff9ca46d672d9bb4e077262b9b8c2d8b971080bd7b06",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/yarn-context-extension-research.md",
+        "../handoffs/active/autokernel-all-devices-all-dimensions.md",
+        "../handoffs/active/gpu-serving-tie-in-program.md",
+        "../handoffs/active/kv-unified-stack-rollout.md",
+        "../progress/2026-10/2026-10-05-workspace-ec.md",
+        "../progress/2026-10/2026-10-06-workspace-ec.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/hardware-optimization.md",
+      "preimage_sha256": "e765c4cb2236dda0a4ace59da1d3c627de04af1991ce2a84bd265ce357f636f1",
+      "candidate_sha256": "bd3643b3e1007d8c195ea91deeda0f04549ff8774ae3ea7b84cfcfd1dbb17f54",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/autokernel-champion-aggregate.md",
+        "../handoffs/active/autokernel-research-loop.md",
+        "../handoffs/active/exl3-cpu-mi210-implementation.md",
+        "../progress/2026-10/2026-10-03-ak-ds41-main.md",
+        "../docs/guides/agent-workflows/agent-loop-design.md",
+        "../handoffs/active/cpu-decode-roofline-program.md",
+        "../handoffs/active/autokernel-all-devices-all-dimensions.md",
+        "../handoffs/active/yarn-context-extension-research.md",
+        "../handoffs/active/cpu-fused-decoder-blocks.md",
+        "../handoffs/active/llama-cpp-dsa-contribution.md",
+        "../docs/reviews/cpu-quant-research-20261003.md",
+        "../docs/reviews/quant-variant-survey-20261003.md",
+        "../handoffs/active/iqk-iquant-enablement.md",
+        "../handoffs/active/mi210-q8-dequant-gemv-roofline.md",
+        "../progress/2026-10/2026-10-04-ak-ds41-main.md",
+        "../progress/2026-10/2026-10-05-ak-ds41-main.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/inference-serving.md",
+      "preimage_sha256": "f90878c4c875b520fd35e5c2e0d6690481746f4e512221fa4f5c6542d674d8ff",
+      "candidate_sha256": "c472ca94fb58c192bee849a4caa8af27d8bebc98b1fa689a1accab15211e30d3",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/kv-unified-stack-rollout.md",
+        "../handoffs/active/autokernel-champion-aggregate.md",
+        "../handoffs/active/CURRENT-CAMPAIGN.md",
+        "../progress/2026-10/2026-10-03-workspace-ec.md",
+        "../handoffs/active/deepseek-v41-flash-evaluation.md",
+        "../handoffs/active/agentic-serving-harness-fixes.md",
+        "../handoffs/active/gpu-serving-tie-in-program.md",
+        "../handoffs/active/heterogeneous-slot-fabric-residency.md",
+        "../handoffs/active/qwen38-27b-replace-qwen36.md",
+        "../handoffs/active/shape-keyed-contention-gating.md",
+        "../progress/2026-10/2026-10-04-workspace-ec.md",
+        "../progress/2026-10/2026-10-05-workspace-ec.md",
+        "../progress/2026-10/2026-10-06-workspace-ec.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/knowledge-management.md",
+      "preimage_sha256": "0d167b2d5e8406e0f5615fc1f493bc449fd45e817c00beb67316094f36bc4fa1",
+      "candidate_sha256": "9b04dec608ea54ca9cd8897628beaef7e0307d060177d538770950bc66c12940",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../progress/2026-10/2026-10-05-ni53-strategy-report-custody.md",
+        "../progress/2026-10/2026-10-05-ni41-eval-scoring-extra.md",
+        "../progress/2026-10/2026-10-06-ni76-code-index-admission.md",
+        "../progress/2026-10/2026-10-05-ni10-gap-census.md",
+        "../progress/2026-10/2026-10-05-ni32-synthetic-schema-boundaries.md",
+        "../handoffs/active/vidya-belief-substrate-program.md",
+        "../progress/2026-10/2026-10-05-ni13-durability-native-projection.md",
+        "../progress/2026-10/2026-10-05-ni15-ci-conformance.md",
+        "../handoffs/active/intake-reverification.md",
+        "../artifacts/intake-depth-audit-20261006/AUDIT.md",
+        "../.claude/skills/research-intake/SKILL.md",
+        "../.claude/skills/research-intake/references/intake-schema.md",
+        "../.claude/skills/research-intake/scripts/validate_intake.py",
+        "../.claude/skills/research-intake/scripts/at_risk_list.py"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/kv-cache.md",
+      "preimage_sha256": "8349856b52b4edc98400cd3a05619a36a09934fe3fbd009cea7cb69315f1f0f3",
+      "candidate_sha256": "6a5e65e442858f4620821ae65a4568f1d54032c2403f82ef9957772e0298235d",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/kv-unified-stack-rollout.md",
+        "../handoffs/active/kv-prefix-fork-and-paged-attention.md",
+        "../handoffs/active/gpu-serving-tie-in-program.md",
+        "../handoffs/active/CURRENT-CAMPAIGN.md",
+        "../handoffs/active/autokernel-champion-aggregate.md",
+        "../docs/design/fa-masked-block-skip-20261003-fold.md",
+        "../progress/2026-10/2026-10-04-workspace-ec.md",
+        "../progress/2026-10/2026-10-03-ak-ds41-main.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/speculative-decoding.md",
+      "preimage_sha256": "b71418e451d2051facf333364b0088d4637656566b43afb5255b2e7c56445228",
+      "candidate_sha256": "1eae93f824d268f45bbcf68363ea9abceaba9ee367583554fe801ef881e2cff2",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../handoffs/active/speculative-decoding-mtp-refresh.md",
+        "../handoffs/active/dflash2-block-drafter-experimental-build.md",
+        "../handoffs/active/kv-unified-stack-rollout.md",
+        "../handoffs/active/qwen38-27b-replace-qwen36.md",
+        "../progress/2026-10/2026-10-03-workspace-ec.md",
+        "../progress/2026-10/2026-10-04-workspace-ec.md",
+        "../progress/2026-10/2026-10-06-workspace-ec.md"
+      ],
+      "validation_ok": true
+    },
+    {
+      "page": "wiki/tool-implementation.md",
+      "preimage_sha256": "96f025bc7d267f4b839d3341331b2623484f2a30b80b43893e57b52dac265020",
+      "candidate_sha256": "3882110c10b9163cd4c493e2e6333675a714acd2f4aff025720d723d05d83898",
+      "existing_body_preserved": true,
+      "source_references": [
+        "../progress/2026-10/2026-10-06-ni68-owned-system-card.md",
+        "../progress/2026-10/2026-10-06-ni69-owned-external-drafter.md",
+        "../progress/2026-10/2026-10-06-ni72-owned-speech-composition.md",
+        "../progress/2026-10/2026-10-06-ni75-executor-fallback-native-report.md",
+        "../progress/2026-10/2026-10-06-ni76-code-index-admission.md",
+        "../progress/2026-10/2026-10-05-ni78-direct-entry-refusal.md"
+      ],
+      "validation_ok": true
+    }
+  ],
+  "new_local_link_occurrences": 138,
+  "all_resolved": true,
+  "source_hash_review": "156/156 initial current and baseline hashes match; final wrap additions separately reviewed"
+}
