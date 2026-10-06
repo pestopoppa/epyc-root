@@ -1,0 +1,46 @@
+{
+  "reviewed_at": "2026-10-06T22:49:07.087101+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": true,
+  "run": 37542457227,
+  "attempt": 1,
+  "artifact": 11449247201,
+  "pins": {
+    "recipe": "f43b4a031e8e230ab957417d8740b58174adf1d8",
+    "research": "7aafbbae7fe33f4a7e5527c6d6df2823b4d02cc6",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app": "70096b763939a43409a1f1827ab633d62425a6c1"
+  },
+  "zip_sha256": "2ded4bb98882cb2650398adefa680438e4f4e8a1f2ca60b64d13b1ca60a8c51b",
+  "zip_bytes": 739959,
+  "members": 43,
+  "readset_count": 34,
+  "git_inputs": 32,
+  "contexts": 2,
+  "counts": {
+    "collected": 27,
+    "error": 0,
+    "executed": 27,
+    "failure": 0,
+    "passed": 27,
+    "skipped": 0
+  },
+  "testcase_nodes": 27,
+  "native_value": true,
+  "receipt_file_sha256": "e7862a5f1ebb4f793653c26c4f4dbb98ebb53cad7821975b6ba8090a6eefbbf8",
+  "receipt_self_sha256": "7b4e962589f2fbc0d18e48e7f72a7f3941488f8bb1f53eed4710ce23aef8cf15",
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "",
+  "scope": "MEDIUM: C5 metadata schema/oracle plan join plus offline test controls; original grading/carrier and production authority verifier unchanged.",
+  "public_derivation": "Original MAIN review remains private; public job identity uses explicit GitHub namespace.",
+  "job_identity": "github_job_112538454792"
+}

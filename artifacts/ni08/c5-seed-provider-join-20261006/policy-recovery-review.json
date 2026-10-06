@@ -1,0 +1,11 @@
+{
+  "review": "PASS",
+  "source_git_blob": "f17f295b884889ba837709f1822e1045fad4a5cb",
+  "originating_commit": "97674cbce44146bd40778d50d1232fc62af8918d",
+  "path": "handoffs/active/agentic-rocm-kernel-authoring.md",
+  "sha256": "c8cec57941b5c0954cd65b44719b984612d9c25094fce3e2ef4bcd42e8ec4f70",
+  "bytes": 90723,
+  "source_repo": "/mnt/raid0/llm/worktrees/pool/lane0",
+  "content_changed": false,
+  "source_authority_replaced": false
+}

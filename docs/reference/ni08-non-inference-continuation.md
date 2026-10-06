@@ -1,6 +1,6 @@
 # NI08 non-inference continuation — 2026-10-06
 
-The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **46 completed scoped tasks: 36 existing checkbox flips and 10 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
+The operator requested continued implementation until only named blockers remain. Prior bounded queues NI05 79/79 and NI06/NI07 35/35 are complete; they do not establish whole-backlog exhaustion. NI08 currently has **48 completed scoped tasks: 37 existing checkbox flips and 11 newly completed scoped subtasks; additional source/design work continues**. MAIN reviews proposals, source/test changes, original evidence and publication, and applies canonical task/index edits; workers use the cheapest capable tier and separate private custody.
 
 | Work | State | Boundary |
 |---|---|---|
@@ -77,7 +77,7 @@ These are existing task identities or already filed prospective source companion
 | SC76 / SC77 | Source-first RAW artifact/revision resolution and shared re-verifier design | Canonical human/machine traceability ladder must remain intact; no original artifact may be fabricated |
 | HS-4 P6 | Cross-repo shared exploration-tool contract/source prep | Live catalog-growth before/after acceptance and Claude-owned deployment stay at the inference owner boundary |
 | HS-19d.P0 | Multi-call source checks, per-message task-part counters and versioned unscored corpus preparation | VB-DISPATCH-S2 itself is explicitly frozen; do not treat all P0 as either wholly free or wholly blocked |
-| C5-5 | Source/27-case recipe passed MAIN32-input prebinding; hosted original capture pending | No SOL bound port, benchmark or kernel change; unavailable original policy bytes remain fail-closed |
+| C5-5 | Accepted persisted eight-way join and original27/27 source controls | No SOL bound port, benchmark or kernel change; original policy bytes recovered; versioned verifier path restoration under review |
 
 R23-70, P0.4b/c, P0-split, Docker pin and HS-E1 are now finished source deliverables; they are excluded from this next-work queue. Full-class source verification across the remaining handoffs continues.
 
@@ -104,3 +104,8 @@ MAIN enrolled VB-THESIS-CONFORMANCE before capture; source9891 is under final na
 ## AP61 source boundary — MAIN acceptance
 
 [All-route invocation guard source review/publication](../../artifacts/ni08/invocation-route-guard-source-20261006/README.md) closes AP61: **46 scoped completions (36 existing flips +10 additions)**. Test-only change,46 currentroutefiles independently AST-inspected, meaningful forbidden-method/direct-name and permitted-text/request-local controls reviewed. No host pytest/import/collection or fixture/runtime claim; aliases/dynamic dataflow outside bounded guard. AP60/AP62 and other source queues continue.
+
+
+## C5 persisted join — MAIN acceptance
+
+[C5 source/native acceptance](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md) closes C5-5 and its pre-enrolled VB companion: **48 scoped completions (37 existing flips +11 additions)**. Exact eight provider joins and193 workload partition remain intact. Failed NULL original retained; successor27/27 independently reviewed. Exact historical policy bytes are now recovered; versioned path restoration and native default-load verification remain separate engineering; no SOL or kernel execution.

@@ -5108,3 +5108,6 @@ The [binary conversation shadow helper](../docs/reference/conversation-shadow-pr
 
 
 2026-10-06: [AP61 source guard](../artifacts/ni08/invocation-route-guard-source-20261006/README.md) scans every current API route for process-global invocation-log calls; source census covers46 routefiles with zero prohibited calls. Per-request telemetry continues to use request-local records. This test-only/static acceptance does not establish cross-thread diagnostic snapshot safety; AP62 remains distinct.
+
+
+2026-10-06: [C5 persisted provider joins](../artifacts/ni08/c5-seed-provider-join-20261006/README.md) make the existing eight-way mapping explicit, preserving193 workloads/dtypes. Hosted27/27 metadata and refusal controls pass; historical policy bytes are recovered and versioned path restoration remains separate source work.

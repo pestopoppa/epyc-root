@@ -1,0 +1,32 @@
+{
+  "reviewed_at": "2026-10-06T22:50:42.564327+00:00",
+  "source_integrity_review": "PASS",
+  "implementation_accepted": false,
+  "run": 37541801662,
+  "attempt": 1,
+  "artifact": 11449196175,
+  "pins": {
+    "recipe": "4762a77e6ad90232e48325625c8b93f29fec41f6",
+    "research": "82619ca6f73d840107eaa0c5132652b010cbd9ed",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "app": "70096b763939a43409a1f1827ab633d62425a6c1"
+  },
+  "zip_sha256": "6827907bf9eaaeb42c983457949a18c2c2ae3008f54b425f65d4d0d6af011fe5",
+  "zip_bytes": 736022,
+  "members": 42,
+  "readset_count": 34,
+  "git_inputs": 32,
+  "contexts": 2,
+  "counts": null,
+  "testcase_nodes": 27,
+  "native_value": null,
+  "receipt_file_sha256": "9c80af1d827606b03d2973ac19553ede7a1f1b584e03f8636d33aaa1a90482e4",
+  "receipt_self_sha256": "8ba17757db64a3ffb64a8947bb7f2c6d59dade9bb1273664e4c50cb5955d2865",
+  "shared_grade": null,
+  "MAIN_executed_grade": false,
+  "originals_unchanged": true,
+  "diagnostic": "inconsistent JUnit suite counts",
+  "scope": "MEDIUM: C5 metadata schema/oracle plan join plus offline test controls; original grading/carrier and production authority verifier unchanged.",
+  "public_derivation": "Original MAIN review remains private; public job identity uses explicit GitHub namespace.",
+  "job_identity": "github_job_112536320609"
+}

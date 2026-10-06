@@ -907,7 +907,7 @@ oracle-workload and candidate-metadata identities separate rather than repeating
       number; never quote their `S` as a speed-of-light figure.** k228 is named in the source as a
       problem where a correct kernel beat the bound, and k227's correction took its bound to 8 cycles —
       "correct, and vacuous". Note k175 additionally sits on the still-defective `declared_traffic` tier.
-- [ ] **C5-5 — Persist the kNNN ↔ problem-slug mapping into `c5_seed_corpus.json`.** All eight resolve
+- [x] **C5-5 — Persist the kNNN ↔ problem-slug mapping into `c5_seed_corpus.json`.** All eight resolve
       uniquely with matching ordinals (k138→`L2__044_mamba…`, k145→`L2__051_…hyena…`,
       k154→`L2__060_chunk_gated_delta_rule…`, k175→`L2__081_moe_sparse_expert_dispatch`,
       k215→`FlashInfer-Bench__006_gemm_n2048_k4096`, k225→`FlashInfer-Bench__016_gqa_ragged_prefill…`,
@@ -916,7 +916,8 @@ oracle-workload and candidate-metadata identities separate rather than repeating
       nowhere in either repository** — they are HyRA's — so this join is ours to maintain and should
       stop being re-derived. Add it as a `sol_execbench_problem_id` field. **2026-08-16 checkpoint:**
       `c5_seed_corpus.json` is now tracked, but exact problem IDs still live separately in
-      `c5_rocm_oracle.json`; the requested joined field remains open.
+      `c5_rocm_oracle.json`; the requested joined field remained open at that checkpoint.
+      ✅2026-10-06 — [MAIN source/native acceptance](../../artifacts/ni08/c5-seed-provider-join-20261006/README.md): exact persisted eight-way join, unchanged193 workloads/dtypes, original27/27 controls and byte-identical Research publication. Exact historical policy bytes are recovered; versioned default-verifier path restoration remains separate source work.
 
 ### OPERATOR DECISION — port the SOL bound constants to gfx90a?
 
