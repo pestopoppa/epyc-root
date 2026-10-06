@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      APP_PIN: fbefc1549b136688938db11e571928c115819884
+      APP_PIN: 060a097642c326dfdd88de46d69b46214269db3f
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       NI07_RUNNER_CONTEXT: ubuntu-latest
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'

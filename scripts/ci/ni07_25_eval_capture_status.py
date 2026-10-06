@@ -54,9 +54,14 @@ def tracked_inputs(repo: Path):
             continue
         path = repo / name
         if path.suffix.lower() == ".py" or path.name in CONFIG_NAMES:
+            cursor = repo
+            for part in Path(name).parts:
+                cursor = cursor / part
+                if cursor.is_symlink():
+                    raise RuntimeError(f"tracked declared input is a symlink: {cursor}")
             if not path.is_file():
                 raise RuntimeError(f"tracked declared input is missing: {path}")
-            yield path.resolve()
+            yield path.absolute()
 
 
 def verify_locked_packages(app: Path) -> None:
@@ -151,16 +156,19 @@ def main() -> int:
         read_paths = [
             freeze,
             environment,
-            Path(__file__).resolve(),
-            recipe / ".github/workflows/ni07-25-eval-capture-status.yml",
+            Path(__file__).absolute(),
         ]
+        workflow = recipe / ".github/workflows/ni07-25-eval-capture-status.yml"
+        if workflow.is_symlink() or not workflow.is_file():
+            raise RuntimeError("declared recipe workflow must be a regular file")
+        read_paths.append(workflow.absolute())
         for repo in repos.values():
             read_paths.extend(tracked_inputs(repo))
         for name in APP_CONTEXTS:
             context = app / name
-            if not context.is_file():
+            if context.is_symlink() or not context.is_file():
                 raise RuntimeError(f"declared APP context is missing: {context}")
-            read_paths.append(context.resolve())
+            read_paths.append(context.absolute())
 
         native = carrier / "scripts/ci/native_conformance.py"
         argv = [
