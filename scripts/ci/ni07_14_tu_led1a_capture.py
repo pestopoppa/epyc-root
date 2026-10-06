@@ -12,7 +12,12 @@ from pathlib import Path, PurePosixPath
 
 ROOT_PIN = "1f09dde6818df8756be86feaabcedeb9f3a60748"
 READSET_REL = Path("artifacts/ni07-14-tu-led1a/ni07-14-tu-led1a-readset.json")
-SELECTION = ["scripts/autopilot/evals/dtap/tests/test_failure_ledger.py"]
+SELECTION = [
+    "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+    "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+    "scripts/autopilot/evals/dtap/tests/test_judge_guard.py",
+    "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py",
+]
 CONFIG_NAMES = {"pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini"}
 
 

@@ -1,5 +1,5 @@
 {
-  "app_pin": "d6efb623d7d57db5378de62c85d0d21c1f6e6cc3",
+  "app_pin": "face5c0f39f128d4d228ca7d7d7374a285518036",
   "app_python_config_closure": [
     {
       "git_blob": "61ba473c1d1ab577857840760fe21ab9218624ad",
@@ -857,9 +857,9 @@
       "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f"
     },
     {
-      "git_blob": "ef7b31ca2bb70e37daec47c7376af2e1bcf25fd8",
+      "git_blob": "aa5edb6fbd016069b3533869cec4d86a5e6e0a50",
       "path": "scripts/autopilot/evals/dtap/harness/failure_ledger.py",
-      "sha256": "974813655713f4dbf03e70c8d84a04dbe0e675bd991ffb042ff6ac812ab0ba58"
+      "sha256": "84c5e1d68e05a037e08bbbc16f9d9d69887c426b369f67f62c16208dca3cb3e6"
     },
     {
       "git_blob": "3c1591ae7ea494b1da39fe40764ae647210b1fd2",
@@ -872,9 +872,9 @@
       "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00"
     },
     {
-      "git_blob": "fb572e7109fb607901b2c6f3df0f03cb5656a86a",
+      "git_blob": "186f75e1206954af90e83df6a71f49dc2dcfa735",
       "path": "scripts/autopilot/evals/dtap/harness/runner.py",
-      "sha256": "dc9a9a5b5c4cc75456707f23e86386848ac3a2bcd2736c19de26c90ae0a4d56f"
+      "sha256": "814d0b4c6aa2cc753d68a2f3bc723752a96d7c315fa5b3cf1ab18fc7eb4aab3a"
     },
     {
       "git_blob": "d05e12aaebd44a2fb042ecc96015e3dfade23b04",
@@ -1022,9 +1022,9 @@
       "sha256": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4"
     },
     {
-      "git_blob": "3fa9d01e061932cbee11018b290ca9ef6452741b",
+      "git_blob": "c791837bd1d62690f09052acf1ad30439181ab78",
       "path": "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py",
-      "sha256": "ab118b4a760d5e1a0d954cb9dcffbd75c94dc858ed6edffab9f05bb39f662d33"
+      "sha256": "96e3079af209639c13075a1cc974811a396757654aadc6c1bb4ee811f7a9cb82"
     },
     {
       "git_blob": "4c189b59e787e3cb3f99e462896c244022aaea78",
@@ -10645,9 +10645,9 @@
       "sha256": "d3f7627c0ea2c097fdd727036803527418a4301ab9bb0dffa2b00d3606136b0f"
     },
     {
-      "git_blob": "ef7b31ca2bb70e37daec47c7376af2e1bcf25fd8",
+      "git_blob": "aa5edb6fbd016069b3533869cec4d86a5e6e0a50",
       "path": "scripts/autopilot/evals/dtap/harness/failure_ledger.py",
-      "sha256": "974813655713f4dbf03e70c8d84a04dbe0e675bd991ffb042ff6ac812ab0ba58"
+      "sha256": "84c5e1d68e05a037e08bbbc16f9d9d69887c426b369f67f62c16208dca3cb3e6"
     },
     {
       "git_blob": "3c1591ae7ea494b1da39fe40764ae647210b1fd2",
@@ -10660,9 +10660,9 @@
       "sha256": "f4552c01eefad64e8ff7f1c4952c2e9b89890a6105f83a1ae3f379c731cd8a00"
     },
     {
-      "git_blob": "fb572e7109fb607901b2c6f3df0f03cb5656a86a",
+      "git_blob": "186f75e1206954af90e83df6a71f49dc2dcfa735",
       "path": "scripts/autopilot/evals/dtap/harness/runner.py",
-      "sha256": "dc9a9a5b5c4cc75456707f23e86386848ac3a2bcd2736c19de26c90ae0a4d56f"
+      "sha256": "814d0b4c6aa2cc753d68a2f3bc723752a96d7c315fa5b3cf1ab18fc7eb4aab3a"
     },
     {
       "git_blob": "d05e12aaebd44a2fb042ecc96015e3dfade23b04",
@@ -10820,9 +10820,9 @@
       "sha256": "110614a894be145c42514a9ea1514c459c773afd72123557c30025c9622aa1f4"
     },
     {
-      "git_blob": "3fa9d01e061932cbee11018b290ca9ef6452741b",
+      "git_blob": "c791837bd1d62690f09052acf1ad30439181ab78",
       "path": "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py",
-      "sha256": "ab118b4a760d5e1a0d954cb9dcffbd75c94dc858ed6edffab9f05bb39f662d33"
+      "sha256": "96e3079af209639c13075a1cc974811a396757654aadc6c1bb4ee811f7a9cb82"
     },
     {
       "git_blob": "4c189b59e787e3cb3f99e462896c244022aaea78",
@@ -10842,9 +10842,9 @@
   ],
   "recipe_files": [
     {
-      "git_blob": "0e86e8ed9915b4be253e3b006cf409dcfe19dc02",
+      "git_blob": "b6c124ed1069c40d2c37aa799b7d3505190cefa6",
       "path": ".github/workflows/ni07-14-tu-led1a.yml",
-      "sha256": "a9972f71f4ba12d118dc1bc1bb8b5b1e58f86d98c930594e8950c4b6946db9eb"
+      "sha256": "71e298f4fe738dc21bc693b89a6dfeca01b48b693a4999b402f67185775ce56c"
     },
     {
       "git_blob": "4ec090f9f43a77bb5f8a651347d41d6a33a925e3",
@@ -10852,9 +10852,9 @@
       "sha256": "d9068321b5c07e5138e3adce3db7e911dc7d29201bb7ed9c9aa2fc92b137dc28"
     },
     {
-      "git_blob": "d27c80aaef5a11fd76cd9f5fec60e174744e39be",
+      "git_blob": "498de0f7fc46a799b4287fadfc27347b5e0c1147",
       "path": "scripts/ci/ni07_14_tu_led1a_capture.py",
-      "sha256": "74e58e72bb58a62297d4a0e869dd05adf94b782aa15c98bcb7b4fb913d3e3a83"
+      "sha256": "1003f8dda142badda8f49ed078c52ba0401cdfa04d435384a692a135120960ba"
     }
   ],
   "recipe_readset_path": "artifacts/ni07-14-tu-led1a/ni07-14-tu-led1a-readset.json",
@@ -14020,6 +14020,9 @@
   "root_carrier_repository": "epyc-root",
   "schema": "ni07-14-tu-led1a-source-readset.v1",
   "selection": [
+    "scripts/autopilot/evals/dtap/tests/test_tool_contract.py",
+    "scripts/autopilot/evals/dtap/tests/test_dtap_harness.py",
+    "scripts/autopilot/evals/dtap/tests/test_judge_guard.py",
     "scripts/autopilot/evals/dtap/tests/test_failure_ledger.py"
   ]
 }

@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 20
     env:
       ROOT_PIN: 1f09dde6818df8756be86feaabcedeb9f3a60748
-      APP_PIN: d6efb623d7d57db5378de62c85d0d21c1f6e6cc3
+      APP_PIN: face5c0f39f128d4d228ca7d7d7374a285518036
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONUNBUFFERED: '1'
