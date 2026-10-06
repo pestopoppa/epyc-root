@@ -1,0 +1,25 @@
+{
+  "schema": "epyc.rtg02.expected_cases/v1",
+  "root": [
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_the_debugbench_shape_is_caught", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_the_debugbench_shape_is_caught"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_a_genuine_oracle_is_not_flagged", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_a_genuine_oracle_is_not_flagged"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_short_incidental_containment_is_reported_but_not_structural", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_short_incidental_containment_is_reported_but_not_structural"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_exact_scorer_is_not_made_vacuous_by_containment", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_exact_scorer_is_not_made_vacuous_by_containment"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[llm-judge]", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_non_programmatic_methods_never_load_the_orchestrator_verifier[llm-judge]"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[code-execution]", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_non_programmatic_methods_never_load_the_orchestrator_verifier[code-execution]"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[math-verify]", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_non_programmatic_methods_never_load_the_orchestrator_verifier[math-verify]"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[unknown]", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_non_programmatic_methods_never_load_the_orchestrator_verifier[unknown]"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_non_programmatic_methods_never_load_the_orchestrator_verifier[exact]", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_non_programmatic_methods_never_load_the_orchestrator_verifier[exact]"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_failed_verifier_import_does_not_poison_the_module_cache", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_failed_verifier_import_does_not_poison_the_module_cache"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_programmatic_echo_uses_the_existing_verifier", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_programmatic_echo_uses_the_existing_verifier"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_programmatic_echo_that_fails_the_verifier_is_not_flagged", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_programmatic_echo_that_fails_the_verifier_is_not_flagged"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_programmatic_verifier_errors_are_unresolved_not_safe", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_programmatic_verifier_errors_are_unresolved_not_safe"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_a_longer_prefix_is_not_a_fix", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_a_longer_prefix_is_not_a_fix"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_missing_or_empty_expected_is_ignored_not_crashed", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_missing_or_empty_expected_is_ignored_not_crashed"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_vacuous_rows_does_not_already_catch_it", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_vacuous_rows_does_not_already_catch_it"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_small_suites_are_not_judged", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_small_suites_are_not_judged"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_empty_expected_across_a_suite_is_not_a_constant_oracle", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_empty_expected_across_a_suite_is_not_a_constant_oracle"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_write_core_jsonl_records_the_flag_and_scopes_it_to_drawn_suites", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_write_core_jsonl_records_the_flag_and_scopes_it_to_drawn_suites"},
+    {"classname": "tests.unit.test_core_pool_vacuous_oracle", "name": "test_suites_are_partitioned_not_pooled", "nodeid": "tests/unit/test_core_pool_vacuous_oracle.py::test_suites_are_partitioned_not_pooled"}
+  ]
+}
