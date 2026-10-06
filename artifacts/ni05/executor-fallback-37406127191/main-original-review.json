@@ -1,0 +1,47 @@
+{
+  "run": 37406127191,
+  "recipe": "45660107ffa880c2b97f08f5c775a5cf4aeb943c",
+  "archives": [
+    {
+      "name": "ni75-postcheck-37406127191",
+      "bytes": 49527716,
+      "sha256": "ee28d238a7dae694e87acc5013d20f22f74936f4f38b4e75e3460a40e45751f1"
+    },
+    {
+      "name": "ni75-setup-37406127191",
+      "bytes": 428079,
+      "sha256": "417e0b0b932f4b9a6d709d05cef21104ed9f35b0489c2f4a2be8447ab62d034a"
+    },
+    {
+      "name": "ni75-native-37406127191",
+      "bytes": 49524215,
+      "sha256": "cf1d59d440111942ef8387d84651fba7f0a54e5d097ab30570511371d2f0a101"
+    }
+  ],
+  "original_members_compared": 5564,
+  "receipt_FILE_sha256": "cb6726d07d366bf0e0f8d18a6a12834b02e33e948c6821a431f0b64d30b1f5e3",
+  "receipt_self_sha256": "eafd884c0d25216fa668feab22692d32820ecb3c09571ab13ab87f24d0ad5fbb",
+  "conformance": null,
+  "native_exit": 4,
+  "summary": null,
+  "readset_count": 2757,
+  "source_classes": {
+    "app": 2129,
+    "producer": 617,
+    "recipe": 1,
+    "context": 10
+  },
+  "all_declared_Git_inputs_exact": true,
+  "projection": null,
+  "postchecks": {
+    "app_source_unchanged": true,
+    "declared_mock_paths_absent": true,
+    "host_paths_absent": true,
+    "lock_unchanged": true,
+    "no_kernel_or_model_materialization": true,
+    "producer_unchanged": true,
+    "production_mounts_absent": true
+  },
+  "originals_unchanged": true,
+  "scope": "Six new synthetic no-launch unit cases; no production runtime/capacity or whole-suite claim"
+}

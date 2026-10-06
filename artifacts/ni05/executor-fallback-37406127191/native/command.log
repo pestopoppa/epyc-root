@@ -1,0 +1,35 @@
+Stack manifest admission fallback unavailable
+Traceback (most recent call last):
+  File "/home/runner/work/epyc-root/epyc-root/app/src/api/admission.py", line 79, in _limits_from_stack_manifest
+    from scripts.server.stack_manifest import HOT_SERVERS, SERIAL_ROLES, WARM_SERVERS
+  File "/home/runner/work/epyc-root/epyc-root/app/scripts/server/stack_manifest.py", line 42, in <module>
+    from scripts.server.stack_paths import LLAMA_MATH_TOOLS, _V2_ROLES, _PATHS
+  File "/home/runner/work/epyc-root/epyc-root/app/scripts/server/stack_paths.py", line 68, in <module>
+    _PATHS = _get_paths()
+             ^^^^^^^^^^^^
+  File "/home/runner/work/epyc-root/epyc-root/app/scripts/server/stack_paths.py", line 54, in _get_paths
+    else str(_kernel_backend_dir("cpu"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/runner/work/epyc-root/epyc-root/app/src/registry/kernel_paths.py", line 79, in backend_dir
+    raise KernelPathError(
+src.registry.kernel_paths.KernelPathError: kernel backend 'cpu' does not resolve: /mnt/raid0/llm/kernels/production/cpu is missing or dangling. Repoint it with: ln -sfn <build dir> /mnt/raid0/llm/kernels/production/cpu
+runtime-facts selected-servers read failed (KernelPathError: kernel backend 'cpu' does not resolve: /mnt/raid0/llm/kernels/production/cpu is missing or dangling. Repoint it with: ln -sfn <build dir> /mnt/raid0/llm/kernels/production/cpu)
+ImportError while loading conftest '/home/runner/work/epyc-root/epyc-root/app/tests/conftest.py'.
+tests/conftest.py:36: in <module>
+    from src.api.state import AppState
+src/api/__init__.py:26: in <module>
+    from src.api.state import get_state, AppState as AppState
+src/api/state.py:15: in <module>
+    from src.api.health_tracker import BackendHealthTracker
+src/api/health_tracker.py:41: in <module>
+    _ht_cfg = get_config().health_tracker
+              ^^^^^^^^^^^^
+src/config/__init__.py:931: in get_config
+    paths=PathsConfig(),
+          ^^^^^^^^^^^^^
+src/config/models.py:963: in <lambda>
+    else str(_kernel_backend_dir("cpu"))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/registry/kernel_paths.py:79: in backend_dir
+    raise KernelPathError(
+E   src.registry.kernel_paths.KernelPathError: kernel backend 'cpu' does not resolve: /mnt/raid0/llm/kernels/production/cpu is missing or dangling. Repoint it with: ln -sfn <build dir> /mnt/raid0/llm/kernels/production/cpu

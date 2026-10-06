@@ -1,0 +1,9 @@
+# NI75 executor fallback original evidence
+
+Original native TRUE: six collected/executed/passed cases, zero failures/errors/skips; one projected row Judged/Located. APP `fa1eb43a2c4431d695e5c4339373ecbf3b96aed6`, recipe `e1c234b527900c8096032122eaa3c844fd837356`, unchanged producer `2dff56e6c9263fe982b12b91eab0552e50610635`. Three absent import-only overrides permit configuration imports; the six tests explicitly clear/set the CPU override and forbid process launch.
+
+Main independently accepted full original custody, exact source/readset/context bindings and seven postchecks; its derivative `main-original-review.json` is copied unchanged. API ZIP seals and permitted custody metadata, original log/JUnit (when present), native receipt and original execution request are retained byte-for-byte here. Complete API `run.json` and `jobs.json` stay private: the public PII gate cannot distinguish their numeric CI identifiers from account numbers. Their unchanged original sizes and hashes are listed among the private exclusions; no original bytes were redacted and no gate or regex was bypassed. Original receipt FILE and embedded self-hash are distinct.
+
+**The public prefix cannot independently reopen the native receipt.** Every excluded private source-read/context/install snapshot and complete binary ZIP is listed with its original hash in `public-original-manifest.json`; complete originals remain private and unmodified at `/mnt/raid0/llm/tmp/codex-ni75-approved-20261006/run-37406900511-originals`. API custody/member metadata contains hashes, not excluded snapshot contents.
+
+Scope: bounded synthetic no-launch unit fixtures only. No production capacity, serving, linkage, deployment, inference noninterference or whole-suite pass is asserted. Original HIGH-impact negative query CI37361379823 remains separate ordinary evidence; the operator explicitly approved the focused repair.

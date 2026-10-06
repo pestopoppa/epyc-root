@@ -1,0 +1,91 @@
+{
+  "run": 37406900511,
+  "recipe": "e1c234b527900c8096032122eaa3c844fd837356",
+  "archives": [
+    {
+      "name": "ni75-postcheck-37406900511",
+      "bytes": 49538588,
+      "sha256": "7d6a4f765758aee525fa57ea4631f1e22dc997830c3a742a472b5aa9f95fc582"
+    },
+    {
+      "name": "ni75-native-37406900511",
+      "bytes": 49535087,
+      "sha256": "9033067f382c169ecd81c5f146ad66359c3b744329f021bfd5951af7dadf2f9a"
+    },
+    {
+      "name": "ni75-setup-37406900511",
+      "bytes": 429600,
+      "sha256": "1553853390a421f14afd83b098e580148ffa4c2c86ab251a93d9eb63533b4e12"
+    }
+  ],
+  "original_members_compared": 5570,
+  "receipt_FILE_sha256": "a65c3e89c01fc7304aa8cf778c331dff1867f1a3c6540693527c6d97b2e78a61",
+  "receipt_self_sha256": "f99c8fa820f2bab780acdd489725856d89e86cd0f7c2ea800680d71c1bf7bb36",
+  "conformance": true,
+  "native_exit": 0,
+  "summary": {
+    "cases": [
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_failed_registry_uses_cpu_store_and_legacy_names",
+        "status": "passed"
+      },
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_failed_registry_server_lookup_uses_cpu_store",
+        "status": "passed"
+      },
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_missing_store_refuses_server_start_before_popen",
+        "status": "passed"
+      },
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_whitespace_override_is_absent",
+        "status": "passed"
+      },
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_explicit_override_wins_without_store_lookup",
+        "status": "passed"
+      },
+      {
+        "classname": "ni75.tests.unit.test_executor_registry_failure_paths",
+        "name": "test_successful_registry_preserves_custom_names_and_one_load",
+        "status": "passed"
+      }
+    ],
+    "counts": {
+      "collected": 6,
+      "error": 0,
+      "executed": 6,
+      "failure": 0,
+      "passed": 6,
+      "skipped": 0
+    }
+  },
+  "readset_count": 2757,
+  "source_classes": {
+    "app": 2129,
+    "producer": 617,
+    "recipe": 1,
+    "context": 10
+  },
+  "all_declared_Git_inputs_exact": true,
+  "projection": [
+    "Judged",
+    "Located"
+  ],
+  "postchecks": {
+    "app_source_unchanged": true,
+    "declared_mock_paths_absent": true,
+    "host_paths_absent": true,
+    "lock_unchanged": true,
+    "no_kernel_or_model_materialization": true,
+    "producer_unchanged": true,
+    "production_mounts_absent": true
+  },
+  "originals_unchanged": true,
+  "scope": "Six new synthetic no-launch unit cases; no production runtime/capacity or whole-suite claim"
+}
