@@ -2680,7 +2680,9 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
 
 
 - [x] **VB-BSV-INPUT-STRICT — bind strict standalone native-outcome input handling prospectively.** ✅ 2026-10-06 — [OriginalCI37454712581](../../artifacts/ni07/run-37454712581/README.md) TRUE38/38 after MAIN3357Git+2contexts/all3367API member review; existing native carrier/shared grader, no new taxonomy/ladder/model quality warrant. Original FALSE31/38 remains separate and unchanged.
-  - [ ] **VB-KB-LAB-CONTEXT — capture existing native catalog dependency at lab context collection.** NI07-18/KB-LAB-CONTEXT-DEPENDENCY under VB-KB-CATALOG-CONSUMERS; strict original identity/null unknown/refusal before query/backend. No historical reconstruction/new class/all-query snapshot.
+  - [x] **VB-KB-LAB-CONTEXT — capture existing native catalog dependency at lab context collection.** ✅ 2026-10-06 — [OriginalCI37454908617](../../artifacts/ni07/run-37454908617/README.md) TRUE19/19 after MAIN3357Git+2contexts/all3367API review. Existing native record/null unknown/refusal before query/backend, no reconstruction/new class/all-query snapshot. Original FALSE17/19 retained independently.
 - [ ] **VB-TOOL-REPAIR-LOG — prospectively capture repair-log minimization source contracts.** NI07-19/TU-TC-1b, existing native CI/shared grading only; original synthetic sentinel/outcome/counter controls. Runtime global counters are descriptive, not decision authority; no new source class/ladder.
 
 - [x] **VB-NI07-CI-BSV-INPUT — ingest strict standalone input fixtures.** ✅ 2026-10-06 — [OriginalCI37454712581](../../artifacts/ni07/run-37454712581/README.md) TRUE38/38, one existing Judged/Located observation and three canonical frames; original FALSE31/38 independently reopened and retained, not regraded.
+
+  - [x] **VB-NI07-CI-LAB-CONTEXT — ingest lab dependency-consumer fixtures.** ✅ 2026-10-06 — [OriginalCI37454908617](../../artifacts/ni07/run-37454908617/README.md) TRUE19/19; one existing Judged/Located observation and3canonical frames after MAIN exact source/API review. Initial FALSE17/19 original retained, not resealed or regraded.

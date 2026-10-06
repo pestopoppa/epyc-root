@@ -1422,3 +1422,7 @@ The [K7 report consumer](../docs/reference/k7-report-catalog-dependency-contract
 ## 2026-10-06 individual vector publication
 
 [Staged NPZ publication](../docs/reference/kb-vector-staged-publication-contract.md) protects old canonical bytes from partial serialization and replace refusal at both KB writers, preserves modes and closes before replacement. [OriginalCI37451221250](../artifacts/ni07/run-37451221250/README.md) passes122/122 after MAIN source/API custody review. SQL/native catalog identity remains logical; later SQL failure, crash recovery and concurrent writes remain outside this guarantee.
+
+## 2026-10-06 lab collection provenance
+
+[Lab context provenance](../docs/reference/lab-kb-context-catalog-dependency-contract.md) records the original strict catalog identity at collection, before KB query and chat/command dispatch; stale/tamper refusal cannot become normal source fallback. Unknown legacy records remain null, public collection API and normal fallback remain. [OriginalCI37454908617](../artifacts/ni07/run-37454908617/README.md) passes19/19 after MAIN source/API custody review; original FALSE17/19 fixture failures retained. Collection identity is not an all-query snapshot or retrieval-quality warrant.

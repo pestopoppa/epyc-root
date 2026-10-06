@@ -1,0 +1,7 @@
+# Lab KB context collection provenance
+
+The lab runner reads the existing strict native catalog dependency once at KB context collection, before query, backend dispatch and output/task publication. Its manifest field `kb_catalog_dependency_at_context_collection` carries the selected resolved catalog path and original validated record. Missing or legacy native record remains null; non-KB context has null dependency. Invalid native seal/schema or stale logical catalog raises `LabRunnerError` outside the broad query-error fallback and before chat or deterministic command dispatch.
+
+Public `collect_context()` retains its two-value result. Normal source fallback, empty KB results, query failures, non-KB context and deterministic modes remain intact. This is a collection-time identity, not a report-time check or a frozen catalog over all queries. Catalog writer/schema/query/ranking/model behavior and native logical-only dependency scope remain unchanged; vector bytes are not attested.
+
+Two APP pathsaf27ec4d promoted maineb066f71; two ROOT recipe paths0f046712 promoted main89eeb251. [Original corrected off-host CI](../../artifacts/ni07/run-37454908617/README.md) passes19/19, both chat and command refusal ordering, original-record/unknown cases and existing module regressions. Initial FALSE17/19 fixture schema errors remain preserved separately. MAIN source/API/contexts review supports synthetic contracts only, not live retrieval or backend quality.
