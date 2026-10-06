@@ -1,13 +1,14 @@
 # NI08 prospective report adapter hosted capture recipe
 
-Status: **prepared for MAIN review; not dispatched**. This is a bounded synthetic source-wiring
-control. It does not assert corpus behavior, evaluator quality, inference, performance, or adoption.
+Status: **APP source proposal published; initial setup-only attempt failed before capture; retry recipe awaiting MAIN rebind**.
+This is a bounded synthetic source-wiring control. It does not assert corpus behavior, evaluator quality, inference, performance, or adoption.
 
 ## Exact source proposals
 
 The APP source is based on current published APP `81663c30177fb567b91df3ef9615060c8d018ab6`.
-The prepared APP proposal tip is `cfcf3768716de888a971bf66489397f5b91241df`; its source/test
-changes are private. The APP producer and package source hashes are:
+The prepared APP proposal tip is `cfcf3768716de888a971bf66489397f5b91241df`, published for review at
+[branch `codex/ni08-analysis-writers-cfcf-source-20261006`](https://github.com/pestopoppa/epyc-orchestrator/tree/codex/ni08-analysis-writers-cfcf-source-20261006).
+It remains unmerged. The APP producer and package source hashes are:
 
 | APP tracked path | SHA-256 |
 |---|---|
@@ -23,6 +24,13 @@ including `b6279387f` and its checkpointed SC80 source changes. This isolated br
 the source proposal and its capture recipe on top of that published source base. The exact final
 ROOT capture commit and manifest digest are recorded in the capture's pre-dispatch source map; do
 not substitute the ignored ledger or other workspace state.
+
+The first hosted attempt (ROOT `e923ec553771b342b0c3836d7f865bfdd5b85dab`, run
+`37544337444`) failed during the exact APP checkout because the pinned object had not yet been
+published to the public remote. Setup stopped before Python setup or capture; its original status
+artifact is retained at `/mnt/raid0/llm/tmp/ni08-vbs1-capture-37544337444` and has no native
+result. This retry recipe changes only the documented APP source-ref custody; the driver, tests,
+APP pin, job and output contract remain unchanged.
 
 The exact producer bytes above are loaded from an isolated temporary APP checkout by
 `test_analysis_producer_roundtrip.py`. The test verifies those bytes before import. It now pins
