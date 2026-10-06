@@ -31,13 +31,7 @@ jobs:
       ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/kernel-bin
       ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
       ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
-      ORCHESTRATOR_PATHS_PROJECT_ROOT: ${{ runner.temp }}/ni07-30-inert-project
-      ORCHESTRATOR_PATHS_LLM_ROOT: ${{ runner.temp }}/ni07-30-inert-llm
-      ORCHESTRATOR_PATHS_MODELS_DIR: ${{ runner.temp }}/ni07-30-inert-models
-      ORCHESTRATOR_PATHS_MODEL_BASE: ${{ runner.temp }}/ni07-30-inert-models
       ORCHESTRATOR_PATHS_LOG_DIR: /dev/null
-      ORCHESTRATOR_PATHS_CACHE_DIR: ${{ runner.temp }}/ni07-30-inert-cache
-      ORCHESTRATOR_PATHS_TMP_DIR: ${{ runner.temp }}/ni07-30-inert-tmp
       ORCHESTRATOR_PATHS_REGISTRY_PATH: >-
         ${{ github.workspace }}/app/orchestration/model_registry.yaml
       ORCHESTRATOR_MOCK_MODE: '1'
@@ -78,6 +72,13 @@ jobs:
       - name: Install exact lock-resolved import closure
         run: ${{ env.NI07_INSTALL_COMMAND }}
       - name: Capture original JUnit and native synthetic receipt
+        env:
+          ORCHESTRATOR_PATHS_PROJECT_ROOT: ${{ runner.temp }}/ni07-30-inert-project
+          ORCHESTRATOR_PATHS_LLM_ROOT: ${{ runner.temp }}/ni07-30-inert-llm
+          ORCHESTRATOR_PATHS_MODELS_DIR: ${{ runner.temp }}/ni07-30-inert-models
+          ORCHESTRATOR_PATHS_MODEL_BASE: ${{ runner.temp }}/ni07-30-inert-models
+          ORCHESTRATOR_PATHS_CACHE_DIR: ${{ runner.temp }}/ni07-30-inert-cache
+          ORCHESTRATOR_PATHS_TMP_DIR: ${{ runner.temp }}/ni07-30-inert-tmp
         run: python recipe/scripts/ci/ni07_30_standalone_numa_capture.py
       - name: Preserve status, original JUnit and every native receipt member
         if: always()
