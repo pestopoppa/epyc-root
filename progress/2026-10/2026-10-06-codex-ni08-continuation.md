@@ -74,3 +74,8 @@ MAIN corrected K2 historical web/encoder premises against APP79abe3ec and TD30f 
 ## Usage source acceptance
 
 MAIN independently recomputed all private allowlisted projection identities/counts/exclusions/sums/ratios/partial intensity distribution and manifest digests. Accepted DCP9A-USAGE/VB-DCP-LOG-USAGE, preserving prior excluded snapshots;26scoped completions(22flips+4scopedadditions). Stable214,334rows;3movingfiles excluded. No transcript bodies/HMAC rows public, no billing/cost/quality/coordination share claim. Definition1 genuinely lacks ordered completed-task quality/time records; parent remains open. Approved source copies/hashpins and aggregate evidence published; metadata ungraded.
+
+
+## Batch verifier source-review boundary
+
+MAIN approved corrected MF source with captured owner-command identity and honest syntax-only reporting, preserving onepatchset/default behavior. Prompt missing-check language permits honest terminal failure/unknown rather than maxturn deadlock. Worker snapshot transferred to independent clone; original4fileproposal retained in privateMAINcustody, MAINlane restoredclean only after preservation. Reviewed3filefinal sourcec0263f8c frozen/pushed to workerbranch; no accepted CI/mainpromotion yet. Filed VB-MFVBS-VERIFIER/source-table row before capture. No completion counted until original evidence review.
