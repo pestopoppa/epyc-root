@@ -30,14 +30,14 @@ DEFAULT_DIR = _APP_LOG_DIR / "serving_calls"
 DEFAULT_JUDGE_LOG = _APP_LOG_DIR / "coherence_judge" / "calls.jsonl"
 
 # These are per-call metrics. Direction is explicit and fixed here from the
-# serving-call contract: latency/wait lower; throughput, cache reuse and draft
-# acceptance higher. Counts used only as denominators stay in native metadata.
+# serving-call contract: latency/wait lower; throughput and draft acceptance
+# higher. A cache token count remains in native metadata but has no improvement
+# direction by itself, so it is not projected as a claim.
 _METRICS: dict[str, tuple[str, str]] = {
     "prompt_ms": ("ms", "lower_better"),
     "predicted_ms": ("ms", "lower_better"),
     "prompt_per_second": ("tokens/s", "higher_better"),
     "predicted_per_second": ("tokens/s", "higher_better"),
-    "cache_n": ("tokens", "higher_better"),
     "draft_acceptance_rate": ("fraction", "higher_better"),
     "pre_dispatch_wait_ms": ("ms", "lower_better"),
 }
@@ -63,7 +63,8 @@ def _stable_bytes(path: Path) -> bytes:
         raise ProjectionError(f"serving-call source unreadable: {path}: {exc}") from exc
     if ((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns) !=
             (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns) or
-            (after.st_dev, after.st_ino) != (current.st_dev, current.st_ino) or
+            (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns) !=
+            (current.st_dev, current.st_ino, current.st_size, current.st_mtime_ns) or
             len(raw) != after.st_size):
         raise ProjectionError(f"serving-call source changed during read: {path}")
     return raw
@@ -71,26 +72,42 @@ def _stable_bytes(path: Path) -> bytes:
 
 def discover(paths: str | Path | Iterable[str | Path] | None = None) -> tuple[Path, ...]:
     """Resolve exact current/rotated JSONL paths, excluding lock files."""
+    custom_bases: set[tuple[Path, str]] = set()
     if paths is None:
         override = os.environ.get("ORCHESTRATOR_SERVING_CALLS_LOG", "").strip()
         if override.lower() in {"off", "0", "none", "false", "disabled"}:
             candidates = []
         elif override:
             override_path = Path(override)
-            candidates = sorted(override_path.parent.glob(override_path.name + "*"))
+            candidates = [override_path, *override_path.parent.glob(override_path.name + ".*")]
+            custom_bases.add((override_path.parent, override_path.name))
         else:
             candidates = sorted(DEFAULT_DIR.glob("serving_calls.jsonl*"))
     elif isinstance(paths, (str, Path)):
         candidate = Path(paths)
-        candidates = (sorted(candidate.glob("serving_calls.jsonl*"))
-                      if candidate.is_dir() else [candidate])
+        if candidate.is_dir():
+            candidates = sorted(candidate.glob("serving_calls.jsonl*"))
+        else:
+            candidates = [candidate]
+            match = re.fullmatch(r"(.+)\.([1-9][0-9]*)", candidate.name)
+            base = match.group(1) if match else candidate.name
+            custom_bases.add((candidate.parent, base))
     else:
         candidates = [Path(p) for p in paths]
+        for candidate in candidates:
+            match = re.fullmatch(r"(.+)\.([1-9][0-9]*)", candidate.name)
+            base = match.group(1) if match else candidate.name
+            custom_bases.add((candidate.parent, base))
     result = []
     for path in candidates:
         if path.name.endswith(".lock"):
             continue
-        if not _ROTATED.fullmatch(path.name):
+        custom_name = any(
+            path.parent == parent and (path.name == base or
+                re.fullmatch(re.escape(base) + r"\.[1-9][0-9]*", path.name))
+            for parent, base in custom_bases
+        )
+        if not _ROTATED.fullmatch(path.name) and not custom_name:
             raise ProjectionError(f"unexpected serving-call source name: {path}")
         if not path.exists():
             continue
@@ -138,7 +155,7 @@ def read_records(paths: str | Path | Iterable[str | Path] | None = None) -> tupl
                 raise ProjectionError(f"serving-call row must be an object at {path}:{line_number}")
             if record.get("schema") != SCHEMA:
                 raise ProjectionError(f"wrong serving-call schema at {path}:{line_number}")
-            if record.get("timings_source") not in {"server", "absent"}:
+            if record.get("timings_source") not in ("server", "absent"):
                 raise ProjectionError(f"invalid serving-call timings_source at {path}:{line_number}")
             record_id = record.get("record_id")
             if not isinstance(record_id, str) or not record_id.strip():
@@ -175,12 +192,22 @@ def native_rows(paths: str | Path | Iterable[str | Path] | None = None) -> tuple
         record = native["record"]
         if record.get("timings_source") == "absent":
             continue
+        _validated_objects(record)
         timings = record.get("timings")
         if not isinstance(timings, Mapping):
             raise ProjectionError("server timing row has no timings object")
         metrics = [name for name in ("prompt_ms", "predicted_ms", "prompt_per_second",
-                                     "predicted_per_second", "cache_n")
+                                     "predicted_per_second")
                    if timings.get(name) is not None]
+        for name in ("prompt_ms", "predicted_ms", "prompt_per_second", "predicted_per_second"):
+            if timings.get(name) is not None:
+                value = _finite_number(timings[name], name)
+                if value < 0:
+                    raise ProjectionError(f"serving-call {name} cannot be negative")
+        cache_n = timings.get("cache_n")
+        if cache_n is not None and (
+                isinstance(cache_n, bool) or not isinstance(cache_n, int) or cache_n < 0):
+            raise ProjectionError("serving-call cache_n must be a nonnegative integer count")
         draft_n, accepted_n = timings.get("draft_n"), timings.get("draft_n_accepted")
         if draft_n is not None or accepted_n is not None:
             if (isinstance(draft_n, bool) or not isinstance(draft_n, int) or draft_n < 0 or
@@ -189,7 +216,13 @@ def native_rows(paths: str | Path | Iterable[str | Path] | None = None) -> tuple
                 raise ProjectionError("draft_n and draft_n_accepted must be valid nonnegative integers")
             if draft_n > 0:
                 metrics.append("draft_acceptance_rate")
-        if (record.get("queue") or {}).get("pre_dispatch_wait_ms") is not None:
+        queue = record.get("queue")
+        if not isinstance(queue, Mapping):
+            raise ProjectionError("serving-call queue must be an object")
+        if queue.get("pre_dispatch_wait_ms") is not None:
+            wait = _finite_number(queue["pre_dispatch_wait_ms"], "queue.pre_dispatch_wait_ms")
+            if wait < 0:
+                raise ProjectionError("serving-call queue.pre_dispatch_wait_ms cannot be negative")
             metrics.append("pre_dispatch_wait_ms")
         for metric in metrics:
             expanded.append({**native, "metric_field": metric})
@@ -268,7 +301,8 @@ def correlate(judge_rows: Iterable[Mapping[str, Any]],
             raise ProjectionError(f"duplicate serving-call record_id: {record_id}")
         seen_record_ids.add(record_id)
         caller = record.get("caller")
-        caller = caller if isinstance(caller, Mapping) else {}
+        if not isinstance(caller, Mapping):
+            raise ProjectionError("serving-call caller must be an object")
         parent_id = caller.get("parent_request_id")
         task_id = caller.get("task_id")
         judge = judges.get(parent_id) if isinstance(parent_id, str) else None
@@ -296,6 +330,33 @@ def _finite_number(value: Any, field: str) -> int | float:
     return value
 
 
+
+def _validated_objects(
+    record: Mapping[str, Any],
+) -> tuple[Mapping[str, Any], Mapping[str, Any], Mapping[str, Any], Mapping[str, Any], bool]:
+    """Validate native block shapes and report whether server identity is scoped."""
+    blocks = {}
+    for key in ("server", "caller", "queue", "provenance"):
+        value = record.get(key)
+        if not isinstance(value, Mapping):
+            raise ProjectionError(f"serving-call {key} must be an object")
+        blocks[key] = value
+    source = blocks["server"].get("identity_source")
+    if source not in ("absent", "unreadable", "stack_sidecar"):
+        raise ProjectionError("serving-call server.identity_source is missing or unknown")
+    scoped = False
+    if source == "stack_sidecar":
+        identity = blocks["server"]
+        argv = identity.get("argv_sha256")
+        binary = identity.get("binary_realpath")
+        model = identity.get("model_path")
+        scoped = (isinstance(argv, str) and re.fullmatch(r"[0-9a-f]{64}", argv) is not None
+                  and isinstance(binary, str) and bool(binary.strip())
+                  and isinstance(model, str) and bool(model.strip()))
+    return (blocks["server"], blocks["caller"], blocks["queue"],
+            blocks["provenance"], not scoped)
+
+
 def _date(record: Mapping[str, Any]) -> str:
     timestamp = record.get("ts_start")
     if not isinstance(timestamp, str):
@@ -321,9 +382,11 @@ def project_record(native: Mapping[str, Any]) -> tuple[ClaimTuple, ...]:
     if record.get("timings_source") == "absent":
         return ()
     candidates = []
-    timings = record.get("timings") or {}
+    timings = record.get("timings")
+    if not isinstance(timings, Mapping):
+        raise ProjectionError("server timing row has no timings object")
     candidates.extend(name for name in ("prompt_ms", "predicted_ms", "prompt_per_second",
-                                        "predicted_per_second", "cache_n")
+                                        "predicted_per_second")
                       if timings.get(name) is not None)
     draft_n, accepted_n = timings.get("draft_n"), timings.get("draft_n_accepted")
     if draft_n is not None or accepted_n is not None:
@@ -333,7 +396,9 @@ def project_record(native: Mapping[str, Any]) -> tuple[ClaimTuple, ...]:
             raise ProjectionError("draft_n and draft_n_accepted must be valid nonnegative integers")
         if draft_n > 0:
             candidates.append("draft_acceptance_rate")
-    queue = record.get("queue") or {}
+    queue = record.get("queue")
+    if not isinstance(queue, Mapping):
+        raise ProjectionError("serving-call queue must be an object")
     if queue.get("pre_dispatch_wait_ms") is not None:
         candidates.append("pre_dispatch_wait_ms")
     return tuple(project({**native, "metric_field": metric}) for metric in candidates)
@@ -360,7 +425,7 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
     if not isinstance(timings, Mapping):
         raise ProjectionError("server timing row has no timings object")
     metric_field = native.get("metric_field")
-    if metric_field not in _METRICS:
+    if not isinstance(metric_field, str) or metric_field not in _METRICS:
         raise ProjectionError(f"unknown serving-call metric {metric_field!r}")
     source_field = metric_field
     if metric_field == "draft_acceptance_rate":
@@ -381,19 +446,10 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
         if metric_field not in timings or timings[metric_field] is None:
             raise ProjectionError(f"serving-call timing {metric_field} is absent")
         value = timings[metric_field]
-    if metric_field == "cache_n" and (isinstance(value, bool) or not isinstance(value, int)):
-        raise ProjectionError("serving-call cache_n must be an integer token count")
     value = _finite_number(value, source_field)
     if value < 0:
         raise ProjectionError(f"serving-call {source_field} cannot be negative")
-    server = record.get("server")
-    provenance = record.get("provenance")
-    caller = record.get("caller")
-    queue = record.get("queue")
-    server = server if isinstance(server, Mapping) else {}
-    provenance = provenance if isinstance(provenance, Mapping) else {}
-    caller = caller if isinstance(caller, Mapping) else {}
-    queue = queue if isinstance(queue, Mapping) else {}
+    server, caller, queue, provenance, unscoped_identity = _validated_objects(record)
     line = native.get("source_line_bytes")
     line_sha = native.get("source_line_sha256")
     if not isinstance(line, bytes) or not isinstance(line_sha, str) or hashlib.sha256(line).hexdigest() != line_sha:
@@ -417,7 +473,7 @@ def project(native: Mapping[str, Any]) -> ClaimTuple:
         "provenance": dict(provenance),
         "timings_source": record.get("timings_source"),
         "queue": dict(queue),
-        "unscoped_server_identity": server.get("identity_source") == "absent",
+        "unscoped_server_identity": unscoped_identity,
         "judge_parent_request_id": caller.get("parent_request_id"),
         "judge_child_request_id": caller.get("request_id"),
     }

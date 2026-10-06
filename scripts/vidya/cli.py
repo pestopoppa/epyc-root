@@ -553,6 +553,7 @@ _FILE_SOURCES = (
     "contextbench-discovery-score",
     "strategy-projection-report",
     "session-intercall-gap",
+    "orchestrator-serving-call",
     "exl3-measurement", "exl3-verifier",
     "research-screen",
     "kv-quant-27b-v10-measurement", "embedder-placement-gate", "gfx90a-static-register",

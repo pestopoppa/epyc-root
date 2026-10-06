@@ -122,6 +122,11 @@ SOURCES: dict[str, Source] = {s.name: s for s in (
     Source("session-intercall-gap", "session_intercall_gap", _files("session-gap-pairs.jsonl"),
            note="prospective timestamp-pair integrity observations; exact enqueue and staging proxies stay separate",
            task="VB-GAP-DIST / HSF-3"),
+    Source("orchestrator-serving-call", "serving_call", _files("serving_calls.jsonl*"),
+           default=ORCHESTRATOR / "logs" / "serving_calls",
+           note="native self-hashed per-call serving timings; absent-timing rows emit no claims; "
+                "judge joins retain one row per attempt; no window aggregates",
+           task="VB-SERVE-TIMING-1"),
     Source("exl3-measurement", "exl3", _files("*.measurement.json"),
            natives="measurement_rows", project="project_measurement",
            note="prospective self-hashed EXL3 measurement receipts", task="VB-EXL3-CPU-GFX90A"),

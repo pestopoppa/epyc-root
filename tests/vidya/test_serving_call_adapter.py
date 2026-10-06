@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+import ast
+import os
 import sys
 from pathlib import Path
 
@@ -70,13 +72,13 @@ def _judge(call_id="cj-001", **over):
 def test_projects_only_native_explicit_metrics_with_exact_source_custody(tmp_path):
     path = _write_lines(tmp_path / "serving_calls.jsonl", _serving())
     rows = reader.native_rows(path)
-    assert len(rows) == 7
+    assert len(rows) == 6
     tuples = [reader.project(row) for row in rows]
     by_metric = {item.metric: item for item in tuples}
     assert set(by_metric) == {
         "serving_call.prompt_ms", "serving_call.predicted_ms",
         "serving_call.prompt_per_second", "serving_call.predicted_per_second",
-        "serving_call.cache_n", "serving_call.draft_acceptance_rate",
+        "serving_call.draft_acceptance_rate",
         "serving_call.pre_dispatch_wait_ms",
     }
     assert by_metric["serving_call.draft_acceptance_rate"].value == 0.75
@@ -92,6 +94,102 @@ def test_projects_only_native_explicit_metrics_with_exact_source_custody(tmp_pat
         assert item.extra["unscoped_server_identity"] is True
         assert item.extra["server"]["binary_realpath"] is None
         assert item.extra["provenance"]["orch_commit"] == "fixture-commit"
+
+
+def test_cache_count_stays_native_but_has_no_claim_direction(tmp_path):
+    row = _serving()
+    assert row["timings"]["cache_n"] == 12
+    path = _write_lines(tmp_path / "serving_calls.jsonl", row)
+    assert "cache_n" not in {item["metric_field"] for item in reader.native_rows(path)}
+
+    malformed = _serving()
+    malformed["timings"]["cache_n"] = -1
+    path = _write_lines(tmp_path / "serving_calls.jsonl", _sealed(malformed))
+    with pytest.raises(ct.ProjectionError, match="cache_n"):
+        reader.native_rows(path)
+
+
+def test_identity_source_is_validated_and_only_complete_sidecar_is_scoped(tmp_path):
+    valid = _serving(server={"identity_source": "stack_sidecar", "argv_sha256": "a" * 64,
+                             "binary_realpath": "/opt/server", "model_path": "/models/m"})
+    path = _write_lines(tmp_path / "serving_calls.jsonl", valid)
+    assert reader.project(reader.native_rows(path)[0]).extra["unscoped_server_identity"] is False
+
+    incomplete = _serving(server={"identity_source": "stack_sidecar",
+                                  "binary_realpath": "/opt/server", "model_path": "/models/m"})
+    path = _write_lines(tmp_path / "serving_calls.jsonl", incomplete)
+    assert reader.project(reader.native_rows(path)[0]).extra["unscoped_server_identity"] is True
+
+    for server in ({}, {"identity_source": "future_source"}, None):
+        path = _write_lines(tmp_path / "serving_calls.jsonl", _serving(server=server))
+        with pytest.raises(ct.ProjectionError, match="server"):
+            reader.native_rows(path)
+
+
+@pytest.mark.parametrize("field,value,message", [
+    ("prompt_ms", -1, "cannot be negative"), ("prompt_ms", "10", "finite number"),
+    ("prompt_per_second", float("nan"), "canonical JSON"),
+    ("predicted_ms", float("inf"), "canonical JSON"),
+])
+def test_refuses_invalid_metric_values(tmp_path, field, value, message):
+    row = _serving()
+    row["timings"][field] = value
+    # NaN/Infinity cannot be valid native canonical JSON; exercise malformed JSON
+    # values through the digest refusal, while finite malformed values reach metrics.
+    if isinstance(value, float) and not __import__("math").isfinite(value):
+        with pytest.raises(ct.ProjectionError, match=message):
+            reader.native_rows(_write_lines(tmp_path / "serving_calls.jsonl", row))
+    else:
+        path = _write_lines(tmp_path / "serving_calls.jsonl", _sealed(row))
+        with pytest.raises(ct.ProjectionError, match=message):
+            reader.native_rows(path)
+
+
+@pytest.mark.parametrize("draft_n,accepted", [(-1, 0), (True, 0), (3, 4), (3, None)])
+def test_refuses_invalid_draft_counts(tmp_path, draft_n, accepted):
+    row = _serving()
+    row["timings"]["draft_n"] = draft_n
+    row["timings"]["draft_n_accepted"] = accepted
+    path = _write_lines(tmp_path / "serving_calls.jsonl", _sealed(row))
+    with pytest.raises(ct.ProjectionError, match="draft_n"):
+        reader.native_rows(path)
+
+
+def test_refuses_malformed_native_block_shapes(tmp_path):
+    for field, value in (("caller", []), ("queue", None), ("provenance", "unknown")):
+        path = _write_lines(tmp_path / "serving_calls.jsonl", _serving(**{field: value}))
+        with pytest.raises(ct.ProjectionError, match=field):
+            reader.native_rows(path)
+
+
+def test_refuses_projected_source_line_mutation(tmp_path):
+    path = _write_lines(tmp_path / "serving_calls.jsonl", _serving())
+    row = dict(reader.native_rows(path)[0])
+    row["source_line_bytes"] = row["source_line_bytes"].replace(b"10.0", b"11.0", 1)
+    row["source_line_sha256"] = hashlib.sha256(row["source_line_bytes"]).hexdigest()
+    with pytest.raises(ct.ProjectionError, match="matching original line"):
+        reader.project(row)
+
+
+@pytest.mark.parametrize("rotate", [False, True])
+def test_refuses_path_rotation_or_mutation_during_read(tmp_path, monkeypatch, rotate):
+    path = _write_lines(tmp_path / "serving_calls.jsonl", _serving())
+    rotated = path.with_name("serving_calls.jsonl.1")
+    real_fstat = reader.os.fstat
+    calls = 0
+
+    def mutate_after_read(fd):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            if rotate:
+                path.rename(rotated)
+            path.write_bytes(b"replacement-with-different-size")
+        return real_fstat(fd)
+
+    monkeypatch.setattr(reader.os, "fstat", mutate_after_read)
+    with pytest.raises(ct.ProjectionError, match="changed during read"):
+        reader._stable_bytes(path)
 
 
 def test_absent_timing_row_is_native_metadata_only_even_when_queue_exists(tmp_path):
@@ -132,6 +230,30 @@ def test_discovery_includes_only_current_and_numbered_rotations(tmp_path):
     (tmp_path / "serving_calls.jsonl.lock").write_text("", encoding="utf-8")
     assert reader.discover(tmp_path) == (current, old)
     assert [row["record_id"] for row in reader.read_records(tmp_path)] == ["new", "old"]
+
+
+def test_explicit_native_writer_custom_filename_and_rotations_are_supported(tmp_path):
+    current = _write_lines(tmp_path / "private-calls.log", _serving())
+    older = _write_lines(tmp_path / "private-calls.log.2", _serving(record_id="older"))
+    assert reader.discover((current, older)) == (current, older)
+
+
+def test_native_digest_matches_pinned_writer_pure_helpers():
+    producer_root = os.environ.get("EPYC_ORCHESTRATOR_ROOT")
+    expected_sha = os.environ.get("EPYC_SERVING_CALLS_SOURCE_SHA256")
+    if not producer_root or not expected_sha:
+        pytest.skip("off-host receipt must pin APP checkout and producer source digest")
+    source = Path(producer_root) / "src/backends/serving_calls.py"
+    source_text = source.read_text(encoding="utf-8")
+    assert hashlib.sha256(source_text.encode("utf-8")).hexdigest() == expected_sha
+    tree = ast.parse(source_text, filename=str(source))
+    selected = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+                and node.name in {"_json_safe", "record_digest"}]
+    assert {node.name for node in selected} == {"_json_safe", "record_digest"}
+    namespace = {"Any": object, "hashlib": hashlib, "json": json}
+    exec(compile(ast.Module(body=selected, type_ignores=[]), str(source), "exec"), namespace)
+    record = _serving()
+    assert namespace["record_digest"](record) == reader._canonical_record_digest(record)
 
 
 def test_judge_join_uses_parent_id_and_preserves_distinct_attempts_once():
