@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      APP_PIN: 0059cfef33859b11adca42f53ff3f2831c558f32
+      APP_PIN: 88b5f44ad285e0accad6fc36f7c69377e06032b6
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       NI07_RUNNER_CONTEXT: ubuntu-latest
       NI07_EXECUTION_CONTEXT: offline-synthetic-guard-fixtures

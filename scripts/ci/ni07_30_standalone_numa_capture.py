@@ -11,7 +11,7 @@ import tomllib
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-APP_PIN = "0059cfef33859b11adca42f53ff3f2831c558f32"
+APP_PIN = "88b5f44ad285e0accad6fc36f7c69377e06032b6"
 SELECTIONS = (
     (
         "tests/unit/test_stack_change_guard.py::"
@@ -277,11 +277,16 @@ def main() -> int:
                         "The five new cases use synthetic topology YAML, a fake validation "
                         "seam, and explicit ambient/fleet traps. The four pipeline controls "
                         "call only mode-resolution functions; they do not run update/check. "
-                        "Two existing guard controls import static stack_manifest, which "
-                        "reads declared YAML and read-only /proc/meminfo during its import-time "
-                        "capacity check. No LLMPrimitives instance/backend execution method, "
+                        "Two selected launch-helper controls import static stack_manifest "
+                        "under a test-only fixture that intercepts only Path('/proc/meminfo') "
+                        "during module import with synthetic 1 TiB MemTotal; other path reads "
+                        "delegate unchanged, and the fixture removes the imported module cache "
+                        "at teardown. The runner's physical /proc/meminfo is read separately "
+                        "and recorded below as context, not substituted or asserted as a claim. "
+                        "No LLMPrimitives instance/backend execution method, "
                         "endpoint, server, kernel, inference, or live network call is invoked. "
-                        "The MemTotal line below is runner context, not an independent host claim."
+                        "Synthetic MemTotal is a test fixture only, not runner or production "
+                        "capacity evidence."
                     ),
                     "app_contexts": list(APP_CONTEXTS),
                     "app_config_extras": list(APP_CONFIG_EXTRAS),
