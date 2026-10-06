@@ -50,41 +50,7 @@ conftest. Third-party roots are `httpx`, `pydantic`, `pydantic-settings`, PyYAML
 module's `scikit-learn`; the hosted requirements pin these roots and their applicable APP-lock
 transitive dependencies.
 
-ROOT critical source/test/carrier pins at the recipe's current pre-recipe commit are:
-
-| ROOT tracked path | SHA-256 |
-|---|---|
-| `scripts/ci/native_conformance.py` | `2b8c63121e1472d10849224911ee8f4035b7f758ce1aefca7c766e2de263aa0e` |
-| `scripts/ci/ni08_source_context.py` | `d163ead4f47619c7ce4a18f99e3e0ff4216922918e9fa06ca6eaec042a03b7df` |
-| `scripts/ci/ni08_run_hosted_capture.py` | `c6e4a32cd557a89a5bdb3c6bbd466402cf4b83a8c15f1164d6125e746497c1cb` |
-| `scripts/ci/ni08-hosted-expected-cases.json` | `a44a0a89e2486f7e285d170ba39051581cdcaef3a4ee8caa162c7cc76142bc15` |
-| `.github/workflows/ni08-vbs1-evaldisc-native.yml` | `316da11d254a3b8f236bd8b79ce4892a28f8cb9bd60d57db49c3eec28cb5f626` |
-| `scripts/ci/ni08-hosted-requirements.txt` | `90450957d13a67f2ff9f4e4a969b0ade0ec08ae556ad05540ca0887491b7bb58` |
-| `scripts/vidya/adapters/ci_conformance.py` | `aceba149c1b3386e2edd0f8ce5b0bd6bb1d4489d0fe3b3275f8984050aeeb19c` |
-| `scripts/vidya/adapters/_analysis_report_provenance.py` | `15014d0ded8685d79428b2d82a2f661a09eca2cef89548d5bbc2bd028baaa12e` |
-| `scripts/vidya/adapters/verify_before_stop.py` | `31e54f1bd0531b3830338ced032ff6a62ac14ceb1c2ec2f9440d635e80960049` |
-| `scripts/vidya/adapters/eval_suite_discriminability.py` | `8f8aa67c3ab87d263061b1f4d9e5266e15f5038695e61b56e314debfda76afd1` |
-| `scripts/vidya/claim_tuple.py` | `058749d2a1ce3487672e85cc5a18fd352b6f17e741a47d7f48bb55be278f4bfe` |
-| `scripts/vidya/ingest_sources.py` | `a0df31d8a4dd1189dab7e5c7dae70f247268b063217dcdbccd8fb1fae4cf6eaf` |
-| `scripts/vidya/cli.py` | `b2aa0b86eea6dc10e943b781dea8b7323e24976b7b57cb02d3a6c528f9ba4a7a` |
-| `scripts/vidya/citation_gate.py` | `14bcad1be3ea81496abe7f92403eeb0a99b5f4d26ee55fe9d633ece5a78bb8e0` |
-| `scripts/vidya/wiki_dependents.py` | `023feb86f1bd8611ef405504fb9ff815578e0ceaf59376cc8281bdc745c208e2` |
-| `scripts/vidya/canonical.py` | `cda6809d24382cbbfa80308c9f8df4eca353f458039816753b1c20156adf1434` |
-| `scripts/vidya/lattice.py` | `a889442eecf1887f5d5a4a1193dc0d7760efb668cf31cda21e1d226ec8b24da2` |
-| `scripts/vidya/fold.py` | `f22dfc750d55c6fbc01cc0b56847f5684417221af5b392e7da7a8d46b2ec2cab` |
-| `scripts/vidya/gate.py` | `01a87a9927d4553e2008bdeed7a04728515ba49a885082cfbc7bcfcb2cd91b6b` |
-| `scripts/vidya/frames.py` | `f47f148218ae99d54c51b322bf4f3b0632d4458e49572843f5ed4aa424d15749` |
-| `scripts/vidya/ledger.py` | `552689d03bf14e11c5e0fee98ba3ab37c43f280751f098ed265cff843b337b09` |
-| `tests/conftest.py` | `e600504b4edfec57fce0a4c1e2fd6d217e2726c6261d502bad30afc8dd17eb7a` |
-| `tests/vidya/test_analysis_producer_roundtrip.py` | `15d2a863cc6f1bd343e55b48d5fdd11cf398ba1c0d1b9d985019fdb75eba4c09` |
-| `tests/vidya/test_analysis_report_adapters.py` | `830e26a56c70a3c0160eea341dd82697594c8ea891b620cc995328364fe60b94` |
-| `tests/vidya/test_citation_gate.py` | `48c2326df76b93828f7ef5680589b8616e0e33c53d5fadf50b67e83ef3e8d439` |
-| `tests/vidya/test_claim_tuple.py` | `93a01202da69951afd170d61f527abd7e21c52853d8f6c429ccf5265aa4b2a6b` |
-| `tests/vidya/test_ingest_sources.py` | `b8ba17a255997189b8119468c730b9830ff1d059da77e92148206deabfbd90d1` |
-| APP `tests/test_analysis_report_provenance.py` | `f9becce57813ff7bb04f8c74d46aec1e566f194be069f0343bbcff7324ece1be` |
-| APP `tests/test_analysis_report_snapshot_sealing.py` | `7a89576ec674bf94c2764f5bc997784a4abce736e8f2609c27d4b621820e423c` |
-| APP `tests/test_eval_suite_discriminability.py` | `9d2f4b78d1d288ea80a9f920c5d0764cad4b0060a56764dfd61e1b975ec5a591` |
-| APP `tests/unit/test_stat_tests.py` | `a512050a8fe09694ec058acaab66657dc80adca57a5f826aade8aa1a7db81850` |
+The exact current ROOT and APP file identities are carried by the generated Git-object source-context manifest and the explicit readset in `scripts/ci/ni08_run_hosted_capture.py`; this recipe does not duplicate a pin table that could drift from the commit being captured. The final pre-dispatch map records each read path, Git blob, byte count and SHA-256.
 
 ## Minimal locked runner environment
 
