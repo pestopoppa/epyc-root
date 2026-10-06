@@ -8,6 +8,7 @@ from pathlib import Path
 
 CONFIG_NAMES = {"pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini"}
 SELECTIONS = [
+    "tests/unit/test_colbert_lock_contract.py",
     "tests/unit/test_kb_rag_caps.py",
     "tests/unit/test_kb_rag_tokenizer_identity.py",
 ]
@@ -31,9 +32,9 @@ def main():
     workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve()
     repos = {"root": workspace / "root", "recipe": workspace / "recipe",
              "orchestrator": workspace / "app"}
-    result = Path(os.environ["RUNNER_TEMP"]) / "ni07" / "result" / "k2"
+    result = Path(os.environ["RUNNER_TEMP"]) / "ni07" / "result" / "s9"
     result.mkdir(parents=True, exist_ok=True)
-    status = {"job": "k2", "state": "preparing", "exit_code": None}
+    status = {"job": "s9", "state": "preparing", "exit_code": None}
     status_path = result / "status.json"
     try:
         freeze = result / "pip-freeze.txt"
@@ -50,7 +51,7 @@ def main():
                 "PYTHONPATH", "ORCHESTRATOR_MOCK_MODE", "ORCHESTRATOR_LOG_DIR",
                 "KB_RAG_QUERY_LENGTH_LOG",
             )},
-            "isolation": "normal imports; fake encoders; temporary catalogs; process controls patched; no pools",
+            "isolation": "fake sessions/tokenizers; temporary catalogs; event-driven thread interleavings; process controls patched; fake Pool constructor only; no process creation",
         }, indent=2) + "\n")
         junit = result / "junit.xml"
         if junit.exists():
