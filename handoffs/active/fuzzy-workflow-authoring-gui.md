@@ -1,5 +1,6 @@
 # Fuzzy Workflow Authoring GUI — deterministic flow, fuzzy steps, one canvas
 
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (NI08 contract review) · worktrees: `/mnt/raid0/llm/worktrees/codex-fw3-prior-art-proposal-root-20261006`
 **Status**: stub (design idea from operator steering, 2026-09-17)
 **Created**: 2026-09-17 (via research intake, operator-approved 2026-09-17)
 **Categories**: agent_architecture, tool_implementation, harness_optimization

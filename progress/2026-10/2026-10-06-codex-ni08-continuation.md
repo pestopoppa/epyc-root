@@ -54,3 +54,8 @@ MAIN independently reopened run37520888816/artifact11439607473 ZIPf217541b,all3,
 ## Contract and prior-art boundary
 
 MAIN applied M19-RECORD/FW2 contracts to APPmain `be8d46f61edcf5cb795d485b1a8171c562ee4971` after privacy/provenance/digest/revision fixes, normal doc commit and serialized CAS push. MAIN applied FW3 official-source note/citation and CFHF1 11-implementation source matrix after independently binding92Gitblobs/44exports; corrected AggAgent sequential loop/workspace distinctions. Four scoped completions (three existing flips+one added record-design subtask) bring NI08 to21/19flips+2added subtasks. No tests/imports/inference/runtime changes for documentation. M19 parent and GUI run remain open; prospective metadata/report sources/tasks filed immediately before future capture.
+
+
+## Triage and usage-capture boundary
+
+MAIN adopted INF02 five-label non-exclusive metadata contract, explicit classified/unknown state and MHS5 cross-link; existing runtime retry taxonomy unchanged. One existing checkbox closure brings NI08 to22 scoped completions. Filed VB-DCP-LOG-USAGE/source-table row before exact v3 source-approved allowlisted read. Earlier usage snapshots remain excluded; no quality/task grouping or billing authority inferred. Three completed-design handoffs now declare actual Scratch custody.

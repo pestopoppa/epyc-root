@@ -236,3 +236,5 @@ the wiki half is queued for the compilation sweep).
 - Housekeeping rider (E0, owned elsewhere): the dangling pointer at
   `handoffs/completed/meta-harness-optimization.md:3` should be repointed at this stub or the clause
   deleted.
+
+The [five execution-alignment triage labels](../../docs/reference/agent-run-failure-triage.md) provide descriptive failure-trajectory vocabulary for MHS-5 consumers. They are metadata, not held-out outcome grades or patch-safety predictions.
