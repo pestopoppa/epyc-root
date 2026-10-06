@@ -45,3 +45,5 @@ TD30F-PUBLIC-REPLAY and VB-TD30F-REPLAY accepted:29 scoped completions (24 exist
 AUD13 and AUD14 accepted:31 scoped completions (26 existing checkbox flips+5 scoped additions). [Consistent scoped attribution and reported dispute](../../artifacts/ni08/coordinator-attribution-source-review-20261006/README.md). RI19 reversible config branch83d530 is published; live RI16 replay remains its owner boundary and adds no completion.
 
 MF-VBS2-SRC and VB-MFVBS-VERIFIER accepted after original9/9 integrity review and byte-identical APPmain publication:33 scoped completions (27 existing flips+6 scoped additions). [Bounded source acceptance](../../artifacts/ni08/batch-verifier-source-20261006/README.md); parent BEP remeasurement remains open.
+
+Newly verified remaining work: VB-MFVBS-1 and VB-EVALDISC-1 lack adapters, and both writers omit native input/source identities needed for a strict claim projection. VB-MFVBS1-PROV and VB-EVALDISC1-PROV are enrolled before capture; private implementation is under MAIN review. Old aggregates remain descriptive, no reconstruction. These preparations add no completions; wider source eligibility audit remains open.

@@ -1778,6 +1778,13 @@ Codex's sign-off before it lands** (shared files).
   `run_unstable`/`brittle`/flip_rate claims refused wherever an input run was error-dominated (RTG-16);
   their MDE/pass_rate stay admissible. Project, do not grade.
 
+### Prospective native provenance before the two analysis adapters — 2026-10-06
+
+Current APP e2d3a670 source review finds no read-side Source registration for either producer. The MF aggregate drops input content/source identities; EvalDisc v1 records paths but no byte/source binding. Deterministic historical JSON does not supply a missing original warrant. The existing caution/direction/denominator rules remain; no new ladder or historical identity reconstruction is authorized.
+
+- [ ] **VB-MFVBS1-PROV — capture verify-before-stop report provenance at its native writer.** Bind exact parsed input bytes and preserved snapshot/manifest, original report/source schema and revision, stable native record identity and corpus scope before the strict VB-MFVBS-1 adapter. Preserve all metric bodies and denominators; unknown stays unknown. Historical identityless output remains descriptive and is refused for ClaimTuple projection. Validate writer/reader controls in isolated native CI through the existing shared grade only; no actual BEP run or efficacy claim.
+- [ ] **VB-EVALDISC1-PROV — capture discriminability report provenance at its native writer.** Bind exact selected input bytes/snapshots, original report/source schema/revision and record identity before the strict VB-EVALDISC-1 adapter. Preserve current error filtering, native denominators and metric direction. No lexical ordering of Git hashes or guessed legacy era; missing original identities are refused. Existing observation carrier/shared grade only, no historical backfill or experiment run.
+
 ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat)
 
 Producer: research lane `lane/ak-actor-seat-20260924` @ `e9495971` (`loop/actors.py` appends
