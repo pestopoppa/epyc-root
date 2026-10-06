@@ -762,6 +762,43 @@ def check(state: dict) -> list[str]:
     return errs
 
 
+def graph_freshness_warnings(state: dict) -> list[str]:
+    """Return advisory findings for the generated backlog graph.
+
+    The graph is a cached dashboard view. Its absence or staleness should be visible to
+    maintainers running ``--check``, but it must not change the existing hard-check result.
+    ``generated_at`` is the sole volatile field in ``build_graph``; all other fields are
+    compared as JSON values, so object-key ordering is naturally irrelevant while list
+    ordering remains significant.
+    """
+    try:
+        current = json.loads(GRAPH.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return [f"generated graph is missing: {_graph_display_path()}"]
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        return [f"generated graph is unreadable or invalid JSON: "
+                f"{_graph_display_path()} ({exc})"]
+
+    if not isinstance(current, dict):
+        return [f"generated graph is malformed: {_graph_display_path()} "
+                "(expected a JSON object)"]
+
+    expected = build_graph(state)
+    current_without_timestamp = {k: v for k, v in current.items() if k != "generated_at"}
+    expected_without_timestamp = {k: v for k, v in expected.items() if k != "generated_at"}
+    if current_without_timestamp != expected_without_timestamp:
+        return [f"generated graph is stale: {_graph_display_path()} differs from "
+                "the graph built from this checkout"]
+    return []
+
+
+def _graph_display_path() -> str:
+    try:
+        return str(GRAPH.relative_to(REPO_ROOT))
+    except ValueError:
+        return str(GRAPH)
+
+
 def scratch_warnings(state: dict) -> list[str]:
     """WARNINGS (never failures) for the **Scratch** header field (operator, 2026-10-04).
 
@@ -888,6 +925,8 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.check:
         errs = check(state)
+        for warning in graph_freshness_warnings(state):
+            print(f"ADVISORY WARNING: {warning}", file=sys.stderr)
         errs += citation_check()
         for e in errs:
             print(e)
