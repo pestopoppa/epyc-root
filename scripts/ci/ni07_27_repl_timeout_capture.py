@@ -37,6 +37,8 @@ APP_CONTEXTS = (
     "src/session/sqlite_store.py",
     "orchestration/model_registry.yaml",
     "orchestration/tool_registry.yaml",
+    "orchestration/derived/stack_priors.yaml",
+    "orchestration/workload_model.yaml",
     *SELECTED_FILES,
 )
 LOCKED_FIXTURE_PACKAGES = {
@@ -75,6 +77,10 @@ LOCKED_FIXTURE_PACKAGES = {
     'Pygments': '2.20.0',
 }
 EXPECTED_CASES = 123  # 117 NI24 cases plus six timeout-specific cases; no parametrization.
+EXPECTED_PINS = {
+    "app": "506acf51a060adc85e4c693221a2f50cd3342968",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+}
 
 def git_head(repo: Path) -> str:
     return subprocess.check_output(
@@ -134,13 +140,37 @@ def main() -> int:
     repos = {"recipe": recipe, "carrier": carrier, "app": app}
     result = runner_temp / "ni07-27-repl-timeout" / "result"
     result.mkdir(parents=True, exist_ok=True)
+    runtime_context = result / "runtime-context"
+    runtime_context.mkdir(parents=True, exist_ok=True)
+    runtime_facts_fixture = runtime_context / "orchestrator_runtime_facts.json"
+    runtime_facts_fixture.write_text('{}\n', encoding="utf-8")
     runtime_flags_fixture = result / "runtime-flags-fixture.json"
     runtime_flags_fixture.write_text('{"flags":{}}\n', encoding="utf-8")
+    isolated_logs = result.parent / "logs"
+    isolated_logs.mkdir(parents=True, exist_ok=True)
     os.environ["ORCHESTRATOR_RUNTIME_FLAGS_PATH"] = str(runtime_flags_fixture)
+    os.environ["TMPDIR"] = str(runtime_context)
+    os.environ["ORCHESTRATOR_PATHS_LLM_ROOT"] = str(runtime_context)
+    os.environ["ORCHESTRATOR_PATHS_TMP_DIR"] = str(runtime_context)
+    os.environ["ORCHESTRATOR_PATHS_LOG_DIR"] = str(isolated_logs)
     status_path = result / "status.json"
     status = {"state": "preparing", "job": "repl-timeout", "exit_code": None}
     status_path.write_text(json.dumps(status, sort_keys=True) + "\n", encoding="utf-8")
     try:
+        for name, expected in EXPECTED_PINS.items():
+            env_name = "APP_PIN" if name == "app" else "ROOT_CARRIER_PIN"
+            if os.environ.get(env_name) != expected:
+                raise RuntimeError(f"{env_name} differs from recipe-pinned {name} SHA")
+        isolation = {
+            "ORCHESTRATOR_MOCK_MODE": "1",
+            "ORCHESTRATOR_SERVING_CALLS_LOG": "off",
+            "ORCHESTRATOR_COHERENCE_JUDGE": "0",
+            "ORCHESTRATOR_COHERENCE_JUDGE_LOG": "off",
+            "ORCHESTRATOR_PATHS_PROJECT_ROOT": str(app),
+        }
+        for name, expected in isolation.items():
+            if os.environ.get(name) != expected:
+                raise RuntimeError(f"{name} is not set to reviewed isolated value {expected!r}")
         if os.environ["NI27_RUNNER_CONTEXT"] != "ubuntu-latest":
             raise RuntimeError("runner context differs from reviewed recipe")
         if sys.version_info[:3] != (3, 13, 15):
@@ -150,8 +180,8 @@ def main() -> int:
             raise RuntimeError(f"uv version is {uv_version!r}, expected uv 0.8.15")
         expected_pins = {
             "recipe": os.environ["GITHUB_SHA"],
-            "carrier": os.environ["ROOT_CARRIER_PIN"],
-            "app": os.environ["APP_PIN"],
+            "carrier": EXPECTED_PINS["carrier"],
+            "app": EXPECTED_PINS["app"],
         }
         for name, repo in repos.items():
             actual = git_head(repo)
@@ -184,8 +214,9 @@ def main() -> int:
                         "uv.lock sync. pytest and pytest-asyncio plus their exact lock closure are explicit fixture "
                         "packages. networkx==3.6.1 is an explicit lock-pinned graph metadata fixture because the "
                         "base no-dev sync excludes its optional torch path. model_registry.yaml and tool_registry.yaml "
-                        "are declared runtime contexts; runtime flags use a captured empty offhost fixture. No "
-                        "sandbox/model extras are installed."
+                        "plus derived stack priors and workload model are captured runtime contexts; runtime flags "
+                        "use an empty offhost fixture, and runtime facts use an empty rejected-manifest fixture. "
+                        "No sandbox/model extras are installed."
                     ),
                     "runtime_flags_fixture": str(runtime_flags_fixture),
                     "selected_tests": list(SELECTIONS),
@@ -201,6 +232,15 @@ def main() -> int:
                             "PYTHONUNBUFFERED",
                             "ORCHESTRATOR_SESSION_HMAC_KEY",
                             "ORCHESTRATOR_RUNTIME_FLAGS_PATH",
+                            "ORCHESTRATOR_MOCK_MODE",
+                            "ORCHESTRATOR_SERVING_CALLS_LOG",
+                            "ORCHESTRATOR_COHERENCE_JUDGE",
+                            "ORCHESTRATOR_COHERENCE_JUDGE_LOG",
+                            "ORCHESTRATOR_PATHS_PROJECT_ROOT",
+                            "ORCHESTRATOR_PATHS_LLM_ROOT",
+                            "ORCHESTRATOR_PATHS_TMP_DIR",
+                            "ORCHESTRATOR_PATHS_LOG_DIR",
+                            "TMPDIR",
                             "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
                             "ORCHESTRATOR_PATHS_LLAMA_MTMD",
                             "ORCHESTRATOR_PATHS_LLAMA_SERVER",
@@ -229,6 +269,7 @@ def main() -> int:
             freeze,
             environment,
             runtime_flags_fixture,
+            runtime_facts_fixture,
             Path(__file__).absolute(),
             reject_symlink_components(recipe, ".github/workflows/ni07-27-repl-timeout.yml"),
         ]
