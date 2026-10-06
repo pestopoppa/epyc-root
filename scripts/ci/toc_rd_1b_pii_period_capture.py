@@ -4,13 +4,17 @@ import hashlib, json, os, platform, subprocess, sys
 from pathlib import Path, PurePosixPath
 
 ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
-SOURCE_PIN = "91cb89c588d0ac1c91d6e024aed0015c8c40643d"
+SOURCE_PIN = "89d669b2bc81b21a53295ab7640b045810d09081"
 WORKFLOW_PATH = ".github/workflows/toc-rd-1b-pii-period.yml"
-CONFIG_NAMES = {"pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini", "uv.lock"}
+CONFIG_NAMES = {
+    "pyproject.toml", "pytest.ini", "setup.cfg", "tox.ini", "uv.lock",
+    "Pipfile.lock", "poetry.lock", "requirements.txt",
+}
+TRACKED_RUNTIME_SUFFIXES = {".py", ".yaml", ".yml", ".toml", ".ini", ".cfg"}
 SELECTIONS = (
     "scripts/hooks/tests/test_pii_staged_capture.py",
 )
-EXPECTED_CASES = 75
+EXPECTED_CASES = 73
 INSTALL_COMMAND = (
     "python -m pip install --require-hashes -r recipe/requirements-pii-capture.txt"
 )
@@ -36,13 +40,17 @@ def regular_repo_file(repo: Path, name: str) -> Path:
         raise RuntimeError(f"declared read is missing or not a regular file: {name}")
     return path.absolute()
 
-def tracked_python_config(repo: Path) -> list[Path]:
+
+def is_runtime_input(name: str) -> bool:
+    relative = PurePosixPath(name)
+    return (relative.suffix in TRACKED_RUNTIME_SUFFIXES or relative.name in CONFIG_NAMES or
+            (relative.name.startswith("requirements") and relative.suffix == ".txt"))
+
+
+def tracked_runtime_inputs(repo: Path) -> list[Path]:
     paths = []
     for name in git(repo, "ls-files", "-z").split("\0"):
-        if not name:
-            continue
-        relative = PurePosixPath(name)
-        if relative.suffix == ".py" or relative.name in CONFIG_NAMES:
+        if name and is_runtime_input(name):
             paths.append(regular_repo_file(repo, name))
     return paths
 
@@ -56,9 +64,7 @@ def derive_git_manifest(repos: dict[str, Path]) -> dict[str, list[dict[str, str]
     manifest: dict[str, list[dict[str, str]]] = {}
     for label, repo in repos.items():
         names = set(git(repo, "ls-files", "-z").split("\0"))
-        selected = {name for name in names if name and (
-            PurePosixPath(name).suffix == ".py" or PurePosixPath(name).name in CONFIG_NAMES
-        )}
+        selected = {name for name in names if name and is_runtime_input(name)}
         selected.update(extras[label])
         entries = []
         for name in sorted(selected):
@@ -123,7 +129,7 @@ def main() -> int:
             "expected_case_count": EXPECTED_CASES, "install_command": INSTALL_COMMAND,
             "git_path_blob_manifest": git_manifest,
             "runtime_contexts": ["environment.json", "pip-freeze.txt"],
-            "dependency_basis": "Pinned pytest 9.0.3 and exact runtime closure only; the selected ROOT hook fixtures use stdlib plus pytest.",
+            "dependency_basis": "The full staged-capture test file was statically traced: direct imports use pytest and stdlib; the selected Vidya CLI path lazily imports ingest_sources, pii_staged_gate, and claim_tuple, which also use stdlib. Five wheel-only packages are hash-locked; no YAML parser is imported by this path.",
             "isolation": "Entire disposable-index PII capture suite (75 collected cases), including fabricated perf rows and synthetic secret controls; no historical prompt/PII source, production repo, APP, model, kernel, or inference calls.",
             "environment": {key: os.environ.get(key) for key in (
                 "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONDONTWRITEBYTECODE", "PYTHONHASHSEED",
@@ -133,8 +139,9 @@ def main() -> int:
         junit, native = result / "original-junit.xml", result / "native"
         if junit.exists() or native.exists():
             raise RuntimeError("refusing to overwrite existing native capture outputs")
-        read_paths = [freeze, environment, *(path for repo in repos.values() for path in tracked_python_config(repo))]
-        read_paths.extend((recipe / WORKFLOW_PATH, recipe / "requirements-pii-capture.txt", source / "scripts/hooks/pii_precommit.sh"))
+        read_paths = [freeze, environment, *(path for repo in repos.values() for path in tracked_runtime_inputs(repo))]
+        read_paths.extend((recipe / WORKFLOW_PATH, recipe / "requirements-pii-capture.txt",
+                           source / "scripts/hooks/pii_precommit.sh"))
         producer = [sys.executable, str(carrier / "scripts/ci/native_conformance.py"),
                     "--cwd", str(source), "--junit", str(junit), "--output", str(native),
                     "--repo", f"recipe={recipe}", "--repo", f"carrier={carrier}", "--repo", f"source={source}"]
@@ -157,6 +164,41 @@ def main() -> int:
         counts = (receipt.get("summary") or {}).get("counts") or {}
         case_gate = (counts.get("collected") == EXPECTED_CASES and counts.get("executed") == EXPECTED_CASES
                      and counts.get("skipped") == 0 and counts.get("failure") == 0 and counts.get("error") == 0)
+        # Re-open and grade the ORIGINAL native receipt through the existing
+        # ci_conformance adapter. This is analysis only; it cannot author a
+        # receipt or alter the native result.
+        originals = [*sorted(path for path in native.rglob("*") if path.is_file()), junit, freeze, environment]
+        before = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in originals}
+        sys.path.insert(0, str(source))
+        sys.path.insert(0, str(source / "scripts" / "vidya"))
+        from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+        from claim_tuple import grade
+        rows = native_rows(receipt_path)
+        analysis = {
+            "kind": "analysis_of_existing_fixture_receipt",
+            "native_original_hashes": before,
+            "repositories": pins,
+            "fixture_rerun": False,
+            "new_native_receipt_authored_by_analysis": False,
+            "metric": metric,
+            "case_counts": counts,
+            "grade": None,
+        }
+        if len(rows) != 1:
+            raise RuntimeError("expected exactly one original ci_conformance row")
+        claim = project_ci_conformance(rows[0])
+        q, t, reasons = grade(claim)
+        analysis.update(measurement_id=claim.measurement_id, source_kind=claim.source_kind,
+                        binding_kind=claim.binding_kind,
+                        grade={"Q": q, "T": t, "reasons": reasons})
+        if (q, t) != ("Judged", "Located"):
+            raise RuntimeError("original fixture receipt shared grade differs from reviewed expectation")
+        after = {str(path): hashlib.sha256(path.read_bytes()).hexdigest() for path in originals}
+        if after != before:
+            raise RuntimeError("shared-grade analysis changed an original receipt or context")
+        with (result / "shared-grade.json").open("x", encoding="utf-8") as handle:
+            json.dump(analysis, handle, indent=2, sort_keys=True)
+            handle.write("\n")
         passed = code == 0 and metric is True and case_gate
         status.update(state="passed" if passed else "failed", exit_code=0 if passed else (code or 1),
                       native_metric=metric, junit_counts=counts, expected_case_count=EXPECTED_CASES,
