@@ -715,18 +715,9 @@ produced it works differently.
       index**. Grep scores whatever the tree says today by construction; ColBERT scores whatever it was built
       against. If the staleness delta is large, the operational argument settles this independently of any
       accuracy result.
-- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** Their
-      semantics-preserving sharded-parallel execution reaches **7.6x at 32 shards** with byte-exact
-      equivalence to sequential execution — and our 96-core EPYC 9655 is better suited to it than their
-      setup, so 32 shards is not near our ceiling. Note also that **91% of their end-to-end latency is LLM
-      GENERATION, not grep** (8.67 s total = 7.86 s generation + 0.81 s tool exec), so tool latency is not
-      the thing to optimise and the index is not buying much latency either.
+- [ ] **KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** The current GrepSeek v2 paper describes SPCS over its raw 14 GB corpus without a learned dense-retrieval index (`intake-1239#00`; `dive-1239/source.txt:L108`), and a separate optional PACE strategy that adds compact auxiliary structure (16.8 GB total; `intake-1239#04`; `dive-1239/source.txt:L146`). Do not generalize “no learned dense-retrieval index” into “no index of any kind.” The reported 7.6x at 32 shards and 91% generation are paper-workload results; they do not establish a local speedup or headroom on our 96-core EPYC. Preserve the conditional adoption task and keep local implementation/equivalence testing open.
 
-_Caveat on the numbers above: everything except the two anchored abstract quotes came from a
-summariser-rendered HTML fetch and is marked MEDIUM verbatim-confidence in `intake-1239`. Re-verify before any
-figure enters a decision-grade document. A predecessor (arXiv:2605.05242) stakes the same
-direct-corpus-interaction claim, so the paradigm is not solely this paper's — a fair reading should check
-whether the delta is the TRAINING RECIPE rather than the idea._
+_2026-10-06 source re-read: the current v2 scope above qualifies the earlier v1 introduction and summarizer-rendered HTML basis. The 0.5691 micro-F1 and seven-benchmark framing are historical; v2 reports macro 0.5226 across eight benchmarks, seven token-F1 plus BrowseComp-Plus judged accuracy, with five wins (`intake-1239#01`). The earlier “NO pre-computed index of any kind” premise is superseded by the SPCS/PACE distinction, and “entirely hardware-independent” does not establish a local hardware result. Corpus-size, indexing/staleness and latency arguments motivate KB-GS-1–3; they do not prove local ColBERT inferiority or a local speedup. Their arms, prebuilt human ground truth and staleness window remain unchanged. The predecessor arXiv:2605.05242 remains a historical companion lead; its training-recipe/paradigm comparison was not re-read here._
 
 ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1278#record)
 

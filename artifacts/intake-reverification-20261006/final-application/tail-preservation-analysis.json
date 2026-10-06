@@ -1,0 +1,14 @@
+{
+  "direct_science_interference_frames": [],
+  "interpretation": "Original full13 audit covers base vs base+420 only. Peer tail is separate and its related dependency frames are reported, not attributed to original application.",
+  "related_tail_frames": [],
+  "reviewed_prefix_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+  "snapshot_sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "status": "structural_tail_analysis_complete",
+  "tail_count": 30,
+  "tail_type_counts": {
+    "epyc.vidya/frame/claim_proposed/v1": 10,
+    "epyc.vidya/frame/evidence_supports_claim/v1": 10,
+    "epyc.vidya/frame/source_observed/v1": 10
+  }
+}

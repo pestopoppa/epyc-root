@@ -5426,13 +5426,7 @@ ablation is **zero**, exactly as it was across intake-1228..1231. The round is n
 because the best-CONSTRUCTED ablation in the family now exists and it **cuts against building.**_
 
 - [ ] **AK-PM-9 — Record the FIRST PUBLISHED NEGATIVE on kernel skill memory as a `CONDITIONAL_NEGATIVE`
-      with an explicit `reopen_when`.** `intake-1248#record` §4.3 measures skill-free RL at Level 2 Fast_1
-      **51.6%** versus **44.8%** with skills at 8B, and Level 3 **12.3%** versus **10.1%** — i.e. memory is
-      NET NEGATIVE at the loose threshold — while skills dominate at Fast_2 / Fast_1.5, where the skill-free
-      arm collapses to 2.1% and 0.0%. **The effect is threshold-conditional and its SIGN FLIPS between the
-      8B and 14B model** on n=1 cells with zero dispersion, which is the signature of noise and which the
-      paper has no data to rule out. `reopen_when`: a with/without-memory ablation appears with n>=5 repeats
-      and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
+      with an explicit `reopen_when`.** Current arXiv v3 Table 2 (`intake-1248#01`; `dive-1248/source.txt:L149-L150,L176,L184`) is threshold- and model-conditional: at 8B Fast_1, skill-free Ablation 5 exceeds the full system at Level 2 (51.6% vs 44.8%) and Level 3 (12.3% vs 10.1%), but trails at Level 1 (25.4% vs 26.1%). Thus skill-free wins two of the three Fast_1 level cells at 8B. At 14B the full system exceeds Ablation 5 in all 12 level-by-threshold cells. The paper reports no per-cell sample count or dispersion; remove the former n=1, zero-dispersion, and noise-signature assertions. Preserve the conditional-negative scope and existing `reopen_when`: a with/without-memory ablation appears with n>=5 repeats and a significance test, OR we run one ourselves on gfx90a (AK-PM-11).
 - [ ] **AK-PM-10 — Record that our §19.3 receipt rule is AHEAD of this literature, not behind it.** The
       commissioned question was whether KLineage — the only paper in the family with VERIFIED in its title —
       formalises skill-level verification warrants comparable to ours. Measured against our three
@@ -5470,14 +5464,7 @@ because the best-CONSTRUCTED ablation in the family now exists and it **cuts aga
       `verify_speedup` **max of 297.3x** and ~35 skill names that are shortcut/elision-flavoured
       (`semantic_shortcut_before_kernelization` at 43.7x). A 297x "verified speedup" on a memory-bound op is
       work elision or a timing artifact, not a kernel optimization.
-- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.**
-      `intake-1250#record` measures SGLang **4.78x isolated → 0.28%-0.87% end-to-end** and LMDeploy
-      **1.36x isolated → 2.03%-3.00%**, on independently-verified MERGED production PRs (sglang#20778,
-      lmdeploy#4345, DLBlas#102). With `intake-1087#record` (1.06x-1.43x per-kernel → +2.12% end-to-end vs
-      TensorRT-LLM), **two independent papers now show ~100x attenuation**. Strong corroboration for the
-      wall-share promotion rule and a standing caution against reading any isolated-op speedup as a
-      deliverable. Zero compute — also read the three merged PRs, which contain the actual LLM-authored
-      kernel source that survived real upstream review.
+- [ ] **AK-PM-13 — Bank a SECOND independent isolated-to-end-to-end attenuation datum in §9.4.** The reviewed KForge v1 paper (`intake-1087#06`; `dive-1087/source.txt:L88-L106,L118`) reports isolated MoE-finalize speedups of 1.06x–1.43x across batch sizes and a separate +2.12% whole-workload throughput change against TensorRT-LLM, under a pinned 1500 MHz clock with the autotuner disabled. These use different operations, denominators, and baselines, so they do not establish a universal ~100x attenuation factor. Preserve the existing second-datum task and its zero-compute primary-PR reads: sglang#20778, lmdeploy#4345 and DLBlas#102. The historical notes for `intake-1250#record` recorded SGLang 4.78x isolated versus 0.28%–0.87% end-to-end and LMDeploy 1.36x versus 2.03%–3.00%; preserve these figures only as dated, unverified reported history, with no current scientific warrant and no re-verification by this KForge read. Record each operation, denominator and baseline separately; do not turn either source into a universal attenuation factor.
 - [ ] **AK-PM-14 — Record the AutoKernel HOMONYM and STRIKE the premise that we cite a name without a
       source.** The 2026-08-21 Stage-3 plan asserted that our handoff references an "AutoKernel G15" selector
       WITHOUT the paper behind it. **That premise is FALSE.** `arXiv:2603.21331` (`intake-1246#record`,

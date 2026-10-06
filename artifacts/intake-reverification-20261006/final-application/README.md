@@ -1,0 +1,3 @@
+# Final intake re-verification application receipts
+
+These compact projections preserve hashes and original paths of actual root-owned runs. Full raw receipts remain KEEP-protected in the declared scratch root; they are not replaced by these projections. Original application: 420 appended frames; retry: zero. Current validation: 29 targeted checks. Later verification preserves peer tail and current index suffix separately; original and current frontiers are different. `publication-gates.json` records the post-filing citation and validator run. `receipt-manifest.json` binds the compact files after that run.

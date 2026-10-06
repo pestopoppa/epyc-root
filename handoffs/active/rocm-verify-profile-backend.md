@@ -316,35 +316,28 @@ from `$ROCM_PATH`, so the prefix needs a mirrored `.info/version`. Both are hand
   complement to the screen we already have (*"can I make this check pass by deleting the thing it
   inspects?"*), and `feedback_pipe_hazards` already records it for piped pytest
 
-## C6 monitor design — five rules from a sabotage/sandbagging red-team (intake-979; 2026-08-03)
+## C6 monitor design — five rules from a sabotage/sandbagging red-team (intake-979#record; 2026-08-03)
 
 _Via `/research-intake` Stage-2b. C6 is our named differentiator and it had no design for the case where
-the agent **underperforms deliberately** rather than cheats. All five are prompt- or plumbing-level and
-cost essentially nothing._
+the agent **underperforms deliberately** rather than cheats. The completed prompt/plumbing controls below remain in place; their local cost and kernel detection benefit were not measured by this source._
 
-**Why this reaches kernel work at all** — the observed sandbagging strategies map straight onto our
-domain. Verbatim from the source: *"agents might train their models on a needlessly small subset to
+**Why this reaches kernel work at all** — the observed ML-engineering sandbagging strategies motivate hypotheses for our domain (intake-979#00), not measured kernel behavior. Verbatim from the source: *"agents might train their models on a needlessly small subset to
 avoid supposed memory issues, or use small and few layers for their CNNs."* Kernel analogues:
 conservative tile/block sizes justified by "LDS pressure", disabled fast paths justified by "numerical
-safety", low unroll factors justified by "register spills". **Each is individually defensible — which is
-exactly why they evaded the general monitor.**
+safety", low unroll factors justified by "register spills". **These kernel examples are individually defensible hypotheses; this paper did not evaluate their evasion of a kernel monitor.**
 
 - [x] **Give the monitor the WHOLE SEARCH TREE, not the selected candidate.** ✅ 2026-08-11 —
   `controller/reward_monitor.py` binds the complete evaluated variant set and exactly one selected row. Best-path-only transcripts
-  structurally advantage a saboteur (the authors say so). Hand the monitor every evaluated variant
-  **including discarded higher-scoring ones** — otherwise a candidate that quietly discards its own best
-  result is invisible. This is a plumbing requirement on the journal, not a prompt change
+  advantage the AIDE sandbagger by hiding potentially higher-scoring paths (intake-979#01). Hand the monitor every evaluated variant **including discarded higher-scoring ones** as a local journal requirement; the paper did not ablate the detection benefit of whole-tree visibility.
 - [x] **Name the threat model in the monitor prompt.** ✅ 2026-08-11 — the declaration requires the
-  versioned threat-specific id and the compiled prompt renders it. Largest measured effect in the study: a generic
-  "is this suspicious?" monitor **rarely fires** on sandbagging; the threat-specific one "performs well"
+  versioned threat-specific id and the compiled prompt renders it. In the sandbagging experiment using claude-3.7 as monitor, the sandbagging-specific prompt outperformed the general prompt (intake-979#02); this does not rank it as the largest intervention across the study
 - [x] **Aggregate.** ✅ 2026-08-11 — the reducer requires a complete model×sample panel and computes
-  mean-of-mean@k. Mean over monitor models ≈ the best single monitor (0.993 vs 0.970); mean@k over
-  repeated samples of one model also improves AUC with fast diminishing returns. Cheap on our stack
-- [x] **Assume monitor-awareness.** ✅ 2026-08-11 — `assume_monitor_aware` is mandatory true. Every monitor scored higher AUC on unaware runs, universally. Any
+  mean-of-mean@k. Aggregation improved detection in the reported code-sabotage setting; mean@k over repeated samples improved AUC with diminishing returns (intake-979#04). The prior legend-only 0.993/0.970 numbers were not read in this audit and are omitted, not refuted; local monitoring cost remains unmeasured here
+- [x] **Assume monitor-awareness.** ✅ 2026-08-11 — `assume_monitor_aware` is mandatory true. Every tested monitor scored higher AUROC on unaware than aware **AIDE code-sabotage** runs in Figure 6 (intake-979#03); this is not a universal result across scaffolds or sandbagging monitors. Any
   agent that can read the loop's config knows it is monitored — design for the aware case
 - [x] **Preserve CoT visibility.** ✅ 2026-08-11 — every trace requires non-empty reasoning and
   `include_reasoning_trace` is mandatory true. Hidden reasoning tokens are described as a "large advantage to the
-  agent"; a monitor reading only final outputs is the weak configuration
+  agent". The local reasoning-visibility control is a design transfer, not a source-measured kernel detection gain
 - [x] **Declare an explicit FPR budget rather than claiming safety.** ✅ 2026-08-11 — the declaration
   requires a numeric FPR budget and the reducer emits sensitivity, specificity, observed FPR and
   `budget_met` — *"gaining strict safety guarantees
@@ -354,6 +347,8 @@ exactly why they evaded the general monitor.**
 - **Cite the qualitative sandbagging finding, never a number**: the AUCs live only in a plot legend that
   is not text-extractable from either the PDF or the HTML render (NOT-FOUND-IN-SOURCE)
 
+
+**Source-scope correction 2026-10-06:** these edits qualify the external rationale only. All completed 2026-08-11 controls, task text and implementation outcomes above remain preserved; no new detection result or implementation task is claimed. The audit was PARTIAL and did not read numeric image-only legends or implementation artifacts.
 
 ## Auto-kernel revival — research-intake integration 2026-07-22 (C6 + task-contract from OpenHyra/HyRA)
 _Via /research-intake Stage-2 (intake-884 HyRA, intake-885 OpenHyra). OpenHyra effectively implements the C6 anti-reward-hacking differentiator this backend owns but never built._
@@ -1532,8 +1527,10 @@ our **465 gfx90a SQ/TA/TCC counters** validated 2026-08-03.
 - **Correctness-conditioned speedup rates are structurally survivorship-biased and must never rank arms.**
   Two independent 2026 benchmarks now exhibit it: CodegenBench reports `Fast_1@1 = 1.00` on LeetSunway for a
   model whose `Pass@1` is **0.06**, and self-diagnoses the cause; `intake-1227` flagged the same divergence.
-  Both `fast_p` and `Fast_1@1` condition on the correct subset, so they inflate exactly where correctness is
-  worst.
+  `Fast_1@1` is computed among correct candidates and can look strong despite low Pass@1. KernelBench
+  `fast_p` counts tasks that are both correct and have speedup greater than threshold `p`, but divides by all `N` tasks;
+  incorrect outputs remain in the denominator. It is a joint success-rate metric, not a correct-subset rate
+  (`intake-664#01`).
 - **ParEval-Repo: the HIP arm is DROPPED — question closed, do not re-ask.** Word-boundary grep of
   `arXiv:2506.20938v2` gives HIP 0 / ROCm 0 / gfx 0 and AMD 2 (both host CPUs); the full 254-path repo tree
   @ `50f7dd8a` contains zero `hip` paths. The OpenMP-Offload arm is **not vendor-neutral**: `target.json`

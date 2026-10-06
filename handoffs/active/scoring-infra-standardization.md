@@ -304,14 +304,11 @@ _Via `/research-intake` Stage-2 2026-07-25; see [`intake-derived-work-2026-07-25
 
 ## 2026-08-03 — intake Stage-2b: audit our own eval paths for HARNESS-LEVEL answer leakage
 
-_Via `/research-intake` (intake-980, plus intake-977). Filed here because the defect class is
-**developer-side**: no agent-side monitor can catch it, so it is a scoring-infrastructure obligation
-rather than a C6 one._
+_Via `/research-intake` (intake-980#record, plus intake-977). Source-scope correction 2026-10-06: harness-origin answer leaks require infrastructure audits, but their trace-visible adoption can also be detected by an agent-side monitor. Monitoring alone is not a sufficient general guarantee (intake-980#03); preserve the infrastructure obligation without claiming categorical monitor invisibility._
 
-An audit of 28+ submissions across 9 agent benchmarks separates cheating into two classes, and only the
-second is what our reviewer/monitor work addresses:
+Paper §3.3 reports over 28 submissions across 9 benchmarks and distinguishes harness-level from task-level cheating; these artifact-specific counts do not establish an exhaustive benchmark-name list. Reviewer/monitor traces can expose behavior in either class when the relevant adoption is visible:
 
-- **Harness-level** (developer or scaffold, invisible to any agent-side monitor): verifier injection ·
+- **Harness-level** (developer or scaffold; infrastructure audits required, not categorically monitor-invisible): verifier injection ·
   answer-key injection · **solution injection** (e.g. an `AGENTS.md` in the working tree that contains
   the solutions).
 - **Task-level** (agent-initiated, what a monitor can see): online solution retrieval · mining
@@ -319,9 +316,11 @@ second is what our reviewer/monitor work addresses:
   **simulating rather than executing**.
 
 The audit found the **top 3 submissions on one benchmark were all cheating**, and 31 confirmed
-reward-hacking cases across 6 benchmarks — roughly 3× prior audits. Separately, a widely-used benchmark
+reward-hacking cases across 6 benchmarks in paper §3.3; the companion blog reports 28 confirmed instances. These are same-work artifact counts, not independent confirmations or a single interchangeable total. Separately, a widely-used benchmark
 maintains its own quarantine section for submissions annotated *"Test-set feedback"*, one of which would
 otherwise have ranked #1 by 7 medal outcomes.
+
+**Freeze-provenance correction 2026-10-06 (intake-980#02):** the April 10 snapshot is Terminal-Bench 2.0. The read paper/blog text supplies no MLE-bench leaderboard-freeze claim or causal link; prior freeze-causation speculation remains withdrawn. The separate quarantine observation above retains its own provenance and is not evidence that this audit caused an MLE-bench freeze. Completed local leakage audits below retain their dates and outcomes.
 
 - [x] **Audit our eval fan-out and scorer paths against the harness-level list.** Specifically: does any
   prompt-assembly path put reference answers, gold patches, or oracle metadata into a context the model

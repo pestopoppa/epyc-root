@@ -1086,16 +1086,7 @@ _From `intake-1246#record` (AutoKernel), `intake-1244#record` (CodegenBench), `i
       authoring prompt. Note the effect is **NOT monotone across architectures** — the same model scored
       HIGHER on ARM-Kunpeng than on x86 — so do not cite "non-x86 is uniformly worse" as this paper's finding.
 - [ ] **C5-17 — Adopt ordinal binning and calibration-as-a-gate for any performance predictor we ever
-      build, and decline the trained artifact.** `intake-1240#record` reports an explicit NEGATIVE we should
-      not spend a cycle rediscovering: **fine-grained NUMERIC speedups are not reliably inferable without
-      running the kernel** — only coarse ordinal bins (8 log-half-octave) are tractable. Adopt the ordinal
-      reward shape, a calibration metric (ECE or Brier) as a first-class ACCEPTANCE gate, and an explicit
-      DEFERRAL policy so a surrogate must escape to real gfx90a measurement. **Decline the trained
-      forecaster**: A100-conditioned with **zero cross-GPU transfer test performed**, despite its own
-      released dataset spanning three GPU types. Note its baseline search BEATS the surrogate-enhanced
-      search on **2 of 6** tasks by 5-7%, so any adoption needs the equal-budget baseline arm run alongside,
-      never a single-arm demo. **Note-the-method-do-not-build-yet**: optimising the search budget of a loop
-      we have not yet made trustworthy is premature while RVP-C2-8/C2-9 are open.
+      build, and decline the trained artifact.** GPU Forecasters v1 (`intake-1240#02`, `intake-1240#03`, `intake-1240#04`; `dive-1240/source.txt:L86,L131,L148`) says fine-grained numerical inference is difficult without execution; it does not establish that numeric prediction is impossible or that ordinal output is the only tractable method in general. Keep forecast accuracy separate from calibration: the tested RL rewards reduce ECE while increasing numerical forecast error, and the six-task search records three surrogate wins, one tie, and two surrogate losses to the baseline (about 5% and 7%). Preserve the existing ordinal reward shape, ECE or Brier as an ACCEPTANCE gate, and explicit DEFERRAL to real gfx90a measurement. Decline the trained forecaster: it is A100-conditioned, and the reviewed paper supplies no cross-GPU transfer test despite its dataset spanning three GPU types; no gfx90a transfer is established. Any future comparison needs the equal-budget baseline arm alongside, never a single-arm demo. Preserve **Note-the-method-do-not-build-yet** while the loop is not trustworthy and RVP-C2-8/C2-9 are open.
 
 ### Recorded so it is not re-derived — a pattern, no longer an incident
 

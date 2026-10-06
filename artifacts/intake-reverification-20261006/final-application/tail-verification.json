@@ -1,0 +1,18 @@
+{
+  "binding_sha256": "04292ce215f81b877e498cc4ab3f26132460d99ddd18e1d3251841eb2d9efd2c",
+  "current_as_of": "2026-10-06T17:08:51.366204Z",
+  "current_citation_exit": 0,
+  "current_frontier": 14341,
+  "current_ledger_sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "intake_validator_exit": 0,
+  "native_frame_count": 420,
+  "new_replay_invocations": 0,
+  "new_retry_invocations": 0,
+  "original_full13_as_of": "2026-10-06T11:52:22Z",
+  "original_prefix_sha256": "2c1eadefa572cb6f1df634b6cbfcad8a91d76c39a65105d3be94cd759e4e53f5",
+  "reviewed_prefix_sha256": "a55a64fe17c96a8603c1f2eb25d3f951789ce1445f0fc9bb87abd96f396d7ec4",
+  "risk_recount_actual": true,
+  "status": "actual_original_custody_and_current_snapshot_gates_pass",
+  "tail_count": 30,
+  "tail_related_frame_ids": []
+}

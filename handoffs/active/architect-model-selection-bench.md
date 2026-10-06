@@ -590,14 +590,15 @@ kernel generation and zero coverage of code-runtime efficiency as an evaluation 
 are now indexed. Nothing below is comparative authority until it runs under the sealed same-era protocol
 above._
 
-### The design space is FOUR instruments, not eight
+### Instrument design and evidence independence
 
-Mercury (intake-972) → EffiBench / EffiBench-X (intake-952) → SWE-Perf (intake-951) is **one connected
-component of four papers**, hubbed on a shared author. So the apparent field-wide consensus that
-"efficiency scores must be normalized against a reference distribution" is **half one lineage**. The
-genuinely independent instruments diverge sharply: ENAMEL normalizes against **one expert solution with
-censoring**; EvalPerf against a **clustered ladder using instruction counts**; GSO against a **single
-human commit in the same container**; COFFE against **the best ground truth, binary**.
+The earlier statement that Mercury, EffiBench / EffiBench-X, and SWE-Perf formed a connected lineage
+through a shared author is retained only as historical discussion, not as a verified current-source
+finding. The review did not audit the other papers' author lists; intake-972's source record is the
+appropriate citation for that scope note (`intake-972#record`). The instruments have distinct designs:
+ENAMEL normalizes against **one expert solution with censoring**; EvalPerf against a **clustered ladder
+using instruction counts**; GSO against **a single human commit in the same container**; COFFE against
+**the best ground truth, binary**.
 
 **Ladder shape — operator-selected 2026-08-03:** *one ranking key, three columns*. Rank on the fused,
 instance-gated, expert-normalized, clipped score; report **correctness** beside it; and report a
@@ -624,9 +625,9 @@ DP-2 — **not yet ratified**, so the rule above is the bench's working conventi
 
 - **Decline SWE-Perf as a harness.** Its code carries **no licence at all**, unanswered for nine months. Its statistical gate is kept.
 - **Decline SWE-fficiency's images** — 1.03 TB. **Adopt its `cpu_assignment.py`** (196 lines, Apache-2.0), which produced correct NUMA-and-SMT-aware cpusets on our EPYC on the first run.
-- **Decline Mercury** (intake-972) — the repo has no licence file at all, so the code is all-rights-reserved. Peer review was not the differentiator it appeared to be: EvalPerf is also peer-reviewed and beats it on licence, maintenance, measurement design and local-endpoint support. Ingest as lineage evidence only.
-- **Decline an efficiency axis over SWE40 / LCB.** Original correctness tests clear the duration-spread gate for **≤3.8%** of problems, and an independent audit (intake-976: 4 benchmarks, 1,538 tasks, 30 reps each) finds only **6.11%** of purportedly performant reference implementations significantly faster on original tests. **Our sealed tasks physically cannot carry a timing signal** — this is a property of the workload, not of our harness.
-- **Decline PerfCodeBench** (intake-975) for ~60 days — no licence, anonymous review-only link, nvcc-bound, and CUDA is 5.2% of its test split. Reopen on a licensed public release or any ROCm/HIP path.
+- **Keep the decline of the original Mercury repository under the existing license gate.** The reviewed original repository had no `LICENSE` file or licensing declaration (`intake-972#00`). The separately advertised Mercury_Eval successor declares MIT in its manifest and README but also has no license file; this is distinct repository metadata, not a legal conclusion about either project. Preserve the existing EvalPerf selection and operational decision.
+- **Keep the decline of an efficiency axis over SWE40 / LCB.** intake-939's duration-spread gate remains its own result: original tests meet robust CV ≥0.3 for at most 3.8% of problems (`intake-939#04`). intake-976 provides related, separate evidence: across 1,538 tasks and 30 runs per implementation pair, 94 (6.11%) were significantly faster on original tests (`intake-976#02`). This does not measure CV/IQR or test the 0.3 threshold, and it does not prove sealed tasks cannot carry a timing signal. Its 209/308 manually sampled cases are author-labeled plausible improvements, not verified speedups (`intake-976#03`). Preserve the explicit corpus dependency: 256 of intake-976's 1,538 tasks are Mercury tasks (`intake-976#01`; intake-972 is lineage context, `intake-972#record`). Do not transfer the original Mercury repository's licensing or status to Mercury_Eval, or vice versa.
+- **Keep the ~60-day PerfCodeBench decline and its reopening gate.** The paper-linked repository is public now, but public availability alone does not meet the predeclared licensed-public-release trigger. The repository has no umbrella LICENSE/COPYING or GitHub license metadata; the reviewed CUDA route is NVIDIA-toolkit oriented and no HIP/ROCm route was found. The current paper/repository versions do not substantiate the old 5.2% test-split figure. Reopen only on licensed public terms or a relevant ROCm/HIP path (`intake-975#00`, `intake-975#03`).
 
 ### Model-candidate verdicts — answering the standing search for a faster `worker_general` / `architect_critic`
 

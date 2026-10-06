@@ -1,0 +1,60 @@
+{
+  "canonical_ledger_sha256": "5e58077522074a459a1300b3d4100a631bd331167f6d08819bf26c8c74d3146a",
+  "files": {
+    "README.md": {
+      "sha256": "6563de595a5225f10a6d7050d82b33f7baef388591818da87afb44b702705565"
+    },
+    "admission-refresh.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/admission-refresh.done.json",
+      "original_sha256": "e67bfeb68863aefa85c1eadec4d9cd6077a938c425d6c3bd19c60d04eb0fcec9",
+      "sha256": "e67bfeb68863aefa85c1eadec4d9cd6077a938c425d6c3bd19c60d04eb0fcec9"
+    },
+    "application-custody.json": {
+      "sha256": "1adf9de3bcaaa335f46f32c17eb75c3cfd2f6e3b02cf88498c2e45d5d64086ca"
+    },
+    "current-gate-summary.json": {
+      "sha256": "49db3aa45c1dfe2dd40aac5221d67d7303e450f266988158e1921915603758f4"
+    },
+    "current-validation-custody.json": {
+      "sha256": "6797c6bf708d6b5b99dd64ddc2f77e7924a09a6432e3644abc87a5c1a01378d0"
+    },
+    "historical-record-discussion.patch": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/final-citation-ak-pm13-proposed/historical-record-discussion.patch",
+      "original_sha256": "482a4ae86aa878361e4f7cf2a01a3e05ff162ebb761f78b41be4dff9dca83e84",
+      "sha256": "482a4ae86aa878361e4f7cf2a01a3e05ff162ebb761f78b41be4dff9dca83e84"
+    },
+    "metadata-application-root-receipt.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/metadata-application-root-receipt.json",
+      "original_sha256": "6010854872e1e6b399eea5d8d3c9ff583775a226238b8a030ad44a0f258bdaf4",
+      "sha256": "6010854872e1e6b399eea5d8d3c9ff583775a226238b8a030ad44a0f258bdaf4"
+    },
+    "publication-gates.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/actual-verification/publication-gates.done.json",
+      "original_sha256": "fabf0a6295745a619167425b74238dd9a6199f7821e8d828dc1424a411787186",
+      "sha256": "48132bbc8c5df90fcf87f330b24546e3a471ac9f7fd719513db2918b2bf80d7c"
+    },
+    "scratch-union-validation.receipt.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/actual-verification/scratch-union-validation.receipt.json",
+      "original_sha256": "dfb30be3098156f79a3cf6bb4c2e9dda0cdbe85d80e23cd6383e4eb1b958c494",
+      "sha256": "dfb30be3098156f79a3cf6bb4c2e9dda0cdbe85d80e23cd6383e4eb1b958c494"
+    },
+    "source-index-preservation.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/source-index-preservation.json",
+      "original_sha256": "cca78c383aa387f928dbcf3c99e49f47c27da8c6d835164663bd4f929606e123",
+      "sha256": "cca78c383aa387f928dbcf3c99e49f47c27da8c6d835164663bd4f929606e123"
+    },
+    "tail-preservation-analysis.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/actual-verification/tail-preservation-analysis.json",
+      "original_sha256": "c3e0c60bc03a120672700fe306bd5a7104b3f3251dd0279befd737327012118f",
+      "sha256": "c3e0c60bc03a120672700fe306bd5a7104b3f3251dd0279befd737327012118f"
+    },
+    "tail-verification.json": {
+      "original_path": "/mnt/raid0/llm/tmp/intake-reverify/root-admission-final-20261006T170848/actual-verification/final-canonical-verification.done.json",
+      "original_sha256": "49ae0a293d7f074be0435fce4bac05df43a121ffd3c999951cd6e9786e49a9ce",
+      "sha256": "a8f949c4c29352ef951cf42d955a7f460eca59ad341838622d7948e3fcac891a"
+    }
+  },
+  "source_index_sha256": "e67455cd898e520d829703b0ccb3ba2ccfe5da6183aebc6c8f5201a50d1a927d",
+  "source_publication_receipt_sha256": "fabf0a6295745a619167425b74238dd9a6199f7821e8d828dc1424a411787186",
+  "status": "sealed_actual_receipts"
+}

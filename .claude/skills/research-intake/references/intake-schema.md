@@ -385,3 +385,28 @@ pre-written verdict is what keeps the classification deterministic at read time.
 **Cross-contamination check.** Before persisting, verify each entry's `key_claims` and
 `reported_results` reference only its **own** source. A figure belonging to a different entry is a
 defect, not a stylistic issue.
+
+### Native correction application custody
+
+A correction changes a current stable slot without rewriting its dated original claim,
+true historical refutation, or immutable frame. A Stage-1 demotion retires the former
+Verified warrant and emits a Hinted discovery projection; this is not a finding that
+the claim is false and does not create fresh Verified source evidence. An explicit
+`record_status` administrative placeholder retains its address and history but emits
+no source-evidence warrant. Reviewed current source claims use the existing native
+`ClaimTuple` producer and literature ladder; no new class, grader, score, or trust rule
+is introduced. Both scientific dive verdict states follow the explicit/new-era
+read-depth contract; undeclared older records remain grandfathered.
+
+MAIN applies a bounded reviewed frame manifest only after actual rehearsal receipts
+pass. Freeze canonical bytes/hash/frontier, current index candidate and rebase receipt,
+actor/authority, source/claim/direction/assertion bindings, source revisions/anchors,
+code/frame hashes, batch `created_at`, and evaluation `as_of`. Peer appends require a
+new snapshot and actual fold rebase with exact target and sibling equality. Validate
+the entire whitelist and prospective fold/impact before append; preserve every old and
+peer byte and all non-target source evidence. Retry permits only an exact approved
+partial-batch prefix. A ledger/fold/output receipt records actual outcomes; proposal,
+static review, and preflight are not application success. Any write lease is an
+adapter/replay wrapper; do not modify the default `Ledger` or fold implementation.
+No global ingestion, automatic prose classification, or new grader/trust policy.
+
