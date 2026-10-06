@@ -6,6 +6,7 @@ on:
       - .github/workflows/toc-rd-1b-pii-period.yml
       - requirements-pii-capture.txt
       - scripts/ci/toc_rd_1b_pii_period_capture.py
+      - scripts/ci/toc_rd_1b_expected_case_identities.json
 permissions:
   contents: read
 jobs:
