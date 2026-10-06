@@ -16051,7 +16051,7 @@
     {
       "path": "scripts/ci/ap_me1_me3_capture.py",
       "role": "tracked-python-or-config",
-      "sha256": "ecebbf1a0b3aa4e6116bd999f4faf3a6dcd849733b0cedf9ab8a257b22ba4d50"
+      "sha256": "79264d4b7e690010f810aa0a41f037e3edce5848e02670ab65633c83a4cba9aa"
     },
     {
       "path": "scripts/ci/ap_me1_me3_case_guard.py",

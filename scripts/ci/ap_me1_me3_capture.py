@@ -1,7 +1,8 @@
 """Capture AP-ME1/3 synthetic controls through the pinned native receipt carrier.
 
-Execution is intended for the isolated hosted workflow only. This source does not
-import the APP, invoke a main trial producer, or touch any live journal.
+Execution is intended for the isolated hosted workflow only. The wrapper itself does not
+import APP or invoke a main trial producer; pytest imports only the selected synthetic
+controls and their ordinary import closure. No live journal is touched.
 """
 from __future__ import annotations
 
@@ -283,6 +284,7 @@ def main() -> int:
             "platform": platform.platform(),
             "runner_context": os.environ.get("AP_ME1_ME3_RUNNER_CONTEXT", ""),
             "execution_context": os.environ.get("AP_ME1_ME3_EXECUTION_CONTEXT", ""),
+            "pytest_pythonpath": os.pathsep.join((str(recipe / "scripts/ci"), str(app))),
             "app_revision": APP_PIN,
             "carrier_revision": ROOT_CARRIER_PIN,
             "recipe_revision": recipe_pin,
@@ -313,7 +315,7 @@ def main() -> int:
             f"--junitxml={junit}", *SELECTIONS,
         ]
         env = os.environ.copy()
-        env["PYTHONPATH"] = os.pathsep.join((str(recipe / "scripts/ci"), str(app)))
+        env["PYTHONPATH"] = environment["pytest_pythonpath"]
         env["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         read_paths = [
@@ -326,11 +328,21 @@ def main() -> int:
         status.update({"state": "running", "selection_count": len(SELECTIONS)})
         status_path.write_text(json.dumps(status, indent=2) + "\n", encoding="utf-8")
         carrier_api = load_native_carrier(carrier)
-        record = carrier_api.capture_fixture_execution(
-            argv=pytest_argv, cwd=app, junit=junit, output=capture_dir,
-            repositories={"recipe": recipe, "carrier": carrier, "app": app},
-            read_paths=list(dict.fromkeys(read_paths)), selections=SELECTIONS,
-        )
+        inherited = {key: os.environ.get(key) for key in (
+            "PYTHONPATH", "PYTEST_DISABLE_PLUGIN_AUTOLOAD", "PYTHONDONTWRITEBYTECODE")}
+        try:
+            os.environ.update({key: env[key] for key in inherited})
+            record = carrier_api.capture_fixture_execution(
+                argv=pytest_argv, cwd=app, junit=junit, output=capture_dir,
+                repositories={"recipe": recipe, "carrier": carrier, "app": app},
+                read_paths=list(dict.fromkeys(read_paths)), selections=SELECTIONS,
+            )
+        finally:
+            for key, value in inherited.items():
+                if value is None:
+                    os.environ.pop(key, None)
+                else:
+                    os.environ[key] = value
         receipt_path = capture_dir / "receipt.json"
         reopened, _receipt_sha = carrier_api.read_receipt(receipt_path)
         if reopened.get("fixture_execution_conformant") is not True:
