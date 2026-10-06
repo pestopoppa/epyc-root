@@ -1,0 +1,349 @@
+{
+  "scope": "MAIN private publication records with positive push/promotion flags; each commit verified ancestor of ROOT main83b63a7. Includes enrollment/checkpoint and NI07 boundaries; NI06 separate final-publication.json provides earlier lineage. Not every worker source commit nor independent task count.",
+  "records": [
+    {
+      "record": "bsv-wrap-publication.json",
+      "commit": "c0522c723f1fe540285e3d146a9abc10be646925",
+      "message": "NI07-17: publish accepted strict standalone BSV input contracts and custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "calibration29-enrollment-publication.json",
+      "commit": "0bb4be572d4a15b9080360b46277df261cc15d23",
+      "message": "Enroll source-confirmed calibration input byte binding preparation",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "calibration29-wrap-publication.json",
+      "commit": "42bd4b304107d5928fdc0979e76a65f1bbf4ab0c",
+      "message": "Close calibration input-byte bindings with source-first native evidence",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ci22-wrap-publication.json",
+      "commit": "8c4dee17bd090f6dc6e1efc2e5944e0b12e986e0",
+      "message": "Close NI07-22 hermetic producer CI repair with preserved checkout history",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "dcp-wrap-publication.json",
+      "commit": "8a9936f81287acd251661727e660e65fc935c247",
+      "message": "Close NI07-21 DCP render identity with native source-first custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "descriptions28-enrollment-publication.json",
+      "commit": "056f19a53a5b01675edd028540d67846f642f919",
+      "message": "Enroll reviewed non-inference TD-14 candidate-description preparation",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "descriptions28-wrap-publication.json",
+      "commit": "e185741ac500bf13fcf9db9c8013b8e229cb4da0",
+      "message": "Close reviewed candidate description preparation and refine grader isolation scope",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "enroll-integrity-publication.json",
+      "commit": "baecd9bfbdbe08dca628101b3ff4b8111c3862db",
+      "message": "Enroll four source-confirmed REPL and eval integrity slices",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "expansion-wrap-publication.json",
+      "commit": "02f12d02ef40b28a141fb7ceaedba3897000a328",
+      "message": "NI07-20: close query-expansion guard and enroll CI dependency/DCP policy follow-ons",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "k7-wrap-publication.json",
+      "commit": "de2d95777ad212ca0048e479d5fe6ab916c07798",
+      "message": "Complete K7 strict report-time catalog provenance and native custody review",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "lab-wrap-publication.json",
+      "commit": "d5bd1e0144885091e92960b0e2fbe2afc9906643",
+      "message": "NI07-18: publish lab context catalog provenance and original CI custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ledger-wrap-publication.json",
+      "commit": "dfe983d8482d2a5819ac32591ca377bf6f4d6e97",
+      "message": "Complete additive native DTAP failure ledger and original synthetic custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-03-publication.json",
+      "commit": "a5701a9c744b876065816597d53fa5e55eb3e8b9",
+      "message": "docs: publish reviewed grader isolation specification and continuous non-inference queue",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-12-enrollment-publication.json",
+      "commit": "68acaf44458849ca4abd98b10ee7bfd01dc7ac5c",
+      "message": "Enroll model-free deletion rollback fix from catalog review",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-catalog-publication.json",
+      "commit": "f1831824bfa1d8101d43756fabb7b5aefcce3075",
+      "message": "Accept catalog dependency hook with original synthetic custody",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-cs-boundary-publication.json",
+      "commit": "2111b8e03c54d57f966f1a8e798749cdffbf8c4f",
+      "message": "Complete NI07 provisional conversation-shadow source and fixture boundary",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-dtap-boundary-publication.json",
+      "commit": "1f09dde6818df8756be86feaabcedeb9f3a60748",
+      "message": "Complete NI07 DTAP native tool contract and original fixture boundary",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-force-boundary-publication.json",
+      "commit": "75ed144f40de041e0f83072d8b879604a39149a5",
+      "message": "Complete forced KB identity correction and enroll staged vector publication",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-hg9-publication.json",
+      "commit": "6fdaef6282385b15be181daf1cf8f47e4c3ecdfb",
+      "message": "docs: accept HG-9 non-inference topology design boundary",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-k2-publication.json",
+      "commit": "640d57b766ffd9f0af18c937d8e8cdbceef89715",
+      "message": "docs: close K2 cap plumbing after original synthetic acceptance",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-k7-enrollment-publication.json",
+      "commit": "f47538cf0b16df72eb066820248c0ffe5c0c6cab",
+      "message": "Enroll K7 report-time native catalog dependency consumer before implementation",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-led-enrollment-publication.json",
+      "commit": "f6d8a4254ab310e0fa6b3bda5e0523ed5af73526",
+      "message": "Enroll additive native failure ledger follow-on",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-rc-boundary-publication.json",
+      "commit": "599487232f8b6c814c7ed0366ea6a162eb5025be",
+      "message": "Complete NI07 supplied-score confidence preparation and native fixture boundary",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-remove-publication.json",
+      "commit": "eec76abc6ecb96f2dcd7c63b501753825237aa19",
+      "message": "Close deletion rollback fix and surface forced-build duplicate repair",
+      "checkbox_closures": 2,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-s9-publication.json",
+      "commit": "5b7c256269cbdace02bbe2596a870e27b31cb83f",
+      "message": "docs: accept ColBERT locking and enroll unlocked DTAP contract work",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-serving-boundary-publication.json",
+      "commit": "fb06b1d93023458b95283aeb8ffa28c0ee79709d",
+      "message": "Complete NI07 serving-reader source and native custody boundary",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-tuhr-publication.json",
+      "commit": "f6feb6516577c951a848fcf3d32769ece84cee64",
+      "message": "docs: publish static tool-rendering audit and source custody",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-utm-boundary-publication.json",
+      "commit": "83216baf6d3c74acfca034ca834251c45b11f631",
+      "message": "Complete NI07 UTM synthetic structural conformance and native readout boundary",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "ni07-utm-enrollment-publication.json",
+      "commit": "1899a83f4be15b55b8885217376ad55bf0a8bbe8",
+      "message": "Enroll native synthetic memory readout before consumption",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "numa30-enrollment-publication.json",
+      "commit": "f821f32e8f2920cffaa4fb8bbf7ec15eabdf0817",
+      "message": "Re-resolve and enroll standalone NUMA guard defect",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "numa30-wrap-publication.json",
+      "commit": "364413b887426230491f3587c6e1ec471fddb547",
+      "message": "Close standalone declared NUMA guard and reviewed 34-slice non-inference cohort",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "pickle24-wrap-publication.json",
+      "commit": "23dc8969d190775ab14ca998d59d7edd5f18ef3e",
+      "message": "Complete NI07-24 signed checkpoint transport with original native custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "pii31-enrollment-publication.json",
+      "commit": "8110a54a441361bddc0bd0a28dbb65eca143c647",
+      "message": "Enroll source-confirmed ED25519 staged-header control without fixture exemptions",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "pii31-wrap-publication.json",
+      "commit": "cadb30ff55048b065f91285d2bc896b8134b6ac6",
+      "message": "Close staged ED25519 controls and preserve explicit fixture-exemption decision",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "reconnect26-wrap-publication.json",
+      "commit": "2508c39233a52ecfe58f45b431f033a83a80d6f9",
+      "message": "Close reviewed outer reconnect cost with original CI custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "repair-wrap-publication.json",
+      "commit": "c2edbd7d9b38a913a47d92e687127417bf582838",
+      "message": "NI07-19: publish accepted repair helper log minimization and native custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "retention-checkpoint-publication.json",
+      "commit": "83b63a739a4cfe3c86f152bff1eb8d2d0989667e",
+      "message": "Record owned custody retention and correct Scratch declaration",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "root-keep32-enrollment-publication.json",
+      "commit": "0685ca720dcc27cbe81ba743bb77c0159db5985d",
+      "message": "Enroll source-confirmed scratch-root KEEP protection follow-on",
+      "checkbox_closures": 0,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "root-keep32-wrap-publication.json",
+      "commit": "e7c47d5a9cd59307a72b814a9e98e924a44ddbc7",
+      "message": "Close declared scratch-root KEEP protection after original 27-case conformance",
+      "checkbox_closures": 3,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "span-wrap-publication.json",
+      "commit": "7973523364e2f4fa50ec9d095618f02bb3c48d28",
+      "message": "Close NI07-23 hit-span policy preparation; retain DCP live gates",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "stage-wrap-publication.json",
+      "commit": "e6bb31d8c06e757683b7a6916012103bc9e8ab26",
+      "message": "Complete staged vector publication and enroll three source-reviewed non-inference follow-ons",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "status25-wrap-publication.json",
+      "commit": "02ec8730c1a9a195a5acce567fec4b72f783bde2",
+      "message": "Complete NI07-25 question-sidecar persistence status with original native custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    },
+    {
+      "record": "timeout27-wrap-publication.json",
+      "commit": "c6e810e13c9d7075ad85dd8ffb31e33391eef121",
+      "message": "Close terminal REPL timeout with bounded late-worker custody",
+      "checkbox_closures": 4,
+      "pushed": true,
+      "promoted": true
+    }
+  ]
+}

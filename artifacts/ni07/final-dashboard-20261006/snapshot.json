@@ -1,0 +1,168 @@
+{
+  "dashboard": {
+    "all_four_columns_combined": {
+      "checked": 6128,
+      "completion_percent": 63.4,
+      "handoffs": 517,
+      "no_checklist": 154,
+      "total": 9671,
+      "unchecked": 3543
+    },
+    "columns": {
+      "active": {
+        "checked": 3543,
+        "completion_percent": 59.1,
+        "handoffs": 183,
+        "no_checklist": 10,
+        "total": 5993,
+        "unchecked": 2450
+      },
+      "archived": {
+        "checked": 751,
+        "completion_percent": 56.1,
+        "handoffs": 120,
+        "no_checklist": 56,
+        "total": 1339,
+        "unchecked": 588
+      },
+      "blocked": {
+        "checked": 7,
+        "completion_percent": 31.8,
+        "handoffs": 6,
+        "no_checklist": 2,
+        "total": 22,
+        "unchecked": 15
+      },
+      "completed": {
+        "checked": 1827,
+        "completion_percent": 78.9,
+        "handoffs": 208,
+        "no_checklist": 86,
+        "total": 2317,
+        "unchecked": 490
+      }
+    },
+    "outstanding_active_plus_blocked": {
+      "checked": 3550,
+      "completion_percent": 59.0,
+      "handoffs": 189,
+      "no_checklist": 12,
+      "total": 6015,
+      "unchecked": 2465
+    },
+    "parser_backlog_percentages": {
+      "all_tracked_tasks_done_percent": 63.4,
+      "outstanding_tasks_done_percent": 59.0
+    },
+    "semantics": "parser top-level cards across handoff states, including router surfaces; active cards with blocked-like status are routed to blocked"
+  },
+  "domain_owned_index_rollup": {
+    "by_domain": {
+      "inference-research": 61,
+      "pipeline-integration": 5,
+      "research-evaluation": 44,
+      "reviewer-control-plane": 6,
+      "routing-and-optimization": 51,
+      "user-facing-harness": 12
+    },
+    "domain_count": 6,
+    "handoffs": 179,
+    "source": "generated domain rollup in handoffs/active/master-handoff-index.md"
+  },
+  "generated_at_utc": "2026-10-06T15:05:52Z",
+  "interpretation": "Dashboard columns count parser-discovered top-level cards, including router surfaces and status-derived blocked routing. The six domain-owned active indices separately report 179 handoffs; these are different scopes. The selected NI06/NI07 cohort is a separate exact-row count from the non-inference backlog; it is not inferred from dashboard cards or parent-gate completion.",
+  "parser": {
+    "path": "dashboard/handoff_parser.py",
+    "sha256": "25e6a37cc31e4ac3bcf3a7c941f013183f4dd7b64835258a10216fb5d722bcf3"
+  },
+  "schema": "epyc.root.handoff_dashboard_snapshot.v1",
+  "selected_non_inference_cohort": {
+    "canonical_counter": {
+      "completed": 35,
+      "total": 35
+    },
+    "checked": [
+      "NI06-01",
+      "NI06-02",
+      "NI06-03",
+      "NI07-01",
+      "NI07-02",
+      "NI07-03",
+      "NI07-04",
+      "NI07-05",
+      "NI07-06",
+      "NI07-07",
+      "NI07-08",
+      "NI07-09",
+      "NI07-10",
+      "NI07-11",
+      "NI07-12",
+      "NI07-13",
+      "NI07-14",
+      "NI07-15",
+      "NI07-16",
+      "NI07-17",
+      "NI07-18",
+      "NI07-19",
+      "NI07-20",
+      "NI07-21",
+      "NI07-22",
+      "NI07-23",
+      "NI07-24",
+      "NI07-25",
+      "NI07-26",
+      "NI07-27",
+      "NI07-28",
+      "NI07-29",
+      "NI07-30",
+      "NI07-31",
+      "NI07-32"
+    ],
+    "completed": 35,
+    "completion_percent": 100.0,
+    "keys": [
+      "NI06-01",
+      "NI06-02",
+      "NI06-03",
+      "NI07-01",
+      "NI07-02",
+      "NI07-03",
+      "NI07-04",
+      "NI07-05",
+      "NI07-06",
+      "NI07-07",
+      "NI07-08",
+      "NI07-09",
+      "NI07-10",
+      "NI07-11",
+      "NI07-12",
+      "NI07-13",
+      "NI07-14",
+      "NI07-15",
+      "NI07-16",
+      "NI07-17",
+      "NI07-18",
+      "NI07-19",
+      "NI07-20",
+      "NI07-21",
+      "NI07-22",
+      "NI07-23",
+      "NI07-24",
+      "NI07-25",
+      "NI07-26",
+      "NI07-27",
+      "NI07-28",
+      "NI07-29",
+      "NI07-30",
+      "NI07-31",
+      "NI07-32"
+    ],
+    "source": "handoffs/active/non-inference-backlog.md exact NI06/NI07 checkbox rows",
+    "total": 35,
+    "unchecked": []
+  },
+  "source_handoffs": "handoffs/{active,blocked,completed,archived}/*.md via build_board",
+  "source_live_origin_main": "83b63a739a4cfe3c86f152bff1eb8d2d0989667e",
+  "source_origin_main": "83b63a739a4cfe3c86f152bff1eb8d2d0989667e",
+  "source_root_head": "83b63a739a4cfe3c86f152bff1eb8d2d0989667e"
+}

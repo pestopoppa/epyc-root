@@ -1,0 +1,55 @@
+{
+  "at_utc": "2026-10-06T15:04:38.147851+00:00",
+  "root_head": "e7c47d5a9cd59307a72b814a9e98e924a44ddbc7",
+  "script_sha256": "c5d4a7283449ca01dfc1cc5ac73517617905f7361fd142c69849b6f947b7c924",
+  "plan_exit": 1,
+  "apply_exit": 1,
+  "kept": 6,
+  "removed": 0,
+  "entries": [
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/codex-ni06-main-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/codex-ni30-custody-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/codex-ni30-custody-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/ni07-29-ci-recipe-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-34-pii-header-preparation-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/ni07-34-pii-header-preparation-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-32-root-keep-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/ni07-32-root-keep-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    },
+    {
+      "path": "/mnt/raid0/llm/tmp/ni07-32-custody-20261006",
+      "kind": "dir",
+      "verdict": "KEEP-MARKED",
+      "reason": "/mnt/raid0/llm/tmp/ni07-32-custody-20261006/KEEP",
+      "result": "kept (declared root is marked)"
+    }
+  ],
+  "scope": "Owned custody housekeeping only; no native CI, live-safety or atomic race warrant",
+  "verification_note": "First local verification aborted because it expected the presentation label kept rather than kept (declared root is marked). No deletion or source correction; this repeated all-KEEP application saves stdout and exit before checking."
+}
