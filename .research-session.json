@@ -2,7 +2,7 @@
  "session_id": "intake-ctxext-ec-20261006",
  "started_at": "2026-10-06T02:41:21Z",
  "last_checkpoint": "2026-10-06T03:11:59Z",
- "stage": "stage2-closeout",
+ "stage": "stage4-complete",
  "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-ctxext-1006",
  "branch": "lane/ec-intake-ctxext-1006",
@@ -150,6 +150,13 @@
    "disposition": "planned",
    "plan_ref": "this ledger append (rows above)",
    "note": "operator 2026-10-06"
+  },
+  {
+   "seq": 13,
+   "stage": 3,
+   "verbatim": "Proceed to stage 4",
+   "disposition": "planned",
+   "plan_ref": "Stage-3 plan approved; Stage 4 applied"
   }
  ],
  "prior_sessions": [

@@ -238978,9 +238978,10 @@
     sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -239354,7 +239355,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1902
@@ -239399,7 +239400,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1903
@@ -239445,7 +239446,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1904
@@ -239489,7 +239490,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1905
@@ -239539,7 +239540,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1906
@@ -239593,9 +239594,10 @@
     no DCA upstream (unverified). | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -239780,9 +239782,10 @@
     | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -239923,7 +239926,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: monitor
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1909
@@ -239965,7 +239968,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1910
@@ -240009,7 +240012,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1911
@@ -240070,9 +240073,10 @@
     (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: monitor
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -240271,7 +240275,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1913
@@ -240317,7 +240321,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1914
@@ -240359,7 +240363,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: declined
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1915
@@ -240400,7 +240404,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1916
@@ -240442,7 +240446,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1917
@@ -240479,7 +240483,7 @@
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
   - 'Stage-1 triage only; awaiting operator dive selection (report: /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md).'
 - id: intake-1918
@@ -240525,9 +240529,10 @@
     (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -240656,9 +240661,10 @@
     | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
@@ -240866,9 +240872,10 @@
     here) reportedly covers it. | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
-  handoffs_updated: []
+  handoffs_updated:
+  - yarn-context-extension-research.md
   handoffs_created: []
-  integration_disposition: knowledge_only
+  integration_disposition: integrated
   disposition_evidence:
   - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
     interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
