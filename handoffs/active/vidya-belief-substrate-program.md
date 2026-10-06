@@ -2662,3 +2662,9 @@ The capture module, strict reader, CLI ingestion and producer hook already exist
   - [ ] **VB-KB-CATALOG-K7-REPORT — preserve the existing native catalog dependency in K7 summary artifacts.** Prospectively enroll the report consumer before implementation/consumption; copy only strict validated original completed-writer identity once at report time. Missing/legacy unknown, invalid/stale refuses; no row invented on read, new ladder/source class, historical rebuild or all-query snapshot assertion. NI07-15/KB-K7-REPORT-DEPENDENCY; original synthetic observations remain under VB-NI07-CI-WIRE.
 
   - [x] **VB-NI07-CI-CS — ingest original provisional conversation-shadow fixtures.** ✅ 2026-10-06 — [Original CI37447169966](../../artifacts/ni07/run-37447169966/README.md) TRUE19/19;3340Git inputs plus2contexts,3350API members reopened. Existing shared Judged/Located observation emits3canonical frames; original FALSE unchanged, no corpus schema/calibration/routing warrant.
+
+
+  - [x] **VB-NI07-CI-FORCE — ingest accepted original forced-build duplicate fixtures.** ✅ 2026-10-06 — [CI37447817516](../../artifacts/ni07/run-37447817516/README.md) TRUE113/113;3335Git bindings plus2contexts,3345API members reopened. One existing shared Judged/Located observation emits3canonical frames; three original FALSEs unchanged. No native vector-integrity/quality/concurrent-writer warrant.
+
+
+- [ ] **VB-KB-VECTOR-PUBLISH — prospectively capture staged vector publication source contracts.** Existing native CI carrier/shared grading only; bind fake writer/source/readset and original partial-write/refusal/success fixtures before execution. No new grading/source class, vector-byte attestation, DB/filesystem transaction or live index warrant. NI07-16; MAIN owns acceptance.

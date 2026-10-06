@@ -1407,3 +1407,8 @@ S9 adds reentrant per-process transactions around mutable tokenizer/session stat
 The KB producer records a logical catalog/meta/FTS digest with distinct stored and already-loaded encoder identities at five named final commits. The read-only exporter checks the original native record against current logical contents; absent legacy rows remain unknown. Init/checkpoints/VACUUM, vector bytes, prior commits and concurrent writers stay outside the contract. [Source contract](../docs/reference/kb-catalog-dependency-contract.md); [original synthetic custody](../artifacts/ni07/run-37441909661/README.md) passes108selected cases with zero skips. Self-hash is not an authenticated external anchor, and this result provides no retrieval-quality or runtime-deployment warrant.
 
 Model-free removal now commits catalog/native state before deleting unreferenced vectors. Digest/commit failure preserves active rows and exact bytes; later cleanup failure leaves a reported orphan while retaining committed catalog success. [Removal contract and limits](../docs/reference/kb-catalog-dependency-contract.md). This does not make build/update vector writes or cross-process catalog writers atomic.
+
+
+## 2026-10-06 forced-build identity correction
+
+The [forced-build correction](../docs/reference/kb-force-build-identity-contract.md) reuses stable exact chunk identity and reconciles touched duplicate rows/FTS after successful encoding. [Original off-host CI37447817516](../artifacts/ni07/run-37447817516/README.md) passes113/113 after MAIN original source/API review. Shared vector files are retained; nonforced/failure/cleanup behavior remains. Individual staged-write protection is separately enrolled; no live index or retrieval-quality result.

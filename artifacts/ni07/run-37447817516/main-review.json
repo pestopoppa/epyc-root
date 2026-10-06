@@ -1,0 +1,64 @@
+{
+  "run": 37447817516,
+  "independent_git_bindings": 3335,
+  "source_counts": {
+    "root": 625,
+    "orchestrator": 2082,
+    "recipe": 628
+  },
+  "contexts": 2,
+  "receipt_file_sha256": "bbfb0c5d5e3c3657014f22f0b3f510ea3861892992b11db85894e0549a677623",
+  "receipt_self_sha256": "de3c91e3db61c69d1ed6e80d0666ae3f6260b5290ace78af36b49cf31573c235",
+  "native_conformant": true,
+  "counts": {
+    "collected": 113,
+    "error": 0,
+    "executed": 113,
+    "failure": 0,
+    "passed": 113,
+    "skipped": 0
+  },
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "attempt": 1,
+  "artifact_id": 11404262165,
+  "zip_sha256": "65a5b01327d6aea829b0cf0b8442204a55d1887710efee0bbbd455bdc295c3cf",
+  "zip_size": 16473869,
+  "zip_extracted_members": 3345,
+  "repositories": {
+    "orchestrator": "2860624a17c08f6d14e15babc6c41af74285b572",
+    "recipe": "2655991475f2b9f619b908d7c01780052861536e",
+    "root": "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
+  },
+  "readset_count": 3337,
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "-o",
+    "addopts=",
+    "--noconftest",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_kb_catalog_dependency.py",
+    "tests/unit/test_colbert_lock_contract.py",
+    "tests/unit/test_kb_rag_caps.py",
+    "tests/unit/test_kb_rag_tokenizer_identity.py",
+    "tests/unit/test_kb_rag_force_dedup.py",
+    "--junitxml=/home/runner/work/_temp/ni07/result/force-dedup/junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "source_main": "e7257b4c7e3bba73831eba867558b213f09c4088",
+  "recipe_main": "35486bc722fa4222641f13bc5fef26fbdc43b87d"
+}
