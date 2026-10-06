@@ -41,7 +41,8 @@ Each entry in `research/intake_index.yaml` follows this schema.
 | `integration_disposition` | enum | Workflow disposition: `integrated`, `knowledge_only`, `monitor`, `declined`, or `awaiting_dive`. This describes how the source is handled; `integrated` means routed into a durable owner, not necessarily deployed code. |
 | `disposition_evidence` | list[string] | One or more repository-grounded reasons for the disposition. Required whenever `integration_disposition` is present. |
 | `locator_note` | string | Why this entry has no `url` and no `arxiv_id`. See below. |
-| `claim_anchors` | list[object] | Per-claim span anchors recorded at dive time. See below. |
+| `claim_anchors` | list[object] | Per-claim span anchors recorded at dive time. REQUIRED for `dive-verified`/`dive-overturned` entries ingested 2026-10-07 or later. See below. |
+| `read_depth` | enum | `FULL` (whole source read from disk), `PARTIAL` (named sections/files read from disk; list what was not read in `notes`), or `DIGEST` (anything fetched through WebFetch, a model-summarised digest). `DIGEST` entries stay `stage1-unverified`; the validator rejects a `dive-verified` entry with `DIGEST` (added 2026-10-06). |
 
 ## `locator_note` — the honest empty-URL case (added 2026-08-09)
 
@@ -90,8 +91,11 @@ entries found that **zero** claims could reach an anchored grade, because no ent
 per-claim span. Recording the anchor at dive time — when the author has the passage open — costs
 seconds; reconstructing it later costs a re-read, and often is not possible at all.
 
-Anchors are optional and per-claim: record them for claims that will be cited, gate a decision, or
-enter an authoritative projection. Ordinary prose does not need one.
+Anchors are **REQUIRED** (non-empty `claim_anchors`) for every `dive-verified` / `dive-overturned` entry
+ingested on or after 2026-10-07, and for any entry that declares `read_depth`; the validator enforces this
+(`READ_DEPTH_ENFORCED_FROM`). Legacy entries ingested earlier are grandfathered, and are re-verified by the
+intake re-verification handoff rather than failed. Anchors stay per-claim: every claim a plan or handoff will
+cite needs one. Ordinary prose does not need one.
 
 Optional setup_scope (what was actually tested, e.g. "downscaled 2-GPU reproduction") and cost_note
 on a claim_anchor or claim_corrections row, so "inconclusive under this setup" is expressible without

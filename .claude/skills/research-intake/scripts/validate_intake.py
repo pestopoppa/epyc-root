@@ -33,6 +33,7 @@ REQUIRED_FIELDS = {
     "id", "arxiv_id", "url", "source_type", "title", "categories",
     "novelty", "relevance", "discovered_via", "verdict", "ingested_date",
 }
+READ_DEPTH_ENFORCED_FROM = "2026-10-07"
 SOURCE_TYPES = {"paper", "blog", "repo"}
 NOVELTY_VALUES = {"high", "medium", "low", "duplicate"}
 RELEVANCE_VALUES = {"high", "medium", "low", "none"}
@@ -417,6 +418,19 @@ def validate_index(entries: list[dict], valid_categories: set[str],
                             f"{eid}: claim_corrections[{j}] needs a 'note' — an unexplained "
                             "per-claim verdict cannot be reviewed or overturned later"
                         )
+
+        # Read-depth gate (added 2026-10-06): a dive-verified entry must carry read_depth FULL|PARTIAL
+        # and per-claim anchors. WebFetch digests (DIGEST) are discovery-only. Forward-only: applies to
+        # entries ingested on/after READ_DEPTH_ENFORCED_FROM or that declare read_depth at all.
+        if entry.get("verification") == "dive-verified":
+            rd = entry.get("read_depth")
+            gated = rd is not None or str(entry.get("ingested_date") or "") >= READ_DEPTH_ENFORCED_FROM
+            if gated:
+                if rd not in ("FULL", "PARTIAL"):
+                    errors.append(f"{eid}: dive-verified requires read_depth FULL|PARTIAL (got {rd!r}); "
+                                  "DIGEST/WebFetch reads stay stage1-unverified")
+                if not entry.get("claim_anchors"):
+                    errors.append(f"{eid}: dive-verified requires non-empty claim_anchors")
 
         # depends_on: the evidential edge (schema § depends_on). Shape-checked here because a
         # malformed dependency is worse than an absent one -- it looks like propagation coverage

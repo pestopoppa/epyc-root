@@ -134,7 +134,11 @@ For each URL:
    The 2026-07-25 audit found 19 entries mis-filed this way; one had hidden a live production defect
    for months because "the paper mentions this repo" was treated as "we have read this repo".
 
-4. **Fetch content**: arXiv → **`https://arxiv.org/html/{id}v{N}` FIRST**, then `https://ar5iv.org/abs/{id}`,
+4. **Fetch content** (read-depth rule: **WebFetch returns a MODEL-SUMMARISED digest, not source text. It is
+   allowed ONLY for Stage-1 discovery.** For Stage 2, fetch the raw HTML or PDF with `curl -L` into
+   `/mnt/raid0/llm/tmp/<dive dir>/` (one download at a time) and read it from disk with `Read` (PDF `pages`)
+   or pypdf text; clone repos with `git clone --depth 1`. See the Stage-2 read-depth contract.)
+   arXiv → **`https://arxiv.org/html/{id}v{N}` FIRST**, then `https://ar5iv.org/abs/{id}`,
    then the given URL; GitHub → repo page + raw README (`main`, then `master`); other → fetch directly.
    Compute a SHA-256 of each raw artifact before extraction.
 
@@ -318,6 +322,14 @@ Begins only when the operator names the intakes. Never self-trigger.
 
 - **Dive only what was named.** Any entry is eligible, including expansion-discovered ones.
 - **Verify, don't summarise.** Read the actual source/code. Quote `file:line` or the exact passage.
+- **Read-depth contract (hard).** WebFetch returns a small-model digest, never source text. It is
+  allowed in Stage 1 for discovery only; a claim verified from a digest is NOT dive-verified. Stage 2 reads
+  source text: papers = `curl -L -o <dive-dir>/paper.pdf https://arxiv.org/pdf/{id}v{N}` then `Read` with
+  `pages` (or the arXiv HTML saved with curl and read from disk), covering every table/equation a claim
+  rests on; repos = `git clone --depth 1` into `/mnt/raid0/llm/tmp/dive-<id>/` and read files there, pinning
+  the SHA; blogs = curl to disk and read. Record `read_depth: FULL|PARTIAL|DIGEST` on the entry. FULL = whole
+  source read from disk; PARTIAL = named sections/files read from disk (list what was not read in `notes`);
+  DIGEST = anything fetched through WebFetch. A DIGEST entry stays `stage1-unverified`; the validator rejects it.
   **Prefer overturning the entry's conclusion to confirming it** — an overturned recommendation is a
   successful dive. Check the *specific numbers*, not the abstract's framing: a Stage-1 agent's
   headline is exactly what a dive exists to falsify.
@@ -352,7 +364,7 @@ Begins only when the operator names the intakes. Never self-trigger.
 **Writes permitted in Stage 2** (intake index only):
 
 - Promote `verification: stage1-unverified` → `dive-verified` (or `dive-overturned`).
-- **Record a `claim_anchors` entry for every claim the dive will let a plan or handoff cite.**
+- **Record a `claim_anchors` entry for every claim the dive will let a plan or handoff cite — REQUIRED (not optional) for every `dive-verified` entry.** `locator` format: `p.N §X Table N` / `Eq. N` / `path/file.py:L10-L25 @ <sha7>`.
   You have the passage open; nobody downstream will. Capture `claim_index`, a `locator` (page,
   section, heading path, or line range), the `quote` verbatim, its `quote_sha256`, and the
   `source_revision` you read — schema and worked example in
