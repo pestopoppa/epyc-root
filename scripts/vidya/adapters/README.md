@@ -502,3 +502,5 @@ Consumers/source contracts enrolled before implementation (acceptance recorded i
 | Typed candidate descriptions (accepted NI07-28) | native CI verifier | Legacy-byte, strict shape, JSON/native render and layout-reader alignment fixtures; no quality/adoption warrant | Native37468262427 TRUE14/14; TD-14-NI-PREP / VB-TD-OPTION-DESCRIPTIONS through existing native carrier/shared grade |
 
 | Calibration input byte bindings (prospective NI07-29) | dependency evidence; existing native CI verifier for synthetic conformance | CLI read-once state/catalogue/gold SHA256 and byte lengths, bounded hints; API metadata caller_asserted or null. No original hashes reconstructed on read, no calibration/label/model validity or standalone tuple | TD-18-NI-INPUTS / VB-TD-CAL-INPUT-BINDINGS; future measurement integration remains VB-TDP-1/shared-screen |
+
+| Standalone guard declared NUMA mode (prospective NI07-30) | native CI verifier | Source-pinned fake CLI forwarding/refusal and portable-pin fixtures; preserve diagnostic/default Python callers and pipeline/update behavior | NIB2-76 / VB-STANDALONE-NUMA-GUARD through existing native carrier/shared grade |
