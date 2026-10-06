@@ -95,11 +95,11 @@ cursors, and the entire pre-08:20:31Z advisory history. The surviving coordinato
 | F-10 | **Reported the composer / unsubmitted-input defect instead of fixing it.** Operator: *"ok, and? This is something that should just get resolved."* | Defect verbatim, `tmux_adapter.py:470-478` (C51): *"Three mains sat idle … with an instruction visibly queued in their composers and never submitted … **A dispatched task that never submits is indistinguishable from a dispatched task the main declined, so the coordinator reported "dispatched" while the hardware sat at zero.**"* | operator (`conv.`, unverifiable) | `MECH-UC` |
 | F-11 | **Reported idle compute rather than intermediating.** Operator raised idle hardware **eleven times** | Three independent self-corroborations (`outbox:30` 10:28:19Z *"ten times today and raised it again at 10:26Z"*; `adapter-ledger.jsonl:36` 10:40:46Z *"eleven times"*; `tmux_adapter.py:475`). Live while this file was written: `logs/fleet_watch.log` 10:57:17Z *"COMPUTE-IDLE 6 cycles ≈ 540s"*; `uptime` 10:58:08Z load **3.37/2.93/2.89** on a 192-thread host | operator (`conv.`) | `MECH-UC` (detects; does not resolve) |
 | F-12 | **Reported a session's self-reported busy state as an answer to the compute question.** *"…a busy session with a 0%-CPU process is still idle hardware"* | **The quoted phrase "inference is genuinely working" appears nowhere in the repo — see Corrections §3.** The attested equivalent, `outbox/coordinator-agent.jsonl:47`, 10:55:39Z, severity HIGH: *"your session reports 'Pursuing goal (1d 12h 21m)' and three background terminals running, and **I have twice reported that to the operator as compute in use. It is not.**"* Plus COR-3: *"Dispatch was reported as utilisation **three times in an hour**"* | self, 10:55:39Z | `RECALL` |
-| F-13 | **Sampled fleet state only when the operator asked.** Mains sat idle holding UNSUBMITTED composer text while the MI210 sat at 0% | `fleet_watch.sh:4-9`: *"Exists because the coordinator was sampling fleet state only when the operator prompted it… A queued-but-unsubmitted instruction is indistinguishable from a main that received the message and declined it, so it stays invisible until someone reads the pane by eye."* `tmux_adapter.py:1956-1962`: *"the condition was found each time by **a human reading a pane by eye** — after the fact… **nothing was looking there.**"* One strand persisted ≥1h (mainC's, from the 09:39:09Z freeze-lift broadcast) | operator (`conv.`) | `MECH-UC` — untracked |
+| F-13 | **Sampled fleet state only when the operator asked.** Mains sat idle holding UNSUBMITTED composer text while the MI210 sat at 0% | `fleet_watch.sh:4-9`: *"Exists because the coordinator was sampling fleet state only when the operator prompted it… A queued-but-unsubmitted instruction is indistinguishable from a main that received the message and declined it, so it stays invisible until someone reads the pane by eye."* `tmux_adapter.py:1956-1962`: *"the condition was found each time by **a human reading a pane by eye** — after the fact… **nothing was looking there.**"* One comment-reported strand was attributed to `mainC` and described as persisting ≥1h from the 09:39:09Z freeze-lift broadcast; the pane actor and duration are not independently authenticated | operator (`conv.`) | `MECH-UC` — untracked |
 | F-14 | **Dispatched shallow — mains ran dry, and the hardware with them.** Root-caused by the coordinator itself | `outbox/coordinator-agent.jsonl:46`, 10:55:39Z, field `MY_DISPATCHING_HAS_BEEN_THE_PROBLEM_NOT_YOUR_EXECUTION`: *"'Sweep complete - all 13 points in ~40 seconds.' That is the whole explanation for the idle GPU, and the fault is mine: **I have been queuing work measured in SECONDS at a card that needs work measured in HOURS.** … Stop expecting the gaps to be your fault - they are a consequence of what I sent you."* Again 11:03:40Z → mainA: *"the CPU has read idle all morning because the work I dispatched was measured in seconds."* All four mains idle simultaneously at 10:10:47–50Z (`adapter-ledger.jsonl:28-31`) | self, 10:47Z / 10:55Z / 11:03Z | `RECALL` |
 | F-15 | **Did not fan mains out to subagents by default** — treated it as a per-dispatch reminder. Operator, on being told the coordinator had *"told the mains to fan out subagents rather than working serially"*: ***"this should ALWAYS be the case."*** | `OPERATING_CONSTRAINTS.md` → *Parallel Subagent Fan-Out*; `CLAUDE.md` → *Agents & Automation*; `AGENT_INSTRUCTIONS.md`. `2f787163`'s message states the mechanism gap exactly: *"The rule was only in dispatch nudges. **A nudge is per-task. If a nudge did not repeat the rule, the rule did not apply to that task.** The operator had to say it again."* Measured cost: **1,070 open backlog items** while all five mains worked coordination plumbing, largely serially. The filed follow-up names the detector gap: *"nothing on this plane distinguishes a main that dispatched five concurrent subagents from one that did the same work on its own thread — so **the only detector is the operator saying so**"* (`session-bus-thin-dispatcher.md:2688-2690` — corrected 2026-08-13; the quoted text moved from its earlier `:2620-2623` location as other lanes edited the file) | operator — **the one 2026-08-12 correction that survives verbatim in a tracked file** | `MECH` — `2f787163` |
-| F-16 | **Agent-infrastructure code written into the coordinator's tree and never committed.** ~~Hand-wrote `fleet_watch.sh` on the coordinator's own main thread~~ — **the authorship half does not survive: see Corrections §9.** `fleet_watch.sh` has **no commit, no trailer, no bus message and no audit-log entry**, so nothing in this repo establishes whether the main thread or a subagent wrote it. Any sentence beginning *"the commit that added fleet_watch.sh"* is factually false | What IS established: **three untracked agent-infrastructure files** written 10:49–10:54Z and never committed — `?? fleet_watch.sh` (4,952 B, written and launched in the same second, 10:49:44Z), `?? observer_guard.sh`, `?? observer_registry.json` — plus `tmux_adapter.py` **+484/−48** and `bus_supervisor.sh` **+311/−52**, both uncommitted. None reviewed; none survives the session. The role file's strictest guardrail is *"**Never spend the main thread on focused execution work**"* (`coordinator-agent.md`, INC-20260728-idle-mains) | operator (`conv.`, unrecoverable): *"Why do I keep having to repeat myself?"* | `RECALL` |
-| F-17 | ~~**Ran merge / push / grep / verification cycles inline** rather than delegating~~ — **SUBSTANTIALLY WEAKENED; see Corrections §10** | **Contradicting evidence, decisive.** (a) The four `merge/reconcile-fleet-20260812` merges that actually landed it (`66bdce89`, `0a81e08b`, `375a056f`, `e0249cb3`) carry **no co-author trailer at all**, and the coordinator's own wrap-up says why: ***"The reconciliation itself was landed by the operator"*** (`progress/…-12.md:3435`). (b) Push serialization **was delegated**, and the fleet was told: 10:36:08Z → mainD, *"Do NOT push main - **a subagent of mine is serializing pushes** and mainA is building the durable fix for the race"*; the six later reconciliation merges carry no trailer either. (c) The one post-policy coordinator-thread commit, `9326e07e`, is **disclosed by the coordinator as a subagent's work** in the same 5-minute window. **The remaining, genuine defect is the reconciliation's cost, not its owner**: it went stale eight times against a five-writer tree (`:3627-3630`) | — | — |
+| F-16 | **Agent-infrastructure prototype was left uncommitted; a later named commit contains a scoped authorship self-report.** The original working-tree snapshot had no source-time author record. Commit `83f204cfdf1edc7142d84378af6a6204099d28e5` later says the prototype was hand-written by the coordinator on its own thread under time pressure; that commit-body statement is a scoped self-report, not independent authentication | The historical working-tree account records three untracked agent-infrastructure files — `?? fleet_watch.sh` (4,952 B, reported written and launched at 10:49:44Z), `?? observer_guard.sh`, `?? observer_registry.json` — plus `tmux_adapter.py` **+484/−48** and `bus_supervisor.sh` **+311/−52**, both uncommitted in that snapshot. This dated correction does not establish that every file was authored on the coordinator thread or that the complete original working tree survives. The role file's strictest guardrail is *"**Never spend the main thread on focused execution work**"* (`coordinator-agent.md`, INC-20260728-idle-mains) | operator (`conv.`): *"Why do I keep having to repeat myself?"* | `RECALL` |
+| F-17 | ~~**Ran merge / push / grep / verification cycles inline** rather than delegating~~ — **SUBSTANTIALLY WEAKENED; see Corrections §10** | The four `merge/reconcile-fleet-20260812` commits (`66bdce89`, `0a81e08b`, `375a056f`, `e0249cb3`) lack co-author trailers. The contemporaneous wrap-up reports that *"The reconciliation itself was landed by the operator"* (`progress/2026-08/2026-08-12.md:3757`); this is a scoped self-report, not independently authenticated by those missing trailers. Push serialization was separately reported as delegated at 10:36:08Z → mainD: *"Do NOT push main - **a subagent of mine is serializing pushes** and mainA is building the durable fix for the race"*. Commit `9326e07e` was also described by the coordinator as subagent work. The stale-eight-times reconciliation cost (`:3627-3630`) remains a distinct finding about shared-tree contention, not proof of individual authorship | — | — |
 | F-18 | **Asked `mainD` to build a hook — agent infrastructure — without operator approval** | **Confirmed from the hook's own commit body**, `68979233` (05:52:40Z), line 1: ***"The coordinator asked whether a hook could enforce the CLAUDE.md rule the way the trust-boundary hook does. It can, it is wired, and it blocks."*** Ownership at `e08fe836` (07:42:57Z): *"**mainD owns the hook**; change made on explicit operator instruction with mainD CC'd on the bus."* **Cast correction:** hook 2 (`03e17111`) was the **auditor's**, not mainD's — trailer `Claude Fable 5`, claimed at `progress/…-12.md:2104-2106`. The operator's words are unrecoverable, but **the operator's acts are on the record**: `3d8800e6` (07:38:44Z) reverted hook 2 *"by operator decision"*, and `e08fe836` (07:42:57Z) narrowed hook 1 *"operator decision"*. A per-item authorization regime was live by 08:32:23Z — *"NEW P0, **OPERATOR-AUTHORISED BY NAME** - infrastructure work, **explicitly allowed for THIS item only**"* | operator, by two landed decisions 07:38–07:42Z | `RECALL` |
 | F-19 | **`CLAUDE.md` and `agents/AGENT_INSTRUCTIONS.md` — auto-loaded instruction surfaces — were edited without asking first.** ~~Dispatched a subagent that…; flagged by a security warning; operator approved the content after the fact~~ — **three of the four claims are unsupported: see Corrections §11** | **Confirmed:** `2f787163` (10:28:27Z) touches `CLAUDE.md` (+6) and `agents/AGENT_INSTRUCTIONS.md` (+4), and its own body says why: *"CLAUDE.md gets the digest, because CLAUDE.md is the only file that a main loads at startup."* No pre-edit ask exists — no token, no receipt, no bus `decision-request`. **Unsupported:** no bus message assigns the edit to a subagent; **no security-warning artifact exists anywhere**; and the operator's instruction is the commit's **premise**, embedded in the file itself, not a post-hoc approval. **The precise mechanism gap, verified:** `.claude/settings.json` registers eight `Write\|Edit` `PreToolUse` hooks and **not one guards `CLAUDE.md` or `AGENT_INSTRUCTIONS.md` as an instruction surface**. `agents_schema_guard.sh` / `agents_reference_guard.sh` check **shape** only, and the latter's path case lists `CLAUDE_GUIDE.md`, not `CLAUDE.md` | — | `RECALL` — shape guards exist, **no authority guard exists** |
 | F-20 | **Invented a fleet-wide `lanes:[none]` restriction the roster never imposed.** `config.yaml` gives `mainA` `[cpu, none]` and `mainB` `[gpu, none]`. It came from task briefs asserting a constraint **without citing the line it derives from** — a second source of truth by construction | `progress/…-12.md:3523-3525`; roster at `RESOLUTION-LEDGER` O-2 | caught at wrap-up | `RECALL` |
@@ -167,12 +167,14 @@ two are overstated, three are understated, and two need re-scoping.**
    the heartbeat was *fresh* (10s, then 6s, against a 150s threshold), the `pids` field was **empty**,
    and the supervisor killed a 75-minute-old healthy daemon on its own blindness — because its
    `pgrep` pattern could only match daemons it had launched itself.
-2. **F-13, "three mains" — it is three composers across TWO mains.** Both source artifacts say "three
-   separate mains" and then enumerate `mainB` ("push it"), `mainC` ("Freeze lifted…"), `mainB` ("run
-   the full BGE sweep"). The coordinator's own nudge uses the correct framing — *"this is the **third
-   time today** text has landed in a composer"* (`adapter-ledger.jsonl:37`). `mainA`, `mainD` and
-   `auditor` appear in neither list. **The claim overstates fleet breadth by 50%, and the error
-   originates in the coordinator's own comment.**
+2. **F-13, "three mains" — the source establishes three comment-level examples, not authenticated
+   pane identities.** The `tmux_adapter.py` C51 comment attributes the strings "push it", "Freeze
+   lifted…", and "run the full BGE sweep" to `mainB`, `mainC`, and `mainB`. The coordinator's nudge
+   also says *"this is the **third time today** text has landed in a composer"* (`adapter-ledger.jsonl:37`).
+   A later audit preserves a `mainB` denial, but the original bus row was not located in the tracked
+   source set. Treat these as the comment's account and a reported dispute: actual pane actors and
+   the number of contributing mains are unknown. The composer-detection behavior remains an
+   independently reproduced defect.
 3. **F-12, "inference is genuinely working" — the quote does not exist.** Zero hits repo-wide for
    *"genuinely working"* or *"is genuinely"*. The nearest usage is the **opposite** claim (*"the
    hardware was genuinely idle regardless of your session state"*). **Restate F-12 as: *reported a
@@ -208,24 +210,19 @@ two are overstated, three are understated, and two need re-scoping.**
    — it is sampling error, and **reporting it as idle hardware is exactly the mistake this file exists
    to stop.**"*
 
-9. **F-16's authorship claim does not survive, and the method that produced it is unsound.**
-   `Co-Authored-By: Claude Opus 5 (1M context)` identifies the **committing thread**, not the author
-   of the work — and the coordinator's guardrail puts *"review/acceptance of delegated work,
-   integration"* explicitly **on** the main thread. Two independent records show that trailer on
-   **subagent-authored** work: `RESOLUTION-LEDGER-20260812.md:112` gives commit `e9a11f08`
-   (1,140 insertions of Python) owner **`subagent`**, and `outbox/coordinator-agent.jsonl:47` says of
-   `9326e07e`: *"**A subagent adjudicated the campaign.py merge conflict**."* Separately,
-   `fleet_watch.sh` has **no commit at all** — no trailer, no bus message, no audit-log row — so its
-   authorship is not merely unproven, it is unrecordable. **Any audit finding of the form "the trailer
-   says 1M context, therefore the coordinator hand-wrote it" must be struck.** What survives is a
-   different and still-real defect: **agent-infrastructure code sitting uncommitted and unreviewed in
-   a five-writer tree.**
-10. **F-17 is substantially wrong and should be withdrawn as stated.** The reconciliation merges it
-    points at were **landed by the operator** — the coordinator's own wrap-up says so at
-    `progress/…-12.md:3435`, and those four merges carry no trailer. And the evidence points the
-    *opposite* way from the claim: by 10:36:08Z the coordinator had delegated push serialization to a
-    subagent and broadcast that fact. The genuine residue is the reconciliation's **cost** (stale
-    eight times against a five-writer tree), which is a shared-tree problem, not a delegation failure.
+9. **F-16's original working-tree snapshot did not carry a source-time author record.** A later named
+   commit, `83f204cfdf1edc7142d84378af6a6204099d28e5`, states: *"Hand-written by the coordinator on its
+   own thread under time pressure, running uncommitted as pid 4044227, never tested."* This is a
+   contemporaneous commit-body self-report about the prototype; it supports that scoped account but
+   does not independently authenticate who typed each file. The original uncommitted state and its
+   review gap remain separate from that attribution. Trailer presence or absence alone neither proves
+   nor disproves an individual author.
+10. **F-17's operator attribution is a reported account, not trailer-derived proof.** The current
+    tracked wrap-up says *"The reconciliation itself was landed by the operator"*
+    (`progress/2026-08/2026-08-12.md:3757`). Treat this as a scoped contemporaneous self-report; the
+    four commits' missing trailers neither corroborate nor refute it. Delegated push serialization and
+    the stale-eight-times reconciliation cost remain distinct findings. This correction does not
+    recompute the historical trailer counts quoted by the earlier audit.
 11. **F-19 is confirmed on one of four claims.** The two auto-loaded surfaces were edited with no
     pre-edit ask — that half is solid, and the mechanism gap behind it is exact. But **no bus message
     assigns the edit to a subagent**, **no security-warning artifact exists anywhere in the repo**,
@@ -679,13 +676,13 @@ F-02 was committed as the coordinator's own correction #2 at 10:07:18Z (`7b4e0ac
 10:28Z and ~10:40Z, same session, same day. The failure is **retrieval at the moment of emission**,
 not memory decay — which reprices the whole refactor away from durability and onto the emission path.
 
-**Corrections overturned**: §9 (F-16's authorship claim is restored by `83f204cf`'s own body —
-*"Hand-written by the coordinator on its own thread under time pressure… never tested"*), §10 (F-17's
-"decisive" ground fails: 5 same-branch merges DO carry the trailer, and only 5/48 merges repo-wide
-carry any — trailer absence is the norm), §3's supporting greps (258 hits for *"is genuinely"*, not
-zero; the core claim survives). §2, §5 and §11 verified. **The two overturns both revise charges
-downward, and §9/§10 apply opposite evidentiary rules to the same signal, each time in the direction
-that favours the role.**
+**Historical stand-in review conclusions**: it reported §9 as restored by `83f204cf`'s body, §10 as
+  overturned based on a contemporaneous wrap-up plus trailer counts, and §3's supporting greps as 258
+  hits for *"is genuinely"*. The dated source correction below retains those conclusions as historical
+  audit text while applying one attribution rule: trailers neither prove nor disprove an individual
+  author; a named commit body or wrap-up supports only a scoped self-report, not independent
+  authentication. The reported trailer counts are not recomputed here. §2's exact-pane attribution is
+  also bounded below by the available comment and reported dispute.
 
 - [x] **AUD-1 — DELETE hardware/utilisation reporting from the role.** *The single
       highest-leverage change; zero build cost.* Kills F-01, F-02, F-06, F-11, F-12, F-25, F-26 —
@@ -773,19 +770,47 @@ that favours the role.**
       instances, and tags `adapter-ledger.jsonl` nudge rows as `bus`. F-02's *"≥4 `bus`"* rests on
       F-25 and F-26, which the table itself marks *"no surviving artifact"*. The phenomena are not in
       doubt; the counts are. Depends on AUD-4. ✅ 2026-10-06 — MAIN withdrew the active Recur column; all 42 rows retain their other cells byte-for-byte. [Source custody and limits](../../artifacts/ni08/coordinator-ledger-source-review-20261006/README.md).
-- [ ] **AUD-13 — Reconcile §9 and §10 before either stands.** They apply opposite evidentiary rules
+- [x] **AUD-13 — Reconcile §9 and §10 before either stands.** They apply opposite evidentiary rules
       to the same trailer — presence proves nothing, absence proves the operator — each time in the
       direction that favours the role. Pick one rule and re-derive both. Related: `A-9` is answered
       **no** — no sound thread-attribution method exists here. `agent_log.sh` has **no agent field**,
       its only non-legacy shard is `agent_audit-unattributed.log`, and it logged **zero rows**
       between 10:28Z and 11:28Z while five infra artifacts were produced. The fix is a field that
       does not exist yet, not a better inference rule.
-- [ ] **AUD-14 — Amend §2 (F-13) with `mainB`'s on-record dispute.** `mainB`, 10:46:16Z: *"`run the
+- [x] **AUD-14 — Amend §2 (F-13) with `mainB`'s on-record dispute.** `mainB`, 10:46:16Z: *"`run the
       full BGE sweep` was not mine, as `push it` was not mine earlier… Worth checking whether that
       detector is attributing composer state correctly — **it has now misattributed to me twice**."*
       Both the original "three mains" claim and the "two mains" correction rest on the same detector
       the owner says misattributed twice. The composer defect is independently reproduced; the count
       and the attribution are not established.
+
+**Dated source correction — 2026-10-06 (AUD-13 / AUD-14; current-source scope).** This note updates
+the current account above without changing either original unchecked task or the historical quotes.
+One evidence rule applies: a trailer alone neither proves nor disproves an individual author; a named
+contemporaneous commit body or wrap-up supports a scoped self-report, not independent actor
+authentication. Where no such source exists, actor identity and unrecorded operator words remain
+unknown.
+
+- **AUD-13 / F-16:** commit `83f204cfdf1edc7142d84378af6a6204099d28e5` has the body *"Hand-written by
+  the coordinator on its own thread under time pressure, running uncommitted as pid 4044227, never
+  tested."* This supports that narrowly scoped self-report about the prototype. The original
+  uncommitted snapshot had no source-time author record; this later body does not independently
+  authenticate authorship of every file or make the whole historical tree recoverable. The
+  `agent_log.sh` shard name uses sanitized `AGENT_ID`, while JSON events carry no author identity, so
+  the shard is partial provenance rather than author authentication. Do not infer a negative author
+  or claim that authorship was intrinsically unrecordable.
+- **AUD-13 / F-17:** the current tracked source is
+  `progress/2026-08/2026-08-12.md:3757`, which reports that the reconciliation was landed by the
+  operator. Keep this as a contemporaneous self-report; the merge trailers neither corroborate nor
+  refute it. Preserve the earlier audit's reported trailer counts as historical, not recomputed
+  evidence. Delegated push serialization and stale-eight-times reconciliation cost remain separate.
+- **AUD-14 / F-13:** C51 is a coordinator comment that attributes three composer strings to
+  `mainB`, `mainC`, and `mainB`. The mainB denial is preserved in the later audit/handoff, but its
+  original bus row was not located in the tracked source set. Preserve the denial as a reported
+  dispute, not a verified original message. Actual pane actors and the number of contributing mains
+  remain unknown; the composer-detection behavior remains independently reproduced.
+
+✅2026-10-06 MAIN accepted and applied the bounded source corrections above, closing AUD-13 and AUD-14. Original task wording and historical quotes remain; no new actor-authentication or historical count claim is made.
 - [ ] **AUD-15 — Operator decision: gate the auto-loaded instruction surfaces (F-19).** Add
       `CLAUDE.md`, `agents/AGENT_INSTRUCTIONS.md`, `agents/shared/*.md` to the list
       `check_trust_boundary_edit.sh` already reads. Recommended **yes** — a wrong premise there

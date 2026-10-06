@@ -301,6 +301,7 @@ Current 2026-07-06 refresh: live Fable/DS-E1 reads report `ri10_telemetry_collec
   - 2026-10-01 (RI-16): this path is the `priors` stage, measured at 156 ms p50 / 275 ms p95 on live `/chat`. Next step:
     set `use_memrl: false` on a branch, re-run the RI-16 30-request set, and confirm `priors` drops to near 0 with the
     same routed roles; then delete the branch.
+  - 2026-10-06 MAIN source preparation accepted: [isolated comparison branch](https://github.com/pestopoppa/epyc-orchestrator/tree/codex/ni08-ri19-disable-memrl-config-proposal-20261006) at83d530e80e7c308c9b71477eaf9ba6605b50175a (base79abe3ec) changes only `routing_classifiers.direct_mode.use_memrl` and `routing_classifiers.specialist_routing.use_memrl` to false. Both existing callers retain keyword fallback. No main integration, live store read, seeding, inference or reload. The historical store/timing baseline is not remeasured here. RI19 remains open for the owning session's identical30-request RI16/role comparison; no threshold invented and no dead-code deletion before that result.
 - [ ] **RI-24 — cut the `route` stage cost (197 ms p50 / 529 ms p95 on live `/chat`, RI-16).** (filed 2026-10-01) After
   RI-19 removes `priors`, `route` is the largest routing stage. Next step: count the prompt embeddings per request
   across `route`, `mode` and `review_gate`. If the same text is embedded more than once, compute it once per request

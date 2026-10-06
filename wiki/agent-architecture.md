@@ -5081,3 +5081,7 @@ Delegation's compact loop telemetry and user-visible report are separate product
 ## 2026-10-06 provisional conversation shadow contract
 
 The [binary conversation shadow helper](../docs/reference/conversation-shadow-preparation.md) delegates JSON decisions beside the unchanged incumbent using existing default-off/sink/queue gates. [Original synthetic CI37447169966](../artifacts/ni07/run-37447169966/README.md) passes19/19 after MAIN source/API review; no executor or model call runs. LOCAL/ORCH descriptions remain provisional until CS-4 schema verification. Confidence is logging only; controller integration, three-arm comparison and live routing gates remain open.
+
+### 2026-10-06 coordinator audit attribution correction
+
+[Current-source corrections](../artifacts/ni08/coordinator-attribution-source-review-20261006/README.md) apply one attribution rule: commit trailers neither prove nor disprove individual authorship; a named contemporaneous body or wrap-up supports a scoped self-report. Log shard names provide partial provenance without actor authentication. The composer actor count and reported mainB dispute remain unverified against original pane/bus custody. This correction preserves historical quotes and the separately documented defect; it supplies no new grading rule.

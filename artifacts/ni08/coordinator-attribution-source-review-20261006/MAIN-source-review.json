@@ -1,0 +1,15 @@
+{
+  "reviewed_at": "2026-10-06T21:17:26.395916+00:00",
+  "proposal_commit": "95124251d359ab81aef8d90cb5002b13a5ac0aaf",
+  "base": "9955bd4a35dfe002c82e02f8bade0b8dcdcbf09d",
+  "source_commit_body": "83f204cfdf1edc7142d84378af6a6204099d28e5",
+  "base_handoff_sha256": "eb61d31bd0f1ea3999ac4e8618684bd30feb3470413c822f66f89ca70179e260",
+  "proposal_handoff_sha256": "b572ebf3b779199110a0c883d09331fa4f5306667875acd2e0342260f2bff159",
+  "retained_finding_rows": 42,
+  "unchanged_other_finding_rows": 39,
+  "active_recurrence_cells": 0,
+  "preserved_original_task_wording": true,
+  "bus_logs_read": false,
+  "new_grading_rule": false,
+  "scope": "Consistent attribution rule and reported actor dispute; historical corpus not recounted"
+}

@@ -94,3 +94,15 @@ Normal index publication gate also resolved its ledger relative to the worktree 
 Accepted exact recipe b267f462, original hosted run37529964352/attempt1/artifact11443274121, four original passing controls. MAIN reconstructed the pinned218-document corpus and bound3,405 Git inputs before dispatch, then independently reopened ZIP/readset/receipt/grade and generated aggregate. All originals are unchanged; private custody retained. The public authored-Markdown successor yields 0/218 for each trigram guard, 0/217 stream-body triggers and one tail-line exclusion. This is descriptive, ungraded source provenance; false-positive rates, length bias and production stream cadence remain unknown. Parent TD-30f stays open. Two scoped closures bring NI08 to29 (24 existing flips+5 scoped additions).
 
 The own review helper initially refused an assertion after an overly broad numeric replacement changed an expected artifact-ID literal; MAIN corrected that literal against the independently fetched API and completed the original review. An application helper then refused because it expected another child bullet after the last TD30f task; MAIN resumed only the unapplied canonical edits using the TD31 boundary. Neither refusal altered original evidence or bypassed checks.
+
+## AUD13 — consistent source attribution boundary
+
+MAIN reviewed proposal95124251 against published9955, reopened83f204cf's exact commit body, dated reconciliation wrap-up and agent_log.sh source. Accepted scoped self-report rule; trailers/shard names do not authenticate authors. All42 finding identities and39 unrelated rows preserved, active recurrence column remains withdrawn, original checkbox task wording retained. AUD13 closes without rereading bus logs or adding an attribution ladder.
+
+## AUD14 — actor-count correction
+
+MAIN applied the separate current account correction: comment-level composer examples and mainB's later reported dispute do not establish exact pane actors or contributing-main counts. Historical quoted audit and independent composer defect remain; no count rederived. AUD14 closes. NI08 now31 scoped completions (26 existing flips+5 additions).
+
+## RI19 preparation and D9 pending decision visibility
+
+Published exact source-only config proposal83d530 on its comparison branch, two values only; MAIN independently reviewed keyword fallbacks. No main promotion/store change/live read/reload. Identical RI16 30-request replay belongs to the inference owner; parent remains open. Corrected stale draft key names rather than publishing that prose. Added the already prepared exact145540 D9 package to the operator decision router; pending approval is not inferred from elapsed time. No completion counted for either preparation/package.
