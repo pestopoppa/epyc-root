@@ -1,0 +1,294 @@
+name: NI62 original KV arithmetic modules with owned declaration fixtures
+on:
+  push:
+    branches: [codex/ni62-owned-arithmetic-validation-20261006]
+    paths: [.github/workflows/ni62-owned-arithmetic-validation.yml]
+permissions:
+  contents: read
+concurrency:
+  group: ni62-owned-arithmetic-validation-20261006
+  cancel-in-progress: false
+env:
+  ROOT_SHA: e8d223ad47629e90d74c84bc5f8c6b8385096e1f
+  RECIPE_PARENT_SHA: 767c41ef92ee30983c967c410b1423c902d6d4bd
+  APP_SHA: 45607fda456b6cc26796136a661e2e7f41cbbcdc
+  APP_PARENT_SHA: 98bfbad5d7a34e594bba92893e71e8675829017d
+  ASSET_MANIFEST_SHA: 71114c16a8b1b44004adefa0fa8ae212827ce0fa67503fa8a59b0245ddb0f15b
+  LOCK_SHA: 7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3
+jobs:
+  capture:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - phase: kv-per-token
+            module_path: tests/unit/test_kv_per_token_declaration.py
+            expected_cases: 10
+            selections_json: '["tests/unit/test_kv_per_token_declaration.py"]'
+          - phase: kv-quant-widths
+            module_path: tests/unit/test_kv_quant_block_widths.py
+            expected_cases: 8
+            selections_json: '["tests/unit/test_kv_quant_block_widths.py"]'
+    env:
+      CI: 'true'
+      ORCHESTRATOR_MOCK_MODE: 'true'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PHASE: ${{ matrix.phase }}
+      MODULE_PATH: ${{ matrix.module_path }}
+      EXPECTED_CASES: ${{ matrix.expected_cases }}
+      SELECTIONS_JSON: ${{ matrix.selections_json }}
+    steps:
+      - name: Checkout immutable recipe
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout exact fixture-only APP candidate
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: 45607fda456b6cc26796136a661e2e7f41cbbcdc
+          path: app
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Checkout immutable native producer
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: e8d223ad47629e90d74c84bc5f8c6b8385096e1f
+          path: producer
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11.14'
+      - name: Set up reviewed uv version
+        uses: astral-sh/setup-uv@22695119d769bdb6f7032ad67b9bca0ef8c4a174
+        with:
+          version: '0.8.15'
+          enable-cache: false
+      - name: Establish private scope and source custody
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          scope="$RUNNER_TEMP/ni62-$PHASE-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$scope" && test ! -L "$scope"
+          mkdir -m 700 "$scope"
+          mkdir -m 700 "$scope/originals" "$scope/cache" "$scope/tmp" "$scope/cache/install-tmp"
+          printf 'NI62_SCOPE=%s\nUV_PROJECT_ENVIRONMENT=%s/venv\nUV_CACHE_DIR=%s/cache\nTMPDIR=%s/tmp\n' "$scope" "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do
+            test ! -e "$scope/$leaf" && test ! -L "$scope/$leaf"
+          done
+          printf 'ORCHESTRATOR_PATHS_LLAMA_CPP_BIN=%s/unavailable-cpu\nORCHESTRATOR_PATHS_LLAMA_MTMD=%s/unavailable-mtmd\nORCHESTRATOR_PATHS_LLAMA_SERVER=%s/unavailable-server\n' "$scope" "$scope" "$scope" >> "$GITHUB_ENV"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git rev-parse HEAD^)" = "$RECIPE_PARENT_SHA"
+          test "$(git diff-tree --no-commit-id --name-only -r HEAD)" = ".github/workflows/ni62-owned-arithmetic-validation.yml"
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C app rev-parse HEAD^)" = "$APP_PARENT_SHA"
+          expected_paths="$(printf '%s\n' tests/unit/test_stack_priors_compiler.py tests/unit/test_aux_service_env.py tests/unit/test_autopilot_system_card.py | LC_ALL=C sort)"
+          actual_paths="$(git -C app diff-tree --no-commit-id --name-only -r HEAD | LC_ALL=C sort)"
+          test "$actual_paths" = "$expected_paths"
+          test "$(git -C producer rev-parse HEAD)" = "$ROOT_SHA"
+          test "$(sha256sum app/tests/unit/test_kv_per_token_declaration.py | cut -d' ' -f1)" = 9102f56cd47f98dce2156579913ec54df7f583fda5cfc9ed53587f594da4b669
+          test "$(sha256sum app/tests/unit/test_kv_quant_block_widths.py | cut -d' ' -f1)" = fb8609c8cf73011d4e8ed51862851a3b345b5754a7bd09f968e73a79da7b8933
+          test "$(sha256sum app/scripts/server/stack_manifest.py | cut -d' ' -f1)" = 5f7acb6d067e4420edfc2bcc662148cd8fc7aff6c90682c51ece207666171610
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni6972_owned"
+          export assets
+          test "$(sha256sum "$assets/ni6972-hosted-assets-manifest.json" | cut -d' ' -f1)" = "$ASSET_MANIFEST_SHA"
+          python - <<'PYASSETS'
+          import hashlib,json,os,pathlib,subprocess
+          a=pathlib.Path(os.environ['assets']);m=json.loads((a/'ni6972-hosted-assets-manifest.json').read_text())
+          expected={'.github/workflows/ni62-owned-arithmetic-validation.yml'}
+          # All reviewed sourceclone assets are inherited unchanged from the recipe parent.
+          actual=set(subprocess.check_output(['git','diff','--name-only',os.environ['RECIPE_PARENT_SHA'],'HEAD'],text=True).splitlines())
+          assert actual==expected
+          for name,e in m['files'].items():
+              q=a/name; assert q.is_file() and not q.is_symlink()
+              b=q.read_bytes();assert len(b)==e['size'] and hashlib.sha256(b).hexdigest()==e['sha256']
+          PYASSETS
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          printf '%s\n' "$HOME" > "$scope/originals/home-before.txt"
+          cp .github/workflows/ni62-owned-arithmetic-validation.yml "$scope/originals/workflow.yml"
+          git -C app ls-tree -r --full-tree HEAD > "$scope/originals/app-ls-tree.txt"
+          sha256sum app/uv.lock > "$scope/originals/lock-before.sha256"
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          python - "$scope/originals/context.json" <<'PYCONTEXT'
+          import json, os, pathlib, sys
+          facts=dict(line.split(':',1) for line in pathlib.Path('/proc/meminfo').read_text().splitlines() if ':' in line)
+          scope=pathlib.Path(os.environ['RUNNER_TEMP']) / ('ni62-'+os.environ['PHASE']+'-'+os.environ['GITHUB_RUN_ID']+'-'+os.environ['GITHUB_RUN_ATTEMPT'])
+          pathlib.Path(sys.argv[1]).write_text(json.dumps({'phase':os.environ['PHASE'],'app_sha':os.environ['APP_SHA'],'root_sha':os.environ['ROOT_SHA'],'recipe_parent_sha':os.environ['RECIPE_PARENT_SHA'],'scope_path':str(scope),'scope_mode':oct(scope.stat().st_mode & 0o777),'scope_uid':scope.stat().st_uid,'host_paths_absent':True,'synthetic_RAM_override':False,'runtime_source_changes':False,'kernel_overrides':'three absent paths; no execution','HOME':os.environ['HOME'],'actual_cpu_count':os.cpu_count(),'actual_allowed_cpus':sorted(os.sched_getaffinity(0)),'MemTotal':facts['MemTotal'].strip(),'MemAvailable':facts['MemAvailable'].strip(),'selected_module':os.environ['MODULE_PATH'],'expected_cases':int(os.environ['EXPECTED_CASES']),'scope':'Original full KV arithmetic modules on owned tiny declarations; synthetic capacity fixture only, real available-memory guard executes; no production capacity/runtime claim'},sort_keys=True)+'\n')
+          PYCONTEXT
+      - name: Install frozen dependencies off-host
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          cd app
+          set +e
+          TMPDIR="$NI62_SCOPE/cache/install-tmp" timeout --signal=TERM --kill-after=15s 900s uv sync --frozen --extra dev --no-install-project > "$NI62_SCOPE/originals/install.stdout" 2> "$NI62_SCOPE/originals/install.stderr"
+          install_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$install_rc" > "$NI62_SCOPE/originals/install-status.json"
+          test "$install_rc" -eq 0
+          test "$(sha256sum uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          "$UV_PROJECT_ENVIRONMENT/bin/python" -c 'import pytest; assert pytest.__version__ == "9.0.3"; print(pytest.__version__)' > "$NI62_SCOPE/originals/pytest-version.txt"
+      - name: Materialize committed owned inputs and capture real available headroom
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni6972_owned"
+          /usr/bin/python3 -I "$assets/ni69-72-sourceclone.py" "$GITHUB_WORKSPACE/app" "$NI62_SCOPE" "$assets" > "$NI62_SCOPE/originals/sourceclone.stdout" 2> "$NI62_SCOPE/originals/sourceclone.stderr"
+          fixture="$NI62_SCOPE/fixture-app"
+          cd "$fixture"
+          env -i HOME="$HOME" PATH="$PATH" PYTHONDONTWRITEBYTECODE=1 CI=true ORCHESTRATOR_MOCK_MODE=true ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYCAPACITY' > "$NI62_SCOPE/originals/actual-owned-capacity.json"
+          import json,pathlib
+          from scripts.server.stack_manifest import serving_shape_capacity_report
+          report=serving_shape_capacity_report()
+          facts={}
+          for line in pathlib.Path('/proc/meminfo').read_text().splitlines():
+              key,_,rest=line.partition(':')
+              if key in {'MemTotal','MemAvailable'}:facts[key]=int(rest.split()[0])
+          assert set(facts)=={'MemTotal','MemAvailable'}
+          available=facts['MemAvailable']/(1024*1024);total=facts['MemTotal']/(1024*1024)
+          host=report['host']; assert available<=total
+          assert host['required_gib']+host['reserve_gib']<=available
+          print(json.dumps({'synthetic_owned_declarations':True,'MemTotal_kB':facts['MemTotal'],'MemAvailable_kB':facts['MemAvailable'],'host_capacity_gib':host['capacity_gib'],'host_required_gib':host['required_gib'],'fixture_reserve_gib':host['reserve_gib'],'actual_available_headroom':True,'unchanged_guard_executed':True,'no_production_capacity_claim':True},sort_keys=True))
+          PYCAPACITY
+      - name: Retain install originals before native phase
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni62-${{ matrix.phase }}-install-${{ github.run_id }}
+          path: ${{ env.NI62_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Capture native originals using unchanged producer CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          case "$PHASE" in
+            kv-per-token) selections=("tests/unit/test_kv_per_token_declaration.py") ;;
+            kv-quant-widths) selections=("tests/unit/test_kv_quant_block_widths.py") ;;
+            *) exit 2 ;;
+          esac
+          arguments=()
+          for selection in "${selections[@]}"; do arguments+=(--select "$selection"); done
+          assets="$GITHUB_WORKSPACE/research/fixtures/ni6972_owned"
+          export assets
+          "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYREADS'
+          import json,os,pathlib
+          w=pathlib.Path(os.environ['GITHUB_WORKSPACE']);scope=pathlib.Path(os.environ['NI62_SCOPE']);fixture=pathlib.Path(os.environ['FIXTURE_APP']);assets=pathlib.Path(os.environ['assets'])
+          manifest=json.loads((assets/'ni69-72-sourceclone-manifest.json').read_text())
+          paths=[w/'.github/workflows/ni62-owned-arithmetic-validation.yml',scope/'originals/context.json',scope/'originals/owned-clone-context.json',scope/'originals/owned-data-overlay.diff',scope/'originals/actual-owned-capacity.json',scope/'originals/app-ls-tree.txt',scope/'originals/fixture-full-ls-tree.txt',scope/'originals/install.stdout',scope/'originals/install.stderr',scope/'originals/install-status.json',scope/'originals/pytest-version.txt',scope/'originals/lock-before.sha256']
+          paths.extend(assets/name for name in ('ni6972-hosted-assets-manifest.json',*json.loads((assets/'ni6972-hosted-assets-manifest.json').read_text())['files']))
+          for name in sorted(manifest['all_tracked_python_pins']):paths.extend((w/'app'/name,fixture/name))
+          for name in ('uv.lock','pyproject.toml','orchestration/model_descriptors.yaml','orchestration/gpu_shadow_lane_np_ceiling.yaml'):
+              paths.extend((w/'app'/name,fixture/name))
+          for item in manifest['owned_yaml_inputs']:paths.extend((w/'app'/item['path'],fixture/item['path']))
+          paths.extend(w/'producer'/name for name in ('scripts/ci/native_conformance.py','scripts/vidya/adapters/__init__.py','scripts/vidya/adapters/ci_conformance.py','scripts/vidya/claim_tuple.py','scripts/vidya/canonical.py','scripts/vidya/frames.py'))
+          assert all(q.is_file() and not q.is_symlink() for q in paths)
+          (scope/'originals/native-read-paths.txt').write_text(''.join(str(q)+'\n'for q in dict.fromkeys(paths)))
+          PYREADS
+          mapfile -t read_paths < "$NI62_SCOPE/originals/native-read-paths.txt"
+          test "${#read_paths[@]}" -gt 4100
+          reads=()
+          for file in "${read_paths[@]}"; do reads+=(--read-path "$file"); done
+          set +e
+          "$UV_PROJECT_ENVIRONMENT/bin/python" producer/scripts/ci/native_conformance.py --cwd "$FIXTURE_APP" --junit "$NI62_SCOPE/originals/generated.xml" --output "$NI62_SCOPE/originals/native" --repo "app=$GITHUB_WORKSPACE/app" --repo "fixture=$FIXTURE_APP" --repo "producer=$GITHUB_WORKSPACE/producer" --repo "recipe=$GITHUB_WORKSPACE" "${reads[@]}" "${arguments[@]}" -- timeout --verbose --signal=TERM --kill-after=15s 120s env -i PATH="$PATH" HOME="$HOME" TMPDIR="$NI62_SCOPE/tmp" CI=true ORCHESTRATOR_MOCK_MODE=true PYTHONDONTWRITEBYTECODE=1 ORCHESTRATOR_PATHS_LLAMA_CPP_BIN="$ORCHESTRATOR_PATHS_LLAMA_CPP_BIN" ORCHESTRATOR_PATHS_LLAMA_MTMD="$ORCHESTRATOR_PATHS_LLAMA_MTMD" ORCHESTRATOR_PATHS_LLAMA_SERVER="$ORCHESTRATOR_PATHS_LLAMA_SERVER" "$UV_PROJECT_ENVIRONMENT/bin/python" -m pytest -q --tb=short --rootdir "$FIXTURE_APP" -o cache_dir="$NI62_SCOPE/cache/pytest" --junit-prefix=ni62 "${selections[@]}" --junitxml="$NI62_SCOPE/originals/generated.xml" > "$NI62_SCOPE/originals/producer.stdout" 2> "$NI62_SCOPE/originals/producer.stderr"
+          producer_rc=$?
+          set -e
+          printf '{"exit_code":%s}\n' "$producer_rc" > "$NI62_SCOPE/originals/producer-status.json"
+          NI62_PRODUCER_RC="$producer_rc" "$UV_PROJECT_ENVIRONMENT/bin/python" - <<'PYVERIFY'
+          import json, os, pathlib, sys, xml.etree.ElementTree as ET
+          source=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'producer'
+          sys.path.insert(0,str(source))
+          from scripts.ci.native_conformance import read_receipt
+          from scripts.vidya.adapters.ci_conformance import native_rows, project_ci_conformance
+          from claim_tuple import grade
+          base=pathlib.Path(os.environ['NI62_SCOPE'])/'originals'; receipt=base/'native/receipt.json'
+          r, receipt_digest=read_receipt(receipt); rows=native_rows(receipt)
+          assert r['repositories']=={'app':os.environ['APP_SHA'],'fixture':os.environ['FIXTURE_SHA'],'producer':os.environ['ROOT_SHA'],'recipe':os.environ['GITHUB_SHA']}
+          clone_context=json.loads((base/'owned-clone-context.json').read_text())
+          assert clone_context['fixture_sha']==os.environ['FIXTURE_SHA'] and clone_context['fixture_parent']==os.environ['APP_SHA']
+          assert clone_context['overlay_changed_paths']==['orchestration/launch_manifest.yaml','orchestration/model_registry.yaml']
+          assert clone_context['synthetic_owned_yaml'] is True and clone_context['physical_memory_overridden'] is False
+          assert r['selections']==json.loads(os.environ['SELECTIONS_JSON'])
+          assert r['argv'].count('env')==1 and '-i' in r['argv'] and 'HOME='+os.environ['HOME'] in r['argv']
+          assert not any(arg.startswith('PYTHONPATH=') for arg in r['argv'])
+          assert int(os.environ['NI62_PRODUCER_RC'])==0 and r['exit_code']==0
+          assert r['fixture_execution_conformant'] is True and r['diagnostic']==''
+          n=int(os.environ['EXPECTED_CASES'])
+          assert r['summary']['counts']=={'passed':n,'failure':0,'error':0,'skipped':0,'collected':n,'executed':n}
+          x=ET.fromstring((base/'native/original-junit.xml').read_bytes()); suite=next(x.iter('testsuite')); cases=list(x.iter('testcase'))
+          assert suite.attrib['tests']==str(n) and len(cases)==n
+          assert len(rows)==1
+          tup=project_ci_conformance(rows[0]); q,t,reasons=grade(tup)
+          assert (q,t)==('Judged','Located')
+          (base/'shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_rows':len(rows),'receipt_digest':receipt_digest,'scope':'exact full original KV arithmetic module assertions on committed synthetic declarations; actual unchanged capacity guard executes; no production capacity/runtime claim','counts':r['summary']['counts']})+'\n')
+          PYVERIFY
+      - name: Retain phase native originals immediately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni62-${{ matrix.phase }}-native-${{ github.run_id }}
+          path: ${{ env.NI62_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
+      - name: Independently retain absent-path and unchanged-source postchecks
+        if: always() && env.NI62_SCOPE != ''
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          test "$(git -C app rev-parse HEAD)" = "$APP_SHA"
+          test "$(git -C "$FIXTURE_APP" rev-parse HEAD)" = "$FIXTURE_SHA"
+          test "$(git -C "$FIXTURE_APP" rev-parse HEAD^)" = "$APP_SHA"
+          git -C "$FIXTURE_APP" status --porcelain=v1 --untracked-files=all > "$NI62_SCOPE/originals/fixture-poststatus.txt"
+          test ! -s "$NI62_SCOPE/originals/fixture-poststatus.txt"
+          python - <<'PYCLONEPOST'
+          import hashlib,json,os,pathlib,subprocess
+          scope=pathlib.Path(os.environ['NI62_SCOPE']);ctx=json.loads((scope/'originals/owned-clone-context.json').read_text());fixture=pathlib.Path(os.environ['FIXTURE_APP']);app=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'app'
+          for name,sha in ctx['canonical_python_hashes'].items():
+              assert hashlib.sha256((fixture/name).read_bytes()).hexdigest()==sha
+              assert (fixture/name).read_bytes()==(app/name).read_bytes()
+          for item in ctx['owned_yaml_inputs']:
+              assert hashlib.sha256((fixture/item['path']).read_bytes()).hexdigest()==item['fixture_sha256']
+              assert hashlib.sha256((app/item['path']).read_bytes()).hexdigest()==item['original_sha256']
+          overlay=subprocess.check_output(['git','-C',str(fixture),'diff','--binary','HEAD^','HEAD'])
+          assert hashlib.sha256(overlay).hexdigest()==ctx['overlay_sha256']
+          PYCLONEPOST
+          test "$(sha256sum app/uv.lock | cut -d' ' -f1)" = "$LOCK_SHA"
+          git -C app status --porcelain=v1 --untracked-files=all > "$NI62_SCOPE/originals/app-poststatus.txt"
+          git -C producer status --porcelain=v1 --untracked-files=all > "$NI62_SCOPE/originals/producer-poststatus.txt"
+          test ! -s "$NI62_SCOPE/originals/app-poststatus.txt"
+          test ! -s "$NI62_SCOPE/originals/producer-poststatus.txt"
+          test "$HOME" = "$(cat "$NI62_SCOPE/originals/home-before.txt")"
+          python - <<'PYMODES'
+          import os, pathlib, stat
+          root=pathlib.Path(os.environ['NI62_SCOPE'])/'originals'; uid=os.getuid()
+          for p in (root,*root.rglob('*')):
+              info=p.lstat()
+              assert info.st_uid==uid and not p.is_symlink()
+              assert stat.S_IMODE(info.st_mode)==(0o700 if p.is_dir() else 0o600), (str(p),oct(info.st_mode))
+          PYMODES
+          git -C app diff --exit-code HEAD > "$NI62_SCOPE/originals/app-postdiff.stdout"
+          git -C producer diff --exit-code HEAD > "$NI62_SCOPE/originals/producer-postdiff.stdout"
+          for leaf in unavailable-cpu unavailable-mtmd unavailable-server; do test ! -e "$NI62_SCOPE/$leaf" && test ! -L "$NI62_SCOPE/$leaf"; done
+          test ! -e /mnt/raid0/llm && test ! -L /mnt/raid0/llm
+          test ! -e /workspace/repos && test ! -L /workspace/repos
+          test "$(stat -c '%a' "$NI62_SCOPE")" = 700
+          test "$(stat -c '%u' "$NI62_SCOPE")" = "$(id -u)"
+          printf '{"app_source_unchanged":true,"lock_unchanged":true,"kernel_paths_absent":true,"host_paths_absent":true}\n' > "$NI62_SCOPE/originals/postchecks.json"
+      - name: Retain independent postchecks
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ni62-${{ matrix.phase }}-postcheck-${{ github.run_id }}
+          path: ${{ env.NI62_SCOPE }}/originals/
+          if-no-files-found: error
+          compression-level: 0
