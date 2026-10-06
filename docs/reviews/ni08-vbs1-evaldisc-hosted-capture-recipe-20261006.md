@@ -18,10 +18,11 @@ changes are private. The APP producer and package source hashes are:
 | `uv.lock` | `7eae6b0447832155673e18f0e9f849fd4a65e3eb5839bf85f4165b13a4b06ca3` |
 
 ROOT is the isolated proposal branch `codex/ni08-vbs1-evaldisc-wire-root-20261006`; its current
-reviewed source base is `d60228b9f61f81c3a5713074c8f6f8bbf2fe6a40`. It descends from the current
-published ROOT line and preserves the SC80 source corrections. The exact final ROOT capture commit
-and manifest digest are recorded in the capture's pre-dispatch source map; do not substitute the
-ignored ledger or other workspace state.
+reviewed source base is current published ROOT `621eed0927a1cae6bbcdfb73155ec91dff607153`,
+including `b6279387f` and its checkpointed SC80 source changes. This isolated branch contains only
+the source proposal and its capture recipe on top of that published source base. The exact final
+ROOT capture commit and manifest digest are recorded in the capture's pre-dispatch source map; do
+not substitute the ignored ledger or other workspace state.
 
 The exact producer bytes above are loaded from an isolated temporary APP checkout by
 `test_analysis_producer_roundtrip.py`. The test verifies those bytes before import. It now pins
