@@ -369,7 +369,7 @@ is_perf_period_table_cell() {
         if (cells(lines[j], body) != 4) exit 1
       }
 
-      header = tolower(lines[target - 2])
+      header = tolower(lines[separator_line - 1])
       rowtext = tolower(lines[target])
       sensitive = tolower(header " " rowtext)
       gsub(/_/, " ", sensitive)
