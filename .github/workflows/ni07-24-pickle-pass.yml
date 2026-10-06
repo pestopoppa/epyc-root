@@ -16,6 +16,9 @@ jobs:
       APP_PIN: abaf5364c4ebfb1eb98173ad867b6c5d119a1581
       ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       NI07_RUNNER_CONTEXT: ubuntu-latest
+      ORCHESTRATOR_PATHS_LLAMA_CPP_BIN: /fixture/kernel-bin
+      ORCHESTRATOR_PATHS_LLAMA_MTMD: /fixture/llama-mtmd-cli
+      ORCHESTRATOR_PATHS_LLAMA_SERVER: /fixture/llama-server
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'

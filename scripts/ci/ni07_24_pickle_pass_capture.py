@@ -179,6 +179,9 @@ def main() -> int:
                             "PYTHONPATH",
                             "PYTHONUNBUFFERED",
                             "ORCHESTRATOR_SESSION_HMAC_KEY",
+                            "ORCHESTRATOR_PATHS_LLAMA_CPP_BIN",
+                            "ORCHESTRATOR_PATHS_LLAMA_MTMD",
+                            "ORCHESTRATOR_PATHS_LLAMA_SERVER",
                         )
                     },
                     "isolation": (
