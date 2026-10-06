@@ -151,3 +151,34 @@ Note carried in CAFE-1..CAFE-4: COPYSPEC-WIDTH (`defa269af`) may be redundant or
 
 ### Explicit declines (derived-actionables gate)
 Not filed because: TurboQuant turbo types (GPU-only, no CPU/HIP path, tracked by tq3-quantization-evaluation); DFly (needs a checkpoint, only Qwen3-8B exists; DSpark already carried via ds41); SSD streaming and the safetensors loader (not dived; monitor only, upstream PR #25294, intake-1931); K-mean-centering (KNOWLEDGE unless AK-E fires); MoE-Spec budgeting (lossy GPU trees, in-house handoff already records the ceiling); EVICT offline C(k) table (subsumed by AK-C plus CAFE-3); Strata PR #1010 (closed unmerged, wrong premise); SP-MoE, BigMoMo, Fast-TurboQuant, PR #25294 (stage1-unverified, no action); eight wave-3 literature candidates (dense-model dynamic-K or offload papers).
+
+## 2026-10-06 evening (since the midday wrap-up e7846b1a1)
+
+Evidence copies are under `artifacts/ec-wrapup-20261006/`.
+
+| Item | Repo / branch / file | Result |
+|---|---|---|
+| Jet-Long gate A2 | `artifacts/ec-wrapup-20261006/jetlong_gateA.md` | PASS 09:28Z (1) |
+| Cap sweep | `artifacts/ec-wrapup-20261006/capsweep-summary.md` | cap 32 chosen (2) |
+| COPYSPEC-NO-DIVERGENCE | `nospec_check.md`, `NO_DIVERGENCE.md` | CLOSED benign (3) |
+| Champion candidate | llama.cpp-experimental-champion-specwidth-20261006 @ `8e597b701`; `FOLD.md` | built, linkage PASS (4) |
+| Upstream drafts | `ISSUE_H1.md`, `ISSUE_H2.md`, `ISSUE_H3.md`, `ISSUE_ATTNFACTOR.md` | operator files them (5) |
+| Ctx decision | `DECISION_CTX4.md` | J is the target (6) |
+| GPU27B test | `GPU27B_JETLONG_TEST.md`; branch llama.cpp-experimental-jetlong-hip-20261006 | builds done, blocked by bug (9, 10) |
+| Save/restore pre-test | `SAVE_RESTORE_TEST.md` | blocked by get_rows OOB (10) |
+| cafe-llama intake | handoffs CAFE-1..CAFE-8 | Stages 1-4 wrapped by subagent (`bb2e4be7b`); workspace-ec owns the 10 tasks (`38b5b4ef0`) |
+
+1. **Jet-Long gate A2 PASS (09:28Z).** Canonical :8070 Qwen3.6-35B-A3B, full host. S, JOFF and JON byte-identical on 41/41; MTP draft/accept 4217/2866 identical; the 34k probe identical. "Jet-Long ON" x2 appears in JON only. Earlier gate-A attempts failed at preflight on script bugs (`--help` to stderr; `strings|grep -q` under pipefail) and on a startup segfault, fixed in `f06123436` (reserve batch with null seq ids).
+2. **Cap sweep** (quiet full host, floor 0.11%). Code edits: W32 +20.66%, W64 +14.07%. Prose (15 long-form): W32 +1.73%, W64 +1.94%. All: W32 +17.01%, W64 +11.73%, identity 55/55. Acceptance: W32 0.574, W64 0.469. Cap 16-32 is the sweet spot; cap 32 chosen.
+3. **COPYSPEC-NO-DIVERGENCE CLOSED, benign.** `--spec-type none` output equals the ngram-only arm on all 3 prompts; both differ from P at near-tied tokens (top-2 logprob gaps 0.0225 / 0.1097 / 0.2268). Cause: the n_rs_seq=0 recurrent-state regime (checkpoint-restore re-decode, a different graph); NM and the W arms share P's n_rs_seq=4 path.
+4. **Champion candidate** llama.cpp-experimental-champion-specwidth-20261006 @ `8e597b701` (version 10342) = champion `4348de400` + COPYSPEC-WIDTH `defa269af` + the `--yarn-attn-factor` fix `720a98e2a`. CPU+HIP builds and linkage PASS. Handed to workspace-89 for regression gates (`FOLD.md`).
+5. **Upstream bug-report DRAFTS** (operator files them): the four `ISSUE_*.md` files above.
+6. **Operator decision 2026-10-06:** cached Jet-Long (J) is the long-context TARGET, no interim D, conditional on above-native recall >= static YaRN. Package `DECISION_CTX4.md` (D RAM ~49-52 GiB added; host 778 GiB free).
+7. **CPU 35B long-context run STOPPED by the operator** (stopped, not failed). CPU prefill at depth: 490 tok/s at 3k falling to ~45 tok/s at 97k (+22 s per 10k chunk); 300k would take ~2.5 h and 524k ~5.6 h more. The first attempt failed with HTTP 400: llama-server caps the slot at n_ctx_train without a `context_length` override. The AK hypothesis "CPU long-KV flash attention" was seeded to Q38FN by workspace-89.
+8. **Small-model Jet-Long check** (Qwen3-0.6B, native 32k): at 30k, N 6/6 and J 6/6 with identical prompt_n 28914. Above-native arms pending.
+9. **GPU 27B Jet-Long test design** `GPU27B_JETLONG_TEST.md`. Branch llama.cpp-experimental-jetlong-hip-20261006: `cd2d65d94` puts the side cache on the layer buft; `ebbf9ad0c` adds the optional f16 side cache. HIP+CPU builds done; scripts in `/mnt/raid0/llm/tmp/jetlong-gpu27b-20261006/`. The executor hard-caps windows at 60 min (MAX_WINDOW_S), so the plan is two windows with slot save/restore (operator choice); `operator_authorize.sh` is written for the operator. AK GPU run 2 waits for it (operator ordering).
+10. **NEW BUG (open):** Jet-Long get_rows OOB assert (`ggml-cpu/ops.cpp:5350`) for any ubatch < the Jet-Long window at positions beyond native, including 4-token tails and likely decode, on Qwen3.8-27B (qwen35, IMRoPE). Did not reproduce on Qwen3-0.6B (NeoX). Being fixed by the prototype author; blocks the save/restore pre-test and the GPU windows (`SAVE_RESTORE_TEST.md`).
+11. **Verified project history** (`progress/2026-09/2026-09-16-sub-op42-readiness.md:131-143`, `progress/2026-03/2026-03-15.md`): on hybrid models, reuse is only via context checkpoints (at user-message starts and 4+n_ubatch / 4 tokens before the end; needs `--ctx-checkpoints` >= 2 and cache-ram), and was never observed. Arbitrary recurrent rollback was never solved (March tree-spec, -53..-62%). The 2026-08-07 citation was NOT verifiable. The pre-test observed checkpoint creation at the expected positions.
+12. cafe-llama.cpp intake Stages 1-4 already wrapped by its subagent (`bb2e4be7b`); workspace-ec owns the 10 tasks (`38b5b4ef0`).
+13. Adaptive verify width (workspace-89 sparkglm intake-1923) is owned by workspace-ec and merged into CAFE-1/CAFE-3.
+14. Process lessons (filed in `docs/guides/agent-workflows/benchmark-analyst.md`, Window discipline): smoke the EXACT argv before any window; never edit a running script; a waiter whose EXIT trap touches DONE also fires when stopped; never `| grep -q` under pipefail; correctness vs timing scheduling; "all recommended" means the full list; single-quarter claims starve full-host waiters while FIFO is off; two subagents ran `pgrep` by name (read-only), against CLAUDE.md.

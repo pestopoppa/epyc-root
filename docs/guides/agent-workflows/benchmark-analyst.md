@@ -143,3 +143,12 @@ bullets below are the working detail.
 ## Research Intake Application and Routing
 
 - **When applying a research intake entry, route its actionable techniques in the same step.** Kernel ideas → inbox notes in the owning AK lanes (hypotheses, cite intake-NNN#record); serving or speculation ideas → a handoff to the stack owner; report the routing with the intake. The sparkglm (intake-1923#record) and TensorFold (intake-1924#record) techniques sat unrouted for hours after application, caught by the operator at wrap-up; immediate routing is part of completing the intake application task. (origin: 2026-10-06, DS41 intake-routing lapse)
+
+## Window discipline (2026-10-06)
+
+- **Smoke the EXACT argv before any window.** Gate-A attempts failed at preflight on script bugs (`--help` wrote to stderr; `strings | grep -q` under pipefail) and burned scheduled time.
+- **Never edit a running script**, and **never use `| grep -q` under `set -o pipefail`** (grep exits at the first match, the upstream gets SIGPIPE, the pipeline reports failure).
+- **A waiter whose EXIT trap touches DONE also fires when it is stopped.** Make the trap distinguish normal completion from a stop, or the next stage starts on a dead run.
+- **Schedule correctness and timing separately.** Correctness runs take build-role quarter claims; timing runs take windows. Single-quarter claims starve full-host waiters while FIFO is off.
+- **"All recommended" means the full list**, not the first few.
+- **No `pgrep`/`pkill` by name, read-only or not** (CLAUDE.md, Process Management); two subagents did it. Track PIDs you captured.

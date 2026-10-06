@@ -1,0 +1,9 @@
+# NO vs P divergence (offline analysis, 2026-10-06)
+Verdict: (a)+(b) hybrid, NOT (c). The NO server runs a different recurrent-state/graph configuration, not just a different batch shape.
+- argv NO vs P differ only in --spec-type (+ngram-mod params); no MTP head/context in NO. Logs: P and NM set n_rs_seq=4 (graph nodes 3947, RS buffer 1256 MiB); NO sets n_rs_seq=0 (graph nodes 3587, RS buffer 251 MiB).
+- Qwen3.6-35B-A3B is a hybrid gated-delta-net model. With n_rs_seq=4, P/NM verify draft batches and keep per-position recurrent snapshots. NO falls back to checkpoint restore plus re-decode: 220 "restore checkpoint" lines in NO, 0 in P and NM.
+- Against (c): 25/85 NO requests had zero drafts (pure single-row decode, no verify path), and 3 of those still diverged from P (idx 22, 27 diverge at char 67 and 32). Also NM has thousands of ngram+MTP rejections and still matches P 85/85, so rejection handling is not corrupting state in the rs_seq path.
+- Not proven: a bug in the n_rs_seq=0 checkpoint-restore path (this is the only path that exercises restore). Logs do not record token ids or logits, so the first divergent token and its step type cannot be recovered from them.
+- Divergence is common (32/85) and starts early (median char 219), consistent with fp near-ties flipping, not a rare state-corruption bug.
+Minimal follow-up: run P (MTP) against a NO' server with --spec-type none and --spec-n-rs-seq-equivalent unchanged (plain decode, n_rs_seq=0) on the 3 no-draft diverging prompts plus 5 others. If NO' == NO, the cause is single-row/n_rs_seq=0 numerics (a/b). Then run NO with draft_n_max 1 versus 4 to isolate restore-and-redecode. Separately dump per-step top-2 logit gap at the first diff (--verbosity plus logprobs n=2) to confirm a near-tie.
+Implication: NM and W arms are safe. They share P's n_rs_seq=4 graph, and NO is a different numerical regime.
