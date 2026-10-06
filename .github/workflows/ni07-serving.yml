@@ -1,5 +1,7 @@
 name: NI07 VB-SERVE-TIMING-1 pinned fixture conformance
 on:
+  push:
+    branches: [codex/ni07-serving-ci-20261006]
   workflow_dispatch:
 permissions:
   contents: read
