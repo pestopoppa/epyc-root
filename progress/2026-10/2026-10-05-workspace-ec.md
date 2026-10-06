@@ -41,3 +41,36 @@ unwired (VB-YARN-E1).
 | `handoffs/active/vidya-belief-substrate-program.md` | root | VB-YARN-E1 note for the CPU leg |
 | `scripts/vidya/adapters/README.md` | root | INF-59 adapter row status |
 | `artifacts/yarn-e1-20261004/cpu_leg/` | root | durable results copy + SOURCES.sha256 |
+
+## OP-76..79: Operator decisions applied and completed
+
+### OP-76: STACKCHG-8083BATCH-20261004 signed
+- Receipt `RATIFY-STACKCHG-8083BATCH-20261004.json` copied from shared clone to `artifacts/operator/receipts/`.
+- Stack change: `:8083` `-b 512 -ub 512` + `--no-cache-idle-slots` (KVU-16f + UFH14-B4j).
+- Applies at next :8083 relaunch.
+
+### OP-77 & OP-78: Orchestrator fast-forward
+- Orchestrator main fast-forwarded to `aeb3a330` (REGION-SIBLING-1 merged).
+- Shared orchestrator checkout updated to `aeb3a330` (includes device-busy fix `6ce26fc9`).
+- Both changes deployed and verified.
+
+### OP-79: GPU-window watchdog cron installed
+- Cron `/scripts/server/gpu_window_watchdog.cron` installed on HOST at ~04:46Z.
+- First tick logged at 04:47:01Z, writing executor-status verdict to `/mnt/raid0/llm/tmp/gpu-window/mi210.json.executor-status.json`.
+
+## STACKCHG-8083BATCH research half pushed
+- Research branches: `7c3ff2b4` (A, idle slots) and `f1c6fef5` (B, `-b`/`-ub` 512).
+- Evidence citations made durable under `data/stackchg-8083batch-20261004/`.
+- Orchestrator reload half still pending (no relaunch until OP-76 applied).
+
+## UFH14-B4g-1: root cause identified
+- Issue: no `prompt_save` lines on current `:8083` shape.
+- Root cause: lines are TRACE level (4) in v10, default logging is level 3; 489 old lines came from two launches with `LLAMA_ARG_LOG_VERBOSITY=4`.
+- Solution: B4g re-run needs `-lv 4` (or `LLAMA_ARG_LOG_VERBOSITY=4`).
+- Documentation: `/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4g-1.md`.
+- UFH14-B4g updated with recipe reference.
+
+| File | Repo | Change |
+|---|---|---|
+| `handoffs/active/agentic-serving-harness-fixes.md` | root | UFH14-B4g-1 ✅ 2026-10-05; UFH14-B4g re-run recipe updated |
+| `artifacts/operator/receipts/RATIFY-STACKCHG-8083BATCH-20261004.json` | root | Operator signature receipt copied |

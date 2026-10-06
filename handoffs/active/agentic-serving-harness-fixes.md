@@ -252,17 +252,24 @@ Orchestrator and stack side (workspace-ec; items are linked here as they land):
       `llama-server-8083.log`, the current 393216 / n-max-7 launch) holds **zero `prompt_save` lines**, even after the
       runner's four long calls (8k / 24k / 48k / 72k tokens, all HTTP 200). One `cache_ram` eviction of 1532.4 MiB was
       logged. Output: `artifacts/gpu-block-27b-20261004/results/b4g/` (with `step5-b4g.out`). The prior from the old
-      shape stands (37.155 MiB/1k, fixed 149.6 MiB). Do not re-run until B4g-1 explains the missing lines.
-    - [ ] **UFH14-B4g-1 — find out why no `prompt_save` lines appear on the current shape, before re-running B4g.**
-      (filed 2026-10-04, workspace-ec) The leading hypothesis is log verbosity. The current :8083 launch and the B4i
-      scratch launches print `verbosity = 3`. The KVU-16b root cause notes that the startup memory, KV and
-      checkpoint lines are missing for this pid. The B4i ON arm also logged zero `saving idle slot` lines, even though
-      `/slots` showed 9 idle-slot drops. Check the level of the `prompt_save` / `saving idle slot` log calls in the v10
-      source against the 2026-10-03 note that they log at default verbosity, and diff the old launch's argv/env
-      (`-lv`, `LLAMA_LOG_VERBOSITY`) against today's. The alternative is that the save path does not run on this shape
-      (e.g. no `--cache-ram` save on a non-idle slot). Done when the cause is named and B4g's runner either sets
-      the needed verbosity on a scratch relaunch or reads the entry cost another way, such as `/slots` + `cache_ram`
-      size deltas.
+      shape stands (37.155 MiB/1k, fixed 149.6 MiB). B4g-1 (2026-10-05): TRACE-level lines, so re-run on a scratch relaunch with `-lv 4` (recipe in B4g-1).
+    - [x] **UFH14-B4g-1 — find out why no `prompt_save` lines appear on the current shape, before re-running B4g.**
+      ✅ 2026-10-05 (workspace-ec): the cause is **log verbosity**, not a save path that stopped running. In v10
+      (`ffc1bac82`; identical in v9) `prompt_save`'s "saving prompt with length" (`server-context.cpp:280`),
+      "saving idle slot" (`:2472`), "created context checkpoint" (`:2408`) and "cache state" (`server-task.cpp:1858`)
+      are `SRV_TRC`/`SLT_TRC` = TRACE (level 4) (`common/log.h:115`, `server-common.h:19,26`). The default threshold
+      is 3 (`common/log.cpp:29`). `common/log.cpp:441-447` also maps every ggml/libllama INFO line to TRACE, which
+      explains KVU-16b's missing startup memory/KV lines. The eviction lines ("making room for prompt cache entry",
+      `server-task.cpp:1719`) are WARN, so they print at 3, which is why the 1532.4 MiB eviction appeared. The 489
+      old lines came from exactly two launches started with `LLAMA_ARG_LOG_VERBOSITY=4` (log lines 21434 and 35063:
+      266 + 223). All 22 other launches, including the current one and both B4i scratch launches, run at 3 with
+      zero such lines. No launcher sets verbosity. The 2026-10-03 note "logged at default verbosity" was wrong:
+      upstream moved these lines to TRACE in #23021 / #25078.
+      **B4g re-run recipe:** a scratch relaunch with the production argv plus `-lv 4` (or env
+      `LLAMA_ARG_LOG_VERBOSITY=4`; not `-v`, which floods DEBUG). Fallback at 3: the WARN eviction lines' entry size
+      plus `/slots` `n_tokens` (`/metrics` has no prompt-cache gauge). Note:
+      `/mnt/raid0/llm/tmp/ufh14-b4-20261005/B4g-1.md`. Suggested follow-up (not filed): record `LLAMA_ARG_*` env in
+      `logs/server_launches/launches.jsonl` so an env-set verbosity is auditable.
   - [x] **UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**
     ✅ 2026-10-04 (workspace-ec) — OFF wins on :8083's shape; the stack change is UFH14-B4j.
     v10 defaults `cache_idle_slots` ON: with `--cache-ram` + `--kv-unified`, every idle slot is saved to RAM and cleared
