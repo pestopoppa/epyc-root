@@ -126,9 +126,15 @@ vacuum_flag_for() {
 }
 
 reap_once() {
-  local state vac db_size
+  local state vac db_size prune_rc=0
   state="$(observe_opencode)" || true   # og_verdict exits 1/3 by design; set -e would abort here
-  vac="$(vacuum_flag_for "$state")"
+  if [[ "${1:-}" == status ]]; then
+    # LR8_ONCE_STATUS_V1: scheduled mode has one alarm owner (the hygiene tick).
+    # The same absent-only VACUUM decision applies, without guardian alarm side effects.
+    vac=""; [[ "$state" != absent ]] || vac="--vacuum"
+  else
+    vac="$(vacuum_flag_for "$state")"
+  fi
   case "$state" in
     absent)       echo "[$(date -u +%FT%TZ)] reap idle>${IDLE_HOURS}h --vacuum (opencode absent: $(og_why))" ;;
     present)      echo "[$(date -u +%FT%TZ)] reap idle>${IDLE_HOURS}h (no vacuum: opencode running)" ;;
@@ -136,10 +142,28 @@ reap_once() {
   esac
   # $vac is intentionally unquoted-when-empty: it is either "--vacuum" or nothing.
   # shellcheck disable=SC2086
-  python3 "$PRUNE" --idle-hours "$IDLE_HOURS" --apply $vac 2>&1 | tail -3 || echo "prune failed (rc=$?)"
+  if [[ "${1:-}" == status ]]; then
+    # Capture the actual pipeline codes BEFORE any other command overwrites PIPESTATUS.
+    local -a pipeline_rc
+    # shellcheck disable=SC2086
+    if python3 "$PRUNE" --idle-hours "$IDLE_HOURS" --apply $vac 2>&1 | tail -3; then
+      prune_rc=0
+    else
+      pipeline_rc=("${PIPESTATUS[@]}")
+      prune_rc="${pipeline_rc[0]}"
+      (( prune_rc != 0 )) || prune_rc="${pipeline_rc[1]}"
+    fi
+  else
+    # shellcheck disable=SC2086
+    python3 "$PRUNE" --idle-hours "$IDLE_HOURS" --apply $vac 2>&1 | tail -3 || echo "prune failed (rc=$?)"
+  fi
   if [[ -n "$OPENCODE_DB" && -e "$OPENCODE_DB" ]]; then
     db_size="$(stat -c %s "$OPENCODE_DB" 2>/dev/null | awk '{printf "%.1f GB",$1/1e9}' || true)"
     echo "[$(date -u +%FT%TZ)] db=${db_size:-?}"
+  fi
+  if [[ "${1:-}" == status ]]; then
+    printf 'LR8_ONCE_STATUS_V1 state=%s prune_rc=%s\n' "$state" "$prune_rc"
+    return "$prune_rc"
   fi
 }
 
@@ -157,6 +181,13 @@ case "${1:-run}" in
   once)
     reap_once
     exit 0
+    ;;
+  once-status)
+    # Prospective owner-only duty: does not exclude the unchanged daemon atomically.
+    # The owning session must stop/verify the daemon before enabling scheduled mode.
+    exec 9>"${REAPER_ONCE_LOCK:-${REAPER_PIDFILE}.once.lock}"
+    flock -n 9 || exit 75
+    reap_once status
     ;;
   run)
     # NIB2-81 startup self-attestation: refuse to start from a lane worktree or
