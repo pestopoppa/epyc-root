@@ -52,13 +52,15 @@ def build(entry_num, claims, *, correction_on=None):
     return out
 
 
-def gate_text(text, frames, *, floor="Hinted/Located", live=None, redirects=None):
+def gate_text(text, frames, *, floor="Hinted/Located", live=None, redirects=None,
+              claim_counts=None):
     result = fold(frames, as_of=AT)
     policy = UsePolicy(use="test", floor=parse_grade(floor))
     return cg.check_text(text, result, policy, path="doc.md",
                          redirects=redirects or {},
                          live=live if live is not None else {"110", "896", "1000"},
-                         by_entry=cg.claims_by_entry(result))
+                         by_entry=cg.claims_by_entry(result),
+                         claim_counts=claim_counts)
 
 
 # --- identity ---------------------------------------------------------------------------
@@ -91,6 +93,52 @@ def test_precise_citation_of_the_refuted_claim_still_reports_it():
     frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
     (v,) = gate_text("per intake-896#03", frames)
     assert v.status == "overturned"
+
+
+def test_precise_in_range_citation_is_graded_when_ingested():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#00", frames, claim_counts={"110": 1})
+    assert v.status == "ok"
+
+
+def test_precise_in_range_but_uningested_claim_stays_unknown():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#01", frames, claim_counts={"110": 2})
+    assert v.status == "unknown"
+    assert v.status not in cg.BLOCKING
+
+
+def test_precise_out_of_range_claim_is_blocking_dangling():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#02", frames, claim_counts={"110": 2})
+    assert (v.status, v.resolved) == ("dangling", "110")
+    assert v.status in cg.BLOCKING
+    assert "outside resolved entry" in v.notes[0]
+
+
+def test_precise_out_of_range_uses_resolved_merge_survivor_count():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-797#01", frames, live={"110"}, redirects={"797": "110"},
+                     claim_counts={"110": 1})
+    assert (v.status, v.resolved, v.how) == ("dangling", "110", "merged")
+
+
+def test_malformed_key_claims_count_preserves_unknown():
+    frames = build("110", {0: ("Hinted", "Located", False)})
+    (v,) = gate_text("see intake-110#99", frames, claim_counts={"110": None})
+    assert v.status == "unknown"
+    assert v.status not in cg.BLOCKING
+
+
+def test_key_claim_count_reader_preserves_malformed_and_duplicate_as_unknown(tmp_path):
+    index = tmp_path / "intake_index.yaml"
+    index.write_text(
+        "- id: intake-100\n  key_claims:\n    - first\n    - second\n"
+        "- id: intake-101\n  key_claims: malformed\n"
+        "- id: intake-102\n  key_claims: []\n"
+        "- id: intake-100\n  key_claims: [duplicate]\n")
+    counts = cg.key_claim_counts(index)
+    assert counts == {"100": None, "101": None, "102": 0}
 
 
 # --- the states a citer can act on ------------------------------------------------------
@@ -190,7 +238,8 @@ def test_citation_forms_are_all_gated(text, expected):
 def test_record_reference_is_not_graded_and_never_blocks():
     """The 3 documents that RECORDED the intake-896 fabrication were reported as resting on it."""
     frames = build("896", {0: ("Hinted", "Located", False), 3: ("Verified", "Located", True)})
-    (v,) = gate_text("the description was struck from intake-896#record", frames)
+    (v,) = gate_text("the description was struck from intake-896#record", frames,
+                     claim_counts={"896": 0})
     assert v.status == "record"
     assert v.status not in cg.BLOCKING
     assert v.claims == []

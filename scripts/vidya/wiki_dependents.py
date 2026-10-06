@@ -30,6 +30,7 @@ import re
 import sys
 from collections import defaultdict
 from pathlib import Path
+import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -162,6 +163,37 @@ def live_entry_ids() -> set[str]:
         if m:
             ids.add(str(int(m.group(1))))
     return ids
+
+
+def key_claim_counts(index_path: Path = INDEX) -> dict[str, int | None]:
+    """Return exact `key_claims` list lengths; malformed or duplicate rows stay unknown."""
+    try:
+        entries = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError):
+        return {}
+    if not isinstance(entries, list):
+        return {}
+    counts: dict[str, int | None] = {}
+    duplicate_ids: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        raw_id = entry.get("id")
+        match = re.fullmatch(r"intake-(\d+)", raw_id) if isinstance(raw_id, str) else None
+        if not match:
+            continue
+        number = str(int(match.group(1)))
+        if number in counts:
+            counts[number] = None
+            duplicate_ids.add(number)
+            continue
+        if number in duplicate_ids:
+            counts[number] = None
+            continue
+        claims = entry.get("key_claims")
+        counts[number] = (len(claims) if isinstance(claims, list)
+                          and all(isinstance(claim, str) for claim in claims) else None)
+    return counts
 
 
 def resolve(num: str, redirects: dict[str, str], live: set[str]) -> tuple[str | None, str]:
