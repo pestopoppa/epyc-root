@@ -1,0 +1,1511 @@
+{
+  "id": "S11",
+  "name": "user-facing-harness-1",
+  "files": [
+    {
+      "path": "handoffs/active/reasoning-compression.md",
+      "state": "active",
+      "sha256": "239d3bdda2241c885db98f051ac1e0835bef3e04ab2bab92590c26eecdf1fc01",
+      "bytes": 96430,
+      "title": "Reasoning Compression for Inference Cost Reduction",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 125,
+          "checked": true,
+          "text": "Run TrimR evaluation on math/gpqa suites — ✅ 2026-04-09 (Package B). DeepSeek-R1-Distill-Qwen-7B on 4×48t NUMA. **GPQA**: full 58.3% → think-strip 52.6% → trimr 45.7% (2400 avg think tokens, thinking helps ~6pp). **Math (GSM8K)**: 66% all strategies identical (151 avg think tokens — model barely thinks on easy math). **Verdict**: TrimR valuable on hard tasks, irrelevant on easy tasks. Aligns with difficulty-adaptive routing. Prerequisites resolved: `chat.cpp` PEG parser fix, binary rebuild, `--jinja` in stack, `\\boxed{}` scorer fix.",
+          "key": "h:d798:61f0:542c:7d19"
+        },
+        {
+          "line": 126,
+          "checked": true,
+          "text": "Collect shadow telemetry from difficulty signal in production — ✅ 2026-04-06. Package A collected 635 routing decisions with shadow predictions.",
+          "key": "h:f5b3:884c:874f:a417"
+        },
+        {
+          "line": 127,
+          "checked": true,
+          "text": "Validate difficulty signal predictive power against benchmark accuracy — ✅ 2026-04-06. At old thresholds (0.3/0.6): 92% easy, 0% hard, no predictive spread. Recalibrated to 0.15/0.35 for ~40/40/20 split. Medium prompts take 29% longer (p50 36s vs 25s). Re-validation needed at new thresholds. **Partial progress 2026-04-21 (NIB2-32 + NIB2-35)**: Analysis script delivered at `scripts/analysis/difficulty_signal_validation.py` — computes Spearman(band_ordinal, error_indicator) with ENFORCE-READY / TUNE-THRESHOLDS / SIGNAL-NOISE / INSUFFICIENT-DATA verdict. Persistence gap identified and closed same day via NIB2-35: `ChatResponse` now surfaces `difficulty_score`/`difficulty_band`/`factual_risk_score`/`factual_risk_band`; `RoleResult` carries them forward; `build_diagnostic()` writes them into `seeding_diagnostics.jsonl`. Re-validation unblocks once Package D (or any seeded benchmark run) accumulates n≥100 records post-2026-04-21. Report: `progress/2026-04/difficulty-signal-revalidation-2026-04-21.md`.",
+          "key": "h:8fa6:bd79:e452:845b"
+        },
+        {
+          "line": 128,
+          "checked": false,
+          "text": "If validated: implement enforce mode (route easy→worker, hard→architect)",
+          "key": "h:620b:fa9c:701b:47fe"
+        },
+        {
+          "line": 129,
+          "checked": true,
+          "text": "FlowSteer deep-dive (intake-126) — blocked on Qwen3.5 (no `build_cvec()` in `qwen35.cpp`), but SEAL linear baseline works on dense Qwen3/Qwen2.5 via `--control-vector`",
+          "key": "h:62ce:f10e:b8d9:77fe"
+        },
+        {
+          "line": 130,
+          "checked": false,
+          "text": "Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment). **Prep DONE 2026-04-09**: `generate_pairs.py` (80 contrastive problems), `eval_cvectors.py` (scaling sweep at 0.3/0.5/0.7), experiment design doc. Awaiting model servers.",
+          "key": "h:176e:98ce:5f87:0986"
+        },
+        {
+          "line": 131,
+          "checked": true,
+          "text": "Reasoning length alarm: cancel + re-generate when `<think>` exceeds 1.5× band budget (Action 9) — `_check_reasoning_length_alarm()` in helpers.py, double-gated (feature flag + enforce mode), wired into `_execute_turn()` with retry + conciseness nudge, 9 tests",
+          "key": "h:7ae3:48c3:a62e:8672"
+        },
+        {
+          "line": 132,
+          "checked": true,
+          "text": "Implement n-gram loop detection (Action 4) — added `detect_think_block_loop()` to `quality_detector.py`, 8 tests",
+          "key": "h:c83c:91f1:13d8:7ccf"
+        },
+        {
+          "line": 133,
+          "checked": true,
+          "text": "Wire band-adaptive token budgets through difficulty_signal enforce mode (Action 5) — `_repl_turn_token_cap()` now accepts `difficulty_band`, returns band-specific cap when mode=enforce (1500/3500/7000). `TaskState.difficulty_band` propagated from `RoutingResult`. Gated behind enforce mode (no behavior change while shadow).",
+          "key": "h:ff14:7f58:ddd0:0d33"
+        },
+        {
+          "line": 134,
+          "checked": true,
+          "text": "Compute Omega metric per-suite — ✅ 2026-04-09 (Package B Phase 4). **Critical finding: 7/10 suites show tools/REPL HURT accuracy vs direct.** Worst: agentic -54.5pp, coder -44pp, general -26pp, math -26pp. Only hotpotqa (+12pp) and gpqa (+6pp) benefit from tools. Implication: default routing should prefer direct mode; REPL/tool use should be opt-in for known-beneficial suites.",
+          "key": "h:5066:efe1:e877:f8ab"
+        },
+        {
+          "line": 135,
+          "checked": false,
+          "text": "Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2 (Claude-as-Judge eval of consolidation across model tiers; SFT data collection mirrors `eval_trimr.py` pattern)",
+          "key": "h:c85e:8a6e:ae06:31d4"
+        },
+        {
+          "line": 136,
+          "checked": true,
+          "text": "Audit conciseness prompts: verified stylistic language, not suppression (Action 7). **UPDATE 2026-04-07**: intake-276 deep-dive reveals our \"be concise\" prompts are the weakest form tested — explicit numeric word limits outperform. See Action 12 below.",
+          "key": "h:50a9:eeb9:64d4:0038"
+        },
+        {
+          "line": 137,
+          "checked": true,
+          "text": "**Action 12: Upgrade conciseness prompts to explicit word limits** — ✅ 2026-04-09. Replaced vague \"be concise\"/\"be direct\" with format-specific word limits in worker_general.md (MC: letter+1 sentence, yes/no: answer+1 sentence, factual: <15w, open: <60w) and worker_math.md (MC: letter+1 sentence, numeric: <50w, proof: <100w). Removed \"Show work step by step\" from worker_math registry suffix (contradicts brevity on easy problems). Based on CCoT (2407.19825) 30-60 word sweet spot and TALE (2412.18547) findings.",
+          "key": "h:3064:43fe:44cc:00c3"
+        },
+        {
+          "line": 138,
+          "checked": true,
+          "text": "**Action 13: Model-tier-differentiated conciseness** — ✅ 2026-04-09. Audit confirmed existing tier differentiation is correct: architect already has aggressive \"<150 tokens\" + \"maximally concise\"; frontdoor stays elaborative (user-facing); coder uses \"code only\". Updated thinking_reasoning suffix from verbose 4-line instruction to \"Think step by step in <think> tags. Answer portion: under 50 words.\" Applied to all 3 thinking model variants in registry.",
+          "key": "h:50c6:7e2c:5540:2184"
+        },
+        {
+          "line": 139,
+          "checked": true,
+          "text": "**Action 14: Add OAA metric to eval framework** — ✅ 2026-04-07. `eval_metrics.py` with `compute_oaa()` (α-penalized excess tokens), `compute_pti()` (per-token intelligence), `compute_batch_oaa()` (batch JSONL). CLI: `python eval_metrics.py --results path.jsonl`.",
+          "key": "h:2667:be40:50b3:c620"
+        },
+        {
+          "line": 140,
+          "checked": true,
+          "text": "**Action 16: Answer-tag stop sequences for benchmark scoring** — ✅ 2026-04-09 (orchestrator), ✅ 2026-04-10 (research repo port). Replaced `####` marker with `<answer></answer>` XML tags in all benchmark prompts (GSM8K, GAIA, CRUXEval, SimpleQA, HotpotQA, sentinel questions). Added `</answer>` to `direct_stage.py` stop sequences — generation halts immediately after model emits `</answer>`, eliminating post-answer rumination loops. Scorers (`debug_scorer.py`) default to `<answer>` extraction with `####` legacy fallback. `ChatRequest.stop_sequences` field added for request-level overrides. **2026-04-10**: Ported to `epyc-inference-research` — the research repo's `dataset_adapters.py` and `debug_scorer.py` had diverged and still used `####`. All 7 adapter prompts + extract patterns updated; scorer defaults updated with `####` legacy fallback. Files: orchestrator: `dataset_adapters.py`, `direct_stage.py`, `debug_scorer.py`, `requests.py`, `seeding_orchestrator.py`, `sentinel_questions.yaml`; research: `dataset_adapters.py`, `debug_scorer.py`.",
+          "key": "h:a5db:71c5:c023:dc69"
+        },
+        {
+          "line": 141,
+          "checked": true,
+          "text": "**Action 15: TALE dynamic budget estimation** — ✅ 2026-04-11 (Package C). 40 questions (math+general), 3 conditions. **Static limits outperform TALE on OAA** (static -3.48 vs TALE -5.95). TALE matches baseline on math (95%) but hurts general (50% vs 95%). Pre-pass adds latency without benefit. **Decision: keep Action 12 static limits, TALE deferred.** Revisit if difficulty_signal improves to enable per-suite policy.",
+          "key": "h:2658:360d:1249:e2a7"
+        },
+        {
+          "line": 142,
+          "checked": true,
+          "text": "CMV deep-dive: think block stripping (Action 10) — N/A for our architecture (raw LLM output not carried into next-turn context; REPL stdout is what flows forward)",
+          "key": "h:cd43:92d4:4121:659b"
+        },
+        {
+          "line": 143,
+          "checked": true,
+          "text": "CMV output spill with retrieval pointer (Action 11) — `_spill_if_truncated()` in helpers.py, writes full output/error to `/tmp/{task_id}_{label}_t{turn}.txt` + appends `peek()` pointer. Feature flag `output_spill_to_file`. 9 tests.",
+          "key": "h:6883:1c58:d34f:b38b"
+        },
+        {
+          "line": 277,
+          "checked": true,
+          "text": "**RC-RE-1** — check RE-Bench for open-weight model compatibility and integration with our eval tower ✅ 2026-07-22",
+          "key": "h:42c2:2545:e0f1:a923"
+        },
+        {
+          "line": 278,
+          "checked": false,
+          "text": "**RC-RE-2** — run RE-Bench against compressed vs uncompressed reasoning to validate compression safety",
+          "key": "h:7878:7d6c:803d:2dcf"
+        },
+        {
+          "line": 636,
+          "checked": true,
+          "text": "**Correct RE-Bench framing** (flagged by the 2026-07-22 RC-RE-1 scoping): RC-RE-1/rec-005 frames RE-Bench as a reasoning-QUALITY eval; it is actually long-horizon **agentic ML-engineering vs human experts** (6/7 envs need 1-8xH100). Re-scope RC-RE-2 accordingly. Scoping: `epyc-inference-research/docs/design/re-bench-open-weight-compatibility.md`. ✅ 2026-07-22",
+          "key": "h:c636:3241:977b:292a"
+        },
+        {
+          "line": 643,
+          "checked": true,
+          "text": "Add a **Tier-0 (zero-training, zero-inference-infra): adopt a pre-compressed checkpoint** rung to the taxonomy, seeded with ThinkingCap-Qwen3.6-27B. Record as an **observation** (vendor self-reported, no independent corroboration); note its own table is 8-of-12 negative out-of-domain and the repo declares no license. ✅ 2026-07-29 — taxonomy entry added above with the admission constraints, grounded in committed `research/intake_index.yaml` intake-892 (vendor results, directional counter-evidence, and license finding).",
+          "key": "h:a21a:cbf0:ac79:a5a4"
+        },
+        {
+          "line": 644,
+          "checked": true,
+          "text": "Add **Behavior-Conditioned Inference** (arXiv 2509.13237) as a Tier-1 candidate: extract named procedural \"behaviors\" from our own successful traces, retrieve k into context, measure output-token delta at fixed accuracy. Best-instrumented paper in the batch (5 seeds MATH, 80 runs AIME, temp 0.6/top-p 0.95). ✅ 2026-07-29 — added to the Tier-1 taxonomy from committed intake-897, including the required local A/B instead of importing its handbook.",
+          "key": "h:a033:3c74:2f5d:7f8b"
+        },
+        {
+          "line": 645,
+          "checked": true,
+          "text": "**Corrected cost story — measure before believing.** The 46% is **\"up to\"**, output-tokens-only, with no accuracy figure at that operating point, and the **input-side cost is admitted but never measured** (`\"involves a larger number of input tokens due to the inclusion of retrieved behaviors\"`; **k=40** behaviors/query on AIME). Their defence — *\"no autoregressive generation required on the input side\"* — is a **GPU-prefill argument that inverts on a bandwidth-bound-decode / compute-bound-prefill CPU stack**. Score **total pipeline tokens** (retrieved-behavior prefill + decode), never decode alone. ✅ 2026-07-29 — carried into the Tier-1 entry using committed intake-897's Stage-2 correction; no claim of CPU benefit is permitted before the local total-token A/B.",
+          "key": "h:4ebc:112e:7623:676c"
+        },
+        {
+          "line": 646,
+          "checked": true,
+          "text": "Two guardrails ride along: behaviors are **model-extracted** (SkillsBench −1.3 pp caution ⇒ held-out validation gate mandatory), and a behavior handbook is itself an **accumulating store** ⇒ build append-only with raw traces retained (arXiv 2605.12978). ✅ 2026-07-29 — both constraints are now carried in the Tier-1 entry, grounded in intake-897's committed contradictory-evidence review.",
+          "key": "h:1615:7f69:c13d:8a28"
+        },
+        {
+          "line": 675,
+          "checked": false,
+          "text": "**RC-XLLM-PREFILL-1 — Execute the smallest released, bound native teacher/student endpoint-prefill smoke.** Resolve the Part II S teacher directory artifact and matching S student from the pinned catalog; use its existing loaders/file-set/hash checks and teacher_manifest_sha256 binding, not the unbound legacy student-file path. Implement a finite research runner comparing full-depth teacher prefill with student endpoint plus teacher terminal-cache construction, followed by identical-depth teacher decoding. Start CPU/eager, batch one, short frozen inputs, with a claimed eight-core footprint, 8 GiB memory ceiling and thirty-minute execution cap. Permit only a narrowly identified device/attention compatibility shim with operation-level conformance; stop at the first unsupported operation rather than launch a general port. If CPU executes both paths correctly, exercise the same inputs on ROCm in a coordinated GPU window. Retain the runnable path and specific remaining incompatibilities; no persistent endpoint, weight training, GGUF conversion, registry change or production-kernel modification.",
+          "key": "h:8c8f:292b:6c58:c08f"
+        },
+        {
+          "line": 714,
+          "checked": false,
+          "text": "**Loopie artifact watch (intake-908)**: re-check `huggingface.co/IQuestLab` (Loopie-*-preview) and `github.com/IQuestLab` (loopie / vllm / megatron repos) before any port/eval planning; if released, pull config.json + vLLM diff to scope what a llama.cpp-experimental layer-loop port would need, then revisit the declined 6B-A0.6B CPU smoke test vs Ouro-2.6B-Thinking.",
+          "key": "h:71ae:73e2:eadc:cddc"
+        },
+        {
+          "line": 715,
+          "checked": true,
+          "text": "Dive-verify the 7 operator-selected lineage intakes and record corrections in the index ✅ 2026-07-28",
+          "key": "h:39cb:6bf5:d98f:63a8"
+        },
+        {
+          "line": 719,
+          "checked": true,
+          "text": "**RC-T1** — Add **TALE** (intake-1215, arXiv:2412.18547v5) to the *Tier 1 — zero-training*",
+          "key": "h:a962:01c3:d542:fe34"
+        },
+        {
+          "line": 729,
+          "checked": true,
+          "text": "**RC-T2** — Record TALE's two full-text-only caveats before anyone adopts it on the headline:",
+          "key": "h:da9a:8328:deff:4014"
+        },
+        {
+          "line": 738,
+          "checked": true,
+          "text": "**RC-T3** — File TALE as an intake entry ✅ 2026-08-21 (intake-1215, dive-verified)",
+          "key": "h:2b2b:2ba8:46bf:b1f7"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/tool-output-compression.md",
+      "state": "active",
+      "sha256": "63a0ea5ee5d745d857872a3165dd387add6c9f1c9e4c0ae5debb16b655dcf051",
+      "bytes": 67580,
+      "title": "Tool Token Optimization — Output Compression + Definition Reduction",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 256,
+          "checked": true,
+          "text": "P3a: Token audit of tool definitions across all prompt paths — ✅ 2026-04-09. `scripts/analysis/token_audit.py` + `docs/token_audit_report.md`. DEFAULT: 841 est. tokens (647 words), 41 entries, 4 duplicates. No usage freq data (seeding diagnostics unavailable). Instruction token ratio: 29.8%.",
+          "key": "h:bf83:442f:7d82:1abc"
+        },
+        {
+          "line": 257,
+          "checked": true,
+          "text": "P3b: Manual compression of `DEFAULT_ROOT_LM_TOOLS` — ✅ 2026-04-09. 55% reduction (647→290 words). Removed 4 duplicates, all \"Do NOT\" clauses, merged related tools, flattened sections. Old version preserved as `VERBOSE_ROOT_LM_TOOLS` for A/B. Instruction token ratio: 16.0%. 162 tests pass.",
+          "key": "h:4209:78d6:c93f:44c6"
+        },
+        {
+          "line": 258,
+          "checked": true,
+          "text": "P3c: Measure `instruction_token_ratio` delta (AP-16) — ✅ 2026-06-28. Static audit now reports default tool definitions at 15.0% of tools+rules+roles, with a prompt-library proxy of 10,686 char-proxy tokens. Runtime AP-16 was repaired in `epyc-orchestrator` commit `bd627b3e`; patched v6-era trials `#1010/#1011` recorded 3,188/3,295 instruction tokens and 91.8%/92.1% instruction ratios, replacing the stale 10,748-token prompt-library charge. `docs/token_audit_report.md` now separates active PromptBuilder scaffold from full prompt-library size.",
+          "key": "h:5e88:8b60:4047:d5a3"
+        },
+        {
+          "line": 259,
+          "checked": true,
+          "text": "P3d: A/B test compressed vs original definitions on seeding harness ✅ 2026-07-14 — A/B done (+4pp REPL, suite-dependent), per status header.",
+          "key": "h:0b2b:e171:3061:efdc"
+        },
+        {
+          "line": 333,
+          "checked": true,
+          "text": "**3d.1 — Inspect upstream patches** — locate the v0.10.0 → v0.11.0 commits touching the compressor module in `/mnt/raid0/llm/hermes-agent`. Identify the three patterns (anti-thrashing, language-aware, fallback chain) at the function/class level. Capture upstream's test fixtures if any. (~1 h) **DONE 2026-06-14**: upstream local history maps to context-compressor commits, not a direct deterministic bash-output port; no upstream fixture should be blindly transplanted.",
+          "key": "h:eeb5:cef5:5a3a:810c"
+        },
+        {
+          "line": 334,
+          "checked": true,
+          "text": "**3d.2 — Port anti-thrashing into `scripts/utils/compress_tool_output.py`** — minimal version: track recent compress/decompress operations on the same content hash; suppress the third operation in any A→B→A oscillation pattern within a turn. (~2 h) **DONE 2026-06-18** in `epyc-root` `ca8c338`: the deterministic compressor now keeps a bounded recent outcome history by content hash, suppresses the third flip in a recent compress → passthrough → compress pattern, and emits `*_anti_thrash_suppressed` metadata when the guard fires. GitNexus impact for `compress_tool_output_with_metadata` was LOW (`impactedCount=2`). Validation: `python3 -m py_compile scripts/utils/compress_tool_output.py scripts/utils/test_compress_tool_output.py` passed; the base interpreter lacked `pytest`/`pip`/`venv`, so the worker used a direct Python smoke for the new gate.",
+          "key": "h:140c:5d09:937f:1c2a"
+        },
+        {
+          "line": 335,
+          "checked": true,
+          "text": "**3d.3 — Port language-aware collapse** — extend the existing per-content-type routing with a language detector for code blocks (re-use existing fence-marker heuristics in the file); preserve fence boundaries when collapsing. (~2 h) **DONE 2026-06-27**: `scripts/utils/compress_tool_output.py` now applies a deterministic `code_fence_collapse` fallback for unknown-command outputs with oversized fenced blocks, preserving fence delimiters and language tags while replacing middle lines with language-appropriate omission markers. GitNexus impact for `compress_tool_output` was LOW (`impactedCount=1`); `compress_tool_output_with_metadata` was LOW (`impactedCount=2`). Validation: `python3 -m py_compile scripts/utils/compress_tool_output.py scripts/utils/test_compress_tool_output.py`; `uv run --with pytest pytest scripts/utils/test_compress_tool_output.py -q` -> `33 passed`; `uv run --with ruff ruff check scripts/utils/compress_tool_output.py scripts/utils/test_compress_tool_output.py` passed.",
+          "key": "h:e0ac:53cf:0079:1723"
+        },
+        {
+          "line": 336,
+          "checked": true,
+          "text": "**3d.4 — Port fallback chain (503/404 → main model)** — when compressor model returns 503/404 or times out, route the input through the main model with a prompt template targeting summarization instead of compression-style condensation; cap fallback retries at 1. (~1–2 h) **DONE 2026-06-28** in `epyc-orchestrator` `a5080ecb`: the deterministic root compressor remains model-free, and the actual runtime fallback landed at `src/api/routes/chat_summarization.py::_run_two_stage_summarization`. If `llm_batch()` falls back to sequential chunk digesting and a worker digest fails with 404/503/timeout, the chunk is retried once through the synthesis/main role (`frontdoor`) before becoming a failed-section placeholder. Stats now expose `worker_fallback_role`, `worker_fallback_count`, and `worker_failure_count`. GitNexus impact was LOW for the orchestrator file (`impactedCount=6`) and LOW for `_run_two_stage_summarization` (`impactedCount=2`). Validation: `py_compile`, `ruff`, focused summarization tests (`39 passed`), adjacent chat vision/REPL/pipeline tests (`96 passed`), and API import smoke + summarization (`76 passed`).",
+          "key": "h:2d00:7bf4:ca22:1d89"
+        },
+        {
+          "line": 337,
+          "checked": true,
+          "text": "**3d.5 — Validate against recorded oscillation transcript** — replay a saved Phase 2b monitoring transcript that exhibits the documented oscillation; confirm anti-thrashing prevents the third compression and the resulting context is correct. (~1 h, offline fixture only) **DONE 2026-06-28**: no recorded fixture existed locally, so `scripts/utils/test_compress_tool_output.py` now reconstructs the Phase 2b compress -> passthrough -> compress sequence on the same content hash and asserts the third call returns `pytest_anti_thrash_suppressed` with unchanged text/char counts. Validation: `python3 -m py_compile scripts/utils/compress_tool_output.py scripts/utils/test_compress_tool_output.py`; `uv run --with pytest pytest scripts/utils/test_compress_tool_output.py -q` (`34 passed`); `ruff` unavailable on this host.",
+          "key": "h:41c7:6299:5ed5:6f33"
+        },
+        {
+          "line": 408,
+          "checked": true,
+          "text": "**P4a — Bash-compressor MCP server skeleton** (~1 h). New file `epyc-orchestrator/src/tool_output_compressor_mcp.py`. Single tool `run_bash_compressed(command: str, timeout_s: int = 60, working_dir: str = \"\") -> str` that shells out via `subprocess.run` with the same security envelope as the existing orchestrator bash path. Uses `from fastmcp import FastMCP` (v3, already pinned in pyproject after the 2026-05-26 migration). Add module-level test (`tests/unit/test_tool_output_compressor_mcp.py`) mirroring `test_mcp_server.py`'s direct-import pattern — v3 keeps `@mcp.tool()` callable, so existing test style transfers. **DONE 2026-06-14**.",
+          "key": "h:ecc5:271c:8f26:6824"
+        },
+        {
+          "line": 409,
+          "checked": true,
+          "text": "**P4b — Compressor middleware** (~2 h). Implement `CompressorMiddleware(Middleware)` with `on_call_tool(self, context, call_next)`:",
+          "key": "h:5d2e:718f:7468:0d6f"
+        },
+        {
+          "line": 415,
+          "checked": true,
+          "text": "**P4c — Downstream-top-up rate measurement** (~1 h). Per intake-605's audit refinement (line 373), vendor token-reduction claims must be measured by *downstream* effects, not headline %. Add a paired telemetry field `next_turn_followup_command` to the Phase 2b sink — populated by reading the next bash command in the same session journal; flag patterns that look like \"re-run uncompressed for missing context\" (e.g., the same command re-issued within 3 turns, or `cat`/`head`/`tail` against a file just listed). Compute weekly `top_up_rate = followups / compressed_calls` from the journal; gate any compression-strategy promotion on top_up_rate ≤ 10%. **DONE 2026-06-14** in `epyc-orchestrator` `5cf9d1e`: MCP telemetry now records `top_up_candidate`, `followup_distance`, `followup_reason`, `next_turn_followup_command`, `followup_source_command`, and `session_id`; detection covers repeated commands within three compressed calls plus `cat`/`head`/`tail` views after `ls`, including common `head`/`tail` flags. Session filtering is exact when `TOOL_COMPRESSION_SESSION_ID` is set, avoiding cross-session contamination. Added `scripts/analysis/tool_compression_topups.py` to compute the weekly JSONL `top_up_rate` and gate against `<=10%`. Validation: `py_compile`; `ruff`; `pytest` for `test_tool_output_compressor_mcp.py` + `test_tool_compression_topups.py` passed 14; empty-live-log smoke reports 0 compressed calls, gate n/a.",
+          "key": "h:d6a5:6faf:9780:e284"
+        },
+        {
+          "line": 416,
+          "checked": true,
+          "text": "**P4d — `.mcp.json` registration + Claude Code smoke test** (~30 min). Add a second entry to `epyc-orchestrator/.mcp.json` alongside `orchestrator`: `bash-compressor` → `python src/tool_output_compressor_mcp.py`, stdio. Restart Claude Code, run the smoke commands from §\"Strategy Prioritization\" via `run_bash_compressed`, verify each returns a visibly compressed result with the expected ratio band (60-90% per the table). Gate live use on a 1-week observation window of P4c top-up-rate before defaulting any high-frequency command to the compressed surface. **DONE 2026-06-14** in `epyc-orchestrator` `e346613`: project `.mcp.json` now registers both `orchestrator` and `bash-compressor` using the repo `.venv/bin/python` and absolute script paths with `PYTHONPATH=/mnt/raid0/llm/epyc-orchestrator`. Validation: `python3 -m json.tool .mcp.json`; both FastMCP servers booted and exited cleanly on stdio EOF; in-memory `run_bash_compressed` smoke returned `git status` strategy `git_status` at ratio `0.3399`, `ls -la tests/unit` strategy `ls` at ratio `0.0012`, and a top-up smoke flagged `ls src` → `head -20 src/tool_output_compressor_mcp.py` as `file_view_after_listing`. **Root registration fix 2026-06-28**: umbrella-session `.mcp.json` now also registers `bash-compressor`; root-started Claude Code sessions were previously unable to create the P4c telemetry sink.",
+          "key": "h:d52e:5479:f042:dceb"
+        },
+        {
+          "line": 417,
+          "checked": true,
+          "text": "**P4e — Decision gate: roll-out scope** ✅ 2026-09-24 — **DROPPED (operator, OP-49 option C).** The",
+          "key": "h:6337:5e97:ae09:10d3"
+        },
+        {
+          "line": 449,
+          "checked": true,
+          "text": "Phase 3d design input: bias the fallback chain toward cheap observation-dropping before LLM summarization, and require summarization to earn its cost in an A/B rather than assuming it. ✅ 2026-07-29 — audit resolves the ownership boundary: `compress_tool_output.py` already does deterministic observation dropping for recognized commands and fenced blocks, and deliberately has no model dependency. The only model fallback is the separate orchestrator two-stage document-summarization path, so it must not be ported into this tool-output script by analogy. Any runtime reorder needs its own telemetry-backed orchestrator task; unknown-command passthrough remains fail-safe rather than a generic lossy dropper. [intake-869, intake-274]",
+          "key": "h:66a5:42d4:4f9e:74de"
+        },
+        {
+          "line": 455,
+          "checked": false,
+          "text": "**First-party A/B: verbatim-append trajectory log + grep/Python read, vs current summarize-and-compact.** Run on OUR models (frontdoor Qwen3.6-35B-A3B, architect Qwen3.5-122B). This is the transfer test neither PRO-LONG nor its antecedent offers — every arm in both is a closed frontier model. MUST report **WALL-CLOCK** (neither paper reports latency) and MUST include a **log-growth / grep-latency curve** — the axis both papers assert (\"tractable for logs over 100k+ lines\") and neither measures. Deterministic-replay-eligible on the scoring axis.",
+          "key": "h:20c7:a3e6:cf49:df0b"
+        },
+        {
+          "line": 456,
+          "checked": false,
+          "text": "**A/B-CTRL — the nominal control arm may not exist. Resolve before scheduling any compute**",
+          "key": "h:0b77:1f93:9d20:162b"
+        },
+        {
+          "line": 461,
+          "checked": false,
+          "text": "**A/B-C — hold the context budget C explicitly EQUAL across backbones and record it in the",
+          "key": "h:b57a:dcc8:f680:7544"
+        },
+        {
+          "line": 468,
+          "checked": false,
+          "text": "**A/B-INSTR — LOCA-bench evaluated as a candidate suite and DECLINED** (intake-1342#record),",
+          "key": "h:0218:714f:8a92:a9e8"
+        },
+        {
+          "line": 476,
+          "checked": false,
+          "text": "**Prerequisite: produce a single chronological, grep-able trajectory artifact per task** — and audit which `peek`/`grep` implementation is live. [2026-09-14: the event schema must include a per-task `spill_pointer_follows` count (peek/grep events whose path matches a spill path) and a retrieval-vs-execution tool-call split — completion can stay flat while re-queries double (5/6 cells in one synthetic environment; no surge in ALFWorld). `intake-1359#01`.]",
+          "key": "h:0de0:98da:258f:4989"
+        },
+        {
+          "line": 495,
+          "checked": false,
+          "text": "Instrument **TOTAL** tokens per episode (not peak) in any compression A/B. **REOPENED 2026-09-16** (the closure below is false). ~~✅ 2026-07-29~~ — `src/graph/session_log.py` now accepts optional observed `input_tokens` / `output_tokens` per turn and aggregates episode `total_input_tokens`, `total_output_tokens`, `total_tokens`, and `token_observed_turns`. Missing usage stays explicit (`None` / observed-turn denominator), never silently zero; generated session logs expose per-turn totals when present. Focused suite `tests/unit/test_session_log.py` 52 passed. This is a telemetry primitive only; the first-party A/B remains open and any result is observation-grade until protocolled. ACM reports peak only while raising tool calls 1.6-2.4×, plus a summarizer call per compression and a full-archive-ingesting querier call per retrieval. On a prefill-bound CPU host, flatter peaks at 2× the calls may be a net throughput LOSS.",
+          "key": "h:bf03:82cb:3339:c03b"
+        },
+        {
+          "line": 497,
+          "checked": false,
+          "text": "Map `query_memory` onto the existing `_spill_if_truncated()` pointer machinery. VERIFIED: ACM's memory needs NO embedding model, NO vector index, NO chunking — verbatim JSON archived by integer key, read back via one LLM recall call. This is a read API over spill pointers we already write (`helpers.py:320-355`).",
+          "key": "h:b17d:4ce3:f4a8:5e1d"
+        },
+        {
+          "line": 525,
+          "checked": true,
+          "text": "**TOC-SP-1 — Spill footer calls `peek`/`grep` with arguments in the wrong order.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `1e2a6315`). `environment.py:650` emitted `peek(\"{path}\")` / `grep(\"{path}\", pattern)` but the signatures are `_peek(n, file_path)` / `_grep(pattern, file_path)` — the pointer never read the file. Footer now `peek(2000, file_path=...)` / `grep(\"<pattern>\", file_path=...)`; the same bug in `suggestions.py` hint templates (flag `REPL_SUGGESTIONS`) fixed too; test executes the footer calls against a real spill. `intake-1350#record`.",
+          "key": "h:6cea:db66:b6bb:9d7e"
+        },
+        {
+          "line": 526,
+          "checked": true,
+          "text": "**TOC-SP-2 — Exact recall for spilled output.** Add offset/length paging to `peek` (reads only `f.read(n)` from byte 0, `file_exploration.py:58-94`), a tail excerpt to `_spill_if_truncated` (head-only, `file_artifacts.py:63-70`), and content-hash spill names (currently `{task}_{label}_t{turn}` opened \"w\"). Pattern: SoL-Pi ObservationPack handle + exact paged recall. `intake-1350#02`. ✅ 2026-09-16",
+          "key": "h:8016:be7e:3b97:a60d"
+        },
+        {
+          "line": 533,
+          "checked": false,
+          "text": "**TOC-SP-3 — Verified-quote receipt for the spill worker summary.** `_spill_output` (`environment.py:716-800`; synchronous `role=\"worker\"`, `n_tokens=512` `llm_call` at :780) summarises only the last 4,000 chars and accepts it unverified. Replace with quotes byte-verified against the full spill, exit-status agreement, failure evidence required inside quote content (stricter than SoL-Pi's label-only check), fail-open to head/tail. Measure evidence retention vs the current summary on real failing test logs (inference). `intake-1350#03`.",
+          "key": "h:f8d1:7930:02e8:d13d"
+        },
+        {
+          "line": 534,
+          "checked": true,
+          "text": "**TOC-RD-1 — Redact before compressing.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `118b65e5`). `tool_output_compressor_mcp.py` returned output without redaction; now `redact_if_enabled` runs on raw text before compression, on the returned text, and inside direct `run_bash_compressed` calls (after the 200k cap). The `redaction.py` PEM rule now also redacts from an unterminated BEGIN header to end-of-text (terminated keys unchanged). Note: an unterminated key redacts everything after it, by design. New PEM tests live in `tests/unit/test_credential_redaction_truncated_pem.py` because the root `pii_precommit.sh` hook blocks edits to the existing credential test file.",
+          "key": "h:21a3:4554:af8d:2cb7"
+        },
+        {
+          "line": 535,
+          "checked": false,
+          "text": "**TOC-RD-1a — PII pre-commit hook gaps (root `scripts/hooks/pii_precommit.sh`).** Its PEM pattern does not match `OPENSSH`/`ED25519` private-key headers (the redactor does), and it blocks any edit to `tests/unit/test_credential_redaction.py` because that file already holds fake credentials. Operator decision: widen the hook pattern AND add a reviewed allow-list for credential-fixture test files together (widening alone would also block the new truncated-PEM test file). `intake-1350#record`.",
+          "key": "h:aebc:5b2d:0c49:bdfd"
+        },
+        {
+          "line": 536,
+          "checked": false,
+          "text": "**TOC-RD-1b — PII hook over-blocks perf sample periods in markdown table cells** (filed 2026-09-24,",
+          "key": "h:4331:ece6:efbb:9126"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/agentic-serving-harness-fixes.md",
+      "state": "active",
+      "sha256": "66c151018ca2009d16dfeb93895bfe3ff04ce4319ffc571cba381f7ebece4c9c",
+      "bytes": 66979,
+      "title": "Agentic serving harness fixes — demonstrate on the 27B, generalize, then audit",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 44,
+          "checked": true,
+          "text": "**UFH14-A1.** ✅ 2026-10-03 — F12 run: the cxf1 arm (F1: solo, 1 h idle timeout, compaction at 150k) and the cxf12 arm (F1 plus F2: JSON-first answer, forced answer at 65% of budget, refine turn, 8k thinking cap). 8 solo calls on C2 and C4, graded blind against all C95 arms. Covers D1 and D4, partly D2.",
+          "key": "h:0e4a:e4cf:739f:d63d"
+        },
+        {
+          "line": 61,
+          "checked": true,
+          "text": "**UFH14-A2.** DFlash2 decode-vs-context probe on the production shape, to compare against the MTP probe and to separate drafter speed from harness effects.",
+          "key": "h:fb24:4db3:1db4:6828"
+        },
+        {
+          "line": 81,
+          "checked": true,
+          "text": "**UFH14-A3.** ✅ 2026-10-04 (GPU run 2026-10-03) Prefix warming plus staggered starts for parallel arms. Issue one warm request for the shared context, then start the arms so they hit the prompt cache. Measure the cold-prefill share and decode stall against an unstaggered A/B. Covers D5.",
+          "key": "h:8214:d0f3:0921:5344"
+        },
+        {
+          "line": 87,
+          "checked": false,
+          "text": "**UFH14-A3a — re-measure the warm leg unperturbed, with ONE warm request.** (filed 2026-10-04) The 10-03 warm leg issued two warm requests (one per arm; 2 × 56.8k tokens) and overlapped foreign GPU work. Issue a single warm request for the shared prefix, then stagger; re-measure decode stall vs the cold leg in a coordinated GPU slot.",
+          "key": "h:f0f4:5df1:08c6:0f9c"
+        },
+        {
+          "line": 88,
+          "checked": true,
+          "text": "**UFH14-A4.** ✅ 2026-10-04 (GPU run 2026-10-03) Compaction that keeps the prefix. Make compaction requests carry the same tools and system prefix, or compact through a separate summarization call that leaves the live prefix intact. Measure re-prefill tokens per compaction. Covers D2. Also cover opencode's task-prompt drop (D3).",
+          "key": "h:2fd8:ece1:77ea:5269"
+        },
+        {
+          "line": 99,
+          "checked": false,
+          "text": "**UFH14-A4a — the post-compaction request still re-prefills ~32k tokens.** (filed 2026-10-04) In both arms the first request after the compaction matched only 6,447 tokens of cache. Diff that request's rendered prompt against the compaction request's to find where they diverge after the system prefix (tool list, task-prompt re-insertion, summary placement), and make the post-compaction prompt extend the compaction prompt.",
+          "key": "h:608d:11c2:7c87:ea6e"
+        },
+        {
+          "line": 100,
+          "checked": false,
+          "text": "**UFH14-A6.** Run every later harness experiment under the Landlock sandbox (`sandbox3.py`) and verify isolation on a real call before relying on it: a planted read of the live campaign store must fail, while the call's own workspace, result dir and wire proxy stay reachable. Origin: C2/cxf1/r2 contamination (A1).",
+          "key": "h:a47c:fa8c:7ed9:027b"
+        },
+        {
+          "line": 102,
+          "checked": false,
+          "text": "**UFH14-A6a — find the a3warm `053c3bd82` leak path and run the planted-read probe.** (filed 2026-10-04) Locate where the 101 hits enter the transcript (scratch clone refs, a bundle file, an allowed binary/log path), close it in `sandbox3.py`'s policy, and make `scan_contamination` cross-check each hit against the denial log. Then the planted read of the live campaign store must fail on a real call.",
+          "key": "h:b661:bd1f:77d0:c039"
+        },
+        {
+          "line": 103,
+          "checked": false,
+          "text": "**UFH14-A5.** Phase A verdict: which fixes measurably change P(keep), wall time and prefill seconds on the 27B. Wire the results to the belief kernel; VB-DS41-C95 already exists, so extend it rather than adding a new ladder.",
+          "key": "h:c463:7dbc:8de7:b0a9"
+        },
+        {
+          "line": 104,
+          "checked": false,
+          "text": "**UFH14-A7 (intake P7). Hybrid re-prefill when the next turn's history diverges inside the previous output.** Code read of frozen v10 `ffc1bac82` plus the F12 wire logs. Report and scripts: `/mnt/raid0/llm/tmp/p6p7-20261003/`.",
+          "key": "h:6808:c244:cd1d:10c8"
+        },
+        {
+          "line": 132,
+          "checked": false,
+          "text": "**UFH14-B1.** Move the demonstrated client fixes (D1–D5) out of the C95 experiment drivers (`/mnt/raid0/llm/tmp/ds41-c95/run2.py`, `proxy2.py`) into shared, model-independent harness settings. Targets:",
+          "key": "h:ce36:9f33:cfab:263f"
+        },
+        {
+          "line": 138,
+          "checked": true,
+          "text": "**UFH14-B1a — research side: F1/F2 in the AutoKernel actor seats.** ✅ 2026-10-03 — research `70f6b9f4` on main: `actor_serving.py` (F1: window from the server's `/props`, prefill rate from the orchestrator's serving-call records, idle timeout = 2 full-window prefills × 1.25 clamped [600 s, 4 h], compaction ≤ 0.76 of the window) for opencode seats on a LOCAL llama-server; F2 (`answer_protocol=\"f2\"`, JSON-first, forced answer at 0.65 of the planner budget) planner only. Hosted providers and the codex/claude CLIs are untouched; `codex_config_overrides()` is the extension point.",
+          "key": "h:77e4:93a5:3ced:264d"
+        },
+        {
+          "line": 139,
+          "checked": true,
+          "text": "**UFH14-B1b — orchestrator side (HS-4 agent-loop compaction) — on workspace-ec's branch.** Flip when it lands on orch main with a live call. ✅ 2026-10-04 (workspace-ec)",
+          "key": "h:f2a8:71b4:fa60:c163"
+        },
+        {
+          "line": 159,
+          "checked": false,
+          "text": "**UFH14-B1c — opencode/codex provider configs used with local models outside the actor seats.** Apply the same derived parameters.",
+          "key": "h:1522:d93f:5b5e:c3c6"
+        },
+        {
+          "line": 165,
+          "checked": false,
+          "text": "**UFH14-B1d — STACKCHANGE: per-role request timeouts cannot cover a full-context prefill.** (filed 2026-10-04,",
+          "key": "h:c8d0:8e15:1e9a:5a6a"
+        },
+        {
+          "line": 174,
+          "checked": false,
+          "text": "**UFH14-B1e — port the `PROVISIONAL(answer)` REPL primitive behind its own flag, default off.** (filed",
+          "key": "h:1aab:8769:d6b2:9b91"
+        },
+        {
+          "line": 179,
+          "checked": false,
+          "text": "**UFH14-B1f — wire the per-turn thinking budget behind its own flag, default off.** (filed 2026-10-04,",
+          "key": "h:018f:b151:effd:485f"
+        },
+        {
+          "line": 184,
+          "checked": false,
+          "text": "**UFH14-B1g — enable decision for `repl_answer_force` (F2).** (filed 2026-10-04, workspace-ec; the",
+          "key": "h:8f18:c65a:d911:9d5a"
+        },
+        {
+          "line": 189,
+          "checked": false,
+          "text": "**UFH14-B1h — retire `DEFAULT_PREFILL_FLOOR_TPS = 250` (`kv_pool_admission.py:169`) for the measured rate.**",
+          "key": "h:71a6:3edc:6a7b:2af6"
+        },
+        {
+          "line": 196,
+          "checked": true,
+          "text": "**UFH14-B2.** ✅ 2026-10-03 (workspace-ec) — orch 2586a7bb on main, API reload: scouts reserve prompt+max_tokens on the token gate; one long prefill (≥16384 est. tokens, env ORCHESTRATOR_KV_POOL_LONG_PREFILL_TOKENS, 0=off) per server, lease ends at first chunk or prompt/250 tok/s; /slots observation holds long requests behind any slot prefilling ≥4096 (covers other uvicorn workers + direct clients like C95); per-request cap = min(slot ctx, model ctx_max). 32 new tests; 4126 related pass. Live alias call via gate ok. Remaining limits: per-worker gate (cross-worker via /slots only), whole-prompt size even when mostly cached; ungated paths documented in /mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md (action_repair_completer if pointed at :8083; prewarmer only :8074). Was: Token-aware pool gate, keyed per server: one long prefill at a time, with all orchestrator traffic, scouts included, going through it. Covers D7. Operator-approved 2026-10-03; deployed as an API-only change. In progress (workspace-ec): orch branch `feat/kv-pool-gate-8083-ec`; tracked as KVU-15 in `kv-unified-stack-rollout.md`.",
+          "key": "h:4ede:8b56:dd71:fee4"
+        },
+        {
+          "line": 197,
+          "checked": true,
+          "text": "**UFH14-B3.** ✅ 2026-10-03 (workspace-ec) — LIVE: :8083 relaunched 13:14:35Z (PID 4052768) with `-c 393216` unified, per-slot cap 262144 (server log `n_ctx_slot = 262144, kv_unified = 'true'`), draft n-max 7; API reload (PID 4054223) reads per_request 262144 / shared_pool / pool_tokens 393216; load peak 50.78 GiB; alias completion via :8000 correct; pipeline `check --run-promotion-gate` all ok. Receipt RATIFY-STACKCHG-KVPOOL-20261003; research 412e8fc1, orch 09e91e1e + 841935ea, root 64d70d17; evidence `/mnt/raid0/llm/tmp/stack-change-kvpool-20261003/`. Detail is KVU-16 in `kv-unified-stack-rollout.md`. Was: KV-pool sizing as a per-model stack rule: slots × expected context, plus a per-request cap. The :8083 instance is a relaunch with `-c 393216` unified and a 262144 per-request cap (stack change, operator signature). Covers D6.",
+          "key": "h:e0df:56ee:a5c6:9604"
+        },
+        {
+          "line": 198,
+          "checked": false,
+          "text": "**Open sub-task: the full-pool concurrent-residency proof.** The 4 × 90k probe held (all 200, zero memory-slot",
+          "key": "h:7115:9164:6c99:b751"
+        },
+        {
+          "line": 203,
+          "checked": false,
+          "text": "**UFH14-B4.** Prefix-cache and `--cache-ram` policy per server. Covers D5 and D6 on the server side.",
+          "key": "h:5c2d:899c:630c:574b"
+        },
+        {
+          "line": 220,
+          "checked": false,
+          "text": "**UFH14-B4a — PFX-SEL-1 stack-change package, after a metric window.** Design §3.8 / §4.4: master",
+          "key": "h:61e2:e32e:cbef:dfa9"
+        },
+        {
+          "line": 225,
+          "checked": false,
+          "text": "**UFH14-B4b — A/B: the stable head as a system message (design R2, §4.2 item 1).** Split the prompt at a",
+          "key": "h:c101:655a:878b:f628"
+        },
+        {
+          "line": 230,
+          "checked": false,
+          "text": "**UFH14-B4c — A/B: `prefix_stable_order` on in production (design R1, §4.2 item 2).** `src/features.py:236`;",
+          "key": "h:329e:b811:ae7a:95f5"
+        },
+        {
+          "line": 234,
+          "checked": false,
+          "text": "**UFH14-B4d — A/B: move CoT prefixes and worker RAG snippets to the tail (design R6, §4.2 item 3).**",
+          "key": "h:41bb:e5d2:886b:6f46"
+        },
+        {
+          "line": 239,
+          "checked": true,
+          "text": "**UFH14-B4e — delete `escalation_prewarmer` (design §4.2 item 5, delete-lens 4).** It warms",
+          "key": "h:4771:493c:a297:5abf"
+        },
+        {
+          "line": 247,
+          "checked": false,
+          "text": "**UFH14-B4f — belief-kernel write side for the per-port prefix-cache report.** Add the report's per-port rows as",
+          "key": "h:851d:a379:8b26:ce92"
+        },
+        {
+          "line": 250,
+          "checked": false,
+          "text": "**UFH14-B4g — re-measure the 27B DFlash2 prompt-cache entry cost (design §4.4).** It was to ride B3's relaunch",
+          "key": "h:ff2c:e458:7f2d:b1e7"
+        },
+        {
+          "line": 267,
+          "checked": true,
+          "text": "**UFH14-B4g-1 — find out why no `prompt_save` lines appear on the current shape, before re-running B4g.**",
+          "key": "h:1a9f:6efc:4e2a:9e40"
+        },
+        {
+          "line": 284,
+          "checked": true,
+          "text": "**UFH14-B4i — evaluate `--no-cache-idle-slots` per server (filed 2026-10-03, from workspace-89's P3 code read).**",
+          "key": "h:2e04:c7c7:1d9f:2059"
+        },
+        {
+          "line": 324,
+          "checked": false,
+          "text": "**UFH14-B4j — stack change: `--no-cache-idle-slots` on :8083, as a PFX-SEL-1 field.** (filed 2026-10-04,",
+          "key": "h:2b23:db56:843c:816c"
+        },
+        {
+          "line": 336,
+          "checked": true,
+          "text": "**UFH14-B4h — remove the dead slot-save warming path (delete-lens 2 and 6).** `--slot-save-path` /",
+          "key": "h:013b:2252:213c:2a9f"
+        },
+        {
+          "line": 347,
+          "checked": true,
+          "text": "**UFH14-B5.** ✅ 2026-10-03 (workspace-ec) — orch c6225e8b/f7fad574/9a0d38e0 on main, API reload 04:59Z: per-call records in `logs/serving_calls/serving_calls.jsonl` (role, request_id, queue wait, llama `timings`, outcome incl. cancelled), chat-stream `prompt_eval_ms` fixed (live :8083 call: 2368 ms), progress rows flushed durably, launch/stop banners + `logs/server_launches/<port>.json` at each server's next stack launch; era ST1 (orch 4e23e553); write-side adapter row in `scripts/vidya/adapters/README.md` (root 999954ca), read side = VB-SERVE-TIMING-1 (open). Was: Serving telemetry: a launch banner with ISO-UTC, pid, role and argv; per-call role, request_id and llama `timings`; `prompt_eval_ms` filled in; cancel summaries; queue wait. Plus the belief-kernel write-side adapter, owned by workspace-ec. Covers D8.",
+          "key": "h:6f41:3861:af96:3a1f"
+        },
+        {
+          "line": 348,
+          "checked": true,
+          "text": "**UFH14-B6.** ✅ 2026-10-03 (workspace-ec) — LIVE and proven on :8083, see the proof below. An OpenAI-compatible passthrough on :8000 for a named role (chat/completions and responses, streaming, tools, timings echoed), so harness experiments can go through the gate instead of hitting servers directly. The gap list is pending from workspace-ec. Gap analysis in progress (workspace-ec): `/mnt/raid0/llm/tmp/kv-gate-8083-ec/BYPASS.md`.",
+          "key": "h:9fbe:cdee:4f0a:d839"
+        },
+        {
+          "line": 370,
+          "checked": true,
+          "text": "**UFH14-B6b — passthrough records must carry `caller.port`.** ✅ 2026-10-03 (filed 2026-10-03, workspace-ec, from the B6",
+          "key": "h:409e:fd7c:1529:d3c0"
+        },
+        {
+          "line": 381,
+          "checked": true,
+          "text": "**UFH14-B6a — passthrough refusal records must name the refusing gate in structured fields.** ✅ 2026-10-03 (filed",
+          "key": "h:3476:f9e3:499f:0140"
+        },
+        {
+          "line": 397,
+          "checked": false,
+          "text": "**UFH14-B6a-1 — structured `blockers` and `wait_ms` on refusal records, and a test per gate.** (filed",
+          "key": "h:ded6:a38a:2fd8:b93a"
+        },
+        {
+          "line": 404,
+          "checked": true,
+          "text": "**UFH14-B6c — parked-role support for one-off GPU windows (`src/runtime/gpu_window.py`).** ✅ 2026-10-03",
+          "key": "h:7227:d731:1dcf:5ec1"
+        },
+        {
+          "line": 421,
+          "checked": false,
+          "text": "**UFH14-B6d — route escalations around a parked target.** (filed 2026-10-03, workspace-ec, the part of",
+          "key": "h:8789:0e9e:f413:aba9"
+        },
+        {
+          "line": 440,
+          "checked": false,
+          "text": "**UFH14-DEPLOY-EC — deploy orch `integ/api-reload-2-ec` (B6, B4 API part, KVU-15a, RI-18c, test fixes).**",
+          "key": "h:1c80:72b2:7542:163a"
+        },
+        {
+          "line": 447,
+          "checked": true,
+          "text": "**UFH14-DEPLOY-EC-1 — gate, merge and API-only reload.** ✅ 2026-10-03 (workspace-ec). Full `tests/unit` on",
+          "key": "h:4ccc:5cf6:8206:4054"
+        },
+        {
+          "line": 453,
+          "checked": false,
+          "text": "**UFH14-DEPLOY-EC-2 — the live proofs, after the :8083 restore (KVU-16e).** Status at 15:00Z:",
+          "key": "h:6195:f8b8:3f90:1648"
+        },
+        {
+          "line": 486,
+          "checked": true,
+          "text": "**UFH14-DEPLOY-EC-2a — KVU-15a lease, live.** ✅ 2026-10-04 (run `20261004T025039Z`, PASS) Two concurrent",
+          "key": "h:1588:5683:75fb:cd27"
+        },
+        {
+          "line": 491,
+          "checked": true,
+          "text": "**UFH14-DEPLOY-EC-2b — KVU-15c cached-prefix credit, live.** ✅ 2026-10-04 (run `20261004T024825Z`, credit",
+          "key": "h:804a:8450:eaa4:1200"
+        },
+        {
+          "line": 495,
+          "checked": false,
+          "text": "**UFH14-DEPLOY-EC-2c — RI-18c: one COMPLETED live `/chat` with `review_gate`/`review_verdict` null.** Needs",
+          "key": "h:af01:ad85:4ebd:31b1"
+        },
+        {
+          "line": 497,
+          "checked": false,
+          "text": "**UFH14-DEPLOY-EC-2d — B4: one dispatched primitives-lane record carrying `request.prefix_fp`.** No",
+          "key": "h:05ba:b7c1:5eb8:612e"
+        },
+        {
+          "line": 500,
+          "checked": false,
+          "text": "**UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** (filed",
+          "key": "h:9928:4821:ac29:4c74"
+        },
+        {
+          "line": 503,
+          "checked": true,
+          "text": "**UFH14-DIAG-EC — a recorded, TTL-bound diagnostic env override for one llama-server component.** ✅ 2026-10-03",
+          "key": "h:7ceb:4cf0:bb35:ffc0"
+        },
+        {
+          "line": 514,
+          "checked": true,
+          "text": "**UFH14-DIAG-EC-a — apply it for workspace-89's A3/A4 multi-turn GPU window, then restore.** ✅ 2026-10-04 (filed",
+          "key": "h:391f:c197:4f5e:ea8e"
+        },
+        {
+          "line": 536,
+          "checked": false,
+          "text": "**UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.**",
+          "key": "h:629d:a447:f00d:fd8b"
+        },
+        {
+          "line": 545,
+          "checked": false,
+          "text": "**UFH14-C1.** A full review of how the A and B fixes fold into orchestrator management across every model in the stack: CPU and GPU roles, frontdoor, architect, workers and embedders. Covers routing, admission, compaction, caching, telemetry and per-model parameters.",
+          "key": "h:8f95:1a3f:0406:22f2"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/harness-selection-and-integration.md",
+      "state": "active",
+      "sha256": "2192c7d0d1a0451e9ebf249bd668eaec3184ce664ef67a84fdf49bd15ffec7eb",
+      "bytes": 64415,
+      "title": "Harness Selection & Integration — Orchestrator ↔ User-Facing Harness",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 59,
+          "checked": true,
+          "text": "**HS-4 — Harness-selection decision gate:** Hermes vs OpenCode vs an ACP-speaker, gated on HS-1 + HS-2. Default outcome preserved: (A) stays orthogonal; no bespoke harness unless a specific research-demo differentiator justifies it.",
+          "key": "h:507a:7a53:f01e:e142"
+        },
+        {
+          "line": 64,
+          "checked": false,
+          "text": "**HS-4 P0 — shell integration, zero features** (doc §4). Per-step state (boxes are ticked by the owning session at the P0.4 live gate; evidence recorded in text):",
+          "key": "h:889c:b1af:68c6:a502"
+        },
+        {
+          "line": 67,
+          "checked": false,
+          "text": "**P0.4b — republish the Harness Card for this configuration (HS-7)** ([`harness-card.md`](../../docs/reference/harness-candidates/harness-card.md)): OpenCode `v1.18.31`, the plugin/config hash from the r3 `opencode.jsonc`, `x_tool_mode=\"client\"`, the served role and build. Zero inference. Filed 2026-09-26.",
+          "key": "h:631b:9c06:6d6b:40bd"
+        },
+        {
+          "line": 68,
+          "checked": false,
+          "text": "**P0.4c — freeze the OpenCode pin (HS-5b ordering: freeze before anything trains against the shell) at the RELEASE TAG `v1.18.31` = `014614d35b39`**, not at `350c726a`: the 2026-09-26 research intake (Stage 4) found `350c726a` is a dev-branch commit whose packages report 1.18.31, while the tag is what `npm install opencode-ai@1.18.31` installs and what r3 ran (`opencode --version` 1.18.31). Record `350c726a` as the audit anchor only. Zero inference. Filed 2026-09-26.",
+          "key": "h:af88:94d3:9061:37a5"
+        },
+        {
+          "line": 69,
+          "checked": false,
+          "text": "**HS-4 P0-split — once P0.4's live run lands, move Phase 0 into its own handoff** *(trigger met 2026-09-26: the live run passed; do it with or after P0.4b/P0.4c)* `opencode-shell-integration.md`, with its own `UFH-NN` row in [`user-facing-harness-index.md`](user-facing-harness-index.md); this index keeps the decision record, the candidates table and the P1–P5 gates and points at the new handoff. **Operator-approved 2026-09-17**, deliberately gated: the P0.4 live run is owned by another session and must not be moved under it mid-flight. Surfaced by the 2026-09-17 document audit alongside the archive/promotion split that has already landed (see *History and promoted material*).",
+          "key": "h:eb2b:279f:b499:566a"
+        },
+        {
+          "line": 70,
+          "checked": false,
+          "text": "**HS-4 P0.4 preflight follow-up — pin `opencode-ai@1.18.31` in `.devcontainer/Dockerfile`** so a container rebuild keeps the audited version (today the Dockerfile installs no OpenCode).",
+          "key": "h:9e8f:c974:3ebd:e6f1"
+        },
+        {
+          "line": 71,
+          "checked": false,
+          "text": "**HS-4 P0.4 carry — live `/v1` override validation, shell-agnostic** (moved 2026-09-16 from the closed [`hermes-outer-shell.md`](../completed/hermes-outer-shell.md) items Phase-2 and P; **needs inference**). In the P0.4 quiet window, run `scripts/hermes/reference_openai_client.py --send` (print-only by default) against the current `/v1/chat/completions` and verify: role override, `x_force_model`, `x_max_escalation` (still metadata/pass-through on this route until full-graph enforcement; see P4 routing parity), `x_disable_repl` end-to-end, `x_show_routing` metadata, and streaming with the override params present. Procedure: [`client-surface-audit.md`](../../docs/reference/harness-candidates/client-surface-audit.md) Step 4.",
+          "key": "h:d8ed:d525:d647:25de"
+        },
+        {
+          "line": 72,
+          "checked": false,
+          "text": "**HS-4 P1 — server-side compaction with a session fold cache** (doc §3.6). Mechanism owner: [`context-folding-progressive.md`](context-folding-progressive.md) CF-3c / CF-PB-1 (pointer only; that handoff owns the work).",
+          "key": "h:7c69:3aa4:166e:faf0"
+        },
+        {
+          "line": 73,
+          "checked": false,
+          "text": "**HS-4 P2 — user profile + notes on `/v1`** (B1 injection is dead code today; doc §3.1–3.2). Measurement: [`episodic-memory-integrity.md`](episodic-memory-integrity.md) M-12 (memory-on vs memory-off A/B; pointer only).",
+          "key": "h:3b93:1b7d:68a5:498d"
+        },
+        {
+          "line": 74,
+          "checked": false,
+          "text": "**HS-4 P2 carry — `memory_*` MCP tools declare `session_id`.** If the P2 memory tools ship as a separate MCP server (a `memory_` prefix), give that server the same declares-`session_id` and refuses-undeclared tests as `tests/unit/test_mcp_undeclared_args_refused.py`. Filed 2026-09-17 (`sub-hs4-mcp`).",
+          "key": "h:d9fa:e34e:d63f:1cde"
+        },
+        {
+          "line": 75,
+          "checked": false,
+          "text": "**HS-4 P3 — `session_search` via `/v1` trace write-side + `ms.search` MCP** (doc §3.3). Mechanism owner: [`unified-trace-memory-service.md`](unified-trace-memory-service.md) — UTM-P1 done (orch `dd24ed10`), UTM-B1 (`ms.search`/`ms.expand` registration) open (pointer only).",
+          "key": "h:42b3:9510:cdac:f7dd"
+        },
+        {
+          "line": 76,
+          "checked": false,
+          "text": "**HS-4 P4 — delegation MCP tool + `/v1` routing parity** (doc §3.5).",
+          "key": "h:59b2:4ddb:3810:7a80"
+        },
+        {
+          "line": 77,
+          "checked": true,
+          "text": "**HS-4 P4-pre — fix the `x_max_escalation` field description in `src/api/models/openai.py`** (epyc-orchestrator). It still describes the field as capping escalation, while `/v1` only records it (`openai_compat.py`; no escalation in client mode until P4). One-line field-description fix; the enforcement itself is P4. Filed 2026-09-17 from the HS-4 document-set audit. ✅ 2026-09-27 — done by orch `336bd170` (2026-09-17, which wrote \"METADATA ONLY on /v1 today … NOT enforced\") and never ticked. TE-1 (`9959e8db`) updated the text again: escalation is governed by `x_escalation` (flag `v1_escalation`), never by this field.",
+          "key": "h:7b27:a9c9:4ba2:811d"
+        },
+        {
+          "line": 79,
+          "checked": false,
+          "text": "**HS-4 P5 — background review, proposal-only** (doc §3.4). Measurement: [`episodic-memory-integrity.md`](episodic-memory-integrity.md) M-12 protocol (pointer only).",
+          "key": "h:3e7b:56d9:c18e:8e04"
+        },
+        {
+          "line": 80,
+          "checked": false,
+          "text": "**HS-4 P6 — serve the REPL exploration tools over the `orchestrator` MCP server, one implementation.** Today two copies exist: the orchestrator mixins (`src/repl_environment/code_search.py:124,:379`, `file_exploration.py:93,:144`, `combined_ops.py:280`) and the autokernel seat's `epyc-inference-research scripts/kernel_rnd/autokernel/loop/actor_tools_mcp.py` (outline / read_range / grep / code_search / profile_top / symbol_annotate, hard output caps, same ColGREP binary and alpha; research lane `lane/ak-actor-seat-20260924`, DS41-C20). Export `code_search`, `peek`/`read_range`, `grep`, `peek_grep` as `@mcp.tool()`s in `src/mcp_server.py` (beside `orchestrator_chat` `:451`) with a `root` argument resolved through `task_root.resolve_task_path` and the seat's byte/line caps as the default output contract, so the OpenCode shell, opencode actors and the orchestrator's own REPL share one implementation. `profile_top` / `symbol_annotate` stay autokernel-owned (perf-profile readers) and register as a second MCP server, not a copy. Acceptance: `actor_opencode_config.MCP_TOOLS` can point at the orchestrator server for the four shared tools with the seat tests green, and `actor_tools_mcp.py` shrinks to the two profile tools. First consumer: INF-78 ([`autokernel-orchestrator-actor-backend.md`](autokernel-orchestrator-actor-backend.md)). Zero inference.",
+          "key": "h:cb26:6afb:cd97:0b34"
+        },
+        {
+          "line": 82,
+          "checked": false,
+          "text": "**HS-4 P7 — OpenCode re-quotes any positional containing a space; pass prompts on STDIN.** opencode 1.18 builds its message as `message.map(G => G.includes(\" \") ? '\"' + G.replace(/\"/g, '\\\\\"') + '\"' : G).join(\" \")` (verified in the 1.18.31 binary) — the DS41 2026-09-24 planner prompt reached the model wrapped in quotes with 2,982 backslash-escaped quotes, all JSON. Stdin is appended verbatim (`message + \"\\n\" + stdin`) and also clears the kernel's 128 KiB per-argument limit (~100 KB prompts). Reference fix: research `loop/actors.py` `Backend.argv` for `opencode` + `Backend.stdin_payload` (lane `lane/ak-actor-seat-20260924`). Action: audit every place this repo invokes `opencode run` / a CLI shell with a prompt argument (`scripts/hermes/`, any launcher under HS-4) and switch to stdin; add a guard test that the argv never carries the prompt. Zero inference. The full list of measured `opencode run` headless pitfalls (stdin, pipe truncation, agent `prompt` replacing the system prompt, compaction echo, rc=1 with a complete reply, `hidden`, unused `task`) is in [`opencode-p03-audit-20260916.md`](../../docs/reference/harness-candidates/opencode-p03-audit-20260916.md) → *Addendum 2026-09-24*.",
+          "key": "h:8f45:6752:0bf5:699d"
+        },
+        {
+          "line": 83,
+          "checked": false,
+          "text": "**HS-1f — score `earendil-works/pi` as an HS-4 candidate.** Never previously listed, and it is the **upstream of both** oh-my-pi (intake-1148#record, rowed) and the pi-ai library dsh depends on. On the body-injection axis it is at parity with oh-my-pi's `compat.extraBody` and strictly ahead of dsh. Score it on orthogonality and minimum-imports like every other candidate before drawing any conclusion — a strong cooperation surface is necessary, not sufficient. Scored 2026-09-14 (below) and used in the decision package §3-B (Option B); pi is the HS-4 fallback. Box left for the owning session.",
+          "key": "h:b17b:e680:8f6a:667d"
+        },
+        {
+          "line": 85,
+          "checked": false,
+          "text": "**HS-1f.1 — one live request (conditional: only if the pi fallback is invoked, i.e. OpenCode fails P0.4):** pi custom provider with `samplingParams` `x_*` keys against orchestrator `/v1`; confirm top-level arrival and tolerance of `store` / `strict:false` / `stream_options` (inference). Not needed while OpenCode is the shell.",
+          "key": "h:fba6:1e66:d067:7784"
+        },
+        {
+          "line": 87,
+          "checked": false,
+          "text": "**HS-5b — score editor-side trainability as a SEPARATE axis, and treat it as strictly downstream of HS-4.** Editor-side trainability is a distinct axis from HS-5's *\"does the harness ship a weight-space RL adapter\"* — the trainable object can be an **external editor for ANY harness**, so the absence of a first-party adapter does not close the axis. Binding **ordering constraint**: a harness must be **frozen BEFORE** anything is trained against it. A harness swapped in afterwards recovers ~nothing (7B GRPO 55.6 → 55.5/55.4) and a tool-schema change afterwards lands the system **below its untrained baseline** (2.7 vs 13.5). Therefore trainability is **downstream of selection and can never be a selection criterion** — a second, hardware-independent reason for the HS-5 AsyncGRPO decline (that caveat is in the [history](../archived/harness-selection-history-through-2026-09-16.md)). `intake-1323#record`, `intake-1339#record`.",
+          "key": "h:5e45:8ee8:99e0:17c5"
+        },
+        {
+          "line": 88,
+          "checked": false,
+          "text": "**HS-9 — Open-weight interpreter feasibility probe** — the one genuinely novel transfer question in the set. All NLAH arms ran on `gpt-5.4-mini`; nothing establishes that an open-weight model can *interpret* a natural-language policy document faithfully. Their mechanism metrics (Workflow Preservation, Stage Coverage, Ordered Workflow, Artifact Contract, Tool Call Success, Information Handoff Recall) score policy adherence **without a benchmark score**, so drift is measurable on saved traces — deterministic-replay-eligible. Watch their own red flag: **Information Handoff Recall drops to 0.32/0.55 under parent-child execution even on a frontier model.**",
+          "key": "h:6a60:a263:ead6:c41f"
+        },
+        {
+          "line": 90,
+          "checked": false,
+          "text": "**HS-E1 — add the harness-null-pool evidence packet to HS-4.** File intake-1444 (30 budget-matched harnesses / 3.1M rollouts / no universally superior harness / checkpoint-pruned portfolio 85.75% vs 82.49%), intake-1457 (independent 12-task convergence; fluid bandit 0.780 vs 0.718), the EvoTrace knob-exposure confound (intake-1451) and the SwarmResearch 13/15 unverifiable finding (intake-1450) into the HS-4 evidence base. HS-4 was decided before this packet was filed, so it is recorded in the decision package §5 as bake-off context (external rows), not as selection evidence.",
+          "key": "h:ad24:f752:151b:9674"
+        },
+        {
+          "line": 97,
+          "checked": false,
+          "text": "**HS-OD-4 — `max_tokens` is not a generation cap in the default mode.** In REPL mode it is read only as `max_turns = max_tokens // 500`, clamped to 1..5 (`:976-977, 1211-1212`), while the per-call cap is hard-coded 1024; on the vision path it is dropped entirely. A client asking for 64 tokens can get 1024 per turn. It IS honoured in client and `x_disable_repl` modes, so the same field means two different things depending on mode — decide whether REPL mode should honour it, refuse it, or document the turn-derivation as the contract.",
+          "key": "h:7c69:e80b:d37a:59f7"
+        },
+        {
+          "line": 98,
+          "checked": true,
+          "text": "**HS-OD-5 — sampling overrides are silently dropped on image requests.** `temperature`, `top_p`, `top_k`, `seed` and `max_tokens` are forwarded on the text path when explicitly set (`:578-586`) but `_run_openai_vision_completion` takes none of them (`:600-627`). A caller pinning `seed` for a reproducible vision run gets an unseeded one with a 200. This is the HS-OD-1 shape exactly — a field that changes output semantics being ignored rather than refused — so the default answer is a 422 naming the field, not silent acceptance.",
+          "key": "h:7042:01cd:9e5d:80f3"
+        },
+        {
+          "line": 100,
+          "checked": true,
+          "text": "**HS-OD-6 — `x_disable_repl=true` plus `tools` tells the model to call tools nothing will execute.** The tool block is still rendered into the prompt as `CALL(...)` instructions (`:348`) while the REPL executor is disabled (`:918, 1183`). Either suppress the tool block when the executor is off, or refuse the combination with a 422. Today the model is instructed to use a mechanism that is not there.",
+          "key": "h:d6ed:b76c:2a5b:1ac2"
+        },
+        {
+          "line": 102,
+          "checked": true,
+          "text": "**HS-OD-8 — backpressure never reaches the shell as a retryable HTTP status.** At orch `fb7871ea`: a full admission queue (`inference.py:958-972`) answers **502** \"Backend failed\" with no `Retry-After` (`openai_compat.py:1427-1433`, stream `:1008-1016`); on `stream:true` (OpenCode's main loop) every denial is an SSE event after a 200, so no header can reach `session/retry.ts`; and no in-stream error text matches OpenCode's retry patterns (`retry.ts:33-41,146-152`), so a queued turn can fail with no retry. Fix: admit or probe before returning the `StreamingResponse`; answer a denial as HTTP **503 with `Retry-After` and `retry-after-ms`** (OpenCode reads `-ms` first, `retry.ts:51-56`); map queue-full to 503, keep genuine upstream faults 502; make any residual in-stream error text retryable (contains \"503 service unavailable\"). The header value stays the current constant until HS-OD-9. Acceptance: extend `harness/opencode-plugin/test/wire-contract.test.ts` through the pinned SDK 2.0.41 + `retry.ts delay()` — the header is honoured on a pre-stream 503 and the in-stream fallback is retried; `test_openai_compat_backend_failure_status.py` still pins 502 for upstream faults. Zero inference. [intake-1790#1, intake-1792#1]",
+          "key": "h:f251:ea81:99a0:b55d"
+        },
+        {
+          "line": 104,
+          "checked": false,
+          "text": "**HS-OD-9 — derive the backpressure delay from live queue state (after HS-OD-8; consumes decision-aware-routing.md DAR-LAT-1's `expected_wait_s`).** Replace the constants (5 s `api/__init__.py:401,406`; 10 s `:418`; 30 s `routes/chat.py:321`) with the expected wait from the ONE admission-ledger estimator, decision-aware-routing.md DAR-LAT-1 — never a second occupancy model. Hold the request in the orchestrator while the estimate fits its own wait budget (the template's `headerTimeout:false` means a pre-stream hold does not time out the shell); bounce only beyond it, with `Retry-After`=ceil(s) and `retry-after-ms`, so OpenCode's 5-retry budget (`retry.ts:31`) spans the queue. Emit `retry_after_ms` + `retry_after_basis` (`estimate|constant`) beside, never inside, the closed `epyc.failure_provenance.v1`. Write one receipt per bounce (VB-V1-BACKPRESSURE). [intake-1790#1, intake-1792#1]",
+          "key": "h:731d:bfc5:8712:785d"
+        },
+        {
+          "line": 106,
+          "checked": true,
+          "text": "**HS-OD-10 — the `x_disable_repl` direct path sent thinking-on roles an untemplated prompt with the suffix appended; fix landing.** ✅ 2026-09-29 — landed (orch `5ddb7320`) and live",
+          "key": "h:b0ed:c767:9129:27a3"
+        },
+        {
+          "line": 211,
+          "checked": false,
+          "text": "**HS-TD-1 — Pre-dispatch classification (risk/intent over a closed set).** One typed decision call per turn classifying request risk/intent; log its answer + confidence beside the harness's permissive/restrictive decision; no gating. Acceptance: shadow log over a real session window with agreement + confidence reported.",
+          "key": "h:5691:f0e5:9638:a8c0"
+        },
+        {
+          "line": 212,
+          "checked": false,
+          "text": "**HS-TD-2 — Per-turn self-check (noul).** Ask whether the turn satisfied the task before handing back; log confidence, never gate. Acceptance: per-turn cost measured on the worker and a sample of disagreements reviewed.",
+          "key": "h:85ac:9251:975f:ada2"
+        },
+        {
+          "line": 213,
+          "checked": false,
+          "text": "**HS-TD-3 — Context selection as a typed decision.** Choose among candidate files/snippets (closed set) instead of heuristic assembly; deterministic assembly; confidence logged. Acceptance: task-quality A/B vs current assembly on a frozen workload.",
+          "key": "h:735c:ff57:9fbc:4198"
+        },
+        {
+          "line": 220,
+          "checked": true,
+          "text": "**HS-16 — accept session identity from headers as a FALLBACK on `/v1`, and record the parent.** Resolve `x_session_id` as body → `x-dynamo-session-id` → `X-Session-Id`; record `parent_session_id` from `x-dynamo-parent-session-id` → `x-parent-session-id`. OpenCode sends these natively on every non-`opencode*` provider (`session/llm/request.ts:187-201` at tag `v1.18.31`), including the child→parent link its `chat.params` hook cannot see (audit E7). Add `session_id_source` and `parent_session_id` to `request_keys` only when a header supplied them, so existing golden output is unchanged. Body wins on conflict; log it and flag `session_id_mismatch`. The P0.2 guard keeps its 422 for an OpenCode user-agent with no body key (a header gives identity, not `x_tool_mode`; a plugin-less turn would silently fall into REPL-bridge mode) and accepts header identity for every other trigger. Tests: precedence table, mismatch, a child `task` request carrying `x-parent-session-id`, Dynamo header-only accepted; TTL expiry; a final-signal release; the event-hook finding recorded in `client-surface-audit.md` §1. Lifecycle (intake-1816#4, intake-1816#6): at tag `v1.18.31`, check whether the plugin `event` hook delivers a session idle, end or delete event; if it does, the plugin sends one end-of-session signal (an `x_session_final` body key on a minimal `/v1` request, or an MCP call); in every case per-session orchestrator state keyed by the resolved id expires on an idle-retention TTL (HSF-3's harness-class p99; a predeclared constant until then) and records `session_end_source` (`signal|ttl`). Tool start/end events are not forwarded (declined; ACTING is inferred from response completion). Then update `client-surface-audit.md` §1's header line. Zero inference. [intake-1785#6, intake-1785#2]",
+          "key": "h:8cf1:d497:d64b:4e04"
+        },
+        {
+          "line": 223,
+          "checked": true,
+          "text": "**HS-17 — keep a queued `orchestrator_chat` MCP call alive, and set the shell's MCP timeout.** OpenCode calls MCP tools with the SDK's 60 s default, reset only by `notifications/progress`, whose message it discards (`mcp/catalog.ts:54-66`, `onprogress: () => {}`); `orchestrator_chat` is a synchronous POST with a 120 s default (`src/mcp_server.py:452`, `:383-406`), and the template sets no MCP timeout, so any call past 60 s dies in the shell. (a) Template: set `mcp.orchestrator.timeout` ≥ the tool's `timeout_s` + 5 s (`packages/core/src/v1/config/mcp.ts:20`), and make the lint require it whenever MCP is enabled. (b) Server: the chat tools emit monotone `ctx.report_progress` (FastMCP 3.3.1) at under half the client timeout while `/chat` is in flight. Any user-visible queue or capacity text goes in the tool RESULT (for example `contention_gate.waited_s`). Acceptance: a fake MCP client with a 60 s timeout and reset-on-progress survives a 90 s call only with (b); the lint refuses an MCP-enabled config with no timeout. Zero inference. [intake-1792#4]",
+          "key": "h:8046:656e:4597:b5dd"
+        },
+        {
+          "line": 225,
+          "checked": false,
+          "text": "**HS-19 — prepare the harness↔orchestrator INTERFACE discussion for the operator (operator-requested 2026-09-26;",
+          "key": "h:b69e:8bab:c7ff:5ba9"
+        },
+        {
+          "line": 238,
+          "checked": true,
+          "text": "**HS-19a — OpenCode's `task` tool as a control interface (T1/Q7).** ✅ 2026-09-27 — stage 1 \"Linked\" built and live PASS 18/18 (all six children closed). HS-4's template denies `permission.task`,",
+          "key": "h:4a88:0b96:ed31:f672"
+        },
+        {
+          "line": 249,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19b — a hierarchy of shared REPLs (Q2).** Today each request gets one isolated REPL. Decide whether a",
+          "key": "h:6346:d964:6ca6:38af"
+        },
+        {
+          "line": 255,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19c — generalized scouting: the orchestrator decides to scout.** Scouts (`chat_pipeline/scout_stage.py`)",
+          "key": "h:dbe7:5cdc:8c83:3491"
+        },
+        {
+          "line": 263,
+          "checked": false,
+          "text": "**HS-19d — stage 2 \"Scheduled\": dispatch subagent work (gate → plan → size → select → aggregate; operator-approved",
+          "key": "h:875b:45e4:a160:de9f"
+        },
+        {
+          "line": 273,
+          "checked": true,
+          "text": "**HS-19d.0 — design note plus the OpenCode source audit per step, and the prior-art check.** ✅ 2026-09-27 — doc §4 (OpenCode `v1.18.31`) and §15.",
+          "key": "h:071b:6bc3:a82c:f1a1"
+        },
+        {
+          "line": 274,
+          "checked": false,
+          "text": "**HS-19d.P0 — preflight, zero inference.**",
+          "key": "h:1c5e:27d1:e4fc:940d"
+        },
+        {
+          "line": 281,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P1 — `epyc.dispatch_plan.v1` schema, validator and TaskIR projection** (doc §7; one test per rule; a GBNF",
+          "key": "h:e607:6d5e:0fe4:7e51"
+        },
+        {
+          "line": 284,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P2 — dispatcher (flag `dispatch_scheduler`).**",
+          "key": "h:b289:57f8:88e1:8932"
+        },
+        {
+          "line": 291,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3a — gate in shadow (flag `dispatch_gate_shadow`).**",
+          "key": "h:ed4f:acb5:202b:9796"
+        },
+        {
+          "line": 296,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3b — front door A live (flag `dispatch_plan`).**",
+          "key": "h:1b8f:21b4:b026:b9b4"
+        },
+        {
+          "line": 302,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3c — HS-19c scouting through the gate (flag `dispatch_scout`).** `scout` → planner-derived",
+          "key": "h:c4ea:1211:f2dd:843f"
+        },
+        {
+          "line": 305,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4a — front door B Size (flag `v1_subagent_schedule`; needs HS-OD-8/9).**",
+          "key": "h:91f4:d4d9:1bbc:1c9a"
+        },
+        {
+          "line": 311,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4b — `orchestrator_dispatch` MCP tool (needs HS-17).** The harness reaches front door A with one",
+          "key": "h:4ff9:2b88:c32f:1103"
+        },
+        {
+          "line": 314,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4c — capacity note (flag `v1_capacity_note`).** A fixed, versioned tail note on turns that offer `task`",
+          "key": "h:b207:1eea:5e55:c220"
+        },
+        {
+          "line": 317,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P5 — eval (inference, coordinated window).**",
+          "key": "h:5078:e887:e779:51b1"
+        },
+        {
+          "line": 323,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P6 — stage 2.5 pointer results (flag `dispatch_pointer_results`).** Subtask outputs go to the UFH-12",
+          "key": "h:3697:d130:7501:0b26"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md",
+      "state": "active",
+      "sha256": "5784d2b49cfc69855dd305ec246a05acbeeef110bcad8205e3969c7b4712f2ff",
+      "bytes": 32786,
+      "title": "Thesis Experiment — does the orchestrator beat the strongest model alone?",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 229,
+          "checked": false,
+          "text": "**TE-3 — build and freeze the manifest (zero inference).**",
+          "key": "h:05ec:6d5c:6cb3:a6f4"
+        },
+        {
+          "line": 237,
+          "checked": false,
+          "text": "**TE-4 — belief-kernel write side before the first scored item** (`vidya-belief-substrate-program.md` VB-THESIS-1;",
+          "key": "h:c849:d009:af80:cd23"
+        },
+        {
+          "line": 243,
+          "checked": false,
+          "text": "**ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7).",
+          "key": "h:5b5e:5beb:2087:2c31"
+        },
+        {
+          "line": 256,
+          "checked": false,
+          "text": "**ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28).",
+          "key": "h:f613:4fd8:155b:0560"
+        },
+        {
+          "line": 258,
+          "checked": false,
+          "text": "The A-3 side-effect sample from ARCHSWAP-3: during the next scout stage on the frontdoor after 2026-09-29,",
+          "key": "h:c574:fa2a:b9f2:3287"
+        },
+        {
+          "line": 264,
+          "checked": true,
+          "text": "**ARCHSWAP-4 — B2: relaunch each model server under its new label** (PACKAGE §7 step 8), which clears the",
+          "key": "h:e3d6:ac31:0142:fcc2"
+        },
+        {
+          "line": 292,
+          "checked": true,
+          "text": "**ARCHSWAP-5 — after ARCHSWAP-3, apply the PACKAGE §9 prepared text** to the surfaces that still use the",
+          "key": "h:87fb:c695:3b98:3b7b"
+        },
+        {
+          "line": 309,
+          "checked": false,
+          "text": "**TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The",
+          "key": "h:634a:bdcb:f551:ea09"
+        },
+        {
+          "line": 314,
+          "checked": false,
+          "text": "**TE-reopen — reopen the experiment once escalation is trained on the swapped stack** (operator, 2026-09-28).",
+          "key": "h:4622:4ed5:addc:0a49"
+        },
+        {
+          "line": 356,
+          "checked": false,
+          "text": "**TE-5 — run (inference; coordinated window; the main session runs it).**",
+          "key": "h:32dc:dc48:875d:7b30"
+        },
+        {
+          "line": 362,
+          "checked": false,
+          "text": "**TE-6 — verdict.** Apply the frozen rule and record SUPPORTED / REFUTED / NO GAP / INCONCLUSIVE, with n, CIs,",
+          "key": "h:5704:66be:8012:5063"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/memento-block-reasoning-compression.md",
+      "state": "active",
+      "sha256": "2ec14ae6d963f2875981f975981f855f67e8bdbdf2a8ffedeb23f0950b1a93c0",
+      "bytes": 26282,
+      "title": "Memento: Block-Level Reasoning Compression with KV Cache Masking",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 185,
+          "checked": false,
+          "text": "**S2-CGE-1 — Feed complete, independently verified targets into Memento's existing SFT path at a matched token budget.** Add an opt-in selector actually consumed before train_stage and a preparation-only entrypoint that constructs no model weights. Bind independent deterministic correctness labels to exact problem/response bytes; unknown or unjoinable labels remain ineligible. Require ordered, balanced block/summary pairs and a final answer surviving the real tokenizer/template and sequence cap. Deduplicate by problem before splitting; where multiple eligible solutions exist, prefer the cheaper complete target. Preserve source/domain/difficulty quotas, including an explicit unknown-difficulty stratum, when selecting across problems. Keep the seeded sampler selectable as incumbent and preserve prompt masking and Stage-2 attention semantics. Screen at most 512 staged records using only locally available independent references/verifiers; never manufacture labels from the teacher's response or reserved MATH-500 evaluation answers. Selected identities must demonstrably reach the existing training loader, not end in an audit report.",
+          "key": "h:fe57:5f9c:ad06:fd8b"
+        },
+        {
+          "line": 226,
+          "checked": true,
+          "text": "S1 llama.cpp block-masking feasibility + runtime validation (5/5 tests PASS, 2026-04-14) ✅",
+          "key": "h:a27e:9ad8:6d2f:1c7b"
+        },
+        {
+          "line": 227,
+          "checked": false,
+          "text": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table)",
+          "key": "h:2c44:b356:4ad0:3748"
+        },
+        {
+          "line": 235,
+          "checked": false,
+          "text": "S2 validation target: Qwen3-1.7B LoRA (promote/stop decision)",
+          "key": "h:9c7f:68b8:3aee:cad1"
+        },
+        {
+          "line": 239,
+          "checked": true,
+          "text": "Install peft/trl; run memento_sft.py real Stage-1 job ✅ 2026-08-12 — shared persistent venv at",
+          "key": "h:069b:d495:5128:e959"
+        },
+        {
+          "line": 246,
+          "checked": true,
+          "text": "**Repair `memento_sft.py` — six pre-existing defects, none of which a passing run would reveal**",
+          "key": "h:ec5d:4af5:c74e:51d4"
+        },
+        {
+          "line": 266,
+          "checked": false,
+          "text": "S3 deployment integration (BLOCKED on S2 pass): wire block masking flag into orchestrator_stack.py",
+          "key": "h:29fd:b3b0:e788:eda3"
+        },
+        {
+          "line": 267,
+          "checked": false,
+          "text": "S3: Fold/Unfold toggle + short-m@k voting + Hadamard+q4_0 stacking",
+          "key": "h:dda1:2fb6:ec60:7952"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/repl-embedding-retrieval.md",
+      "state": "active",
+      "sha256": "06167c7b289b9f9062679fba69b8ef0318caca29ea71d40741bace25d1b64861",
+      "bytes": 25122,
+      "title": "REPL Embedding Retrieval — hybrid search that returns pointers",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 76,
+          "checked": true,
+          "text": "**REPL-EMB-0.1 — prepare the placement package via the `stack-change` skill**: disjoint cores per",
+          "key": "h:04fa:3c7a:254e:d275"
+        },
+        {
+          "line": 82,
+          "checked": true,
+          "text": "**REPL-EMB-0.2 — after signature: apply, bring up, and prove** distinct affinity per instance from",
+          "key": "h:a3c8:ac85:7de0:9966"
+        },
+        {
+          "line": 109,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-12 Phase-2 retrieval eval shows dense retrieval pays — **REPL-EMB-0.3 — prepare the GPU embedder instance package (the other half of D1)** via the `stack-change`",
+          "key": "h:cf96:22c7:662f:ac43"
+        },
+        {
+          "line": 120,
+          "checked": true,
+          "text": "**REPL-EMB-1.1 — pooled async embedding client**: one shared `httpx.AsyncClient`, round-robin over",
+          "key": "h:e7ba:54e3:8d46:ef66"
+        },
+        {
+          "line": 126,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once the UFH-12 Phase-2 retrieval eval shows dense retrieval pays — **REPL-EMB-1.4 — cap in-flight embeddings next to a busy frontdoor half, then re-measure G1**",
+          "key": "h:6497:2b22:e3c4:6f90"
+        },
+        {
+          "line": 138,
+          "checked": true,
+          "text": "**REPL-EMB-1.2 — line-aware chunker** that preserves source line ranges for every chunk.",
+          "key": "h:b50b:72de:5266:569d"
+        },
+        {
+          "line": 142,
+          "checked": true,
+          "text": "**REPL-EMB-1.3 — per-request flat numpy index** (cosine, top-k) plus lexical scorer and",
+          "key": "h:2bcb:332c:515d:96a0"
+        },
+        {
+          "line": 151,
+          "checked": true,
+          "text": "**REPL-EMB-2.1 — pre-register the decision rule and kill criterion BEFORE running**: \"cheapest arm",
+          "key": "h:9cd0:cb1f:35eb:967a"
+        },
+        {
+          "line": 191,
+          "checked": false,
+          "text": "**REPL-EMB-2.2 — offline eval**: corpus = real spill files, context bundles, UFH-07's 45 behavioural",
+          "key": "h:9c20:7008:876a:f5a2"
+        },
+        {
+          "line": 194,
+          "checked": false,
+          "text": "**REPL-EMB-2.3 — online shadow**: run all arms, show one, and log which returned spans the model",
+          "key": "h:c3d2:d3ff:8c51:6d7e"
+        },
+        {
+          "line": 196,
+          "checked": false,
+          "text": "**REPL-EMB-2.4 — wire the eval's write side into the belief kernel** (row in",
+          "key": "h:18cb:88dc:d9a5:e1d9"
+        },
+        {
+          "line": 201,
+          "checked": false,
+          "text": "**REPL-EMB-3.1 — replace `_spill_output`'s summary** (`src/repl_environment/environment.py`",
+          "key": "h:44b8:adba:d438:bb9c"
+        },
+        {
+          "line": 205,
+          "checked": false,
+          "text": "**REPL-EMB-3.2 — A/B** the replacement vs the current summary on latency, accuracy and re-fetches.",
+          "key": "h:4729:6093:2000:fd26"
+        },
+        {
+          "line": 209,
+          "checked": false,
+          "text": "**REPL-EMB-4.1 — `context.search()`**: `repl_view` closure + namespace key, `op=\"search\"` pull",
+          "key": "h:5663:4ee1:a71e:bfb3"
+        },
+        {
+          "line": 225,
+          "checked": false,
+          "text": "**REPL-EMB-4.2 — replace `DocumentREPLEnvironment.search_sections`** (`src/repl_document.py:221`)",
+          "key": "h:8145:7629:ea85:fed6"
+        },
+        {
+          "line": 227,
+          "checked": false,
+          "text": "**REPL-EMB-4.3 — evaluate via `rlm-contested-claims` E3b.**",
+          "key": "h:7c3a:3102:a600:e4e0"
+        },
+        {
+          "line": 228,
+          "checked": true,
+          "text": "**REPL-EMB-4.4 — deploy context.search for the DS41-C100 `orsv` arm**: on workspace-76's \"ALL GPU CALLS DONE\",",
+          "key": "h:8c25:1901:c83e:4f9f"
+        },
+        {
+          "line": 246,
+          "checked": true,
+          "text": "**REPL-EMB-4.5 — make an experiment-arm flag enable expire.** (filed 2026-10-03, from the 10-03 post-reboot reset)",
+          "key": "h:db73:38b3:2301:ec33"
+        },
+        {
+          "line": 266,
+          "checked": false,
+          "text": "**REPL-EMB-5.1 — deliver a SEARCH command primitive** for OAB-8 scouts. INF-78 is owned by another",
+          "key": "h:c2f9:bd3c:0c70:3ebf"
+        },
+        {
+          "line": 277,
+          "checked": true,
+          "text": "**REPL-EMB-B.1 — define the quality baseline run**: Qwen3.8-Flash-Next (strongest stack model) alone, same suites the",
+          "key": "h:cb4b:ba92:cb0d:1afb"
+        },
+        {
+          "line": 283,
+          "checked": false,
+          "text": "**REPL-EMB-B.2 — speed baseline (after B.1; the operator deferred speed comparison)**: large MoE hybrid",
+          "key": "h:b0f6:0227:abc9:bd6e"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "state": "active",
+      "sha256": "4ad4aa8871b3432805f460401b1a83a13945925cfbe11af1e71474cad7f2d011",
+      "bytes": 21970,
+      "title": "Fuzzy Workflow Authoring GUI — deterministic flow, fuzzy steps, one canvas",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 23,
+          "checked": false,
+          "text": "**FW-1 — Requirement sketch + one worked example.** Take one recurring fuzzy subtask from PAW-5's",
+          "key": "h:ff57:bfe0:0a0b:e8f7"
+        },
+        {
+          "line": 46,
+          "checked": false,
+          "text": "**FW-2 — Record placement (no operator choice remains).** HS-4 §2 admits shell plugins only for",
+          "key": "h:3772:5b8d:0219:50ca"
+        },
+        {
+          "line": 56,
+          "checked": false,
+          "text": "**FW-3 — Survey prior art (≤1 day).** Flow-authoring UIs with LLM nodes (e.g. Dify/LangFlow-class) and",
+          "key": "h:e6cb:0a7b:0723:8ee7"
+        },
+        {
+          "line": 60,
+          "checked": true,
+          "text": "**FW-4 — Belief-kernel wiring, write side, prospective (CLAUDE.md → Belief Kernel).** Before the first",
+          "key": "h:fca8:08e3:6675:f26e"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/minddr-deep-research-mode.md",
+      "state": "active",
+      "sha256": "3c393889c8322b7fc1c60f23bd639a61ce87150c6857938440de82740350a15e",
+      "bytes": 20671,
+      "title": "MindDR Deep Research Mode",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 13,
+          "checked": false,
+          "text": "Phase-2: run a gfx90a (MI210) training-viability smoke now that the hardware gate flipped (was DGX-blocked) — **BLOCKED 2026-07-29**: GPU is idle and visible, but both project uv environments lack `torch`, `transformers`, `accelerate`, `trl`, `peft`, and `datasets`; requires a pinned gfx90a-compatible training environment, not an ad-hoc install. **Countermanded until E5 Stage-B releases the host:** a Python ROCm trainer is currently invisible to E5's process/SMT-affinity gates and could silently contaminate its decision-grade CPU cells.",
+          "key": "h:3ffd:9ae6:0484:c7c6"
+        },
+        {
+          "line": 176,
+          "checked": true,
+          "text": "**MD-PB-1** — evaluate PaperBench methodology for source-fidelity validation of deep-research reports ✅ 2026-07-22",
+          "key": "h:0638:adf6:88cb:9b96"
+        },
+        {
+          "line": 177,
+          "checked": false,
+          "text": "**MD-PB-2** — consider integrating PaperBench-style evaluation into MD-9 A/B test rubric",
+          "key": "h:04d1:5fa5:62f1:aaef"
+        },
+        {
+          "line": 181,
+          "checked": true,
+          "text": "MD-1..MD-8 Phase 1 scaffold (flag, classifier, prompts, pydantic_graph, rubric, sentinel suite - DONE 2026-04-22) ✅",
+          "key": "h:8750:08c6:9fa0:ce2a"
+        },
+        {
+          "line": 182,
+          "checked": false,
+          "text": "MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED)",
+          "key": "h:6671:658d:9cd7:e207"
+        },
+        {
+          "line": 183,
+          "checked": false,
+          "text": "Request-dispatcher 1-line wiring (feature_flag && is_research_like -> run_minddr) once MD-9 passes",
+          "key": "h:6064:805d:1aa3:3f11"
+        },
+        {
+          "line": 184,
+          "checked": false,
+          "text": "EV-9 multi-dimensional rubric scoring (handed to eval-tower; needed for non-structural MD-9)",
+          "key": "h:3970:3d1c:022f:21d3"
+        },
+        {
+          "line": 185,
+          "checked": false,
+          "text": "Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred)",
+          "key": "h:f830:c97c:3026:55ae"
+        },
+        {
+          "line": 186,
+          "checked": false,
+          "text": "Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift)",
+          "key": "h:6d02:c057:ddd9:3e2a"
+        },
+        {
+          "line": 195,
+          "checked": false,
+          "text": "Operator-review candidate (deep-dive 2026-07-11 SHARPENED): **PRIMARY (prompt-level, genuinely new):** rubric-as-**execution**-interface — PlanningNode emits a prospective `<rubrics>` block; DeepSearch loop does per-step `<state_evaluation>` vs rubric; add a **Review stage** (`<rubric_review>` mapping evidence→criteria before ReportSynthesis) — the *sole* scaffold delta vs our 3-node pipeline — plus a Review-stage rubric-adherence EV-9 dimension. **Note:** stage-decomposed *scoring* is already in EV-9 (`rubric_scoring.py`); only SS-GRPO's per-stage credit-assignment is new and it's **RL/GPU-gated (OUT — duplicates MD-10..13)**. **EXPERIMENTAL (adopt cautiously):** a heuristic kb-search rubric bank over `src/trace` — but the paper's own Fig-6 ablation attributes the transfer gain to the *trained* meta-policy and shows an untrained model doesn't benefit, so treat as a falsifiable experiment, not a free win.",
+          "key": "h:87ea:e75e:e7ec:3d1f"
+        },
+        {
+          "line": 207,
+          "checked": true,
+          "text": "**MD-9 external-anchor demotion:** BrowseComp/WideSearch/xbench-DS are now explicitly observation-grade, not reliable adoption anchors; their possible search-time contamination is comparable to the +5pp promotion margin. The local MD-8 sentinel remains a distinct non-verbatim, trajectory-auditable evaluation surface. ✅ 2026-07-29",
+          "key": "h:6f11:8bdb:667c:75d6"
+        },
+        {
+          "line": 208,
+          "checked": false,
+          "text": "Operator-review candidate: capture search trajectories (query, URL, snippet) on deep-research eval runs so question-context / answer leakage can be audited post hoc — our SearxNG JSON path already returns `engines[]`/`score`, making this nearly free. [intake-877]",
+          "key": "h:8d90:4b5a:6958:8a96"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/harness-improvement-loop.md",
+      "state": "active",
+      "sha256": "c7dfa4de3d15ed168d0286e72ed63d24b6116dd79cc21878c2998cafffae6855",
+      "bytes": 6277,
+      "title": "Harness Improvement Loop — self-improvement for orchestrator-side harness features",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 51,
+          "checked": false,
+          "text": "**HIL-1** — from `hs4-shell-and-orchestrator-features-20260916.md` §3 (landed), list which orchestrator",
+          "key": "h:06b4:556f:1007:bdb0"
+        },
+        {
+          "line": 54,
+          "checked": false,
+          "text": "**HIL-2** — define the objective axes per feature (e.g. M-12 recall accuracy for memory, task",
+          "key": "h:2e25:14af:c2e7:91a5"
+        },
+        {
+          "line": 58,
+          "checked": false,
+          "text": "**HIL-3** — substrate-extraction plan for option B: which AutoPilot modules must become",
+          "key": "h:6cce:6e85:8497:a687"
+        },
+        {
+          "line": 62,
+          "checked": false,
+          "text": "**HIL-4** — decision package A vs B (vs C) with costs, for the operator. The draft is the table",
+          "key": "h:f24c:54ec:58e0:57f5"
+        },
+        {
+          "line": 64,
+          "checked": false,
+          "text": "**HIL-5** — belief-kernel wiring for the loop's measurements, write side, **prospective row filed",
+          "key": "h:e89f:81da:e915:31ac"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/amd-ai-lab-website-publication.md",
+      "state": "active",
+      "sha256": "19cfa533cfbb8ac39b33dc78f459b532940dbcb342da574dd9e554ab85ef4c54",
+      "bytes": 3138,
+      "title": "AMD AI Lab website publication",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": [
+        {
+          "line": 15,
+          "checked": true,
+          "text": "Publish the private `epyc-web` source repo and registered dashboard preview. ✅ 2026-09-25 — latest site source `4602416`, root snapshot merged to `main` `a07408f2`.",
+          "key": "h:be13:6da1:7101:e73a"
+        },
+        {
+          "line": 16,
+          "checked": true,
+          "text": "Build a compact dark AMD catalog with model workspaces, source links, and configuration details. ✅ 2026-09-25 — seven cards, hardware grouping, search and filters.",
+          "key": "h:e646:36c1:5577:2bd5"
+        },
+        {
+          "line": 17,
+          "checked": true,
+          "text": "Show explicit weight quantization and measured performance matrices on every card. ✅ 2026-09-25 — unmeasured cells remain labeled; speech uses thread × workload rather than LLM context.",
+          "key": "h:9689:5719:71e2:1b1f"
+        },
+        {
+          "line": 18,
+          "checked": true,
+          "text": "Audit best current results and add Qwen3.8-Flash-Next. ✅ 2026-09-25 — frozen-v10 quality: MMLU-Pro 151/200 and GPQA 127/195 on UD-IQ4_XS; older 52.661 tok/s predecessor run identified separately.",
+          "key": "h:b614:1787:65ad:d0ce"
+        },
+        {
+          "line": 19,
+          "checked": true,
+          "text": "Validate the site and dashboard publication. ✅ 2026-09-25 — Chromium desktop/mobile suite passes all seven workspaces; live dashboard checks confirmed Flash-Next and source evidence.",
+          "key": "h:e8cc:9c2b:cbe9:7a95"
+        },
+        {
+          "line": 23,
+          "checked": false,
+          "text": "**WEB-1 — operator publication choice:** provide the contact destination (email, booking link, or contact page) and confirm the reviewed page is ready for public GitHub Pages launch. Recommendation: use a dedicated contact email unless a booking flow already exists. This choice is needed to make the services section actionable and to fix the public launch point.",
+          "key": "h:ba9c:e2c3:c96e:1435"
+        },
+        {
+          "line": 24,
+          "checked": false,
+          "text": "**WEB-2 — publish the reviewed snapshot:** configure GitHub Pages for the private `epyc-web` repo under the available plan, verify its public URL, connect the GoDaddy domain, then check HTTPS, links, responsive layout, and that no private research paths or credentials are exposed.",
+          "key": "h:993a:eb88:f9dd:d121"
+        },
+        {
+          "line": 25,
+          "checked": false,
+          "text": "**WEB-3 — refresh evidence when measured:** if a frozen-kernel Flash-Next UD-IQ4_XS CPU np × context throughput sweep is produced, replace the card's unmeasured grid with its source-backed cells. The September 24 sweep was explicitly skipped by the operator; this task does not authorize running it.",
+          "key": "h:8ca8:0004:3874:f2e4"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/browser-agent-surface.md",
+      "state": "active",
+      "sha256": "b9f0d5080416e34d7e79451be715c7a15bb3dd259169f77b288051ddccc6b808",
+      "bytes": 2691,
+      "title": "Browser Agent Surface — interactive, goal-driven web actions",
+      "owner_index": "user-facing-harness-index.md",
+      "boxes": []
+    }
+  ]
+}

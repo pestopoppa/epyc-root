@@ -1,0 +1,2064 @@
+{
+  "shard_id": "S06",
+  "method": "Verified all 21 listed file hashes against the audit manifest, then parsed every unchecked checkbox and its continuation through the next checkbox/heading; dispositions retain explicit owners and separate offline preparation from live acceptance. Read the full TU-GR-1 and scoring-infra 2a-iv boundary, and inspected the shipped typed-decision APIs for the source-verified JEV fit. No runtime, inference, or edits.",
+  "files": [
+    {
+      "path": "handoffs/active/eval-tower-verification.md",
+      "source_sha256": "c7c9e45de131f75f1af81a91f5852ce466b3c342b9487215ab7e27a9b7f9cf87",
+      "reviewed_open_keys": [
+        "h:1839:a854:29dc:ef38",
+        "h:bcd7:62f5:2c5a:6848",
+        "h:54a1:b0ff:382b:b19d",
+        "h:5283:5099:5497:6d4f",
+        "h:44b4:d416:3533:a577",
+        "h:6360:8100:3e06:45b5",
+        "h:d2e4:ae8c:6010:3e5b",
+        "h:4ab4:1c7a:5050:3b2e",
+        "h:8361:1f89:e624:bd8a",
+        "h:844a:94aa:512d:30a0",
+        "h:1565:7f48:fff9:966d",
+        "h:e1db:9884:3b23:5e4f",
+        "h:fc9a:206c:c80d:181c",
+        "h:9459:8a79:b178:3f85",
+        "h:8347:62d9:61be:5472",
+        "h:4b7b:adfe:0d55:614b",
+        "h:0ed1:9c9a:1e29:730b",
+        "h:fd6b:4de7:5ff2:fb27",
+        "h:1402:c969:8eda:8bbf",
+        "h:acca:f13f:e21a:f28a",
+        "h:96f2:19ea:e933:d3e9",
+        "h:81ab:0398:9d77:65ed",
+        "h:f9f5:ccc5:02bb:8a9d",
+        "h:e924:48fc:02e8:4ba9",
+        "h:ad46:b50a:7dbe:1a4f",
+        "h:80e8:e2b2:c3c1:c5f4",
+        "h:da9a:4572:feea:4e2f",
+        "h:1553:e4f6:aef2:9ba1",
+        "h:4ee1:78b5:9e16:241e",
+        "h:4c54:e58c:a7dc:3425",
+        "h:8d9d:b271:0239:e459",
+        "h:f135:7935:7878:a347",
+        "h:661d:7920:d0cd:3e06",
+        "h:5d1d:2ccf:61bb:eb49",
+        "h:70ac:43c6:18ac:6b8f",
+        "h:581e:1fcd:ed11:dfc4",
+        "h:5459:ed87:248e:7a45",
+        "h:09a0:673a:6c75:74bb",
+        "h:3370:592d:e8a8:cf3c",
+        "h:b8b6:5eb3:b41f:f7bc",
+        "h:1108:0a23:5811:d56c",
+        "h:59ae:1b5a:e147:57de",
+        "h:073d:d673:2672:580c",
+        "h:c115:866f:e672:d1f4",
+        "h:f386:df02:9eb6:9a85",
+        "h:790e:419a:fb17:0a4b",
+        "h:0d97:3ebf:88c0:3fcb"
+      ],
+      "status_assessment": "Active file; reviewed all 47 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1839:a854:29dc:ef38"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19 / ### EV-4: Calibration baseline (needs inference)`; task text: - [ ] **EV-4** — Complete the decision-grade HE-R+ calibration baseline through the inference-batch loop after v7 contention-matrix recertification. *(accuracy leg DONE; calibration axes pending the EV-4b rerun below)*. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:bcd7:62f5:2c5a:6848"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19 / ### EV-4: Calibration baseline (needs inference)`; task text: - [ ] **EV-PROTO — rebaseline wall-clock protocol options** (from the 2026-07-21 EV-11c 26h-serial run): (a) **arm-parallelism** — different-role arms run on separate servers, so concurrent arms are compute-identical to serial (co. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:54a1:b0ff:382b:b19d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19 / ### EV-4: Calibration baseline (needs inference)`; task text: - [ ] **EV-4b — rerun the calibration axes on the Option-A scorer** (chained to execute when EV-11c frees the window): real code-domain ECE/AUROC/Top-1/Bottom-1/ρ/MAE on HE-R+; supersedes the marginal run's calibration axes via le. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:5283:5099:5497:6d4f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19 / ### EV-4: Calibration baseline (needs inference)`; task text: - [ ] Identify calibration violations — which question types produce miscalibrated confidence? *(needs EV-4b + EV-11c data)*. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:44b4:d416:3533:a577"
+          ],
+          "disposition": "duplicate_candidate",
+          "reason": "Section `### EV-3: Download Scoring Verifiers benchmarks — ✅ 2026-06-19 / ### EV-4: Calibration baseline (needs inference)`; task text: - [ ] This baseline is the comparison point for all subsequent verification improvements. This checkbox points at a canonical owner/fold; retain the cross-reference and do not create parallel work."
+        },
+        {
+          "keys": [
+            "h:6360:8100:3e06:45b5"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-4: Calibration baseline (needs inference) / ### EV-5: Deploy ThinkPRM-1.5B for T2 process verification (~100 lines)`; task text: - [ ] Download ThinkPRM-1.5B from HuggingFace, quantize to Q4_K_M GGUF (~2GB). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:d2e4:ae8c:6010:3e5b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-4: Calibration baseline (needs inference) / ### EV-5: Deploy ThinkPRM-1.5B for T2 process verification (~100 lines)`; task text: - [ ] Add server config for ThinkPRM in `orchestrator_stack.py` (load only during T2 eval, unload main models — sequential loading per memory note). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:4ab4:1c7a:5050:3b2e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### EV-4: Calibration baseline (needs inference) / ### EV-5: Deploy ThinkPRM-1.5B for T2 process verification (~100 lines)`; task text: - [ ] Implement verification pass in `eval_tower.py` `eval_t2()`:. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:8361:1f89:e624:bd8a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-4: Calibration baseline (needs inference) / ### EV-5: Deploy ThinkPRM-1.5B for T2 process verification (~100 lines)`; task text: - [ ] Cross-family verification: enforce that ThinkPRM model family differs from evaluated models. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:844a:94aa:512d:30a0"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-6: Cross-family verification constraint — ✅ 2026-04-15 / ### EV-7: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7)`; task text: - [ ] Integrate Ouro-2.6B (P7) as T0 sentinel verification candidate. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1565:7f48:fff9:966d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### EV-7: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7) / ### EV-8: Diversity metrics (NEW 2026-04-22, DD4 / intake-441)`; task text: - [ ] One-day baseline pass: 4 production roles × 20 open-ended prompts × 4 completions (temperature 0.7 baseline + T=1.0 ladder point for recovery probe). **Inference-gated; baseline yaml schema ready (`orchestration/autopilot_ba. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:e1db:9884:3b23:5e4f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### EV-7: AP-27 RLVR integration (depends on EV-1–4 + Ouro P7) / ### EV-8: Diversity metrics (NEW 2026-04-22, DD4 / intake-441)`; task text: - [ ] Deferred: temperature-ladder experiment (T=0.7/1.0/1.3); CoT-suppression ablation.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:fc9a:206c:c80d:181c"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### New Related Research / ### EV-10 (NEW 2026-05-27) — Skill/Prompt Efficacy Gate + leak-free surrogate scoring`; task text: - [ ] **EV-10a — Paired skill-vs-no-skill efficacy check** (adopt SkillsBench methodology). For any candidate skill / agent-file / prompt mutation, eval-tower should report the *paired* delta (with-artifact minus without-artifact). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9459:8a79:b178:3f85"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### New Related Research / ### EV-10 (NEW 2026-05-27) — Skill/Prompt Efficacy Gate + leak-free surrogate scoring`; task text: - [ ] **EV-10b — Surrogate-verifier scoring for leak-constrained tasks** (adopt CoEvoSkills pattern). Where a task has no exposable ground truth, score via a self-authored assertion suite from an **independent, cross-family verifi. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:8347:62d9:61be:5472"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### New Related Research / ### EV-10 (NEW 2026-05-27) — Skill/Prompt Efficacy Gate + leak-free surrogate scoring`; task text: - [ ] **EV-10d — Diff the outcome-grounded rerun reward against ParetoArchive / eval_tower admission semantics** (intake-1323#record — dive actionable D6, dive-verified). Three asymmetries worth arguing: (a) a full-batch rerun pri. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:4b7b:adfe:0d55:614b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### New Related Research / ### EV-10 (NEW 2026-05-27) — Skill/Prompt Efficacy Gate + leak-free surrogate scoring`; task text: - [ ] **EV-10e — Report CPM (completions per million tokens) and quality-per-dollar beside quality** in whatever gate reports a scored task set (intake-1333#03, gate half; the doc half lands in `docs/chapters/08-cost-aware-rewards. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0ed1:9c9a:1e29:730b"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### New Related Research / ### EV-10 (NEW 2026-05-27) — Skill/Prompt Efficacy Gate + leak-free surrogate scoring`; task text: - [ ] **EV-10f — State, where EV-10a is described, that `evaluate_skill_efficacy` operates at SUITE granularity** and would NOT surface an intake-1321-class \"16 of 84 tasks regressed inside a suite whose mean rose\" (intake-1317#06. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:fd6b:4de7:5ff2:fb27"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `#### EV-10a corroboration — the regression prior is now REPLICATED (2026-08-15, intake-1142) / ### EV-11/12/13 (NEW 2026-07-14) — backlog ROI audit waypoints`; task text: - [ ] **EV-11c — fresh math re-baseline (INFERENCE → batch manifest)**: gated on EV-11a fix + EV-11b decision; production temp+seed42; record dataset_sha256+test_profile per arm; era-label supersede (never edit historical). Pre-de. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:1402:c969:8eda:8bbf"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#### EV-10a corroboration — the regression prior is now REPLICATED (2026-08-15, intake-1142) / ### EV-11/12/13 (NEW 2026-07-14) — backlog ROI audit waypoints`; task text: - [ ] **EV-13 — review-finding-F1 suite** (M; intake-658, audit RE-3, formalizes the EV-NEW prose below): local code-review benchmark per the Factory-methodology deep-dive (Augment v1 145-bug golden set, ~80-LOC scorer, local mode. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:acca:f13f:e21a:f28a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `#### EV-10a corroboration — the regression prior is now REPLICATED (2026-08-15, intake-1142) / ### EV-11/12/13 (NEW 2026-07-14) — backlog ROI audit waypoints`; task text: - [ ] **EV-13b — run leg (INFERENCE → batch-manifest entry)**: source Augment-v1 145-bug set (github.com/ai-code-review-evaluations/golden_comments; raw items lack structured criterion/location → semantic-matcher rides the run leg. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:96f2:19ea:e933:d3e9"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate (EV, judge validity): adopt an **anchor rule** — any judge-scored metric used to gate a decision must be paired with a judge-independent verifier (exact-match, unit tests, code execution, or held-ou. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:81ab:0398:9d77:65ed"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate (EV, judge validity): adopt a **de-anchoring rule** for judges used in *selection* (commit-first or blind-solve rather than show-candidate-and-ask), **GATED on a measured verifier solve-accuracy thr. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:f9f5:ccc5:02bb:8a9d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate (EV-6): run the **dual-judge offline audit** — score a held-out set with a clean rubric and with a deliberately bias-augmented rubric, report the gap per reviewer/judge config. Runnable on our stack. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:e924:48fc:02e8:4ba9"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate (EV-9 / RM-5): extend the bias-robustness probe set with the four CHERRL bias families and add exploitability (can the *author* cheaply emit the pattern?) as a second reporting axis. [intake-874]. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:ad46:b50a:7dbe:1a4f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate: quantify the judge-scored fraction of the autopilot quality objective — count distinct `scoring_method: llm_judge|rubric` questions per suite and their weight in the Pareto quality axis. **PRE-ESTA. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:80e8:e2b2:c3c1:c5f4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-16 (Reviewer control plane: EV-9/ECE/AUC reuse contract) / ## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking)`; task text: - [ ] Operator-review candidate (EV-6, judge validity): **split the cross-family claim at the top of this file** — it is currently stated once, as one rule, and it is true of one failure mode and false of the other. Do NOT delete . No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:da9a:4572:feea:4e2f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking) / ### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision`; task text: - [ ] Offline A/B on an existing labeled set (e.g. the RM-3/RM-5 reviewer corpus, or any suite with gold labels): score the same candidates with (a) the current show-candidate-and-ask judge and (b) a commit-first judge (judge answ. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:1553:e4f6:aef2:9ba1"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking) / ### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision`; task text: - [ ] Forward guard from intake-877 (was prose-only in progress): when the three absent-source suites are downloaded (operator ask), attach a **web-egress check** to any GAIA run — the suite is 165 verbatim public questions and is. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:4ee1:78b5:9e16:241e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (Judge validity: anchoring, agreement metrics, rubric hacking) / ### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision`; task text: - [ ] **Cross-fleet arm-parallelism for rebaselines (operator-endorsed 2026-07-23; TRIGGER: implement. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:4c54:e58c:a7dc:3425"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision / ## 2026-07-25 — intake Stage-2a dive: EV-9 frontier-tier candidate + EV-10c admission prefilter`; task text: - [ ] **EV-10c — single-artifact admission prefilter (CORE pattern, intake-888).** Before a candidate skill/insight/prompt fragment reaches the EV-10a paired per-suite gate, re-attempt ONLY the originating failure with ONLY that a. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:8d9d:b271:0239:e459"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Audit catch 2026-07-21 — de-anchoring can be EVIDENCE-GATHERED before the rule decision / ## 2026-07-25 — intake Stage-2a dive: EV-9 frontier-tier candidate + EV-10c admission prefilter`; task text: - [ ] **EV-9 frontier-tier candidate — FrontierCS (arXiv 2512.15699).** EV-9 records production suites saturating in the 90–94% band and unable to resolve the top-2 models; FrontierCS is maximally non-saturating (best model Score@. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:f135:7935:7878:a347"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster) / ### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate`; task text: - [ ] **EV-14a — Measure a per-suite resolution band using the instrument we already have.** Run. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:661d:7920:d0cd:3e06"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster) / ### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate`; task text: - [ ] **EV-14b — Decide whether the measured band should BLOCK.** The only measured instrument (MAD). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5d1d:2ccf:61bb:eb49"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster) / ### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate`; task text: - [ ] **EV-14b′ — The candidate/baseline asymmetry is structural, not just a K mismatch.** The. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:70ac:43c6:18ac:6b8f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster) / ### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate`; task text: - [ ] **EV-14f — Known-null corpus: run the optimizer against inputs with NO failures and assert it. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:581e:1fcd:ed11:dfc4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-08-15 (measurement resolution: VeRO / HarnessOpt-Bench cluster) / ### EV-14 (NEW 2026-08-15) — measured resolution band, and promoting it to the gate`; task text: - [ ] **EV-14g — decide whether `EvalResult` carries a completed count beside `n_questions`.** It has none. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5459:ed87:248e:7a45"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15a — Clean-room port of the eight read-out formulas.** Implement mode, mean, rounded mean,. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:09a0:673a:6c75:74bb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15b — Pin the read-out spec.** Force an assistant prefix, read completion **position 0**,. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:3370:592d:e8a8:cf3c"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15c — Guard the two silent failure modes**, both of which return a well-formed logprob array. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:b8b6:5eb3:b41f:f7bc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15d — `retained_mass` as a first-class per-call field, with a refusal floor.** Assert all K. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:1108:0a23:5811:d56c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15e — Pre-aggregation over both presentation orders is REQUIRED, not optional**, and must be. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:59ae:1b5a:e147:57de"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-19 (LLM-as-a-Verifier re-ingest: the local read-out instrument) / ### EV-15 (NEW 2026-08-19) — local logprob-expectation read-out: build the instrument, then let the measurement decide`; task text: - [ ] **EV-15f — Record the cheaper alternative before building the expensive one.** intake-1171 (V1). This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:073d:d673:2672:580c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-08-21 (intake-1217, Claw-Eval) / ### ETV-T1 assessment — trajectory-aware grading against OUR harness (2026-08-21)`; task text: - [ ] **ETV-T2 — report-only trajectory/outcome divergence counter for `tool_use` sentinels** (cheapest first. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:c115:866f:e672:d1f4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### ETV-T1 assessment — trajectory-aware grading against OUR harness (2026-08-21) / ## Research Intake Update — 2026-09-15 (judge independence and judge validity)`; task text: - [ ] **EV-6c — give llm_judge a non-Qwen judge.** Since EV-6b every llm_judge row is labelled `same_family` (default judge `architect_general` = Qwen3.8-27B; every served generator is Qwen): 3,806 pool items (physreason, zeroscro. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:f386:df02:9eb6:9a85"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### ETV-T1 assessment — trajectory-aware grading against OUR harness (2026-08-21) / ## Research Intake Update — 2026-09-15 (judge independence and judge validity)`; task text: - [ ] **EV-16 (S3-EV-02) — judge-validity gate before AUTOPILOT_RUBRIC_JUDGE_ROLES is enabled for any run. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:790e:419a:fb17:0a4b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Trigger records — materialize only when the named condition fires / ## Research Intake Update — 2026-10-04`; task text: - [ ] **EV-RI-CAPTURE-STATUS — Expose question-sidecar persistence status in existing batch details.** Report writer initialization, successful/failed row appends and completion-marker state, with bounded error reasons. Preserve e. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0d97:3ebf:88c0:3fcb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Trigger records — materialize only when the named condition fires / ## Research Intake Update — 2026-10-04`; task text: - [ ] **EV-RI-RECONNECT-COST — Retain reconnect attempts and cumulative backoff in existing question metadata.** Carry counts, waited seconds and bounded failure reasons through every success/terminal return from call_orchestrator. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/bulk-inference-campaign.md",
+      "source_sha256": "a1f62fdaa1aaba835b3d53e0562e995b6c30d3f88f4286e7f2d4944ce007577e",
+      "reviewed_open_keys": [
+        "h:1338:6b9f:7e1a:293f",
+        "h:8ea1:e8d2:b957:22e5",
+        "h:197d:7fba:12a0:9e77",
+        "h:ef83:87c4:4aa7:a7c7"
+      ],
+      "status_assessment": "Active file; reviewed all 4 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1338:6b9f:7e1a:293f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Queue 3 — restart bundle (live code; collect clean vector history) / ### Standalone model-batched windows (~27h; group by model so each GGUF loads once)`; task text: - [ ] **K-LCM-1 — LongCoT-Mini calibration run** (intake-386, audit RE-4, filed 2026-07-14): ~500-easy deterministic long-horizon reasoning suite on local models, one clean-window package. Adds a non-saturated suite exactly where . This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:8ea1:e8d2:b957:22e5"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Internal Interaction Lifecycle (consult sibling) — TRACKING / ## Research Intake Update — 2026-07-17 (OP-6 reviewer-plane baseline window — staged for clean-window pickup)`; task text: - [ ] **RCP-W1 — Reference-lineup relaunch + preflight**: `orchestrator_stack.py` relaunch under three-gates discipline (pipeline-green ≠ starts ≠ live==config); `affinity_preflight.py` live-affinity check; flip `review_decision_s. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:197d:7fba:12a0:9e77"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Internal Interaction Lifecycle (consult sibling) — TRACKING / ## Research Intake Update — 2026-07-17 (OP-6 reviewer-plane baseline window — staged for clean-window pickup)`; task text: - [ ] **RCP-W2 — RD-12 paired shadow replay** (feeds LB-1 + TM-8 + first `review_ledger` rows): the same 50-question eval-tower replay run shadow-OFF then shadow-ON (paired, same questions, seed42 production sampling). OFF leg re-. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:ef83:87c4:4aa7:a7c7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Internal Interaction Lifecycle (consult sibling) — TRACKING / ## Research Intake Update — 2026-07-17 (OP-6 reviewer-plane baseline window — staged for clean-window pickup)`; task text: - [ ] **RCP-W3 — RC-8 smoke slice**: status-quo self-review (architect alias) in shadow over ~100–200 multi-oracle `nearmiss-v1` rows across domains incl. the natural-defect control slice (`/mnt/raid0/llm/datasets/nearmiss-corpus-. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/architect-model-selection-bench.md",
+      "source_sha256": "3a7c97cd8e1aa54bcef82af6ec11b3f6bff4cdd63e03d4189d839ac7cb1f28e3",
+      "reviewed_open_keys": [
+        "h:ea7d:e8ce:2e72:cac8",
+        "h:0412:3081:f5c1:7668",
+        "h:94c2:495c:0bad:929e",
+        "h:d34e:d2de:a1b4:80c5",
+        "h:f1f0:3853:abea:b3c7",
+        "h:0340:571e:fd02:18a4",
+        "h:6060:f74e:d04d:5609",
+        "h:e486:be4e:dfaf:804b",
+        "h:a655:74b3:f507:c64b",
+        "h:869f:3fe4:c131:624d",
+        "h:0656:aaf3:9f94:0079",
+        "h:1f09:1bcc:b6c8:3d98",
+        "h:ecac:9749:9f4c:279e",
+        "h:cbbf:5cc1:3923:1493",
+        "h:7e64:3207:0489:37e2",
+        "h:70a7:127e:3261:698e",
+        "h:9821:f1ef:3aa4:365a",
+        "h:82b0:d2c6:943d:af2b",
+        "h:d80d:4656:6642:1156",
+        "h:830b:1da4:d7ce:bbfd",
+        "h:f362:0afd:5ed4:2d86",
+        "h:3e75:4644:d73f:e387",
+        "h:0346:b1b7:460d:32bb",
+        "h:8afa:1f63:3a67:7c7e",
+        "h:7593:b395:0a8f:bb6d",
+        "h:7958:8d2d:8145:7024",
+        "h:4774:1513:3551:7971",
+        "h:76eb:911a:3d2b:c851",
+        "h:1be5:83f1:4c44:84c1"
+      ],
+      "status_assessment": "Active file; reviewed all 29 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ea7d:e8ce:2e72:cac8"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Prioritized task list / ### Prep (no inference — can proceed now)`; task text: - [ ] (Phase 2, if approved) build/validate the SWE-bench-Verified agentic scorer → FAIL_TO_PASS pass/fail.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0412:3081:f5c1:7668"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#### Prep findings that change the protocol (2026-07-20) / ### Gated inference (after all three gates)`; task text: - [ ] **Phase 1** — A1–A4 × {AIME'25, GPQA-Diamond, MMLU-Pro control}, paired, seed-pinned, MEASUREMENT-stamped.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:94c2:495c:0bad:929e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `#### Prep findings that change the protocol (2026-07-20) / ### Gated inference (after all three gates)`; task text: - [ ] GPU arms A1/A3/A4 × **`gpqa_diamond_cot`** full n=198 — *primary* CoT measure (deferred behind OlympiadBench; n=50 slice done in R2). The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:d34e:d2de:a1b4:80c5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `#### R2d — **native `<think>` hurts BOTH models. `enable_thinking=false` is vindicated stack-wide.** ✅ complete / ### Follow-up tooling / deferred (derived this session)`; task text: - [ ] Resolve the decision tree from Phase 1; **(conditional) build + run A5** if branch 2 fires.. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:f1f0:3853:abea:b3c7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#### R2d — **native `<think>` hurts BOTH models. `enable_thinking=false` is vindicated stack-wide.** ✅ complete / ### Follow-up tooling / deferred (derived this session)`; task text: - [ ] **Phase 2 depth probe** — tool-using *planning* (multi-step, stateful) on the surviving arms.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0340:571e:fd02:18a4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#### R2d — **native `<think>` hurts BOTH models. `enable_thinking=false` is vindicated stack-wide.** ✅ complete / ### Follow-up tooling / deferred (derived this session)`; task text: - [ ] **CAL-1 — external calibration input: static code benchmarks barely rank-correlate with. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:6060:f74e:d04d:5609"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Intake (research provenance — persisted 2026-07-20) / ## Laguna S 2.1 intake integration — 2026-07-22 → **UNBLOCKED 2026-07-26 by the v8 freeze**`; task text: - [ ] **L-Q4P conditional CPU performance discovery.** The bounded four-cell config selector and broader CPU sweep remain deferred. Trigger only if a concrete CPU-resident Laguna role proposal needs a measured throughput/cost surf. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e486:be4e:dfaf:804b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## 2026-07-25 — intake Stage-2a dive: ThinkingCap arm, corrected / ## 27B finetune candidates — downloads + bench (operator-sequenced 2026-07-26, GPU lane after MiniCPM-o)`; task text: - [ ] **A3-ff behavioral/abliteration candidacy gate.** No ratified direct-generation refusal/behavior screen exists in the repository; the existing RewardBench reviewer protocol is not applicable. The first-read remains valid, bu. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:a655:74b3:f507:c64b"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## 27B finetune candidates — downloads + bench (operator-sequenced 2026-07-26, GPU lane after MiniCPM-o) / ## 2026-07-27 fine-grain + remediation program (operator-directed discussion outcome)`; task text: - [ ] **FG-6 — BCB-hard pre-deployment regression screen (CONDITIONAL — do not run now; operator decision 2026-07-27).** BCB-hard is explicitly NOT run on the finetunes as a ranking instrument: it proved non-discriminating on this. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:869f:3fe4:c131:624d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 2026-07-27 fine-grain + remediation program (operator-directed discussion outcome) / ## 2026-07-29 — intake Stage-2 dive: Qwopus3.6-27B-Coder arm + zero-inference weight-delta geometry`; task text: - [ ] **Collect and bench Jackrong/Qwopus3.6-27B-Coder MTP-Q8_0** (29.0 GB, apache-2.0, 63k downloads). It carries the lineage's ONLY full-denominator SWE-bench Verified run — 335/500 = 67.0% measured **thinking-off**, matching ou. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:0656:aaf3:9f94:0079"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The design space is FOUR instruments, not eight / ### Instrument selection`; task text: - [ ] **Adopt EffiBench-X as the efficiency instrument, Python-only, restricted to the 308 DATED problems.** Apache-2.0, and its local-endpoint support **works unpatched** (`OpenAI()` with no args after `load_dotenv()`). Three blo. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1f09:1bcc:b6c8:3d98"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### The design space is FOUR instruments, not eight / ### Instrument selection`; task text: - [ ] **Pull GSO's two `abetlen/llama-cpp-python` optimization tasks (~21 GB) and run them against the coder and architect roles.** MIT, expert-commit performance targets, and **the only thing in this literature that lands on our . The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:ecac:9749:9f4c:279e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### The design space is FOUR instruments, not eight / ### Instrument selection`; task text: - [ ] **Run EvalPerf against our local endpoint** — lowest friction in the cluster: Apache-2.0, native `--backend openai --base-url`, ~15 min/model, ~100 MB. Its measurand is retired instructions via hardware counters, max CV 0.4%. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:cbbf:5cc1:3923:1493"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The design space is FOUR instruments, not eight / ### Instrument selection`; task text: - [ ] **Add the Slow/CRR conditional diagnostic** (intake-974): among a model's **correct** outputs, what fraction is no faster than baseline. It separates correctness inflation from genuine efficiency gain, and it is the one numb. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:7e64:3207:0489:37e2"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Declines, named so they are not re-derived / ### Model-candidate verdicts — answering the standing search for a faster `worker_general` / `architect_critic``; task text: - [ ] **Bench `Qwen3.6-35B-A3B` at `UD-IQ3_XXS` as a `worker_general` candidate.** ~3B active (leaner than gemma4-26B-A4B's ~4B on the bandwidth-bound path), **already supported by the frozen kernel**, and at **13.2 GB it fits `wo. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:70a7:127e:3261:698e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-1 — Prove it does not reason, BEFORE benching anything.** This is the whole premise of. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:9821:f1ef:3aa4:365a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-2b — CPU arms, still owed.** Deferred because a sibling agent was saturating 176 cores. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:82b0:d2c6:943d:af2b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **QUALITY IS NOW THE OPEN QUESTION, and the current probe is the wrong instrument.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:d80d:4656:6642:1156"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **NO DETERMINISTIC COMPUTE TOOL EXISTS for a worker to route arithmetic to.** `src/tools/` holds. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:830b:1da4:d7ce:bbfd"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **NO CORRECTNESS SIGNAL CAN TRIGGER ESCALATION on the `general` chain.** The chain exists —. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:f362:0afd:5ed4:2d86"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-2 — CPU + GPU decode, interleaved, both quants.** Report pp/tg with stddev, peak. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:3e75:4644:d73f:e387"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-3 — The decision-grade bar the original row asked for and never got**: strict task. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:0346:b1b7:460d:32bb"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-4 — Speculative decoding, only after WG-LFMI-1 passes.** Spec-dec raises tokens/second;. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:8afa:1f63:3a67:7c7e"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### The candidate now under test / ### Tasks`; task text: - [ ] **WG-LFMI-5 — RE-OPEN the 2.6B reasoning variant on a RESIDENCY argument, not a rate argument.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:7593:b395:0a8f:bb6d"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Tasks / ### Traps this row has already paid for — do not rediscover them`; task text: - [ ] **`llama-cli` / `llama-completion` SILENTLY IGNORE `-rea off`.** `default_template_kwargs` is. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:7958:8d2d:8145:7024"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Tasks / ### Traps this row has already paid for — do not rediscover them`; task text: - [ ] **A raw-completion harness UNDER-SCORES a reasoning model** — the mirror trap. LFM2.5-2.6B looked. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:4774:1513:3551:7971"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Tasks / ### Traps this row has already paid for — do not rediscover them`; task text: - [ ] **RECIPE-NUMA-1 — `numactl --membind=<node>` is WRONG even for a single-region CPU grant**, and. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:76eb:911a:3d2b:c851"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Tasks / ### Traps this row has already paid for — do not rediscover them`; task text: - [ ] **`-fa 0` measured 12.9% faster decode for gemma4 on gfx90a** (101.44 vs 90.86 tg128, far outside. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1be5:83f1:4c44:84c1"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `### Traps this row has already paid for — do not rediscover them / ## 2026-08-09 — OpenRSI release-state watch (research-intake Stage-2b)`; task text: - [ ] **Follow-on (opened 2026-08-11, trigger-fired): assess OpenMLE Sandbox reproduction feasibility** — re-opens the intake-940#record reproducibility finding via intake-1024#record. Gates, in order: (1) worker/controller images. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/intake-derived-work-2026-07-25.md",
+      "source_sha256": "b13cb4c4ec91c153f5000c0e54a7940e9f4d53b593691c45939e863e558e7e08",
+      "reviewed_open_keys": [
+        "h:0311:c300:895c:93cf",
+        "h:0611:9834:8848:625e",
+        "h:7b4e:5d04:fa1c:6ebf",
+        "h:97fd:8298:cc1d:6f0b",
+        "h:b0b2:1aa8:fcca:31aa",
+        "h:520f:a026:888d:b057",
+        "h:6406:0ca4:9843:323f",
+        "h:c2ae:7091:e43c:2aa4",
+        "h:1fd3:768b:e6bd:29fc",
+        "h:881f:5822:0608:ba6e",
+        "h:e0e8:d5a1:42be:de2c",
+        "h:e6d3:a6a6:e179:9361",
+        "h:d008:7842:f68a:6ce0",
+        "h:74ff:30de:8790:02b0",
+        "h:6a73:b41c:307e:54b7"
+      ],
+      "status_assessment": "Active file; reviewed all 15 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0311:c300:895c:93cf"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## P0 — Live defect (verified on disk, this session) / ## P1 — Standing decisions now contradicted by independent evidence`; task text: - [ ] **ID-3 — Re-open the AP-21 `gepa_ratio = 0.30` decision on two independent grounds.** AP-21 (2026-07-11) declined to raise GEPA's PromptForge share. **Corrected facts**: only **8 `gepa_optimize` trials have ever run** (one e. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0611:9834:8848:625e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## P0 — Live defect (verified on disk, this session) / ## P1 — Standing decisions now contradicted by independent evidence`; task text: - [ ] **ID-4 — Gate AP-29 KnowledgeDistiller BEFORE wiring; add an episodic-only control arm.** Code landed 2026-05-08 (`4cdc77e`); **wiring is still deferred**, so this is a free design change now and an expensive rollback later.. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:7b4e:5d04:fa1c:6ebf"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## P1 — Standing decisions now contradicted by independent evidence / ## P2 — New instruments (both address named, dated gaps)`; task text: - [ ] **ID-8 — FrontierCS floor probe (~10 problems, one production arm) before any harness spend.** arXiv **2512.15699**, 156 open-ended problems with per-problem evaluators, open-source. EV-9 records that our production suites s. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:97fd:8298:cc1d:6f0b"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## P1 — Standing decisions now contradicted by independent evidence / ## P2 — New instruments (both address named, dated gaps)`; task text: - [ ] **ID-9 — Evaluate Behavior-Conditioned Inference as a Tier-1 reasoning-compression lever.** arXiv **2509.13237**: extract named procedural \"behaviors\" from our own successful traces, retrieve k into context; reports up to **. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:b0b2:1aa8:fcca:31aa"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## P3 — Process defects found in our own governance / ### Research Intake Update — 2026-10-04 (operator-approved Stage 4)`; task text: - [ ] **ID-11 — `handoffs_updated` is unreliable as an integration signal; the dashboard reads it.** 49 entries are `relevance: high` + actionable verdict + empty `handoffs_updated`, but the field is simply not backfilled: the REA. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:520f:a026:888d:b057"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## P3 — Process defects found in our own governance / ### Research Intake Update — 2026-10-04 (operator-approved Stage 4)`; task text: - [ ] **ID-13 — Lossless structural de-duplication of the always-loaded governance surface.** `/workspace/CLAUDE.md` is 223 lines / 2,282 words / 18,080 chars (~4.5k tokens) always loaded. Four policies are stated 2–3×: kernel imm. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:6406:0ca4:9843:323f"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-14 — Fractal: containerized / disposable-host trial.** ✅ operator decision 2026-07-25 — **containerized trial approved; NOT on this host as configured.** Rationale: nodes run agents with permission prompts bypassed by d. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:c2ae:7091:e43c:2aa4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-15 — Header-gate the DavidAU Qwen3.6-27B MTP GGUFs (no inference, one download).** The release publishes **every quant twice** (MTP / non-MTP) across ten tiers, and the MTP twin is larger by **exactly 451,320,768 bytes . No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1fd3:768b:e6bd:29fc"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-16 — ThinkingCap: the MTP head is STOCK, confirmed at byte level. Rewrite the A/B accordingly.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:881f:5822:0608:ba6e"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-17 — Offer a graded quant-quality instruction-following probe to the v8 IQ-quant arms.** `tq3-quantization-evaluation.md:151` currently gates on a single binary prompt (\"exactly six lowercase words\"). ID-7's ordered-cov. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e0e8:d5a1:42be:de2c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-18 — PageIndex: complement, not competitor — and gate on measured per-query cost.** Right instrument for \"where inside this 200-page PDF\", wrong one for \"which of 577 markdown files\" (it has **no cross-document retrieva. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:e6d3:a6a6:e179:9361"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-19 — Letta `trajectory`: DOWNGRADED from `adopt_component` — there is no artifact to adopt. Port ~50 lines instead.** `letta-trajectory` is **not on PyPI** (404; `release.yml` runs `npm publish` only and never builds a . This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:d008:7842:f68a:6ce0"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `### Research Intake Update — 2026-10-04 (operator-approved Stage 4) / ## P4 — Model/tool artifacts and operator-gated items`; task text: - [ ] **ID-20 — TRL + OpenEnv: DECLINE the bridge; keep only the GPU-free half.** **The blocker is not the token key — it is the absent control plane.** `vllm_client.py` requires seven non-OpenAI endpoints (`/get_world_size`, `/pa. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:74ff:30de:8790:02b0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## P4 — Model/tool artifacts and operator-gated items / ## P1b — DFlash: a blocker that is factually dead, and two unmeasured production-role drafters`; task text: - [ ] **ID-29 — Measure `z-lab/gemma-4-26B-A4B-it-DFlash` (0.43B, Apache-2.0) against the live worker_general target.** The collection grew from ~4 drafters at filing time to **22**, and now covers two roles the March DFlash hando. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:6a73:b41c:307e:54b7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## P1b — DFlash: a blocker that is factually dead, and two unmeasured production-role drafters / ## P3b — Conflation-audit outcomes (re-read of mis-filed entries)`; task text: - [ ] **ID-25 — Index-hygiene fixes surfaced by the audit** (cheap, one-line each):. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/tool-use-eval-contract.md",
+      "source_sha256": "bddc28fc2a546f02b985336cdd6a85eaded6cb069d853523c77e820309a8f126",
+      "reviewed_open_keys": [
+        "h:007a:fb39:5544:6d41",
+        "h:315b:e05f:87b5:0a8a",
+        "h:e5c0:e89d:13b0:8331",
+        "h:4bb5:50a7:78a2:39b8",
+        "h:b58e:463c:a768:f50e",
+        "h:b94a:e947:0370:364a"
+      ],
+      "status_assessment": "Active file; reviewed all 6 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "direct",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:007a:fb39:5544:6d41"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Phase 2 — native OpenAI tools seam  🚧 PARTIAL CODE SHIPPED 2026-06-28 / ### Research Intake Update — 2026-10-04 (P3)`; task text: - [ ] **TU-MH-1 — Make shared file-tool tasks executable acceptance tests for both REPL and OpenCode.** Parameterize the existing HS-4 fixture runner and add an external driver with two execution adapters: /chat forced REPL with d. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:315b:e05f:87b5:0a8a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### Deep-Dive Refinement (2026-06-12) — parent already shipped; REPL child-schema work is closed / ## Research Intake Update — 2026-07-21 (A worked example against the comment-only-REPL blocker)`; task text: - [ ] **TU-DTAP-2 — Run the imported DTAP subset against a live local model under an inference grant.** Wire the disposable runner's live OpenAI-compatible endpoint mode to a real model, then add simulated-service environment effe. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:e5c0:e89d:13b0:8331"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (A worked example against the comment-only-REPL blocker) / ## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021)`; task text: - [ ] **TU-ADV-1 — Add the Continual/Pokee negative cases as exact contract fixtures.** Fixture A. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:4bb5:50a7:78a2:39b8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (A worked example against the comment-only-REPL blocker) / ## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021)`; task text: - [ ] **TU-HR-1 — Source-audit the tool-call rendering path per served model** (intake-1339#03,. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:b58e:463c:a768:f50e"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Section `## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021) / ## Research Intake Update — 2026-09-14 (intake-1346…1366)`; task text: - [ ] **TU-GR-1 — Grader isolation clause.** Graders and reference artifacts must be structurally unreachable from the agent (container mount or separate uid, outside any git worktree containing the workspace), plus a transcript g. See source-verified JEV refinement below; the host must enforce path isolation, while typed outputs only handle verdict shape."
+        },
+        {
+          "keys": [
+            "h:b94a:e947:0370:364a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 2026-08-07 — state-judged agent security and recovery fixtures (intake-1012/1016/1020/1021) / ## Research Intake Update — 2026-09-14 (intake-1346…1366)`; task text: - [ ] **TU-LED-1 — Solve-failure ledger (observe-only).** Buckets ran-out-of-time / failed-verification / no-valid-tool-call, with gains AND give-backs; first-try-valid-call %, repair-recovery %, tokens spent on still-failing task. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S06-TU-GR1-HOST-ISOLATION",
+          "task_keys": [
+            "h:b58e:463c:a768:f50e"
+          ],
+          "title": "Implement grader separation by reusing the existing execution-sandbox boundary, then mock the JEV reader contract",
+          "original_premise": "TU-GR-1 requires grader/reference artifacts to be structurally unreachable from the agent, with a transcript path-leak tripwire. The related scoring-infra handoff already owns `code_exec_scorer.py` bubblewrap isolation (`2a-iv`) for untrusted code execution; this is the natural mechanism to reuse where the agent and grader share a runner, not a second sandbox project.",
+          "revised_deliverable": "First map the concrete evaluation process boundary and reuse 2a-iv’s host-enforced `bwrap`/namespace policy for grader process: keep rubric/gold files outside agent bind mounts/worktree, send submitted candidate bytes through a controlled pipe or immutable host-owned input, expose only the grader result. Add synthetic integration fixtures for denied path reads, transcript leak tripwire, tampered candidate/readset staleness, and failure/abstention refusing a pass. Inject mocked typed judge values; preserve deterministic gold labels and report model agreement separately from correctness. Do not run the local judge or claim deployed isolation in this zero-inference slice.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "symbol": "_run_typed_case / RubricCase",
+              "what": "Existing frozen gold rubric, per-criterion typed questions and explicit accuracy-vs-agreement distinction. Keep gold expected values host-only; do not pass them in the agent-visible catalogue."
+            },
+            {
+              "path": "src/typed_decisions/schema.py; src/typed_decisions/runner.py; src/typed_decisions/types.py",
+              "symbol": "Question / run_typed_decisions / DecisionResult / ParseFailure",
+              "what": "Reuse typed constrained labels and explicit refusal/parse failures through mocked responses; failure is no verdict, never a default pass."
+            },
+            {
+              "path": "src/typed_decisions/prepared_action.py",
+              "symbol": "prepare_action / validate_prepared_action / DecisionReceipt",
+              "what": "Freeze task/catalog/readset fingerprints and revalidate host authorization before judging; fingerprint detects stale inputs but does not secure filesystem access."
+            },
+            {
+              "path": "src/typed_decisions/call_recorder.py",
+              "symbol": "record_llm_calls",
+              "what": "Optional later local-reader cost telemetry; fake primitives can test it offline, but it is neither filesystem isolation nor a grading warrant."
+            },
+            {
+              "path": "handoffs/active/scoring-infra-standardization.md",
+              "symbol": "2a-iv",
+              "what": "Existing bubblewrap/namespace hardening owner for the execution scorer; coordinate/reuse this implementation rather than duplicate sandbox plumbing."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/tool-use-eval-contract.md",
+              "lines": "414-416",
+              "observation": "TU-GR-1 exact open boundary and adjacent observe-only solve-failure accounting; no inference is needed to implement the privacy tests."
+            },
+            {
+              "path": "handoffs/active/scoring-infra-standardization.md",
+              "lines": "150-180",
+              "observation": "Scorer isolation is explicitly delegated to 2a-iv, with unshare/bubblewrap and resource-boundary constraints; do not add an independent sandbox route."
+            },
+            {
+              "path": "src/typed_decisions/prepared_action.py",
+              "lines": "1-6,18-47,63-112",
+              "observation": "Host-owned snapshot/revalidation/authorization API is available but only fingerprints the readset."
+            },
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "lines": "741-840",
+              "observation": "Frozen cases, typed outputs, and parse-failure path exist and can be used with injected mock responses."
+            }
+          ],
+          "non_inference_scope": "Owned fixture-only slice: fake judge response, temp agent/grader roots, mount/UID policy harness with synthetic secrets/gold, transcript scanner. No model calls, benchmark runs, inference, or deployment.",
+          "inference_acceptance": "Future use of a local typed judge remains local-only per operator ruling. Any quality/cost comparison is separate and cannot use confidence as correctness; deterministic expected labels or independent human truth remain authoritative.",
+          "gate": "Coordinate with scoring-infra 2a-iv owner before selecting shared sandbox code; no new operator approval for offline fixtures. Actual use on untrusted benchmark agents is gated on host isolation review.",
+          "ownership": "TU-GR-1 owner with scoring-infra 2a-iv owner. Do not edit Claude-owned `coherence_judge.py`/calibration; this proposal uses judge_redundancy only as a fixture pattern.",
+          "roi": "high",
+          "effort": "medium",
+          "verification": "source_verified",
+          "proposed_handoff_append": "**Proposed JEV-aware implementation refinement (no new checkbox or grading rule):** Reuse the host-owned isolation boundary already tracked in `scoring-infra-standardization.md` 2a-iv wherever the grader and agent share an execution runner. Keep grader/reference files outside the agent mount/worktree; pass submitted candidate bytes across a controlled boundary. Add temp-root tests for denied grader-path reads, transcript-path tripwire, stale candidate/readset refusal, and typed judge parse/refusal yielding no verdict. Reuse `judge_redundancy.py`’s frozen expected labels and per-criterion `Question`/`DecisionResult` shape with mocked responses only; keep correctness against gold separate from reader agreement. `PreparedAction` fingerprints can detect a changed task/rubric before dispatch, but do not enforce filesystem privacy. This fixture does not launch a model or establish deployed isolation; a live local-judge comparison remains separately gated."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/reboot-gated-inventory-and-staging.md",
+      "source_sha256": "74238fdd0670e9ed5fb5bbf15658fd83112d8c91a9a573dd78006521010a0d1f",
+      "reviewed_open_keys": [
+        "h:b18c:7c12:81d1:8477",
+        "h:02e5:2675:e303:3eff",
+        "h:9ba3:e3d8:1dc9:7391",
+        "h:d633:884c:e744:1053",
+        "h:ab41:3a68:3d66:10fa",
+        "h:dd0b:9890:beb2:c1dd",
+        "h:badb:9972:7bb3:ac95",
+        "h:8b3f:4a39:ce6e:a289",
+        "h:622e:e857:1b7b:4869",
+        "h:e16c:84a5:b302:c11e",
+        "h:0159:44e1:21de:3caf",
+        "h:d71a:bad7:61a5:1323",
+        "h:6562:c74c:6093:770a",
+        "h:2341:fc80:7916:7b60",
+        "h:b8b1:6d6a:f49f:3d2a",
+        "h:983e:a325:ce48:a7d7",
+        "h:5bd8:2d88:8338:29e7"
+      ],
+      "status_assessment": "Active file; reviewed all 17 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:b18c:7c12:81d1:8477"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-04 — Refresh the E5 Stage-B readiness verification; it is 14 days stale.** The \"45/45. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:02e5:2675:e303:3eff"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-05 — Generate the corrected E5 re-measurement grid** per the RE-MEASURE row's five binding. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:9ba3:e3d8:1dc9:7391"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-06 — Build the ThinkPRM-1.5B Q4_K_M GGUF and land the EV-5 wiring** (HF pull →. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:d633:884c:e744:1053"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-07 — Acquire the OmniDocBench source PDFs and mint an immutable manifest.** Unblocks. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:ab41:3a68:3d66:10fa"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-08 — Regenerate the E8 context coverage scan.** `e8_quality_context_coverage_v4_20260727.json`. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:dd0b:9890:beb2:c1dd"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-09 — Delete the five `.staging-` bundles** left by the 2026-07-26→29 E8 `--execute` attempts.. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:badb:9972:7bb3:ac95"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-10 — Land SS-BENCH-GATE-b's cpuset pinning in the launch path before the reboot** so it is. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:8b3f:4a39:ce6e:a289"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-11 — Close the P-BENCH-1 host-health gap.** `bench_canonical.sh` performs no uptime or. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:622e:e857:1b7b:4869"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-12 — File OP-16 as a pre-validated token block in `tokens/token-queue.md`.** It currently. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e16c:84a5:b302:c11e"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-13 — Correct the \"OP-16 was declined by the operator\" claim** in. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0159:44e1:21de:3caf"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-14 — Execute the capture list in §7 into a dated snapshot directory** under. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:d71a:bad7:61a5:1323"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-15 — Write the post-reboot runbook (§8) into. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:6562:c74c:6093:770a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-16 — Run the Category-C corrections**: flip EV-4 / EV-4b / EV-11c (terminal `DONE_PASS`);. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:2341:fc80:7916:7b60"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-17 — Close R1a before the reboot, not after.** One short `-n 128 -r 1` smoke on a small model. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:b8b1:6d6a:f49f:3d2a"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-18 — Put the two free operator decisions in front of the operator during the wait**: RC-6a. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:983e:a325:ce48:a7d7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-19 — Re-issue OP-6 before it is approved.** It names *\"the v8 reference lineup\"* while. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5bd8:2d88:8338:29e7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 8. Post-reboot first hour — the order these rows imply / ## 9. Pre-reboot staging tasks`; task text: - [ ] **S-20 — Provision the pinned gfx90a training environment** (`torch`/`transformers`/`accelerate`/. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/fable5-window2-findings-05c-mi210-lever-category-matrix.md",
+      "source_sha256": "c548e27941445d47e7d8506bb8bb6f8a71b38889b1c5475ce82697e746a54c77",
+      "reviewed_open_keys": [
+        "h:8e7b:6902:638c:ed2f",
+        "h:6fdc:a57c:b246:bf24",
+        "h:5f64:a73e:92b5:2ccd",
+        "h:e9ed:3ada:da49:471e",
+        "h:6ad2:848c:4c19:8c38",
+        "h:049d:75b8:e90b:2c78",
+        "h:01b1:ff0f:3452:5000",
+        "h:088c:2f2f:b2bf:ecf9",
+        "h:ca43:9410:b5ef:69da",
+        "h:f1ab:966e:c10a:8046",
+        "h:c86e:5719:9cf8:5bc4",
+        "h:479d:7dd9:3f6b:3f14",
+        "h:51d2:468b:d320:b78f",
+        "h:0ec1:ec24:f875:4df6",
+        "h:37f0:67ee:3a5a:acf3",
+        "h:1462:959c:ef74:6158",
+        "h:c098:3a09:1392:9932",
+        "h:99b1:0686:e511:9b9a"
+      ],
+      "status_assessment": "Active file; reviewed all 18 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:8e7b:6902:638c:ed2f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **EAGLE-3 on pure-dense** (L10) — needs a trained head + relax `target_layer_ids_n==3`; also gemma-MoE untested.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:6fdc:a57c:b246:bf24"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **GPU-draft / CPU-target spec** (L18) — for overflow-to-CPU MoE (122B, GLM-5.2 IQ2) and CPU-target GDN roles.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5f64:a73e:92b5:2ccd"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **quantize_q8_1 requant kill** (L2) — low effort, do early.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e9ed:3ada:da49:471e"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Weight swizzle / SoA Q8_0 repack** (L6) — gate on `TCC_EA_RDREQ_32B`; do jointly with L3.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:6ad2:848c:4c19:8c38"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **MFMA compute-bound kernels** (L7) — prefill / DiT denoise / ViT encoder / high-batch expert GEMM; profile-gated (high VALUBusy + low MfmaUtil).. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:049d:75b8:e90b:2c78"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Q4_K dequant efficiency** (L21) — ~+43% → ~47 t/s single-stream, quality-gated.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:01b1:ff0f:3452:5000"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Diffusion serving path + all DiT levers** (§3.5) — no path exists yet.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:088c:2f2f:b2bf:ecf9"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Auxiliary baselines (BGE encode, VL prefill)** (§3.6) — no aux model ever benchmarked; the entire Aux column is currently deductive.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:ca43:9410:b5ef:69da"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Dense-Q4_K / K-quant** — the registry **default** quant (Q4_K 291 hits), a distinct 33%-roofline dequant regime where L1 barely applies (+5.8% vs +17–32% Q8). Treated as a lever, is really a category.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:f1ab:966e:c10a:8046"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Pure-MoE vs GDN-hybrid-MoE split** inside \"MoE-on-GPU-decode\" — the campaign's own sharpest distinction (spec-dec viable + 5.9–8.6x scaling for pure-MoE vs net-negative + 3.4x for GDN-hybrid-MoE).. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:c86e:5719:9cf8:5bc4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Sub-4-bit / IQ codebook quant** — architecturally different dequant kernel from K-quant block dequant; the bytes/token axis deciding 64 GB fit.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:479d:7dd9:3f6b:3f14"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **MLA-attention MoE** (GLM-4.7-Flash frontdoor candidate, deepseek2) — latent-compressed KV **flips the L14 KV-quant math**; spec-dec-forbidden.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:51d2:468b:d320:b78f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Mamba2-hybrid** (Nemotron-Cascade-2 frontdoor candidate) — float32 SSM state (~2× traffic), 88% recurrent; must **not** inherit delta-net GDN verdicts (`--mamba-ssm-dtype` is its own recurrent-traffic knob).. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0ec1:ec24:f875:4df6"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Lightning / linear-attention hybrid** (Ring, bailingmoe_linear) — a third distinct linear kernel, neither delta-net nor Mamba2.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:37f0:67ee:3a5a:acf3"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **VL split** (ViT vision-**encoder** prefill = compute-bound MFMA target; VL decoder = full MoE/dense decode; spec-dec mmproj-forbidden) — currently hidden inside \"Auxiliary(vision).\". No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1462:959c:ef74:6158"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **VL vision-encoder prefill baseline — the unrun half of A3.** 2026-08-12 ran the BGE encode half only (13 GPU points, `artifacts/gpu-aux-baselines/a3_bge_mi210_20260812.jsonl`, commit `182f30b6`): bge-m3 Q8_0 and f16 land w. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:c098:3a09:1392:9932"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **Ultra-sparse MoE** (MiniMax-M2, 256-of-8) — where expert-gather/scatter and the mmid dispatch behave very differently than at A3B/A4B.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:99b1:0686:e511:9b9a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### 3.6 Auxiliary (embed/rerank/vision) / ## 4. Gap list — queued measurements (checklist)`; task text: - [ ] **ASR / speech encoder-decoder** (Whisper large-v3-turbo) — conv frontend + bidirectional encoder + cross-attention decoder fits none of the 6 buckets.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/rao-redel-substrate-spike.md",
+      "source_sha256": "aad89830fc1e461910555782150a70a7a2bed9b3ee878e44b57344732f5c5e3e",
+      "reviewed_open_keys": [
+        "h:accc:5eda:8b06:0ff5",
+        "h:e7b4:b5e0:14ce:a572",
+        "h:5450:b201:71d6:0ee7",
+        "h:28be:ff67:c3b5:aad5",
+        "h:24fd:2691:cca6:1637",
+        "h:0e15:c9f9:b205:9fca"
+      ],
+      "status_assessment": "Active file; reviewed all 6 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:accc:5eda:8b06:0ff5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## References / ## Progress checklist`; task text: - [ ] Run a naturally-delegating workload A/B (HotpotQA/DeepDive or small base model) before Step 3 escalation. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:e7b4:b5e0:14ce:a572"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## References / ## Progress checklist`; task text: - [ ] Operator decision: push/PR the sub-decision-taxonomy feature branch. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:5450:b201:71d6:0ee7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## References / ## Progress checklist`; task text: - [ ] Step 3 conditional substrate replacement (~400-800 LoC) - gated on delegation-positive re-test. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:28be:ff67:c3b5:aad5"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (Two new RLM sources — the depth evidence still favours max_depth≤1) / ### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge)`; task text: - [ ] Build the Escalation-prediction surface (10,528 pos / 56,457 neg, already labelled and Ready per `learned-routing-controller.md`) as the depth gate, developed jointly with the `COMP_r(x)` competence probe — they estimate the. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:24fd:2691:cca6:1637"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Intake Update — 2026-07-21 (Two new RLM sources — the depth evidence still favours max_depth≤1) / ### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge)`; task text: - [ ] Gate depth escalation on expected value, not on predicted failure alone: require `P(fail) × value(rescue) > cost_multiplier`, with depth-2 held behind a measured threshold given the ~96x wall-clock.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0e15:c9f9:b205:9fca"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Correction 2026-07-21 — depth should be CONDITIONAL, not a pinned default (operator challenge) / ### Audit catch 2026-07-21 — OOLONG is the missing instrument for the open depth A/B`; task text: - [ ] Evaluate adopting OOLONG as a suite adapter (source/licence check first), sized to the depth question: n large enough to resolve a ~10-25pp gap, not a full-suite port. If adopted, the naturally-delegating-workload A/B above . This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/scoring-infra-standardization.md",
+      "source_sha256": "2425f14edb1734e8fd02c25ee9ffb8d7418a53d2e6127e474eb5ac0333821f26",
+      "reviewed_open_keys": [
+        "h:2a31:8d16:60b8:4702",
+        "h:0507:2c4c:eb77:e02f",
+        "h:1ea4:da44:e0e7:6844",
+        "h:0234:7dc1:8854:317e",
+        "h:2bef:5f32:580d:209d",
+        "h:db27:3335:1efd:2fe0",
+        "h:2b6f:340c:edc7:76a2",
+        "h:efb8:1cb9:a18e:152f",
+        "h:b2d5:3ffb:b231:4855",
+        "h:1664:e2ff:d4b1:4e1e",
+        "h:be8a:cc36:824f:b7a0",
+        "h:8db2:729d:d81b:392e",
+        "h:ceba:6a92:d30b:acbc",
+        "h:3b4c:d639:e0a6:6f33",
+        "h:ce98:1261:1125:e491",
+        "h:11e3:7ab7:3d30:8fbc"
+      ],
+      "status_assessment": "Active file; reviewed all 16 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2a31:8d16:60b8:4702"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Phases / ### Track 1 — Scorer standardization`; task text: - [ ] **1c-fix (PRODUCTION-TOUCHING, GATED — scoped by the audit).** (a) Vendor the canonical `answer_scoring`. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:0507:2c4c:eb77:e02f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2a-iii-followon. Bound process/thread COUNT via cgroup v2 `pids.max`** — the correct mechanism (counts. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1ea4:da44:e0e7:6844"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2a-iv. Harden isolation** — wrap `code_exec_scorer.py` in bubblewrap (`--unshare-net`, read-only root,. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:0234:7dc1:8854:317e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2b-confirm. SWE A3-vs-A4 expansion (SEQUENCED AFTER Laguna, operator 2026-07-24).** Expand the. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:2bef:5f32:580d:209d"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2b-laguna. Fold Laguna-S-2.1 into the candidate process — ⛔ BLOCKED (operator 2026-07-24): needs a. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:db27:3335:1efd:2fe0"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2b-agentic-0-verify. Re-verify the clean-at-base assumption (2b-agentic-smoke, below) now that the. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:2b6f:340c:edc7:76a2"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2b-agentic-smoke. LIVE smoke of the agentic harness (parent session, GPU-gated).** One instance. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:efb8:1cb9:a18e:152f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2c. Eval-tower pool registration decision package (OPERATOR).** Once LCB-hard/BCB-hard/SWE-oracle. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:b2d5:3ffb:b231:4855"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2d. LCB contamination-window refresh.** The cached LCB snapshot spans 2023-05→2024-03 (likely inside. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1664:e2ff:d4b1:4e1e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### Track 1 — Scorer standardization / ### Track 2 — Tool-use / coding eval harness`; task text: - [ ] **2b-agentic. SWE-bench/tau-bench multi-turn harness** for true planning/tool-use. Audit Q3 unblocks a. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:be8a:cc36:824f:b7a0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### SWE-bench disclosure application — intake-916 / 917 / 924 (2026-07-29) / ### Phase 3 — external infrastructure prior art (2026-08-18, intake-1160 metaharness, dive-verified)`; task text: - [ ] **3a. Host-side auth gateway for sandboxed eval fan-out.** Trials run in containers holding. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:8db2:729d:d81b:392e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### SWE-bench disclosure application — intake-916 / 917 / 924 (2026-07-29) / ### Phase 3 — external infrastructure prior art (2026-08-18, intake-1160 metaharness, dive-verified)`; task text: - [ ] **3b. Adapter-normalized experiment/run/trace as prior art.** One schema, SQLite store, REST/SSE,. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:ceba:6a92:d30b:acbc"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Reporting / ## 2026-07-25 — intake Stage-2a dive: ordered-subsequence verifier (BOTH metrics)`; task text: - [ ] Source is **ACL 2025 Main and an Outstanding Paper** (arXiv 2506.15629) — our 43-question `instruction_precision` suite has **no ordering/sequence verifier of any kind**. Known fragility: spaCy-lemmatization dependence (same. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:3b4c:d639:e0a6:6f33"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## 2026-08-03 — intake Stage-2b: audit our own eval paths for HARNESS-LEVEL answer leakage / ## 2026-08-23 — follow-up from the NIB2-57a reader audit (tier-1 pass)`; task text: - [ ] **Loader projects non-live records into the live scorer's quality map.** `_baseline_quality_by_role()` (q_scorer.py:205) iterates ALL priors records, not just `live_stack` — `qwen35_122b_q4km` and `qwen36_q8_0` (benchmark_or. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:ce98:1261:1125:e491"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 2026-08-23 — follow-up from the NIB2-57a reader audit (tier-1 pass) / ## 2026-09-07 — laguna's provenance pins are stale in committed history (found during CJ-11)`; task text: - [ ] **Two of laguna's three pinned-file digests do not match the files on disk, and have not. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:11e3:7ab7:3d30:8fbc"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 2026-08-23 — follow-up from the NIB2-57a reader audit (tier-1 pass) / ## 2026-09-07 — laguna's provenance pins are stale in committed history (found during CJ-11)`; task text: - [ ] **Generalize a pin-staleness checker across the benchmark tree.** One script walks every. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/eval-tower-loop-robustness-audit-2026-07-20.md",
+      "source_sha256": "7cd4904a24df0abeeb01a72dfeeaabf10258bf2eee1cdccfcef7a0be90cadb28",
+      "reviewed_open_keys": [
+        "h:e505:eaae:1286:ad2e",
+        "h:2a39:ef8c:ee78:a7bb"
+      ],
+      "status_assessment": "Active file; reviewed all 2 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:e505:eaae:1286:ad2e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### Phase 3 — Runner robustness [agent·coord — touches `eval_tower.py`] / ### Phase 4 — Prevention [agent]`; task text: - [ ] **H2.v8 — remeasure the contention matrix under frozen v8 after E8 quality collection** — live dashboard topology and region-lock payloads already include `architect_general`; the stored/live measured-role topology hash is t. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:2a39:ef8c:ee78:a7bb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### Phase 4 — Prevention [agent] / ### Scoring Trust Boundary`; task text: - [ ] **Cluster E — scoring → tracked as EV-CONF in [eval-tower-verification.md](eval-tower-verification.md).** EV-11b closed-bin binning is implemented; **[agent]** logprob-passthrough plumbing (`completion_probabilities → confid. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/repo-readiness-scorer.md",
+      "source_sha256": "13f2687ba6e504343b5f7707cae7d27d4f7f4065dd6dc769e11426127818d4db",
+      "reviewed_open_keys": [
+        "h:130b:78d8:6dd9:1605",
+        "h:53dd:b186:6e4e:05d1"
+      ],
+      "status_assessment": "Active file; reviewed all 2 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:130b:78d8:6dd9:1605"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Notes / ## Progress checklist`; task text: - [ ] Bring epyc-llama Standardized/L3 -> L4 (incremental_validation, generated_docs, health_automation, analysis_reports, security_audit, replay_analysis). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:53dd:b186:6e4e:05d1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Notes / ## Progress checklist`; task text: - [ ] Add the root candidate gate to a periodic path (nightshift health or CI) so a red gate is observed within days, not weeks — the 2026-08-03 PII allowlist/fixture drift kept `candidate_eval_gate.sh` red ~22 days unobserved (de. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/autopilot-sequential-allocation.md",
+      "source_sha256": "ad58089b93e49f97a73e5a82920dc38835ffb13b6bb13c6daf36bd199064336d",
+      "reviewed_open_keys": [
+        "h:0eb1:c0aa:d33c:f728",
+        "h:1368:16c3:2a84:6da6",
+        "h:ee71:aef5:2e14:d022",
+        "h:6006:246d:dc6b:32bc",
+        "h:0b5b:2545:c61d:68ca",
+        "h:f41c:307a:1adf:49a0",
+        "h:64b0:03f6:eb89:221a",
+        "h:5eaf:b34d:2a2e:7b56",
+        "h:e1b2:6658:7c2d:9f79",
+        "h:35b3:757e:a3f2:a0d8",
+        "h:946a:2c95:38f0:1509",
+        "h:8467:0e2b:3e94:2f0e",
+        "h:6cb2:7f27:c5a5:a9ac",
+        "h:3295:23b9:e974:f300"
+      ],
+      "status_assessment": "Active file; reviewed all 14 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0eb1:c0aa:d33c:f728"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Re-adjudication result (2026-07-28, zero inference) / ## Two defects in the verdict machinery`; task text: - [ ] **SEQ-B — the promotion gate is unreachable, but NOT because anything is broken.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1368:16c3:2a84:6da6"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## Re-adjudication result (2026-07-28, zero inference) / ## Two defects in the verdict machinery`; task text: - [ ] SEQ-B1 — **OPERATOR DECISION**: keep the joint gate, or move the rate axis to advisory. This. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:ee71:aef5:2e14:d022"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-3 — **Resume the top candidate to a verdict. GATED — read the era problem first.**. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:6006:246d:dc6b:32bc"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-3a — **Bridge (cheap, needs an operator ruling).** If an operator judges the E8. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:0b5b:2545:c61d:68ca"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-3b — **Re-run clean under E8 (expensive, no ruling needed).** Restart the candidate at. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:f41c:307a:1adf:49a0"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] **Decide whether to re-arm the sequential gate.** Currently `AUTOPILOT_SEQ_VERDICT=0`. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:64b0:03f6:eb89:221a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] **The real reason `E_quality` never cleared 20 is trial starvation, not calibration.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5eaf:b34d:2a2e:7b56"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] **Rate-axis comparator has no era fence of its own.** The incumbent pool is the 120 most recent. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e1b2:6658:7c2d:9f79"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-B3 — Delete `_axis_refuted_factory` together with whichever test binds it, now that it has no caller. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:35b3:757e:a3f2:a0d8"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-B4 — Decide explicitly whether the refutation record should carry `k_rate` alongside the QUALITY. Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:946a:2c95:38f0:1509"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-A — Sticky `refuted` label (above).. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:8467:0e2b:3e94:2f0e"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] SEQ-B — Frozen baseline-promotion gate (above).. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:6cb2:7f27:c5a5:a9ac"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Section `## Two defects in the verdict machinery / ## Tasks`; task text: - [ ] **SEQ-4 — zero-inference allocation replay: would a bandit allocator have reached confirm_e on the stored pool?** Re-fold the 141 stored candidates / 393 trials under (a) BaSE-style UCB/Thompson routing (intake-1456) and (b). Explicit operator approval/decision is a prerequisite; prepare evidence only, and do not substitute model confidence for that choice."
+        },
+        {
+          "keys": [
+            "h:3295:23b9:e974:f300"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Reporting / ## Research Intake Update — 2026-09-25 (Shinka parent-selection replay)`; task text: - [ ] **SEQ-SHINKA-1 — Run the first policy screen over the shared selector-replay package.** Consume the immutable journal/candidate graph, incumbent policy, outcome bytes, task order, holdout, and digests frozen by `AP-DGM-PROV`. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/frontier-f2-self-running-lab.md",
+      "source_sha256": "a8f1d0bb7229a4bd940a4b1e2149d8f35fb0cc10db1b63179acc68f3bd243630",
+      "reviewed_open_keys": [
+        "h:f4ea:c489:de16:a5d7",
+        "h:e7b7:9ba6:bd96:282a"
+      ],
+      "status_assessment": "Active file; reviewed all 2 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:f4ea:c489:de16:a5d7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Why / ## Waypoints`; task text: - [ ] **W3 — reliability ladder** (ongoing): `scripts/lab/promote_job.py` enforcing shadow → reviewed → autonomous from logged stats (shadow ≥10 runs scored vs a cloud-reference run; autonomous only for read_only report-class jobs. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:e7b7:9ba6:bd96:282a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Why / ## Waypoints`; task text: - [ ] **W4 — expand** (weeks): intake triage joins after F5 lands; deep-dive drafting after triage proves; research-intake skill stays the orchestrator, local models take per-source extraction steps — acceptance: each expansion en. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/frontier-f6-upstream-publication.md",
+      "source_sha256": "487c72f701d129ba48a0b76ad0a43b76799573c9ae4a8914486b71fd9fc8d3ab",
+      "reviewed_open_keys": [
+        "h:fcd6:01a1:4bf5:9cc9",
+        "h:a975:732d:bd7d:7589",
+        "h:55d5:6fae:fba3:626b",
+        "h:2aa7:1561:c069:ce31",
+        "h:9349:96d1:8345:5c8b",
+        "h:8081:90f9:d270:8d73"
+      ],
+      "status_assessment": "Active file; reviewed all 6 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:fcd6:01a1:4bf5:9cc9"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators. / ## Waypoints`; task text: - [ ] **W1 — D2 PR spearhead** (1–2 weeks; specced in llama-cpp-dsa-contribution.md): the prompt-processing sparse path the PR author asked for help with — upstream citizenship AND our own unlock (V3.2 + GLM-5.1 on 1.1TB). Do D1 s. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:a975:732d:bd7d:7589"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators. / ## Waypoints`; task text: - [ ] **W2 — methodology post** (2–3 days, research-writer role): \"How we collapsed our own +17% wins to +1.6%: canonical CPU benchmarking on EPYC\" — content exists in CPU20 + 2026-04-26 compounding data + MEASUREMENT.md. Venue: b. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:55d5:6fae:fba3:626b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators. / ## Waypoints`; task text: - [ ] **W3 — public results page** (optional, 1 day): generated from `RESULTS.md` (models × quant × t/s on EPYC, protocol-tagged). Regenerated per release, never hand-edited. Acceptance: generation script, no manual numbers. **Gen. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:2aa7:1561:c069:ce31"
+          ],
+          "disposition": "retain",
+          "reason": "Section `#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators. / ## Waypoints`; task text: - [ ] **W4 — cadence**: one artifact/month max. Candidates queue: NUMA topology laws; gemma4 MTP recipe; closure-inflation/remediation story; instrument-era reconciliation (epistemics piece). Acceptance: queue maintained in this f. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9349:96d1:8345:5c8b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `#21149, STQ1_0 #22836, MTP upstreaming), free external replication, collaborators. / ## Waypoints`; task text: - [ ] **W5 — social/X conversation ledger**: maintain `docs/publication/social/` as the append-only record of outbound social threads and notable inbound replies, every public claim linked to its in-repo receipt and MEASUREMENT.md. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:8081:90f9:d270:8d73"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Checkpoints / ## Candidate — llama.cpp issue #27442 (2026-08-21, Stage-2b intake-1279#record)`; task text: - [ ] **B2 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — post our analysis upstream. PART ONE DONE, see above; this row now covers ONLY the results half.**. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/mathsmith-hc-formalizer-eval.md",
+      "source_sha256": "8b7aef37ae62edd92ce8c1d37b412b8f5a7ecd55ff9c92cd8f4b6ceee0e1621d",
+      "reviewed_open_keys": [
+        "h:0b3f:0392:82fe:6b3d",
+        "h:b54c:78ee:0349:fb6c",
+        "h:97ac:9cbc:4a64:e582",
+        "h:2845:b131:1e5b:6681",
+        "h:2fc7:d5f9:4c49:0089",
+        "h:2acb:40c4:66a8:ae84",
+        "h:1c87:b901:1748:3de6",
+        "h:9491:3886:8067:1b07",
+        "h:3883:007a:e60a:49a4",
+        "h:9b61:ff53:d746:6623",
+        "h:bcb1:d750:aeba:5c5f",
+        "h:faa1:084f:7f56:3c83",
+        "h:be3c:49d4:0e27:15f7",
+        "h:ab36:99e0:dd75:63e4",
+        "h:6202:3f59:24b7:c30b"
+      ],
+      "status_assessment": "Active file; reviewed all 15 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0b3f:0392:82fe:6b3d"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S1: Registry cleanup (low effort) — DONE 2026-04-05 / ### S2: HC artifact availability and quantization path`; task text: - [ ] If the repo exists but no GGUF is available, convert from HF weights: `convert_hf_to_gguf.py` + `llama-quantize` for Q4_K_M and Q8_0. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:b54c:78ee:0349:fb6c"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S1: Registry cleanup (low effort) — DONE 2026-04-05 / ### S2: HC artifact availability and quantization path`; task text: - [ ] Verify speed is normal (12-15+ t/s for Q8_0) — if so, confirms mradermacher conversion was the old speed bug. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:97ac:9cbc:4a64:e582"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S1: Registry cleanup (low effort) — DONE 2026-04-05 / ### S2: HC artifact availability and quantization path`; task text: - [ ] Benchmark on existing formalizer test suite (summary.csv rows 15-16 baseline). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:2845:b131:1e5b:6681"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S2: HC artifact availability and quantization path / ### S3: Spec decode validation`; task text: - [ ] Test Qwen3-0.6B as drafter for HC-8B (tokenizer-compatible, vanilla Qwen3). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:2fc7:d5f9:4c49:0089"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S2: HC artifact availability and quantization path / ### S3: Spec decode validation`; task text: - [ ] Test Qwen3-1.7B as drafter. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:2acb:40c4:66a8:ae84"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S2: HC artifact availability and quantization path / ### S3: Spec decode validation`; task text: - [ ] Compare against current Q4_K_M + spec decode n3 (16.1 t/s ceiling). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:1c87:b901:1748:3de6"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S2: HC artifact availability and quantization path / ### S3: Spec decode validation`; task text: - [ ] Consider MathSmith-HC-Qwen3-1_7B-ShortCoT as domain-matched drafter. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9491:3886:8067:1b07"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Design test protocol using new `aime` suite (60 questions, AIME2024+2025) and `olympiadbench` suite (674 questions). This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:3883:007a:e60a:49a4"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Pipeline A (baseline): solver model receives raw problem, produces answer. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9b61:ff53:d746:6623"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Pipeline B (formalizer): only after the HC contract probe passes, MathSmith-HC formalizes → solver receives formalized problem → answer. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:bcb1:d750:aeba:5c5f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Solver candidates: Qwen2.5-Math-7B, Qwen3-8B, current production worker. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:faa1:084f:7f56:3c83"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Measure: accuracy delta, latency overhead, total pipeline time. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:be3c:49d4:0e27:15f7"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Key question: does formalization help more on harder problems (AIME > OlympiadBench > MATH-500)?. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:ab36:99e0:dd75:63e4"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Measure total pipeline token cost: (formalizer tokens + solver tokens) vs (baseline solver tokens). Report per-problem breakdown — formalizer overhead is fixed (~300-500 tok) but solver savings should scale with problem ambi. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:6202:3f59:24b7:c30b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `### S3: Spec decode validation / ### S4: A/B benchmark — formalize-then-solve vs direct solve`; task text: - [ ] Use Math-Verify (intake-377) for answer comparison instead of exact-match — 66% more accurate on math expressions. See eval-tower-verification.md for caveats (NOT symmetric, NOT thread-safe). No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/rlm-contested-claims-self-evaluation.md",
+      "source_sha256": "9a9be34602d519d52fe2ecc04973dc0269ccef16456ed0e4974f18c9311a76ed",
+      "reviewed_open_keys": [
+        "h:33b9:d5d4:4d96:2b73",
+        "h:0a50:4e6a:d4e9:e37d",
+        "h:ba98:5dd1:ba81:f6f6",
+        "h:aec8:ca33:8c31:ff0b",
+        "h:e896:577b:e965:51d2"
+      ],
+      "status_assessment": "Active file; reviewed all 5 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:33b9:d5d4:4d96:2b73"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## What is already settled — do not re-derive / ## Tasks`; task text: - [ ] E1 — **RESCOPED BY E0**: measure **Base vs Depth-1 first**, not depth-1 vs depth-2. E0 showed. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:0a50:4e6a:d4e9:e37d"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## What is already settled — do not re-derive / ## Tasks`; task text: - [ ] E2 — **RESCOPED 2026-07-27 (operator): do not replicate this synthetically.** The original plan. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:ba98:5dd1:ba81:f6f6"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## What is already settled — do not re-derive / ## Tasks`; task text: - [ ] E3 — Add the **non-RLM long-context baseline arm** that neither source has. Without it, no. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:aec8:ca33:8c31:ff0b"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## What is already settled — do not re-derive / ## Tasks`; task text: - [ ] **E3b — Run a clean same-model direct-context versus REPL/data-by-reference comparison.** The. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:e896:577b:e965:51d2"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## What is already settled — do not re-derive / ## Tasks`; task text: - [ ] E4 — Write the resolution into `rao-redel-substrate-spike.md` § caveat and master-index N17 as. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/fable5-window2-findings-01-optimizer-integrity.md",
+      "source_sha256": "6ec3488e3dac3e521b45021e17b3737eb9f74f763c136eb2129ee401f46f9ca2",
+      "reviewed_open_keys": [
+        "h:daaf:7a8f:2dca:655f"
+      ],
+      "status_assessment": "Active file; reviewed all 1 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:daaf:7a8f:2dca:655f"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## 4. W6/W7: \"clear\" means re-based first, then re-earned within a narrowed frame / ## 5. Build seeds (acceptance criteria + cheapest decisive experiment)`; task text: - [ ] **R2-current — accrue a current-era, trusted per-question ledger sufficient for a reproducible ≥40-item core selection.** Do not promote the July-3 candidate or use its item set as a substitute. A later selection must retain. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/frontier-f4-continuity-backup.md",
+      "source_sha256": "633a83e020c59b65ed1e21bf2e146d94c75e72de34981681a0816fb784a8464b",
+      "reviewed_open_keys": [
+        "h:d65e:3adc:a0f7:7d31",
+        "h:9cca:65ee:53be:a69d"
+      ],
+      "status_assessment": "Active file; reviewed all 2 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d65e:3adc:a0f7:7d31"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Why / ## Waypoints`; task text: - [ ] **W2 — the job** (half day): `scripts/backup/backup_critical.sh` — restic preferred (dedupe+encryption, open-source) or snapshot-copy fallback. Targets: root SSD (different failure domain) + one off-host target (operator pic. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:9cca:65ee:53be:a69d"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Why / ## Waypoints`; task text: - [ ] **W3 — restore proof** (half day + quarterly): `scripts/backup/verify_restore.sh` — restore to temp dir, checksum-compare, parse-validate JSON/YAML/SQLite. Add backup-age check to ATTESTATION. Acceptance: one full restore cy. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/conversational-memory-eval-instrument.md",
+      "source_sha256": "b5d9b15d132f707e1afadb32f3058dc5722fd0f05a828f239d8481e831478a10",
+      "reviewed_open_keys": [
+        "h:c3a6:8cdd:c023:c373"
+      ],
+      "status_assessment": "Active file; reviewed all 1 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c3a6:8cdd:c023:c373"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Research Context / ## Tasks`; task text: - [ ] **CME-3 — Carry the BEAM harness-defect note wherever a BEAM number is quoted, ours or. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/agent-file-prose-compression.md",
+      "source_sha256": "e5c617a4d181633849848dc2a105b3ee6aff477aeae443cc5e443127f23e54f8",
+      "reviewed_open_keys": [
+        "h:8760:1130:302f:5c75",
+        "h:b8bc:1f16:074c:cb78",
+        "h:881a:5cf6:ac85:e95a",
+        "h:0bc7:ae79:d3e1:64de",
+        "h:9220:a2db:bba6:f174"
+      ],
+      "status_assessment": "Active file; reviewed all 5 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:8760:1130:302f:5c75"
+          ],
+          "disposition": "retain",
+          "reason": "Section `# Per-Model Agent-File Prose Compression / ## Executor Start Here (2026-07-30)`; task text: - [ ] **AFC-P5.E3 — run the n=30 compliance campaign.** READY but HELD (operator: \"I will tell. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:b8bc:1f16:074c:cb78"
+          ],
+          "disposition": "retain",
+          "reason": "Section `# Per-Model Agent-File Prose Compression / ## Executor Start Here (2026-07-30)`; task text: - [ ] **AFC-P5.E4 — re-take the rollout decision on the n=30 evidence.** Gate per model/level:. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:881a:5cf6:ac85:e95a"
+          ],
+          "disposition": "retain",
+          "reason": "Section `# Per-Model Agent-File Prose Compression / ## Executor Start Here (2026-07-30)`; task text: - [ ] **AFC-P5.E5 — denominate the compression target in WORDS, not lines, and re-derive the. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:0bc7:ae79:d3e1:64de"
+          ],
+          "disposition": "retain",
+          "reason": "Section `# Per-Model Agent-File Prose Compression / ## Executor Start Here (2026-07-30)`; task text: - [ ] **AFC-P5.E6 — correct the \"we exceed the corpus maximum\" framing before it propagates.**. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9220:a2db:bba6:f174"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `# Per-Model Agent-File Prose Compression / ## Executor Start Here (2026-07-30)`; task text: - [ ] **AFC-P5.E7 — Cross-model artifact reuse rule for shared agent files** (intake-1317#record,. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/integration-test-coverage.md",
+      "source_sha256": "13b1989cd4a84a109b2458f31ee9f6ac25b202732dca7d5d755c873355e98fea",
+      "reviewed_open_keys": [
+        "h:be61:0828:165f:3f86",
+        "h:9218:74e9:10ce:3eae",
+        "h:5749:de5b:177d:1896",
+        "h:726d:ee71:3f25:31d3",
+        "h:ad6f:880b:5cf1:6f78",
+        "h:44c2:13f8:f8b7:62c5",
+        "h:5d26:c7f6:8d78:f91c"
+      ],
+      "status_assessment": "Active file; reviewed all 7 unchecked boxes with full continuation and nearest headings. No checkbox completion inferred; live runs and approval gates remain as written.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:be61:0828:165f:3f86"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Outstanding Task Queue / ## Rules For New Tests`; task text: - [ ] Keep mocked integration tests separate from real inference tests.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:9218:74e9:10ce:3eae"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Outstanding Task Queue / ## Rules For New Tests`; task text: - [ ] Label inference-backed tests so normal CI can skip them.. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        },
+        {
+          "keys": [
+            "h:5749:de5b:177d:1896"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Outstanding Task Queue / ## Rules For New Tests`; task text: - [ ] Include port selection, startup, teardown, and stale-process checks for live-server fixtures.. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:726d:ee71:3f25:31d3"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Outstanding Task Queue / ## Rules For New Tests`; task text: - [ ] Avoid broad fixture rewrites unless a current failing test proves the fixture contract is wrong.. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:ad6f:880b:5cf1:6f78"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Section `## Outstanding Task Queue / ## Rules For New Tests`; task text: - [ ] Before adding code, run `git -C /mnt/raid0/llm/epyc-orchestrator status --short` and inspect the current test layout.. The checkbox requires a live-model/measurement outcome. Freeze protocol, inputs, scorer and mock refusal cases offline, but those do not satisfy its live result gate."
+        },
+        {
+          "keys": [
+            "h:44c2:13f8:f8b7:62c5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Section `## Reporting Instructions / ### Follow-ups from the 2026-09-14 zero-inference sweep`; task text: - [ ] **Record the `epyc-orchestrator` `origin/main` red-test baseline so sessions stop reading it as their own. This concrete preparation/code/fixture can be verified with saved or synthetic inputs; the original live acceptance (if any) remains separately gated."
+        },
+        {
+          "keys": [
+            "h:5d26:c7f6:8d78:f91c"
+          ],
+          "disposition": "retain",
+          "reason": "Section `## Reporting Instructions / ### Follow-ups from the 2026-09-14 zero-inference sweep`; task text: - [ ] **Give `test_recent_eval_qids_excludes_only_rows_inside_recency_window` a frozen or relative clock** — it. No source-verified JEV integration is needed; preserve this checkbox and its current acceptance boundary."
+        }
+      ],
+      "findings": []
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "kind": "source-inspection",
+  "hooksPath": "/workspace/.git/hooks",
+  "hook": {
+    "path": "/workspace/.git/hooks/pre-push",
+    "sha256": "83c3d43fa82041c26628243470e0bac4b0efe0048dfe947902398d46f967359d",
+    "executable": true
+  },
+  "tracked_guard": {
+    "path": "scripts/hooks/pre_push_serialization_guard.sh",
+    "pinned_sha256": "4bf50c29b6e9e615199753a408edfa62983a1742dbdb2c8c97698f16a9e36869"
+  },
+  "limitation": "Installed hook is local/bypassable; no server-side enforcement proof."
+}

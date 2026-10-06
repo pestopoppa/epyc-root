@@ -1,0 +1,496 @@
+{
+  "shard_id": "S07",
+  "method": "Verified every listed file SHA-256 against ROOT snapshot 818841b22fb95a0f79a25e67f37583e3b94c5b7f; reviewed all 40 unchecked keys and their adjacent headings/dependency/evidence sections (large historical narratives not read linearly); checked relevant current epyc-orchestrator source at APP 07b352d0 / published main 4a11e974 for typed-decision schemas/native failure behavior, call accounting, host authority receipts, and existing escalation policy. Checked completed NI05 ledger for overlap; no implementations or runtime actions performed.",
+  "files": [
+    {
+      "path": "handoffs/active/glm52-reviewer-capability-gates.md",
+      "source_sha256": "b20385a0de89b89457e4f084b37c5c061783b2cc6a749a151d5e2820349d496b",
+      "reviewed_open_keys": [
+        "h:18d6:557f:eab0:1ec8",
+        "h:a6d6:9a2e:eac0:8905",
+        "h:8239:055d:6c3a:ae6f",
+        "h:101b:7253:c72f:e92e",
+        "h:7a33:5b5c:c4f7:8b7a",
+        "h:3fa4:9745:6165:ba9e"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:18d6:557f:eab0:1ec8"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain. DeepSeek-V4.1 port/load/sparse-attention and P-REV-1 claim-grade gate precede the corpus run; GLM-5.2 schema results do not transfer. JEV schema/native APIs may inform a new-template smoke but cannot establish claim-grade reviewer quality."
+        },
+        {
+          "keys": [
+            "h:a6d6:9a2e:eac0:8905"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain. V4.1 gates and frontier-reference rubric comparison are prerequisites; old GLM-5.2 axis-coverage smoke is not transferable. JEV closed-set output validation cannot replace rubric-depth/grounding scoring."
+        },
+        {
+          "keys": [
+            "h:8239:055d:6c3a:ae6f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain. V4.1 gates and P-REV-1 precede corpus diagnosis; explicitly discard the obsolete IQ2 hypothesis. Typed failure/schema APIs can preserve invalid outputs, but do not assess why-diagnosis accuracy."
+        },
+        {
+          "keys": [
+            "h:101b:7253:c72f:e92e"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain. Sizing is only useful after V4.1 loads and Engram access is measured; actual residency policy remains operator-owned. JEV is irrelevant."
+        },
+        {
+          "keys": [
+            "h:7a33:5b5c:c4f7:8b7a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain, model-agnostic but still an actual reviewer-split evaluation; do not treat typed-choice schema as evidence of two-axis reviewer efficacy."
+        },
+        {
+          "keys": [
+            "h:3fa4:9745:6165:ba9e"
+          ],
+          "disposition": "historical_only",
+          "reason": "The checkbox explicitly says NOT APPLICABLE: GLM-5.2 UD-IQ2_M is gone and V4.1 has no IQ2 experts. Keep as historical tombstone; do not rerun or retarget."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/reviewer-calibration-accounting.md",
+      "source_sha256": "a6a06851e692db02d36781800af317fbed5ce079b82a115fc81d4f4a260a0fd9",
+      "reviewed_open_keys": [
+        "h:ec00:90f8:397b:16b8",
+        "h:cf4f:b8c8:beea:998f",
+        "h:34da:a5c9:0c43:e706",
+        "h:752f:53c8:2097:f538",
+        "h:9907:59af:8077:63f2"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ec00:90f8:397b:16b8"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain: MEASUREMENT.md amendment is human-amendment-only; until it lands, reviewer metrics remain observation-only. JEV receipts cannot amend claim grammar."
+        },
+        {
+          "keys": [
+            "h:cf4f:b8c8:beea:998f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain after RC-6a and corpus-v1 admissibility. JEV local typed-decision outputs are not the reviewer baseline and cannot be substituted for blinded self-review."
+        },
+        {
+          "keys": [
+            "h:34da:a5c9:0c43:e706"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Use JEV native closed-set probabilities as a candidate adapter for the requested score-token expectation, not as a new confidence/calibration claim. Preserve the existing ledger and exact A/B; do not change thresholds or reviewer decisions."
+        },
+        {
+          "keys": [
+            "h:752f:53c8:2097:f538"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain as a human-only P-REV-1 amendment candidate; the existing MEASUREMENT boundary requires operator PR/sign-off. JEV cannot authorize or silently change estimands."
+        },
+        {
+          "keys": [
+            "h:9907:59af:8077:63f2"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain as human-only estimand policy for the external reviewer amendment; report malformed/tie rates explicitly only after the owner accepts the definition. No JEV shortcut."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S07-F1",
+          "task_keys": [
+            "h:34da:a5c9:0c43:e706"
+          ],
+          "title": "Evaluate RC-10 through the shipped native typed-decision probability seam",
+          "original_premise": "RC-10 proposes expectation over ordered score-token probabilities but names a custom model_grader readout site; the current JEV toolkit now has closed-set native candidate probabilities and typed failure records.",
+          "revised_deliverable": "Add one adapter arm that represents the existing score bins as a Question, obtains the candidate distribution with the native typed-decision runner, computes the already specified expectation, and compares it against the current discrete construction on the same fixed ledger/corpus. Preserve invalid/unresolved rows and do not change thresholds, reviewer decisions, or P-REV-1 claims.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/types.py",
+              "symbol": "Question, DecisionResult, ParseFailure",
+              "what": "Closed-set score catalogue and explicit per-question failure outcomes."
+            },
+            {
+              "path": "src/typed_decisions/native.py",
+              "symbol": "run_typed_decisions_native",
+              "what": "Candidate probability distribution; single-token binding may reject unsupported options instead of silently substituting."
+            },
+            {
+              "path": "src/typed_decisions/call_recorder.py",
+              "symbol": "record_llm_calls",
+              "what": "Total calls, prompt/cache/decode telemetry when run through LLMPrimitives /v1 seam."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/reviewer-calibration-accounting.md",
+              "lines": "63-68",
+              "observation": "RC-10 explicitly requests expectation over score-token distribution against the existing ledger, forbids threshold/reviewer-quality claims, and points at the existing corpus/scorer."
+            },
+            {
+              "path": "src/typed_decisions/native.py",
+              "lines": "418-481",
+              "observation": "Native API returns typed results and explicit unsupported/unavailable/unresolved failures; default single-token keys exist for multi-token labels."
+            },
+            {
+              "path": "src/typed_decisions/call_recorder.py",
+              "lines": "1-18,120-154",
+              "observation": "Call recorder retains per-call prompt/cache/decode where backend exposes /v1 meta; absent values stay null."
+            }
+          ],
+          "non_inference_scope": "Design and implement only the adapter and deterministic tests; actual comparison remains inference-gated and follows RC-10 P-REV-1/corpus gates.",
+          "inference_acceptance": "Same eligible rows and labels on both constructions; report each construction’s missing/unresolved denominator, Brier/ECE/AUC under the existing analysis protocol; no threshold or quality claim.",
+          "gate": "RC-6a/P-REV-1 and available inference window; operator rules unchanged.",
+          "ownership": "reviewer calibration owner; coordinate with TD typed-decision maintainer before touching core APIs.",
+          "roi": "medium",
+          "effort": "medium",
+          "verification": "source_verified",
+          "proposed_handoff_append": "  - Candidate implementation seam (JEV audit, 2026-10-06): use the existing `Question`/`DecisionResult` and `run_typed_decisions_native` candidate distribution as an adapter arm for the specified score-bin expectation; preserve unsupported/unresolved failures and use `record_llm_calls` only when the runner uses its supported `LLMPrimitives` `/v1` seam. Compare on the same existing rows under RC-10’s current protocol. This does not alter thresholds, reviewer decisions, or the inference/P-REV-1 gates."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/reviewer-typed-artifacts.md",
+      "source_sha256": "a3ec5b08404936c0aee2e330183a3a69f44c21b8b6c3e2ce0d2d8e65c909f5e0",
+      "reviewed_open_keys": [
+        "h:d2ed:cc75:793c:82df"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d2ed:cc75:793c:82df"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain the built N=20 pilot as gated; it requires live model calls and operator gate. Existing typed artifacts and hashes do not prevent contamination when intent is pasted into artifact text; JEV typed decisions do not fix that information-boundary limitation."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/reviewer-model-ablations.md",
+      "source_sha256": "6a7416c60b656577136272c4a9b3be32d4346935948e45ceb788af9c7d475358",
+      "reviewed_open_keys": [
+        "h:c03d:91d3:0d51:f29a",
+        "h:38a4:2426:9074:866a",
+        "h:dad6:a776:a409:0255",
+        "h:5831:0e87:e372:dc29",
+        "h:fa49:2acc:5ed4:a83a",
+        "h:0be9:3e17:799d:d9d2",
+        "h:7959:8bd2:509f:1cd8",
+        "h:7c7f:d8a3:81c5:47d0",
+        "h:9566:0400:b571:79b7",
+        "h:89ba:19e5:4f6a:6228",
+        "h:6903:aa01:9500:bdd2",
+        "h:ba78:3404:fcb4:7082"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c03d:91d3:0d51:f29a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "Re-resolve the open umbrella against its own dependency graph: A0/A1/A3/A4 are already closed evidence, while A4 names deleted GLM-5.2 and Ref has local-only ruling implications. Do not rerun old arms; retain only a currently authorized residual candidate after owner review."
+        },
+        {
+          "keys": [
+            "h:38a4:2426:9074:866a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain the screening protocol; runtime screening remains model/evidence work. JEV call recorder can support cost accounting only when the runner uses an LLMPrimitives llm_call seam; do not assume it instruments direct HTTP."
+        },
+        {
+          "keys": [
+            "h:dad6:a776:a409:0255"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain the paired N>=100 confirmation protocol; no typed-decision schema substitutes for paired reviewer outcomes, sequential test, or Holm control."
+        },
+        {
+          "keys": [
+            "h:5831:0e87:e372:dc29"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain as held-out probe criteria folded into RM-4; bias robustness needs actual reviewer calls and blinded outcomes. Existing reviewer artifact blinding can support controls; JEV does not establish robustness."
+        },
+        {
+          "keys": [
+            "h:fa49:2acc:5ed4:a83a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain as a field-order arm within RM-4; grammar order effect is empirical and requires paired model runs. JEV response schema can be held constant but does not answer the A/B."
+        },
+        {
+          "keys": [
+            "h:0be9:3e17:799d:d9d2"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain as RM-4 paired ablation; verifier-access effect requires actual calls and winning-pair evidence. JEV is not a substitute."
+        },
+        {
+          "keys": [
+            "h:7959:8bd2:509f:1cd8"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain after a valid winner and RC-6a; registry measured fields require admissible calibration evidence. JEV results do not become reviewer calibration by annotation."
+        },
+        {
+          "keys": [
+            "h:7c7f:d8a3:81c5:47d0"
+          ],
+          "disposition": "historical_only",
+          "reason": "Deferred low-value GLM-5.2 solo arm names a deleted model and depends on A4; do not reactivate absent a new operator-approved candidate and evidence."
+        },
+        {
+          "keys": [
+            "h:9566:0400:b571:79b7"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain exactly as a prompt ablation with stated safety exclusions and blinded objective outcomes; requires actual calls. JEV prompt/schema handling cannot support superalignment or safety claims."
+        },
+        {
+          "keys": [
+            "h:89ba:19e5:4f6a:6228"
+          ],
+          "disposition": "retain",
+          "reason": "Keep as an umbrella for RM-11a/b, not a separate third experiment. Its premise correction (AUC of confidence is not TPR-FPR discrimination) is load-bearing; JEV does not collapse those metrics."
+        },
+        {
+          "keys": [
+            "h:6903:aa01:9500:bdd2"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; existing selector harness can compare family-dissimilar vs same-family verifier on fixed pool/prompt/budget/seeds. Report verifier gain (precision minus solver accuracy); typed APIs can preserve categorical outcomes but will not validate the self-verification mechanism."
+        },
+        {
+          "keys": [
+            "h:ba78:3404:fcb4:7082"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; solve-accuracy requires reviewer runs on the C-CRAB slice and the specified anchoring comparison. Do not infer from reviewer confidence or JEV confidence values."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/reviewer-latency-and-sampling-budget.md",
+      "source_sha256": "3dd9826ec6e67ca9bb29fdebdfacb0176e37004966cdb39d6994145503ff060b",
+      "reviewed_open_keys": [
+        "h:b38c:4bf0:159c:4e5a",
+        "h:116b:0c2a:c3d3:278d",
+        "h:dd93:c1ad:65c4:1595",
+        "h:125b:d724:31fd:11fe",
+        "h:265c:a9d9:52a3:6c5d",
+        "h:7b6a:8541:bf27:0169",
+        "h:4144:448b:bfe0:65a8"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:b38c:4bf0:159c:4e5a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain as RD-12 replay attribution. `record_llm_calls` can decompose prompt/decode/cached-token cost if the replay goes through its LLMPrimitives seam; direct /completion lacks prompt-side values. No model-independent estimate should stand in for the replay."
+        },
+        {
+          "keys": [
+            "h:116b:0c2a:c3d3:278d"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Keep only remaining sampling-policy subitems; complexity gate, reminder substitution, and caps already landed. A bounded code-only pass may wire existing quick_mode/TaskComplexity and effort rules into the existing review dispatcher, with deterministic tests; k% policy should remain a declared config/seeded rule, not a JEV confidence threshold. Evaluate quality/throughput later under LB-4."
+        },
+        {
+          "keys": [
+            "h:dd93:c1ad:65c4:1595"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; paired task-rate A/B and e-process are the evidence gate. JEV call receipts can provide per-call costs, not replace paired outcomes; on-host reviewer wall clock remains summed as specified."
+        },
+        {
+          "keys": [
+            "h:125b:d724:31fd:11fe"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Metric/procedure is drafted; the remaining threshold value is explicitly OP-5b. JEV confidence is not calibrated reviewer correctness and cannot pick the operator threshold."
+        },
+        {
+          "keys": [
+            "h:265c:a9d9:52a3:6c5d"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain as explicit OP-5b choice; no enforce flip before it. No agent/JEV-selected threshold."
+        },
+        {
+          "keys": [
+            "h:7b6a:8541:bf27:0169"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; M3 floor comparison is the series go/no-go and requires paired live outcome/cost data. JEV does not supply reviewer-quality labels."
+        },
+        {
+          "keys": [
+            "h:4144:448b:bfe0:65a8"
+          ],
+          "disposition": "retain",
+          "reason": "Publish only after standing numbers exist; no premature table. JEV receipts may be cited as cost telemetry where applicable, not as quality claims."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+      "source_sha256": "6fcff8ffe8f6745c08b976edd9393752add7d1d322eb5621c92901525bef9ec9",
+      "reviewed_open_keys": [
+        "h:3a09:9468:e9c6:38be",
+        "h:46f9:2886:dd97:c228",
+        "h:a630:050b:b4ad:5390",
+        "h:45b8:a7ad:f913:1b2c",
+        "h:c86e:6494:6bf7:5ef4",
+        "h:1654:3e7c:0983:f664",
+        "h:f389:c123:685f:42de",
+        "h:f125:7cbc:338d:40d4",
+        "h:afef:6580:4df8:66df"
+      ],
+      "status_assessment": "Active canonical handoff; all open boxes reviewed against adjacent dependency/evidence sections and current JEV API boundaries.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:3a09:9468:e9c6:38be"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; depends on H4/H5 reliability-by-confidence evidence and LB-6. Typed model confidence is not calibration and cannot set thresholds."
+        },
+        {
+          "keys": [
+            "h:46f9:2886:dd97:c228"
+          ],
+          "disposition": "deterministic",
+          "reason": "The stated distinction is deterministic: conclusive verifier conflict escalates; inconclusive conflict stays with reviewer. Existing `fa/fr_candidate` events already fire. Keep blocked behind HG-1/H4/H5 per dependency graph; a source-grounded implementation/route fixture can be done without inference once dependency owner authorizes. JEV is unnecessary."
+        },
+        {
+          "keys": [
+            "h:a630:050b:b4ad:5390"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Existing scoping audit invalidated “align with SafetyGate”: three items are path/branch enforced; deploy and DB migration are not. Human-only paths file is operator-amendment-only. Keep this exact gate; do not author an unenforced JEV action menu."
+        },
+        {
+          "keys": [
+            "h:45b8:a7ad:f913:1b2c"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Retain: sampling rate/cadence is explicitly an operator decision (OP bundle); a JEV audit/selector cannot choose policy authority."
+        },
+        {
+          "keys": [
+            "h:c86e:6494:6bf7:5ef4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "Check current /v1 contract and HS-4 state before dispatch. Surfacing/override plumbing is deterministic API work; JEV PreparedAction is relevant only if the endpoint accepts a host-authorized action choice, not for response fields alone. Do not widen authority or add a new decision framework."
+        },
+        {
+          "keys": [
+            "h:1654:3e7c:0983:f664"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain as optional and strictly post-A/B; net-flip and right-to-wrong tail require actual blinded evaluation. JEV schema validation does not prove the two-sided round helps."
+        },
+        {
+          "keys": [
+            "h:f389:c123:685f:42de"
+          ],
+          "disposition": "historical_only",
+          "reason": "The task itself says frozen pointer until HS-4 resolves; do no harness UX work until that dependency changes."
+        },
+        {
+          "keys": [
+            "h:f125:7cbc:338d:40d4"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Retain; policy A/B requires P-AB-1/P-REV-1 and LB-6. JEV telemetry can aid cost accounting but does not satisfy quality/promotion gates."
+        },
+        {
+          "keys": [
+            "h:afef:6580:4df8:66df"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Step 1 is no-inference topology mapping only. Reuse existing detector/fixer roles and escalation path; record malformed/stale/empty finding and no-eligible-fixer fallback. Do not implement/tune an AutoPilot selector. If a later shadow choice is required, the existing `Question(CHOICE)`/`DecisionResult` and `PreparedAction` authority/read-set validation are candidate reuse seams; no live route now."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S07-F2",
+          "task_keys": [
+            "h:afef:6580:4df8:66df"
+          ],
+          "title": "Keep HG-9 Step 1 as a bounded topology map; reserve JEV selector APIs for a later shadow stage",
+          "original_premise": "HG-9 seeks a detector→fixer option AutoPilot can mutate but lacks a bounded mapping of input, route, trigger and failure behavior.",
+          "revised_deliverable": "Map one existing finding contract to eligible detector roles, one fixer role, the “finding emitted” trigger, existing escalation routing, and deterministic fallback for malformed/stale/empty findings or no eligible fixer. No new selector code or policy tuning in Step 1. Later shadow-only role choice may reuse typed `Question(CHOICE)`/`DecisionResult` plus `PreparedAction` host revalidation if the owner chooses it; do not imply those APIs are deployed on AutoPilot routes.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/types.py",
+              "symbol": "Question, DecisionResult",
+              "what": "Possible later closed-set detector/fixer choice with explicit parse/failure result."
+            },
+            {
+              "path": "src/typed_decisions/prepared_action.py",
+              "symbol": "prepare_action, validate_prepared_action, DecisionReceipt",
+              "what": "Later host-side catalog/read-set/revision/authorization/availability validation and incumbent fallback; does not grant execution permission."
+            },
+            {
+              "path": "src/orchestration/escalation.py",
+              "symbol": "EscalationPolicy, EscalationContext",
+              "what": "Existing route/policy to map against rather than inventing a parallel framework."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+              "lines": "39-52,54-61",
+              "observation": "Step 1 explicitly no-inference; Step 2 requires EV-13b and a judge-stable score; dependency graph preserves the later gates."
+            },
+            {
+              "path": "src/orchestration/escalation.py",
+              "lines": "179-212,220-?",
+              "observation": "Existing escalation policy owns retry/escalate/skip/fail outcomes and configurable escalation limits."
+            },
+            {
+              "path": "src/typed_decisions/prepared_action.py",
+              "lines": "66-145,148-180",
+              "observation": "Host snapshots offered menu/read set and rechecks expiry, authorization, model availability and staleness; rejected choice falls back to incumbent."
+            }
+          ],
+          "non_inference_scope": "Specification/table and source mapping only; no route implementation, runtime mutation, or production tuning.",
+          "inference_acceptance": "Step 1 has none. Later detector-accuracy work remains EV-13b-gated; an optional choice policy needs its own shadow evidence and cannot be inferred from typed schema validity.",
+          "gate": "EV-13b and measured shadow evaluation for any later model selection; D9/AutoPilot ownership review before code.",
+          "ownership": "reviewer escalation/control-plane owner; AutoPilot escalation owner for any future code.",
+          "roi": "medium",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "  - Step 1 implementation boundary (JEV audit, 2026-10-06): document the detector/fixer pool, finding contract, trigger, existing `EscalationPolicy` route, and deterministic fallback for malformed/stale/empty findings or no eligible fixer. This step is a source-backed topology map only; do not add a new AutoPilot selector or claim that typed decisions are live on this route. If a later shadow stage chooses among a closed menu, evaluate reuse of `Question(CHOICE)`/`DecisionResult` and host-side `PreparedAction` validation/receipt, with EV-13b and that stage’s own evidence gates intact."
+        }
+      ]
+    }
+  ]
+}

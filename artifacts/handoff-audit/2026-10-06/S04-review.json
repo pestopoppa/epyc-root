@@ -1,0 +1,823 @@
+{
+  "shard_id": "S04",
+  "method": "Verified all six ROOT snapshot file SHA-256 values at 818841b22fb95a0f79a25e67f37583e3b94c5b7f; reviewed every unchecked key and adjacent gates/owner sections (not linearly reading historical narrative); checked actual orchestrator source at accepted 07b352d0/published main 4a11e974 for ColBERT config, query/document caps, index metadata, tokenizer identity, and singleton locking. Checked NI05 completed ledger for duplicate work; no generation, model call, build, or canonical edit performed. JEV applicability is limited to the KB-WM freshness checker (none), and does not replace retrieval metrics or parser/image evaluation.",
+  "files": [
+    {
+      "path": "handoffs/active/internal-kb-rag.md",
+      "source_sha256": "5e507578c337fbb084e21bfbfe14a59b80724c6e0efd25a1ad7d1075b97bbfe1",
+      "reviewed_open_keys": [
+        "h:0d18:5513:c9d2:bfd2",
+        "h:2076:81d7:139d:ec51",
+        "h:3b43:0c8b:6217:9f4c",
+        "h:5389:0e43:a8b1:72c6",
+        "h:c4ca:d300:7eb2:ff9c",
+        "h:ba5a:ce5b:875e:4c95",
+        "h:e8cb:e492:af96:1718",
+        "h:cd0b:31a7:c7c5:df4c",
+        "h:835e:3d60:dd5f:6a18",
+        "h:9a48:a5ee:0879:12fc",
+        "h:d83e:7ed5:5b91:a4ae",
+        "h:2592:732f:050b:3359",
+        "h:6bae:3f05:4f04:e72a",
+        "h:e8b8:33f6:bd05:e91a",
+        "h:9919:4047:9c8a:6d5f",
+        "h:cea3:d9bb:6ddd:d779",
+        "h:9049:db4d:a0df:7623",
+        "h:e085:04da:c7e4:a414",
+        "h:9340:506f:0cec:5699",
+        "h:78dd:0185:353a:1bb0",
+        "h:3be8:c82f:9e66:2e6f",
+        "h:7f1f:7e83:ed59:a075",
+        "h:da13:6004:fde9:cf62"
+      ],
+      "status_assessment": "Active handoff; all listed unchecked boxes reviewed with nearby dependency/guardrail sections and source checks where relevant.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0d18:5513:c9d2:bfd2"
+          ],
+          "disposition": "conditional",
+          "reason": "K8 is explicitly LOW/deferred until K1-K7 ship and a measured wiki cross-link gap exists; do not build a learning scorer from generic JEV availability."
+        },
+        {
+          "keys": [
+            "h:2076:81d7:139d:ec51"
+          ],
+          "disposition": "standing",
+          "reason": "This is a citation rule for any future K2 defense, not an independent engineering task; preserve the HOPE evidence attribution and do not make JEV a substitute for retrieval evidence."
+        },
+        {
+          "keys": [
+            "h:3b43:0c8b:6217:9f4c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "STQ1_0 is a model-dependent prerequisite: first check the named llama.cpp PR/GGUF load path and documented fallback; do not infer usability from PR status or a JEV typed answer."
+        },
+        {
+          "keys": [
+            "h:5389:0e43:a8b1:72c6"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Weights acquisition is prep only; it does not show Hy-MT2 quality, latency, or launchability. Keep separate from model calls and only resolve the exact selected artifact after STQ1_0 status is known."
+        },
+        {
+          "keys": [
+            "h:c4ca:d300:7eb2:ff9c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The launch recipe requires a real service/template smoke; its reasoning-mode and sampling behavior cannot be settled by static JEV schema conformance."
+        },
+        {
+          "keys": [
+            "h:ba5a:ce5b:875e:4c95"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The handoff explicitly reserves benchmark launch to the operator and per-run inference grant; prep commands only, no autonomous run."
+        },
+        {
+          "keys": [
+            "h:e8cb:e492:af96:1718"
+          ],
+          "disposition": "retain",
+          "reason": "Freeze the sample set before any run. This is deterministic study hygiene and can be prepared without inference; JEV would not choose/relabel a post-hoc sample."
+        },
+        {
+          "keys": [
+            "h:cd0b:31a7:c7c5:df4c"
+          ],
+          "disposition": "source_recheck",
+          "reason": "This is a tooling/quiet-CPU re-index task, not JEV work. Recheck canonical GitNexus wrapper and index staleness/quiet-window owner before dispatch; no analysis was run in this audit."
+        },
+        {
+          "keys": [
+            "h:835e:3d60:dd5f:6a18"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Keep this a deterministic `--check` contract: warn non-fatally when the checkout graph is absent or differs from `build_graph(state)`, without changing `index_graph_readiness` or AIR-13 missing-graph semantics. JEV choice/receipt machinery adds no value to freshness."
+        },
+        {
+          "keys": [
+            "h:9a48:a5ee:0879:12fc"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The four-arm corpus retrieval A/B is the actual performance/quality question; preserve exact corpus/engine/evaluator inputs and objective labels. Typed model confidence must not become retrieval ground truth."
+        },
+        {
+          "keys": [
+            "h:d83e:7ed5:5b91:a4ae"
+          ],
+          "disposition": "retain",
+          "reason": "Question-set and ground-truth construction is a separable no-model preparation step; freeze and stratify before any arm. Keep labels human/objective and independent of JEV candidate outputs."
+        },
+        {
+          "keys": [
+            "h:2592:732f:050b:3359"
+          ],
+          "disposition": "inference_gated",
+          "reason": "A staleness arm is a separate retrieval-quality comparison; first define the stale-source slice and age semantics, then run only under the parent KB-GS protocol. JEV does not adjudicate document freshness."
+        },
+        {
+          "keys": [
+            "h:6bae:3f05:4f04:e72a"
+          ],
+          "disposition": "conditional",
+          "reason": "Hardware optimization is conditional on selecting/adopting the sharded engine; do not build the optimization path before the KB-GS result and the stated engine decision."
+        },
+        {
+          "keys": [
+            "h:e8b8:33f6:bd05:e91a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "This is a correction to the documented AnswerAI→GTE retirement rationale; inspect the cited changelog/model-card evidence and correct only the causal prose. No retrieval benchmark or JEV judgment is needed."
+        },
+        {
+          "keys": [
+            "h:9919:4047:9c8a:6d5f"
+          ],
+          "disposition": "standing",
+          "reason": "This is a claim guard against a model-card number that does not exist; retain as a citation constraint and verify any future BEIR number at its primary source."
+        },
+        {
+          "keys": [
+            "h:cea3:d9bb:6ddd:d779"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Source confirms config reading exists but KB-RAG still passes hard-coded query/document caps. Narrow K2 to consume declared caps or fail closed at those call sites, preserve fallback only when metadata is absent, and test model-specific caps; keep the OP-24 re-embed/index stamp gate for any behavior change."
+        },
+        {
+          "keys": [
+            "h:9049:db4d:a0df:7623"
+          ],
+          "disposition": "refine_jev",
+          "reason": "The embedding_dim half is shipped in `kb_rag.py`; tokenizer SHA remains unstamped. Finish only that identity guard, retaining legacy unstamped-index behavior and explicitly refusing mismatched known tokenizer hashes; deterministic file hashing, no JEV decision."
+        },
+        {
+          "keys": [
+            "h:e085:04da:c7e4:a414"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Quantification itself is zero-compute: tokenize original chunk text with truncation disabled and report true tail-token/character coverage; current catalog token_count is post-truncation and capped, so 40.5% is only a truncated-chunk count. Do not run the G13 re-embed arms as part of H1."
+        },
+        {
+          "keys": [
+            "h:9340:506f:0cec:5699"
+          ],
+          "disposition": "inference_gated",
+          "reason": "G11 compares two ONNX encoders on real chunk texts and needs actual embedding execution; retain max-absolute-delta and MaxSim top-1 agreement gate, not byte-hash or JEV-selected outputs."
+        },
+        {
+          "keys": [
+            "h:78dd:0185:353a:1bb0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "G12 requires new verbose queries and incumbent retrieval scoring; build/freeze the cases as prep, but the >2pp decision result requires the named model/retrieval execution."
+        },
+        {
+          "keys": [
+            "h:3be8:c82f:9e66:2e6f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "G13 changes document cap/chunking and requires full-corpus re-embedding; do not combine it with JEV or treat scoring from stale embeddings as evidence."
+        },
+        {
+          "keys": [
+            "h:7f1f:7e83:ed59:a075"
+          ],
+          "disposition": "inference_gated",
+          "reason": "B6 is explicitly a decision blocked on G11 and the 1.32pp-vs-2pp/noise-floor quality-cost basis; no encoder switch before those inputs."
+        },
+        {
+          "keys": [
+            "h:da13:6004:fde9:cf62"
+          ],
+          "disposition": "inference_gated",
+          "reason": "B7 is explicitly blocked on G12 and live query-length distribution; the existing 90 short queries never approach the cap, so changing it now is not evidence."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S04-F1",
+          "task_keys": [
+            "h:835e:3d60:dd5f:6a18"
+          ],
+          "title": "Finish KB-WM-6 as an advisory graph freshness check",
+          "original_premise": "The ROOT task says neither index_state --check nor backlog_row_check.index_graph_readiness compares `.index-graph.json` with the checkout state; copied lane graphs remain old.",
+          "revised_deliverable": "Add a non-fatal `index_state.py --check` warning only when the local graph is absent or differs from `build_graph(state)`; preserve graph provenance-only behavior and AIR-13 no-reason-on-missing semantics. Add three deterministic fixtures for current, stale, and missing graph.",
+          "toolkit_reuse": [
+            {
+              "path": "scripts/handoffs/index_state.py",
+              "symbol": "build_graph, --check",
+              "what": "Use the graph builder and existing checker as the only freshness authority; no model/tool call."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/internal-kb-rag.md",
+              "lines": "656-669",
+              "observation": "Task itself identifies absent comparison and recommends option (b), a non-fatal check warning."
+            },
+            {
+              "path": "handoffs/active/internal-kb-rag.md",
+              "lines": "657-663",
+              "observation": "Existing screener pins silent-on-absence behavior; avoid altering it."
+            }
+          ],
+          "non_inference_scope": "Checker, warning and deterministic fixtures only.",
+          "inference_acceptance": "None; no retrieval A/B claim.",
+          "gate": "No operator gate found; retain single ownership with root index-state tooling.",
+          "ownership": "epyc-root handoff/index-state owner.",
+          "roi": "high",
+          "effort": "small",
+          "verification": "handoff_only",
+          "proposed_handoff_append": "  - Bounded completion (JEV audit, 2026-10-06): compare the checkout `.index-graph.json` with `build_graph(state)` in `index_state.py --check` and emit a non-fatal warning for missing/stale graph files. Preserve provenance-only/silent-on-absence screener behavior. Add current/stale/missing fixtures; this is deterministic integrity checking, not a model decision or retrieval-quality claim."
+        },
+        {
+          "id": "S04-F2",
+          "task_keys": [
+            "h:cea3:d9bb:6ddd:d779"
+          ],
+          "title": "Narrow K2 to the remaining hard-coded internal KB caps",
+          "original_premise": "The handoff says ONNX config loading landed, while declared lengths are still not acted on; verify this at both retrieval call sites.",
+          "revised_deliverable": "Keep `_load_declared_config()` behavior; update `kb_rag.query`/document encode call sites that still pass `_QUERY_MAX_TOKENS=48` and `_DOC_MAX_TOKENS=256` to honor declared caps or fail loudly according to the model contract. Preserve legacy fallbacks only for absent/unreadable metadata and track the cap in index metadata; do not bulk-reembed or change production encoder defaults as part of this code task.",
+          "toolkit_reuse": [
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "symbol": "max_query_tokens, max_document_tokens, _load_declared_config",
+              "what": "Existing checkpoint metadata reader and per-checkpoint cap helpers."
+            },
+            {
+              "path": "src/retrieval/kb_rag.py",
+              "symbol": "_QUERY_MAX_TOKENS, _DOC_MAX_TOKENS, query",
+              "what": "Exact remaining call sites and index metadata stamping."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "lines": "221-246,365-390",
+              "observation": "The declared-config loader reads both config files and cap helpers expose model-declared query/document length."
+            },
+            {
+              "path": "src/retrieval/kb_rag.py",
+              "lines": "66-67,236-237,482,608,762,769",
+              "observation": "Internal KB still uses fixed 48/256 caps at encode call sites and stamps those constants."
+            },
+            {
+              "path": "src/tools/web/colbert_reranker.py",
+              "lines": "76-120",
+              "observation": "The web reranker already calls `colbert_encoder.max_query_tokens()`, so scope is KB-RAG, not all ColBERT paths."
+            }
+          ],
+          "non_inference_scope": "Source-derived config plumbing + synthetic temp-config fixtures; do not regenerate stored embeddings or compare retrieval quality.",
+          "inference_acceptance": "Any cap/index behavior change affecting stored vectors needs the existing OP-24 re-embed decision and later retrieval evidence; code fixture is not performance acceptance.",
+          "gate": "Respect OP-24 index-convention/re-embed ownership before changing values on live stores.",
+          "ownership": "epyc-orchestrator retrieval/KRAG owner; coordinate with reranker maintainer to avoid duplicate helper changes.",
+          "roi": "high",
+          "effort": "medium",
+          "verification": "source_verified",
+          "proposed_handoff_append": "  **JEV-aware source narrowing (2026-10-06):** `_load_declared_config()` and `max_query_tokens()` / `max_document_tokens()` now exist; `src/tools/web/colbert_reranker.py` already uses the helper. Remaining fixed values are in `src/retrieval/kb_rag.py` (`_QUERY_MAX_TOKENS=48`, `_DOC_MAX_TOKENS=256`) and its encode call sites. Close only this KB-RAG cap plumbing with synthetic declared/absent/invalid-config fixtures and preserve index metadata/stamp semantics. Do not re-embed or claim retrieval improvement; any stored-index cap transition stays under OP-24."
+        },
+        {
+          "id": "S04-F3",
+          "task_keys": [
+            "h:9049:db4d:a0df:7623"
+          ],
+          "title": "Complete the missing tokenizer identity half of K3",
+          "original_premise": "The task records embedding width as shipped, but same-dimension tokenizer swaps remain invisible to the index reader.",
+          "revised_deliverable": "At index build, stamp the SHA-256 of the exact tokenizer file used; on read, compare only when both stored and current identity are known, refuse a mismatch, and keep legacy unstamped catalogs in the established compatibility path. Add deterministic same/mismatch/legacy fixtures with temporary tokenizer files.",
+          "toolkit_reuse": [
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "symbol": "_TOKENIZER_PATH, resolve_model_dir",
+              "what": "Canonical path to the tokenizer actually loaded."
+            },
+            {
+              "path": "src/retrieval/kb_rag.py",
+              "symbol": "_stamp_meta, _read_meta, _check_embedding_dim",
+              "what": "Existing index metadata write/read/refusal seam."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "src/retrieval/kb_rag.py",
+              "lines": "203-250,288-294",
+              "observation": "Only embedding_dim is currently stamped/checked; tokenizer hash absent from metadata."
+            },
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "lines": "105-107,323-326,434-440",
+              "observation": "The loaded tokenizer is the exact `_TOKENIZER_PATH` artifact, a deterministic hash input."
+            }
+          ],
+          "non_inference_scope": "Hash and metadata compatibility logic with temp-file unit fixtures; no model execution or reindexing.",
+          "inference_acceptance": "None for the identity guard; do not imply retrieval-quality improvement.",
+          "gate": "Respect historical unstamped-index compatibility and index owner before any production reindex.",
+          "ownership": "epyc-orchestrator KB retrieval owner.",
+          "roi": "high",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "  **JEV-aware source narrowing (2026-10-06):** `_stamp_meta()`/`_check_embedding_dim()` already guard width, but `_read_meta()` has no tokenizer digest and `colbert_encoder` loads `_TOKENIZER_PATH`. Finish only the missing tokenizer SHA-256 stamp/read check; test same hash, mismatch refusal, and legacy unstamped catalog behavior with temp files. This is deterministic encoder identity integrity, not a JEV/model decision or retrieval-quality claim."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/colbert-reranker-web-research.md",
+      "source_sha256": "8921da086c494f3fd9f1da91a56ea0704fd679761480c10c92b77b34c94d3cf1",
+      "reviewed_open_keys": [
+        "h:4ede:09de:887f:3019",
+        "h:a1df:5323:fcc1:5ea4",
+        "h:0e6b:a85a:5c3c:2607",
+        "h:79de:29ee:dd14:7d89",
+        "h:cba6:29e0:97a2:3d5e",
+        "h:964c:74c2:afa2:4f6c",
+        "h:6b22:7ce6:0567:6170",
+        "h:78ba:a464:f56f:13ea",
+        "h:bf03:4831:d988:9c32",
+        "h:68cf:943d:2a12:e2ed",
+        "h:c2f9:dcc1:562b:b64c"
+      ],
+      "status_assessment": "Active handoff; all listed unchecked boxes reviewed with nearby dependency/guardrail sections and source checks where relevant.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:4ede:09de:887f:3019"
+          ],
+          "disposition": "conditional",
+          "reason": "S5 is explicitly HOLD until a fresh analyzer has >=50 synthesized pages and >20% irrelevant pages; only then implement behind its feature flag. JEV is not a source of page-count/relevance telemetry."
+        },
+        {
+          "keys": [
+            "h:a1df:5323:fcc1:5ea4"
+          ],
+          "disposition": "inference_gated",
+          "reason": "S6 needs the sentinel-question synthesis-quality, irrelevant-page-rate, and latency comparison; keep the upstream gate and raw outputs. Typed-choice judgments cannot replace those outcomes."
+        },
+        {
+          "keys": [
+            "h:0e6b:a85a:5c3c:2607"
+          ],
+          "disposition": "inference_gated",
+          "reason": "S7 needs `/tokenize`/`/completion` token probabilities and event-boundary retrieval comparisons; cost and page-quality effect require model execution."
+        },
+        {
+          "keys": [
+            "h:79de:29ee:dd14:7d89"
+          ],
+          "disposition": "conditional",
+          "reason": "The LateOn A/B is conditional on acceptable latency and available AR-3 Package D queries; no local JEV test can establish synthesis quality."
+        },
+        {
+          "keys": [
+            "h:cba6:29e0:97a2:3d5e"
+          ],
+          "disposition": "conditional",
+          "reason": "DenseOn is only worth evaluating if BGE-small retention is an observed bottleneck; first verify that premise from traffic, then gate any model A/B."
+        },
+        {
+          "keys": [
+            "h:964c:74c2:afa2:4f6c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The amended LateOn-vs-GTE sentinel A/B is explicitly gated on AR-3 Package D and requires decontaminated queries; keep it paired and scope-honest."
+        },
+        {
+          "keys": [
+            "h:6b22:7ce6:0567:6170"
+          ],
+          "disposition": "inference_gated",
+          "reason": "PREFIX-2 tests transfer of published BEIR deltas into the actual prefix configuration; that is an empirical retrieval comparison after PREFIX-1, not a typed-model selection."
+        },
+        {
+          "keys": [
+            "h:78ba:a464:f56f:13ea"
+          ],
+          "disposition": "inference_gated",
+          "reason": "PREFIX-3 corrects the invalid raw-text-vs-prefixed parity comparison by calling `encode(role=ROLE_DOCUMENT)`; ONNX/PyLate execution is required, and prior parity claims remain void."
+        },
+        {
+          "keys": [
+            "h:bf03:4831:d988:9c32"
+          ],
+          "disposition": "refine_jev",
+          "reason": "S9 is a genuine code-only singleton race: current `refresh_model_dir()` clears global session/tokenizer fields and `ensure_loaded()` fills them without a lock. Add a narrow lock contract around repoint/load/read and deterministic interleaving tests with fake session/tokenizer; do not enable reranking or claim runtime concurrency evidence."
+        },
+        {
+          "keys": [
+            "h:68cf:943d:2a12:e2ed"
+          ],
+          "disposition": "conditional",
+          "reason": "S8 is explicitly parked until S5 is stable and DGX Spark GPU exists; keep dormant and do not expand its model/data scope."
+        },
+        {
+          "keys": [
+            "h:c2f9:dcc1:562b:b64c"
+          ],
+          "disposition": "source_recheck",
+          "reason": "G14 is a bounded exporter repair, but the stated Python 3.10–3.12 venv prerequisite and exporter revision must be rechecked first; CPU export/parity is compute, so separate environment prep from execution and preserve graph-dimension/parity acceptance."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S04-F4",
+          "task_keys": [
+            "h:bf03:4831:d988:9c32"
+          ],
+          "title": "Add the ColBERT singleton locking contract before concurrent slots are enabled",
+          "original_premise": "`refresh_model_dir()` can clear shared ONNX/tokenizer globals while `ensure_loaded()` or `encode()` uses them, creating a transient empty session and ordinary miss.",
+          "revised_deliverable": "Define one narrow lock around model-dir repoint, lazy load, and each encode critical section; use deterministic fake tokenizer/session barriers to prove calls see either the old complete slot or the new complete slot, never a partial reset. Do not start reranker or claim deployed concurrency behavior.",
+          "toolkit_reuse": [
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "symbol": "refresh_model_dir, ensure_loaded, encode",
+              "what": "Existing global state seams; no new decision toolkit needed."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "src/retrieval/colbert_encoder.py",
+              "lines": "293-326,409-440,487-?",
+              "observation": "Refresh clears module-level session/tokenizer and loader repopulates them without a lock; task premise matches current source."
+            },
+            {
+              "path": "handoffs/active/colbert-reranker-web-research.md",
+              "lines": "553-560",
+              "observation": "Task explicitly places locking before concurrent KB-RAG/reranker enablement."
+            }
+          ],
+          "non_inference_scope": "Lock contract and fake-object interleaving tests only.",
+          "inference_acceptance": "No performance or concurrency deployment claim; live concurrent enablement remains owner-gated.",
+          "gate": "Before any concurrent reranker enablement; coordinate before touching shared retrieval module.",
+          "ownership": "epyc-orchestrator ColBERT encoder owner.",
+          "roi": "medium",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "  **Source verification (JEV audit, 2026-10-06):** `refresh_model_dir()` clears `_session`/`_tokenizer` and `ensure_loaded()` repopulates the globals without synchronization. Before any concurrent KB-RAG/reranker enablement, define a narrow lock contract covering refresh/load/encode and test deterministic fake-object interleavings. This is local state integrity only; no reranker activation or runtime performance claim."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/ernie-image-turbo-evaluation.md",
+      "source_sha256": "c750849c5fb49ad307dcd8edceb88a08c28d3d74c56aaf66cb743ae7307502f2",
+      "reviewed_open_keys": [
+        "h:1771:bbdc:5d85:19a0",
+        "h:a635:7442:38d2:c859",
+        "h:909e:0fe7:cdf0:44ad",
+        "h:1215:8e78:882a:8345",
+        "h:d324:acc0:cfee:9d9e",
+        "h:f5f2:0d70:3ffa:f8a2"
+      ],
+      "status_assessment": "Active handoff; all listed unchecked boxes reviewed with nearby dependency/guardrail sections and source checks where relevant.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1771:bbdc:5d85:19a0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Matched Qwen-Image-2.1 vs ERNIE image generation is the direct comparison and has no admissible outputs yet; freeze prompts/settings and retain images before making comparative claims. JEV APIs do not assess image quality."
+        },
+        {
+          "keys": [
+            "h:a635:7442:38d2:c859"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Content-filter `--execute` is a live audit of the generated-image path; the harness readiness is not an audit result. Execute only under its named operator approval and preserve pass/fail artifacts."
+        },
+        {
+          "keys": [
+            "h:909e:0fe7:cdf0:44ad"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The 20-prompt EN/ZH typography spot-check is the only local check against vendor-reported 0.9655; retain prompts, outputs, and objective text/transcription scoring, not JEV confidence."
+        },
+        {
+          "keys": [
+            "h:1215:8e78:882a:8345"
+          ],
+          "disposition": "operator_gated",
+          "reason": "GPU/MI210 rebench is explicitly operator-approved and measurement-only; use the prepared ROCm recipe only after window authorization, and do not alter frozen production builds."
+        },
+        {
+          "keys": [
+            "h:d324:acc0:cfee:9d9e"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The next ≥1024² white-output hypothesis is prep-first and run-gated on lifting the GPU hold; preserve the fact that prior DiT-linear hypotheses were exhausted and target VAE/attention instead."
+        },
+        {
+          "keys": [
+            "h:f5f2:0d70:3ffa:f8a2"
+          ],
+          "disposition": "source_recheck",
+          "reason": "FLUX alternative depends on product need for bilingual long-form in-image text; no technical benchmark resolves that product choice. Retain as a decision prompt until that requirement is stated."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/master-handoff-index.md",
+      "source_sha256": "f01267dbe12fa5adcc75b6dfdb96eec6c640a1f91716f84c360fda54d1dcf7de",
+      "reviewed_open_keys": [],
+      "status_assessment": "Router/index only; no unchecked boxes in shard. No backlog owned here.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/document-parser-table-bench.md",
+      "source_sha256": "7dc7a8f3eb7240c0e8f3f4ceb751c09858f0c561ca27dc9991c18a2d2ec4aaa8",
+      "reviewed_open_keys": [
+        "h:17eb:2934:ec91:2301",
+        "h:100a:780f:d490:5973",
+        "h:5fea:d12d:9015:5871",
+        "h:ebef:cf4b:d4a4:38af",
+        "h:f3e1:e332:69d7:4671",
+        "h:dc35:d9cf:b1bc:a49f",
+        "h:cae2:3dc3:b2d6:5dfe",
+        "h:d8ba:ae09:483a:81b2",
+        "h:9848:1fd8:935c:24c2",
+        "h:237c:5076:fff5:e10a",
+        "h:ba3f:1c95:cfc6:18c2",
+        "h:902d:0604:28da:7dfd",
+        "h:824d:a69c:908f:3aa8",
+        "h:40e3:14d3:8b4a:ebc7",
+        "h:ef23:4989:cb8d:4dce",
+        "h:b006:815b:4678:eda3"
+      ],
+      "status_assessment": "Active handoff; all listed unchecked boxes reviewed with nearby dependency/guardrail sections and source checks where relevant.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:17eb:2934:ec91:2301"
+          ],
+          "disposition": "retain",
+          "reason": "Weight resolution/cache-size recording is environment preparation, separate from the GGUF and CPU layout-stage invocation; no quality claim follows from download."
+        },
+        {
+          "keys": [
+            "h:100a:780f:d490:5973"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The CPU-only-path check still executes PP-DocLayout inference on EPYC; it proves no GPU assumption but remains a model run. Keep distinct from the approved server/GPU arms."
+        },
+        {
+          "keys": [
+            "h:5fea:d12d:9015:5871"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Starting experimental-v7 llama-server is an explicit server action and the phase is operator-approval-gated; no run in this audit."
+        },
+        {
+          "keys": [
+            "h:ebef:cf4b:d4a4:38af"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The handful-of-table-pages smoke is the bounded live pipeline call and requires the preceding server approval; preserve representative table-bearing page selection."
+        },
+        {
+          "keys": [
+            "h:f3e1:e332:69d7:4671"
+          ],
+          "disposition": "inference_gated",
+          "reason": "This is a result gate on actual output: require emitted HTML tables, and stop if zero. No full run is justified before it passes."
+        },
+        {
+          "keys": [
+            "h:dc35:d9cf:b1bc:a49f"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Cleanup proof is coupled to the approved server run; capture owned PID death and residency evidence at that boundary, never infer it from the invocation."
+        },
+        {
+          "keys": [
+            "h:cae2:3dc3:b2d6:5dfe"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Full 1,651-page ODL baseline changes the incumbent and requires full-set inputs/measurement approval; retain the specified supersession of the old TEDS claim."
+        },
+        {
+          "keys": [
+            "h:d8ba:ae09:483a:81b2"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Full PaddleOCR-VL pipeline score uses the same data and live model calls; hold until Phase B table-emission gate and Phase C approval."
+        },
+        {
+          "keys": [
+            "h:9848:1fd8:935c:24c2"
+          ],
+          "disposition": "retain",
+          "reason": "This is a required reporting split for every metric; specify it in the report template before the run, and do not pool the Chinese-skewed demo into English claims."
+        },
+        {
+          "keys": [
+            "h:237c:5076:fff5:e10a"
+          ],
+          "disposition": "retain",
+          "reason": "The n=665 TEDS plus structure-only/text/reading-order metrics are output requirements for the approved same-corpus comparison; no new metric framework is needed."
+        },
+        {
+          "keys": [
+            "h:ba3f:1c95:cfc6:18c2"
+          ],
+          "disposition": "retain",
+          "reason": "Persist via the already named `odl_bench compare-existing` path after scores exist; JEV action receipts are not benchmark result custody."
+        },
+        {
+          "keys": [
+            "h:902d:0604:28da:7dfd"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The table-path decision is downstream of English-only table TEDS and latency; keep ODL-only/hybrid/wholesale choices open until those admissible comparisons exist."
+        },
+        {
+          "keys": [
+            "h:824d:a69c:908f:3aa8"
+          ],
+          "disposition": "conditional",
+          "reason": "This row is conditional on PaddleOCR-VL underperforming; its architecture precheck already says both candidates are multi-call, so no single-pass download/benchmark. Reopen only with a separately scoped multi-call harness."
+        },
+        {
+          "keys": [
+            "h:40e3:14d3:8b4a:ebc7"
+          ],
+          "disposition": "conditional",
+          "reason": "Domain transfer is expressly not a blocker; assemble the real-ingest corpus when transfer is worth checking, but do not hold the OmniDocBench English gate on it."
+        },
+        {
+          "keys": [
+            "h:ef23:4989:cb8d:4dce"
+          ],
+          "disposition": "standing",
+          "reason": "This is a live guardrail, deliberately unchecked; keep it as a permanent no-download rule until a separate multi-call harness exists, not as unfinished work to execute."
+        },
+        {
+          "keys": [
+            "h:b006:815b:4678:eda3"
+          ],
+          "disposition": "conditional",
+          "reason": "The separate MinerU2.5-Pro pipeline-harness scope is conditional on PaddleOCR pipeline success and product need; only then define multi-call layout/OTSL assembly and test backend compatibility."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/opendataloader-pipeline-integration.md",
+      "source_sha256": "29867b457df8fb390a781363c560a2e893a0c12cb328dccc52dffecc025d76cd",
+      "reviewed_open_keys": [
+        "h:9fa1:f419:4d31:ba36",
+        "h:d252:8346:43e1:321d",
+        "h:b1c2:e588:9dfc:6c7f",
+        "h:e8fc:4369:f0e7:4013",
+        "h:21ed:483a:fa55:72b8",
+        "h:2987:6898:1dd0:1077",
+        "h:3259:75f3:81df:df99",
+        "h:069e:5c51:3e9a:a9c4",
+        "h:c364:f019:4d6c:fe8c",
+        "h:18e1:4d09:97d6:b885",
+        "h:08e1:8f5b:9722:3c66",
+        "h:4b3a:5bd6:bc65:2d37",
+        "h:d84e:014a:b218:9d84",
+        "h:5d0e:cc94:89ca:f7d5",
+        "h:975c:47be:3a81:af8a",
+        "h:77fe:5405:2936:19bb",
+        "h:432b:4e12:66a1:4ed4",
+        "h:4596:4825:1f13:3d3e"
+      ],
+      "status_assessment": "Active handoff; all listed unchecked boxes reviewed with nearby dependency/guardrail sections and source checks where relevant.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:9fa1:f419:4d31:ba36"
+          ],
+          "disposition": "inference_gated",
+          "reason": "LightOnOCR parser-quality comparison is the parent evidence question; use structural/table/reading-order metrics and docling-fast baseline. JEV is irrelevant to parser output fidelity."
+        },
+        {
+          "keys": [
+            "h:d252:8346:43e1:321d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Latency belongs inside the quality comparison and cannot independently reopen/adopt the model; collect only after quality-scoring says the candidate is useful."
+        },
+        {
+          "keys": [
+            "h:b1c2:e588:9dfc:6c7f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Three-way routing depends on the parser-quality evidence and verified class boundaries; do not add a router before the candidate’s scanned/table scope is established."
+        },
+        {
+          "keys": [
+            "h:e8fc:4369:f0e7:4013"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The 200-PDF five-engine comparison is long-running/model-backed; it needs immutable corpus, engine/evaluator hashes, and the appropriate inference grant."
+        },
+        {
+          "keys": [
+            "h:21ed:483a:fa55:72b8"
+          ],
+          "disposition": "retain",
+          "reason": "Dated results publication is an evidence-preservation requirement after a completed run; report metric direction and artifact hashes, never a JEV-generated quality claim."
+        },
+        {
+          "keys": [
+            "h:2987:6898:1dd0:1077"
+          ],
+          "disposition": "refine_jev",
+          "reason": "The ODL-013 decision gate is valid but currently scratch-only and its benchmark directory is absent in this snapshot. First make a no-inference evidence-availability inventory; if raw outputs are gone, the old observation cannot be made durable without a new approved run. Prepare a protocol/claim tuple and precommitted rule from an existing parser protocol if one exists, otherwise identify the operator ratification needed. `decision_receipt.v1` is an action receipt, not a measurement claim tuple; do not substitute it."
+        },
+        {
+          "keys": [
+            "h:3259:75f3:81df:df99"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The 200-PDF current-pipeline baseline is model-backed; freeze the same corpus/engines and obtain measurement authorization before execution."
+        },
+        {
+          "keys": [
+            "h:069e:5c51:3e9a:a9c4"
+          ],
+          "disposition": "standing",
+          "reason": "W-RAC citation is conditional on measured cost becoming a bottleneck; add the citation only when that condition is evidenced, not as an unconditional task."
+        },
+        {
+          "keys": [
+            "h:c364:f019:4d6c:fe8c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Intrinsic chunk metrics must be calculated on the Phase-3 fixture beside existing structural/speed scores; they do not stand alone as routing warrant and do not need JEV judgment."
+        },
+        {
+          "keys": [
+            "h:18e1:4d09:97d6:b885"
+          ],
+          "disposition": "inference_gated",
+          "reason": "HOPE is the contradictory arm and common RAG correctness endpoint; it requires the digest-pinned fixture and downstream RAG evaluation before either intrinsic family informs routing."
+        },
+        {
+          "keys": [
+            "h:08e1:8f5b:9722:3c66"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The fast-path constraint is a deterministic routing-policy requirement, but verify current LiteParse route/config before editing; keep it born-digital-only and refuse complex/table/scanned use."
+        },
+        {
+          "keys": [
+            "h:4b3a:5bd6:bc65:2d37"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The 1,651-page/665-table rebaseline is blocked by missing source-PDF/manifest bridge plus full measurement; first close the corpus bridge, then run under operator authorization."
+        },
+        {
+          "keys": [
+            "h:d84e:014a:b218:9d84"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Prior PaddleOCR-VL numbers are explicitly void; re-run only through the official pipeline or official cropped prompts under an inference grant. Do not reuse 0.0/0.058 TEDS."
+        },
+        {
+          "keys": [
+            "h:5d0e:cc94:89ca:f7d5"
+          ],
+          "disposition": "retain",
+          "reason": "The architecture/availability/intake precheck can be done without inference before any measurement; preserve the condition that both candidates are multi-call and create separate intake records before deciding on a harness."
+        },
+        {
+          "keys": [
+            "h:975c:47be:3a81:af8a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "This is model-architecture eligibility/guardrail work, not a serving implementation: verify stock full-MHA, quant and loop constraints against current artifacts before any single-pass arm; production kernel stays frozen."
+        },
+        {
+          "keys": [
+            "h:77fe:5405:2936:19bb"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The canonical Unlimited-OCR matched A/B is explicitly blocked by the all-inference-stop order and new Inference grant; maintain exact prompt/profile, result stripping and full-window receipt requirements."
+        },
+        {
+          "keys": [
+            "h:432b:4e12:66a1:4ed4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The row says the default was already repointed and requantized; remaining bounded work is immutable SHA-256 plus tensor audit and DEFAULT_MODEL/source verification. Inspect current registry/artifact source before making another quant change."
+        },
+        {
+          "keys": [
+            "h:4596:4825:1f13:3d3e"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The 18-page OmniDocBench demo is gated on artifact compliance and inference grant; require full binary/model/mmproj, linkage/residency, response, metrics and cleanup receipt."
+        }
+      ],
+      "findings": []
+    }
+  ]
+}

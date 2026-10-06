@@ -1,0 +1,3595 @@
+{
+  "shard_id": "S14",
+  "method": "Verified all 113 assigned file SHA-256 values against the ROOT snapshot and enumerated all 315 unchecked checkbox keys. Each source is archived/completed by the shard manifest; reviewed residual task text/status for overlap and classified as historical-only. Did not create JEV refinements or current work from historical checkboxes; any live recurrence must be resolved against its active owner. No inference or implementation.",
+  "files": [
+    {
+      "path": "handoffs/completed/fable5-findings-appendix-evidence-reports.md",
+      "source_sha256": "63a091d9d01ff2f797c6ce84389b0e44e07fa41cece0b7f3dfc05c4e8878b26b",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/inference-research-index-history-through-2026-08-10.md",
+      "source_sha256": "a5c9dab0261867ec49da3dfd6dc0f16edb86d7f325fda69464e7caf1b6b9a243",
+      "reviewed_open_keys": [
+        "h:3456:7df2:3001:a5b2",
+        "h:2a70:5e4e:1719:7afc",
+        "h:e635:57d2:4e48:a935",
+        "h:d081:1127:bae1:fdc6",
+        "h:89ba:e5c7:ba29:9727",
+        "h:76be:0823:ad4a:aeda",
+        "h:54e5:d0fc:8b3f:921b",
+        "h:c1d2:bd2a:0564:ccf0",
+        "h:add7:d58e:2cf9:0664",
+        "h:2ad1:4df5:fb2f:9910",
+        "h:918e:da27:8798:1341",
+        "h:d6a3:5f9e:a256:62fd"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:3456:7df2:3001:a5b2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2a70:5e4e:1719:7afc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e635:57d2:4e48:a935"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d081:1127:bae1:fdc6"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:89ba:e5c7:ba29:9727"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:76be:0823:ad4a:aeda"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:54e5:d0fc:8b3f:921b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c1d2:bd2a:0564:ccf0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:add7:d58e:2cf9:0664"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2ad1:4df5:fb2f:9910"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:918e:da27:8798:1341"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d6a3:5f9e:a256:62fd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/kv-cache-quantization.md",
+      "source_sha256": "ed9d34ddaae13f413de6ef605baeac7cc57dd7a81fc32be25a5be56894564bef",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/non-inference-backlog-completed-through-2026-04-12.md",
+      "source_sha256": "3e6925202d80b487d9c83957e4d8de045d406f5c45faaf111826894f32b71245",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/cpu-shape-specialized-gemv-decode-history-through-2026-09-17.md",
+      "source_sha256": "14648659f83809e0486028ad857f2f516e2847278fdbaa4348f6d48ad0cb6f47",
+      "reviewed_open_keys": [
+        "h:5388:1d97:81ee:3090",
+        "h:fda4:8ce1:7ef1:6a25",
+        "h:d986:06ee:aa51:bbe7",
+        "h:33ef:777e:b0b4:f650",
+        "h:ec8b:d446:8de5:33a8",
+        "h:d23d:640d:076f:4612",
+        "h:88b0:0728:dc71:84c5",
+        "h:2d0d:469b:80ea:af07",
+        "h:40a4:aee7:a024:df5b",
+        "h:5b73:162a:abe9:1a86",
+        "h:7004:892d:8fc4:61f0",
+        "h:ff79:4e46:af49:6c7c",
+        "h:9010:45d6:3450:e087",
+        "h:fa87:56b5:e871:1442",
+        "h:fb83:c150:017c:ed5f",
+        "h:c048:5f89:570c:b265",
+        "h:2d03:b056:a3b7:9661",
+        "h:58fb:ab62:06b7:dff2",
+        "h:70b4:84fb:b16f:9c58",
+        "h:c3b2:d82e:9c42:e3ac",
+        "h:a802:d3aa:3dc1:751a",
+        "h:fa8b:30a5:fdf0:bd7d",
+        "h:09d9:333a:cb2c:1f9e",
+        "h:0d6f:f596:293b:70df",
+        "h:392e:07bb:b261:a7e3",
+        "h:dae5:3afb:f495:27ac",
+        "h:f2eb:f073:6c74:5395",
+        "h:a1e0:ec1b:e410:ab43",
+        "h:3b27:c61d:d07f:81bb",
+        "h:33d9:ad9b:e849:4ecd",
+        "h:ff58:1f39:b86c:47fd",
+        "h:a7d8:eed9:9d94:3f21",
+        "h:d12f:7e5f:a88f:2bbd",
+        "h:67e7:6f0b:646c:9b23",
+        "h:2dc3:0673:76cf:6355",
+        "h:f16c:448f:faba:2143"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:5388:1d97:81ee:3090"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fda4:8ce1:7ef1:6a25"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d986:06ee:aa51:bbe7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:33ef:777e:b0b4:f650"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ec8b:d446:8de5:33a8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d23d:640d:076f:4612"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:88b0:0728:dc71:84c5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2d0d:469b:80ea:af07"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:40a4:aee7:a024:df5b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:5b73:162a:abe9:1a86"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7004:892d:8fc4:61f0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ff79:4e46:af49:6c7c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9010:45d6:3450:e087"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fa87:56b5:e871:1442"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fb83:c150:017c:ed5f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c048:5f89:570c:b265"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2d03:b056:a3b7:9661"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:58fb:ab62:06b7:dff2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:70b4:84fb:b16f:9c58"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c3b2:d82e:9c42:e3ac"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a802:d3aa:3dc1:751a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fa8b:30a5:fdf0:bd7d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:09d9:333a:cb2c:1f9e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0d6f:f596:293b:70df"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:392e:07bb:b261:a7e3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dae5:3afb:f495:27ac"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f2eb:f073:6c74:5395"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a1e0:ec1b:e410:ab43"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3b27:c61d:d07f:81bb"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:33d9:ad9b:e849:4ecd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ff58:1f39:b86c:47fd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a7d8:eed9:9d94:3f21"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d12f:7e5f:a88f:2bbd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:67e7:6f0b:646c:9b23"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2dc3:0673:76cf:6355"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f16c:448f:faba:2143"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/x-mas-text-routing-history-through-2026-06-19.md",
+      "source_sha256": "70f876158ada1e4911fec2790ef3b9725a4e24bd8032a1adfae486f9489318bd",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/routing-intelligence-completed-through-2026-05-28.md",
+      "source_sha256": "2a1c60f23032704d75f4aa8241d3f41111d3d5d296a10f1e9c36691dd3f58c67",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/hermes-outer-shell.md",
+      "source_sha256": "8fe0572bf4178f94b43ccfc5a5445d8f1552f3d927bdac9f3b3839aeff9baccc",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/deepseek-v41-flash-evaluation-completed-through-2026-09-26.md",
+      "source_sha256": "61495e355072170a8c1385715603a274a2541c6f38d40864bdf951eee359537c",
+      "reviewed_open_keys": [
+        "h:1997:f8bd:d8bb:d57a",
+        "h:1c8f:2f17:de8d:896e"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1997:f8bd:d8bb:d57a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1c8f:2f17:de8d:896e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/v5-push-cleanup-audit.md",
+      "source_sha256": "00170ed34f1a3466378dd84b96c428e4299e05ecfa761a2ab76ed1eed087315d",
+      "reviewed_open_keys": [
+        "h:56f3:0e36:d045:8040",
+        "h:f1d8:7a0e:ca34:221c",
+        "h:9c74:1f16:8028:993b",
+        "h:e2b9:206e:2cfb:9a71",
+        "h:bb95:6169:03d6:e9fd",
+        "h:c155:bdb1:9210:7d3f",
+        "h:b4ed:84f8:bece:3bb8",
+        "h:d272:20a4:f0fc:1b8f",
+        "h:7510:7faf:efb7:500b",
+        "h:c67a:0be1:2470:e4de",
+        "h:26ab:8a15:72fe:095e",
+        "h:c4d4:7f44:11dd:2f8d",
+        "h:920e:c25e:f1c1:450b",
+        "h:1847:397f:91af:1a2f",
+        "h:6c61:8ffa:f3b0:dbfc",
+        "h:c562:6bf3:132e:57ce",
+        "h:d586:d298:603a:61ad",
+        "h:2ecc:55bb:5f03:da61",
+        "h:1548:7622:7c35:4de2",
+        "h:76c8:c266:4366:c744",
+        "h:586c:75cf:fdf9:53d5",
+        "h:a4c6:0193:9298:385b",
+        "h:9337:01b3:3522:ce5b",
+        "h:4bff:bc66:a21f:21fa",
+        "h:3d58:006e:1b9d:05a0",
+        "h:09ef:8018:8604:d3e6"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:56f3:0e36:d045:8040"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f1d8:7a0e:ca34:221c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9c74:1f16:8028:993b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e2b9:206e:2cfb:9a71"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bb95:6169:03d6:e9fd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c155:bdb1:9210:7d3f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:b4ed:84f8:bece:3bb8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d272:20a4:f0fc:1b8f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7510:7faf:efb7:500b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c67a:0be1:2470:e4de"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:26ab:8a15:72fe:095e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c4d4:7f44:11dd:2f8d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:920e:c25e:f1c1:450b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1847:397f:91af:1a2f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6c61:8ffa:f3b0:dbfc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c562:6bf3:132e:57ce"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d586:d298:603a:61ad"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2ecc:55bb:5f03:da61"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1548:7622:7c35:4de2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:76c8:c266:4366:c744"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:586c:75cf:fdf9:53d5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a4c6:0193:9298:385b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9337:01b3:3522:ce5b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4bff:bc66:a21f:21fa"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3d58:006e:1b9d:05a0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:09ef:8018:8604:d3e6"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/integration-test-coverage-phases-1-4-completed-through-2026-05-28.md",
+      "source_sha256": "0a4de5d4ad146d898c1afb470e66eb01b076a54e610215f0bb03ae0968dd20e3",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/research-evaluation-index-history-through-2026-06-19.md",
+      "source_sha256": "1a7dac5713c4b167070028deed2397c298e3272ebd9a06e6857710cb49c96245",
+      "reviewed_open_keys": [
+        "h:33d8:9e0d:29b8:c247",
+        "h:f7ee:8138:ee63:082b",
+        "h:3922:2a3a:2525:5d30",
+        "h:cd7b:d82b:538d:0fe9",
+        "h:2ec2:957a:427c:962b",
+        "h:468a:bf6e:c5cd:b084",
+        "h:e572:a227:bd60:bbb1",
+        "h:08ca:fd38:f8be:f246",
+        "h:e4af:8e06:273d:e905",
+        "h:3c84:5df8:3f60:c9af",
+        "h:c81d:e55d:450f:7271",
+        "h:6a0a:c793:89ca:c3ff",
+        "h:7d3f:dc69:ec29:0f1d",
+        "h:bf9a:6e6c:dc4e:0030",
+        "h:a187:a68d:79de:ba5c",
+        "h:dbd6:d4e5:c8cf:c9ec",
+        "h:8091:84cb:6e06:a0b0",
+        "h:e1b2:6c00:f705:6116",
+        "h:12eb:7e22:8b1d:64c4",
+        "h:66df:9129:3a85:23b9",
+        "h:c59f:64e2:9013:c4e3",
+        "h:a555:129a:572a:3cda",
+        "h:d05b:44b5:b816:8f89",
+        "h:e38a:04de:606f:eceb",
+        "h:6211:4068:dc44:fa43",
+        "h:a28c:f245:2b73:7308",
+        "h:cf84:4235:2ee7:5c0d",
+        "h:f01b:f664:2b7a:0ff9",
+        "h:9587:7cde:74aa:7e98",
+        "h:1727:4d4b:0ad4:2b4e",
+        "h:04b4:f07f:1fe3:d526",
+        "h:d8b4:99f4:2a18:74b4",
+        "h:7b19:dec2:c557:08f3",
+        "h:def3:ae97:cfde:a0ee",
+        "h:65d6:ff30:6336:74d0",
+        "h:0717:d4bc:af2b:d627",
+        "h:3ec5:d093:5383:89d7",
+        "h:18c4:b549:e98b:103a",
+        "h:4a8b:c6ca:596c:883e",
+        "h:493b:7d94:482b:b32a",
+        "h:bdf1:1f6f:b8c2:453a",
+        "h:1dad:8c9c:15b2:be42",
+        "h:282a:6b15:19bb:9ab5",
+        "h:d9bf:324e:9f61:9e93",
+        "h:19f7:e473:cc26:b5bd",
+        "h:6f46:7613:061a:dff3",
+        "h:8986:b2fa:561e:2271",
+        "h:a9e0:f64b:4678:83ce"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:33d8:9e0d:29b8:c247"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f7ee:8138:ee63:082b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3922:2a3a:2525:5d30"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:cd7b:d82b:538d:0fe9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2ec2:957a:427c:962b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:468a:bf6e:c5cd:b084"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e572:a227:bd60:bbb1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:08ca:fd38:f8be:f246"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e4af:8e06:273d:e905"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3c84:5df8:3f60:c9af"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c81d:e55d:450f:7271"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6a0a:c793:89ca:c3ff"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7d3f:dc69:ec29:0f1d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bf9a:6e6c:dc4e:0030"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a187:a68d:79de:ba5c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dbd6:d4e5:c8cf:c9ec"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8091:84cb:6e06:a0b0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e1b2:6c00:f705:6116"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:12eb:7e22:8b1d:64c4"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:66df:9129:3a85:23b9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c59f:64e2:9013:c4e3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a555:129a:572a:3cda"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d05b:44b5:b816:8f89"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e38a:04de:606f:eceb"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6211:4068:dc44:fa43"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a28c:f245:2b73:7308"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:cf84:4235:2ee7:5c0d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f01b:f664:2b7a:0ff9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9587:7cde:74aa:7e98"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1727:4d4b:0ad4:2b4e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:04b4:f07f:1fe3:d526"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d8b4:99f4:2a18:74b4"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7b19:dec2:c557:08f3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:def3:ae97:cfde:a0ee"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:65d6:ff30:6336:74d0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0717:d4bc:af2b:d627"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3ec5:d093:5383:89d7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:18c4:b549:e98b:103a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4a8b:c6ca:596c:883e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:493b:7d94:482b:b32a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bdf1:1f6f:b8c2:453a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1dad:8c9c:15b2:be42"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:282a:6b15:19bb:9ab5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d9bf:324e:9f61:9e93"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:19f7:e473:cc26:b5bd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6f46:7613:061a:dff3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8986:b2fa:561e:2271"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a9e0:f64b:4678:83ce"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-kernel-env-flags-inventory.md",
+      "source_sha256": "5ec4ebcfb40ee8a301f82c27e2d122b81e269037564c70c6d9e522bf649c9e63",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/autopilot-handoff-hint-distillation.md",
+      "source_sha256": "fe28b65680fb2936b35ad4497e6f2bd1a8529521cb78f8559df04c7102e9daa2",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/repl-turn-efficiency-completed-through-2026-05-28.md",
+      "source_sha256": "1d5cc12813808c4255d246dec88be887f7009f2b5f739d418c256d95f8bf858d",
+      "reviewed_open_keys": [
+        "h:5845:2f21:a34d:de33",
+        "h:9220:a8d9:bd97:6912",
+        "h:58ab:b3d2:05d8:9f56",
+        "h:da09:e9df:35bf:315f",
+        "h:0908:af69:2dc7:c5d2"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:5845:2f21:a34d:de33"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9220:a8d9:bd97:6912"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:58ab:b3d2:05d8:9f56"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:da09:e9df:35bf:315f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0908:af69:2dc7:c5d2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/langgraph-migration.md",
+      "source_sha256": "a96dc6fc4e9237f49c03c05393d584ab67b38af752555dba35a43969d21c1f65",
+      "reviewed_open_keys": [
+        "h:0100:c4c5:38d5:9d07",
+        "h:6cd5:a508:6656:a60a",
+        "h:bd54:c392:5e68:feb0",
+        "h:7014:bbf0:a187:be1b",
+        "h:2c95:790b:b2a7:8213",
+        "h:1814:62c6:7943:1826",
+        "h:1a21:4f57:71bf:9b3d"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0100:c4c5:38d5:9d07"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6cd5:a508:6656:a60a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bd54:c392:5e68:feb0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7014:bbf0:a187:be1b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2c95:790b:b2a7:8213"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1814:62c6:7943:1826"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1a21:4f57:71bf:9b3d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/dflash-block-diffusion-speculation.md",
+      "source_sha256": "f935a43192f597ffd89dde7ab21310d5133b82ffffba81784cb0d0e186cfa756",
+      "reviewed_open_keys": [
+        "h:eee0:337e:0bff:e94b",
+        "h:96dc:38d3:29ee:e8e4",
+        "h:4734:bc9b:5930:45f0",
+        "h:ef5f:3f38:bbbc:3218",
+        "h:d336:ad86:7971:b91a",
+        "h:17ea:9a18:6f2b:fff6",
+        "h:f162:db81:0c80:f61e",
+        "h:85e3:af45:06fa:b7af"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:eee0:337e:0bff:e94b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:96dc:38d3:29ee:e8e4"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4734:bc9b:5930:45f0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ef5f:3f38:bbbc:3218"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d336:ad86:7971:b91a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:17ea:9a18:6f2b:fff6"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f162:db81:0c80:f61e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:85e3:af45:06fa:b7af"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/glm51-reap-cpu-evaluation.md",
+      "source_sha256": "90c51b701384fd4ca9879f79b6599b5359d5bd896c1eae31bb10decdf64d1a2b",
+      "reviewed_open_keys": [
+        "h:499d:aa53:ddfc:2849",
+        "h:7ecc:ae95:4930:c9af",
+        "h:557b:3592:8edd:4e86",
+        "h:ed00:2f65:7833:a5af",
+        "h:89b1:a2b2:3f91:9e70",
+        "h:edb7:eeec:a3ee:b8ed",
+        "h:05f7:6330:b741:2775",
+        "h:c845:5255:45b5:1a99",
+        "h:0c32:8811:c763:afcd",
+        "h:e782:a3ba:563f:70c9",
+        "h:aeba:f996:c567:0e10"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:499d:aa53:ddfc:2849"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7ecc:ae95:4930:c9af"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:557b:3592:8edd:4e86"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ed00:2f65:7833:a5af"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:89b1:a2b2:3f91:9e70"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:edb7:eeec:a3ee:b8ed"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:05f7:6330:b741:2775"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c845:5255:45b5:1a99"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0c32:8811:c763:afcd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e782:a3ba:563f:70c9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:aeba:f996:c567:0e10"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/qwen35-frontdoor-benchmark.md",
+      "source_sha256": "366bc6509b10a2d16b3ce7e16e54414d709deffa2a1676ff8f9a4d2c4c8ecadf",
+      "reviewed_open_keys": [
+        "h:ecaf:7944:084f:0f69",
+        "h:2ba6:16ee:99d1:e6d1",
+        "h:9acd:6c71:a015:7321",
+        "h:4324:51d0:e6e5:a9a6",
+        "h:ea67:ff34:404a:fc5c",
+        "h:b8d0:9a0e:a9d4:245a",
+        "h:c9d9:e9ab:ffeb:eb8c",
+        "h:758d:1dc2:1e2a:e2af",
+        "h:6294:06f7:86cf:ebed",
+        "h:750f:edca:3b57:b281",
+        "h:0551:93aa:ce4d:2d32",
+        "h:2cae:6de5:560d:b73b"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ecaf:7944:084f:0f69"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2ba6:16ee:99d1:e6d1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9acd:6c71:a015:7321"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4324:51d0:e6e5:a9a6"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ea67:ff34:404a:fc5c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:b8d0:9a0e:a9d4:245a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c9d9:e9ab:ffeb:eb8c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:758d:1dc2:1e2a:e2af"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:6294:06f7:86cf:ebed"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:750f:edca:3b57:b281"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0551:93aa:ce4d:2d32"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2cae:6de5:560d:b73b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/canvas-control-plane-architecture.md",
+      "source_sha256": "014af2e707de6852c764ea1e3b17e192474762adc32723ad6b8f004ecb4919a9",
+      "reviewed_open_keys": [
+        "h:6dae:013d:7342:172a",
+        "h:dea7:3997:b477:45b7",
+        "h:98e5:6afd:e00f:f534",
+        "h:e8a6:1f01:7aad:265d",
+        "h:ae05:d99a:6b3d:8da4",
+        "h:2e33:88c7:4246:e360",
+        "h:546b:22e4:0f64:edbf",
+        "h:bdfa:3851:aff9:3f6a",
+        "h:9575:4e60:4e58:ae2e",
+        "h:1003:743c:c35a:f490",
+        "h:02d8:b5da:cbc2:c7bb",
+        "h:55e3:7ac6:043e:80f9",
+        "h:a5f8:7e7b:190b:1b87",
+        "h:aa0f:fe2e:23a6:6534",
+        "h:052a:c20a:0f03:a69d",
+        "h:1bb8:1d7f:6a33:ab74",
+        "h:ab10:5b93:186a:2ef7",
+        "h:cc35:2aa4:daf1:a0e1",
+        "h:0c1e:ca2f:0711:cfdb",
+        "h:267e:812a:e8cc:97ce",
+        "h:3be9:d956:6b87:e8f9",
+        "h:25a2:046a:11e0:1089",
+        "h:eca2:db91:d1f6:6832",
+        "h:87c4:2a0c:839c:5834",
+        "h:951c:9ce1:9ad8:3709",
+        "h:bffc:584a:7047:fe94",
+        "h:0e41:f8ec:e367:d6f5",
+        "h:72e7:718e:e32e:50e3",
+        "h:4416:9e19:d53c:5211",
+        "h:4e93:1e57:55d7:87e9",
+        "h:060a:cb58:b43c:fa98",
+        "h:9d22:06ad:4098:0269",
+        "h:f630:8be8:11c9:8ec3",
+        "h:7bf4:6d10:9604:fbb8",
+        "h:cc03:2e2c:a680:9c1e",
+        "h:ca88:205b:371a:7b1d",
+        "h:b854:a652:1c1d:c72b",
+        "h:58c1:0788:ef24:631a"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:6dae:013d:7342:172a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dea7:3997:b477:45b7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:98e5:6afd:e00f:f534"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e8a6:1f01:7aad:265d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ae05:d99a:6b3d:8da4"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2e33:88c7:4246:e360"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:546b:22e4:0f64:edbf"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bdfa:3851:aff9:3f6a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9575:4e60:4e58:ae2e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1003:743c:c35a:f490"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:02d8:b5da:cbc2:c7bb"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:55e3:7ac6:043e:80f9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a5f8:7e7b:190b:1b87"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:aa0f:fe2e:23a6:6534"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:052a:c20a:0f03:a69d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1bb8:1d7f:6a33:ab74"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ab10:5b93:186a:2ef7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:cc35:2aa4:daf1:a0e1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0c1e:ca2f:0711:cfdb"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:267e:812a:e8cc:97ce"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3be9:d956:6b87:e8f9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:25a2:046a:11e0:1089"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:eca2:db91:d1f6:6832"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:87c4:2a0c:839c:5834"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:951c:9ce1:9ad8:3709"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bffc:584a:7047:fe94"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0e41:f8ec:e367:d6f5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:72e7:718e:e32e:50e3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4416:9e19:d53c:5211"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4e93:1e57:55d7:87e9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:060a:cb58:b43c:fa98"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9d22:06ad:4098:0269"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f630:8be8:11c9:8ec3"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7bf4:6d10:9604:fbb8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:cc03:2e2c:a680:9c1e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ca88:205b:371a:7b1d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:b854:a652:1c1d:c72b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:58c1:0788:ef24:631a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/model-stack-single-source-update-pipeline-completed-through-2026-09-27.md",
+      "source_sha256": "e88c5564f97b8515ba5c34339b983fed7c43bfc139904114f0fa4668af4238c9",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/orchestration-architecture-optimization-handoff.md",
+      "source_sha256": "ac208aa0b1c51a0498f9bfac391241cfad8d526ee7ecc5be31256a4108003379",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/non-inference-backlog-ni05-2026-10-06.md",
+      "source_sha256": "14166a989d797b8da9f1da542c19dda57cca5fe629f5157844f8abd3065a33f7",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-window2-findings-05b-mi210-inference-architecture.md",
+      "source_sha256": "3d0f226137bdb704ce3d215585a382221dea52f01688b0a5aff9da07e0b0c50a",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/wp9-wp10-lineup-event-prep.md",
+      "source_sha256": "420e05312d6e3f3a708b67536cae2d0c3cfdd4343f246f4d7d931cd0fe4bb4a6",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/gemma4-mtp-drafter-evaluation.md",
+      "source_sha256": "118b93093560cba4190f281d44e306d7e733278d2d2e73b5f6bd11b9fd37aed1",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/outer-coordinator-learned-head.md",
+      "source_sha256": "387c7ce95a47f745541e7c687aa70450280d831e8b497a23d9842b026afa028a",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/nextplaid-code-retrieval.md",
+      "source_sha256": "02956d53a01241ede60c74b561c5118b5b750f3414f0bcd54ee1448422deb5c4",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/mab-tree-shape-selector.md",
+      "source_sha256": "879870620f452afc320ad0a524a6ceea5329d6f3535505356c0c5b2d3a60ce86",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/numa-private-weights-quarter-roles.md",
+      "source_sha256": "036bcd3cf82f68531e0cfa98400c8e1e096c4c023af76d9acf9c5db24e10d26c",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/llama-cpp-kernel-push-rebase.md",
+      "source_sha256": "0955b3f7c41b800955e4af60dcf3dd00d343e4fbeccd3a8c160206fb3f47fae3",
+      "reviewed_open_keys": [
+        "h:7791:0b98:5d6c:6162",
+        "h:5067:a1e2:be03:2d95",
+        "h:2d3d:f89a:9d64:25ae",
+        "h:8286:0a02:9bbc:e540",
+        "h:70e9:6e86:adc4:a088",
+        "h:c6bf:7692:9658:52f5",
+        "h:5b72:1809:f278:6259",
+        "h:4142:5dfd:40ba:b299",
+        "h:59cd:663c:f5ef:8946",
+        "h:52a8:19e3:5d44:54dd",
+        "h:80a1:04ca:9df6:04cd",
+        "h:e514:90b5:ea03:6614",
+        "h:4258:40e2:99be:c378"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:7791:0b98:5d6c:6162"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:5067:a1e2:be03:2d95"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2d3d:f89a:9d64:25ae"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8286:0a02:9bbc:e540"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:70e9:6e86:adc4:a088"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c6bf:7692:9658:52f5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:5b72:1809:f278:6259"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4142:5dfd:40ba:b299"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:59cd:663c:f5ef:8946"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:52a8:19e3:5d44:54dd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:80a1:04ca:9df6:04cd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e514:90b5:ea03:6614"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:4258:40e2:99be:c378"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/cluster-A.md",
+      "source_sha256": "80db3888f25bbfe555834baabc3cb411a798a6e907b95cfe67c5653e6c900f9f",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/orchestrator-live-testing.md",
+      "source_sha256": "8969a74d6e401349e6328667079f790fc66d99b985b9c6ee42ad075e92be1ac8",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/iqk-port.md",
+      "source_sha256": "f7a72d5618aaf483e3f0cba77af545bce5eb99b2e0eb611df8870b19a1e13704",
+      "reviewed_open_keys": [
+        "h:0ea3:ec55:b0e0:a795"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0ea3:ec55:b0e0:a795"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/claude-code-patterns-for-orchestrator.md",
+      "source_sha256": "b02a0d1d3a892ccce4455e6a42c9606736954b057f7103a8e766f7c3c3faebc7",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/cluster-C.md",
+      "source_sha256": "4923668aa85f4a595ced96f7e090842d247377dab70200b638a9a6f6f5861e95",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/peer-verifier-speculation-spike.md",
+      "source_sha256": "9803a212ce047a1dc4153acceddca15ad826db8a18b3d81221a6a48994e775c0",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/seeding-diagnostics-review-2026-03-02.md",
+      "source_sha256": "9dfc59c071b991ef49a85b8b2e9b2f58e8cc0aef52fd9b50fe42741491ab23f2",
+      "reviewed_open_keys": [
+        "h:8df9:6f2c:e286:c626",
+        "h:bd53:ffe2:198b:4949",
+        "h:7453:0b8f:59c1:ca1c",
+        "h:484a:0c2c:13b5:4a3b",
+        "h:8aad:5afd:b02d:08d8",
+        "h:77fd:267c:0de8:d63e",
+        "h:826d:3191:d2c5:15eb",
+        "h:eff8:43e3:69a0:c8e1",
+        "h:ebef:088b:db41:bafc",
+        "h:8a4a:db1e:d6da:ee2d",
+        "h:03e3:e97e:4548:621b",
+        "h:0ed5:f9d2:1c89:79da",
+        "h:bc72:eb7c:03c3:b98a",
+        "h:155f:f760:250e:c555",
+        "h:bb81:c42a:7c99:b5f8",
+        "h:dd7f:8b21:d262:f559",
+        "h:dc83:9c14:14cc:50fd",
+        "h:7ec9:1cba:a075:d732",
+        "h:fa9c:94d2:79a6:25b1",
+        "h:7f23:1f8c:e4b6:8166",
+        "h:874e:fbd5:f1b3:c7c8",
+        "h:44da:73ed:f189:4755",
+        "h:39bf:4f49:9e00:0d7f",
+        "h:8374:a3f7:c224:299e",
+        "h:31b9:a83d:6c85:3ff6",
+        "h:9149:a1e1:766e:bb7d",
+        "h:1765:2673:3777:d74f",
+        "h:782e:24a6:d8f5:edfc",
+        "h:ec63:9b46:ce44:85ba",
+        "h:04cd:0db2:f07e:98c7",
+        "h:2def:db43:51a2:ccba",
+        "h:7fa9:b0f0:151c:c978",
+        "h:679c:b923:7e45:7c85",
+        "h:9657:e2ab:806f:72e7",
+        "h:c1de:ef43:c917:2ac5",
+        "h:a5e1:b7ea:60a9:b2a5",
+        "h:b4b0:a6dd:c736:134f",
+        "h:5c24:8d09:a8bf:2e1a",
+        "h:ac3e:f4bc:b110:c5c0",
+        "h:25c8:5684:0d83:2c96",
+        "h:bf45:8ada:6c16:ab29",
+        "h:43d9:5b66:b9a9:5716",
+        "h:c502:657f:c113:4eb7",
+        "h:068a:c326:efc8:d022",
+        "h:8576:deaa:f803:c07f",
+        "h:82e3:2b3d:8f39:fc73",
+        "h:0847:76c6:b520:9b83"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:8df9:6f2c:e286:c626"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bd53:ffe2:198b:4949"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7453:0b8f:59c1:ca1c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:484a:0c2c:13b5:4a3b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8aad:5afd:b02d:08d8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:77fd:267c:0de8:d63e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:826d:3191:d2c5:15eb"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:eff8:43e3:69a0:c8e1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ebef:088b:db41:bafc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8a4a:db1e:d6da:ee2d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:03e3:e97e:4548:621b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0ed5:f9d2:1c89:79da"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bc72:eb7c:03c3:b98a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:155f:f760:250e:c555"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bb81:c42a:7c99:b5f8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dd7f:8b21:d262:f559"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dc83:9c14:14cc:50fd"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7ec9:1cba:a075:d732"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fa9c:94d2:79a6:25b1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7f23:1f8c:e4b6:8166"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:874e:fbd5:f1b3:c7c8"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:44da:73ed:f189:4755"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:39bf:4f49:9e00:0d7f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8374:a3f7:c224:299e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:31b9:a83d:6c85:3ff6"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9149:a1e1:766e:bb7d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:1765:2673:3777:d74f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:782e:24a6:d8f5:edfc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ec63:9b46:ce44:85ba"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:04cd:0db2:f07e:98c7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2def:db43:51a2:ccba"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7fa9:b0f0:151c:c978"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:679c:b923:7e45:7c85"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9657:e2ab:806f:72e7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c1de:ef43:c917:2ac5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:a5e1:b7ea:60a9:b2a5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:b4b0:a6dd:c736:134f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:5c24:8d09:a8bf:2e1a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ac3e:f4bc:b110:c5c0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:25c8:5684:0d83:2c96"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:bf45:8ada:6c16:ab29"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:43d9:5b66:b9a9:5716"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c502:657f:c113:4eb7"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:068a:c326:efc8:d022"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:8576:deaa:f803:c07f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:82e3:2b3d:8f39:fc73"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0847:76c6:b520:9b83"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-findings-01-impl-plan.md",
+      "source_sha256": "9042b0af9764922f1b0a03e53745c3c9c52f262e69a0c8fcbf8a03e4b1ea70ea",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/validation-research.md",
+      "source_sha256": "5ec752b6c79395a67cada78071a3881bf962ef8217751d59b9b9c964d08dd4bf",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/cluster-D.md",
+      "source_sha256": "cdda8fcd55c73530675f39a4219229f95da2594df84105d76877f92bb1a53a2b",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/kernel-development.md",
+      "source_sha256": "22e28a11ef4a2c82485fbea23a23bf5143b57c0317b8d267036890343ebaff3e",
+      "reviewed_open_keys": [
+        "h:cf1f:ea66:d42e:7a16",
+        "h:c3db:99e2:394b:ddb5",
+        "h:baed:0488:bdad:456e",
+        "h:f715:32aa:5881:89d4",
+        "h:2632:8585:47b2:854e",
+        "h:0c41:0b36:4bb6:9402"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:cf1f:ea66:d42e:7a16"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c3db:99e2:394b:ddb5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:baed:0488:bdad:456e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:f715:32aa:5881:89d4"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2632:8585:47b2:854e"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0c41:0b36:4bb6:9402"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/pipeline-integration-index-history-through-2026-08-10.md",
+      "source_sha256": "fe7d8cd6f18de085267112bf184058495fa832be5947f0e0dac283afc32f94da",
+      "reviewed_open_keys": [
+        "h:b701:2fbe:e432:5a75",
+        "h:740a:afef:76c8:441a",
+        "h:10b4:c2fb:88b9:f755",
+        "h:43e9:8963:5660:c693",
+        "h:ee1f:9131:03dc:eb01",
+        "h:0579:dfb9:e2ba:cc47",
+        "h:d5c6:af2c:79cf:6e8c",
+        "h:d5e5:c828:4b11:1a24",
+        "h:c445:3dc0:d54a:e6cc",
+        "h:9f6c:7804:cfa3:fcf2",
+        "h:0172:f66b:f0a4:5506",
+        "h:abf3:a604:0afa:0519",
+        "h:2821:55ad:0432:a798"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:b701:2fbe:e432:5a75"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:740a:afef:76c8:441a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:10b4:c2fb:88b9:f755"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:43e9:8963:5660:c693"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ee1f:9131:03dc:eb01"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0579:dfb9:e2ba:cc47"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d5c6:af2c:79cf:6e8c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d5e5:c828:4b11:1a24"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c445:3dc0:d54a:e6cc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:9f6c:7804:cfa3:fcf2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:0172:f66b:f0a4:5506"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:abf3:a604:0afa:0519"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2821:55ad:0432:a798"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu4-deferred-avenues-design-note.md",
+      "source_sha256": "ba041cf1c49ec61e4e8a37e289743d29149508279e4ec6e26cef6e6f094b29e5",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-benchmark-rigor-and-revalidation.md",
+      "source_sha256": "f66b8447946ed999c878ae11bc29d74583204e6d50f398dced3ebdd3a1a90245",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/esc8-stack-restart-landmine-audit-2026-07-22.md",
+      "source_sha256": "24d66e245f5074e8b34c5777287eb6992ba2206d69615fbaa2ad79ff94a5f974",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/minimax-m21-download.md",
+      "source_sha256": "7f4e37a22a4cdb40cd5fcd763ee2a550f91f1c0445158e19e483ff808ab3f763",
+      "reviewed_open_keys": [
+        "h:d1b3:7363:f6b4:cfa9",
+        "h:63aa:5d9b:4d5f:a8b2"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d1b3:7363:f6b4:cfa9"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:63aa:5d9b:4d5f:a8b2"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-findings-01-measurement-and-integrity.md",
+      "source_sha256": "561c46d19554abd1ee40d9edce3d499ce6675b72118ed8992416cb5ef905329e",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/mi210-mfma-compute-bound-paths.md",
+      "source_sha256": "6978e3c3f4109f9bf27117dcc48cd0f06b2114daf1a1788e7ca7c9ac6d4ee168",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/qwen36-production-upgrade.md",
+      "source_sha256": "b4ba4ecd6fe8a84a784959dbda6ffa3809feef227fb2f596ec6f65ba2e7f1d23",
+      "reviewed_open_keys": [
+        "h:aee6:0240:3e7d:bd4a",
+        "h:b6ef:8021:01ec:61bc"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:aee6:0240:3e7d:bd4a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:b6ef:8021:01ec:61bc"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/autopilot-control-plane-integration.md",
+      "source_sha256": "dd3806613eb8e5e7413f44c7f26597056775261be29204e8e1568aa25821a7db",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/user-facing-harness-index-history-through-2026-08-10.md",
+      "source_sha256": "29b16244979a973ae8ad9674ecc4cd75696c320f890d33574c0887ac7d3324a5",
+      "reviewed_open_keys": [
+        "h:3cd8:b125:d7ab:3b05",
+        "h:3344:25a0:6168:9d94",
+        "h:7a84:773b:7f14:987a",
+        "h:c0d9:c66b:2451:b045",
+        "h:18ca:1ae4:1d2f:d94c",
+        "h:7c53:dbdd:ded9:5730",
+        "h:85ba:1fd4:17da:21c1",
+        "h:3d50:1ce8:d509:de5b",
+        "h:04bb:1da5:d56d:dd3a",
+        "h:dc47:30a0:4bd1:fe7a",
+        "h:ab5e:f95f:d30b:393c"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:3cd8:b125:d7ab:3b05"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3344:25a0:6168:9d94"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7a84:773b:7f14:987a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:c0d9:c66b:2451:b045"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:18ca:1ae4:1d2f:d94c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:7c53:dbdd:ded9:5730"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:85ba:1fd4:17da:21c1"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3d50:1ce8:d509:de5b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:04bb:1da5:d56d:dd3a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:dc47:30a0:4bd1:fe7a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:ab5e:f95f:d30b:393c"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/mi210-speed-campaign-summary.md",
+      "source_sha256": "16921838c3d8daf02e9e7d0c5fb8cb7d31b0f7d9f95bbfdf1cf7a61c1ed59e16",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/autopilot-dispatch-latency-optimization.md",
+      "source_sha256": "71199a96e2f3d32ad42f641507ab4eb448e06531098145283690bae2224666fe",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/backend-saturation-504-429.md",
+      "source_sha256": "7ea5fcc352a41616edbebf6e2a60afbf9a073ddd545d84be7dc434bb029ab842",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/orchestration-architecture-roadmap.md",
+      "source_sha256": "ddf6d58733fbc6e5431aacbb14c024116bdf56a0d9b99744ceb03a1da3999869",
+      "reviewed_open_keys": [
+        "h:6f15:b4d5:89b2:5560"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:6f15:b4d5:89b2:5560"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/thesis-experiment-orchestrator-vs-strongest-model-completed-through-2026-09-29.md",
+      "source_sha256": "c7fac5be4029ac94e17136202740a7fe7969fcc0300aab664a99f49d6dcdeee1",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/reviewer-decision-plane.md",
+      "source_sha256": "d3017df66ce5aec75289d4c271ac6843916dfd178b1cab68c5f14b2d63c144ca",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/mtp-speculative-decoding.md",
+      "source_sha256": "ba9d7c59deb874a11dfddfc58dcfd1514385f1644517f522b4112501c581e42f",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/decision-aware-routing-history-through-2026-09-27.md",
+      "source_sha256": "15e3023aee02aea87f8d1efec1b4093bd37c57b8f7c4766700496d864745a8a2",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/optical-context-compression.md",
+      "source_sha256": "f3a5d4cdd736001e504aecb4273e7137723c01bbad37aea364267c9023fac621",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/wdata-aware-mul-mat-coalescing-design.md",
+      "source_sha256": "6ceba3c6df2ce7fdabffecfa0eaa057c104ebdce88a1959cf52e56bc9ecadfaf",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-window2-findings-00-executive-summary.md",
+      "source_sha256": "37dcef76684346e91d54a0a4a324034983357be7e0c03be2364eab9ff2c9c8aa",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/fable5-long-horizon-session-pickup-history-through-2026-06-20.md",
+      "source_sha256": "df1ec24bb22b4ffd7b6804fbef8316163ba90f85a91d4714b9e0a20d7468f4ab",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/voice_recognition_setup.md",
+      "source_sha256": "584c3311f8abb9b1d266e3c95d60bc77f1a84361a2f3b19bd48b7c4568979a54",
+      "reviewed_open_keys": [
+        "h:2a2a:5fa5:bb02:427a",
+        "h:d98e:1d35:9982:dd69",
+        "h:3321:12d2:a612:2ce5",
+        "h:e63a:1511:cbd9:477f"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2a2a:5fa5:bb02:427a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:d98e:1d35:9982:dd69"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:3321:12d2:a612:2ce5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:e63a:1511:cbd9:477f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-optimization-thesis-pause-2026-04-26.md",
+      "source_sha256": "238291fcd436f64c9566f95f94bc411228639c6d0e1422d783bd15b86a687b84",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-uncore-fabric-attribution.md",
+      "source_sha256": "bfcff14ca839823132e8926c53d35fdca90ec9f43793e8bf42df44fe24e1fff3",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/repo-resilience-portability.md",
+      "source_sha256": "107593f287a64f374180a783e02094638cafcef056c59b088ba8899229a70ad2",
+      "reviewed_open_keys": [
+        "h:c698:add1:30ec:fe72",
+        "h:52a9:daa7:57b4:697f"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c698:add1:30ec:fe72"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:52a9:daa7:57b4:697f"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/mi210-batch1-latency-wall-greenfield.md",
+      "source_sha256": "6fe5caec0a71406ed2d09341e88742365dde6e38bbe140ef031c7123ac6dc86b",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/07-skillsbench-eval-suite.md",
+      "source_sha256": "13dccb078134298cc7cf330f0995346e7835da06b87c8148fffd30eccc35c57c",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-hierarchical-barrier.md",
+      "source_sha256": "f2773fcba89fe34fb9ffb57139ee6dd8a50db787384865ab8d5d5cc04cf952f6",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/qwen36-benchmark-fixes.md",
+      "source_sha256": "3880999180fd69e2a43268f9bf509328dfcd97c157b45210d1a51acf95d56a4c",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-findings-01c-sequential-verdict-spec.md",
+      "source_sha256": "db7704d439f4128e020fa3bccdf12a3008a8099b6229faa0b97220a8e0a898c8",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/numa-mirror-integration.md",
+      "source_sha256": "3cf323abefabbbd6e8550800884b69eb17bf15a77143d02a35b19a05856350c5",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit-refresh.md",
+      "source_sha256": "235b55aaad2cf94ba60f0a5dc7ce038b92dcb0f64fe800d69e2226bc5577d1d7",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-findings-02-impl-plan.md",
+      "source_sha256": "ed09f2da42d80e23a8429fbc605b618af9445712b5fc6dc730a2fd89b108f681",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/fable5-findings-00-executive-summary.md",
+      "source_sha256": "8bca70d752705f2370d95e48176af0c7f9d260b209bf90b3e821730fb8774af7",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/orchestrator-architecture-review.md",
+      "source_sha256": "f64de978a618875f041cb7532b6b66b498e7b30c97122875e51ef12c247c7242",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-context-regime-coverage.md",
+      "source_sha256": "619bc4fc70c90d6eccb96c4251d16ae6dabe29aa02120d2af1612c25a4186985",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu22-hybrid-spillover-design.md",
+      "source_sha256": "c7735f0c1c81b4a7090fbcdd28808c0bddc05433d1c97c6ba20125a6f01fac49",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/cpu-openmp-runtime-scheduling-matrix.md",
+      "source_sha256": "377f224f8f07fa9f2340e6752d60011c17532e0e38c7562066258723ec8c0da8",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/cluster-A-edits.md",
+      "source_sha256": "ff490eff660c0ed3dfcd3a453f693c31e160384a493c1d884f1b99bb93cf0284",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/post-reboot-autopilot-restart-runbook.md",
+      "source_sha256": "55bc5f285fdf376d25e209815d73cbfe8dba2a96a88e96d0ce1b722cc7ab6b27",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/benchmark-results-dashboard-completed-through-2026-08-23.md",
+      "source_sha256": "b9b7d8cf7792f156324322bfb13be6faf2db30bbbc7b8606ca1f2f7cfeb9657e",
+      "reviewed_open_keys": [
+        "h:de66:d7b7:6138:ccc5"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:de66:d7b7:6138:ccc5"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/docs-chapters-audit/cluster-B-edits.md",
+      "source_sha256": "11d64a0b7ecf8ace24bc5ff1fe7caee68a35732c4a29437eced0a00b690ad1ed",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/classifier-refactoring.md",
+      "source_sha256": "d984eeb92fa7d56447153d9f3578185e726439dd64bd51027a632897234efaea",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/llama-cpp-training-bug-report.md",
+      "source_sha256": "f1494e370f1401c2cec597a87137f063b4693159f1370ba943a43cf68c68c0b2",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/branch-integration-to-main-2026-06-22.md",
+      "source_sha256": "721c91076f0624bc61a8a6e7ccbaa4a31b4f8ee002ce70d5fd6f9304b07610f5",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/orchestrator-intelligence-improvements.md",
+      "source_sha256": "504b3e5adff25b46105972a01d508a3361c38d6a635e3727b9ec61170d261272",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/compress-frontdoor-prompt.md",
+      "source_sha256": "74764f3fafceac44c0ab12f0fc25fa5245351ac06c360c38af3acb097ca0a616",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/seed-routing-decomposition.md",
+      "source_sha256": "77dd5244035d6666513f7bc8736cc09342df365e571c5801adc6c6b5485644e1",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/minicpm-o-4_5-integration.md",
+      "source_sha256": "283fb397e6513bc4f6fbac614e8dc85116f4f9b64a32c13d773285bd31538cf5",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/formalizer-evaluation.md",
+      "source_sha256": "e2ccb05df7febd7c0cc2014bba65158d0cc7ba44121a8844dde154af0e643b13",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/long-context-eval-datasets.md",
+      "source_sha256": "4ee0b3d39f1308c7444a231dba3d45cb82e698833ee4b1f1225d929a49763abb",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/autokernel-champion-aggregate-history-through-2026-09-29.md",
+      "source_sha256": "ed2ce25553e32417279db44c617ffbe12a2a35c64ca7b69e41a718979b900204",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/ssm-checkpoint-speculation.md",
+      "source_sha256": "a78364a6a363ef0c376ac5b7ed5858b3f8a3acc94d4300d41fc0dc3a778f6098",
+      "reviewed_open_keys": [
+        "h:72de:b817:547d:820a"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:72de:b817:547d:820a"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/03-session-scratchpad-memory.md",
+      "source_sha256": "cb72fe4fe3f261c7bf6d516dd1df4cb863627d9908ae39e34ee8b427ed81db88",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/model-stack-single-source-update-pipeline-history-through-2026-06-19.md",
+      "source_sha256": "136b9edfcbabc2963d9e54207b47acaefc7196659c7f7b364e25f3a23ed56d4c",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/llama-cpp-upstream-rebase.md",
+      "source_sha256": "7de6637fb0929ceb78eadb59969886980042357f3af8a6d55acfcd32b6a3b73e",
+      "reviewed_open_keys": [
+        "h:8e8f:e5aa:5769:2c48",
+        "h:825f:3d59:8abb:bf3d"
+      ],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:8e8f:e5aa:5769:2c48"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:825f:3d59:8abb:bf3d"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `completed` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/memrl_mode_advantage_tasks.md",
+      "source_sha256": "b9fe0d3891bf8bc42698706d723b6fb497bea61bfbbd614d986a73611b336642",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/infra-seeding-regression.md",
+      "source_sha256": "44111e092de347b0ae9799b0cbb329ebef51c84b411732f3155e915e639196b6",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/orchestrator_document_pipeline.md",
+      "source_sha256": "48ff745695b3b9e49c995498eda8814814d7a591e6602bd7c883370299b345e8",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/evidence-plane-ledger-and-sequential-verdicts-history-through-2026-06-19.md",
+      "source_sha256": "fbdc9b40296603e6d084bf9393092f7dfbf50be3677c745746cba2209a9d8fdb",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/figure_analysis.md",
+      "source_sha256": "669720da30fe287e38303e3516b97db38bf50a4419505dd07b0640f06fcbee39",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/repl-session-log.md",
+      "source_sha256": "7bccbef22c288b623942fcfd1da847d2508b433d8247f3913a72cd1cf34430d3",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/01-speculative-decoding-completed-through-2026-08-23.md",
+      "source_sha256": "8a6a40407b55a80f751cd1bd91a1ffa7c5cd0a46019c43fdec8a80a1ccd5048a",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/cpu-optimization.md",
+      "source_sha256": "ccb344c5874b8d0c3201e67105f5c2e858e1b77eaee8675769cfe3cd882af657",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/memory-viability-pilot.md",
+      "source_sha256": "41b62539fa27655e46b1fe3e9befc46e88d7e79f9aef5a1e0490f4223af0292d",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/11-conceptlm-monitoring.md",
+      "source_sha256": "29a31bb6d3a66c7fc9a14d724889bf43a64af4af1ee82582655d7ec558ed9bf3",
+      "reviewed_open_keys": [
+        "h:6280:a885:95de:0b3b",
+        "h:fa4f:9d23:4a63:d631",
+        "h:33d5:ac2c:7db6:bca0",
+        "h:2469:8e43:6a0a:de93"
+      ],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:6280:a885:95de:0b3b"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:fa4f:9d23:4a63:d631"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:33d5:ac2c:7db6:bca0"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        },
+        {
+          "keys": [
+            "h:2469:8e43:6a0a:de93"
+          ],
+          "disposition": "historical_only",
+          "reason": "This checkbox is in a `archived` source selected by the historical shard. Preserve it as historical status/evidence; the S14 audit does not reopen the item or create current work. If the same subject is considered for dispatch, resolve the current active owner/index first."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/completed/readme-refresh.md",
+      "source_sha256": "2cda7c391693a6ff5cedd927f3058899da9bc189a240c0edeca635ba6f49210b",
+      "reviewed_open_keys": [],
+      "status_assessment": "completed; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/non-inference-backlog-history-through-2026-09-27.md",
+      "source_sha256": "c06572b32dd50ad7c0a2d7404c498ff86e7f5becf44cc39dcaef177b03e90ecb",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/simpleqa-debugger-agency.md",
+      "source_sha256": "8cb74bf32229490ef111c0cfa328a97b876a34d712f11539e03ac76aef0f5873",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/archived/retrain-routing-models.md",
+      "source_sha256": "e051397e4e729f2cf0b97910d28b11d1a6b5ce9a75aac3c0908e5aba24b84fd1",
+      "reviewed_open_keys": [],
+      "status_assessment": "archived; unchecked residuals reviewed only for historical status/overlap, not recast as current backlog.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    }
+  ]
+}

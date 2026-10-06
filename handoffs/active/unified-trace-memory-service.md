@@ -345,3 +345,9 @@ _Via `/research-intake` Stage-4 (intake-930 ReasoningBank, intake-888 CORE, inta
 **Note on UTM-M9** (mandatory no-memory control arm for every memory A/B, above): it is already
 flagged in-file as an operator-gated MEASUREMENT.md trust-boundary ask. M-12a/M-12b satisfy its
 intent; **do not tick UTM-M9** — the eval-tower registration is the operator's.
+
+## MAIN-reviewed JEV refinement — 2026-10-06 (UTM-V3)
+
+Prepare the semantic-verifier case manifest and mocked parser/readout fixtures using the existing `judge_redundancy.py` fixture/receipt pattern: frozen case and rubric hashes, explicit criterion outcomes, unresolved parse/transport failures and denominators, and reader agreement reported separately from accuracy against gold. Reuse `Question`/`DecisionResult` only for genuinely closed rubric choices; memory payloads and explanations remain source data. Structural schema/scope/provenance/transition checks remain deterministic host checks.
+
+UTM must author and adjudicate its own human-labelled conflicting, stale, poisoned, private, manipulated, duplicate, missing-source and delete/restore cases. CJ's synthetic rubric truth does not transfer to memory semantics. Mocked conformance proves representation and failure handling only; the separately versioned live semantic judge still needs UTM-V3's per-class false-pass/false-fail calibration. Add no belief grading ladder and grant no write authority. UTM-M9's human-amendment-only eval-tower gate remains unchanged.

@@ -1,0 +1,28 @@
+{
+  "reviewer": "/root/next_ni_control",
+  "status": "closed",
+  "owned_scratch_outputs": [
+    "S04-review.json",
+    "S07-review.json",
+    "S08-review.json",
+    "S09-review.json",
+    "S10-review.json",
+    "S13-review.json",
+    "historical-overlap.json"
+  ],
+  "main_approved_scope": "Source-bound JEV handoff audit recommendations in S04/S07/S08/S09/S10/S13, historical open/checked overlap review, correction of S08-S10 task-specific inference/operator dispositions, and source-recheck finding that the pre-push guard install decision was already resolved. MAIN reviewed/approved the findings and applied canonical handoff wording.",
+  "boundary_controls": {
+    "canonical_edits_by_reviewer": false,
+    "inference_or_model_calls": false,
+    "builds_or_runtime_actions": false,
+    "reloads_or_process_control": false,
+    "gitnexus_used": false,
+    "handoff_index_progress_wiki_or_log_edits_by_reviewer": false
+  },
+  "residual_limitations": [
+    "Review findings are source/handoff recommendations and do not certify inference quality, live behavior, promotion, or deployment.",
+    "Historical overlap matching used exact normalized task text and separately labeled semantic candidates; it did not treat checkbox keys, global IDs, line numbers, or status terms as task identity.",
+    "The local pre-push hook is installed and advisory; this review does not establish server-side pre-receive enforcement."
+  ],
+  "validation": "S08/S09/S10/S13 and complete review coverage validated; MAIN owns final integration and all canonical repository updates."
+}

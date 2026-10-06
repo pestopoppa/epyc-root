@@ -576,3 +576,9 @@ First live run of the redundancy harness (24 rubric cases / 72 criteria, synthet
     disagreement-driven adjudication rate. It has no threshold-accept first stage, no fallback attribution and no
     sequential end-to-end latency, and URE-2a (`decision-aware-routing.md`) needs all three. The hosted-Jev arm is
     dropped, so the old credentials / resolved-hosted-identity trigger no longer applies.
+
+## MAIN-reviewed JEV refinement — 2026-10-06 (CJ-13)
+
+Separate the ready parse/fixture repair from the existing gated local-reader comparison. Reuse canonical typed question/result and constrained-schema contracts (`build_response_schema`, `DecisionResult`, `ParseFailure`) plus the existing structured-output validation/repair seam where its contract fits. Reader B needs an explicit response-shape adapter: the current free-form reader payload is not automatically the typed runner's schema. Preserve reader B's independent prompt/reading role, frozen rubric/case identities and labels; do not turn agreement into accuracy by making both readers the same implementation.
+
+Mocked valid, omitted, invalid and unresolved responses can test complete criterion mapping and all failure denominators without model calls. Report each reader's accuracy against frozen gold separately from jointly resolved agreement and projected adjudication. Fixture conformance does not establish model accuracy, cost, calibration or adoption: CJ-13's MI210-window/CJ-GATE acceptance remains open, CJ-16 remains its separate cascade owner, and the Claude-owned coherence judge is untouched.

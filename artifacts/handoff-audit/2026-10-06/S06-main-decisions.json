@@ -1,0 +1,17 @@
+{
+  "shard": "S06",
+  "accepted": true,
+  "files": 21,
+  "open_keys": 220,
+  "decisions": [
+    {
+      "id": "S06-TU-GR1-HOST-ISOLATION",
+      "path": "handoffs/active/tool-use-eval-contract.md",
+      "decision": "accepted_with_main_revision",
+      "original_sha256": "bddc28fc2a546f02b985336cdd6a85eaded6cb069d853523c77e820309a8f126",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (TU-GR-1)\n\nCoordinate the isolation mechanism with `scoring-infra-standardization.md` 2a-iv, the existing owner of the planned bubblewrap/namespace hardening. That hardening is still open: the current research `code_exec_scorer.py` supplies subprocess/resource/descendant bounds, not grader filesystem secrecy. Do not assume a complete sandbox exists or build a competing isolation project.\n\nSpecify the concrete agent/grader process and mount/UID boundary: keep reference/gold files outside agent-visible roots and pass immutable submitted candidate bytes through a controlled host boundary. Host permissions enforce isolation; prepared-action hashes only detect changed inputs. Reuse the shipped `judge_redundancy.py` frozen-rubric and typed verdict/failure contracts in mocked conformance, keeping expected labels host-only and independent accuracy separate from reader agreement.\n\nNo-inference preparation can define the shared policy/adapter and fixtures for denied grader-path reads, leaked-path transcript tripwires, changed candidate/read-set, malformed or unresolved verdicts and controlled result export. A simulated denial does not prove actual filesystem isolation: the chosen mechanism needs its real synthetic access-denial check at its owned acceptance boundary, before untrusted benchmark use. No local model, active coherence-judge edit, new grading ladder or deployed-isolation claim is part of this refinement. Later local judge quality/cost comparison remains separate.\n",
+      "new_sha256": "6e7aab48b2f2b726be17d8014f12eeee06bafe9a56a4c4069407c88df64a62d7",
+      "review_notes": "MAIN verified research scorer at pinned commit: resource/subprocess limits exist, bubblewrap does not. Corrected proposed reuse to planned shared owner and distinguished mocked policy tests from actual denial proof."
+    }
+  ]
+}

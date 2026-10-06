@@ -1,0 +1,724 @@
+{
+  "title": "Live-open vs historical checkbox overlap review",
+  "method": {
+    "source": "manifest.json from pinned ROOT snapshot",
+    "root_commit": "818841b22fb95a0f79a25e67f37583e3b94c5b7f",
+    "files_scanned": 528,
+    "live_open_boxes_scanned": 2468,
+    "historical_boxes_scanned": 3662,
+    "normalization": "Exact normalized key is lowercase text with punctuation/whitespace normalized; remove only date stamp and trailing dated evidence suffix introduced by ✅ YYYY-MM-DD. No line numbers, global IDs, or key hashes used as identity. Semantic candidates are listed separately and are not promoted to exact matches.",
+    "historical_checked_exact_normalized_matches": 0,
+    "historical_open_exact_normalized_pairs": 92
+  },
+  "exact_normalized_groups": [
+    {
+      "live_path": "handoffs/active/autopilot-continuous-optimization.md",
+      "historical_path": "handoffs/completed/autopilot-continuous-optimization-history-2026-06-21-through-2026-09-25.md",
+      "historical_state": "open",
+      "match": "exact after normalization (remove date/evidence stamp; lowercase and punctuation/whitespace normalize only)",
+      "task_pairs": [
+        {
+          "live_key": "h:570e:632e:9ba1:b290",
+          "live_line": 28,
+          "historical_key": "h:9f40:6ef4:0184:4e5a",
+          "historical_line": 534,
+          "normalized_text": "ap 26 test dspy rlm for autopilot tasks long horizon benchmark analysis where metadata first context exploration avoids context window limits"
+        },
+        {
+          "live_key": "h:1506:5b23:e739:74bb",
+          "live_line": 30,
+          "historical_key": "h:94c9:271b:3fe7:1967",
+          "historical_line": 535,
+          "normalized_text": "ap 27 formalize eval tower tiers t0 t1 t2 as rlvr verification functions with deterministic reward signals per tier state matching not llm as judge partial scaffold epyc orchestrator commit 7ee919d8 adds src autopilot_core rlvr_tiers py a pure observe only reward contract with t0 binary t1 calibrated continuous and t2 t3 process attributed reward views plus explicit blockers for missing calibration process evidence export slice scripts autopilot export_rlvr_environment py exports prompt free ap27_rlvr_environment_row v1 jsonl from evalresult journal artifacts for future rl training report slice evalresult to_grep_lines emits report only metric rlvr_ lines without changing objectives safetygate pareto or journal schema journal slice epyc orchestrator commit 69445d43 adds observe only eval_details rlvr_reward journal payloads from the same deterministic contract via the lower risk main loop journal assembly point avoiding the high risk evaltower _aggregate path this closes the code only tier reward design offline export report only and journal payload pieces ap 27 remains open for inference dependent ouro integration implementation plan see eval tower verification md eval tower verification md ev 1 ev 7 depends on ev 4 calibration baseline and p7 ouro results"
+        },
+        {
+          "live_key": "h:7216:e76d:24bb:abe0",
+          "live_line": 43,
+          "historical_key": "h:9018:de1e:53b4:226a",
+          "historical_line": 685,
+          "normalized_text": "ap me 1 per operator context budgets shorttermmemory ap 22 is a single 120 line"
+        },
+        {
+          "live_key": "h:41e3:e196:5f95:c870",
+          "live_line": 50,
+          "historical_key": "h:73b6:9c74:ad26:d48b",
+          "historical_line": 701,
+          "normalized_text": "ap me 3 complementarity cue for crossover donor selection replacing frequency ranking in"
+        },
+        {
+          "live_key": "h:24fa:e4f2:09e9:0981",
+          "live_line": 56,
+          "historical_key": "h:85f2:c85c:f59e:41ec",
+          "historical_line": 706,
+          "normalized_text": "ap me 4 deterministic error_signature plus a repeated failures counter per the"
+        },
+        {
+          "live_key": "h:40fa:9ecf:4cb7:7cc6",
+          "live_line": 62,
+          "historical_key": "h:c9ef:6a07:afc3:6b8e",
+          "historical_line": 750,
+          "normalized_text": "ap me 6 negative evidence rendering discipline intake 940 record s dive narrowed this from an"
+        },
+        {
+          "live_key": "h:923c:b8cd:2abd:00e5",
+          "live_line": 70,
+          "historical_key": "h:0028:fdea:d854:c598",
+          "historical_line": 1189,
+          "normalized_text": "bsv 2 differential testing on accept before promoting a mutation run new vs old on the same sentinels and compare behavior not just aggregate score prefer paired sequential execution under identical server model snapshot for attribution use parallel execution only when explicitly approved and when concurrency cannot contaminate latency measurements reuse the existing t0 t1 tower the novelty is paired behavioral comparison gate on both scalar regression and signature diff severity scaffold orchestrator 0943e7c0 adds scripts autopilot bsv_paired_report py a read only paired report over already journaled question_results vectors it emits shared qid coverage mcnemar accuracy deltas bsv signature severity blockers json markdown and nonzero exit on a blocked candidate follow up 5b29eead adds eval result pair so the same report can compare standalone paired run evalresult like json artifacts without needing journal ingestion first orchestrator 939750c7 adds scripts autopilot bsv_paired_runner py a default safe plan only cli that with explicit run applies baseline candidate params sequentially evaluates the same core writes baseline candidate evalresult json artifacts restores baseline params by default and emits the existing bsv paired report follow up a3570d8d restores baseline params even when candidate application fails before candidate eval orchestrator 2bdb7abc wires the mutation accept path behind default off autopilot_bsv2_accept_gate prompt gepa and code mutations run a pre mutation baseline eval only when the flag is on compare baseline candidate evalresult vectors through the paired report backend reject revert on gate_decision block or blocking signature severity accept annotate watch pass cases and preserve existing single eval behavior when the flag is off remaining work is operator approved live paired runs rollout evidence before enabling the flag in production windows"
+        },
+        {
+          "live_key": "h:c48a:8913:30f9:2eac",
+          "live_line": 72,
+          "historical_key": "h:c0bb:0a18:c67b:9099",
+          "historical_line": 1190,
+          "normalized_text": "bsv 3 conflict aware acceptance when two independently accepted mutations touch the same subsystem prompt routing two prompts prompt tool policy context packer batch editor flag potential semantic conflict for review rather than blind compose observe only ledger landed in orchestrator 168e9bd8 under autopilot_bsv_observe 1 frontier safety passing trials now append a bounded bsv_mutation_dependency_ledger state row and journal eval_details bsv_observe mutation_dependency conflict_report keyed by subsystem files_touched prompt_sections_touched feature_flags behavior_signature_delta and parent_trial conflict severity increases on shared subsystem file section flag overlap blocking bsv deltas different behavior surfaces or disjoint opposing sentinel movement across accepted mutations still observe only default off open work is production conflict policy enforcement after bsv 2 paired gate rollout evidence is available"
+        },
+        {
+          "live_key": "h:72f9:ed56:d4d0:ca0d",
+          "live_line": 87,
+          "historical_key": "h:e79c:7c06:b8c0:e72a",
+          "historical_line": 1590,
+          "normalized_text": "when ap 29 knowledgedistiller is wired currently deferred see ap 29 apply an explicit predictability staleness gate to it what to precompute for how many consumers invalidate on stack config change framing from intake 819 the predictability co objective note adopt_patterns only no importable artifact this is a rider on ap 29 not new standalone scaffolding"
+        },
+        {
+          "live_key": "h:4817:8dd3:d7d1:fbb2",
+          "live_line": 92,
+          "historical_key": "h:8034:542d:c6d9:b890",
+          "historical_line": 1630,
+          "normalized_text": "harden keep revert into an explicit self scoring candidate contract always retain a proven baseline valid rollback before any experiment accept only on a re verified strict improvement measured under pinned determinism fixed threads seed n run mean atomic config swap require an inline validity note stating what the number does doesn t prove including no gating on a locally unmeasurable proxy without held out re verify"
+        },
+        {
+          "live_key": "h:29a5:d957:8870:e503",
+          "live_line": 97,
+          "historical_key": "h:7e3e:7d59:4b3e:8ef3",
+          "historical_line": 1644,
+          "normalized_text": "ap 19b supervised first live gepa_optimize run operator watched at next stack bring up operator decision blacklist stays lifted the first live exercise of the repaired path happens in a watched window before any unattended dispatch is relied on one shot run watch the new error path and the journal row risk posture verified adapter evaluates in a scratch prompt root live frontdoor md untouched during eval gepa_optimizer py 92 113 _prompt_integrity_reason guards at mutation creation and apply applies are git snapshotted auto committed cold bring up recipe esc8 stack restart landmine audit md completed esc8 stack restart landmine audit md"
+        },
+        {
+          "live_key": "h:f21b:8b47:e9bd:6184",
+          "live_line": 99,
+          "historical_key": "h:ff2a:612b:bd63:ef14",
+          "historical_line": 1646,
+          "normalized_text": "ap 21 re open on corrected facts journals all shards show only 8 gepa_optimize trials ever 181 182 521 536 785 882 1137 1144 exactly one ever keep gepa_ratio is absent from live orchestration autopilot_state json the 0 30 is a hardcoded fallback at autopilot py 8798 on the autonomous fallback path not stored state and not the primary dispatch external evidence stands arxiv 2607 14004 terminal bench 2 0 matched budgets reports the gepa optimized agent transferring below the unoptimized baseline 2602 01011 reports gepa returning the seed prompt unchanged 2606 19605 reproduces gepa at 3 78 to 7 97 pp gate on ap 19a"
+        },
+        {
+          "live_key": "h:d20e:6324:7376:8b0a",
+          "live_line": 101,
+          "historical_key": "h:64db:7e90:de81:acfd",
+          "historical_line": 1647,
+          "normalized_text": "ap 29 gate before wiring narrowed knowledgedistiller has zero non test callers uninstantiated not flag off so this is a free design change now the genuine ask is an episodic only control arm retain delete abstraction disabled that the distiller must beat justification arxiv 2605 12978 feeds ground truth solutions through a streaming consolidator and drops a 19 problem arc agi slice from 100 52 6 at r10 the fault is provably in the rewriting step carry the authors caveat two repeats per question point estimates rather than formal error bars"
+        },
+        {
+          "live_key": "h:03ec:a020:f7d5:eccf",
+          "live_line": 121,
+          "historical_key": "h:50d9:6a28:644c:5e31",
+          "historical_line": 1671,
+          "normalized_text": "ap 29b compare correctness first lexicographic selection against the scalarized cost aware reward in chapter 08 by deterministic replay over already persisted autopilot trials no new inference rescore saved outcomes and rebaseline only the objective axis that changed exactly what agents shared measurement_policy md deterministic replay before regeneration prescribes journal shards autopilot_journal jsonl autopilot_journal_1 jsonl already carry the per trial outcomes this needs"
+        },
+        {
+          "live_key": "h:6115:aeaf:a5bf:9b5c",
+          "live_line": 123,
+          "historical_key": "h:ce9d:b0f0:6820:21b2",
+          "historical_line": 1673,
+          "normalized_text": "ap 29c name the prompt optimizer of record as gepa class and adopt compile on small model deploy to large as the cpu first strategy gepa s cross model transfer prompts optimized on qwen3 8b scored 9 00 aggregate on gpt 4 1 mini beating every optimizer tuned directly on it which is what makes compiling on a cheap local model economically viable here mark bootstrapfewshot superseded for 2026 era instruct models miprov2 buys only 2 6 on qwen3 8b and regresses on aime livebench cost line for any compile is tracked in harness selection and integration md harness selection and integration md hs 11 5k 25k lm calls region locked campaign sequencing this is downstream of ap 19a ap 19b do not re argue the gepa pin ap 42 before the repaired path has run live once"
+        },
+        {
+          "live_key": "h:5314:53e4:6da6:2615",
+          "live_line": 130,
+          "historical_key": "h:8676:c36d:d1f3:1da0",
+          "historical_line": 1707,
+          "normalized_text": "reload the escaped live api at the inference owner s next safe boundary named external"
+        },
+        {
+          "live_key": "h:3931:5052:c7d1:fd13",
+          "live_line": 137,
+          "historical_key": "h:c223:2c77:13b4:87e4",
+          "historical_line": 1723,
+          "normalized_text": "e8 quality baseline reseed blocked on an operator source amendment pending since"
+        },
+        {
+          "live_key": "h:fb0c:1ef3:edf1:589b",
+          "live_line": 151,
+          "historical_key": "h:72b7:59f9:e048:5f16",
+          "historical_line": 1756,
+          "normalized_text": "run the canonical 79 question judge suite on qwen3 6 27b mtp q8_0 inherited from the three"
+        },
+        {
+          "live_key": "h:79af:5177:0bb6:e8e6",
+          "live_line": 157,
+          "historical_key": "h:a383:c41a:a9a7:8c93",
+          "historical_line": 1761,
+          "normalized_text": "decide the lineup status of worker_fast 8102 eval_batch_frontdoor 18070 and the"
+        },
+        {
+          "live_key": "h:8ff8:d11e:5d64:7fe8",
+          "live_line": 165,
+          "historical_key": "h:8013:0fa8:ccb3:82ac",
+          "historical_line": 1847,
+          "normalized_text": "ap 58 decide whether to reseed the speed axis on any eligible in era frontier measurement since"
+        },
+        {
+          "live_key": "h:b723:81d2:90ec:2f62",
+          "live_line": 171,
+          "historical_key": "h:3887:5ab0:c989:b23e",
+          "historical_line": 1852,
+          "normalized_text": "ap 59 decide whether the e8 quality baseline reseed row closes as superseded rather than done as"
+        },
+        {
+          "live_key": "h:1bb7:0cb0:477f:5f7b",
+          "live_line": 175,
+          "historical_key": "h:45c8:cc3c:9a4f:3a3c",
+          "historical_line": 1855,
+          "normalized_text": "ap 60 remove the import time q_td_write test trap with a fixture or a config object read since"
+        },
+        {
+          "live_key": "h:20f6:d190:90a7:fd7c",
+          "live_line": 181,
+          "historical_key": "h:0cf8:e72c:90f8:4a24",
+          "historical_line": 1860,
+          "normalized_text": "ap 61 stop hand maintaining the invocation log guard s module list since it covers five modules"
+        },
+        {
+          "live_key": "h:17c5:bbfd:eb69:b779",
+          "live_line": 186,
+          "historical_key": "h:a8f1:969d:8218:de33",
+          "historical_line": 1864,
+          "normalized_text": "ap 62 document the shared invocation ring s synchronisation contract invoke appends from"
+        },
+        {
+          "live_key": "h:c6c3:00b1:f847:0e11",
+          "live_line": 191,
+          "historical_key": "h:3886:c46d:fd9f:077d",
+          "historical_line": 1872,
+          "normalized_text": "request files vision input still has no telemetry image reference"
+        },
+        {
+          "live_key": "h:1522:96c0:1f77:937c",
+          "live_line": 195,
+          "historical_key": "h:5fa8:8264:7f78:4c7e",
+          "historical_line": 1875,
+          "normalized_text": "evidence durability symlink guard covers the form that barely occurs"
+        },
+        {
+          "live_key": "h:373f:1f3f:6843:3066",
+          "live_line": 204,
+          "historical_key": "h:4f0f:975b:98d4:d25e",
+          "historical_line": 1884,
+          "normalized_text": "memories sub_decision is 0 59 337 with no producer anywhere column index"
+        },
+        {
+          "live_key": "h:b7ef:694f:1a84:78f0",
+          "live_line": 230,
+          "historical_key": "h:79a8:42c6:85c3:c24d",
+          "historical_line": 1909,
+          "normalized_text": "binding_router is a parameter nobody passes gating a whole feature src api state py 97"
+        },
+        {
+          "live_key": "h:9e28:1b9b:9272:c773",
+          "live_line": 255,
+          "historical_key": "h:7437:dff1:e62c:4fd8",
+          "historical_line": 1933,
+          "normalized_text": "ten fully built fully tested zero production importer modules 1 3 test importers 0"
+        },
+        {
+          "live_key": "h:d44f:042d:773d:6e2e",
+          "live_line": 289,
+          "historical_key": "h:b5d8:ea49:38c6:dac6",
+          "historical_line": 1979,
+          "normalized_text": "the metric s name and its new tooltip both overstate what it counts contention_gate py 325"
+        },
+        {
+          "live_key": "h:5cb5:3e54:67e3:4fc9",
+          "live_line": 302,
+          "historical_key": "h:9710:10ae:226f:b8b9",
+          "historical_line": 2087,
+          "normalized_text": "sibling sweep six more runtime imports are hard unguarded and declared nowhere the same"
+        },
+        {
+          "live_key": "h:8685:cfc7:1229:3bee",
+          "live_line": 315,
+          "historical_key": "h:b9db:5444:7bfe:d1d0",
+          "historical_line": 2113,
+          "normalized_text": "the 77 test retired topology failure bucket"
+        },
+        {
+          "live_key": "h:5884:c83d:b1c4:d9d2",
+          "live_line": 317,
+          "historical_key": "h:07dd:8ede:bd03:a633",
+          "historical_line": 2114,
+          "normalized_text": "measurement md 148 158 still states the durability checker fails on any citation resolving"
+        },
+        {
+          "live_key": "h:c56b:3edd:c8eb:b5e1",
+          "live_line": 322,
+          "historical_key": "h:d080:b8b9:3128:4117",
+          "historical_line": 2174,
+          "normalized_text": "cosmetic follow on not acted on dashboard html 6305 6307 has no explicit case for"
+        },
+        {
+          "live_key": "h:7322:64ab:8064:1990",
+          "live_line": 326,
+          "historical_key": "h:675b:893d:602a:d4fb",
+          "historical_line": 2178,
+          "normalized_text": "flaky under load flagged to its owner test_daemon_owned_state_ownership py landed today"
+        },
+        {
+          "live_key": "h:2146:9310:1370:4667",
+          "live_line": 333,
+          "historical_key": "h:c597:c5e5:4199:86c4",
+          "historical_line": 2231,
+          "normalized_text": "restart the stack so the np change goes live the guard reports 12 live process drift"
+        },
+        {
+          "live_key": "h:d793:13b6:3663:77bb",
+          "live_line": 339,
+          "historical_key": "h:c111:059e:4c48:d650",
+          "historical_line": 2279,
+          "normalized_text": "regenerate the e8 context coverage scan artifacts operator e8_quality_context_coverage_v4_20260727 json"
+        },
+        {
+          "live_key": "h:6e5f:2efb:9a22:133c",
+          "live_line": 345,
+          "historical_key": "h:9ce7:b97b:4f0d:7549",
+          "historical_line": 2284,
+          "normalized_text": "per instance np cannot be declared slots_by_shape is keyed by shape class full"
+        },
+        {
+          "live_key": "h:8ef4:0b41:4773:0ab5",
+          "live_line": 351,
+          "historical_key": "h:8cfa:e37b:69d4:06d9",
+          "historical_line": 2289,
+          "normalized_text": "routing is not context length aware nothing inspects prompt length before choosing an"
+        },
+        {
+          "live_key": "h:a3d3:0c7b:5a67:6e35",
+          "live_line": 357,
+          "historical_key": "h:b028:8d3a:6f8a:6a4f",
+          "historical_line": 2294,
+          "normalized_text": "settle qwen3 6 27b s architecture it gates a 2x context win on the mi210 8083 runs"
+        },
+        {
+          "live_key": "h:bff0:4a09:c81c:b75d",
+          "live_line": 372,
+          "historical_key": "h:551f:adf9:2529:2c83",
+          "historical_line": 2318,
+          "normalized_text": "p1 the contention matrix admits a differently measured prior as a role pair verdict"
+        },
+        {
+          "live_key": "h:c22e:c6b1:0760:fe99",
+          "live_line": 401,
+          "historical_key": "h:d40f:89f5:5494:6ff8",
+          "historical_line": 2409,
+          "normalized_text": "the legacy substring fallback false positives and the evidence is comical applied to"
+        },
+        {
+          "live_key": "h:3ef2:5751:acca:11b2",
+          "live_line": 407,
+          "historical_key": "h:2f64:7986:db52:a88d",
+          "historical_line": 2414,
+          "normalized_text": "8 855 failure records pre have no work payload at all nothing durable"
+        },
+        {
+          "live_key": "h:3bd2:9548:5c0b:3bd5",
+          "live_line": 411,
+          "historical_key": "h:0926:a3b0:96ff:5186",
+          "historical_line": 2418,
+          "normalized_text": "close the write side provenance gap this is why the assessment above is unresolvable"
+        },
+        {
+          "live_key": "h:70be:bb55:735b:962d",
+          "live_line": 416,
+          "historical_key": "h:4796:6e23:5841:ac0b",
+          "historical_line": 2422,
+          "normalized_text": "operator decision on the 419 update path rows the progress log records old_q for each so"
+        },
+        {
+          "live_key": "h:460a:dd94:04e8:0763",
+          "live_line": 422,
+          "historical_key": "h:883c:18fc:78c8:54b7",
+          "historical_line": 2447,
+          "normalized_text": "queue hygiene correction routed to the coordinator the b bucket cited"
+        },
+        {
+          "live_key": "h:a5ae:7c27:a7f8:1a51",
+          "live_line": 427,
+          "historical_key": "h:73d9:7ae7:d52b:1f76",
+          "historical_line": 2510,
+          "normalized_text": "a hazard that corrects our own standing advice git commit path bypasses the index"
+        },
+        {
+          "live_key": "h:06e6:ed4e:7ccf:c3e8",
+          "live_line": 435,
+          "historical_key": "h:5879:16f5:8920:604b",
+          "historical_line": 2559,
+          "normalized_text": "importerror cannot import name llama_server circular import prints on every stack"
+        },
+        {
+          "live_key": "h:d95f:c563:15cd:e15b",
+          "live_line": 444,
+          "historical_key": "h:19f9:046e:8a3b:493d",
+          "historical_line": 2582,
+          "normalized_text": "unexplained every llama server exited at 07 00 on while whisper and tts"
+        },
+        {
+          "live_key": "h:df68:c487:f188:aee2",
+          "live_line": 454,
+          "historical_key": "h:7a43:7364:82a4:787c",
+          "historical_line": 2655,
+          "normalized_text": "a third silent scoring defect found while porting the research repo s diverged"
+        },
+        {
+          "live_key": "h:150c:6cae:a80e:6319",
+          "live_line": 461,
+          "historical_key": "h:8c5b:f49a:557e:ae05",
+          "historical_line": 2661,
+          "normalized_text": "scorer defect reported not worked around _extract_code_block truncates unfenced code at"
+        },
+        {
+          "live_key": "h:0b03:91b6:cfc8:b3d8",
+          "live_line": 465,
+          "historical_key": "h:031d:2676:a732:3f99",
+          "historical_line": 2665,
+          "normalized_text": "regenerate ma_hard_code_001 hand authored tracked yaml"
+        },
+        {
+          "live_key": "h:2a8b:fff6:2c49:9fc4",
+          "live_line": 469,
+          "historical_key": "h:d535:8dc0:bb1b:c1d0",
+          "historical_line": 2694,
+          "normalized_text": "the live pool still carries the old oracle the rebuild takes effect on the next pool"
+        },
+        {
+          "live_key": "h:fdc8:7f60:355f:f4ca",
+          "live_line": 474,
+          "historical_key": "h:7029:2c03:3644:1db3",
+          "historical_line": 2705,
+          "normalized_text": "residual guard gap vacuous_rows only inspects the substring family so a programmatic"
+        },
+        {
+          "live_key": "h:cf46:ad42:d7f2:215d",
+          "live_line": 478,
+          "historical_key": "h:135c:f6ce:b03b:3c24",
+          "historical_line": 2708,
+          "normalized_text": "stated limit not hidden whether an alternative correct repair passes is bounded by argument"
+        },
+        {
+          "live_key": "h:bf90:a610:1e56:7506",
+          "live_line": 483,
+          "historical_key": "h:fb21:0b7b:cfd9:db96",
+          "historical_line": 2712,
+          "normalized_text": "design lens review of autopilot dispatched workflow wf_50aef395 2a4 essential vs"
+        },
+        {
+          "live_key": "h:6712:6ba9:5e0d:ce3c",
+          "live_line": 514,
+          "historical_key": "h:f219:ebb8:f64e:625d",
+          "historical_line": 2771,
+          "normalized_text": "dominates silently truncated mismatched objective tuples fixed to raise"
+        },
+        {
+          "live_key": "h:b599:a1b1:1c44:8d36",
+          "live_line": 526,
+          "historical_key": "h:f73c:a19d:68dd:ad52",
+          "historical_line": 3079,
+          "normalized_text": "ap 48 add backlog aware adaptive full split admission after the e13 burst baseline treat"
+        },
+        {
+          "live_key": "h:657f:5f91:399f:1406",
+          "live_line": 536,
+          "historical_key": "h:edc3:f57a:c55b:48cb",
+          "historical_line": 3088,
+          "normalized_text": "ap 49 explore true live decode checkpoint resume only on a versioned experimental kernel the"
+        },
+        {
+          "live_key": "h:f709:c6c9:203e:088d",
+          "live_line": 548,
+          "historical_key": "h:0afb:4e69:c46f:b254",
+          "historical_line": 3104,
+          "normalized_text": "ap wm 1 shadow test loop native least commitment diagnostics do not add a live selector"
+        },
+        {
+          "live_key": "h:4b7b:125f:39c3:ead3",
+          "live_line": 566,
+          "historical_key": "h:40ce:7102:bd1c:e05c",
+          "historical_line": 3122,
+          "normalized_text": "ap wm 1b execute over autokernel s first real matched archive observe only consume the"
+        },
+        {
+          "live_key": "h:5673:03a1:153f:abfa",
+          "live_line": 574,
+          "historical_key": "h:931f:f577:2f4a:9c7b",
+          "historical_line": 3142,
+          "normalized_text": "ap ch 1 add a default off adapter that turns a bounded recent trajectory window into typed"
+        },
+        {
+          "live_key": "h:9dcd:003f:1d65:4681",
+          "live_line": 582,
+          "historical_key": "h:5d8e:3339:4a82:0c28",
+          "historical_line": 3150,
+          "normalized_text": "ap ch 2 compare reset free and episodic proposal generation at equal budget use the same"
+        },
+        {
+          "live_key": "h:0391:6339:1d5a:28c6",
+          "live_line": 591,
+          "historical_key": "h:6370:e3aa:022c:1a88",
+          "historical_line": 3197,
+          "normalized_text": "p17 bt 5a retrospective feedback synthesizer do this first consume logged"
+        },
+        {
+          "live_key": "h:2c22:1d08:4aa4:acaa",
+          "live_line": 599,
+          "historical_key": "h:c30b:0ec6:afd3:d9ca",
+          "historical_line": 3204,
+          "normalized_text": "p17 bt 5b full feedback conditioned mutation pilot gated on 5a showing signal ship in one"
+        },
+        {
+          "live_key": "h:a0c9:2ad6:a98c:a0c1",
+          "live_line": 607,
+          "historical_key": "h:eba5:7f0b:cc94:be94",
+          "historical_line": 3211,
+          "normalized_text": "p17 bt 5c log pair content not just ids persist winner loser candidate ids and both"
+        },
+        {
+          "live_key": "h:c181:1f7a:310c:dbad",
+          "live_line": 625,
+          "historical_key": "h:f1ac:8aab:4c1c:cb16",
+          "historical_line": 3249,
+          "normalized_text": "sg w1 no op guard refuse to promote a candidate whose config diff is byte identical to its"
+        },
+        {
+          "live_key": "h:dbd4:001f:d526:434e",
+          "live_line": 630,
+          "historical_key": "h:ed3e:995e:87fa:7d84",
+          "historical_line": 3253,
+          "normalized_text": "sg w2 warrant as telemetry explicitly not a gate record whether an accepted edit cites"
+        },
+        {
+          "live_key": "h:2a4d:9c13:9545:8477",
+          "live_line": 640,
+          "historical_key": "h:6155:4244:afc2:33a1",
+          "historical_line": 3262,
+          "normalized_text": "sg w3 dispose of src diversity_gate py wire it or delete it zero production importers"
+        },
+        {
+          "live_key": "h:db76:d37e:1cb9:6514",
+          "live_line": 653,
+          "historical_key": "h:2876:a7ad:c377:d0dd",
+          "historical_line": 3277,
+          "normalized_text": "ap 51 diff three jit admission rules against paretoarchive eq 4 reward strict and one"
+        },
+        {
+          "live_key": "h:81d1:2e0e:fd29:22ab",
+          "live_line": 658,
+          "historical_key": "h:cf28:4b04:d10c:83ff",
+          "historical_line": 3281,
+          "normalized_text": "ap 52 standing caution against the frozen frontier proposer contract two prompted"
+        },
+        {
+          "live_key": "h:14bf:12c5:8e68:5986",
+          "live_line": 670,
+          "historical_key": "h:c321:5951:c0de:566e",
+          "historical_line": 3401,
+          "normalized_text": "ap 54b compute gated filed not run wiki fence a b on eval rollouts same eval suite"
+        },
+        {
+          "live_key": "h:2f49:b4a4:193d:f9e0",
+          "live_line": 679,
+          "historical_key": "h:161d:b789:6be7:510c",
+          "historical_line": 3491,
+          "normalized_text": "ap 56 determinism certification before n 1 promotion llama server fixed seed and fixed"
+        },
+        {
+          "live_key": "h:7b4c:7c34:d71e:1acc",
+          "live_line": 687,
+          "historical_key": "h:94e4:be1d:4337:53aa",
+          "historical_line": 3498,
+          "normalized_text": "ap 63 s3 ap 01 close the two preconditions that have blocked the orx"
+        },
+        {
+          "live_key": "h:7e32:520b:2de8:f9fa",
+          "live_line": 709,
+          "historical_key": "h:c062:35fb:54c4:bb6f",
+          "historical_line": 3520,
+          "normalized_text": "ap 63 b lane arbiter precondition blocked on the op 41 sequence above champion"
+        },
+        {
+          "live_key": "h:8ab1:7a8e:a0a9:c67f",
+          "live_line": 711,
+          "historical_key": "h:ea8f:23bb:c22c:74aa",
+          "historical_line": 3522,
+          "normalized_text": "ap 63c after the first post restart trial check read only that its journal row"
+        },
+        {
+          "live_key": "h:d9ec:12de:d4aa:77a6",
+          "live_line": 714,
+          "historical_key": "h:7952:146f:29af:71ef",
+          "historical_line": 3525,
+          "normalized_text": "ap 63d decide whether parent_trial s consumers config_diff peaf surprise r"
+        },
+        {
+          "live_key": "h:aa95:364c:880e:8f4b",
+          "live_line": 719,
+          "historical_key": "h:4eff:de78:3eb9:42fe",
+          "historical_line": 3529,
+          "normalized_text": "ap 64 s3 ap 02 apply the op 20 task_failed ruling to both producers eval_tower and"
+        },
+        {
+          "live_key": "h:9565:c36c:ea72:cb68",
+          "live_line": 725,
+          "historical_key": "h:d54c:f100:008a:8cdb",
+          "historical_line": 3534,
+          "normalized_text": "ap 65 s3 ap 03 decide whether _proxy_check binds it is the only leg built to catch a"
+        },
+        {
+          "live_key": "h:44d6:e4d1:8a20:04e6",
+          "live_line": 731,
+          "historical_key": "h:c814:2e88:ccd0:1de0",
+          "historical_line": 3539,
+          "normalized_text": "ap 66 s3 ap 04 numericswarm must tell infeasible configs to the sampler not hide"
+        },
+        {
+          "live_key": "h:c637:bae3:506d:fbd7",
+          "live_line": 759,
+          "historical_key": "h:ca1a:2f72:9ac2:be7f",
+          "historical_line": 3566,
+          "normalized_text": "ap 67 s3 ap 05 planner authored numeric trials must reach the sampler the"
+        },
+        {
+          "live_key": "h:00f4:43a4:086c:c755",
+          "live_line": 765,
+          "historical_key": "h:397d:5bb8:394c:632b",
+          "historical_line": 3571,
+          "normalized_text": "ap 68 s3 ap 06 measure whether planner numeric trials are the worst proposer arm from"
+        },
+        {
+          "live_key": "h:dde2:7c28:506b:879a",
+          "live_line": 771,
+          "historical_key": "h:047f:4f87:86d6:4aa7",
+          "historical_line": 3576,
+          "normalized_text": "ap 69 s3 ap 07 label every planner critic verdict kind proposal_filter never"
+        },
+        {
+          "live_key": "h:8799:80fd:bf4f:b201",
+          "live_line": 778,
+          "historical_key": "h:3d38:661f:f42f:1dbb",
+          "historical_line": 3582,
+          "normalized_text": "ap 70 s3 ap 08 rotation boundary generalisation drop observe only at every"
+        },
+        {
+          "live_key": "h:184a:1ece:b8fc:c186",
+          "live_line": 785,
+          "historical_key": "h:76b3:9fbe:bdb8:61d0",
+          "historical_line": 3588,
+          "normalized_text": "ap 71 s3 ap 09 promptforge lineage depth side effect audit for every kept prompt"
+        },
+        {
+          "live_key": "h:4ecf:559c:5ff5:6502",
+          "live_line": 791,
+          "historical_key": "h:da8b:3800:ff6f:e26f",
+          "historical_line": 3593,
+          "normalized_text": "ap 72 s3 ap 10 metric event physicality bound in safetygate a trial whose reported"
+        },
+        {
+          "live_key": "h:364b:3158:2573:f91f",
+          "live_line": 823,
+          "historical_key": "h:6b50:94aa:0b64:7ba7",
+          "historical_line": 2074,
+          "normalized_text": "operator install the two declared deps into the live orchestrator venv the"
+        },
+        {
+          "live_key": "h:a7e0:0a79:c244:2618",
+          "live_line": 837,
+          "historical_key": "h:ad91:15ca:2fc9:1bcd",
+          "historical_line": 2262,
+          "normalized_text": "pre existing eval_tower and the seeding path disagree about a task_failure so the same"
+        },
+        {
+          "live_key": "h:e7bd:4aaa:fba7:f639",
+          "live_line": 849,
+          "historical_key": "h:35fe:397a:9550:463d",
+          "historical_line": 2273,
+          "normalized_text": "operator decision deliberately not taken by the subagent 1960 also says reliability"
+        },
+        {
+          "live_key": "h:c86d:45bd:0de4:eb0f",
+          "live_line": 855,
+          "historical_key": "h:35b7:4db9:d59e:4450",
+          "historical_line": 2888,
+          "normalized_text": "operator edit needed human_only_paths yaml still calls safety gates unenforceable"
+        },
+        {
+          "live_key": "h:b4df:53b4:6829:4f51",
+          "live_line": 866,
+          "historical_key": "h:f578:6eb5:2f46:5bcc",
+          "historical_line": 2898,
+          "normalized_text": "behaviour change to ratify or reverse operator applies can no longer be run from a"
+        },
+        {
+          "live_key": "h:0b36:8902:0265:bd54",
+          "live_line": 871,
+          "historical_key": "h:ff6d:4256:bdbf:a1e7",
+          "historical_line": 3463,
+          "normalized_text": "ap 55 arm after one autopilot run in shadow mode a report how often enforce"
+        }
+      ],
+      "verdict": "historical_open_ledger_snapshot; same task remains unchecked historically, so this is not completion evidence. Keep the live checkbox status/owner; archive copy is a historical carry-forward."
+    }
+  ],
+  "verified_semantic_candidates": [
+    {
+      "live": {
+        "path": "handoffs/active/vidya-belief-substrate-program.md",
+        "line": 594,
+        "key": "h:12fa:6f98:2b02:ea08",
+        "text": "VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records"
+      },
+      "historical": {
+        "path": "handoffs/completed/vidya-belief-substrate-program-completed-through-2026-08-10.md",
+        "line": 1337,
+        "text": "SC75 (VB-INF70-ARMS) — wire the INF-70 serving-harness ARM records on the WRITE side"
+      },
+      "source_context": [
+        "active README lines 1572 reports producer hook wired 2026-09-16 and first real arm pending",
+        "scripts/vidya/adapters/README.md line 264 confirms capture module, strict reader, producer hook, and first arm absent"
+      ],
+      "verdict": "stale-premise/duplicate implementation scope: wiring/adapter is done and appears in completed record; live remainder should be narrowed to first real post-hook arm acceptance only, preserving refusal of pre-hook arms and ClaimTuple grading. Parent should re-resolve/treat checkbox; do not tick here."
+    },
+    {
+      "live": {
+        "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+        "line": 1304,
+        "key": "h:4fe8:5d09:2b93:d1a1",
+        "text": "DS41-T9 — Role/quality fit per standard suites; GO/WAIT/KILL plus disk-retention decision"
+      },
+      "historical": {
+        "path": "handoffs/completed/glm53-flash-evaluation.md",
+        "line": 114,
+        "text": "T4 — CLOSED UNRUN (subject deleted; translated to DS41-T9) — GLM quality/role fit and disk retention"
+      },
+      "source_context": [
+        "active DeepSeek task asks fit and retention for DS41, with independent current model/suite gate",
+        "historical GLM task explicitly closed unrun because GLM subject was deleted and translated into DS41-T9"
+      ],
+      "verdict": "legitimate successor, not stale completion: historical GLM box did not run and refers to a different model; keep DeepSeek task open pending its own evidence."
+    },
+    {
+      "live": {
+        "path": "handoffs/active/deepseek-v41-flash-evaluation.md",
+        "line": 1293,
+        "key": "h:67f3:0b1d:d5a9:9b0a",
+        "text": "DS41-T6 — CPU canonical-recipe throughput baseline"
+      },
+      "historical": {
+        "path": "handoffs/completed/glm53-flash-evaluation.md",
+        "line": 112,
+        "text": "T3 — GLM canonical-recipe throughput baseline"
+      },
+      "source_context": [
+        "active sibling explicitly says DS41-T6 first llama-bench baseline/T6c placement fix done, but a new T6 plain vs native-MTP observation baseline remains unchecked",
+        "GLM historical T3 is the completed baseline for the GLM model, not DS41"
+      ],
+      "verdict": "legitimate model-specific measurement, not duplicate completion; previous run is precedent only."
+    }
+  ]
+}

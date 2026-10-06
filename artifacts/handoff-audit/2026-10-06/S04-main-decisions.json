@@ -1,0 +1,44 @@
+{
+  "shard": "S04",
+  "accepted": true,
+  "files": 6,
+  "open_keys": 74,
+  "decisions": [
+    {
+      "id": "S04-F1",
+      "path": "handoffs/active/internal-kb-rag.md",
+      "decision": "accepted",
+      "applied_append": "- Bounded completion (JEV audit, 2026-10-06): compare the checkout `.index-graph.json` with `build_graph(state)` in `index_state.py --check` and emit a non-fatal warning for missing/stale graph files. Preserve provenance-only/silent-on-absence screener behavior. Add current/stale/missing fixtures; this is deterministic integrity checking, not a model decision or retrieval-quality claim.",
+      "original_sha256": "5e507578c337fbb084e21bfbfe14a59b80724c6e0efd25a1ad7d1075b97bbfe1",
+      "review_notes": "MAIN checked actual config cap helpers, remaining KB constants/metadata, encoder refresh/load globals and NI61 scope (tests/thread defaults, not singleton synchronization). No model decision appropriate for these deterministic gaps.",
+      "new_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "id": "S04-F2",
+      "path": "handoffs/active/internal-kb-rag.md",
+      "decision": "accepted",
+      "applied_append": "**JEV-aware source narrowing (2026-10-06):** `_load_declared_config()` and `max_query_tokens()` / `max_document_tokens()` now exist; `src/tools/web/colbert_reranker.py` already uses the helper. Remaining fixed values are in `src/retrieval/kb_rag.py` (`_QUERY_MAX_TOKENS=48`, `_DOC_MAX_TOKENS=256`) and its encode call sites. Close only this KB-RAG cap plumbing with synthetic declared/absent/invalid-config fixtures and preserve index metadata/stamp semantics. Do not re-embed or claim retrieval improvement; any stored-index cap transition stays under OP-24.",
+      "original_sha256": "5e507578c337fbb084e21bfbfe14a59b80724c6e0efd25a1ad7d1075b97bbfe1",
+      "review_notes": "MAIN checked actual config cap helpers, remaining KB constants/metadata, encoder refresh/load globals and NI61 scope (tests/thread defaults, not singleton synchronization). No model decision appropriate for these deterministic gaps.",
+      "new_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "id": "S04-F3",
+      "path": "handoffs/active/internal-kb-rag.md",
+      "decision": "accepted",
+      "applied_append": "**JEV-aware source narrowing (2026-10-06):** `_stamp_meta()`/`_check_embedding_dim()` already guard width, but `_read_meta()` has no tokenizer digest and `colbert_encoder` loads `_TOKENIZER_PATH`. Finish only the missing tokenizer SHA-256 stamp/read check; test same hash, mismatch refusal, and legacy unstamped catalog behavior with temp files. This is deterministic encoder identity integrity, not a JEV/model decision or retrieval-quality claim.",
+      "original_sha256": "5e507578c337fbb084e21bfbfe14a59b80724c6e0efd25a1ad7d1075b97bbfe1",
+      "review_notes": "MAIN checked actual config cap helpers, remaining KB constants/metadata, encoder refresh/load globals and NI61 scope (tests/thread defaults, not singleton synchronization). No model decision appropriate for these deterministic gaps.",
+      "new_sha256": "7a4aeaf33d983fffcb7512ce82fe9e02310ce5a1f1127928e1cbb96a03b6c363"
+    },
+    {
+      "id": "S04-F4",
+      "path": "handoffs/active/colbert-reranker-web-research.md",
+      "decision": "accepted",
+      "applied_append": "**Source verification (JEV audit, 2026-10-06):** `refresh_model_dir()` clears `_session`/`_tokenizer` and `ensure_loaded()` repopulates the globals without synchronization. Before any concurrent KB-RAG/reranker enablement, define a narrow lock contract covering refresh/load/encode and test deterministic fake-object interleavings. This is local state integrity only; no reranker activation or runtime performance claim.",
+      "original_sha256": "8921da086c494f3fd9f1da91a56ea0704fd679761480c10c92b77b34c94d3cf1",
+      "review_notes": "MAIN checked actual config cap helpers, remaining KB constants/metadata, encoder refresh/load globals and NI61 scope (tests/thread defaults, not singleton synchronization). No model decision appropriate for these deterministic gaps.",
+      "new_sha256": "533424889672de64894b44cc3ae4aa425632f2ecfc583e3830346ca8cfee3aac"
+    }
+  ]
+}

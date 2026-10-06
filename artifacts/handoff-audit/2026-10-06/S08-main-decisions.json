@@ -1,0 +1,27 @@
+{
+  "shard": "S08",
+  "accepted": true,
+  "files": 14,
+  "open_keys": 201,
+  "main_review": "MAIN reviewed semantic corrections separating offline simulation, trace persistence and code preparation from live/actual human gates. These are handoff-screening classifications, not premise verification or authorization to dispatch every retained task. Focused source/API crosscheck recorded separately.",
+  "decisions": [
+    {
+      "id": "S08-UTMV3-JEV-1",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "decision": "accepted_with_revision",
+      "original_sha256": "047a5f5576641b31a67990b77aa6c7d533d86160736c6d85f83c7cdc359ae19a",
+      "new_sha256": "5673b5cf3685211843d5394de25c4b8428cdc066e5a5df6389342ff8c75b489d",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (UTM-V3)\n\nPrepare the semantic-verifier case manifest and mocked parser/readout fixtures using the existing `judge_redundancy.py` fixture/receipt pattern: frozen case and rubric hashes, explicit criterion outcomes, unresolved parse/transport failures and denominators, and reader agreement reported separately from accuracy against gold. Reuse `Question`/`DecisionResult` only for genuinely closed rubric choices; memory payloads and explanations remain source data. Structural schema/scope/provenance/transition checks remain deterministic host checks.\n\nUTM must author and adjudicate its own human-labelled conflicting, stale, poisoned, private, manipulated, duplicate, missing-source and delete/restore cases. CJ's synthetic rubric truth does not transfer to memory semantics. Mocked conformance proves representation and failure handling only; the separately versioned live semantic judge still needs UTM-V3's per-class false-pass/false-fail calibration. Add no belief grading ladder and grant no write authority. UTM-M9's human-amendment-only eval-tower gate remains unchanged.",
+      "review_notes": "MAIN inspected exact UTMV3 and UTM-M9 source, actual hashed-case strict parser/accuracy/agreement implementation. UTM human rubric/gold separate; no filesystem isolation claim."
+    },
+    {
+      "id": "S08-F1",
+      "path": "handoffs/active/session-bus-thin-dispatcher.md",
+      "decision": "accepted_with_revision",
+      "original_sha256": "9c996ed15b8bd44ff2d5080b655e1f2b209b9d41df9038a1229c28c222ab24e0",
+      "new_sha256": "4ec98eebe7bbf40ea35a6739c5b0e501acdafb5713361291550df0e57b715797",
+      "applied_append": "## MAIN source recheck — pre-push installation (2026-10-06)\n\nThe old install decision's premise is stale. `core.hooksPath` selects `/workspace/.git/hooks`; its executable `pre-push` chains `scripts/hooks/pre_push_serialization_guard.sh` and Git LFS, and records the operator-approved Phase-0 installation on 2026-08-12. The guard source's statement that it does not install itself describes the separate installation step, not the current hook state. Do not request installation approval again or duplicate the local guard.\n\nThis verifies local installation only. A client-side hook can be bypassed and does not supply server-side structural enforcement; no new server-side implementation or inference result is claimed. Original task text and checkbox are preserved as audit identity, with this source recheck governing its still-needed premise.",
+      "review_notes": "MAIN inspected configured hooksPath and installed executable header/chaining, kept local/server enforcement distinction. No source task checkbox altered."
+    }
+  ]
+}

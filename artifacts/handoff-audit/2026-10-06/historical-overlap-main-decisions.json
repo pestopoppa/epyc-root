@@ -1,0 +1,7 @@
+{
+  "finding": "HIST-VB-INF70-ARMS",
+  "decision": "accepted_with_revision",
+  "path": "handoffs/active/vidya-belief-substrate-program.md",
+  "applied_append": "### VB-INF70-ARMS — source-verified remaining scope (MAIN, 2026-10-06)\n\nThe capture module, strict reader, CLI ingestion and producer hook already exist (`inf70_serving_arm{,_capture}.py`, `scripts/inf70/harness1/sc75_capture.sh`, `arm_cold.sh`, `arm_hot.sh`; VB-WIRE-2 / SC75). Do not rebuild that adapter. The existing unchecked parent now means first real post-hook arm acceptance at the INF-70 owner's granted window: reopen its producer-written sidecar and launch/contention identities through the strict reader and shared `ClaimTuple` grading. Keep pre-hook arms refused, arm-level support identity and all existing quality/authority gates. Existing wiring and synthetic checks cannot substitute for the first real arm.",
+  "source_review": "MAIN checked adapter/capture modules and source hook paths against pinned ROOT, existing source README and completed SC75 record. No first real arm inferred from implementation status. Historical exact open/open pairs not completion proof; DS41 different-model successors retained."
+}

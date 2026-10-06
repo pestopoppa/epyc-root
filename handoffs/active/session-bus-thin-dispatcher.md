@@ -3199,3 +3199,9 @@ drain puts coordination rows into a main's **paying** context, which is the same
 **firewalled side-loop with a capped return summary** is the cheaper structure. **File as a design
 input, NOT as evidence**: this is backed only by a citation to intake-1113, nothing here was measured
 on this host, and no row above depends on it. `intake-1333#record`, `intake-1113#record`.
+
+## MAIN source recheck — pre-push installation (2026-10-06)
+
+The old install decision's premise is stale. `core.hooksPath` selects `/workspace/.git/hooks`; its executable `pre-push` chains `scripts/hooks/pre_push_serialization_guard.sh` and Git LFS, and records the operator-approved Phase-0 installation on 2026-08-12. The guard source's statement that it does not install itself describes the separate installation step, not the current hook state. Do not request installation approval again or duplicate the local guard.
+
+This verifies local installation only. A client-side hook can be bypassed and does not supply server-side structural enforcement; no new server-side implementation or inference result is claimed. Original task text and checkbox are preserved as audit identity, with this source recheck governing its still-needed premise.

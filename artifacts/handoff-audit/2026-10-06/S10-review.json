@@ -1,0 +1,1100 @@
+{
+  "shard_id": "S10",
+  "method": "Reviewed every assigned active/blocked handoff and every unchecked manifest task, reading each task text and its own qualification/gate. Checked candidate typed-decision reuse against the accepted orchestrator source package; no finding added where tasks require deterministic source/evidence work, estimated outcome modeling, or runtime behavior rather than a bounded unresolved decision.",
+  "files": [
+    {
+      "path": "handoffs/active/learned-routing-controller.md",
+      "source_sha256": "dcf026a5b7ecc7a4b2154fed520eeb9f1e87f5b4c36d58ffbc908981200e9cdb",
+      "reviewed_open_keys": [
+        "h:c1b3:8585:c043:d882",
+        "h:ee02:a7da:85f3:80aa",
+        "h:1403:979c:91a2:f260",
+        "h:e1dc:9438:1ac8:f547",
+        "h:3f48:d9f9:9c39:9408",
+        "h:0c9f:358a:9e9d:e649",
+        "h:ab37:8339:8410:cb44",
+        "h:d382:69c7:9fd4:0c7f",
+        "h:5ced:9395:6089:a6ae",
+        "h:6f8d:6dbb:bb51:5dc8",
+        "h:5302:59a7:5f9e:1d7f",
+        "h:e6dc:264a:ad80:6bc1",
+        "h:b649:e4af:ddcf:18a0",
+        "h:4b5b:9d2a:4038:c211",
+        "h:2bda:4715:68b6:c64b",
+        "h:9b56:ed8a:b8ee:696d",
+        "h:391f:8adb:649a:3724",
+        "h:6d3f:f8f3:7d58:5be6",
+        "h:8b86:1221:b8c2:30d9",
+        "h:f97f:133b:4cf5:aa41",
+        "h:38f7:68d8:9ccc:231e",
+        "h:3904:376c:c19f:95fd",
+        "h:36de:c34c:fe13:4c68",
+        "h:d8f9:e4eb:2a70:4fa5",
+        "h:2e25:5b05:07c8:5898",
+        "h:d61f:4c85:0b0e:f3fd",
+        "h:85e4:f1a1:a2a3:821e",
+        "h:86e5:e75f:116d:0738",
+        "h:3093:6594:5658:7531"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c1b3:8585:c043:d882"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'EP-5 — **Re-run the probe only after the `outcome` label defects below are fixed.** The current'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:ee02:a7da:85f3:80aa"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'EPD-1b — **(operator-gated, live store)** backfill historical labels: `UPDATE memories SET outcome ='; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:1403:979c:91a2:f260"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**EPD-3 — the embedding index mixes >=3 text conventions, so the vector leaks the writer path.**'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:e1dc:9438:1ac8:f547"
+          ],
+          "disposition": "operator_gated",
+          "reason": "EPD-3-R1 explicitly labels itself OPERATOR and requires granting an inference window because the embedding recipe and bulk reseed must flip atomically. Preserve both the human window authorization and subsequent probe."
+        },
+        {
+          "keys": [
+            "h:3f48:d9f9:9c39:9408"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**EPD-3-R7 — decide the fate of the 200-char objective truncation at the payload level**, i.e. the': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:0c9f:358a:9e9d:e649"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P1.5.2** Collect over ~1000+ requests — FROZEN under the 2026-06-12 routing-expansion guard. Reope'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:ab37:8339:8410:cb44"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P1.5.3** Train linear probe (512 params), evaluate accuracy — gated by P1.5.2 collection.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:d382:69c7:9fd4:0c7f"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P1.5.4** Decision gate: >= 80% → proceed to Phase 2; < 60% → stay with BGE+MLP — gated by P1.5.3.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:5ced:9395:6089:a6ae"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**P2.3** Collect mean-pooled hidden states at each attention layer during inference (needs live server test)': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:6f8d:6dbb:bb51:5dc8"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P2.4** Train independent linear probes per attention layer — find best'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:5302:59a7:5f9e:1d7f"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P2.5** If complementary, use learned attention pooling (N learnable weights)'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:e6dc:264a:ad80:6bc1"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P2.6** Decision gate: >= 90% → Phase 3; < 80% → stay with BGE+MLP'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:b649:e4af:ddcf:18a0"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P3.1** Replace BGE embedding with hidden-state features in MLP input'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:4b5b:9d2a:4038:c211"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P3.2** Remove BGE model from inference path (~300MB RAM, ~5-10ms/request saved)'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:2bda:4715:68b6:c64b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**P3.3** Update episodic store schema (hidden states instead of BGE embeddings)'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:9b56:ed8a:b8ee:696d"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P4.3** **SVD-scale fine-tuning trial (medium cost; currently artifact/env-blocked for the true exp'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:391f:8adb:649a:3724"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P4.4** **sep-CMA-ES cold-start spike (large cost; no longer justified for the current trained-labe'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:6d3f:f8f3:7d58:5be6"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P5.2** **Cold-start A/B vs on-disk full sweep (~70 LoC harness, 1 session)** — **HARNESS + KEYED-E'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:8b86:1221:b8c2:30d9"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P5.3** **(conditional)** Production rollout: if P5.2 passes its decision gate, document the cold-s'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:f97f:133b:4cf5:aa41"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**P6.3.1** Port the SamsungSAILMontreal `TinyRecursiveModels` repo to a CPU-only training mode (it currently requir': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:38f7:68d8:9ccc:231e"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**P6.3.2** Apply the **Augmented-HRM training recipe** from intake-585 — data augmentation (Gaussian noise on embed': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:3904:376c:c19f:95fd"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**P6.3.3** A/B against P6.2 MLP verifier on the same train/val/test split. Decision gate: Brier improvement ≥ 0.01 ': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:36de:c34c:fe13:4c68"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'Do NOT import intake-866\\'s \"harness induces an equivalence relation\" framing — it is unmeasured, and'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:d8f9:e4eb:2a70:4fa5"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**LRC-RI-EXTRACT-SOURCE — Make routing-data extraction honor explicit source and update-count filter'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:2e25:5b05:07c8:5898"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**LRC-SDM-ACTION-SCORER — Add an experimental availability-aware task/action outcome scorer at the e'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:d61f:4c85:0b0e:f3fd"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**LRC-SDM-CACHED-SCREEN — Run one grouped observed-outcome challenger comparison on the existing P4.5 cache.** Join': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:85e4:f1a1:a2a3:821e"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-open'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:86e5:e75f:116d:0738"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-open'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:3093:6594:5658:7531"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**LRC-RI-CONCURRENCY — PROPOSED: qualify and repair blocking embedding/retrieval in the complete routing path.** Re': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/evidence-plane-event-sourcing-and-narrative.md",
+      "source_sha256": "98fc162d4f75662835a61eb62c511c5c354b625f2b52b86025845a5426b8ad90",
+      "reviewed_open_keys": [
+        "h:f3ef:5933:57fd:a860",
+        "h:d28a:171d:3ee3:d4d2"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:f3ef:5933:57fd:a860"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**W3 — rotation snapshots** (impl 3.2, ~1 day): journal segments per 1000 trials chained with a snap'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:d28a:171d:3ee3:d4d2"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**W6 — strategy provenance** (impl 4.2, ~2 days, needs W1): `strategies.db` rows gain `evidence_tria'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/model-stack-update-pipeline-audit.md",
+      "source_sha256": "2564b58d73680d0170cd66673e3fb91a6138b30427daae50d0d11dd727ca0e6c",
+      "reviewed_open_keys": [
+        "h:ea33:45fa:3270:2b91",
+        "h:39c2:1a24:076e:b220",
+        "h:1280:8f04:4376:4340"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ea33:45fa:3270:2b91"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'Direct benchmark runtime enforcement only if promotion-gate coverage proves insufficient'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:39c2:1a24:076e:b220"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '(620 follow-up — deferred, operator-gated) Wire a compile-blocking strict known-gap for null `ctx_model_max` in `_d': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:1280:8f04:4376:4340"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**scripts.server circular-import fail-open flake** (filed 2026-07-24): `runtime_facts_manifest`/`sta'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/loops-and-dashboards-audit-2026-07-05.md",
+      "source_sha256": "52b12b2b2b454aefa92458896daf0b7bba084fac7ba7900ea0c24efb3a26b155",
+      "reviewed_open_keys": [
+        "h:c863:0706:b598:1943"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c863:0706:b598:1943"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Fix `real_suite_v1` discriminability BEFORE certifying OP-1** (forward work from the audit above) '; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/qwen-chat-template-evaluation.md",
+      "source_sha256": "d0d618b5f5b5db846bd328b5c1e270ae4ffdb7097343e09ea56960e92872b37f",
+      "reviewed_open_keys": [
+        "h:34c7:923e:7184:b719",
+        "h:db4c:4147:8627:1ed9",
+        "h:96fa:78ad:d202:1089",
+        "h:2182:7258:8956:049f"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:34c7:923e:7184:b719"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**CT-4** — If anything is adopted, pin the exact revision + sha256, not a branch.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:db4c:4147:8627:1ed9"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**CT-10 — cruxeval watch-item re-check under real coder traffic** (filed'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:96fa:78ad:d202:1089"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**CT-11 — re-decide the pilot adoption after real traffic accumulates**'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:2182:7258:8956:049f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "CT-1a records an operator-directed execution protocol, but its actual outstanding work is CPU-side model A/B during permitted GPU-busy windows. The protocol is not a new operator-approval dependency; acceptance still requires the stated sampled inference runs."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/internal-interaction-lifecycle.md",
+      "source_sha256": "89bddc24d86a206e43d702142c9fa61c0103fd78a15b4df08d00793d6c7df779",
+      "reviewed_open_keys": [
+        "h:1266:e8ae:19df:09ba",
+        "h:20a9:91c7:43f6:b395",
+        "h:fa2f:30c0:a1d5:d984",
+        "h:4731:3bfe:ce2b:edca",
+        "h:e9b7:4472:e207:ac1d"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1266:e8ae:19df:09ba"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P3-3**. **Shadow/optimization calibration**: use `consult_gate_probe` on T2/T3 hard workflow slice'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:20a9:91c7:43f6:b395"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**P3-4**. After ≥1 week of shadow data: enable enforcement for one signal at a time. Require an expl'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:fa2f:30c0:a1d5:d984"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**P4-1**. Integration-quality metrics:': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:4731:3bfe:ce2b:edca"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P4-2**. Wire metrics into MemRL reward signal as a separate `consult_reward` head. Do NOT blend wi'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:e9b7:4472:e207:ac1d"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**P4-3**. Quarterly review: keep / tune / disable each consult skill based on metrics.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/model-stack-change-standardization-audit.md",
+      "source_sha256": "eafbf0b00e3a6de515aae4bcffe2c7f068be2942a45ce07e2db612493e30543a",
+      "reviewed_open_keys": [
+        "h:59f0:83fc:373c:5359",
+        "h:b92b:40ea:685d:60f7",
+        "h:0482:02d7:92c3:b2b3",
+        "h:119f:1eb8:ed6c:8ef5",
+        "h:1691:d6b8:515e:7280",
+        "h:f9bc:fd78:f37c:a256",
+        "h:589b:f5a6:5e64:3aba",
+        "h:0b6d:b47b:23d9:dd59",
+        "h:21d4:cd7c:7706:b4f5",
+        "h:390e:f2b8:bf5f:7b29",
+        "h:33c4:7919:c1c1:18ec"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:59f0:83fc:373c:5359"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Identify the change type: role model swap, shared-server consolidation, role retirement, tier change, port/slot cha': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:b92b:40ea:685d:60f7"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Update structured inputs only:'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:0482:02d7:92c3:b2b3"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Compile descriptors, preserving gaps instead of inventing values.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:119f:1eb8:ed6c:8ef5"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Compile stack priors.'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:1691:d6b8:515e:7280"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Sync procedure role enums (`python3 scripts/registry/sync_procedure_role_enums.py --check`).'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:f9bc:fd78:f37c:a256"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Run loose guard, all-surface guard, and strict guard.'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:589b:f5a6:5e64:3aba"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Run focused unit tests for stack priors, guard, enum sync, q_scorer, admission, and any touched cons'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:0b6d:b47b:23d9:dd59"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Run simulated model-swap tests:'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:21d4:cd7c:7706:b4f5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Update only generated operator summaries or explicitly historical docs.': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:390e:f2b8:bf5f:7b29"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Before launch, require fresh generated priors and a guard pass or an explicit diagnostic override.'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:33c4:7919:c1c1:18ec"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'After launch, compare running PIDs/ports/flags/binaries against stack priors and restart stale proce'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/reasoning-effort-levels.md",
+      "source_sha256": "1aa295145fb804f1521bfd41789ad1bc19e17ebc8a8b630f4e5ac576a36351c3",
+      "reviewed_open_keys": [
+        "h:5ab6:106a:80a1:4d74",
+        "h:8692:6ba5:53fb:7f8d",
+        "h:6150:7a69:5d2c:4da3",
+        "h:68a5:8584:50cc:68de",
+        "h:8234:29ed:4467:9b40",
+        "h:8660:c0bc:e549:caa7",
+        "h:9b0e:cc6d:726e:5718",
+        "h:56c4:5130:520d:9eed",
+        "h:730d:67fc:fdf4:ffbe",
+        "h:e0a5:4987:cf2a:c8e9",
+        "h:a586:7253:3785:4aea",
+        "h:9073:57aa:7034:61f7",
+        "h:6db3:b816:89ab:b733",
+        "h:8154:3d64:9617:e76c",
+        "h:0ca1:47f7:c615:a198",
+        "h:5629:9528:fb1e:b841",
+        "h:e836:9052:b019:1056",
+        "h:df9e:3026:5d41:5229"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:5ab6:106a:80a1:4d74"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-1 — Per-model budget curve.** For each stack model, on a truncation-inducing suite'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:8692:6ba5:53fb:7f8d"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**TB-2 — Test the \"single mostly-ok setting\" hypothesis.** Does one budget capture ≥90% of each'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:6150:7a69:5d2c:4da3"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins \"**TB-3 — Audit production ceilings against the knees.** Cross-reference each role's live\"; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:68a5:8584:50cc:68de"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-4 — Interaction with the effort ladder.** Budget is a **third axis** alongside prompt-effort'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:8234:29ed:4467:9b40"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-5 — Expose `max_tokens` / `reasoning_budget` as a per-request tunable surface** the router'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:8660:c0bc:e549:caa7"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**TB-6-exec-v8 candidate extension — grids terminal; prefill-to-depth RAG RUNNING 2026-07-28.** Under the operator'\": The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:9b0e:cc6d:726e:5718"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-6-exec-followups (GPU-owned).** (a) ✅ A3+A4 surfaces DONE 2026-07-23; remaining: the other'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:56c4:5130:520d:9eed"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-6-exec (c) — A2/CPU (122B-Q4) np×context surface — HANDED TO CPU LINEAGE 2026-07-23.** Does the'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:730d:67fc:fdf4:ffbe"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**TB-6 — Concurrency-aware admission control (VRAM *and BANDWIDTH* guard).** The router/orchestrator'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:e0a5:4987:cf2a:c8e9"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TB-6-ROUTER — Wire the np×budget surface into the router (GATED on GPU joining the orchestration'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:a586:7253:3785:4aea"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**RP-3 — Does it loop on the ARCHITECT WORKLOAD** (multi-step planning) or only on competition-math'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:9073:57aa:7034:61f7"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**RP-4 — MODEL-specific penalty policy in the registry:** add a per-**model** repetition-penalty'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:6db3:b816:89ab:b733"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**RP-5 — Clean H1 (Q4 vs IQ2 reasoning parity) WITH the fence.** Both quants loop unfenced, so the'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:8154:3d64:9617:e76c"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**E-2 — Measure the curve, once per model.** Sweep the levels on the **already-pinned**': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:0ca1:47f7:c615:a198"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**E-3 — Evaluate by rescue-rate, not mean accuracy.** Per'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:5629:9528:fb1e:b841"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**E-4 — Per-role defaults, expressed as (model × level) pairs.** Map levels → roles *given the'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:e836:9052:b019:1056"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**E-5 — Dynamic selection (stretch).** Let the router pick effort from task difficulty rather than'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:df9e:3026:5d41:5229"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**E-6b — retest budget-cap on a NON-saturated suite.** E-6 ran on `gpqa_diamond_cot` (~85–90%'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/tri-role-coordinator-architecture.md",
+      "source_sha256": "81dbb06b6243093d5bb36f7d98ccbc10b68d72695a716b5ccef8700c5eb95c42",
+      "reviewed_open_keys": [
+        "h:c363:2072:26c5:3f09",
+        "h:d2a1:3050:f6c6:012e",
+        "h:cf27:fc27:43f7:3600",
+        "h:100d:6403:2611:8e72",
+        "h:8392:000e:0a63:7c55",
+        "h:c640:480e:190e:7868",
+        "h:877d:9e3f:8fe5:ba0d"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c363:2072:26c5:3f09"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TR-4.1** In `routing.py`, compose role with model selection: per-role model-affinity table OR inde'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:d2a1:3050:f6c6:012e"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TR-4.2** Update `RoleResult` consumers to honour the assigned role — Thinker turns get the plannin'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:cf27:fc27:43f7:3600"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TR-4.3** Multi-turn composition: if our orchestrator runs multi-turn sessions, ensure subsequent t'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:100d:6403:2611:8e72"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**TR-4.4** Verifier-acceptance termination: if Verifier returns ACCEPT, short-circuit subsequent dis'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:8392:000e:0a63:7c55"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**TR-5.1** Define benchmark suite for the A/B: must include at least one task family where role distinction is *exp': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:c640:480e:190e:7868"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**TR-5.2** Run paired A/B with `ROLE_AWARE_ROUTING=1` vs `=0` for ≥N=200 per arm per benchmark. Use the same routin': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:877d:9e3f:8fe5:ba0d"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**TR-5.3** Decision gate: if Δ ≥ +2 points on at least one benchmark with no regression > −1 point on others, promo': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/delegation-context-preassembly.md",
+      "source_sha256": "1b98df6086ed1241a19657e101e03a343668ca8aff24f3a2bf296f7cb76fd07b",
+      "reviewed_open_keys": [
+        "h:f406:8fc5:ed99:951b",
+        "h:7585:5076:4bb6:d209",
+        "h:e88a:e275:b5fe:cd24",
+        "h:713e:8ecd:a1a4:f0be",
+        "h:c922:8dfe:1134:bc39",
+        "h:9d43:459d:dbfa:06f2",
+        "h:4f43:29fc:07d5:ddef",
+        "h:6193:0078:bb26:47bb",
+        "h:0443:cc6d:dafe:bef6",
+        "h:5fa1:41c8:07d3:e497",
+        "h:ecc1:b076:8589:5549",
+        "h:b9a0:5f87:fa67:27f8"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:f406:8fc5:ed99:951b"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**DCP-6 — Eval.** Measure on a delegation-heavy workload: prefill tokens, end-to-end latency, top-up'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:7585:5076:4bb6:d209"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DCP-7 — external evidence that MORE CONTEXT IS NOT MONOTONICALLY BETTER** (intake-1152, EDIT-Bench, arXiv:2511.04': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:e88a:e275:b5fe:cd24"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DCP-8 — borrow the paired descriptive/lazy instruction axis** (intake-1157, CanItEdit) as an instr'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:713e:8ecd:a1a4:f0be"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DCP-9a — Compute the Eq.-4 quantities over the existing Claude Code journals** (do now, zero compute): cache-read': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:c922:8dfe:1134:bc39"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DCP-9b — The coordination SHARE is NOT computable from journals as they stand.** This is an **inst'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:9d43:459d:dbfa:06f2"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '(Gated) Add the ColBERT KB as an optional prior-decisions source in delegation-context pre-assembly, behind the exi': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:4f43:29fc:07d5:ddef"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DCP-10 — Zero-decode discovery scoring on ContextBench (primary instrument).** Per instance: shallow checkout at ': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:6193:0078:bb26:47bb"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**DCP-10b — Secondary Python ranking cross-check on Loc-Bench V1** (after DCP-10): Acc@5/@10 file + '; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:0443:cc6d:dafe:bef6"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**DCP-10c — ripwire vs GitNexus blast-radius head-to-head (evidence only).** Pinned ripwire SHA vs c'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:5fa1:41c8:07d3:e497"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**DCP-11 — Packer rendering: stop downgrading edit-site files to signatures.** For a candidate with '; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:ecc1:b076:8589:5549"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DCP-12 — DCP-6 power prerequisite.** Before any DCP-6 rerun: ≥2 identical-arm reruns of the same role+prompt set ': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:b9a0:5f87:fa67:27f8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DCP-13 — Delegation hand-off fidelity.** Code facts at orchestrator `5a9442d3`: the architect deci'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/objective-task-rate-goodput.md",
+      "source_sha256": "92ee6a679bc0451822dd4dd91aae6d4d74175b19aabd764d48714938bea643e3",
+      "reviewed_open_keys": [
+        "h:bd07:6798:b8d0:8fd3",
+        "h:2c69:23d2:6a05:c8c6",
+        "h:14b3:149e:c7cf:10e5",
+        "h:0a4e:82f3:4f4c:3097",
+        "h:c31c:650f:4779:52af",
+        "h:b8d4:86ff:b6f5:3099",
+        "h:c28d:1218:a9cb:1683",
+        "h:13d9:3e16:f0c9:c0c0",
+        "h:2b5b:8267:616e:1093",
+        "h:178d:f18f:2ef2:2eaa"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:bd07:6798:b8d0:8fd3"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '**OPERATOR DECISION — goodput vs raw rate on axis 1.** Not mine to take, and it is bigger': The task explicitly assigns a human/operator ruling, approval, review, or action; that authority boundary is real and cannot be inferred from a model result."
+        },
+        {
+          "keys": [
+            "h:2c69:23d2:6a05:c8c6"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W3e — retire the tier-cost axis from dominance** (deferred out of W3). The original'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:14b3:149e:c7cf:10e5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**W6d — decide whether the mix should be production-traffic-weighted rather than': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:0a4e:82f3:4f4c:3097"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W6e — surface the generalization gap.** The W6 audit block already draws FRESH'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:c31c:650f:4779:52af"
+          ],
+          "disposition": "source_recheck",
+          "reason": "W6f is blocked on new-era trials landing and self-seeds from the SG-3/B3a path; once records exist, recomputing the baseline is offline state/data analysis. Do not gate this calculation on another inference run."
+        },
+        {
+          "keys": [
+            "h:b8d4:86ff:b6f5:3099"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**W5 — regime-profiled offered load (NEXT INSTRUMENT ERA, pairs with batching'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:c28d:1218:a9cb:1683"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W7 — rename one of the two boxes both called W3d**, the hold record and the 2026-07-27 panel-activ'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:13d9:3e16:f0c9:c0c0"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W8 — annotate or replace the `0.0`-for-unavailable sentinel in `task_rate_qph_from{,_row}`**, kept'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:2b5b:8267:616e:1093"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W9 — do the same for `_float()`, which returns `0.0` for absence** and is used for other journal'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:178d:f18f:2ef2:2eaa"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**W10 — find out why the live `pareto_archive` is empty** (`state[\"pareto_archive\"]` has no keys), s'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/capability-registry-and-promotion.md",
+      "source_sha256": "7367f720067cc25de8154aff379c88b49c09a9820765bf0a0716a3355a5618d5",
+      "reviewed_open_keys": [
+        "h:62cd:44a9:84f6:b372",
+        "h:a0eb:bf59:4e2c:5238",
+        "h:3a92:98b5:d616:5d58"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:62cd:44a9:84f6:b372"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**W3 — safe role-restart applicator** (~2–3 days): `config_applicator.restart_role(role, env_overrides, registry_ov': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:a0eb:bf59:4e2c:5238"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**W3-b — BLOCKED on a reload window owned by the inference session.** The remaining acceptance half': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:3a92:98b5:d616:5d58"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**W4 — promotion workflow + first cohort** (recurring, ~half day/month): monthly pass per §C.3 — pro'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/batched-edit-parallel-apply.md",
+      "source_sha256": "4f796140f3f1e55a04f05dcab1d5f646b5fcc6efeb045dbf89fb32137e7e41f7",
+      "reviewed_open_keys": [
+        "h:9280:a380:23cc:55e9",
+        "h:850d:625e:6091:8ef5",
+        "h:b982:8253:a05d:1843",
+        "h:0501:8475:d073:ae85",
+        "h:68b5:2823:68a7:abd8"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:9280:a380:23cc:55e9"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**BEP-2 / J8 — CPU latency A/B for the legacy structured patchset path.** Head-to-head bench: batch-'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:850d:625e:6091:8ef5"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**BEP-3 — Autopilot search-space knob.** If BEP-2 is positive, expose batch-vs-interleaved as a Stru'; it is a concrete data/source/test/instrumentation deliverable. Deterministic implementation is the relevant path; no unresolved closed-set model choice is specified."
+        },
+        {
+          "keys": [
+            "h:b982:8253:a05d:1843"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins \"**BEP-5 — Sandbox-before-disk + granular accept/reject (general).** Generalize Meta-Harness Tier-2's\"; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:0501:8475:d073:ae85"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins '**BEP-4 residual — optional LM-repair lane.** When deterministic apply fails, run an optional cheap-'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:68b5:2823:68a7:abd8"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**BEP-7 — if an edit-format change is ever proposed, apply two external rules first.** (a) **PAIRING RULE** (intake': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/blocked/swarm-dataset-distillation.md",
+      "source_sha256": "10b2d0fbf57416645265e3642522a562980871b554cfc0072eca03ebd481ed91",
+      "reviewed_open_keys": [
+        "h:fde1:e084:8fa0:e8ab",
+        "h:205d:44c3:1915:1c61",
+        "h:e2ae:e0a1:945d:42fa"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:fde1:e084:8fa0:e8ab"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins \"Correct the premise: arXiv 2607.21051's own Table 6 shows the distillation objective is worth ~2pp v\"; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        },
+        {
+          "keys": [
+            "h:205d:44c3:1915:1c61"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'Import the three data-construction levers (hindsight conditioning; enhanced teacher-reasoning prompt'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:e2ae:e0a1:945d:42fa"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'BLOCKED: gated on strand-rust-coder-rustevo2-verification Phase B Pass@1'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/retrain-routing-models.md",
+      "source_sha256": "24574b38c65b22c8b40cfd4d3f6aa65df518cd2af59838c73621cbede61190c8",
+      "reviewed_open_keys": [
+        "h:2cfb:9d6c:3b31:3b41",
+        "h:3201:f144:2951:9e29",
+        "h:0013:22c5:a580:41d4"
+      ],
+      "status_assessment": "Reviewed every manifest-open key against its own task requirements, dependency text, and current pinned-source premises.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2cfb:9d6c:3b31:3b41"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for 'Operator decision: run a --keep-enabled bracket to actually enable live routing': The task explicitly assigns a human/operator ruling, approval, review, or action; that authority boundary is real and cannot be inferred from a model result."
+        },
+        {
+          "keys": [
+            "h:3201:f144:2951:9e29"
+          ],
+          "disposition": "standing",
+          "reason": "The task text begins 'Step 4/5 GAT + SkillBank retrains - only if Fable 5 freeze gate (DAR-1 regret >=5%) justifies'; its explicit freeze/conditional trigger means there is no current action until that condition is evidenced."
+        },
+        {
+          "keys": [
+            "h:0013:22c5:a580:41d4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Step 7 delete handoff once complete'; first resolve the named premise against current source/status; do not create a JEV task without a verified decision gap."
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "correction_note": "2026-10-06 parent-review correction: re-resolved every prior operator_gated/inference_gated item from its full task text and explicit prerequisites. Words such as decision, approval/escalation-as-state, metric gate, bench, or model do not alone establish an operator boundary/live inference requirement; offline replay, simulations, deterministic tests and code/schema preparation stay separable. Existing freezes, owner boundaries, and stated numerical/runtime acceptance criteria are preserved. Focused task-context fixes: distinguished offline simulation/replay and deterministic code prep from runtime measurement; approval/escalation trace content is not operator authorization; only explicit operator decisions or frozen human boundaries remain operator_gated."
+}

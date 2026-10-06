@@ -1,0 +1,8 @@
+{
+  "shard": "S12",
+  "accepted": true,
+  "files": 28,
+  "open_keys": 512,
+  "main_review": "MAIN reviewed existing typed-decision/M19 contracts and parallel AutoKernel ownership. Retain existing JEV refinements and inference/native gates; no redundant appendix.",
+  "decisions": []
+}

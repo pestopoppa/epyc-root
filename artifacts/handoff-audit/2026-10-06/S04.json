@@ -1,0 +1,869 @@
+{
+  "id": "S04",
+  "name": "pipeline-integration-1",
+  "files": [
+    {
+      "path": "handoffs/active/internal-kb-rag.md",
+      "state": "active",
+      "sha256": "5e507578c337fbb084e21bfbfe14a59b80724c6e0efd25a1ad7d1075b97bbfe1",
+      "bytes": 124525,
+      "title": "Internal Knowledge-Base RAG",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": [
+        {
+          "line": 71,
+          "checked": true,
+          "text": "**K1: Extract shared encoder module** — Pull the ONNX session + tokenizer + MaxSim implementation out of the web_research path into `epyc-orchestrator/src/retrieval/colbert_encoder.py` (or similar). Single class instance, lazy-loaded, used by both consumers. ~1 h. Cross-coordinates with `colbert-reranker-web-research.md` S5 — both should import the same module.",
+          "key": "h:a839:9fa2:d72b:d430"
+        },
+        {
+          "line": 72,
+          "checked": true,
+          "text": "**K2: Corpus configuration + chunker** — Define `kb_rag_config.yaml` listing corpus roots + glob patterns + exclusions (archived/). Implement heading-aware chunker (`src/retrieval/markdown_chunker.py`). Unit tests on a fixture set. ~2 h.",
+          "key": "h:e36b:98ae:adf7:ca0a"
+        },
+        {
+          "line": 73,
+          "checked": true,
+          "text": "**K3: Initial index build** — Walk corpus, encode every chunk, write per-doc `.npz` + SQLite catalog at `data/kb_rag/index/`. CLI: `python -m epyc.kb_rag build`. Measure end-to-end time on full corpus (expect: ≤5 min for ~150 markdown files at 180 ms/encode). ~3 h.",
+          "key": "h:c50a:2a72:9abb:41b2"
+        },
+        {
+          "line": 74,
+          "checked": true,
+          "text": "**K4: Query CLI + Python API** — `python -m epyc.kb_rag query \"<question>\" [--top-k 8]` returns ranked chunks with breadcrumbs. Python API for orchestrator/Explore-agent integration. Result schema: `[{file, heading_path, line_range, snippet, score}, ...]`. ~2 h.",
+          "key": "h:07e9:6441:322b:6779"
+        },
+        {
+          "line": 75,
+          "checked": true,
+          "text": "**K5: Index-on-commit hook** — Extend the existing PostToolUse-on-commit hook (currently runs `npx gitnexus analyze` for code) to also run `python -m epyc.kb_rag update --since-commit HEAD~1` for markdown changes. Detect changed files via `git diff --name-only` filtered by corpus globs; re-encode only those. ~1 h.",
+          "key": "h:2b2f:3d94:5743:de70"
+        },
+        {
+          "line": 76,
+          "checked": true,
+          "text": "**K6: Explore-subagent integration** — Add a thin tool wrapper (e.g., `kb_search` MCP tool or in-orchestrator helper) so Explore subagents call the KB-RAG instead of grep-first for semantic queries. Document the pattern in `.claude/skills/...` or agent file overlays. ~2 h.",
+          "key": "h:7fc0:c02d:c8ff:1950"
+        },
+        {
+          "line": 77,
+          "checked": true,
+          "text": "**K7: Validation pass — Flywheel-template eval** (rewritten 2026-04-28, from intake-492). Adopt Flywheel's HotpotQA + LoCoMo eval **methodology** (NOT its harness code — Flywheel ships as Node/MCP/Obsidian-coupled `demos/hotpotqa/` + `demos/locomo/`; we re-implement in Python against our own corpus). Two protocols:",
+          "key": "h:b70a:b969:8ebb:6395"
+        },
+        {
+          "line": 87,
+          "checked": false,
+          "text": "**K8 (LOW priority, defer): wikilink learning-loop scorer** (NEW 2026-04-28, from intake-492). Flywheel's auto-wikilink suggestion uses an accept/reject feedback loop that updates a graph-edge scorer over time (alias + co-occurrence + graph + semantic context). Adapt as a wiki-cross-reference quality signal for the existing wiki/INDEX.md compilation pipeline. Defer until KB-RAG K1–K7 ships and we have a measured wiki-cross-link gap to address. NOT blocking K1–K7.",
+          "key": "h:0d18:5513:c9d2:bfd2"
+        },
+        {
+          "line": 229,
+          "checked": true,
+          "text": "Bookmark the Ekimetrics MIT 5-metric implementation as candidate eval scaffolding for K7 ✅ 2026-07-29 — already indexed as [`intake-580`](../../research/intake_index.yaml) and documented above with its MIT core, the FMRE non-commercial dependency caveat, and the lack of a reusable chunker interface. Adoption remains gated on the HOPE-vs-Ekimetrics side-by-side from opendataloader Phase 2; this records the source only and adopts no metric or harness.",
+          "key": "h:596d:1091:4327:4af9"
+        },
+        {
+          "line": 230,
+          "checked": false,
+          "text": "When defending K2's heading-aware chunking choice in any future review, cite HOPE's independence finding as empirical support rather than relying on the \"natural for markdown\" argument alone.",
+          "key": "h:2076:81d7:139d:ec51"
+        },
+        {
+          "line": 317,
+          "checked": false,
+          "text": "**STQ1_0 llama.cpp PR #22836 either landed OR confirmed to load via existing GGUF support**. If the 1.25-bit GGUF cannot load without the new kernel, fall back to the BF16 safetensors variant via a temporary HF transformers loader OR use the 2-bit GGUF (also released, no special kernel needed). Document which variant was used — speedup numbers do not transfer across variants.",
+          "key": "h:3b43:0c8b:6217:9f4c"
+        },
+        {
+          "line": 318,
+          "checked": false,
+          "text": "**Hy-MT2-1.8B weights downloaded** to `/mnt/raid0/llm/models/` (pick variant per above)",
+          "key": "h:5389:0e43:a8b1:72c6"
+        },
+        {
+          "line": 319,
+          "checked": false,
+          "text": "**Test launch recipe verified** — Hy-MT2-1.8B likely needs `--enable-thinking=false` (fast-thinking model per release notes), verify chat template + sampling params before bulk run",
+          "key": "h:c4ca:d300:7eb2:ff9c"
+        },
+        {
+          "line": 320,
+          "checked": false,
+          "text": "**Approval to run** — per `feedback_speed_verify_via_llama_bench`, NEVER launch `run_benchmark.py` autonomously; user runs ALL benchmarks manually. Same constraint applies here: prepare commands, do not execute. Per `feedback_no_concurrent_inference`, get explicit per-run approval to avoid contaminating concurrent agent work.",
+          "key": "h:ba5a:ce5b:875e:4c95"
+        },
+        {
+          "line": 321,
+          "checked": false,
+          "text": "**Sample set frozen** before any pipeline runs — no swapping samples post-hoc",
+          "key": "h:e8cb:e492:af96:1718"
+        },
+        {
+          "line": 397,
+          "checked": true,
+          "text": "**K9 — Cross-encoder rerank stage.** ✅ CODE LANDED 2026-05-27; K7 measured 2026-06-13. New `src/retrieval/cross_encoder.py` (ONNX, mirrors `colbert_encoder.py`; graceful no-op when model absent) + `cross_encoder.rerank()` blend `(1−w)·maxsim + w·sigmoid(CE_logit)` (agentmemory `reranking.py:62`). Wired into `kb_rag.query(rerank=…, rerank_weight=…)` over the top-`4×K` pool (`KB_RAG_RERANK` / `_WEIGHT` / `_POOL_MULT` env overrides). Model downloaded: `cross-encoder/ms-marco-MiniLM-L-6-v2` ONNX int8 at `/mnt/raid0/llm/models/ms-marco-minilm-l6-v2-onnx`. Live smoke: relevant logit +8.0 vs irrelevant −11.3; rerank flips a lower-base relevant doc to top. 4 unit tests (mocked + real-model skipif). **K7 verdict**: useful for first-rank/recall@3, not default-safe; rerank configs missed 3-5 all-evidence cases on the certification pool.",
+          "key": "h:65b6:72be:4b01:d294"
+        },
+        {
+          "line": 398,
+          "checked": true,
+          "text": "**K10 — Temporal Gaussian recency signal.** ✅ CODE LANDED 2026-05-27; K7 measured 2026-06-13. `_recency_score(mtime, now, σ_days)` Gaussian + blend in `kb_rag.query(recency_weight=…, recency_sigma_days=…)`; `mtime` now SELECTed from the K3 catalog. Default `recency_weight=0.0` → identical to MaxSim-only (back-compat); env overrides `KB_RAG_RECENCY_WEIGHT` / `KB_RAG_RECENCY_SIGMA_DAYS` for sweeps. 2 unit tests (monotonicity + tie-break reorder). **K7 verdict**: validated; `recency_w0.3_s90` is the safest default candidate (0 missed-all-evidence, recall@10 within noise of the aggregate winner).",
+          "key": "h:827b:4f74:9d0b:c343"
+        },
+        {
+          "line": 399,
+          "checked": true,
+          "text": "**K11 (optional, measure-first) — FTS5 lexical signal.** SQLite FTS5 porter-stemmed lexical matching landed default-off in `epyc-orchestrator` `74120be`: `kb_rag.py` now maintains an optional `chunk_fts` table during full builds and targeted updates, backfills it for unchanged chunks, and blends a reciprocal-rank lexical score only when `lexical_weight` or `KB_RAG_LEXICAL_WEIGHT` is explicitly set. ColBERT MaxSim remains the default because lexical weight defaults to zero. Validation: `tests/unit/test_retrieval.py` and `tests/unit/test_kb_rag_eval.py`.",
+          "key": "h:2edb:940b:30ad:ebb8"
+        },
+        {
+          "line": 400,
+          "checked": true,
+          "text": "**K11 batch lexical sweep.** ✅ 2026-07-21 Run `BULK-kbrag-autowiki-k11` against the remapped K7 certification pool and fresh FTS5 catalog; close only the batch measurement decision, not model-backed AutoWiki drafting. Result: `DONE_MARGINAL_OBS`, protocol `internal-kb-rag.k11-lexical-sweep.v1`, `n=70`, all weights 0.0/0.1/0.2/0.3 had `mean_recall@10=0.5048` and `missed_all_evidence_count=14`; AutoWiki deterministic writer dry-run passed under `evidence_policy=verified`; no default lexical-weight promotion.",
+          "key": "h:94df:ea80:0232:16e5"
+        },
+        {
+          "line": 515,
+          "checked": true,
+          "text": "Build a code<->docs crossover query: federate the GitNexus symbol/flow graph with the ColBERT KB index (symbol/file -> related handoff/wiki chunks; doc-mention -> code symbols). This handoff already names the gap at :21; federation is additive, not the \"replace GitNexus\" non-goal (:102) ✅ 2026-07-22",
+          "key": "h:4c0d:bd0b:680f:9445"
+        },
+        {
+          "line": 518,
+          "checked": true,
+          "text": "Re-run `scripts/gitnexus-analyze.sh` for **epyc-orchestrator** — its GitNexus index is corrupt (LadybugDB `lbug.wal` without `lbug.shadow` → CLI segfaults, signal 11, on every read). The `federation.py` tool degrades gracefully (skips that repo) but the orchestrator code-graph side is unavailable until re-indexed. ✅ 2026-07-22 (re-indexed 32.9s, 52,993 nodes; index reads clean, no more signal-11)",
+          "key": "h:ccfc:b7af:820f:03f1"
+        },
+        {
+          "line": 519,
+          "checked": true,
+          "text": "Tidy `federation.py`'s hardcoded `onnxruntime` site-packages fallback path (env-overridable via `FEDERATION_ORT_SITE_PACKAGES`) — discover the encoder deps without the hardcoded `/mnt/raid0/llm/venv/...` path. ✅ 2026-07-22",
+          "key": "h:0256:b3fe:508c:8675"
+        },
+        {
+          "line": 521,
+          "checked": false,
+          "text": "Re-index **epyc-orchestrator** with `scripts/gitnexus-analyze.sh` (never bare `gitnexus analyze`) at a quiet CPU",
+          "key": "h:cd0b:31a7:c7c5:df4c"
+        },
+        {
+          "line": 533,
+          "checked": true,
+          "text": "**Adaptive-chunking lift re-costed ✅ 2026-07-29**: epyc-root `c942728e` Stage-2a source audit established that the shipped API is `RecursiveSplitter`; selection remains paper-only reproduction code.",
+          "key": "h:feb0:d5eb:39d1:e93b"
+        },
+        {
+          "line": 534,
+          "checked": true,
+          "text": "**DCC-only signal scoped ✅ 2026-07-29**: epyc-root `c942728e` recorded the no-dependency scope and the SC/BI saturation evidence.",
+          "key": "h:6856:da54:ea77:6f96"
+        },
+        {
+          "line": 535,
+          "checked": true,
+          "text": "**Offset-provenance prerequisite recorded ✅ 2026-07-29**: epyc-root `c942728e` established exact-substring offsets as the prerequisite before breadcrumbed `markdown_chunker.py` output can be evaluated.",
+          "key": "h:6274:0f0f:2b68:6339"
+        },
+        {
+          "line": 536,
+          "checked": true,
+          "text": "**K2/ODL triggers verified fired ✅ 2026-07-29**: epyc-root `c942728e` recorded K2 certification and the ODL heading-chunking landing; this removes only the deferral premise, not the subsequent evaluation work.",
+          "key": "h:50dc:be0b:e431:89c4"
+        },
+        {
+          "line": 537,
+          "checked": true,
+          "text": "**PageIndex complement evaluation recorded ✅ 2026-07-29**: epyc-root `c942728e` captured its within-document-only scope and independent timeout/cost evidence; no corpus-search adoption is implied.",
+          "key": "h:bdcc:ed1d:f828:65c6"
+        },
+        {
+          "line": 543,
+          "checked": true,
+          "text": "**K-eval re-scoped ✅ 2026-07-29**: epyc-root `683f70de` corrected the GGUF-path/capability evidence and bounded the work to the K7 70-case probe under the 2pp noise floor; execution still requires a region claim.",
+          "key": "h:8d01:1961:e17b:a066"
+        },
+        {
+          "line": 544,
+          "checked": true,
+          "text": "**intake-925 retriever reading corrected ✅ 2026-07-29**: epyc-root `683f70de` recorded that the figures are shell-invocation counts and Table 2 favors dense retrieval; retrieval complements rather than replaces grep.",
+          "key": "h:ebcf:5aab:e138:6bc8"
+        },
+        {
+          "line": 557,
+          "checked": true,
+          "text": "**KB-WM-1 — Make watermark LOSS distinguishable from \"never compiled\".** `get_last_compile()`",
+          "key": "h:4f28:8aed:5631:aa1c"
+        },
+        {
+          "line": 577,
+          "checked": true,
+          "text": "**KB-WM-2 — Decide where the watermark should live, given it is fleet-shared but untracked.**",
+          "key": "h:fa7c:5ada:b6d2:e527"
+        },
+        {
+          "line": 590,
+          "checked": true,
+          "text": "**KB-WM-4 — Retire `wiki/.last_compile`, or give it one format.** Residual of KB-WM-1/2",
+          "key": "h:8cb9:0c54:251c:f869"
+        },
+        {
+          "line": 620,
+          "checked": true,
+          "text": "**KB-WM-3 — Same audit for the other three files untracked by `f1717d80`.** If `.last_compile`",
+          "key": "h:2f70:d907:33ae:b1df"
+        },
+        {
+          "line": 650,
+          "checked": true,
+          "text": "**KB-WM-5 — `logs/.current_session` is one file shared by every agent** (filed 2026-09-17,",
+          "key": "h:f355:8f76:271b:2365"
+        },
+        {
+          "line": 656,
+          "checked": false,
+          "text": "**KB-WM-6 — `.index-graph.json` freshness is unchecked** (filed 2026-09-17, KB-WM-3 audit).",
+          "key": "h:835e:3d60:dd5f:6a18"
+        },
+        {
+          "line": 695,
+          "checked": false,
+          "text": "**KB-GS-1 — Run a four-arm retrieval A/B on our own corpus. Deliberately NOT a replication.**",
+          "key": "h:9a48:a5ee:0879:12fc"
+        },
+        {
+          "line": 701,
+          "checked": false,
+          "text": "**KB-GS-2 — Build the question set and the ground truth BEFORE any arm runs, and stratify it.**",
+          "key": "h:d83e:7ed5:5b91:a4ae"
+        },
+        {
+          "line": 711,
+          "checked": false,
+          "text": "**KB-GS-3 — Add a STALENESS arm; that axis is invisible in the paper and may decide the question for",
+          "key": "h:2592:732f:050b:3359"
+        },
+        {
+          "line": 716,
+          "checked": false,
+          "text": "**KB-GS-4 — Exploit the hardware we actually have if the sharded engine is adopted.** Their",
+          "key": "h:6bae:3f05:4f04:e72a"
+        },
+        {
+          "line": 733,
+          "checked": false,
+          "text": "**C1 — the answerai→GTE retirement rationale on file is wrong.** `CHANGELOG.md` and",
+          "key": "h:e8b8:33f6:bd05:e91a"
+        },
+        {
+          "line": 749,
+          "checked": false,
+          "text": "**C2 — never record `54.89` as the incumbent's BEIR-15.** It does not exist on the model card",
+          "key": "h:9919:4047:9c8a:6d5f"
+        },
+        {
+          "line": 754,
+          "checked": true,
+          "text": "**C7 (Z) — fix the stale `:8089` model attribution** in `src/repl_environment/code_search.py:12`,",
+          "key": "h:0a65:e6a4:6581:80ce"
+        },
+        {
+          "line": 766,
+          "checked": true,
+          "text": "**K1 — the ColBERT encoder cannot load ANY BERT-family late-interaction ONNX.** ✅ **LANDED",
+          "key": "h:b30f:a755:2140:3a91"
+        },
+        {
+          "line": 786,
+          "checked": false,
+          "text": "**K2 — honour `onnx_config.json` instead of hard-coding.** **PARTIALLY LANDED 2026-08-23**,",
+          "key": "h:cea3:d9bb:6ddd:d779"
+        },
+        {
+          "line": 818,
+          "checked": false,
+          "text": "**K3 — stamp `embedding_dim` + a tokenizer hash into `index_meta`.** **HALF LANDED 2026-08-23**,",
+          "key": "h:9049:db4d:a0df:7623"
+        },
+        {
+          "line": 899,
+          "checked": false,
+          "text": "**H1 (Z to quantify; remedy is G13) — doc-side truncation is tracked by no work item, and it is",
+          "key": "h:e085:04da:c7e4:a414"
+        },
+        {
+          "line": 914,
+          "checked": true,
+          "text": "**H2 (Z) — no query-length instrumentation exists anywhere in the retrieval path.** We cannot",
+          "key": "h:d8b7:c3a8:e190:141e"
+        },
+        {
+          "line": 946,
+          "checked": false,
+          "text": "**G11 — ONNX INT8-vs-fp32 parity fixture.** 200 real KB chunk texts, both roles, `model.onnx`",
+          "key": "h:9340:506f:0cec:5699"
+        },
+        {
+          "line": 959,
+          "checked": false,
+          "text": "**G12 — structural query-shift evaluation.** Add a verbose/narrative arm (~20 cases, 60–150",
+          "key": "h:78dd:0185:353a:1bb0"
+        },
+        {
+          "line": 967,
+          "checked": false,
+          "text": "**G13 — doc-truncation recall sweep.** recall@10 on the K7 70-case pool at `_DOC_MAX_TOKENS`",
+          "key": "h:3be8:c82f:9e66:2e6f"
+        },
+        {
+          "line": 979,
+          "checked": false,
+          "text": "**B6 — switch the KB encoder to answerai-colbert-small-v1.** **Blocked on G11** and on the open",
+          "key": "h:7f1f:7e83:ed59:a075"
+        },
+        {
+          "line": 988,
+          "checked": false,
+          "text": "**B7 — raise `query_maxlen` above the checkpoint default and measure.** **Blocked on G12.**",
+          "key": "h:da13:6004:fde9:cf62"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/colbert-reranker-web-research.md",
+      "state": "active",
+      "sha256": "8921da086c494f3fd9f1da91a56ea0704fd679761480c10c92b77b34c94d3cf1",
+      "bytes": 66897,
+      "title": "ColBERT Reranker for web_research Pipeline",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": [
+        {
+          "line": 235,
+          "checked": true,
+          "text": "**S1: Instrument relevance logging** ✅ 2026-04-14 — Added `_is_irrelevant_synthesis()` heuristic + per-page/summary logging to `_web_research_impl()`. Returns `pages_irrelevant` + `irrelevant_rate` in response dict. 5 tests added. **Data collection folded into AR-3 Package D** — AR-3 includes a `web_research` sentinel suite (50 questions) that will trigger this instrumentation automatically during autopilot runs.",
+          "key": "h:f85a:45b3:3197:209a"
+        },
+        {
+          "line": 239,
+          "checked": true,
+          "text": "**S2: Register feature flag** ✅ 2026-04-14 — Added to `src/features.py` FeatureSpec registry + Features dataclass. Registry consistency test passes. Telemetry pipeline wired: `pages_irrelevant` + `irrelevant_rate` captured in `repl_executor.py`, `chat_delegation.py`, `WebResearchTelemetry`, and `analyze_web_research_baseline.py`.",
+          "key": "h:ea4a:deb7:71bc:58fc"
+        },
+        {
+          "line": 248,
+          "checked": true,
+          "text": "**S3: Model + encoding pipeline setup** ✅ 2026-04-14 — **REVISED**: PyLate eliminated. Using existing GTE-ModernColBERT-v1 ONNX (already on disk at `/mnt/raid0/llm/models/gte-moderncolbert-v1-onnx/`) + `onnxruntime` (installed in orchestrator venv). No download needed.",
+          "key": "h:744e:4774:2f89:f7d5"
+        },
+        {
+          "line": 256,
+          "checked": true,
+          "text": "**S4: Benchmark latency on EPYC** ✅ 2026-04-14 — Benchmark complete. Results:",
+          "key": "h:6026:5392:1dd7:9eb4"
+        },
+        {
+          "line": 263,
+          "checked": false,
+          "text": "**S5: Implement reranker** — HOLD as of 2026-06-12 gate analysis. Add reranking to `research.py`, gated behind `web_research_rerank` flag, only if a fresh analyzer run has >=50 synthesized pages and >20% irrelevant-page rate. When flag is ON: increase `max_results` from 5 to 8-10, encode search snippets (from SearXNG JSON API when deployed per [`searxng-search-backend.md`](searxng-search-backend.md), else DDG HTML) via GTE-ModernColBERT ONNX, rerank by MaxSim, take top 3 for fetch. When using SearXNG, `engines[]`/`score` metadata available for multi-engine confidence weighting. Lazy model loading on first call.",
+          "key": "h:4ede:09de:887f:3019"
+        },
+        {
+          "line": 269,
+          "checked": false,
+          "text": "**S6: A/B test** — Compare reranked (10 results → top 3 by ColBERT) vs current (5 results → top 3 by DDG order) on web_research benchmark questions. Metrics: synthesis quality, irrelevant page rate, total latency.",
+          "key": "h:a1df:5323:fcc1:5ea4"
+        },
+        {
+          "line": 283,
+          "checked": false,
+          "text": "**S7: Surprisal-based page chunking** — After fetching pages, run through llama.cpp `/tokenize` + `/completion` with `n_probs`, compute per-token surprisal, split at surprise spikes. Feed chunks to ColBERT MaxSim instead of raw paragraphs. Tests whether event-boundary chunking improves synthesis quality on real web pages (where structure is less clean than synthetic narratives). Depends on S5/S6 confirming ColBERT reranking adds value.",
+          "key": "h:0e6b:a85a:5c3c:2607"
+        },
+        {
+          "line": 406,
+          "checked": true,
+          "text": "Verify ONNX INT8 variant availability for LateOn on HF Hub ✅ 2026-07-14 — S3b confirmed: LightOn ships `model_int8.onnx` pre-quantized on `lightonai/LateOn`",
+          "key": "h:d263:8035:fe89:d0ba"
+        },
+        {
+          "line": 407,
+          "checked": true,
+          "text": "Benchmark LateOn CPU latency vs GTE-ModernColBERT-v1 baseline (target: <200ms for 10 snippets) ✅ 2026-08-12 — LateOn 200.2 ms vs GTE 202.7 ms (S4b section below)",
+          "key": "h:7c82:16b2:4cee:d108"
+        },
+        {
+          "line": 408,
+          "checked": false,
+          "text": "If latency acceptable: A/B test LateOn vs current model on web_research sentinel queries (when AR-3 Package D data accumulates)",
+          "key": "h:79de:29ee:dd14:7d89"
+        },
+        {
+          "line": 409,
+          "checked": false,
+          "text": "Secondary: evaluate DenseOn for probe-first pool if BGE-small retention becomes a bottleneck",
+          "key": "h:cba6:29e0:97a2:3d5e"
+        },
+        {
+          "line": 421,
+          "checked": true,
+          "text": "**S3b**: ONNX INT8 export of LateOn + parity test vs PyLate reference (NIB2-47, ~1h, non-inference). Unblocked today independent of AR-3. **DONE 2026-04-22 (code)**: LightOn ships `model_int8.onnx` pre-quantized on the `lightonai/LateOn` HF repo — no local Torch→ONNX export needed. Delivered `/mnt/raid0/llm/epyc-orchestrator/scripts/benchmark/colbert/export_lateon_onnx_int8.py` (~180 LoC): downloads 17 files (model_int8.onnx + model.onnx + safetensors + tokenizer + 3 dense heads + configs) then runs 20-snippet parity vs PyLate reference with `PARITY_TOLERANCE=1e-2`. Extended `src/tools/web/colbert_reranker.py` with `LATEON_MODEL_PATH` env var override (single-env-var activation). Added `[colbert-export]` optional extras to `pyproject.toml`. 13/13 colbert_reranker tests pass (+2 new). Execution run deferred: `pip install -e '.[colbert-export]'` + `python -m scripts.benchmark.colbert.export_lateon_onnx_int8` when a python env with onnxruntime + torch + transformers + pylate is available.",
+          "key": "h:da2b:2a09:d935:9288"
+        },
+        {
+          "line": 422,
+          "checked": true,
+          "text": "**S4b**: Re-run CPU latency benchmark with LateOn INT8 (DD1-A2, ~30min + 2h inference). Target: latency ≤ 200ms for 10 snippets (GTE baseline 180ms). **Harness unblocked 2026-06-14**: `epyc-orchestrator` `b37de4a` added `scripts/benchmark/bench_colbert_rerank.py`, so this is now a model/runtime measurement task rather than harness work. ✅ 2026-08-12 — artifact downloaded and measured; see \"S4b measurement (2026-08-12)\" below. **LateOn 200.2 ms median / 10 snippets, target MET**, and latency-neutral vs the same-harness GTE baseline (202.7 ms, −1.2%) as the same-backbone/same-parameter-class prediction required.",
+          "key": "h:5181:ae5c:bba3:ea4e"
+        },
+        {
+          "line": 423,
+          "checked": true,
+          "text": "**S7**: Adopt LightOn's decontamination protocol (xxhash64 + 13-gram containment, threshold 0.5) as EPYC-internal retrieval-eval standard. ✅ 2026-07-29 — `epyc-orchestrator` `bdfb6c63` adds `scripts/benchmark/decontaminate_against_embeddings_training.py`: normalized exact xxHash64 first, then word-level 13-gram containment at ≥0.5, with per-row provenance and retained-row output. Focused synthetic coverage validates official hash vectors plus exact/near-duplicate rejection. Decontaminate AR-3 Package D sentinel suite before running E3. Guards against \"new model wins because it saw the test\" failure mode.",
+          "key": "h:08de:73ec:437e:241c"
+        },
+        {
+          "line": 424,
+          "checked": false,
+          "text": "**S5** (amended): A/B test LateOn vs GTE-ModernColBERT-v1 on decontaminated web_research sentinel queries. Gated on AR-3 Package D completion.",
+          "key": "h:964c:74c2:afa2:4f6c"
+        },
+        {
+          "line": 478,
+          "checked": true,
+          "text": "**S4d**: Carry the same ONNX intra-op bound to the two *live* retrieval encoders —",
+          "key": "h:7b86:4dba:c0c8:cfbf"
+        },
+        {
+          "line": 486,
+          "checked": true,
+          "text": "**S3b-parity**: LateOn ONNX↔PyLate numerical parity, previously skipped with `--no-parity`",
+          "key": "h:c569:43cb:baec:1cc9"
+        },
+        {
+          "line": 497,
+          "checked": true,
+          "text": "**PREFIX-1 — the encoder never applies the trained `[Q]`/`[D]` prefix tokens, and this is",
+          "key": "h:67ba:a6e1:c5bd:b489"
+        },
+        {
+          "line": 539,
+          "checked": false,
+          "text": "**PREFIX-2 — confirm whether the published BEIR deltas transfer before banking any model swap.**",
+          "key": "h:6b22:7ce6:0567:6170"
+        },
+        {
+          "line": 547,
+          "checked": false,
+          "text": "**PREFIX-3 — re-run the banked ONNX↔PyLate parity through `colbert_encoder.encode(role=ROLE_DOCUMENT)`",
+          "key": "h:78ba:a464:f56f:13ea"
+        },
+        {
+          "line": 553,
+          "checked": false,
+          "text": "**S9 — give the `colbert_encoder` module singleton a locking contract** before the reranker is ever",
+          "key": "h:bf03:4831:d988:9c32"
+        },
+        {
+          "line": 571,
+          "checked": false,
+          "text": "**S8** (park until primary S5 stable + GPU available): local NV-Retriever fine-tune on REPL+sentinel queries. GPU-gated to DGX Spark. Worth revisiting as a Phase 2+ enhancement.",
+          "key": "h:68cf:943d:2a12:e2ed"
+        },
+        {
+          "line": 583,
+          "checked": true,
+          "text": "**S3c**: ONNX INT8 export of `Reason-mxbai-colbert-v0-32m` + parity test vs PyLate reference (~1 h, non-inference). Unblocked independent of AR-3. **Artifact-profile step LANDED 2026-06-14** in `epyc-orchestrator` `ea29d79`: `export_lateon_onnx_int8.py` now has `lateon` and `reason-mxbai` profiles, verifies from HF metadata that Reason-mxbai is source-only (no `model_int8.onnx` shipped), can print/download the Reason-mxbai source artifact set, and fails fast with an actionable `model_int8.onnx` requirement before parity/latency. **Source artifacts staged 2026-06-14**: `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8` now contains the expected 67 MB safetensors/tokenizer/config/dense-head file set. **Export scaffold LANDED 2026-06-14** in `epyc-orchestrator` `8711c60`: the helper now has a concrete `--export-int8` path, stable PyLate feature-dict wrapper, ONNX contract (`input_ids`/`attention_mask` → `token_embeddings`, opset 18, dynamic batch/sequence axes), dynamic INT8 quantization helper, and dependency preflight. **Artifact generated 2026-06-14**: after adding `onnx`, `onnxruntime`, and `onnxscript` to the isolated reranker/export environments, `model.onnx` + `model.onnx.data` + `model_int8.onnx` were produced under `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8`. ONNX checker accepts both graphs with inputs `input_ids`/`attention_mask` and output `token_embeddings`; parity vs PyLate passed with max cosine divergence `2.7212e-03` and mean `1.2388e-03` at tolerance `1e-2`. Follow-up `epyc-orchestrator` `7c1e41e` adds `onnxscript` to the export preflight and makes reranker availability require actual model loadability instead of file presence only.",
+          "key": "h:10a4:8308:d9c7:b414"
+        },
+        {
+          "line": 584,
+          "checked": true,
+          "text": "**S4c**: CPU latency benchmark with Reason-mxbai INT8 at 48 threads for 10 snippets (~30 min). Target median ≤80 ms. **Harness prereq DONE 2026-06-14**: `epyc-orchestrator` `b37de4a` added `scripts/benchmark/bench_colbert_rerank.py` with warmup-separated latency metrics, JSON output, explicit LateOn/Reason-mxbai model-slot overrides, and no-model skip behavior. **Measured 2026-06-14** on the real ONNX Runtime path after `7c1e41e` hardened availability checks: artifact `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8`, 50 measured calls, 5 warmup calls, 10 snippets/call, median `104.434 ms`, mean `104.301 ms`, p95 `105.237 ms`, first call `107.838 ms`, throughput `95.876 snippets/s`. Result: latency is faster than the older ~180 ms GTE baseline but misses the original ≤80 ms target; treat Reason-mxbai as promising-but-not-yet-accepted until request-path A/B and any optimization pass. **Superseded 2026-08-12** — that 104 ms was an unbounded-ONNX-thread-pool measurement; with the intra-op bound the same harness reads **49.1 ms**, inside the ≤80 ms gate. See \"S4b measurement (2026-08-12)\" below.",
+          "key": "h:04f4:3e71:46fb:088a"
+        },
+        {
+          "line": 585,
+          "checked": true,
+          "text": "**S5-amend**: **LANDED 2026-06-14** in `epyc-orchestrator` `107a8db`. `src/tools/web/colbert_reranker.py` now has a three-slot selector documented in code comments: `LATEON_MODEL_PATH` primary, `REASON_MXBAI_MODEL_PATH` 32M fallback, and GTE-ModernColBERT-v1 default. Unit coverage verifies default, Reason-mxbai-only, and LateOn-over-Reason precedence. Full A/B remains inference-gated on AR-3 Package D, same gate as S5.",
+          "key": "h:9195:4a16:0cb3:36af"
+        },
+        {
+          "line": 586,
+          "checked": false,
+          "text": "**G14 (compute-gated) — re-export `Reason-mxbai-colbert-v0-32m` with `pylate-onnx-export` 1.7.0 so the slot finally has an `onnx_config.json`.** The staged artifact at `/mnt/raid0/llm/models/reason-mxbai-colbert-v0-32m-onnx-int8` ships `config_sentence_transformers.json` but **no `onnx_config.json`** — the file the NextPlaid Rust reader requires and the one `colbert_encoder._load_declared_config()` now prefers (`epyc-orchestrator` `4e5e84c0`). Install **from git**: `pip install \"pylate-onnx-export @ git+https://github.com/lightonai/next-plaid.git#subdirectory=next-plaid-onnx/python\"` — **not** the model card's `onnx/python` path, which 404s at head and at `00e26aae`, and **not** PyPI 0.1.0, which takes the projection from `pylate_model[1].linear` while reading the output dimension from `pylate_model[-1]`: on this **3-Dense** checkpoint (`1_Dense` 384→768, `2_Dense` 768→768, `3_Dense` 768→128) that emits a **truncated graph with a mislabelled `embedding_dim`**. Pin a PyLate ceiling as well — `query_prefix_id` gained a `None` return at 1.6.0 that `export.py:264-265`'s bare `int()` would crash on. **Compute is one CPU trace of a 32M model — seconds.** **Owning handoff**: this one (`colbert-reranker-web-research.md`). **What opens the gate**: the real blocker is an **environment prerequisite, not compute** — 1.7.0 declares `requires-python \">=3.10,<3.13\"` and this host is Python 3.13.7, so a **Python 3.10–3.12 venv must exist first**. Once it does, the gate opens when the exported graph's declared `embedding_dim` matches the last Dense's `out_features` (**128** here) **and** parity holds against the existing **92 MB** (92,079,820 B) `model_int8.onnx`. The older cp314 / `fast-plaid` / `voyager` objection on file is **stale**: `voyager` is an optional extra gated `python_version < 3.14`, `fast-plaid` ships cp310–cp314 manylinux wheels, and `pylate/__init__.py` never imports `pylate/indexes/`, so neither is imported on this path.",
+          "key": "h:c2f9:dcc1:562b:b64c"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/ernie-image-turbo-evaluation.md",
+      "state": "active",
+      "sha256": "c750849c5fb49ad307dcd8edceb88a08c28d3d74c56aaf66cb743ae7307502f2",
+      "bytes": 23761,
+      "title": "ERNIE-Image-Turbo Evaluation",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": [
+        {
+          "line": 133,
+          "checked": true,
+          "text": "Acquire the requested Qwen-Image-2.1 Diffusers weights for comparison ✅ 2026-09-23 — complete public bundle at",
+          "key": "h:e47c:d0ca:a33f:2b71"
+        },
+        {
+          "line": 137,
+          "checked": true,
+          "text": "Switch the production `image_generate` backend to Qwen-Image-2.1, preserving the API and keeping ERNIE for rollback ✅ 2026-09-24 — CPU-only Diffusers service is healthy on port 8190; no generation-quality claim is made.",
+          "key": "h:af73:140f:b03c:435f"
+        },
+        {
+          "line": 138,
+          "checked": false,
+          "text": "Run a matched-prompt Qwen-Image-2.1 vs ERNIE generation comparison and record prompt, settings, outputs,",
+          "key": "h:1771:bbdc:5d85:19a0"
+        },
+        {
+          "line": 140,
+          "checked": true,
+          "text": "Production functional on CPU via sd-server Q8 + conv-direct; Q4 rejected (text corruption) ✅",
+          "key": "h:20a6:2c76:38b1:f5ec"
+        },
+        {
+          "line": 141,
+          "checked": true,
+          "text": "**File the missing intake row and close the `intake-528` mis-citation** ✅ 2026-07-29 — the deployed",
+          "key": "h:f8df:db17:93b9:ca12"
+        },
+        {
+          "line": 148,
+          "checked": true,
+          "text": "Record the LongText-Bench resolution in the deep dive (§ benchmark positioning) ✅ 2026-07-29 — harmonized ranking,",
+          "key": "h:a5b0:7c14:fce7:5cd4"
+        },
+        {
+          "line": 151,
+          "checked": false,
+          "text": "Run content-filter audit live with --execute (harness ready in orchestrator ed6f65f5) and review outputs",
+          "key": "h:a635:7442:38d2:c859"
+        },
+        {
+          "line": 152,
+          "checked": false,
+          "text": "Run 20-prompt local LongTextBench-style EN/ZH typography spot-check to validate 0.9655 self-report",
+          "key": "h:909e:0fe7:cdf0:44ad"
+        },
+        {
+          "line": 153,
+          "checked": false,
+          "text": "GPU/MI210 rebench of the 8-step distilled DiT via ROCm/HIP path (operator-approved, measure-not-extrapolate)",
+          "key": "h:1215:8e78:882a:8345"
+        },
+        {
+          "line": 219,
+          "checked": false,
+          "text": "**ERNIE-ROCM-NEXT — prepare the next ≥1024² white-output hypothesis outside the DiT linears** (VAE",
+          "key": "h:d324:acc0:cfee:9d9e"
+        },
+        {
+          "line": 223,
+          "checked": false,
+          "text": "Re-litigate FLUX.1-schnell alternative if bilingual long-form in-image text not needed by product",
+          "key": "h:f5f2:0d70:3ffa:f8a2"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/master-handoff-index.md",
+      "state": "active",
+      "sha256": "f01267dbe12fa5adcc75b6dfdb96eec6c640a1f91716f84c360fda54d1dcf7de",
+      "bytes": 18157,
+      "title": "EPYC Handoff — Master Index",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": []
+    },
+    {
+      "path": "handoffs/active/document-parser-table-bench.md",
+      "state": "active",
+      "sha256": "7dc7a8f3eb7240c0e8f3f4ceb751c09858f0c561ca27dc9991c18a2d2ec4aaa8",
+      "bytes": 16327,
+      "title": "Document Parser Table-Extraction Benchmark — PaddleOCR-VL-1.6 pipeline vs ODL",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": [
+        {
+          "line": 50,
+          "checked": true,
+          "text": "**Install ✅ 2026-07-20**: `paddlepaddle==3.2.2` + `paddleocr==3.7.0` (paddlex 3.7.2) into `/mnt/raid0/llm/venvs/paddleocr` (Python 3.12.13, uv). Venv total **1.4 GB**. **Gotcha recorded**: the resolver pulls `opencv-contrib-python`, which needs `libGL.so.1` — absent in this container, so `import paddleocr` fails with `ImportError: libGL.so.1`. Fixed by swapping to `opencv-contrib-python-headless==4.10.0.84` (uninstall the non-headless first); no system packages required. Re-run this swap after any dependency upgrade that reinstates the GUI build.",
+          "key": "h:6c92:5c55:f72e:a2ca"
+        },
+        {
+          "line": 51,
+          "checked": true,
+          "text": "**CLI verified ✅ 2026-07-20**: `paddleocr doc_parser -i ... --vl_rec_backend llama-cpp-server --vl_rec_server_url http://host:port/v1` is available and **`llama-cpp-server` is an explicitly supported backend** (full set: `native`, `vllm-server`, `sglang-server`, `fastdeploy-server`, `mlx-vlm-server`, `llama-cpp-server`). **Do not be misled by `paddleocr --help`** — it lists only `doc2md` and `api` because pipeline subparsers are registered without a `help=` kwarg and argparse omits those from the listing. The subcommand exists and works. Equivalent Python API is `paddleocr.PaddleOCRVL(...)` exposing `layout_detection_model_name`, `vl_rec_backend`, `vl_rec_server_url`, `use_layout_detection`, `merge_layout_blocks` — prefer this for `odl_bench` integration over shelling out.",
+          "key": "h:22e4:a6bd:cb03:3b8f"
+        },
+        {
+          "line": 52,
+          "checked": false,
+          "text": "Trigger PP-DocLayoutV3 weight resolution and record the cache path + size (a *separate* download from the GGUF, not yet performed).",
+          "key": "h:17eb:2934:ec91:2301"
+        },
+        {
+          "line": 53,
+          "checked": false,
+          "text": "Confirm the CPU-only path works on EPYC (no GPU assumptions in the layout stage).",
+          "key": "h:100a:780f:d490:5973"
+        },
+        {
+          "line": 56,
+          "checked": false,
+          "text": "Start experimental-v7 `llama-server` with the PaddleOCR-VL GGUF + mmproj on a high port, `--temp 0`.",
+          "key": "h:5fea:d12d:9015:5871"
+        },
+        {
+          "line": 57,
+          "checked": false,
+          "text": "Run the documented pipeline on a handful of **table-bearing** pages from the full set:",
+          "key": "h:ebef:cf4b:d4a4:38af"
+        },
+        {
+          "line": 59,
+          "checked": false,
+          "text": "**Gate**: confirm HTML `<table>` markup is actually emitted. If still zero, stop — the problem is the harness, not the model, and no full run should be spent.",
+          "key": "h:f3e1:e332:69d7:4671"
+        },
+        {
+          "line": 60,
+          "checked": false,
+          "text": "Capture cleanup proof (no stray `llama-server`, 0% VRAM / no KFD PIDs) per existing K35 discipline.",
+          "key": "h:dc35:d9cf:b1bc:a49f"
+        },
+        {
+          "line": 63,
+          "checked": false,
+          "text": "Re-baseline **ODL end-to-end** on the full 1651-page set. This supersedes `table.TEDS = 0.783813` everywhere it is quoted.",
+          "key": "h:cae2:3dc3:b2d6:5dfe"
+        },
+        {
+          "line": 64,
+          "checked": false,
+          "text": "Score **PaddleOCR-VL-1.6 full pipeline** on the same set.",
+          "key": "h:d8ba:ae09:483a:81b2"
+        },
+        {
+          "line": 65,
+          "checked": false,
+          "text": "Report **both** an all-language and an **English-only** (`language: english`, 755 pages) split for every metric. The demo set's 64%-Chinese skew is why prior numbers were misleading.",
+          "key": "h:9848:1fd8:935c:24c2"
+        },
+        {
+          "line": 66,
+          "checked": false,
+          "text": "Report table TEDS at **n=665** with TEDS-structure-only alongside, plus text-block edit distance and reading-order edit distance.",
+          "key": "h:237c:5076:fff5:e10a"
+        },
+        {
+          "line": 67,
+          "checked": false,
+          "text": "Persist via `odl_bench compare-existing` into `epyc-inference-research/data/odl_existing_comparison/`.",
+          "key": "h:ba3f:1c95:cfc6:18c2"
+        },
+        {
+          "line": 70,
+          "checked": false,
+          "text": "Decide the table path: ODL alone / ODL + PaddleOCR-VL for table regions / PaddleOCR-VL pipeline wholesale. Gate on the **English-only table TEDS**, with latency and the inference-avoidance property as secondary criteria.",
+          "key": "h:902d:0604:28da:7dfd"
+        },
+        {
+          "line": 71,
+          "checked": false,
+          "text": "Only if PaddleOCR-VL underperforms: consider **MinerU2.5-Pro** or **GLM-OCR**. Architecture pre-check already done 2026-07-20 (below) — **neither is single-pass**, so neither is an `odl_bench` model swap. Nothing to download until a pipeline harness is scoped.",
+          "key": "h:824d:a69c:908f:3aa8"
+        },
+        {
+          "line": 72,
+          "checked": false,
+          "text": "Domain-transfer refinement (**not** a blocker): assemble a modest corpus of the PDF types the orchestrator actually ingests and confirm the OmniDocBench-chosen parser holds up. OmniDocBench's English subset is a legitimate gating instrument on its own; this only checks transfer.",
+          "key": "h:40e3:14d3:8b4a:ebc7"
+        },
+        {
+          "line": 144,
+          "checked": false,
+          "text": "**Do not download MinerU2.5-Pro or GLM-OCR as `odl_bench` model swaps** — the harness invokes models single-pass and both would produce void results. ✅ 2026-07-29 — this guardrail is now the operative Phase-D condition; either candidate requires a separately scoped multi-call pipeline harness before any download or benchmark.  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*",
+          "key": "h:ef23:4989:cb8d:4dce"
+        },
+        {
+          "line": 145,
+          "checked": false,
+          "text": "If PaddleOCR-VL's pipeline proves the concept and we want a one-kernel alternative, scope **MinerU2.5-Pro-2605 as a separate pipeline-harness project** (multi-call orchestration + OTSL→HTML assembler). Its in-model layout stage is the reason it is the right target: `llama-server` + mmproj can serve *both* stages, with pure Python glue and no second inference runtime. `mineru-vl-utils` has an `http-client` backend for OpenAI-compatible servers that llama-server plausibly drops into, though it is not a listed/tested backend.",
+          "key": "h:b006:815b:4678:eda3"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/opendataloader-pipeline-integration.md",
+      "state": "active",
+      "sha256": "29867b457df8fb390a781363c560a2e893a0c12cb328dccc52dffecc025d76cd",
+      "bytes": 16286,
+      "title": "OpenDataLoader PDF — Pipeline Integration",
+      "owner_index": "pipeline-integration-index.md",
+      "boxes": [
+        {
+          "line": 36,
+          "checked": false,
+          "text": "Parser-quality comparison: evaluate LightOnOCR-2-1B only as a structural/table/reading-order parser candidate against docling-fast; speed is secondary and not a standalone reopen reason.",
+          "key": "h:9fa1:f419:4d31:ba36"
+        },
+        {
+          "line": 37,
+          "checked": false,
+          "text": "Measure LightOnOCR latency only inside the parser-quality comparison above, after structural/table/reading-order scoring says the swap is useful.",
+          "key": "h:d252:8346:43e1:321d"
+        },
+        {
+          "line": 38,
+          "checked": false,
+          "text": "Implement three-way routing: ODL local (simple) → ODL hybrid (tables) → LightOnOCR (scanned).",
+          "key": "h:b1c2:e588:9dfc:6c7f"
+        },
+        {
+          "line": 39,
+          "checked": false,
+          "text": "Run comparison on 200 PDFs: our pipeline vs ODL local vs ODL hybrid vs docling vs marker.",
+          "key": "h:e8fc:4369:f0e7:4013"
+        },
+        {
+          "line": 40,
+          "checked": false,
+          "text": "Publish results in the dated progress log with immutable artifacts and metric directions.",
+          "key": "h:21ed:483a:fa55:72b8"
+        },
+        {
+          "line": 41,
+          "checked": false,
+          "text": "**Make ODL-013 decision-capable before any adoption or routing-default change**: preserve the corpus/evaluator/engine hashes and raw outputs in durable in-repo evidence; use an existing or operator-ratified document-parser protocol with the full claim tuple and a precommitted decision rule. Keep the current default unchanged until that gate closes.",
+          "key": "h:2987:6898:1dd0:1077"
+        },
+        {
+          "line": 42,
+          "checked": true,
+          "text": "**Harden the ODL three-way harness and timing record** ✅ 2026-08-25 (mainA PIP-05): fail closed on non-zero pdftotext return codes, missing ODL candidates, and empty liteparse/phase predictions (failed docs leave no prediction file, `failed_stems` recorded, exit 2); ODL engine pinned (`opendataloader-pdf==2.5.0`, `liteparse==2.12.0`) via `importlib.metadata` with fail-closed exit 2 on mismatch/unresolvable, recorded in summary.json; raw per-document latencies persisted (`per_doc_latency_ms`) so median/p90 are independently reproducible, report gains a p90 column; score phase exits 3 on missing/empty predictions or missing evaluation.json. Research `run_three_way_bench.py` + 13 new tests; suite 69 passed/1 skipped.",
+          "key": "h:20ad:def4:acd7:ef8b"
+        },
+        {
+          "line": 43,
+          "checked": true,
+          "text": "**Resolve the dataset name collision explicitly** ✅ 2026-08-25 (mainA PIP-05): the OmniDocBench clone was renamed `/mnt/raid0/llm/opendataloader-bench` → `/mnt/raid0/llm/omnidocbench` (no live processes; venv activate scripts + console shebangs migrated); every in-repo path reference repointed (research odl_bench + document_extraction_adapter + validate_pool, orchestrator corpus_v1/common.py, root handoffs/wiki/op-bundle/backlog-queue/amend_e8 script); bare-name references now fail loudly. `/mnt/raid0/llm/opendataloader-bench-upstream` remains the 200-PDF OpenDataLoader benchmark. Historical progress records left as dated.",
+          "key": "h:f050:a7da:118c:ac84"
+        },
+        {
+          "line": 44,
+          "checked": false,
+          "text": "Run baseline: our current pipeline (pdftotext + LightOnOCR) on the 200 PDFs.",
+          "key": "h:3259:75f3:81df:df99"
+        },
+        {
+          "line": 45,
+          "checked": false,
+          "text": "Cite W-RAC as Phase-2 hybrid-routing prior art if measured cost becomes a bottleneck.",
+          "key": "h:069e:5c51:3e9a:a9c4"
+        },
+        {
+          "line": 49,
+          "checked": false,
+          "text": "During Phase 3 benchmark integration, add intrinsic chunk-quality scores beside the committed `odl_bench` structural text edit distance, table TEDS, reading-order edit distance, and speed rows; explicitly bridge/co-report sibling NID/MHS if those names remain in the parent contract.",
+          "key": "h:c364:f019:4d6c:fe8c"
+        },
+        {
+          "line": 50,
+          "checked": true,
+          "text": "**ODL-011 integrate and test the non-coref Ekimetrics arm ✅ 2026-08-13**: registered SC/BI/ICC/DCC in `odl_bench` (`intrinsic.py`, research `f24b8aa9` + `cd329746`); upstream MIT provenance pinned (intake-580, FMRE/RC excluded per license + contract); 30 intrinsic tests cover metric direction + degenerate inputs; unavailable-embedder evidence preserved (`value=None` + reason). First real run complete: sentence-transformers 5.7.0 installed under inference grant (msg-84), all-MiniLM-L6-v2 over the ODL-013 dirs (200 docs/engine) — pdftotext ICC 0.651/DCC 0.672, opendataloader ICC 0.643/DCC 0.654, liteparse ICC 0.552/DCC 0.654. Evidence: `/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/intrinsic/intrinsic-*-embed.json`. HOPE arm + common RAG endpoint remain open (row below).",
+          "key": "h:164a:c009:1119:d2f4"
+        },
+        {
+          "line": 51,
+          "checked": false,
+          "text": "**ODL-011 add the contradictory HOPE arm and common endpoint**: score both intrinsic families on the digest-pinned Phase-2 fixture and report the same downstream RAG answer-correctness endpoint before either family informs routing.",
+          "key": "h:18e1:4d09:97d6:b885"
+        },
+        {
+          "line": 55,
+          "checked": true,
+          "text": "Bench LiteParse-local vs OpenDataLoader-local vs pdftotext on a representative born-digital corpus: reading order, table fidelity, speed, and JVM-free deploy footprint. Use LiteParse-aware scoring and decide `adopt_component` vs ODL-only. ✅ **EXECUTION COMPLETE 2026-08-13; OBSERVATION ONLY** — the same 200 PDFs and prediction stems were scored with the upstream NID/TEDS/MHS evaluator, and all 600 stored outputs reproduce exactly. LiteParse leads the aggregate point estimates (overall 0.8804 vs ODL 0.8419 and pdftotext 0.5705), but NID and MHS paired exploratory intervals cross zero and no decision rule was precommitted. The scratch-only artifact lacks a document-parser protocol/category/attestation and cannot gate adoption, routing, promotion, or closure. Harness: `odl_bench/run_three_way_bench.py` (research `a16aa0d9`); local artifact `/mnt/raid0/llm/tmp/odl013-bench-20260813T1336Z/`.",
+          "key": "h:16f8:2d1a:03d5:0c8c"
+        },
+        {
+          "line": 56,
+          "checked": true,
+          "text": "**ODL-013 execute and record the representative comparison** under an inference-owned CPU window, with an explicit page/document scoring bridge, pinned transient dependencies, and a fast-path policy verdict. ✅ **EXECUTION COMPLETE 2026-08-13; REQUESTED VERDICT NOT LICENSED** — completed 13:36–13:38Z under the recorded inference grant using the upstream GT/evaluator and pinned LiteParse/OpenDataLoader/poppler dependencies. The independent audit accepts the quality output as reproducible comparative evidence, but rejects `ADOPT` because the record is scratch-only and has no applicable measurement protocol or precommitted selection rule. Timing remains summary-only, ODL's version is `?`, and prospective failure accounting is not fail closed.",
+          "key": "h:254c:5045:bb53:6c0b"
+        },
+        {
+          "line": 57,
+          "checked": true,
+          "text": "**Independent ODL-013 and matched-parser audit.** ✅ 2026-08-13 — accepted both stored comparisons with follow-ups as sound observations, corrected the comparison report's `matched, decision-grade fixture` phrase by explicit supersession here, and kept all parser/routing defaults unchanged. The audit found 200 non-empty predictions per engine with exact upstream-evaluator replay; it did not find decision-grade warrant.",
+          "key": "h:40f2:9fd4:45dd:70ae"
+        },
+        {
+          "line": 58,
+          "checked": false,
+          "text": "Route complex, dense-table, and scanned documents away from LiteParse; it is a born-digital fast-path backend only.",
+          "key": "h:08e1:8f5b:9722:3c66"
+        },
+        {
+          "line": 62,
+          "checked": true,
+          "text": "**PaddleOCR-VL stronger parser / LightOnOCR comparison ✅ 2026-08-13**: a matched 200-PDF scored fixture was obtained for LiteParse, ODL, and pdftotext. The point estimates are useful comparative observations, not a promotion or routing decision: the local comparison report's `matched, decision-grade fixture` wording is superseded by the independent audit above. PaddleOCR-VL remains retracted off-label; LightOnOCR remains scanned-document scope; the n=665 rebaseline and a protocol-admissible decision record remain open.",
+          "key": "h:5b68:a8c9:8fc7:758d"
+        },
+        {
+          "line": 63,
+          "checked": false,
+          "text": "**Re-baseline ODL end-to-end on the full set**: acquire the missing source PDFs/immutable manifest, then report table TEDS at n=665 with all-language and English-only splits.",
+          "key": "h:4b3a:5bd6:bc65:2d37"
+        },
+        {
+          "line": 64,
+          "checked": false,
+          "text": "**Void and re-run the PaddleOCR-VL arm** through the real `PaddleOCRVL` pipeline with `vl_rec_backend=\"llama-cpp-server\"`, or restrict llama.cpp-only testing to cropped elements with the official six prompts. Do not cite the prior `0.0`/`0.058` TEDS numbers.",
+          "key": "h:d84e:014a:b218:9d84"
+        },
+        {
+          "line": 65,
+          "checked": false,
+          "text": "**P1 — evaluate MinerU2.5-Pro (1.2B) and GLM-OCR (0.9B)**: check single-pass vs pipeline architecture and llama.cpp/GGUF availability first; create one intake entry per candidate before measurement.",
+          "key": "h:5d0e:cc94:89ca:f7d5"
+        },
+        {
+          "line": 66,
+          "checked": false,
+          "text": "**P2 — Unlimited-OCR as a single-pass arm**: preserve the stock full-MHA path, Q5_K_M-or-better body, `lm_head >= Q8_0`, and conservative loop guard; do not take draft R-SWA PR #24975 into the production kernel.",
+          "key": "h:975c:47be:3a81:af8a"
+        },
+        {
+          "line": 67,
+          "checked": true,
+          "text": "**Correct the P2 observation record before using it** ✅ 2026-08-25 (mainA PIP-05): `progress/2026-08/2026-08-13-mainD.md` carries a supersession note — 18-page run retained as an observation; \"root cause\" → demonstrated prompt/profile mismatch (bare-passthrough GGUF chat template verified; \"coordinate output regardless of prompt\" NOT — llama.cpp canonical `tools/mtmd/tests/test-deepseek-ocr.py` records prompt-dependent behavior). Timing narrative corrected: stored receipt reports only `held_s=1.002881998` (pre-`aca459d9` ~1s post-health snapshot), not full-interval proof, and the run dir artifact is no longer on disk (`aca459d9` fixes future runs only). Remaining: canonical-profile A/B (row below), gated on inference-stop order lifting.",
+          "key": "h:7142:cbd4:8e98:f4d4"
+        },
+        {
+          "line": 68,
+          "checked": false,
+          "text": "**Run the canonical Unlimited-OCR profile as a fresh matched A/B after inference resumes**: use `document parsing.`, `n_predict=4096`, `n_ctx=16384`, DRY, and grounding-strip exactly as `tools/mtmd/tests/test-deepseek-ocr.py` specifies; preserve both profiles, score the stripped output, and require a new inference-window receipt spanning server launch through termination. This is blocked only on the operator's all-inference-stop order being lifted and a new Inference grant.",
+          "key": "h:77fe:5405:2936:19bb"
+        },
+        {
+          "line": 69,
+          "checked": false,
+          "text": "**Make the default Unlimited-OCR artifact quant-compliant**: replace/requantize the default model so `output.weight`/`lm_head` is at least Q8_0, record immutable SHA-256 plus tensor audit, and update `DEFAULT_MODEL`. *(2026-08-13 lane/mainD `a08b24dc`: a requantized `Unlimited-OCR-Q5_K_M-outq8.gguf` (2.26 GB, `output.weight` → q8_0 via `llama-quantize --allow-requantize --output-tensor-type q8_0`, other 154 tensors byte-copied, verified via `llama-gguf`) exists under `/mnt/raid0/llm/models/Unlimited-OCR-GGUF/` and `DEFAULT_MODEL` was repointed — research `c733e1ee`; the 22:18Z demo ran on it. Still missing: the immutable SHA-256 + tensor-audit record this row requires.)*",
+          "key": "h:432b:4e12:66a1:4ed4"
+        },
+        {
+          "line": 70,
+          "checked": false,
+          "text": "**Run and score the 18-page OmniDocBench demo** only after the artifact gate and an inference grant: capture binary/model/mmproj digests, server argv, linkage/residency during the window, responses, CER/TEDS/reading-order/latency, failures, manifest contract, and cleanup proof.",
+          "key": "h:4596:4825:1f13:3d3e"
+        }
+      ]
+    }
+  ]
+}
