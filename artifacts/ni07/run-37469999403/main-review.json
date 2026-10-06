@@ -1,0 +1,68 @@
+{
+  "run": 37469999403,
+  "attempt": 1,
+  "artifact_id": 11416088135,
+  "independent_git_bindings": 3369,
+  "source_counts": {
+    "app": 2096,
+    "carrier": 625,
+    "recipe": 648
+  },
+  "contexts": 4,
+  "zip_sha256": "0672e3d1fbde923a6364b800332da5f9305005ad9568aecc90fb90e3ef368301",
+  "zip_size": 17135370,
+  "zip_extracted_members": 3431,
+  "receipt_file_sha256": "96a6ac3967d052c30c41ce6911161396490a5ff95a7ceb47079dec37dd32b6db",
+  "receipt_self_sha256": "8b34dfb02ee19ae0255c62317c396985b322e433cfae9cae99b6fa2b3725626b",
+  "repositories": {
+    "app": "506acf51a060adc85e4c693221a2f50cd3342968",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "5db7ca512a6d561bd291cf6478bbd819b2eba969"
+  },
+  "argv": [
+    "/home/runner/work/epyc-root/epyc-root/app/.venv/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "pytest_asyncio.plugin",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_persister.py",
+    "tests/unit/test_repl_executor.py",
+    "tests/unit/test_safe_pickle.py",
+    "tests/unit/test_repl_environment.py::TestExecuteTimeout::test_alarm_timeout_marks_terminal_and_refuses_later_execute",
+    "tests/unit/test_repl_environment.py::TestExecuteTimeout::test_structured_alarm_timeout_is_sticky",
+    "tests/unit/test_repl_environment.py::TestExecuteTimeout::test_restricted_timeout_result_marks_terminal_without_executor_import",
+    "tests/unit/test_graph_helpers.py::TestReplTimeoutTerminal::test_terminal_environment_stops_future_turn_before_llm_work",
+    "tests/unit/test_graph_helpers.py::TestReplTimeoutTerminal::test_execute_turn_timeout_does_not_rescue_final_or_export_artifacts",
+    "tests/unit/test_graph_helpers.py::TestReplTimeoutTerminal::test_late_worker_cannot_resume_execute_or_checkpoint",
+    "--junitxml=/home/runner/work/_temp/ni07-27-repl-timeout/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 123,
+    "error": 0,
+    "executed": 123,
+    "failure": 0,
+    "passed": 123,
+    "skipped": 0
+  },
+  "shared_grade": {
+    "Q": "Judged",
+    "T": "Located",
+    "reasons": [
+      "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+      "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+    ]
+  },
+  "native_conformant": true,
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "app_main": "733623f4cd3b422a18d29710ece35219b25b3896",
+  "root_main": "f8ba8487e433a8cce8bba26d6f190e98cf86558d",
+  "context_recipe_assertions_checked": true
+}

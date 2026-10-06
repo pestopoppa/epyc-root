@@ -1529,3 +1529,7 @@ The [pinned research checkout/test seams](../docs/reference/hermetic-research-pr
 ## 2026-10-06 typed candidate descriptions
 
 [Descriptions preparation](../docs/reference/typed-candidate-description-preparation.md) adds strict optional aligned text to both renderers and readers while keeping legacy bytes and original label/key authority. [Native evidence](../artifacts/ni07/run-37468262427/README.md) passes14/14; prior wrong-order fixtureFALSE preserved. Live no-harm/adoption remains TD14/TD16.
+
+## 2026-10-06 terminal REPL timeout
+
+[Terminal state guard](../docs/reference/repl-terminal-timeout-state.md) refuses reuse/checkpoints and suppresses FINAL/artifact rescue while preserving API lease cleanup. [Native evidence](../artifacts/ni07/run-37469999403/README.md) passes123/123 including Event-controlled late-worker tests. Threads may still finish and cause host effects; D-f1 live lease acceptance remains open.

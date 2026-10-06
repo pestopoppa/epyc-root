@@ -1,0 +1,7 @@
+# Terminal REPL timeout state
+
+An awaited REPL timeout makes that environment permanently terminal: ordinary, structured and restricted execution entries reject reuse; direct checkpoints and SessionPersister refuse namespace persistence. The graph marks timeout at its worker-await boundary, suppresses FINAL rescue and artifact export, and refuses future turns before LLM work. Chat checkpointing records repl_timed_out and retains HeldSessionLease release/fencing. Reset/restore do not clear the flag; a fresh environment is required.
+
+A worker thread may continue and mutate memory or affect the host after asyncio wait_for times out. This patch does not terminate it, cancel host effects, roll back mutations or establish effect isolation. It prevents subsequent environment execution and checkpoint persistence; existing live lease-validation gate D-f1 remains open. Intrinsic timeout errors retain the typed REPLTimeout form; restricted timeout matching is exact, and boolean property checks preserve mocks.
+
+[Original native evidence](../../artifacts/ni07/run-37469999403/README.md) passes123/123:31persister,31executor,55safe-pickle parameterized cases,3environment timeout and3graph timeout. Event-controlled workers are released/completion-waited with bounded finally cleanup, including after-timeout late writes; API fake pipeline verifies lease release without checkpoints. No inference, real backend, live session or host test.
