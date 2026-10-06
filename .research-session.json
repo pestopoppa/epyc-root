@@ -1,7 +1,7 @@
 {
  "session_id": "intake-ctxext-ec-20261006",
  "started_at": "2026-10-06T02:41:21Z",
- "last_checkpoint": "2026-10-06T02:48:59Z",
+ "last_checkpoint": "2026-10-06T03:11:59Z",
  "stage": "stage2-closeout",
  "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-ctxext-1006",
@@ -78,6 +78,30 @@
    "verbatim": "To keep it reasonable, set the cap to 10",
    "disposition": "planned",
    "plan_ref": null
+  },
+  {
+   "seq": 4,
+   "stage": 2,
+   "verbatim": "The fused kernel is H100-only.\" - we can fuse ourselves",
+   "disposition": "planned",
+   "plan_ref": null,
+   "note": "self-fused HIP/CPU kernel is in scope; H100-only is not a blocker"
+  },
+  {
+   "seq": 5,
+   "stage": 2,
+   "verbatim": "Candidate list: \"sends reasonable\"",
+   "disposition": "context-only",
+   "plan_ref": null,
+   "note": "NOT plan approval"
+  },
+  {
+   "seq": 6,
+   "stage": 2,
+   "verbatim": "why not? Isn't that the whole point of deep diving a source in stage 2?!?",
+   "disposition": "planned",
+   "plan_ref": null,
+   "note": "digest reads are not dives; redo against full sources"
   }
  ],
  "prior_sessions": [
@@ -4912,6 +4936,13 @@
    "chunkqwen/flash_decoding patch files",
    "alphaxiv/HF pages for 2607.07740"
   ],
-  "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md"
+  "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md",
+  "redo": {
+   "date": "2026-10-06",
+   "scope": "1900,1906,1907,1911,1918-1922 re-verified against full PDFs (pypdf text + Read), shallow clones, raw blog HTML",
+   "claim_anchors_recorded": 103,
+   "sources_dir": "/mnt/raid0/llm/tmp/intake-ctxext-src/",
+   "wave_counted": "wave 2 (not a new wave)"
+  }
  }
 }

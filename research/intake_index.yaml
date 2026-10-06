@@ -238942,12 +238942,23 @@
     8B).
   - Evaluated on Qwen3-1.7B/4B/8B-Base up to 128K (RULER, HELMET-RAG, PG-19), Llama-3-8B and Jet-Nemotron hybrid; GQA/MoE/speculative
     decoding/Qwen3.5 NOT FOUND in the digest.
+  - 'Code (commit a7a9071) applies the correction rotation to ALL distant cached keys at every decode step and every layer,
+    recomputing the cos/sin table each time and caching nothing; prefill rotates all total_kv_len keys every chunk. Derived
+    cost per layer per decode step is O(n) with n=L-1-w0 distant keys: about 3*n*Hk*D flops plus 2D trig per key and roughly
+    20*D*Hk bytes per key against 4*D*Hk bytes of attention K+V traffic (about 5x), a derived-from-code estimate, not measured.'
+  - The shipped fused path still pre-rotates distant K in torch each step (distant_k_grouped=True disables the optional in-kernel
+    rotation); the fused kernels are SM90-only (CuTe/TMA/WGMMA, flash_attn.cute FA4 beta), 2799 lines for decode alone, with
+    a pure-torch decode oracle (_reference_jetlong_decode) and a non-fused FA2 A+B-C implementation usable as a spec for a
+    HIP/CPU reimplementation.
+  - L_curr is the batch-wide max position + 1, so G is one value per forward; in-window the model forward returns plain base
+    cos/sin and the stock HF attention (no extra op).
   techniques:
   - dynamic bifocal RoPE
   - dynamic remote grouping G
   - on-the-fly correction rotation
   reported_results:
-  - 'Table 1: Qwen3-1.7B Base RULER six-length mean (4K-128K) 60.93 vs Jet-Long 73.93 (digest; Stage-1 reading as a 32K in-window change was OVERTURNED at Stage 2).'
+  - 'Table 1: Qwen3-1.7B Base RULER six-length mean (4K-128K) 60.93 vs Jet-Long 73.93 (digest; Stage-1 reading as a 32K in-window
+    change was OVERTURNED at Stage 2).'
   - RULER lead +4.79/+2.18/+2.03 pp over strongest baseline (1.7B/4B/8B).
   cross_references:
     chapters: []
@@ -238963,58 +238974,340 @@
   - '[unverified] Resolve the apparent tension between the exact-in-window claim and a +13 pp RULER delta at 32K.'
   notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
     read in full). Second HTML pass on arxiv.org/html/2607.07740v4 (digest) for Eq.1/4-6 and Appendix E. Code: https://github.com/jet-ai-projects/jet-long
-    (redirect check: no change; README not read). v4 revised 2026-09-29.'
+    (redirect check: no change; README not read). v4 revised 2026-09-29. | 2026-10-06 REDO: re-verified against full primary
+    sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: monitor
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: '2026-10-06 Stage2 wave1. Primary-text read via WebFetch (small-model digest of the arXiv HTML/repo page,
-    NOT a PDF/source-file read unless stated): quotes are digest relays and carry no quote_sha256 anchors; re-pull the PDF before
-    any load-bearing citation. #4 (Table 1 anomaly recorded at Stage 1) OVERTURNED: Table 1 caption reads "RULER (accuracy averaged
-    over 13 tasks and six lengths: 4K, 8K, 16K, 32K, 64K, 128K)", so 60.93 vs 73.93 are six-length means that include 64K and
-    128K (beyond the 32K native window where unextended Base collapses), not 32K scores; no per-length 4K-32K table was seen,
-    so in-window equivalence is UNTESTED on Qwen3 in the sources read. #1 CONFIRMED with scope: Sec 3 states reduction to base
-    attention for L<=w_pretrained; code returns base cos/sin when L_curr<=jetlong_w; the 0.21/0.16 pp diffs (Appendix C) are
-    Llama-3-8B at 4K/8K, not Qwen3. #2 CONFIRMED: Appendix E cache stores base-RoPE keys; retained-cache decoding is not equivalent
-    to re-prefill. #3 CONFIRMED on H100 only (fused kernel needs SM90 + CUDA 13 per README). Extra: G is computed from batch-max
-    position (L_curr=position_ids.max()+1), and decode applies the correction rotation to all keys older than the w0 boundary
-    every step, i.e. O(L*d) per layer per step (agent inference). HELMET-RAG: not best at 1.7B (Self-Extend 43.01 vs 42.28)
-    despite the abstract. No independent replication found (1 search; repo has 8 commits). Stage-2 close-out declines recorded 2026-10-06: arXiv 2411.13476 (BFloat16 breaks RoPE; training-time method AnchorAttention, not training-free) declined as out of scope for wave 2, bears on correction-rotation precision; arXiv 2606.05345 (PJ-RoPE; learnable position space, not context extension) declined (wave 2 ingested 2411.13476 as intake-1922, not_applicable); alphaxiv/HF pages for 2607.07740 not fetched (low value).'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO against FULL primary sources (PDF text layer + Read, cloned repo @a7a9071).
+    CHANGED vs the 2026-10-06 digest dive: (1) in-window exactness is now supported by numbers: Table 13 PG-19 equals Base
+    at 4K-32K for all three sizes, so the digest-era "Jet-Long higher at 32K" worry is REFUTED; the Stage-1 "+13 pp at 32K"
+    remains OVERTURNED (six-length mean, Table 1 caption). Per-length RULER for Qwen3 Base is only in Figure 3 (not read;
+    PDF figure rendering unavailable). (2) cost of the correction rotation read from code: every decode step rotates the whole
+    distant K, uncached (M:546), ~5x the attention K+V bytes (derived estimate), O(L) per layer per token; prefill rotates
+    all cached K every chunk (quadratic over a long prefill). (3) fused kernel is SM90-only CuTe (TMA/WGMMA/warp-specialised,
+    FA4 beta dependency, 2799-line decode kernel) and still depends on torch pre-rotating K; operator ruling 2026-10-06: a
+    self-fused HIP/CPU kernel is in scope, so H100-only is not a blocker; reference specs for a port exist in-repo (non-fused
+    FA2 A+B-C M:381-617, _reference_jetlong_decode, tests _attention_ref/_merge_ref; parity tolerances atol 7e-2..1.2e-1,
+    input one repeated token, no real-checkpoint assertion). (4) MTP/DFlash2: paper and code have no speculative-decoding
+    support (greps of paper and repo found no hits); G is the batch-wide max position (M:146), so a verify batch shares one
+    G; a batch straddling a ceil(L/w) boundary still differs from sequential decode (inference). Below 32K nothing changes.
+    (5) Table 3: Qwen3-30B-A3B-Instruct-2507 (MoE) at 1M 64.03 vs YaRN 57.71, Unextended 26.82. Appendix A: no LongRoPE/GALI/ReRoPE
+    comparison; dense attention retained. Stage-2 close-out declines recorded earlier: arXiv 2606.05345 PJ-RoPE declined;
+    alphaxiv/HF pages not fetched. | Prior close-out record: Stage-2 close-out declines recorded 2026-10-06: arXiv 2411.13476
+    (BFloat16 breaks RoPE; training-time method AnchorAttention, not training-free) declined as out of scope for wave 2, bears
+    on correction-rotation precision; arXiv 2606.05345 (PJ-RoPE; learnable position space, not context extension) declined
+    (wave 2 ingested 2411.13476 as intake-1922, not_applicable); alphaxiv/HF pages for 2607.07740 not fetched (low value).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Eq.2 G=max(1,ceil(L/w_pretrained)), w0=2048 for main Qwen3 runs; code line read matches.
+    note: Eq.2, w0=2048, G formula re-read in full paper and code (M:155).
   - claim_index: 1
     effect: narrowed
-    note: Exactness at L<=native CONFIRMED by Sec 3 and code; numeric evidence (0.16-0.21 pp) is Llama-3-8B only and the +13
-      pp Stage-1 reading was a misreading of a six-length mean.
+    note: 'CONFIRMED from Eq.1 text and code path (M:149-151 returns base cos/sin, stock HF attention). Numeric in-window
+      evidence upgraded vs the digest dive: Table 13 PG-19 is identical to Base to two decimals at 4K/8K/16K/32K for all three
+      Qwen3 sizes; Appendix C Llama-3-8B diffs 0.21/0.16 pp; Appendix D post-trained Qwen3 at most 0.17/0.11 pp; Table 4 hybrid
+      46.59 vs 46.58. Still NOT-FOUND-IN-SOURCE as a table: per-length RULER for Qwen3 Base vs Jet-Long at 4K-32K (only Figure
+      3, a plot; PDF figures not rendered here).'
   - claim_index: 2
     effect: unaffected
-    note: Appendix E and code comment confirm base-RoPE keys in cache and non-equivalence to re-prefill after G changes.
+    note: Appendix E/A and code comment agree; boundary logit diff 0.1719 to 0.8750 on Qwen3-1.7B at L=98,304; Table 11 stratified
+      mean -0.74 pp, CI [-1.83,+0.35].
   - claim_index: 3
     effect: narrowed
-    note: Throughput 0.83-0.88x FA3 prefill and 1.04-1.08x decode confirmed on H100 only; table rows/batch size not seen; kernel
-      is not usable on MI210 or CPU.
+    note: 'Numbers confirmed on H100 80GB. Qualification newly found in code: the shipped fused decode still rotates distant
+      K in torch every step (distant_k_grouped=True) and requires SM90/CUDA 13; decode figure is 8B single-batch only.'
   - claim_index: 4
+    effect: narrowed
+    note: Table 1 caption confirms six-length means (4K-128K); 60.93 vs 73.93 are NOT 32K scores. HELMET-RAG note from digest
+      dive not re-checked here.
+  - claim_index: 5
     effect: unaffected
-    note: 'Qwen3 1.7B/4B/8B-Base, Llama-3-8B, Jet-Nemotron confirmed; extras: post-trained Qwen3 to 1M (Qwen3-30B 64.03 vs YaRN
-      57.71).'
-  reader_should_conclude: Cite Jet-Long as a training-free scheme that is provably base attention at L<=native and keeps base-RoPE
-    keys in cache, but do NOT cite +13 pp as an in-window effect, do NOT cite 0.16-0.21 pp as Qwen3, and do NOT assume MTP/DFlash2
-    compatibility (paper silent; G depends on batch-max position so a verify batch straddling a ceil(L/w) boundary can differ
-    from sequential decode). Per-step correction cost is O(L*d) per full-attention layer.
+    note: New claim from code; cost figures are derived-from-code estimates, unmeasured.
+  - claim_index: 6
+    effect: unaffected
+    note: New claim from code; port target is reimplementation, which the operator has put in scope.
+  - claim_index: 7
+    effect: unaffected
+    note: New claim from code (M:146-149).
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: G is the smallest integer that keeps the compressed sequence
+    quote_sha256: 62b90ffd379dac3e04588104b02b68a5ccf6d12c6dabb468d32e7914151a8232
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.6
+    quote: The main Qwen3 comparisons use
+    quote_sha256: 75d891b0822ea7ef793b63ca2a5f7a60631d2dfffdb35769814f822c0f0b06ca
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:155
+    quote: G = max(1, math.ceil(L_curr / self.jetlong_w))
+    quote_sha256: 5897206135b45fcd6f4cf71ab4647b4fd9cbca2f482c384877051a08448b2086
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: WhenL≤w pretrained,f(x) =x and Eq. (1) reduces to the unmodified base attention.
+    quote_sha256: 925deecb9a424bafd12f9730a5782da3e8193679945fe7fc6ad1624d4c33b2c9
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:149
+    quote: 'if L_curr <= self.jetlong_w:'
+    quote_sha256: d54d71b3386de5dc27e3748c19797f111bbf3953c12adf0d527059a796c1e5bd
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:144
+    quote: return base_cos, base_sin
+    quote_sha256: 05fb303e82a5cb94126172e6139f536c778b4b3b20d1978ca1cea40bed22f68a
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.18
+    quote: Qwen3-1.7B-Base11.52 11.82 11.59 12.49 12.60 17.99 71.00 16.39
+    quote_sha256: c1b24b995e4f21ff4044b70d7c1a03eca8e3a784ecfee76025f200c1749330ba
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.18
+    quote: + Jet-Long (ours)11.52 11.82 11.59 12.49 11.53 11.65 11.41 11.71
+    quote_sha256: 9736c1eead17100cfaeedcd40f32b3cda14caea32dbf0c50bd1d403fa1ff5179
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.18
+    quote: Qwen3-4B-Base9.74 9.90 9.75 10.45 10.40 21.44 104.66 15.64
+    quote_sha256: 4caca0d0c55834c5cebe445243804245c9e19d4c994f85ba540302f78411c827
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.18
+    quote: + Jet-Long (ours)9.74 9.90 9.75 10.45 9.67 9.81 9.62 9.85
+    quote_sha256: f8e17cb26b4a216d4dd488b17277b22e8fab1386d781f1a55783c9df40d2dd80
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.15
+    quote: its measured means differ from the unextended model by 0.21
+    quote_sha256: 9c69ac7ca0bb337442b1e9b1567a6f1ad69b2361eb994d7dc920563e60fb46ac
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.16
+    quote: Jet-Long’s measured means differ from the unextended model by at most 0.17 pp for 1.7B
+    quote_sha256: a01d95c985a8cd67be63dc644329324bae07ce081db6f04d755e8df950c327db
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: uncompressed base keys at their exact absolute positions
+    quote_sha256: 6ed31ce481e19005095ed13ed7025689e0716da98a5e53fe51e6e0650d6335f6
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:336
+    quote: '# Cache base-rotated keys (invariant: cache always stores base-RoPE''d keys)'
+    quote_sha256: 515aaa5263e0a0630e160d6586ce1b7ad5f1f87790fea94019f2e92fafb11e09
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.14
+    quote: Retained-cache decoding therefore differs from full re-prefill.
+    quote_sha256: 34e9bd3eaef154483db94a871a292cbfc2b8d8739f40ea73a833852dc3a52ecd
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.16
+    quote: the maximum absolute logit difference increases from 0.1719 to 0.8750.
+    quote_sha256: e7854b0361adc7bf95330308c1d3c74ea7c31ee4fc585e5bc355675e5a267aba
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.9
+    quote: fused prefill reaches 0.83–0.88× FA3 throughput, 0.88–
+    quote_sha256: 778b96b67ccd3acb6855e6e5930b9bc1c7b90e4f015fef5e8df45f6810aeef4a
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.9
+    quote: fused decode reaches1.04–1.08× FA3 and0.994–1.034× the matched
+    quote_sha256: 2774f22357b46718e4a8a767eeb16412be52ac0a7e9f1ddd2c015b46a4fb89a8
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.10
+    quote: Jet-Long CuTe 33830 (1.00×) 22759 (1.00×) 15612 (0.88×) 10382 (0.85×)
+    quote_sha256: 716e2b70379cedd685d6c673b95028b64410d1612571fb6aa84ec1ae5fecf0bc
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.10
+    quote: Jet-Long CuTe — — 73.90 (1.08×) 58.03 (1.04×)
+    quote_sha256: 367f0ea39302b9b34e9c2961039c07ab1147f0128a23776d62d2c4932858ffcf
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.19
+    quote: Measurements use an NVIDIA H100 80GB HBM3 (SM90),
+    quote_sha256: 95f634cf06310d02accb66f76ee8f842392467bc3e27d91dd137a85d8091f6b1
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: 'Table 1: Long-context performance on RULER (accuracy averaged over 13 tasks and six lengths:'
+    quote_sha256: 2514d64288c3c077e7857ecec932efccd9b8131188f29ab7ae469ebe26d1abf0
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: Base 60.93 69.94 73.13 68.00 36.20 44.33 47.24 42.59 16.13 14.84 12.80 14.59
+    quote_sha256: 7eb64d81acdeb5ec6d6048ee74e51226604370a75ee04952feb84e56d5fa70f9
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: Jet-Long (ours)73.93 83.02 86.74 81.2342.2853.61 57.34 51.08 11.72 9.85 8.73 10.10
+    quote_sha256: c559073cc138953e6e8f88a4b3e6a6f48c8b887a1b744c126b1c67bee7b83bb3
+    source_revision: arXiv:2607.07740v4 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 5
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:546
+    quote: k_distant_group = correction_rotate_per_sample(
+    quote_sha256: 1343bb1d3a0f732b5ff7dc505cec46352a76bed9fb8269a8785c790d0491568b
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 5
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:227
+    quote: return x * corr_cos + rotate_half(x) * corr_sin
+    quote_sha256: c0e05a621cfc76d2ee42496cedc440070677b846f20f7b1e20225da836f70293
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 5
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:399
+    quote: k_group = correction_rotate_per_sample(key_base,   delta_k_pos_2d, inv_freq, dtype)
+    quote_sha256: 7684d9ee6aecac6de4ac4593ab5e705453e2dcf1461ad8489fd08865e32e30b7
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 5
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_jetlong_backend.py:164
+    quote: distant_k_grouped=True,
+    quote_sha256: e9eb2ef2204be6cc9369cbd749238852d1d0ca9ed58b02e7d3beae0a31a90fb6
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 5
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_decode_sm90.py:2797
+    quote: apply_distant_k_correction=not distant_k_grouped,
+    quote_sha256: e399da63a5179ad64ef751415183c06d3739975eb87528d8d740c90931800fe4
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 6
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_decode_sm90.py:62
+    quote: from flash_attn.cute.flash_fwd_sm90 import FlashAttentionForwardSm90
+    quote_sha256: d714b0b7811523e96aa4d9044871aecaff4d8060e0caf7c87629da30d91e8cc2
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 6
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_decode_sm90.py:2774
+    quote: raise RuntimeError("fa4_cute_decode_sm90_jetlong_fused requires SM90/H100")
+    quote_sha256: 5d97542277ae08fb19e47f567f79918d017db91ad52c7b3d6b4496a5d1c4214d
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 6
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_prefill_sm90.py:194
+    quote: k_packed = torch.cat((k_base, k_group), dim=1).contiguous()
+    quote_sha256: e88f08807632655b6e8bbe8b327a849166f66d9881c017dcd2a4e89817f89672
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 6
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/merge_fused.py:83
+    quote: '"""Merge two attention branches in one CUDA kernel.'
+    quote_sha256: 0069b1c759f9ed7f9c5473f0faf111d66ca886ff15cb22ee4341aeef8178c2c0
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 6
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_jetlong_backend.py:93
+    quote: 'def _reference_jetlong_decode(query_base, query_group, key_near, value_near, key_distant_group, value_distant):'
+    quote_sha256: 96ce79478c1ad0853397ed5ffae8bc18726e91fc9cff7d453a337db6c5fa0f7e
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 7
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:146
+    quote: max_pos = position_ids.max().item()
+    quote_sha256: b562e0ca6d8ba83a6f7a134405c0f7953965f94efe454d50f97d07e29a830d3d
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 7
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:147
+    quote: L_curr = max_pos + 1
+    quote_sha256: 0b33ff65052dc67f68eb7dcc9038f44559e0d8fec1759bf4536a9b5a2c8459cb
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 7
+    kind: line-range
+    locator: Jet-Long/jetlm/modeling/jetlong/modeling_qwen3_jetlong.py:317
+    quote: scaling=self.scaling, sliding_window=self.sliding_window, **kwargs,
+    quote_sha256: 08e20bc9094f98602a0b8560eea25fbc109de18f3e06e6643857f2611344282f
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Cite Jet-Long as training-free, identity at L<=native by Eq.1 and code, supported in-window by PG-19
+    equality at 4K-32K (Table 13) and small RULER diffs on other models, NOT as a +13 pp in-window effect. Do not assume Qwen3-Base
+    per-length RULER in-window numbers exist (Figure 3 plot only). The correction rotation is uncached O(L) per layer per
+    decode step; a CPU/HIP port should cache grouped K per G-epoch or fuse rotation into the K load. No MTP/DFlash2 evidence.
   depends_on: []
-  dive_wave: 1
+  dive_wave: 2
   source_revision:
-    arxiv: 2607.07740v4 (HTML, digest)
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
-    repo: github.com/jet-ai-projects/Jet-Long main (SHA not visible)
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
   second_reader:
     reader: none
-    scope: 'single dive agent; second reader pending (SC76 mechanical re-find not run: quotes are digest relays)'
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
     human_verification: false
     empirical_reproduction: false
 - id: intake-1901
@@ -239277,6 +239570,8 @@
   - Llama2-70B reaches >100k context; 94% of gpt-3.5-16k performance claimed.
   - 'Reported limitation (search digest): intra-chunk pattern effectively truncates distant info; 7B models make practical
     mistakes despite low perplexity.'
+  - The paper states in its Impact Statement that DCA preserves model performance within the training length; there is no
+    dedicated in-window ablation, and the chunk size s is typically 3/4 of the training length.
   techniques:
   - Dual Chunk Attention
   reported_results:
@@ -239295,52 +239590,145 @@
     equivalence claims with the paper and the Qwen2.5-1M implementation.'
   notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
     read in full). Code: https://github.com/HKUNLP/ChunkLlama (redirect unchanged). Search digest indicates llama.cpp has
-    no DCA upstream (unverified).'
+    no DCA upstream (unverified). | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: monitor
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: '2026-10-06 Stage2 wave1. Primary-text read via WebFetch (small-model digest of the arXiv HTML/repo page,
-    NOT a PDF/source-file read unless stated): quotes are digest relays and carry no quote_sha256 anchors; re-pull the PDF before
-    any load-bearing citation. #0 CONFIRMED: Eq.2 P_q^Intra=P_k=[0..l-1] mod s; Eq.5 inter c-1; Eq.7 succ (paper notation s=chunk,
-    c=pretrain length, w=c-s, s typically 3/4 c; local DESIGN-DCA chunk_size = paper c). #1 PARTIAL: training-free, FlashAttention
-    (Alg.1: three flash-attn calls merged by softmax normalisers) and PI/NTK orthogonality CONFIRMED; YaRN composition NOT-FOUND-IN-SOURCE
-    in this paper (appears in 2501.15383). #2 PARTIAL: 94% of gpt-3.5-16k CONFIRMED (Table 4, L-Eval 63.20 vs 67.03); ">100k"
-    not confirmed (digest: 96k with +0.56 PPL, scales toward 100k). #3 PARTIAL: no limitations section; 13B suboptimal on global-understanding
-    tasks (Tables 6-7); weak-7B statement is from the repo README, not the paper; truncation wording not found. Exactness: for
-    n<=s the equivalence to plain RoPE follows from Eq.2 (single chunk) but is a derivation, not a paper claim; the paper says
-    only that DCA preserves performance within training length. Reference code (raw chunkllama_attn_replace.py, wave 2) clamps
-    qc_t at chunk_size, matching the local v1 clamp, so the paper c-1 vs local chunk_size difference is paper-vs-reference-code,
-    not a local defect. Stage-2 close-out declines recorded 2026-10-06: chunkqwen/flash_decoding patch files not ingested (low marginal value; chunkllama patch ingested as intake-1918); vLLM branch ingested as intake-1921; MInference paper already intake-1908 (stage1-unverified, not selected).'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO against the full PDF text (v2, 18 pp). CHANGED vs the digest dive: claim
+    2 upgraded PARTIAL to confirmed (">100k" present in abstract/intro; Table 2 gives 70B PPL 5.24 at 4k and 6.12 at 128k).
+    Newly found: exactness in-window is not a measured result: the paper has only the Impact Statement sentence plus Table
+    1 equality at 4096 measured with a 256 sliding window; and the reference code is not an identity between chunk_len (=chunk_size-local_window,
+    2560 for Llama2) and the training length (see intake-1918/1921). Prior declines: vLLM branch and chunkqwen patches now
+    ingested (1918, 1921).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Eq.2/5/7 confirmed.
+    note: Eq.2/5/7 re-read in the full paper.
   - claim_index: 1
     effect: narrowed
-    note: YaRN composition not in this paper.
+    note: 'Training-free, FlashAttention (Algorithm 1: three separate flash calls merged by softmax sums) and PI/NTK orthogonality
+      confirmed. YaRN is only a baseline row in this paper; the ChunkLlama code ships a YaRN-style mscale though (see intake-1918).'
   - claim_index: 2
-    effect: narrowed
-    note: 94% confirmed; >100k only ~96k in digest.
+    effect: unaffected
+    note: 'UPGRADED from PARTIAL: 94% confirmed (63.20 vs 67.03 = 94.3%, Table 4) and the abstract/intro claim exceeding 100k
+      tokens is present (70B PPL 6.12 at 128k per Table 2).'
   - claim_index: 3
     effect: narrowed
-    note: Limitation partly from README; no limitation section.
-  reader_should_conclude: DCA is training-free and exact up to s=chunk-local only by derivation; local v1 graph is NOT stock
-    in-window (static gating by dca_chunk_size>0, 3 ropes + 3 mul_mat, ignores -fa) so DCA-on is a dedicated-instance choice;
-    v1 refuses MTP and DFlash2 needs a no-draft context. Local bit-exactness evidence is synthetic-model CPU non-FA only (test-dca-run4.log
-    max|d|=0).
+    note: No limitations section; Tables 6/7 are QA demos; weak-7B remark is in the appendix/README.
+  - claim_index: 4
+    effect: unaffected
+    note: 'New claim: only in-window statement is the Impact Statement; Table 1 at 4096 shows 7.87 for both ChunkLlama2 7B
+      and Llama2 7B with a 256 sliding window.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.3
+    quote: q = Pk = [0, 1, . . . , l− 1] mod s. (2)
+    quote_sha256: f1e5325cf547991240ccc70823e55e81a50fc5fc5e4a71a053485824d4129eec
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: pretraining c− 1 > max(Pk), where c is the pretraining
+    quote_sha256: 922be895b8676aa7b7ba9b63026fdce45108e56d9e6b95c702d34957a2893e8f
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: s, s + 1, . . . , s+ w− 1, c− 1, . . . , c− 1| {z }
+    quote_sha256: 40821d7fb22d296cea92080e4454ee0833817f483fab867d60a0c5b6685af907
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.2
+    quote: 2. Orthogonality. DCA is orthogonal to existing popular
+    quote_sha256: 33fe47600017e2c3bbfad1f0ad95df0a7bf01ba6d4dc9d06edec5111b00552df
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.15
+    quote: inner product with all keys kj with j≤ i. We have n =⌊i/s⌋ chunks before the current chunks. DCA calls 3 separate
+    quote_sha256: 1d33b071da3858e54d2b9d2cba836e0ea492798e65e89fee6b6df7a3cda934ee
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.6
+    quote: Llama2-PI-Yarn 7B 7.87 8.80 11.75 42.42 >102
+    quote_sha256: 55ffe588736efd6d160ca7024a755b6d87b11487b8bce5e72454639a428b480e
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.8
+    quote: CHUNKLLAMA2-Chat 70B ✗ 4k 82.15 60.39 48.54 61.72 63.20
+    quote_sha256: fe43885499fcbd4675dba805a7715b361288698287ab8e2fda0139143715d70d
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.8
+    quote: GPT3.5-16k-0613 Unkown – 78.43 61.38 63.51 64.84 67.03
+    quote_sha256: 6e05b36ce1c42c4735a57371b9a186c5e617add4cad11d2319dad24fd3c14a09
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.8
+    quote: 94% of the performance of gpt-3.5-turbo-16k. We
+    quote_sha256: 667ef7ac5661db893a68d89a2df0b8bca0610a2dfe042c7234e1e1628e858433
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.2
+    quote: to handle context sizes exceeding 100k tokens.
+    quote_sha256: e1f11a8315aa53ac2d2133972ff721cc55b20a648785c2ff6375a5030ea5a058
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.17
+    quote: Table 6. QA (Easy) results of CHUNK LLAMA 2 13B/70B and Dynamic-NTK with Llama2 13B, using the content of this
+      paper as input.
+    quote_sha256: 9583b2f6f12e2f017d3007f3d49bc6d18175a7c48fcf65a9a0e5d9de628adb9b
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.9
+    quote: serves model performance within the training length, and
+    quote_sha256: d6e3d91bcf89f9a6a33c880a9449e5e7339f9a312e27963e1b3ce2a2d9f62148
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: 16k context length. The chunk size s can be typically set to
+    quote_sha256: fa797d5c15527f141bcdbc4f9d0b5e90b3a3c27564e389ff96e4b47c1cdb0066
+    source_revision: arXiv:2402.17463v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: DCA is training-free and its identity for n<=chunk_len follows from Eq.2, not from a measured in-window
+    ablation. Between chunk_len and the training window the reference code already remaps positions. Local v1 graph is not
+    stock in-window; v1 refuses MTP.
   depends_on: []
-  dive_wave: 1
+  dive_wave: 2
   source_revision:
-    arxiv: 2402.17463v2 (HTML digest)
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
-    local_branch_tip: fork/experimental/dca-20261004 = 9264f8095e42
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
   second_reader:
     reader: none
-    scope: single dive agent; logs read on disk, ctest not re-run
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
     human_verification: false
     empirical_reproduction: false
 - id: intake-1907
@@ -239366,6 +239754,12 @@
     1M (per search digest and the blog; the abs-page digest did not name DCA).
   - Qwen blog says YaRN attention scaling used with DCA leaves short-sequence behavior unchanged (recalled from OPTIONS.md
     prior art; not re-fetched).
+  - 'Tables 4 and 5 report DCA+YaRN rows with only the average and the 64K/128K (LV-Eval: 64K-256K) columns filled; the stated
+    averages equal the mean of six columns when the short columns are taken from the RoPE row (arithmetic check on the 7B
+    row: (96.7+95.1+93.7+89.4+82.3+55.1)/6 = 85.4), i.e. the short-length equality is consistent with having been assumed
+    rather than measured.'
+  - The report says DCA brings Qwen2.5-7B/14B-Instruct (trained to 32K) to over 80% accuracy on passkey up to 1M tokens; the
+    blog restates this as nearly perfect accuracy.
   techniques:
   - DCA + MInference inference framework
   reported_results:
@@ -239382,46 +239776,110 @@
   - '[unverified] Dive must read the PDF/HTML to anchor the DCA-in-production and short-sequence-unchanged claims for a trained
     (not training-free) model family.'
   notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
-    read in full). Blog: https://qwenlm.github.io/blog/qwen2.5-1m/ not fetched in this pass. Only 3 authors recorded of 28.'
+    read in full). Blog: https://qwenlm.github.io/blog/qwen2.5-1m/ not fetched in this pass. Only 3 authors recorded of 28.
+    | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: '2026-10-06 Stage2 wave1. Primary-text read via WebFetch (small-model digest of the arXiv HTML/repo page,
-    NOT a PDF/source-file read unless stated): quotes are digest relays and carry no quote_sha256 anchors; re-pull the PDF before
-    any load-bearing citation. #0 CONFIRMED: staged 4K->32K->65,536->131,072->262,144 training with ABF base raised from 10,000
-    toward 1M then 5M/10M. #1 PARTIAL: 3.2-6.7x prefill at 1M (digest; 12.2 min to 109 s on H20 for 14B) CONFIRMED, but the
-    speedup is from MInference sparse prefill plus chunked prefill (32,768-token chunks), NOT from DCA, which adds no speed.
-    #2 PARTIAL: the sentence "these two length extrapolation methods do not alter the model''s behavior when processing short
-    sequences" is verbatim but a bare assertion with no DCA-on/off ablation; Table 6 compares differently-trained models (14B-Instruct
-    vs 14B-Instruct-1M). Extra: DCA applied to stock 32K-trained Qwen2.5-7B/14B-Instruct reaches >80% on passkey to 1M (vendor
-    paper, Passkey only, chunk/local sizes not stated in paper; HF config 262144/8192 per DESIGN-DCA.md:30). Vendor blog is
-    restatement, not corroboration.'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO against the full PDF (v1, 19 pp). CHANGED vs the digest dive: the "does
+    not alter short-sequence behaviour" sentence graded earlier as an unevidenced assertion is now shown to have NO short-length
+    measurement behind it in the report: Table 4/5 DCA+YaRN rows contain only average and long-length columns and the averages
+    are consistent with copied RoPE short columns (derived arithmetic, not stated by the authors). Speedup attribution confirmed
+    as MInference + kernels/engine, not DCA (no DCA-only timing). The blog (intake-1920) says passkey is nearly perfect while
+    the report says over 80%.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Training recipe confirmed.
+    note: Stage lengths and ABF bases confirmed (p3).
   - claim_index: 1
     effect: narrowed
-    note: Speedup attribution is MInference, not DCA.
+    note: 3.2-6.7x confirmed but credited to sparse attention (MInference with refinement) plus optimized kernels/engine;
+      no DCA-only timing; MInference alone about 4x prefill.
   - claim_index: 2
     effect: narrowed
-    note: Verbatim sentence confirmed but unevidenced; holds only n<=training length because the temperature factor clamps at
-      1.
-  reader_should_conclude: Do not cite the 3-7x speedup as a DCA benefit. The short-sequence-unchanged sentence is an unevidenced
-    vendor assertion. The only stock-model evidence for DCA is passkey on Qwen2.5-Instruct; nothing is shown for GDN-hybrid
-    Qwen3.x.
+    note: Sentence is verbatim and repeated in Table 4/5 captions, but Tables 4/5 DCA+YaRN rows do not show short-length columns,
+      so no on/off measurement exists in the report; Figure 3 compares with/without DCA only at 1M tokens; Table 6 compares
+      differently trained models.
+  - claim_index: 3
+    effect: unaffected
+    note: 'New claim: arithmetic consistency with copied short columns is the dive agent''s derivation, labelled as such.'
+  - claim_index: 4
+    effect: unaffected
+    note: 'New claim: 32K-trained Instruct models reach over 80% passkey to 1M; chunk size and local window not stated in
+      the report.'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.3
+    quote: 262,144 tokens, with the RoPE base frequencies set to 1,000,000, 5,000,000, and 10,000,000, respectively.
+    quote_sha256: 6f2ace2399f4bf7607ca4932f2a1521b451780cfa51e9aa7c6d4a055af233bab
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.15
+    quote: As illustrated in Figure 11, our method, enhanced with sparse attention and optimized inference engines,
+    quote_sha256: c3e654de80e92c873c643355ecea4c03de9ad219c3edc91cdd54be74a9a0faaa
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.9
+    quote: 4 times speedup during the prefilling stage.
+    quote_sha256: 30860c5311a6c00e8ff8d758f4de93c3d677922ad465946591e01a3af3dbd1a4
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.6
+    quote: thus ensuring that performance on shorter tasks remains unaffected.
+    quote_sha256: f0123b0d33704b90fac936fe9b4237ed7d7d2402994b7fa13c413ed58e5da4ac
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: page-and-quote
+    locator: PDF p.13
+    quote: 'Table 4: Performance of Qwen2.5 Models on RULER. DCA+YaRN does not change the model behavior'
+    quote_sha256: 5acae196f88223f50a0e38f1f21d6c111d44f7ef3d6eba95952d1129c2cffe87
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.13
+    quote: Qwen2.5-7B-Instruct RoPE 32K 80.1 96.7 95.1 93.7 89.4 74.5 31.4
+    quote_sha256: 2580c02fbbf5e6390196130579d885953fb2a42e967c1afd45772efe8211f71e
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: page-and-quote
+    locator: PDF p.13
+    quote: DCA+YaRN 128K 85.4 82.3 55.1
+    quote_sha256: a9a6bb2f3102f586078704b1f4bd286f0d53153a8ec69ebb0d4ab5108c646374
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 4
+    kind: page-and-quote
+    locator: PDF p.6
+    quote: to 1 million tokens, despite being trained only on sequences up to 32K tokens. This underscores the
+    quote_sha256: b2eb37de2845fa5b61d570fb8d841d0393392cd89190f1d63dd00e393a6ba02a
+    source_revision: arXiv:2501.15383v1 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: 'Do not cite the report as evidence that DCA+YaRN is unchanged at short length: it is an assertion
+    with no short-column measurement. Do not credit DCA with the prefill speedup. No GDN-hybrid evidence.'
   depends_on: []
-  dive_wave: 1
+  dive_wave: 2
   source_revision:
-    arxiv: 2501.15383v1 (HTML digest)
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
   second_reader:
     reader: none
-    scope: single dive agent
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
     human_verification: false
     empirical_reproduction: false
 - id: intake-1908
@@ -239583,6 +240041,14 @@
     length (to be checked).
   - llama.cpp already ships --grp-attn-n/--grp-attn-w options in common/arg.cpp at ffc1bac82 (lines 2224-2236, examples completion
     and passkey only; server not verified).
+  - Table 4 short-task results (SelfExtend vs vanilla, G=16/w_n=1024 for Llama-2, G=6 for Mistral, G=12/w=512 for Phi-2) are
+    near-identical, not bit-identical (cells move from -0.23 to +0.46); identity for L<=w_n follows from Algorithm 1 (grouped
+    path never selected), not from a measurement.
+  - llama.cpp keeps one position per cached K and re-ropes the cache each time ga_w tokens accumulate; unlike the paper the
+    query is not floored and the effective neighbour window is a sawtooth in [0, ga_w); grouping starts at n_past = ga_w (default
+    512). Under YaRN the K-shift graph passes ext_factor and attn_factor to ggml_rope_ext, and rope_yarn multiplies cos/sin
+    by 1+0.1*ln(1/freq_scale) on every call, so every K-shift (Self-Extend or server context shift) rescales all shifted cells
+    again; this is a code-read hypothesis, untested.
   techniques:
   - grouped + neighbor attention
   - K-shift re-rope in llama.cpp
@@ -239600,53 +240066,166 @@
   notes: 'Stage-1 read: arXiv abs page via WebFetch digest on 2026-10-06 (small-model summary, not source text; HTML/PDF not
     read in full). Local check 2026-10-06: git grep at /mnt/raid0/llm/llama.cpp ffc1bac82 shows the options; implementation
     depth (mid-sequence re-rope via K-shift) not yet read. If it re-ropes cached K, OPTIONS.md claim of no prior re-rope art
-    needs revising. Code: https://github.com/datamllab/LongLM.'
+    needs revising. Code: https://github.com/datamllab/LongLM. | 2026-10-06 REDO: re-verified against full primary sources
+    (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: monitor
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: '2026-10-06 Stage2 wave1. Paper: arXiv 2401.01325 v3 HTML (digest, targeted verbatim pass). Code: DIRECT
-    read of llama.cpp ffc1bac82eeca6f9099e1ccd9ba49703c460a115 via git show. #2 (llama.cpp already ships grp-attn) CONFIRMED
-    and sharpened: options registered common/arg.cpp:2222-2237 for LLAMA_EXAMPLE_COMPLETION/PASSKEY only; tools/server has no
-    grp_attn use (tests/utils.py:223-224 harness residue only), so llama-server does NOT support it. It DOES re-rope cached
-    K: tools/completion/completion.cpp:638-657 loops while n_past>=ga_i+ga_w calling llama_memory_seq_add and llama_memory_seq_div;
-    llama-kv-cache.cpp:622-660 seq_div calls cells.pos_div (llama-kv-cells.h:469-483: pos/=d, shift+=p_old-pos, has_shift=true);
-    init_update (llama-kv-cache.cpp:746-749) sets do_shift=get_has_shift() so the K-shift graph (build_rope_shift) rotates cached
-    K by the position delta before the next decode. It repeats every ga_w/ga_n tokens, so llama.cpp already has a repeated cached-K
-    re-rope primitive; OPTIONS.md "nobody re-ropes at the crossing" is false for llama.cpp itself. Hybrid: llama-memory-hybrid.cpp:167-170
-    forwards seq_div to attention KV and recurrent memory; recurrent seq_div divides only the tail cell position (state untouched).
-    In-window: default grp_attn_n=1 (off) and ga_w=512 (common/common.h:464-465), grouping starts at n_past>=ga_w, so it is
-    inert only if ga_n==1 or ga_w>=native window. The llama.cpp scheme rewrites one position per cached K, which differs from
-    the paper per-(q,k) grouped/neighbour merge (Eq.3 Pg=P//Gs, merge before softmax); fidelity to the LongLM reference code
-    not checked. Paper: neighbour tokens use normal attention; Table 4 short tasks ARC-c 52.73 to 52.73, GSM8k 18.73 to 18.88
-    (Llama-2-chat); Qwen not among tested models.'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO against the full PDF text (v3, 16 pp) and llama.cpp@ffc1bac82 source. CHANGED
+    vs the digest dive: (a) the paper has no neighbour-attention equation, only Eq.3 (Pg=P//Gs) and Algorithm 1 (two full
+    score matrices, merge by replacement); (b) Table 4 is near-identical not identical and the digest omitted hyperparameters;
+    (c) llama.cpp does NOT implement the paper scheme exactly: grouped keys at floor(orig/G) as in the paper, but queries
+    unfloored and a sawtooth neighbour window, so it is a variant; (d) NEW code-read, untested hypotheses: under YaRN each
+    K-shift re-applies rope_yarn mscale (net 1.069 at factor 2) to all shifted cells, so shifts compound (also affects server
+    context shift); pos_div records shift += old-new whereas pos_add records shift += d, a sign that looks inconsistent for
+    division (unverified; needs a CPU test; do not call it a bug until run); quantized K goes dequant, Hadamard, rope, Hadamard,
+    requant with nrot derived from the full head dimension while the view is n_rot wide (partial-rotary risk, untested). The
+    K-shift graph rotates all kv_size cells, so its cost scales with n_ctx, not cells moved. Server context shift uses seq_rm+seq_add
+    through the same machinery and never calls seq_div; llama-server does not support grp-attn.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Training-free grouped plus neighbour attention, ICML 2024 spotlight confirmed.
+    note: Grouped/neighbour attention definitions confirmed (Eq.3; Algorithm 1 merges per (q,k) pair by replacement).
   - claim_index: 1
     effect: narrowed
-    note: In-window exactness holds inside the neighbour window per the paper; short-task numbers are near but not identical
-      (GSM8k 18.73 to 18.88), so not bit-exact; llama.cpp default ga_w=512 groups early.
+    note: Short tasks near-identical, not bit-identical; hyperparameters G=16/6/12 w=1024/1024/512; Qwen and MoE not tested.
   - claim_index: 2
     effect: narrowed
-    note: Options exist but only completion/passkey, not llama-server; implemented via seq_div + K-shift (re-ropes cached K)
-      rather than a paper-style pairwise merge.
-  reader_should_conclude: Self-Extend in llama.cpp is a working, repeated cached-K re-rope (K-shift) path but is CLI-only (no
-    llama-server), not inert below native unless disabled or ga_w>=native, and untested on Qwen/GDN-hybrid with MTP. Its value
-    to us is as an existing re-rope primitive, not as an exact-in-window method.
+    note: CLI-only (completion/passkey), not llama-server; re-ropes cached K via seq_div+K-shift; deviates from the paper
+      (unfloored query, sawtooth neighbour window); default ga_w=512 groups early.
+  - claim_index: 3
+    effect: unaffected
+    note: 'New claim: K-shift under YaRN rescales K by mscale each time (code read, untested).'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.3
+    quote: Pg =P // G s, (3)
+    quote_sha256: 6c65bf6e379f377cdf78ef9ff5b25d404da0c8e306920b9907645da26c361846
+    source_revision: arXiv:2401.01325v3 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: the attention values out of the neighbor token window with
+    quote_sha256: 004abe466150d08b53b4ef8ed5191b15bfdc8331d1bd3c3dc0547560f9aefc6f
+    source_revision: arXiv:2401.01325v3 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: 7B Llama-2-chat52.73 78.49 48.2045.32 18.73
+    quote_sha256: 0676ec6f956abb643d28c5e6812c7417de1887bde35ca336b57cb827fde88230
+    source_revision: arXiv:2401.01325v3 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: 7B SE-Llama-2-chat-16k52.73 78.4948.0945.33 18.88
+    quote_sha256: 90e2537a366b75e79db93cdc52203bafce5d4df2f233f713be4c211fc7deef7d
+    source_revision: arXiv:2401.01325v3 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.7
+    quote: SelfExtend, the group size is 16 and neighbor window is 1024;
+    quote_sha256: 70e8aaea889ed33af593693d0bc5b27381efd35cf498e6383b7570962a7cf325
+    source_revision: arXiv:2401.01325v3 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: tools/completion/completion.cpp:640
+    quote: while (n_past >= ga_i + ga_w) {
+    quote_sha256: 4b35d227b111debf1b4c071dfdbcca9c358f42a949cde9a3fb7cb7a9ce415a9a
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: tools/completion/completion.cpp:650
+    quote: llama_memory_seq_add(mem, 0, ga_i,                n_past,              ib*bd);
+    quote_sha256: a472fd975eded60213a5f620207e5ca4f3675328f548d53bdd1252d395653a82
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: tools/completion/completion.cpp:651
+    quote: llama_memory_seq_div(mem, 0, ga_i + ib*bd,        ga_i + ib*bd + ga_w, ga_n);
+    quote_sha256: 58853337e9f39fc91861f97b609c9063bd9ba08c8136e587764f113d77f84406
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: common/common.h:465
+    quote: int32_t grp_attn_w            =   512; // group-attention width
+    quote_sha256: 673c650b8213383a00095fb159effa5cfbe4611ad3d3d976b382d80328b4279e
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: common/arg.cpp:2229
+    quote: set_env("LLAMA_ARG_GRP_ATTN_N").set_examples({LLAMA_EXAMPLE_COMPLETION, LLAMA_EXAMPLE_PASSKEY})
+    quote_sha256: 7a07b5af933a1405ad94b1582a098ccd3391a2e957ad5e0e718c1f3071b82903
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: src/llama-kv-cells.h:478
+    quote: shift[i] += p_old - pos[i];
+    quote_sha256: 2e8eb80e189f1921718c634311d74aa755a59885073216c1eb67cb7458839ba8
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: src/llama-kv-cache.cpp:2000
+    quote: '? LLAMA_ROPE_TYPE_NEOX'
+    quote_sha256: 0e6f86ea5acb2035dc9a3f4219d1eab9ede2d1fe4e9dcbbfc6f0263403722e5b
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: src/llama-kv-cache.cpp:2009
+    quote: tmp = llama_mul_mat_hadamard(ctx, tmp, rot);
+    quote_sha256: 7bbb9a1a2438602b451ea30962d7fe1106bf4686433870ee1536171babe0f588
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: tools/server/server-context.cpp:3042
+    quote: common_context_seq_add(ctx_tgt, slot.id, n_keep + n_discard, slot.prompt.n_tokens(), -n_discard);
+    quote_sha256: 5da50c02a7e488a101ed7bea29856457e4906f88dbe44adaa5b3347314a43db6
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: line-range
+    locator: ggml/src/ggml-cpu/ops.cpp:6181
+    quote: mscale *= 1.0f + 0.1f * logf(1.0f / freq_scale);
+    quote_sha256: 0c110972ea8ed0efd724580ea40c714abe83b479d54741eeea158ded164bb247
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 3
+    kind: line-range
+    locator: src/llama-context.cpp:228
+    quote: cparams.yarn_attn_factor *= 1.0f / (1.0f + 0.1f * logf(factor));
+    quote_sha256: 249ebe6c546a7454d1403495ba1224a2c6bba4d457b8f420d8c48f25ef22fc5c
+    source_revision: llama.cpp@ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: llama.cpp has a working but CLI-only cached-K re-rope (seq_div + K-shift) that is a variant of Self-Extend,
+    off by default and not inert above ga_w=512. Treat the YaRN-mscale-compounding and pos_div-sign observations as unverified
+    hypotheses to test before building on K-shift with YaRN.
   depends_on: []
-  dive_wave: 1
+  dive_wave: 2
   source_revision:
-    arxiv: 2401.01325v3 (HTML digest)
-    llama_cpp_commit: ffc1bac82eeca6f9099e1ccd9ba49703c460a115
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
   second_reader:
     reader: none
-    scope: code read direct by the dive agent; no second reader, nothing run
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
     human_verification: false
     empirical_reproduction: false
 - id: intake-1912
@@ -239924,6 +240503,10 @@
     k_t=(arange(seq_len+MAX_NEW_TOKENS)%chunk_len)/scaling_factor.
   - 'The code has no special branch for seq_len<=chunk_len: the chunk logic runs uniformly; a YaRN-style mscale=get_mscale(scale)
     with scale=seq_len/max_position_embeddings is applied.'
+  - The code ships a YaRN-style temperature get_mscale(scale)=0.05*ln(scale)+1 (1.0 when scale<=1) applied to q and k cos/sin
+    caches (logits scale roughly squared), with the comment that the paper results did not use yarn; the cache is rebuilt
+    only when seq_len exceeds max_seq_len, so a later short input can reuse a long-input mscale (reading, not run). chunkqwen_attn_replace.py
+    has no mscale and a local_window default of pretraining//16.
   techniques:
   - DCA reference patch
   reported_results: []
@@ -239936,35 +240519,103 @@
     - intake-1906
   contradicting_evidence: null
   recommended_actions: []
-  notes: Raw file raw.githubusercontent.com/HKUNLP/ChunkLlama/main/chunkllama_attn_replace.py read 2026-10-06 via WebFetch
+  notes: 'Raw file raw.githubusercontent.com/HKUNLP/ChunkLlama/main/chunkllama_attn_replace.py read 2026-10-06 via WebFetch
     digest with verbatim code lines; commit SHA not visible (README showed 122 commits); other patch files (chunkqwen, flash_decoding)
-    not read. Companion artifact of intake-1906, not a duplicate.
+    not read. Companion artifact of intake-1906, not a duplicate. | 2026-10-06 REDO: re-verified against full primary sources
+    (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: 'Wave-2 source surfaced by the intake-1906 dive. #0 CONFIRMED: the qc_t clamp is max=chunk_size, which
-    is the convention used by local v1 (min(r+chunk_len, chunk_size)); the paper Eq. states c-1, so the discrepancy is paper
-    vs reference code, and local v1 follows the reference code. #1 CONFIRMED: no in-window branch; whether mscale is clamped
-    at 1 when seq_len<=pretraining length is not visible in the digest (get_mscale body not read).'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO: full source read of chunkllama_attn_replace.py and chunkqwen_attn_replace.py
+    @2add4d7. CHANGED: the earlier "get_mscale clamp not read" gap is closed (clamped to 1 at or below max_position_embeddings);
+    real chunk length is chunk_size - local_window (2560 for Llama2), not the paper s=3072; chunkqwen differs (no mscale,
+    //16 window, qc_t double-divided by scaling_factor).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Clamp and chunk constants read from code lines.
+    note: Clamp max=chunk_size and constants read from code at commit 2add4d7.
   - claim_index: 1
     effect: narrowed
-    note: No branch confirmed; get_mscale clamp not read.
-  reader_should_conclude: Local v1 clamp matches the ChunkLlama reference code; the paper c-1 form is not what the code does.
-    Read get_mscale before claiming temperature is 1 in-window.
+    note: 'Re-graded: no explicit short-sequence branch, but get_mscale is 1.0 for scale<=1 so the loop-free intra path equals
+      plain RoPE up to mscale; positions between chunk_len and the training length are remapped.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'New claim: YaRN-style mscale present in code but not used for the paper results.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:47
+    quote: chunk_len = chunk_size - local_window
+    quote_sha256: 004fa6e8d6534ab12aa6332cee8601d5834ec6093fb4c8b0d4c4339c6f5c7614
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:50
+    quote: max=chunk_size) / self.scaling_factor
+    quote_sha256: 3f6349862c45240d2aef84e98cd6d32165c0761506600090b26b306515512ad8
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:251
+    quote: chunk_size = pretraining_length * 3 // 4
+    quote_sha256: 54132c290d0396b82e45731df53b9ea72b653482b1a0e44bd53b22d20ef655df
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:252
+    quote: local_window = local_window_size if local_window_size else pretraining_length // 8
+    quote_sha256: a0ac72c555080cf1fb4448237270a0c6cb2578adde616fa57cbe60a7a51ab67d
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:52
+    quote: dtype=self.inv_freq.dtype) % chunk_len) / self.scaling_factor
+    quote_sha256: 770de9cbec68fae63995585e8ce89203699248afd5d2d2fc0500294c8f099d2c
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:189
+    quote: position_ids[:, chunk_len - 1][:, None].repeat(1, curr_chunk_len))
+    quote_sha256: 5e3373c715d0c5fe76989ca76c47a82c1a5806b394c02a7b8dd1b54ad10d2135
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:19
+    quote: return 0.05 * math.log(scale) + 1.0
+    quote_sha256: 6d4153296dbbdd3918542cc92ba5a6a895298c61547c03f8281524c97a8f44ed
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 2
+    kind: line-range
+    locator: ChunkLlama/chunkllama_attn_replace.py:40
+    quote: '# employing yarn will lead to better performance but results reported in our paper did not use yarn.'
+    quote_sha256: d168cce0de568f2918180c81365e948568c03e7a7da40bfc66a26d5de1fd97d4
+    source_revision: HKUNLP/ChunkLlama@2add4d7c99d24dcc1ab03414cc602abb2e28cf2c
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Local v1 clamp matches the reference code, and the paper c-1 form is not what either code base does.
+    Identity with plain RoPE holds only for n<=chunk_len (and mscale=1), not for the whole training window.
   depends_on: []
   dive_wave: 2
   source_revision:
-    file: chunkllama_attn_replace.py@main
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
-    sha: not visible
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
+  second_reader:
+    reader: none
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
+    human_verification: false
+    empirical_reproduction: false
 - id: intake-1919
   arxiv_id: null
   url: https://github.com/jet-ai-projects/Jet-Long
@@ -240001,35 +240652,66 @@
   recommended_actions: []
   notes: 'README/tree read via WebFetch digest 2026-10-06; fused-kernel and modeling sources not read by this pass (the wave-1
     dive read the Python path: base-RoPE keys in cache, per-step correction rotation). Companion artifact of intake-1900.
-    The bundled dca/selfext modules suggest an apples-to-apples baseline harness we could reuse for CPU-side probes (unverified).'
+    The bundled dca/selfext modules suggest an apples-to-apples baseline harness we could reuse for CPU-side probes (unverified).
+    | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: 'Wave-2 source surfaced by the intake-1900 dive. #0 CONFIRMED (tree, license, test file). #1 CONFIRMED
-    (hard requirement quoted by digest). #2 CONFIRMED by absence in the page read, which is not evidence of absence in the
-    tree.'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO: shallow clone read @a7a9071 (modeling, kernels, tests, README). CHANGED:
+    now a full code read rather than a README digest; see intake-1900 for the structure, cost and port-scope findings (non-fused
+    FA2 A+B-C and torch decode oracle are the specs).'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Tree and license as listed.
+    note: Tree, Apache-2.0 license, tests/test_fa4_cute_kernels.py confirmed in the clone @a7a9071.
   - claim_index: 1
     effect: unaffected
-    note: H100-only fused kernel; no ROCm or CPU path.
+    note: 'Kernel path is SM90/CUDA 13 only; the default FlashAttention-2 non-fused path runs elsewhere. Operator ruling:
+      self-fused HIP/CPU kernel is in scope.'
   - claim_index: 2
     effect: narrowed
-    note: Absence claim limited to the README page; source files unsearched.
-  reader_should_conclude: The fused Jet-Long kernel is unusable on MI210 and CPU; any port is a reimplementation. Reference
-    harness bundles DCA and Self-Extend baselines.
+    note: Absence of vLLM/llama.cpp/speculative-decoding mentions re-checked by grep over the whole clone (agent report),
+      not just the README page; absence is not itself anchorable.
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: Jet-Long/tests/test_fa4_cute_kernels.py:164
+    quote: _assert_allclose(actual, expected, atol=1e-1)
+    quote_sha256: 76e88cd752add183184ff7dd2cf596e6b66bf190a32f891b796186bf2dbcad8e
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: line-range
+    locator: Jet-Long/README.md:111
+    quote: 'Hard requirements: NVIDIA **SM90/H100** + **CUDA 13**.'
+    quote_sha256: 9041834fbd846fb4414d85751ea5a4fd12368d69465b73c49036b284ab80f5cd
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: line-range
+    locator: Jet-Long/jetlm/kernels/cute_decode_sm90.py:2774
+    quote: raise RuntimeError("fa4_cute_decode_sm90_jetlong_fused requires SM90/H100")
+    quote_sha256: 5d97542277ae08fb19e47f567f79918d017db91ad52c7b3d6b4496a5d1c4214d
+    source_revision: jet-ai-projects/Jet-Long@a7a9071ae63e2cad604ec92d953398a91c6032e8
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Reference harness bundles DCA and Self-Extend baselines under jetlm/modeling. Port target is a reimplementation
+    of the math on HIP/CPU; the SM90 kernel is not portable.
   depends_on: []
   dive_wave: 2
   source_revision:
-    repo: github.com/jet-ai-projects/Jet-Long
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
-    sha: not visible
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
+  second_reader:
+    reader: none
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
+    human_verification: false
+    empirical_reproduction: false
 - id: intake-1920
   arxiv_id: null
   url: https://qwenlm.github.io/blog/qwen2.5-1m/
@@ -240062,30 +240744,86 @@
     - intake-1907
   contradicting_evidence: null
   recommended_actions: []
-  notes: Vendor restatement of intake-1907, NOT independent corroboration. Read 2026-10-06 via WebFetch digest.
+  notes: 'Vendor restatement of intake-1907, NOT independent corroboration. Read 2026-10-06 via WebFetch digest. | 2026-10-06
+    REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: 'Wave-2 vendor source. #0 CONFIRMED for the quoted sentences; the YaRN-scaling and short-unchanged statements
-    are NOT FOUND on the page (they remain only in the technical report). Short-context claim is compared with the 128K models,
-    not DCA on/off.'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO: raw HTML fetched with curl and read in full. CHANGED: the blog does not
+    mention YaRN at all, and states the vendor passkey result more strongly than the technical report. It remains vendor restatement,
+    not independent corroboration.'
   claim_corrections:
   - claim_index: 0
     effect: narrowed
-    note: Short-text claim is vs 128K models, chart-only, no numbers in text.
+    note: Short-text claim is vs the 128K models; the blog does say models were evaluated with and without length extrapolation,
+      but numeric short results are an image chart. Blog says nearly perfect passkey vs the report over 80%.
   - claim_index: 1
     effect: unaffected
-    note: Branch name and VRAM figures quoted by digest.
-  reader_should_conclude: Treat as vendor restatement; no ablation of DCA on/off on short text.
+    note: Branch name and hardware text confirmed in the raw HTML.
+  - claim_index: 2
+    effect: unaffected
+    note: Blog contains no YaRN mention (confirmed over the full page text).
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: which addresses this issue by remapping relative positions to smaller values, avoiding the large distances not
+      seen during training.
+    quote_sha256: ffa1db22636881730d2652d5545fdd5c25306eeec57be738d00b2d4ce1972d28
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: maintain performance on short text tasks that is similar to their 128K versions
+    quote_sha256: e6769682e8c5bec09ff2a6592f6f01ff5e0a5cf8bfd00214d2794031f9155c8a
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: achieve nearly perfect accuracy in passkey retrieval tasks with 1M-token contexts.
+    quote_sha256: 4e9e6e1687ac30b37adcc6b64db33fedbea116f2c5ec1272e08411123cd1e750
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: git clone -b dev/dual-chunk-attn git@github.com:QwenLM/vllm.git
+    quote_sha256: e2438960ef28056f2aa39a6be316cad6ed3866098da051e44154b6e67acf59a9
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: we recommend using GPUs with Ampere or Hopper architecture, which support optimized kernels.
+    quote_sha256: e7f57818506e7ebb30a3fff9b0997301af422bdfb52c02e47efdccfdf6fa6aea
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: qwen25-1m-blog.html (rendered text)
+    quote: 3.2x to 6.7x acceleration in the prefill speed
+    quote_sha256: 8b553a65bf8fc6f18614acff88d37cacd4f1f9e2db1bff547e27e7d1611a20f7
+    source_revision: Qwen blog raw HTML, curl 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Vendor restatement only; do not use as corroboration of the report; prefer the report text.
   depends_on: []
   dive_wave: 2
   source_revision:
-    url: qwenlm.github.io/blog/qwen2.5-1m/
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
+  second_reader:
+    reader: none
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
+    human_verification: false
+    empirical_reproduction: false
 - id: intake-1921
   arxiv_id: null
   url: https://github.com/QwenLM/vllm/tree/dev/dual-chunk-attn
@@ -240105,6 +240843,12 @@
   - Branch exists in the QwenLM vllm fork (page showed 4,204 commits); README says it incorporates sparse attention and length
     extrapolation features and defers to the Qwen2.5-1M model cards.
   - The page read did not list DCA source files or a commit SHA; file-level code was not read.
+  - 'Branch dev/dual-chunk-attn @47b8640 implements DCA in vllm/attention/backends/dual_chunk_flash_attn.py (1439 lines) and
+    DualChunkRotaryEmbedding (rotary_embedding.py from line 934): qc positions clamp at chunk_size, inter query position index
+    chunk_len-1, keys position % chunk_len; a temperature factor (0.1*ln(len/orig)+1, clipped at 1) is applied to keys before
+    caching and to softmax scale; no short-sequence fast path (only the intra branch runs when k_length<=chunk_len, lengths
+    between chunk_len and the training window are remapped); sparse attention only above 32768 tokens by default; CUDA graphs
+    unsupported (needs eager); no speculative-decoding handling found.'
   techniques:
   - DCA production implementation
   reported_results: []
@@ -240117,32 +240861,84 @@
     - intake-1907
   contradicting_evidence: null
   recommended_actions: []
-  notes: Read 2026-10-06 via WebFetch digest of the branch page only; code not read, so any claim about its clamp, chunk geometry,
-    FA integration or MTP behaviour is NOT-FOUND-IN-SOURCE. Local note upstream-and-vllm-dca-notes.md (not read here) reportedly
-    covers it.
+  notes: 'Read 2026-10-06 via WebFetch digest of the branch page only; code not read, so any claim about its clamp, chunk
+    geometry, FA integration or MTP behaviour is NOT-FOUND-IN-SOURCE. Local note upstream-and-vllm-dca-notes.md (not read
+    here) reportedly covers it. | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: 'Wave-2 source. #0 CONFIRMED branch exists. #1 NOT-FOUND-IN-SOURCE for implementation files; a later code
-    dive would need the file paths from git (clone not performed: no compute/network clone in this task).'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO: shallow single-branch clone @47b8640 read (backend, rotary, wiring). CHANGED:
+    the earlier existence-only record is replaced by file-level findings; clamp matches ChunkLlama (chunk_size), the temperature
+    is applied to both key and query paths, and positions between chunk_len and the training window are remapped.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Branch and README sentence as quoted.
+    note: Implementation files and behaviour read in the cloned branch.
   - claim_index: 1
-    effect: uncertain
-    note: No file-level read.
-  reader_should_conclude: Existence-only record; do not cite implementation details from it.
+    effect: narrowed
+    note: 'Re-graded from NOT-FOUND-IN-SOURCE: file-level code now read; no fast path and no speculative-decoding handling
+      found.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/model_executor/layers/rotary_embedding.py:993
+    quote: chunk_len).clamp(max=self.chunk_size)
+    quote_sha256: 8bb8cbee08a97169a252c1c69b8bcbe9c5d53decfd063176fd8fa10458c81df2
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/model_executor/layers/rotary_embedding.py:1063
+    quote: self.cos_sin_qc_cache[chunk_len - 1].repeat(positions.shape[0], 1),
+    quote_sha256: ee2e258522d8efccbc7b62bc49bf10a05adc80e0fee217155878d006f27e1e47
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/attention/backends/dual_chunk_flash_attn.py:106
+    quote: 1.0).clip(min=1)
+    quote_sha256: d92387689f87f4124353d59563736274810c6a267adfd42c653149bf8a73c9d8
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/attention/backends/dual_chunk_flash_attn.py:677
+    quote: softmax_scale = softmax_scale * scaling_factor
+    quote_sha256: 83a0de943f14d462b32bfaf595062e9076e43959e8fcf27ce7a945408416ed5a
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/attention/backends/dual_chunk_flash_attn.py:287
+    quote: '"sparse_attention_threshold", 32768)'
+    quote_sha256: f6d69f9b13bec87e8b105c49964d023305f1191a78b673359e8be7ae65e81a73
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: line-range
+    locator: vllm-qwen/vllm/engine/arg_utils.py:1041
+    quote: '"Cuda graph is not supported with DualChunkFlashAttention. "'
+    quote_sha256: dd68c379f6ae44f636a6a8955f28ee71a8d4cacfbc9829214e18a7c1c9623fe5
+    source_revision: QwenLM/vllm@dev/dual-chunk-attn 47b8640114dd4a2318b3a2dbe1ec1964b7393a08
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Production DCA is not a no-op between chunk_len and the training length and needs eager mode; do
+    not cite it for MTP/spec-decode compatibility (none found).
   depends_on: []
   dive_wave: 2
   source_revision:
-    branch: QwenLM/vllm dev/dual-chunk-attn
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
-    sha: not visible
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
+  second_reader:
+    reader: none
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
+    human_verification: false
+    empirical_reproduction: false
 - id: intake-1922
   arxiv_id: '2411.13476'
   url: https://arxiv.org/abs/2411.13476
@@ -240185,27 +240981,81 @@
   contradicting_evidence: null
   recommended_actions: []
   notes: 'arXiv HTML v2 read via WebFetch digest 2026-10-06 (v1 2024-11-20, v2 2024-11-26). Stage-1 intake-1900 dive hint
-    that this bears on correction-rotation precision is NOT supported: the paper is training-only and says nothing about inference.'
+    that this bears on correction-rotation precision is NOT supported: the paper is training-only and says nothing about inference.
+    | 2026-10-06 REDO: re-verified against full primary sources (see dive_corrections).'
   verification: dive-verified
   ingested_date: '2026-10-06'
   handoffs_updated: []
   handoffs_created: []
   integration_disposition: knowledge_only
   disposition_evidence:
-  - 'Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md); interim disposition only, final disposition set at Stage 3 (no handoff or plan written).'
-  dive_corrections: 'Wave-2 source. #0 CONFIRMED (numerical deviation, float32 removes it). #1 CONFIRMED scope training only;
-    relevance to serving bf16 correction rotations is inferred, not shown.'
+  - Stage-2 dive 2026-10-06 closed with findings recorded in dive_corrections/claim_corrections (see /mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md);
+    interim disposition only, final disposition set at Stage 3 (no handoff or plan written).
+  dive_corrections: '2026-10-06 Stage2 wave2 REDO against the full PDF (v2, 24 pp). CHANGED: the digest said inference unaddressed
+    and training-only; the paper is training-scoped in claims but Figure 1 measures a pretrained model forward pass, and the
+    mechanism (fp32 rotation then bf16 QK) means fp32 angle computation alone does not remove the error.'
   claim_corrections:
   - claim_index: 0
     effect: unaffected
-    note: Figure 1 claims as digest-relayed.
+    note: Source of error is the bf16 cast of fp32-rotated q/k before QK inside FA2; only all-fp32 removes it; fp32 angles
+      alone are not claimed to suffice.
   - claim_index: 1
     effect: narrowed
-    note: Training scope only; inference unaddressed.
-  reader_should_conclude: Do not cite as evidence about inference-time RoPE precision; at most motivates a float32-rotation
-    sanity probe.
+    note: Claims and fix (AnchorAttention) are training-scoped; Figure 1 is a forward-pass measurement on pretrained Llama-2-7B
+      (so inference-style), but no serving statement is made and the absolute-position explanation is a hypothesis.
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: Applied before FlashAttention2, Float32
+    quote_sha256: 1b3aa798dd6a6032cfc3e143a25d7029ce3d69488e58a1bbe269f1628a2272d5
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.4
+    quote: Computed within FlashAttention2, BFloat16
+    quote_sha256: a4cd3be23278790997b3ecdcfa18114c242ebfa628bda49961e0b5082a7f6515
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: computations are performed with Float32 precision, this effect disappears (as shown by the
+    quote_sha256: 5304aff8837e3d26d25e4310fad24aecfd65db4975481231f84d68d932bb39af
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: clearly indicate that the first token contributes most significantly to the attention difference.
+    quote_sha256: 40e7c2c222ad124fe2deaacdebf0757951e32febba754310f79449b7275af179
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 0
+    kind: page-and-quote
+    locator: PDF p.5
+    quote: This indicates that longer sequences exacerbate the discrepancies in the first token.
+    quote_sha256: 048f4787f2400c19f36d5cadb8c60bc9df70f3832c57e87f976300a103efa61b
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  - claim_index: 1
+    kind: page-and-quote
+    locator: PDF p.6
+    quote: hypothesis that RoPE functions in some way as
+    quote_sha256: 7b50548bdf38dfb96b17f9f4d2f29a2a322853a92368505b8fb91eacbc4c5157
+    source_revision: arXiv:2411.13476v2 PDF text layer (pypdf), retrieved 2026-10-06
+    verified_by: research-intake/stage2-redo (mechanical re-find in full source)
+  reader_should_conclude: Motivates a float32/bf16 sanity probe for any correction-rotation port; not evidence about inference
+    serving.
   depends_on: []
   dive_wave: 2
   source_revision:
-    arxiv: 2411.13476v2 (HTML digest)
+    method: full PDF text layer + Read, cloned repos, raw HTML
     retrieved_utc: '2026-10-06'
+    scratch: /mnt/raid0/llm/tmp/intake-ctxext-src/
+  second_reader:
+    reader: none
+    scope: single dive agent set (4 readers); mechanical quote re-find only; no per-claim second reader (SC76 pending)
+    human_verification: false
+    empirical_reproduction: false
