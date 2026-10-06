@@ -218,7 +218,8 @@ def _artifact_snapshot(paths: tuple[Path, ...]) -> dict[str, str]:
 def _install_locked_minimal_set(capture_root: Path) -> tuple[Path, str]:
     log_path = capture_root / "dependency-install.log"
     command = [sys.executable, "-m", "pip", "install", "--disable-pip-version-check",
-               "--require-hashes", "-r", str(ROOT / "scripts/ci/ni08-hosted-requirements.txt")]
+               "--require-hashes", "--no-deps", "--only-binary=:all:",
+               "-r", str(ROOT / "scripts/ci/ni08-hosted-requirements.txt")]
     completed = subprocess.run(command, cwd=ROOT, check=False, capture_output=True)
     _write_once(log_path, completed.stdout + b"\n--- stderr ---\n" + completed.stderr)
     if completed.returncode:
