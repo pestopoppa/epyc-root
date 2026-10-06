@@ -1,0 +1,26 @@
+{
+  "shard": "S07",
+  "accepted": true,
+  "files": 6,
+  "open_keys": 40,
+  "decisions": [
+    {
+      "id": "S07-F1",
+      "path": "handoffs/active/reviewer-calibration-accounting.md",
+      "decision": "accepted_with_main_revision",
+      "original_sha256": "a6a06851e692db02d36781800af317fbed5ce079b82a115fc81d4f4a260a0fd9",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (RC-10)\n\nPrepare an adapter arm using the shipped `Question`/`DecisionResult` and native candidate readout over the existing score-bin catalogue, rather than building a second typed scorer. Compute the specified expectation in host code; preserve explicit unsupported, missing and unresolved outcomes. Deterministic fixtures can validate mapping, expectation, failure denominators and call-accounting integration without model calls.\n\nBefore a live comparison, prove that temperature, masking/conditioning and probability semantics match RC-10's existing EV-15b/EV-15c read-out contract. Native candidate probabilities cannot silently replace the historical score-token instrument. Preserve the same corpus/panel, objective-verifier precedence, cross-family separation and all P-REV-1/inference gates. This refinement supplies an implementation seam; it changes no threshold or reviewer verdict and establishes no accuracy or cost improvement. Use `record_llm_calls` where its actual primitives seam is invoked; missing telemetry stays absent.\n",
+      "source_review": "MAIN independently checked RC-10 contract, native API/primitives seam and actual EscalationPolicy/prepared-action definitions; preserved instrument/gates/authority",
+      "new_sha256": "cf9c1535003a2c8295f31335feead50e1cf6a90586f7156276c7c4e745248925"
+    },
+    {
+      "id": "S07-F2",
+      "path": "handoffs/active/reviewer-escalation-and-human-gate-policy.md",
+      "decision": "accepted_with_main_revision",
+      "original_sha256": "6fcff8ffe8f6745c08b976edd9393752add7d1d322eb5621c92901525bef9ec9",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (HG-9)\n\nStrengthen Step 1 into a concrete detector-to-fixer contract: map the eligible detector pool, fixer target, evidence-anchored finding, emitted-finding trigger and current `EscalationPolicy` path. Identify the bounded rubric/role choices that can reuse `Question`/`DecisionResult`, while leaving free-text explanations and patch generation outside the closed-set decision. Reuse the existing host-owned prepared-action validation where a menu is selected; typed output never grants permission or establishes correctness.\n\nThe no-inference preparation includes explicit schema/mapping and mocked boundary cases for malformed, unresolved, empty or stale findings, a changed offered-role catalogue, an unavailable fixer and attributed incumbent fallback. Detection must finish before the fixer consumes its findings: dependent stages are not independent heads in one shared-state call. Keep detection and repair costs separately attributable with the existing call-accounting seam, preserving absent fields rather than inventing zeros.\n\nThis prepares an option for the existing AutoPilot mutation/evaluation path; it does not activate a selector, tune routing or alter the incumbent. Step 2 remains subject to EV-13b and judge-stable detection scoring, and Step 3 retains its paired fix-acceptance/cost comparison and promotion gates. Coordinate any later core changes with the existing escalation/typed-decision owners; add no parallel routing framework.\n",
+      "source_review": "MAIN independently checked RC-10 contract, native API/primitives seam and actual EscalationPolicy/prepared-action definitions; preserved instrument/gates/authority",
+      "new_sha256": "8e13498b14fa49b2fcb9464aeb1dd5d47f34af14e79f30f7dd7a22ea4971eae2"
+    }
+  ]
+}

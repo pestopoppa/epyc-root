@@ -1,0 +1,14 @@
+{
+  "shard": "S11",
+  "accepted": true,
+  "files": 12,
+  "open_keys": 132,
+  "decisions": [
+    {
+      "id": "S11-HSTD-JEV-1",
+      "decision": "rejected_redundant_then_withdrawn",
+      "reason": "Existing HS-TD-4 consumer contract already explicitly names these consumers; generic duplicate append adds no new scope. No canonical edit applied."
+    }
+  ],
+  "review_notes": "Initial keyword-based misgates rejected; mixed prep/acceptance, FW-2 no-choice and HIL-5 prospective wiring corrected. This is semantic triage; source_recheck premises are not independently proven."
+}

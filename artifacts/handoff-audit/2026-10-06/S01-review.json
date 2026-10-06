@@ -1,0 +1,1878 @@
+{
+  "shard_id": "S01",
+  "method": "Verified all assigned file SHA-256 values against ROOT snapshot. Enumerated every unchecked key from S01.json, reviewed its full extracted task text and corresponding source line/context; checked JEV/toolkit references against the accepted typed-decision handoff and APP implementation. No task in this shard benefits from replacing measurement, deterministic verification, kernel code, or human authority with Jev: local typed choice primitives do not speed CPU/GPU kernels, establish performance, authorize a production change, or produce independent benchmark evidence. Semantic review identified CS-24 as a genuine closed-set classification use of the shipped JEV stack; no other recommendation substitutes typed decisions for measurement, deterministic verification, kernel correctness, or human authority. No inference/build/reload/process action. its implementation option is shadow-only and its CS-4 comparative evaluation remains inference-gated. CS-18’s retain/cancel behavior is already an explicit deterministic host policy, so adding JEV there would duplicate a settled rule.",
+  "files": [
+    {
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "source_sha256": "d265dc2e97ea332f4ebadd31a19a68619f1ca44f452a1b934ed9b1d6dafba03d",
+      "reviewed_open_keys": [
+        "h:b4f8:5146:a8e0:9f0f",
+        "h:76a4:ca39:9274:5c46",
+        "h:8c54:8866:e2d5:e3d9",
+        "h:b5ae:b569:c07f:ef7e",
+        "h:57e9:5539:1b95:0623",
+        "h:e962:b3f2:d0c6:4783",
+        "h:dbbd:063c:dde8:bc6f",
+        "h:18c7:1ccf:969c:7423",
+        "h:c16f:893c:a952:db65",
+        "h:6ba4:65fd:5b50:d05d",
+        "h:641c:324a:fab7:1262",
+        "h:674c:15e0:32a3:ff7c",
+        "h:e17a:9008:cca9:65f8",
+        "h:a2c6:fc00:3f96:a67a",
+        "h:cd0f:f449:c2ed:0083",
+        "h:7d4e:1e8c:af20:2dec",
+        "h:5349:fb55:4118:b19c",
+        "h:0963:4640:64f8:1cfa",
+        "h:b1de:0441:d0cb:2f52",
+        "h:2a1d:9161:6de0:bb09",
+        "h:3376:724d:73d9:3520",
+        "h:c930:ca7c:5ffc:a171",
+        "h:27ae:d87b:582a:6773",
+        "h:9542:6d73:1f20:a184",
+        "h:ce1c:4819:3c82:18a9",
+        "h:e55b:763d:d602:58df",
+        "h:9dd4:08e0:c70f:d2cb",
+        "h:2f56:7efc:e136:5739",
+        "h:b81c:0036:6861:8eee",
+        "h:7d01:ddc1:e781:1567",
+        "h:c082:7d8e:b7cf:b475",
+        "h:ef9c:f6ba:01b9:4e8b",
+        "h:4915:c39c:8550:5f0a",
+        "h:1ce2:ece1:cddd:706f",
+        "h:df51:1bdd:6d80:815a",
+        "h:9b12:e975:dd99:e8d1",
+        "h:2bee:6ca4:0fa2:96bd",
+        "h:2f23:f437:d7ce:cfe4",
+        "h:c4a5:e0bb:efc2:61a6",
+        "h:9a01:fcf7:ae0f:cc1d",
+        "h:e03d:c568:4e7c:6ca4",
+        "h:925f:6bf0:9dee:0608",
+        "h:3b96:0091:ea84:cc70",
+        "h:4d7f:acc5:68dd:b2e7",
+        "h:7b3e:1bf1:21c2:337c",
+        "h:fe7c:8d39:a853:2d35",
+        "h:1314:20dd:2c5d:016a",
+        "h:ba85:7bb3:b891:42c5",
+        "h:3677:32a7:15d7:92b4",
+        "h:9409:2193:4113:e9f8",
+        "h:d388:d296:cde2:2a9a",
+        "h:f24f:73dd:8d0f:9463",
+        "h:7a91:1235:be20:c3a4",
+        "h:fa5c:3694:7829:5dc4",
+        "h:8319:3a53:8b34:feff",
+        "h:4e90:a403:03a8:b923",
+        "h:403d:fe1c:e683:1ce0",
+        "h:8a3c:4b18:0d86:9d49",
+        "h:71f5:225b:1774:0670",
+        "h:2de3:f8de:0a20:8248",
+        "h:bc92:f158:107e:b1b5",
+        "h:ba30:d9db:f2d1:547c",
+        "h:7c3f:6b63:05aa:2a25",
+        "h:5003:ee41:d546:59d0",
+        "h:0451:b4ce:32d3:8361",
+        "h:c8a2:3c00:fdae:3669",
+        "h:6e02:a02a:19b4:48e7",
+        "h:519c:1607:7970:1b1f",
+        "h:8fb3:109f:693c:61f1",
+        "h:94b2:cd4a:d155:63ba",
+        "h:0f41:4747:f301:d05a",
+        "h:1bdb:9626:390e:d1a4",
+        "h:b253:b62d:6dde:a5ea"
+      ],
+      "status_assessment": "active; 73 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:b4f8:5146:a8e0:9f0f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:76a4:ca39:9274:5c46"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:8c54:8866:e2d5:e3d9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b5ae:b569:c07f:ef7e"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:57e9:5539:1b95:0623"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:e962:b3f2:d0c6:4783"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:dbbd:063c:dde8:bc6f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:18c7:1ccf:969c:7423"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:c16f:893c:a952:db65"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:6ba4:65fd:5b50:d05d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:641c:324a:fab7:1262"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:674c:15e0:32a3:ff7c"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:e17a:9008:cca9:65f8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:a2c6:fc00:3f96:a67a"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:cd0f:f449:c2ed:0083"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:7d4e:1e8c:af20:2dec"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:5349:fb55:4118:b19c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:0963:4640:64f8:1cfa"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b1de:0441:d0cb:2f52"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:2a1d:9161:6de0:bb09"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:3376:724d:73d9:3520"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c930:ca7c:5ffc:a171"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:27ae:d87b:582a:6773"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:9542:6d73:1f20:a184"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ce1c:4819:3c82:18a9"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:e55b:763d:d602:58df"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:9dd4:08e0:c70f:d2cb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:2f56:7efc:e136:5739"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b81c:0036:6861:8eee"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:7d01:ddc1:e781:1567"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c082:7d8e:b7cf:b475"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:ef9c:f6ba:01b9:4e8b"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:4915:c39c:8550:5f0a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:1ce2:ece1:cddd:706f"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:df51:1bdd:6d80:815a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:9b12:e975:dd99:e8d1"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:2bee:6ca4:0fa2:96bd"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:2f23:f437:d7ce:cfe4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:c4a5:e0bb:efc2:61a6"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:9a01:fcf7:ae0f:cc1d"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:e03d:c568:4e7c:6ca4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:925f:6bf0:9dee:0608"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:3b96:0091:ea84:cc70"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:4d7f:acc5:68dd:b2e7"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:7b3e:1bf1:21c2:337c"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:fe7c:8d39:a853:2d35"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:1314:20dd:2c5d:016a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:ba85:7bb3:b891:42c5"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:3677:32a7:15d7:92b4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:9409:2193:4113:e9f8"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:d388:d296:cde2:2a9a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:f24f:73dd:8d0f:9463"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:7a91:1235:be20:c3a4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:fa5c:3694:7829:5dc4"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:8319:3a53:8b34:feff"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:4e90:a403:03a8:b923"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        },
+        {
+          "keys": [
+            "h:403d:fe1c:e683:1ce0"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:8a3c:4b18:0d86:9d49"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:71f5:225b:1774:0670"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:2de3:f8de:0a20:8248"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:bc92:f158:107e:b1b5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ba30:d9db:f2d1:547c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:7c3f:6b63:05aa:2a25"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:5003:ee41:d546:59d0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:0451:b4ce:32d3:8361"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c8a2:3c00:fdae:3669"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:6e02:a02a:19b4:48e7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:519c:1607:7970:1b1f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:8fb3:109f:693c:61f1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:94b2:cd4a:d155:63ba"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:0f41:4747:f301:d05a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:1bdb:9626:390e:d1a4"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b253:b62d:6dde:a5ea"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "Task names another owner/session or an external coordinated hardware boundary."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/gpu-acceleration-path.md",
+      "source_sha256": "00df74016beb8f9842557b6fd247f88db79fe4590b3b8de9f3956a047f024799",
+      "reviewed_open_keys": [
+        "h:426a:c738:bbd0:8882",
+        "h:1b2d:a44a:d869:a9e8",
+        "h:4562:4855:cf99:5ccb",
+        "h:298a:3b30:4a0d:31b6",
+        "h:5b99:b76e:f1dc:96fa",
+        "h:7055:e6b9:c4a2:53e7",
+        "h:311b:bae9:5e66:e752",
+        "h:df5a:8f5d:93ee:0842",
+        "h:8aaf:90f1:ab81:8aa7"
+      ],
+      "status_assessment": "active; 9 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:426a:c738:bbd0:8882"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:1b2d:a44a:d869:a9e8"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:4562:4855:cf99:5ccb"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:298a:3b30:4a0d:31b6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:5b99:b76e:f1dc:96fa"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:7055:e6b9:c4a2:53e7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:311b:bae9:5e66:e752"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:df5a:8f5d:93ee:0842"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:8aaf:90f1:ab81:8aa7"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The open box contains evidence of a possibly completed/retired/historical condition; verify current source/consumer before treating as implementation work."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "source_sha256": "a64ffea8c675f0c3b050c2bba12f4408bc48cf8a10dc65c62b9998740feb2ef6",
+      "reviewed_open_keys": [
+        "h:2c3d:83d6:ae1c:8ca5",
+        "h:6849:757f:1c63:6097",
+        "h:163f:8853:7b16:a051",
+        "h:7f9f:3e23:7061:907a",
+        "h:3ac3:e921:3e92:05b7",
+        "h:51ca:7edf:3cbd:d1f7",
+        "h:4b84:c747:9a9d:ed5d",
+        "h:393a:46d0:bd89:437f",
+        "h:d6b4:e6a8:8e70:9baf",
+        "h:d437:2aa7:bb6d:323b",
+        "h:c293:bdcf:da21:3994"
+      ],
+      "status_assessment": "active; 11 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2c3d:83d6:ae1c:8ca5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:6849:757f:1c63:6097"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:163f:8853:7b16:a051"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:7f9f:3e23:7061:907a"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:3ac3:e921:3e92:05b7"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:51ca:7edf:3cbd:d1f7"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:4b84:c747:9a9d:ed5d"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:393a:46d0:bd89:437f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:d6b4:e6a8:8e70:9baf"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:d437:2aa7:bb6d:323b"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:c293:bdcf:da21:3994"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "source_sha256": "61b1f764d38a845ad1814e3bacd733be311c156d2b8572821d62a0af908c8a83",
+      "reviewed_open_keys": [
+        "h:d144:0fbc:9c95:4533",
+        "h:53af:143a:120e:21ee",
+        "h:1462:2bc4:7df6:0dc4",
+        "h:ab10:ce68:4eff:2e05",
+        "h:3d0d:4d96:1e74:1743"
+      ],
+      "status_assessment": "active; 5 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d144:0fbc:9c95:4533"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:53af:143a:120e:21ee"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:1462:2bc4:7df6:0dc4"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ab10:ce68:4eff:2e05"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:3d0d:4d96:1e74:1743"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/conversation-stack.md",
+      "source_sha256": "a90aaeee8ed6922c8752eead0a69f327128fc3f994bc21a10582226192c5a07d",
+      "reviewed_open_keys": [
+        "h:efe3:90c6:67d7:3810",
+        "h:e73e:020c:0391:fb8d",
+        "h:1a2d:ee3b:ec36:eee5",
+        "h:587c:6f3a:c432:e288",
+        "h:c2bb:c171:248a:676c",
+        "h:058d:738d:a8aa:802b",
+        "h:4413:0d39:7b3a:2158",
+        "h:fc6b:f1d2:a8cc:f920",
+        "h:c688:f53b:01e9:5d33",
+        "h:19f0:3532:b4e8:3fd5",
+        "h:9380:5d73:90cd:b010",
+        "h:0d84:0abb:7a8e:6e6c",
+        "h:18ce:b5b5:9f08:9482",
+        "h:6349:989f:cf38:4ccf",
+        "h:5dd9:b10e:0caf:db07",
+        "h:ff5b:c8f5:c4ac:23ac",
+        "h:b043:df21:c505:bf30",
+        "h:1f8c:f669:90ab:55a1",
+        "h:7613:8d72:e7e2:40dd",
+        "h:2bb6:c5a2:5923:ab99",
+        "h:b8c1:c103:b2fb:fb07",
+        "h:a557:3217:5f1d:16dc",
+        "h:4e41:26ee:a992:2972",
+        "h:0031:a852:04e3:5a0a",
+        "h:f221:0695:576d:6a34",
+        "h:a398:6be0:7eb9:d03c",
+        "h:cbb1:f7c3:38b1:1b12",
+        "h:95a5:8a68:1b0e:f4bb",
+        "h:04ec:e5dc:5010:eb5b",
+        "h:ee71:a185:cc0c:cbe4",
+        "h:d995:6b32:8e23:380a",
+        "h:bf4e:c3e5:bb7b:2217",
+        "h:c746:2f57:6826:1aef",
+        "h:4cb0:0c3d:c347:41eb",
+        "h:8f8c:5fd7:1b22:6c42",
+        "h:d7b9:c827:5758:fd8d",
+        "h:fdab:d3a4:8f18:b0be",
+        "h:a065:28c3:a456:3bf2",
+        "h:eaeb:b111:100c:a2c7",
+        "h:9001:ac8f:fddc:f655",
+        "h:7b02:49dd:f553:8407",
+        "h:ceff:ae32:b0a3:ff57",
+        "h:beb3:9acf:76fd:e819",
+        "h:cdf0:7cc5:2bce:1e25"
+      ],
+      "status_assessment": "active; 44 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "direct",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:efe3:90c6:67d7:3810"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:e73e:020c:0391:fb8d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:1a2d:ee3b:ec36:eee5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:587c:6f3a:c432:e288"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:c2bb:c171:248a:676c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:058d:738d:a8aa:802b"
+          ],
+          "disposition": "deterministic",
+          "reason": "CS-6 asks for an ordered run plan with duration, measurands and exit criteria before the second-GPU window. The run ordering and admission limits can be written from the named acceptance protocols now; actual GPU measurements remain on the window, so a local typed choice cannot decide the data."
+        },
+        {
+          "keys": [
+            "h:4413:0d39:7b3a:2158"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "Task names another owner/session or an external coordinated hardware boundary."
+        },
+        {
+          "keys": [
+            "h:fc6b:f1d2:a8cc:f920"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:c688:f53b:01e9:5d33"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:19f0:3532:b4e8:3fd5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:9380:5d73:90cd:b010"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:0d84:0abb:7a8e:6e6c"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:18ce:b5b5:9f08:9482"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:6349:989f:cf38:4ccf"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:5dd9:b10e:0caf:db07"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ff5b:c8f5:c4ac:23ac"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b043:df21:c505:bf30"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:1f8c:f669:90ab:55a1"
+          ],
+          "disposition": "retain",
+          "reason": "CS-18 specifies an explicit cancellation policy and the existing `_cancel_only` host path; the phrases “yeah, exactly” and “no, forget that” can be resolved in the controller contract. Keep actual cancel authority deterministic and under the existing path. No typed model call is needed to execute this policy."
+        },
+        {
+          "keys": [
+            "h:7613:8d72:e7e2:40dd"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:2bb6:c5a2:5923:ab99"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b8c1:c103:b2fb:fb07"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:a557:3217:5f1d:16dc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:4e41:26ee:a992:2972"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:0031:a852:04e3:5a0a"
+          ],
+          "disposition": "refine_jev",
+          "reason": "CS-24 already has a closed three-arm method choice and a labeled CS-4 routing set with precision/recall as its decision metric. Instantiate option (ii) with the shipped typed `choice` runner as a measured candidate arm; this gives schema-bounded labels and explicit parse failures without letting the model choose the live route. Deterministic mocked-runner fixtures can be built now; actual CS-4 precision/recall and end-to-end decision cost remain the task’s inference acceptance."
+        },
+        {
+          "keys": [
+            "h:f221:0695:576d:6a34"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:a398:6be0:7eb9:d03c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:cbb1:f7c3:38b1:1b12"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:95a5:8a68:1b0e:f4bb"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:04ec:e5dc:5010:eb5b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ee71:a185:cc0c:cbe4"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:d995:6b32:8e23:380a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:bf4e:c3e5:bb7b:2217"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c746:2f57:6826:1aef"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:4cb0:0c3d:c347:41eb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:8f8c:5fd7:1b22:6c42"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:d7b9:c827:5758:fd8d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:fdab:d3a4:8f18:b0be"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:a065:28c3:a456:3bf2"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:eaeb:b111:100c:a2c7"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:9001:ac8f:fddc:f655"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:7b02:49dd:f553:8407"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:ceff:ae32:b0a3:ff57"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:beb3:9acf:76fd:e819"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:cdf0:7cc5:2bce:1e25"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S01-CS24-JEV-1",
+          "task_keys": [
+            "h:0031:a852:04e3:5a0a"
+          ],
+          "title": "Use the existing typed-decision runner as CS-24 option (ii)",
+          "original_premise": "CS-24 compares three voice-turn routing mechanisms (prompt policy, short first-pass classification, parallel text classifier) on CS-4 routing clips, but option (ii) leaves the output shape and failure handling unspecified.",
+          "revised_deliverable": "Specify option (ii) as a local one-question `QuestionKind.CHOICE` classifier over the closed routing labels for social/non-social (and an explicit unknown/abstain outcome only if the CS-4 annotation contract supports it). Use `run_typed_decisions` and the existing typed shadow logger to record output beside the incumbent decision; keep actual routing on the incumbent host policy. Add deterministic mocked-primitive cases for valid label, invalid schema/transport failure, and unknown/ambiguous input. Preserve the original three-arm comparison and precision/recall gate on CS-4; include latency/call-cost so the extra pass is priced.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/types.py",
+              "symbol": "Question / QuestionKind.CHOICE / DecisionResult",
+              "what": "Closed candidate labels and explicit parse failures, suitable for option (ii); confidence is an uncalibrated statistic."
+            },
+            {
+              "path": "src/typed_decisions/runner.py",
+              "symbol": "run_typed_decisions",
+              "what": "Local one-pass typed call with Draft 2020-12 schema validation and explicit failure records."
+            },
+            {
+              "path": "src/typed_decisions/shadow.py",
+              "symbol": "submit_shadow",
+              "what": "Default-off, bounded asynchronous, fail-open shadow call that records typed output and incumbent without changing the route."
+            },
+            {
+              "path": "src/features.py",
+              "symbol": "typed_decisions_shadow",
+              "what": "Existing default-off feature gate for shadow instrumentation."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/conversation-stack.md",
+              "lines": "298-305",
+              "observation": "CS-24 offers prompt policy, short first-pass classification, or parallel text classifier and requires precision/recall on CS-4 routing set; CS-41 consumes logged decisions."
+            },
+            {
+              "path": "src/typed_decisions/shadow.py",
+              "lines": "1-28,181-288",
+              "observation": "Generic shadow path records typed questions, incumbent, failures, and latency; it is default-off, async, bounded, and does not alter incumbent."
+            },
+            {
+              "path": "src/typed_decisions/types.py",
+              "lines": "36-68,100-141",
+              "observation": "Question supports choice over unique labels; DecisionResult retains failures and confidence is a local, uncalibrated statistic."
+            },
+            {
+              "path": "src/typed_decisions/runner.py",
+              "lines": "1-35,127-139",
+              "observation": "Runner performs schema-validated local typed decisions and preserves failures."
+            },
+            {
+              "path": "src/features.py",
+              "lines": "280-290,738-746",
+              "observation": "`typed_decisions_shadow` exists and defaults false."
+            }
+          ],
+          "non_inference_scope": "Add the option-(ii) spec and deterministic unit fixtures using mocked primitives; verify the existing shadow path logs the incumbent and failures and never modifies the routing result. No model call or serving route change is part of this prep slice.",
+          "inference_acceptance": "Run all three CS-24 arms on the frozen CS-4 routing set and compare precision/recall plus end-to-end latency/cost. This remains necessary before a policy choice; fixtures do not establish comparative accuracy.",
+          "gate": "Local models only. Keep the typed classifier shadow-only until the original CS-4 comparison supports a later decision. Never threshold the reported confidence; host routing remains authoritative.",
+          "ownership": "Conversation-stack CS-24 owns routing experiment; typed-decision APIs are shared existing primitives. No competing owner identified in the assigned shard.",
+          "roi": "medium",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "**JEV implementation option (acceptance preserved):** define CS-24 option (ii) as the existing local `run_typed_decisions` choice catalogue over the CS-4 routing labels, emitted through `submit_shadow` beside the incumbent decision. Keep the caller route unchanged and confidence logging-only; use deterministic mocked-primitive fixtures for schema/failure behavior. The existing CS-4 three-arm precision/recall and cost comparison remains the acceptance gate."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+      "source_sha256": "892b9d8ac5b9f65bb77da243749f7a6a231258d44ce35254a558989996c10bd3",
+      "reviewed_open_keys": [
+        "h:3242:3b53:9752:c970",
+        "h:1d41:c48a:1e11:cbbc",
+        "h:5ef0:26d1:d9d7:a62a",
+        "h:deae:a4b9:735b:0679",
+        "h:ee0e:5d33:d5dd:c8b3",
+        "h:bbc4:34e7:ddef:f069",
+        "h:c61c:abcb:57f4:98be",
+        "h:2115:0396:83a4:4461",
+        "h:178a:3cff:6771:9c66",
+        "h:58d4:b065:64aa:3afe",
+        "h:22a8:4749:ce20:09d2",
+        "h:bf0a:94b5:4937:60f5",
+        "h:0676:8bf1:a62e:d40d",
+        "h:fa3f:a726:607c:393d"
+      ],
+      "status_assessment": "active; 14 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:3242:3b53:9752:c970"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:1d41:c48a:1e11:cbbc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:5ef0:26d1:d9d7:a62a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:deae:a4b9:735b:0679"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ee0e:5d33:d5dd:c8b3"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:bbc4:34e7:ddef:f069"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:c61c:abcb:57f4:98be"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:2115:0396:83a4:4461"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:178a:3cff:6771:9c66"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:58d4:b065:64aa:3afe"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:22a8:4749:ce20:09d2"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:bf0a:94b5:4937:60f5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:0676:8bf1:a62e:d40d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:fa3f:a726:607c:393d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "source_sha256": "d5dfbd0b6e3324c94b401a4ae4f127a9a9f07c80456664d940000c3c7794d36d",
+      "reviewed_open_keys": [
+        "h:af06:ff46:4d3f:ae87",
+        "h:b1d1:a3e8:8653:5d05",
+        "h:ab05:d797:e6c0:122c",
+        "h:5e63:3e8b:78ed:8658",
+        "h:00f6:b04c:55ac:9253",
+        "h:aa23:deb3:62ab:c0fa",
+        "h:3fc4:e4e9:f904:e0e6",
+        "h:94fa:410a:2ecc:9ec0",
+        "h:3101:bb6d:67d4:8709",
+        "h:15f5:e0ba:d61c:557e",
+        "h:956e:0c53:7417:b6c0",
+        "h:f8f8:5a72:41a7:1362",
+        "h:c951:3e3b:7e78:dbb7",
+        "h:655f:20a0:460f:8283"
+      ],
+      "status_assessment": "active; 14 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:af06:ff46:4d3f:ae87"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:b1d1:a3e8:8653:5d05"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:ab05:d797:e6c0:122c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:5e63:3e8b:78ed:8658"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:00f6:b04c:55ac:9253"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:aa23:deb3:62ab:c0fa"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:3fc4:e4e9:f904:e0e6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:94fa:410a:2ecc:9ec0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:3101:bb6d:67d4:8709"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:15f5:e0ba:d61c:557e"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:956e:0c53:7417:b6c0"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:f8f8:5a72:41a7:1362"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c951:3e3b:7e78:dbb7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:655f:20a0:460f:8283"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/attention-matching-kv-compaction.md",
+      "source_sha256": "1204469bb1e4de5105d9c16e24f65beace2e31b0157bab1d95085ca85f7ae4ac",
+      "reviewed_open_keys": [
+        "h:28da:efa2:0326:ae04",
+        "h:25c6:9c2f:2601:5f23",
+        "h:58c8:09ae:2169:3af1",
+        "h:4154:5c11:947d:01d9",
+        "h:e3c2:2cd2:ab2a:6abb",
+        "h:c33e:0550:27fd:0e58",
+        "h:dd8e:6de7:b128:9e51",
+        "h:e57f:9cf4:1b1b:78bf",
+        "h:472c:8462:826e:708e",
+        "h:0d98:35cb:d4f1:d100"
+      ],
+      "status_assessment": "active; 10 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:28da:efa2:0326:ae04"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:25c6:9c2f:2601:5f23"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:58c8:09ae:2169:3af1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:4154:5c11:947d:01d9"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:e3c2:2cd2:ab2a:6abb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:c33e:0550:27fd:0e58"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:dd8e:6de7:b128:9e51"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:e57f:9cf4:1b1b:78bf"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        },
+        {
+          "keys": [
+            "h:472c:8462:826e:708e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:0d98:35cb:d4f1:d100"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/autokernel-concurrent-target-coordination.md",
+      "source_sha256": "6d8126104521109550d648786c7b3a04b7ef25b9a1c6b024c3a11cc8b31cf8d7",
+      "reviewed_open_keys": [
+        "h:ffbe:7b6d:ff6b:a211",
+        "h:0bac:99c3:df2e:b0b8",
+        "h:95b7:8cfe:6623:4d44",
+        "h:e2b0:c94b:a690:4d7b",
+        "h:5cbc:2f5b:cb95:a8dc",
+        "h:7420:b186:acbc:b59a",
+        "h:6f9b:4cf8:1496:846d",
+        "h:6194:0743:2931:df8d",
+        "h:f365:dd34:f6ef:aff7"
+      ],
+      "status_assessment": "active; 9 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ffbe:7b6d:ff6b:a211"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:0bac:99c3:df2e:b0b8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:95b7:8cfe:6623:4d44"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:e2b0:c94b:a690:4d7b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:5cbc:2f5b:cb95:a8dc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:7420:b186:acbc:b59a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:6f9b:4cf8:1496:846d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:6194:0743:2931:df8d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:f365:dd34:f6ef:aff7"
+          ],
+          "disposition": "conditional",
+          "reason": "Explicit prerequisite, freeze, or trigger governs when this task can start."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/laguna-s21-cpu-port.md",
+      "source_sha256": "3ac16feb4376d91d60d304d885442208bea21ee665cc6afc98d7893724573ad6",
+      "reviewed_open_keys": [
+        "h:b99f:fe97:e7e7:4a6f"
+      ],
+      "status_assessment": "active; 1 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:b99f:fe97:e7e7:4a6f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "source_sha256": "a1c788133f94805bbcbb0bcb7b3f60cc2f4b361ea094f23fcd78e5add0de8a05",
+      "reviewed_open_keys": [
+        "h:bde1:82d7:60b9:5652",
+        "h:46ad:fd00:85c5:6643"
+      ],
+      "status_assessment": "active; 2 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:bde1:82d7:60b9:5652"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:46ad:fd00:85c5:6643"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/sarathi-serve-cpu-evaluation.md",
+      "source_sha256": "a05d24e9d5b566f7cb142dad546e7b7e59214dc5c9a62941cbc59ddf2bfc3f15",
+      "reviewed_open_keys": [
+        "h:a651:6ec1:2b9c:73db",
+        "h:891c:82a4:7f4a:c6cd"
+      ],
+      "status_assessment": "active; 2 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:a651:6ec1:2b9c:73db"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:891c:82a4:7f4a:c6cd"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/gpu-candidates-surface-qwen38-update.md",
+      "source_sha256": "44b6e3d52e95d1de44f42d0c0cc037626352261e325b254fc9b1db0036614a79",
+      "reviewed_open_keys": [
+        "h:8270:5f9a:7ec6:8dea",
+        "h:6403:d54c:89ed:1552",
+        "h:a049:4f53:d13c:b725"
+      ],
+      "status_assessment": "active; 3 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:8270:5f9a:7ec6:8dea"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:6403:d54c:89ed:1552"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:a049:4f53:d13c:b725"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/v9-kernel-per-request-speculative-params.md",
+      "source_sha256": "893728d998f1b32b356b902b9de14d563e78f876745f4f551e9cdd6abdbe6305",
+      "reviewed_open_keys": [
+        "h:1610:4323:a846:8686"
+      ],
+      "status_assessment": "active; 1 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:1610:4323:a846:8686"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/qwen38-flash-next-fp8-evaluation.md",
+      "source_sha256": "f26a157b75c1387af8131cfe794d2a176efcd114499ea5cef548196d1fdba1b1",
+      "reviewed_open_keys": [
+        "h:7682:7363:1acb:0569",
+        "h:2b6f:f336:5c5e:6579",
+        "h:7a60:363d:dd8d:8c12",
+        "h:155f:d7bd:8493:a1f6",
+        "h:874b:068b:aba9:647c",
+        "h:dbfd:3771:9110:2fff",
+        "h:cfa8:92ef:e7fb:46f4"
+      ],
+      "status_assessment": "active; 7 unchecked boxes source-pinned and classified individually; measurements/production gates retained.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:7682:7363:1acb:0569"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Explicit human decision/approval is retained as the gate."
+        },
+        {
+          "keys": [
+            "h:2b6f:f336:5c5e:6579"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:7a60:363d:dd8d:8c12"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        },
+        {
+          "keys": [
+            "h:155f:d7bd:8493:a1f6"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:874b:068b:aba9:647c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:dbfd:3771:9110:2fff"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Acceptance needs a model, live workload, GPU, benchmark, or performance observation; typed-decision techniques cannot substitute."
+        },
+        {
+          "keys": [
+            "h:cfa8:92ef:e7fb:46f4"
+          ],
+          "disposition": "deterministic",
+          "reason": "Source/document/fixture implementation is independently actionable without JEV; no typed decision improves the deterministic acceptance."
+        }
+      ],
+      "findings": []
+    }
+  ]
+}

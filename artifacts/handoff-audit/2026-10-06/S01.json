@@ -1,0 +1,2580 @@
+{
+  "id": "S01",
+  "name": "inference-research-1",
+  "files": [
+    {
+      "path": "handoffs/active/cpu-decode-roofline-program.md",
+      "state": "active",
+      "sha256": "d265dc2e97ea332f4ebadd31a19a68619f1ca44f452a1b934ed9b1d6dafba03d",
+      "bytes": 471132,
+      "title": "CPU Decode Roofline Program — Qwen3.8-Flash-Next (qwen4exp) at the machine ceiling",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 179,
+          "checked": true,
+          "text": "**C0 — measure the roofline denominator: read-only DRAM bandwidth under the decode recipe.** ✅ 2026-09-02",
+          "key": "h:2d7a:0b67:b4e9:bcb7"
+        },
+        {
+          "line": 193,
+          "checked": true,
+          "text": "**C5 — re-anchor the baseline in ONE clean build.** ✅ 2026-09-02 — 10.14 / 10.09 t/s at t48 (INF-68",
+          "key": "h:9e20:7b8d:3e2b:9691"
+        },
+        {
+          "line": 209,
+          "checked": false,
+          "text": "**C1 — report every decode result as achieved GB/s against the C0 number, alongside ms/token,**",
+          "key": "h:b4f8:5146:a8e0:9f0f"
+        },
+        {
+          "line": 212,
+          "checked": false,
+          "text": "**C2 — every instrument gets a sanity assertion before its output is believed**, and every table",
+          "key": "h:76a4:ca39:9274:5c46"
+        },
+        {
+          "line": 219,
+          "checked": false,
+          "text": "**C3 — hold the BUILD constant, not just the artifact, and chase every derived figure when a",
+          "key": "h:8c54:8866:e2d5:e3d9"
+        },
+        {
+          "line": 229,
+          "checked": false,
+          "text": "**C4 — a control arm for every claim.** The fused path's \"84% gemv\" was uninterpretable until the",
+          "key": "h:b5ae:b569:c07f:ef7e"
+        },
+        {
+          "line": 232,
+          "checked": true,
+          "text": "**C6 — belief-kernel wiring before the first C5 run.** ✅ 2026-09-02 — `inf70_roofline_ledger.py` + `cli.py ingest inf70`; 147 claims / 441 frames over the three measured run dirs, zero refusals; `tests/vidya` 763 passed (SC53 ✅). C0/C5/B1/D0 are new measurement producers.",
+          "key": "h:91d7:bc4e:209c:7bd9"
+        },
+        {
+          "line": 237,
+          "checked": true,
+          "text": "**C7 — make the placement fix permanent, everywhere a CPU model is loaded.** ✅ 2026-09-03 *(a) ✅ ADOPTED-FORCING",
+          "key": "h:e432:1f9a:88ec:3363"
+        },
+        {
+          "line": 282,
+          "checked": true,
+          "text": "**C8 — the BIOS session at the next reboot (operator-executed; this task prepares and verifies).** ✅ 2026-09-21",
+          "key": "h:247a:7ae3:49c1:de86"
+        },
+        {
+          "line": 302,
+          "checked": true,
+          "text": "**C9 — `llama-perplexity` returns NaN for qwen4exp; there is no PPL/KL gate for this model.** ✅ 2026-09-04 — stale binary; verified to the same-binary standard, see the C9 block below.",
+          "key": "h:4006:99c5:71a4:bffd"
+        },
+        {
+          "line": 337,
+          "checked": true,
+          "text": "**D0 — measure the per-node floor directly; count the sync events per token.** ✅ 2026-09-02 —",
+          "key": "h:5676:f43e:b471:e85a"
+        },
+        {
+          "line": 352,
+          "checked": true,
+          "text": "**D1 — remove the internal `mul_mat` / `mul_mat_id` barrier at batch 1.** ✅ 2026-09-02 — implemented",
+          "key": "h:8f53:e399:5821:7a1c"
+        },
+        {
+          "line": 364,
+          "checked": false,
+          "text": "**D2 — barrier elision between nodes that do not need one (re-priced to ~zero: D0 counts 579 eligible",
+          "key": "h:57e9:5539:1b95:0623"
+        },
+        {
+          "line": 376,
+          "checked": false,
+          "text": "**D3 — the barrier implementation itself.** Three cheap arms measured by the D0 harness first,",
+          "key": "h:e962:b3f2:d0c6:4783"
+        },
+        {
+          "line": 385,
+          "checked": true,
+          "text": "**D4 — thread count × placement sweep.** ✅ closed 2026-09-02 by measurement, not run further: with",
+          "key": "h:16c2:88be:7f7e:634b"
+        },
+        {
+          "line": 403,
+          "checked": false,
+          "text": "**D5 — huge pages (demoted to verify-only).** Measured 2026-09-02: with free memory on the nodes the",
+          "key": "h:dbbd:063c:dde8:bc6f"
+        },
+        {
+          "line": 413,
+          "checked": true,
+          "text": "**D8 — parallelise GET_ROWS (and the other single-task copy ops).** ✅ implemented 2026-09-02",
+          "key": "h:3249:fd3e:e347:91f9"
+        },
+        {
+          "line": 454,
+          "checked": false,
+          "text": "**D6 — the 796 small dense gemvs run at 40% of read bandwidth while the one big gemv runs at 94%.**",
+          "key": "h:18c7:1ccf:969c:7423"
+        },
+        {
+          "line": 464,
+          "checked": true,
+          "text": "**D7 — upstream CPU-side fusion sync.** ✅ 2026-09-02, research only (subagent report",
+          "key": "h:dfcb:8c5d:ec90:e3e0"
+        },
+        {
+          "line": 479,
+          "checked": true,
+          "text": "**D7a — enable the CONCAT dim-0 row partition (found by D7).** ✅ measured 2026-09-02 (subagent",
+          "key": "h:1e7d:a55d:18fb:fa5f"
+        },
+        {
+          "line": 493,
+          "checked": true,
+          "text": "**D7b — flip `GGML_CPU_CONCAT_DIM0_ROWS` default-ON in the fusion tree.** ✅ 2026-09-02 — branch",
+          "key": "h:5211:ea8e:cde0:86ed"
+        },
+        {
+          "line": 519,
+          "checked": true,
+          "text": "**B1 — split the token by path and report achieved GB/s, not just ms — on the C5 build.** ✅",
+          "key": "h:cd07:42fa:7adc:f4c9"
+        },
+        {
+          "line": 528,
+          "checked": true,
+          "text": "**B2 — decide what binds the expert path: per-call fixed cost or bandwidth.** ✅ 2026-09-02 —",
+          "key": "h:56d3:4145:1bf9:b1ff"
+        },
+        {
+          "line": 543,
+          "checked": true,
+          "text": "**B3 — restructure `mul_mat_id` for batch 1.** ✅ 2026-09-03 (both halves). Beyond D1's barrier removal: chunk across",
+          "key": "h:6386:594e:cb1d:244b"
+        },
+        {
+          "line": 581,
+          "checked": true,
+          "text": "**B4 — the bytes budget: requantize what is streamed for no reason.** ✅ 2026-09-02 (subagent `b4`,",
+          "key": "h:cbf5:2579:6666:d624"
+        },
+        {
+          "line": 603,
+          "checked": false,
+          "text": "**B5 — a quality-representative uniform artifact without the FP8 conversion.** The OP-32 uniform",
+          "key": "h:c16f:893c:a952:db65"
+        },
+        {
+          "line": 611,
+          "checked": false,
+          "text": "**B6 — interleave striping vs expert-local placement (deprioritized).** Expert weights are",
+          "key": "h:6ba4:65fd:5b50:d05d"
+        },
+        {
+          "line": 641,
+          "checked": true,
+          "text": "**★ PROD-1 — THE CANONICAL RECIPE. Operator-flagged 2026-09-06 as the thing not to forget; with PROD-2",
+          "key": "h:3695:0b7b:46ae:68af"
+        },
+        {
+          "line": 676,
+          "checked": false,
+          "text": "**PROD-2 — ⚠ THE 09-06 DEFERRAL WAS REVERSED BY THE OPERATOR ON 2026-09-07. Read the FOLD block",
+          "key": "h:641c:324a:fab7:1262"
+        },
+        {
+          "line": 730,
+          "checked": false,
+          "text": "**PROD-3 — promote a CHAMPION artifact and retire the anchor** (this is what remains of OP-37).",
+          "key": "h:674c:15e0:32a3:ff7c"
+        },
+        {
+          "line": 833,
+          "checked": true,
+          "text": "**SYNC-1 — COMPLETE ✅ 2026-09-07 (ranked envelope + per-(node,thread) census; see the tip-census block). authoritative census + outlier diagnosis + barrier-cost baseline.** Dispatched 2026-09-05.",
+          "key": "h:3221:564a:efc2:ff13"
+        },
+        {
+          "line": 840,
+          "checked": true,
+          "text": "**SYNC-2 — GO on all three levers. ★ GRAPH BARRIERS DO CONVERT TO WALL TIME — AXIS S IS ALIVE.** ✅",
+          "key": "h:7179:98de:90c0:23aa"
+        },
+        {
+          "line": 878,
+          "checked": true,
+          "text": "**SYNC-10 COMPLETE 2026-09-05 — GO on the split, NO-GO on the vectorisation.** ✅ Lock released,",
+          "key": "h:68c9:75f3:9c67:4d06"
+        },
+        {
+          "line": 909,
+          "checked": true,
+          "text": "**SYNC-16 — COMPLETE ✅ 2026-09-07: the lever WORKS and does NOT PAY. NO-GO.** Branch",
+          "key": "h:e1d8:f0cd:4a2a:63ad"
+        },
+        {
+          "line": 933,
+          "checked": false,
+          "text": "**★★ MEAS-1 — EVERY ABA IN THIS CAMPAIGN RAN WITH UNFENCED TOOLING INSIDE THE MEASURED REGION.**",
+          "key": "h:e17a:9008:cca9:65f8"
+        },
+        {
+          "line": 985,
+          "checked": false,
+          "text": "**★★ MEAS-1-DECIDE — OPERATOR DECISION. Three options; fencing is not among them.** Requested for",
+          "key": "h:a2c6:fc00:3f96:a67a"
+        },
+        {
+          "line": 1020,
+          "checked": false,
+          "text": "**★ MEAS-3 — RETENTION ROW: `/mnt/raid0/llm/tmp/inf70/agents/sync16/` IS A CROSS-CAMPAIGN DEPENDENCY.",
+          "key": "h:cd0f:f449:c2ed:0083"
+        },
+        {
+          "line": 1027,
+          "checked": true,
+          "text": "**★ MEAS-2 — ADOPTED AND OUT OF SCRATCH 2026-09-14.** ✅ `scripts/lib/build_locked.sh` in",
+          "key": "h:ba87:1262:cbd0:812b"
+        },
+        {
+          "line": 1034,
+          "checked": true,
+          "text": "**★★★ MEAS-6 — MEASURED 2026-09-08: TWO CPU/GPU CAMPAIGNS CANNOT BE MEASURED CONCURRENTLY ON",
+          "key": "h:2316:d139:3cbe:8c7b"
+        },
+        {
+          "line": 1084,
+          "checked": false,
+          "text": "**★ MEAS-4 — THE INSTRUMENT RESERVES 96 CORES TO USE 48, AND BLOCKS A SECOND AGENT WHILE",
+          "key": "h:7d4e:1e8c:af20:2dec"
+        },
+        {
+          "line": 1183,
+          "checked": false,
+          "text": "**SYNC-21 — prove or kill the profiler-overhead hypothesis for SYNC-16's null.** Needs a",
+          "key": "h:5349:fb55:4118:b19c"
+        },
+        {
+          "line": 1486,
+          "checked": true,
+          "text": "**B4-b — CLOSED/REFUTED ✅ 2026-09-07 (there is no second B4; see the B4-b close block below). sweep EVERY artifact's F32 tensors for the same BF16-padding test.** Filed 2026-09-07. If the",
+          "key": "h:70d7:c295:475b:a402"
+        },
+        {
+          "line": 1631,
+          "checked": true,
+          "text": "**SYNC-17 — COMPLETE ✅ 2026-09-07: three fixes built and measured as ONE combined lever vs",
+          "key": "h:fd22:5d9d:9772:0db9"
+        },
+        {
+          "line": 1653,
+          "checked": true,
+          "text": "**SYNC-19 — measure FIX-1 alone, unbundled from the −3% lever.** ✅ 2026-09-08",
+          "key": "h:8198:3eda:72a0:eba6"
+        },
+        {
+          "line": 1670,
+          "checked": true,
+          "text": "**SYNC-20 — sweep the yield floor.** ✅ 2026-09-08 `GGML_SOLO_YIELD_ROWCOL=1` ×",
+          "key": "h:6913:d9e9:9776:cb77"
+        },
+        {
+          "line": 1680,
+          "checked": true,
+          "text": "**METH-2 — register the A/A control as two A arms run BACK-TO-BACK.** ✅ 2026-09-08 — adopted and applied campaign-wide: SYNC-19/20's `AP` control (42 arms) and HARNESS-1's A/A floor (21 arms) are both back-to-back, and `AP` resolved on its pre-registered FIRST branch at **+0.02%**. SYNC-17's pre-registered",
+          "key": "h:ba43:9f49:edef:f79d"
+        },
+        {
+          "line": 1686,
+          "checked": false,
+          "text": "**SYNC-18 — re-test \"small gathers should stay single-task.\"** D8's +0.97% was measured with both arms",
+          "key": "h:0963:4640:64f8:1cfa"
+        },
+        {
+          "line": 1689,
+          "checked": true,
+          "text": "**UP-2 — upstream the two ggml contract bugs**: the `SET_ROWS` `wdata` overflow (size by `n_threads`)",
+          "key": "h:f92c:4832:5116:33df"
+        },
+        {
+          "line": 1902,
+          "checked": false,
+          "text": "**HARNESS-2 — object-digest incremental builds, so leave-one-out is cheap enough to run every time.**",
+          "key": "h:b1de:0441:d0cb:2f52"
+        },
+        {
+          "line": 1929,
+          "checked": true,
+          "text": "**HARNESS-1 — make the measurement harness 3–5× faster and tighten its noise floor.** ✅ 2026-09-08 Dispatched",
+          "key": "h:a4aa:c27a:4fbf:44ac"
+        },
+        {
+          "line": 2148,
+          "checked": true,
+          "text": "**★★ RETEST-1 — EXECUTED AND CLOSED ✅ 2026-09-08. 3 of 5 levers resolved, 2 NOT REACHED.**",
+          "key": "h:e57d:d78b:6247:4ab8"
+        },
+        {
+          "line": 2230,
+          "checked": false,
+          "text": "**STAT-1-SWEEP — relabel every per-prompt-paired significance claim in this campaign as",
+          "key": "h:2a1d:9161:6de0:bb09"
+        },
+        {
+          "line": 2235,
+          "checked": false,
+          "text": "**SCALE-1 — annotate every pre-2026-09-07 COLD absolute with the hot/cold scale offset.**",
+          "key": "h:3376:724d:73d9:3520"
+        },
+        {
+          "line": 2240,
+          "checked": false,
+          "text": "**MEAS-7 — HARNESS-1 does not close MEAS-4; say so where MEAS-4 is quoted.**",
+          "key": "h:c930:ca7c:5ffc:a171"
+        },
+        {
+          "line": 2261,
+          "checked": false,
+          "text": "**FIX2-BUILD — `inf70/sync17-fix2` is CORRECT IN SOURCE, DELIBERATELY UNBUILT, and as of",
+          "key": "h:27ae:d87b:582a:6773"
+        },
+        {
+          "line": 2275,
+          "checked": false,
+          "text": "**BACKUP-1 — give the ref-coverage rule a durable home outside this handoff.** *\"I made a",
+          "key": "h:9542:6d73:1f20:a184"
+        },
+        {
+          "line": 2280,
+          "checked": false,
+          "text": "**★★ NOFOLD-1 — `feature/tree-draft-v6` MUST NOT FOLD. Recorded here because a 2026-09-08",
+          "key": "h:ce1c:4819:3c82:18a9"
+        },
+        {
+          "line": 2295,
+          "checked": false,
+          "text": "**LOADAVG-1 — REMOVE the pre-arm `loadavg` gate; it costs the largest single setup item and",
+          "key": "h:e55b:763d:d602:58df"
+        },
+        {
+          "line": 2301,
+          "checked": false,
+          "text": "**BUILDVERIFY-1 — there is NO rebuild-and-compare-`.so` check in this harness.** Stated flatly",
+          "key": "h:9dd4:08e0:c70f:d2cb"
+        },
+        {
+          "line": 2306,
+          "checked": false,
+          "text": "**ABLATE-1 — `harness1/ablate.sh` is IMPLEMENTED AND UNIT-READY BUT NEVER DEMONSTRATED.**",
+          "key": "h:2f56:7efc:e136:5739"
+        },
+        {
+          "line": 2311,
+          "checked": false,
+          "text": "**REGIONLOCK-1 — BUILDS THAT SKIP `region-lock` RUN STRAIGHT THROUGH A HELD BENCH LOCK. This",
+          "key": "h:b81c:0036:6861:8eee"
+        },
+        {
+          "line": 2320,
+          "checked": false,
+          "text": "**DECLINE-RECORDED — `GGML_SOLO_YIELD_MIN_ELEMS` will NOT be built.** A clean yield-floor sweep",
+          "key": "h:7d01:ddc1:e781:1567"
+        },
+        {
+          "line": 2327,
+          "checked": false,
+          "text": "**OWN-1 — the `epyc-inference-research` clone that took `foreign_load.py` needs an owner.**",
+          "key": "h:c082:7d8e:b7cf:b475"
+        },
+        {
+          "line": 2340,
+          "checked": false,
+          "text": "**★★ CLOSE-1 — GIVE \"A FLOOR CARRIES ITS UNIT\" A DURABLE HOME OUTSIDE THIS HANDOFF.**",
+          "key": "h:ef9c:f6ba:01b9:4e8b"
+        },
+        {
+          "line": 2349,
+          "checked": false,
+          "text": "**★★ CLOSE-2 — FILE THE VACUOUS-INSTRUMENT PATTERN AS ONE PATTERN, NOT FOUR INCIDENTS, AND LAND",
+          "key": "h:4915:c39c:8550:5f0a"
+        },
+        {
+          "line": 2364,
+          "checked": false,
+          "text": "**★ CLOSE-3 — `ps -p` IS NOT A DEATH TEST; `CLAUDE.md` CURRENTLY SAYS IT IS.** Root `CLAUDE.md`",
+          "key": "h:1ce2:ece1:cddd:706f"
+        },
+        {
+          "line": 2369,
+          "checked": false,
+          "text": "**★★ CLOSE-4 — SWEEP: LABEL EVERY CHAMPION-VS-PRISTINE RATIO \"RECIPE-TO-RECIPE, NOT",
+          "key": "h:df51:1bdd:6d80:815a"
+        },
+        {
+          "line": 2377,
+          "checked": false,
+          "text": "**★★ CLOSE-5 — `CHAMPION-DIVERGENCE.md` STAYS OPEN AND NEEDS AN OWNER.** Plain ratio **2.1857×**",
+          "key": "h:9b12:e975:dd99:e8d1"
+        },
+        {
+          "line": 2384,
+          "checked": false,
+          "text": "**CLOSE-6 — SYNC-16 WAS NOT REACHED BY RETEST-1.** Its partial-selection top-k is a real",
+          "key": "h:2bee:6ca4:0fa2:96bd"
+        },
+        {
+          "line": 2390,
+          "checked": false,
+          "text": "**CLOSE-7 — SYNC-13's `GGML_STATIC_CHUNKS` WAS NOT REACHED EITHER, AND IS ALREADY FILED TWICE.**",
+          "key": "h:2f23:f437:d7ce:cfe4"
+        },
+        {
+          "line": 2394,
+          "checked": false,
+          "text": "**★★ CLOSE-8 — ADMISSION CONTROL, NOT SCREENING: the contention channel was DRAM BANDWIDTH.**",
+          "key": "h:c4a5:e0bb:efc2:61a6"
+        },
+        {
+          "line": 2402,
+          "checked": false,
+          "text": "**★ CLOSE-9 — A HALT DOES NOT DRAIN AN ALREADY-QUEUED CHAIN. Structural, not careless.**",
+          "key": "h:9a01:fcf7:ae0f:cc1d"
+        },
+        {
+          "line": 2409,
+          "checked": false,
+          "text": "**★ CLOSE-10 — THE IN-WINDOW SAMPLER ONLY COVERS WINDOWS THAT CONTAIN AN ARM.** `foreign_load.py`",
+          "key": "h:e03d:c568:4e7c:6ca4"
+        },
+        {
+          "line": 2417,
+          "checked": false,
+          "text": "**CLOSE-11 — RECORD THE PROCESS FAILURES, UNSOFTENED, WHERE THEY OUTLIVE THIS CAMPAIGN.**",
+          "key": "h:925f:6bf0:9dee:0608"
+        },
+        {
+          "line": 2429,
+          "checked": false,
+          "text": "**★ CLOSE-12 — THE BELIEF KERNEL HAS NO LAUNCH-UNIT ADAPTER, AND THE CLOSE-OUT'S HEADLINE IS A",
+          "key": "h:3b96:0091:ea84:cc70"
+        },
+        {
+          "line": 2453,
+          "checked": false,
+          "text": "**WRAP-1 — purge the two retracted framings from this handoff, the sibling reports and the wiki.**",
+          "key": "h:4d7f:acc5:68dd:b2e7"
+        },
+        {
+          "line": 2462,
+          "checked": false,
+          "text": "**WRAP-2 — re-price SYNC-5's fusion ceiling at 3.1 µs/barrier.** SYNC-5 closed \"don't pursue the",
+          "key": "h:7b3e:1bf1:21c2:337c"
+        },
+        {
+          "line": 2468,
+          "checked": false,
+          "text": "**WRAP-3 — classify every node compute-bound vs memory-bound before any imbalance figure is treated as",
+          "key": "h:fe7c:8d39:a853:2d35"
+        },
+        {
+          "line": 2473,
+          "checked": false,
+          "text": "**WRAP-4 — fix the co-residency sampler's \"disjoint-from-0-95\" label AND re-open every conclusion that",
+          "key": "h:1314:20dd:2c5d:016a"
+        },
+        {
+          "line": 2478,
+          "checked": false,
+          "text": "**WRAP-5 — report the llama.cpp GGUF C reader segfault upstream (fold into UP-2).** B12 found",
+          "key": "h:ba85:7bb3:b891:42c5"
+        },
+        {
+          "line": 2481,
+          "checked": false,
+          "text": "**WRAP-6 — give two cross-campaign rules a durable home outside this handoff.** (a) *\"digest the",
+          "key": "h:3677:32a7:15d7:92b4"
+        },
+        {
+          "line": 2488,
+          "checked": true,
+          "text": "**WRAP-7 — CLOSED BY SUPERSESSION ✅ 2026-09-08, not by being done.** Champion-3 is **no",
+          "key": "h:f201:a582:6d61:8761"
+        },
+        {
+          "line": 2499,
+          "checked": false,
+          "text": "**WRAP-8 — `GGML_STATIC_CHUNKS`: the one separable arm SYNC-13 left on the table.** Two lines at",
+          "key": "h:9409:2193:4113:e9f8"
+        },
+        {
+          "line": 2503,
+          "checked": false,
+          "text": "**WRAP-9 — re-derive phase R WITHIN-ARM. ⚠ PART (b) IS ITSELF SUPERSEDED — do NOT restate the",
+          "key": "h:d388:d296:cde2:2a9a"
+        },
+        {
+          "line": 2516,
+          "checked": true,
+          "text": "**WRAP-10 — LANDED IN GIT 2026-09-14.** ✅ `epyc-inference-research` `fc8c44de` + `932bf5c4` +",
+          "key": "h:4915:fd1e:4b97:2f13"
+        },
+        {
+          "line": 2539,
+          "checked": false,
+          "text": "**WRAP-11 — decide the fate of the 21 branches carrying unique work.** `inf70/champion3` is pushed to",
+          "key": "h:f24f:73dd:8d0f:9463"
+        },
+        {
+          "line": 2543,
+          "checked": false,
+          "text": "**WRAP-12 — correct the PROD-1 hybrid recipe and the build-10221 figure wherever they were propagated.**",
+          "key": "h:7a91:1235:be20:c3a4"
+        },
+        {
+          "line": 2549,
+          "checked": false,
+          "text": "**WRAP-13 — relabel the campaign headline's champion arm so its two-commit instrumentation delta is",
+          "key": "h:fa5c:3694:7829:5dc4"
+        },
+        {
+          "line": 2553,
+          "checked": false,
+          "text": "**WRAP-14 — get `scripts/lib/test_canonical_recipe.py` into `PYTEST_SMOKE` and make its collection",
+          "key": "h:8319:3a53:8b34:feff"
+        },
+        {
+          "line": 2556,
+          "checked": false,
+          "text": "**WRAP-15 — guard `assert_artifact_digests()` against being called from `preflight()`**, because it",
+          "key": "h:4e90:a403:03a8:b923"
+        },
+        {
+          "line": 2675,
+          "checked": false,
+          "text": "**CHAMP-1 — decide promotion.** `inf70/champion` is forked from `exp/cpu-fusion-qwen4exp-20260829`, **not",
+          "key": "h:403d:fe1c:e683:1ce0"
+        },
+        {
+          "line": 2679,
+          "checked": true,
+          "text": "**CHAMP-2 — RESOLVED ✅ 2026-09-07: measured GO (+1.0%) solo, then DID NOT SURVIVE in the champion-3 stack (pooled +0.16%, 73/120); shim shipped opt-in as `GGML_NOHUGEPAGE_PROCESS=1`. extend `MADV_NOHUGEPAGE` past `ggml_aligned_malloc` to KV/compute buffers.** d6place's",
+          "key": "h:082f:2e2c:152f:5c41"
+        },
+        {
+          "line": 2712,
+          "checked": true,
+          "text": "**PLACE-1 — DONE by CHAMPION-1 2026-09-06.** ✅ Knob merged (`77b704e5d`) and the merged levers re-priced on the corrected base via leave-one-out: `ROWCOL_SPLIT` +5.3% (not +3.05%), `TINY_SOLO` +0.5%, `EMPTY_SKIP` −0.1% — the last two now below the noise floor. **Original scope:** merge `GGML_NOHUGEPAGE` and re-price the merged levers against the corrected base.",
+          "key": "h:ab5e:c4b6:ff71:4908"
+        },
+        {
+          "line": 2719,
+          "checked": true,
+          "text": "**D6-PLACE — ★★ THE \"2 MB THP BOUNDARY\" DOES NOT EXIST. The mechanism is real and BIGGER than the",
+          "key": "h:c2cf:f6b7:80ce:371a"
+        },
+        {
+          "line": 2755,
+          "checked": true,
+          "text": "**MERGE-1 DONE 2026-09-06 — `exp/cpu-fusion-qwen4exp-20260829` advanced `c51e4dabf` → `13907877d`.** ✅",
+          "key": "h:f755:efdd:bb2f:7207"
+        },
+        {
+          "line": 2788,
+          "checked": true,
+          "text": "**HYG-3 — PRE-EXISTING test failures in the fusion branch, NOT merge-induced.** Filed 2026-09-06 from",
+          "key": "h:813c:d2fd:cd20:de64"
+        },
+        {
+          "line": 2801,
+          "checked": true,
+          "text": "✅ **D6-PLACE-ORIGINAL (superseded, retained for the record) — the largest remaining lever: ~9.1 ms/token at the 2 MB THP boundary.** Filed 2026-09-05,",
+          "key": "h:5a39:2a3f:baa6:cb04"
+        },
+        {
+          "line": 2809,
+          "checked": true,
+          "text": "**SYNC-15 — COMPLETE ✅ 2026-09-07: premise refuted; `GGML_VEC_Q8K` + `GGML_QSPLIT` GO (+5.24% served as a stack), `TINY_SOLO_ROWS` NO-GO. `hc_inject` `MUL_MAT [10240,4]` moves 21,760 bytes in 19.0 µs = 1.1 GB/s, 1.83 ms/token**,",
+          "key": "h:46f0:75dc:2ee5:c6c4"
+        },
+        {
+          "line": 2814,
+          "checked": true,
+          "text": "**SYNC-2-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-2 is",
+          "key": "h:f868:eb56:7db6:ba8f"
+        },
+        {
+          "line": 2820,
+          "checked": true,
+          "text": "**SYNC-3 — NO-GO 2026-09-05. The seam had already closed; the subsystem is 3.8% of the token.** ✅",
+          "key": "h:778a:9c40:8a88:9dad"
+        },
+        {
+          "line": 2863,
+          "checked": true,
+          "text": "**SYNC-9 — DONE ✅ 2026-09-07: implemented by SYNC-12 (nine lines, bit-identical, `skip_barrier` load-bearing), shipped as `GGML_EMPTY_SKIP` in the champion. 72 zero-sized `build_rs` nodes cost 0.173 ms/token for ZERO work** (98.8% dead, pure",
+          "key": "h:1bf1:b9e2:656c:c3f1"
+        },
+        {
+          "line": 2874,
+          "checked": true,
+          "text": "**SYNC-3-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-3 is",
+          "key": "h:ec79:c4a4:ed33:9343"
+        },
+        {
+          "line": 2880,
+          "checked": true,
+          "text": "**SYNC-4 — CLOSED 2026-09-05. The premise was STALE: GET_ROWS was already parallelised at D8.** ✅",
+          "key": "h:10f9:e54f:7fb1:1669"
+        },
+        {
+          "line": 3040,
+          "checked": true,
+          "text": "**B12 — CLOSED ✅ 2026-09-08 (checkbox added at wrap-up; B12 concluded 2026-09-05 with a full",
+          "key": "h:6c18:dafc:51a2:847b"
+        },
+        {
+          "line": 3187,
+          "checked": true,
+          "text": "**SYNC-14 — CLOSED ✅ 2026-09-07: measured null (`GGML_IQK_EVENSPLIT` −0.24%); imbalance on a memory-bound matmul is not recoverable capacity. diagnose matmul imbalance (4.83 MTP ms/token, the LARGEST single item, and nobody knows",
+          "key": "h:e465:a7bd:6c48:215d"
+        },
+        {
+          "line": 3302,
+          "checked": true,
+          "text": "**SYNC-10-ORIGINAL (superseded, retained for the record) ✅ 2026-09-08** — the live SYNC-10 is",
+          "key": "h:9317:aad6:5498:4270"
+        },
+        {
+          "line": 3328,
+          "checked": true,
+          "text": "**SYNC-12 — DONE 2026-09-05. Entry point built; CUDA's `K<=1` bail is SCOPE, not soundness.** ✅",
+          "key": "h:b9af:1a5d:2b5d:1ff0"
+        },
+        {
+          "line": 3371,
+          "checked": true,
+          "text": "✅ **SYNC-12-ORIGINAL (superseded, retained for the record)** — port the CUDA GDN fusion. Dispatched",
+          "key": "h:4de9:82fd:6445:ee49"
+        },
+        {
+          "line": 3396,
+          "checked": true,
+          "text": "**SYNC-13 — COMPLETE ✅ 2026-09-07: premise was inverted; keep `ggml_is_numa()` false, never pass `--numa` (affinity, not chunking, is the disqualifier). what does `ggml_is_numa()` gate, and is `false` the right value for us?** Filed 2026-09-05",
+          "key": "h:001c:36a5:954b:c4ce"
+        },
+        {
+          "line": 3405,
+          "checked": false,
+          "text": "**METH-1 — make the per-`(node,thread)` OCCUPANCY census the standing FIRST step for kernel work.**",
+          "key": "h:8a3c:4b18:0d86:9d49"
+        },
+        {
+          "line": 3425,
+          "checked": true,
+          "text": "**UP-1 — upstream the two ggml contributions this campaign produced.** Filed 2026-09-05.",
+          "key": "h:a796:b52e:d456:1da7"
+        },
+        {
+          "line": 3451,
+          "checked": true,
+          "text": "**HYG-1b — rebuild or remove EVERY stale build dir in the shared tree.** Escalated 2026-09-05: it is not",
+          "key": "h:af51:9a34:6759:590b"
+        },
+        {
+          "line": 3462,
+          "checked": true,
+          "text": "**HYG-2 — `check_commit_hygiene.py` parses the COMMIT MESSAGE as shell text.** Filed 2026-09-05 (was",
+          "key": "h:fea1:fda6:0fcb:27c5"
+        },
+        {
+          "line": 3469,
+          "checked": false,
+          "text": "**★ HYG-2b — THE COMMIT-HYGIENE HOOK DOES NOT SEGMENT A COMPOUND SHELL COMMAND, AND IT BLOCKS ITS OWN",
+          "key": "h:71f5:225b:1774:0670"
+        },
+        {
+          "line": 3487,
+          "checked": true,
+          "text": "**SYNC-11 — CLOSED ✅ 2026-09-07: ANSWERED, not run. Both of its justifications are gone.** Its",
+          "key": "h:177d:c6f7:b713:9a52"
+        },
+        {
+          "line": 3554,
+          "checked": true,
+          "text": "**SYNC-8 — COMPLETE ✅ 2026-09-07: swept as a shape; both bugs written up in UP-2. two latent HEAP OVERFLOWS in the `n_tasks`-is-advisory class (not on our critical path).**",
+          "key": "h:b97e:e021:2659:9209"
+        },
+        {
+          "line": 3570,
+          "checked": true,
+          "text": "**SYNC-7 — COMPLETE ✅ 2026-09-07: kernel-vs-planner classification done; invalidated D8's +0.97% (filed SYNC-18). audit every `n_tasks`-based assumption in the campaign.** Filed 2026-09-05 from SYNC-4.",
+          "key": "h:3341:57a0:5baf:8376"
+        },
+        {
+          "line": 3577,
+          "checked": true,
+          "text": "✅ **SYNC-4-ORIGINAL (superseded, retained for the record) — GET_ROWS serialization.** Dispatched 2026-09-05.",
+          "key": "h:8107:5c3a:62f4:eca9"
+        },
+        {
+          "line": 3581,
+          "checked": true,
+          "text": "**SYNC-5 — ANSWERED 2026-09-05: DO NOT pursue the fused-decoder / megakernel axis. And INF-67 never",
+          "key": "h:346f:7c12:b023:b177"
+        },
+        {
+          "line": 3626,
+          "checked": false,
+          "text": "**SYNC-6 — THE DECIDER for the whole coordination axis: re-measure the existing D1 arms to ±0.2 ms.**",
+          "key": "h:2de3:f8de:0a20:8248"
+        },
+        {
+          "line": 3634,
+          "checked": true,
+          "text": "✅ **SYNC-5-ORIGINAL (superseded, retained for the record) — is there a COARSER graph?** Dispatched 2026-09-05.",
+          "key": "h:450f:2783:3128:fb0e"
+        },
+        {
+          "line": 3641,
+          "checked": true,
+          "text": "**B10 — NO-GO 2026-09-05. Reduced-vocabulary drafting does not pay HERE, and the reason is L3.** ✅",
+          "key": "h:f883:e1a6:4250:c08d"
+        },
+        {
+          "line": 3696,
+          "checked": true,
+          "text": "✅ **B10-ORIGINAL (superseded, retained for the record) — REDUCED-VOCABULARY DRAFTING for the MTP head.** Filed 2026-09-05 from an operator question",
+          "key": "h:e471:de22:a894:5c32"
+        },
+        {
+          "line": 3711,
+          "checked": true,
+          "text": "**B11 — CLOSED 2026-09-05 AS A NON-QUESTION. There is no missing 38%; the premise was wrong.** ✅",
+          "key": "h:9bbf:9f07:76f7:7dc1"
+        },
+        {
+          "line": 3749,
+          "checked": true,
+          "text": "✅ **B11-ORIGINAL (superseded, retained for the record) — where does 4.15 GB/token go?** Plain decode moves 51.3 GB/s at 12.35 t/s = **4.15 GB/token** for a",
+          "key": "h:5d89:3f46:d41c:697b"
+        },
+        {
+          "line": 3758,
+          "checked": true,
+          "text": "**INF-71 — EXL3 `mul1` trellis experts.** ⚠ **RENAMED 2026-09-07 from \"B7\" — that label COLLIDED with the CLOSED PLE-precision B7** (ANSWERED NO 2026-09-04: higher PLE precision buys no quality; BF16 would cost **+25.6 GB resident for nothing**). Two different items carried one ID and the closed one could shadow the live one. **This is the live item, and the operator has just prioritized it; every \"B7\" elsewhere in this file resolves to the CLOSED PLE item.** turboderp published EXL3 weights for this",
+          "key": "h:8dc8:3a2e:5b01:cfd1"
+        },
+        {
+          "line": 3798,
+          "checked": false,
+          "text": "**RES-VMAB-1 — Make all champion weights lockable.** Options, cheapest first:",
+          "key": "h:bc92:f158:107e:b1b5"
+        },
+        {
+          "line": 3803,
+          "checked": false,
+          "text": "**RES-VMAB-2 — Residency receipt for every arm against `:8074`.** Record VMA B's Locked/Rss/Swap from",
+          "key": "h:ba30:d9db:f2d1:547c"
+        },
+        {
+          "line": 3811,
+          "checked": true,
+          "text": "**XFER-1 — DS41 AutoKernel keeps on Q38FN.** ✅ 2026-10-03 — `/mnt/raid0/llm/tmp/q38fn-transfer-20261003/run2.log`, run dir `runs/20261003T172030Z/`. Arms: A = champion `90c12df42` (cpu-20260925, reference), B = DS41 champion-of-record `053c3bd82` (anchor-gen-007), C = DS41 held-keep tip `b3e0b0902` (anchor-gen-017). Host was loaded (load avg 36–49); 6 of 18 launches excluded on foreign CPU, which leaves UD at n = 1.",
+          "key": "h:91e0:4186:baa3:3585"
+        },
+        {
+          "line": 3816,
+          "checked": true,
+          "text": "**XFER-2 — uniform IQ4_XS vs UD-IQ4_XS on one build.** ✅ 2026-10-03 — same run, arm A: uniform tg128 36.04 vs UD 28.76 t/s (**+25%**), pp5 88.65 vs 70.98 (**+25%**). The 2026-09-02 gap (row \"decode, UD-IQ4_XS (the served file)\" in *The gap*) was ~+10%; it has widened on the current champion.",
+          "key": "h:ed01:e7cc:7e66:b457"
+        },
+        {
+          "line": 3817,
+          "checked": false,
+          "text": "**XFER-3 — re-decide the served Q38FN file with the +25% gap.** (filed 2026-10-04) UD stays the served file today (the ledger above). Pair a quality comparison (PPL/KLD of both files against the same base, or the eval suite) with a clean-window speed A/B on the champion; if quality is within tolerance, take the uniform file to the operator as a stack change. Also explain the widening (+10% → +25%): which champion keeps favour the uniform tensor mix.",
+          "key": "h:7c3f:6b63:05aa:2a25"
+        },
+        {
+          "line": 3825,
+          "checked": true,
+          "text": "**XFER-4 — iqk IQ4_NL/MXFP4 allowlist: NOT folded.** ✅ 2026-10-03 — build `cpu-20261003-8c4b282ae-iqkallow` vs champion `90c12df42` on UD-IQ4_XS, 3 rounds, all launches valid (`/mnt/raid0/llm/tmp/iqk-allow-20261003/ab-runs/20261003T174700Z/`, log `/mnt/raid0/llm/tmp/iqk-allow-ab/run.log`): pp5 **−12.2%** [−16.9, −8.8], pp256 −3.9%, tg128 −3.2%, slower in 3/3 rounds on every metric; greedy output differs at token 45 on prompt 1. Mainline's `iq4_nl_8x8` repack path is better than routing these types into iqk. Consequence for INF-77 DS41-T8: MXFP4 experts stay on CPU_REPACK `mxfp4_8x8_q8_0`; iqk is not the fix.",
+          "key": "h:0035:9edd:52cd:4174"
+        },
+        {
+          "line": 3826,
+          "checked": false,
+          "text": "**XFER-4b — iqk IQ4_NL/MXFP4 allowlist `8c4b282ae`: re-decide with a prefill A/B and a paired task-quality eval.**",
+          "key": "h:5003:ee41:d546:59d0"
+        },
+        {
+          "line": 3868,
+          "checked": true,
+          "text": "**E1 — download the heads.** ✅ 2026-09-02 — `mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf`",
+          "key": "h:e55d:45aa:77f8:a6a2"
+        },
+        {
+          "line": 3872,
+          "checked": true,
+          "text": "**E2 — port the `qwen4exp` MTP path into the experimental tree.** ✅ 2026-09-02 — branch `inf70/mtp`",
+          "key": "h:e12f:f7b8:40f6:afb8"
+        },
+        {
+          "line": 3889,
+          "checked": true,
+          "text": "**E2a — CLOSED negative 2026-09-03: the divergence is the batched target forward, not the bonus token; no driver-side fix exists.** Prompt 1 diverges at generated token 28: the MTP arm accepted",
+          "key": "h:6383:fcc4:c52b:2425"
+        },
+        {
+          "line": 3943,
+          "checked": false,
+          "text": "**E2b — recurrent-state checkpoints per draft round (measured).** Every verification round writes a",
+          "key": "h:0451:b4ce:32d3:8361"
+        },
+        {
+          "line": 3989,
+          "checked": false,
+          "text": "**LONG-PROMPT-GARBAGE — P0, blocks every serving claim: the fusion tree's qwen4exp path degenerates to",
+          "key": "h:c8a2:3c00:fdae:3669"
+        },
+        {
+          "line": 4085,
+          "checked": true,
+          "text": "**BATCH-ENVELOPE — SOLVED 2026-09-04 (`batch-envelope`). MTP on qwen4exp IS LOSSLESS; the divergence was",
+          "key": "h:b11b:2f1f:1f88:64b9"
+        },
+        {
+          "line": 4123,
+          "checked": true,
+          "text": "**INSTR-1 ✅ 2026-09-04 (`instr-b7`) — co-residency attribution shipped to 22 harness scripts** via one",
+          "key": "h:d09e:885c:4029:36c7"
+        },
+        {
+          "line": 4144,
+          "checked": true,
+          "text": "~~INSTR-1 (original text)~~ — the co-residency sampler records PID + etime only, so it cannot tell a lock violation from",
+          "key": "h:5891:6da7:8ab7:aebd"
+        },
+        {
+          "line": 4159,
+          "checked": false,
+          "text": "**HYG-1 — the stale shared build dir is a live trap; rebuild it or remove it.**",
+          "key": "h:6e02:a02a:19b4:48e7"
+        },
+        {
+          "line": 4171,
+          "checked": true,
+          "text": "**BE-3 — carrier 3 CLOSED as a well-scoped negative ✅ 2026-09-04 (`be3-dsa`). It never propagates, and the",
+          "key": "h:b6c4:2841:5c14:5325"
+        },
+        {
+          "line": 4208,
+          "checked": true,
+          "text": "**BE-1 — carrier 1 made shippable; MERGED 2026-09-04 into `exp/cpu-fusion-qwen4exp-20260829` at",
+          "key": "h:585e:3425:e075:16a0"
+        },
+        {
+          "line": 4229,
+          "checked": true,
+          "text": "**BE-1 Phase 2 — THE FASTEST DEPLOYABLE CONFIGURATION.** ✅ 2026-09-04, 24-prompt production mix,",
+          "key": "h:b9c0:3238:efa3:2e36"
+        },
+        {
+          "line": 4290,
+          "checked": true,
+          "text": "**BE-2 — SOLVED and MERGED 2026-09-04 (`be2-fa`; knob cherry-picked as `c51e4dabf` — the branch itself was",
+          "key": "h:0b88:55af:2dce:9615"
+        },
+        {
+          "line": 4348,
+          "checked": false,
+          "text": "**GDN-ROWEXACT — make `build_delta_net_chunking` row-exact vs `build_delta_net_autoregressive` for small n",
+          "key": "h:519c:1607:7970:1b1f"
+        },
+        {
+          "line": 4390,
+          "checked": true,
+          "text": "**C9 — SOLVED 2026-09-04 (`b7-ple`). `llama-perplexity` returned `nan` on qwen4exp because the Q6_K output",
+          "key": "h:3cb9:9a3f:4e5e:7d9c"
+        },
+        {
+          "line": 4432,
+          "checked": true,
+          "text": "**C10 — CLOSED ✅ 2026-09-08 (checkbox added at wrap-up; the verdict above was recorded in prose",
+          "key": "h:ecb1:b2d9:a8d7:792d"
+        },
+        {
+          "line": 4555,
+          "checked": true,
+          "text": "**B9 — CLOSED ✅ 2026-09-08 (checkbox sync; the verdict was recorded in prose 2026-09-04 and the",
+          "key": "h:0309:1f93:1dad:5689"
+        },
+        {
+          "line": 4634,
+          "checked": true,
+          "text": "**B7 — ANSWERED 2026-09-04: NO. Higher PLE precision does not buy quality — a null WITH a stated floor.** ✅",
+          "key": "h:24e9:e6ff:5406:e4f4"
+        },
+        {
+          "line": 4713,
+          "checked": true,
+          "text": "**E3 — measure α before tuning anything.** ✅ 2026-09-03 (`e3-run`, build 10217 `540b1e697`, shared-Q8_0,",
+          "key": "h:fc90:d804:f39f:211d"
+        },
+        {
+          "line": 4744,
+          "checked": false,
+          "text": "**E4 — the comparison arms, one `--spec-type` at a time**: plain, `ngram-mod` (free, no head — but",
+          "key": "h:8fb3:109f:693c:61f1"
+        },
+        {
+          "line": 4774,
+          "checked": false,
+          "text": "**E-GATE**: acceptance-weighted t/s against the non-speculative C5 number for the same trunk,",
+          "key": "h:94b2:cd4a:d155:63ba"
+        },
+        {
+          "line": 4862,
+          "checked": false,
+          "text": "**G2-CONC — BLOCKING PROMOTION GATE. Must run on the PROMOTION CANDIDATE BINARY, not on an ancestor.**",
+          "key": "h:0f41:4747:f301:d05a"
+        },
+        {
+          "line": 4913,
+          "checked": false,
+          "text": "**CLS-RECT-1 — INF-70 classifier labels are synthetic-id labels; nothing flips, re-cite the paired",
+          "key": "h:1bdb:9626:390e:d1a4"
+        },
+        {
+          "line": 4933,
+          "checked": false,
+          "text": "**CLS-RECT-1a — apply patch 04 to the INF-70 harness1 client (owner: workspace-ec).** (filed 2026-10-04,",
+          "key": "h:b253:b62d:6dde:a5ea"
+        },
+        {
+          "line": 4947,
+          "checked": true,
+          "text": "**G2-CONC-POLICY — OPERATOR DECISION, not a defect. Per-slot reproducibility vs throughput.**",
+          "key": "h:cbeb:0e63:e181:38fe"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/gpu-acceleration-path.md",
+      "state": "active",
+      "sha256": "00df74016beb8f9842557b6fd247f88db79fe4590b3b8de9f3956a047f024799",
+      "bytes": 77548,
+      "title": "GPU Acceleration Path — CPU+GPU Hybrid Inference",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 330,
+          "checked": true,
+          "text": "Measure H2D/D2H bandwidth on the Gen4 x16 link and replace every circulating figure with the measurement ✅ 2026-08-03 — H2D 28.89 / D2H 28.20 GB/s; the ~64 GB/s figure retired",
+          "key": "h:3083:41dd:57ea:9bf6"
+        },
+        {
+          "line": 331,
+          "checked": true,
+          "text": "Sweep the repo for arguments sized against the retired ~64 GB/s PCIe figure and re-size them ✅ 2026-08-03 — three sites corrected in this file (the superseded-DGX premise, the hybrid-MoE transfer claim, and the topology diagram's \"PCIe 5.0\"). **Deliberately NOT touched: the ~64 GB/s figures in `sarathi-serve-cpu-evaluation.md`, `numa-prefill-decode-disaggregation.md` and `design-backlog-triage-2026-07-23.md` are xGMI INTER-SOCKET bandwidth — a different link entirely.** This measurement says nothing about xGMI, and \"correcting\" those would be a category error. Their own Phase-0 xGMI measurement remains unrun.",
+          "key": "h:0ce3:757b:8aca:13bd"
+        },
+        {
+          "line": 332,
+          "checked": true,
+          "text": "**Bidirectional NUMA asymmetry — RE-RUN AT n=10, INTERLEAVED, AND IT IS REAL** ✅ 2026-08-03. Round-robin across nodes (not blocked — a blocked design would alias thermal drift onto the arm, which `P-AK-SEARCH-1` forbids):",
+          "key": "h:7df2:5ac5:39b4:244f"
+        },
+        {
+          "line": 346,
+          "checked": false,
+          "text": "**Explain the mechanism before this becomes a placement input.** It is still bidirectional-only",
+          "key": "h:426a:c738:bbd0:8882"
+        },
+        {
+          "line": 352,
+          "checked": false,
+          "text": "Restore the P2-5j placement protocol to git, then run device-local (node 1) vs the current",
+          "key": "h:1b2d:a44a:d869:a9e8"
+        },
+        {
+          "line": 555,
+          "checked": true,
+          "text": "M0 zero-cost production MTP-acceptance log read (findings-02) ✅ 2026-07-14 (CLOSED 2026-07-03 — mtp_acceptance_report_20260703T114323Z: α frontdoor 0.6582 / architect 0.6854 / worker 0.8256; findings-02 L58)",
+          "key": "h:1882:b791:b20d:1acc"
+        },
+        {
+          "line": 556,
+          "checked": false,
+          "text": "Gate R frontdoor residency bench under P-GPU-1: `P-GPU-1` was ratified in `/workspace/MEASUREMENT.md` on 2026-07-19 with a production-named-kernel-only certification path. Existing experimental-v7 rows remain observation-grade; now that v7 is promoted, rerun Gate R on `production-consolidated-v7` before using the numbers for serving/default decisions. Ratification package: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md`.",
+          "key": "h:4562:4855:cf99:5ccb"
+        },
+        {
+          "line": 557,
+          "checked": true,
+          "text": "Gate R candidate observation under quiet host: `data/k35_stack_context_matrix/frontdoor_pgpu1_candidate_20260718Tquiet/` completed `n=5` same-window 8K/1024-token fresh-server rows on experimental v7 `d1e5a20eb`; CPU no-spec median `17.10 t/s`, MI210 no-spec `95.39 t/s` (`5.58x`), MI210 native MTP `119.69 t/s` (`7.00x`, `3835/3835` accepted drafts). Observation-grade until `P-GPU-1` is ratified. ✅ 2026-07-18",
+          "key": "h:68f2:0ecc:b4e0:7d20"
+        },
+        {
+          "line": 558,
+          "checked": false,
+          "text": "intake-310 -ot exps=CPU / --n-cpu-moe hybrid MoE offload probe on MI210",
+          "key": "h:298a:3b30:4a0d:31b6"
+        },
+        {
+          "line": 560,
+          "checked": false,
+          "text": "DFlash/DDTree HIP re-scope — **FUND-OR-CLOSE decision** (2026-07-14): both activation gates fired (MI210 online 2026-07-02; M0 α baseline 2026-07-03), yet every production target now ships a native MTP head and tree-draft Phase-1b was shelved 2026-07-06 on exactly this ground (embedded MTP dominates external drafters — qwen-27B MTP 41.9 vs external ~18 t/s). Decision = confirm-negative vs narrow MTP-less niche.",
+          "key": "h:5b99:b76e:f1dc:96fa"
+        },
+        {
+          "line": 561,
+          "checked": false,
+          "text": "intake-460 Splitwise GPU-prefill/CPU-decode KV handoff (Family D)",
+          "key": "h:7055:e6b9:c4a2:53e7"
+        },
+        {
+          "line": 562,
+          "checked": true,
+          "text": "intake-576 Nemotron tri-mode diffusion self-spec loader/runnability: stock experimental-v7 Dream loader fixed for local Nemotron-Labs-Diffusion-14B Q8_0 by sizing Q/O projections from `attention.key_length * n_head`; real-GGUF CPU-forced load smoke and Dream-style CLI smoke exit `0`, and `test-llama-archs --arch dream` passes. This closes loader/runnability only; stock-v7 CPU/MI210 throughput + task-quality remain open. ✅ 2026-07-18",
+          "key": "h:1977:1db7:a05d:9afd"
+        },
+        {
+          "line": 563,
+          "checked": true,
+          "text": "intake-576 stock-v7 Nemotron Diffusion MI210 speed/runnability row: current experimental-v7 `llama-bench -ngl 99 -dev ROCm0` measured `pp512 1700.42 t/s`, `tg512 69.05 t/s`, and stock `llama-diffusion-cli` exited `0` at `112.97 ms/step`; exact-output quality failed because the model emitted reasoning text, so this is not role readiness. ✅ 2026-07-18",
+          "key": "h:de49:ecb4:ebef:59a3"
+        },
+        {
+          "line": 564,
+          "checked": true,
+          "text": "intake-576 stock-v7 Nemotron Diffusion CPU clean row: CPU-only `llama-bench -dev none -ngl 0 --no-op-offload 1 --no-kv-offload 1 -r 3` measured `pp512 157.57 t/s`, `tg256 2.69 t/s`. ✅ 2026-07-18",
+          "key": "h:be05:bcc6:ee3f:fa6e"
+        },
+        {
+          "line": 565,
+          "checked": true,
+          "text": "intake-576 follow-up: stock-v7 Nemotron Diffusion broader task-quality/content-control gate after Dream fix executed on MI210 at `data/nemotron_diffusion_stock_v7/content_control_mi210_20260718T191331Z/`. Current experimental v7 `41ae8340`, `llama-diffusion-cli`, `-n 128 --diffusion-steps 32`, exit `0`, wall `6.009s`, diffusion total `3399.06ms` (`106.22ms/step`, approx `37.66 tok/s` over the token budget), cleanup clean; strict JSON content-control failed with prose/malformed target text, so this is a failing quality verdict and not role readiness. ✅ 2026-07-18",
+          "key": "h:81f1:14e2:ff2f:4cda"
+        },
+        {
+          "line": 566,
+          "checked": true,
+          "text": "intake-576 source-head content-control repair attempt: rebuilt current experimental-v7 `llama-diffusion-cli` at `ed4091266` to clear stale shared-library mismatch, then ran MI210 matrix `data/nemotron_diffusion_stock_v7/content_control_repair_sourcehead_mi210_20260719T020722Z/summary.json`. Unconstrained strict JSON, exact GBNF, JSON-schema const, and exact line-copy variants all exited `0` with clean cleanup but exact-output pass stayed `0/4`; `--grammar` / `-j` are parsed by the CLI but inert because `examples/diffusion/diffusion.cpp` uses its own sampler chain rather than the common grammar/schema sampler. ✅ 2026-07-19",
+          "key": "h:9616:9766:0dc7:03ee"
+        },
+        {
+          "line": 567,
+          "checked": false,
+          "text": "intake-576 maintained stock-v7 admission path: implement or procure a maintained server/parser path with separated reasoning/content, or design diffusion-aware constrained decode; until then keep Nemotron Diffusion out of production roles despite MI210 runnability.",
+          "key": "h:311b:bae9:5e66:e752"
+        },
+        {
+          "line": 574,
+          "checked": true,
+          "text": "**intake-578 stale-catalog correction recorded ✅ 2026-07-29**: epyc-root `c942728e` recorded the reversed Nemotron premise; audit evidence is in [`progress/2026-07/2026-07-25.md`](../../progress/2026-07/2026-07-25.md) lines 80–82. The content-control blocker (task 517) remains open.",
+          "key": "h:5dbd:a96b:604a:0f75"
+        },
+        {
+          "line": 580,
+          "checked": false,
+          "text": "**Patch ERNIE for ROCm f32 matmul precision and re-test 1024².** Mirror upstream PR #1772's pattern: ROCm-guarded `set_force_prec_f32(true)` on `ErnieImageAttention::to_out.0` and `ErnieImageFeedForward::linear_fc2` (setters exist locally at `ggml_extend.hpp:2885`). Rebuild `build-hip` (gfx90a), re-run the failing case at fixed seed across 896/960/1024. RATIONALE: upstream ran a ROCm f16-overflow campaign on 2026-07-10 (#1771, #1772) covering z_image, qwen_image, krea2, boogu and the shared FeedForward — **`ernie_image.hpp` appears in NEITHER PR**, and is the only deployed model in the family with zero ROCm overflow mitigation. That `--vae-tiling`, `--vae-on-cpu` and CPU-RNG were already ruled out points away from the VAE and at the DiT emitting non-finite latents; a threshold between 896 and 960 is what accumulation overflow looks like. **This is a candidate FIX, not a diagnosis.** Needs no new model and no new weights.",
+          "key": "h:df5a:8f5d:93ee:0842"
+        },
+        {
+          "line": 581,
+          "checked": true,
+          "text": "**Reverse-KL/OPD guardrail recorded ✅ 2026-07-29**: epyc-root `683f70de` recovered and recorded the source analysis in [`research/intake_index.yaml`](../../research/intake_index.yaml) (intake-920); retain the Table-5 negative as a guardrail for future context-dependent weight-space work.",
+          "key": "h:8ffd:308e:0501:bc0f"
+        },
+        {
+          "line": 589,
+          "checked": false,
+          "text": "**Record the hipify data point as independent support for the hand-port bet.** `intake-1218#06` measures automated CUDA-to-HIP translation directly against generated native HIP on the same three workloads: \"On GEMM, Conv2D, and attention, Hipify MI350 kernels have a geomean **0.05x** performance against torch.compile, while HAWKEYE uses the MI350 column of unit tests to reach **1.26x** speedup over torch.compile.\" That is a **25x gap**, from a group with no stake in our hand-port decision, and it is stronger evidence for this path than the qualitative statement we previously held. CAVEATS, both load-bearing: the measurement is on **MI350 / CDNA4**, not gfx90a, so it is directional rather than a number we own; and the 1.26x arm is itself Conv2D-carried (that source's MI350 GEMM is 0.75x, a 25% LOSS to torch.compile), so it argues that *hipify is bad*, NOT that *generated HIP is good*. A second, independent source agrees on the direction from the opposite end: `intake-1226#record` deliberately DECLINED an available Triton path on AMD and optimised HIP C++ directly, judging AMD low-precision operator coverage uncertain. **RATIONALE:** the decision this informs is whether to keep investing in hand-authored HIP rather than machine translation — and the answer from both sources is that translation is not a shortcut. Needs no new model, no new weights, and no GPU time to record.",
+          "key": "h:8aaf:90f1:ab81:8aa7"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/mi210-big-model-and-acceleration-roadmap.md",
+      "state": "active",
+      "sha256": "a64ffea8c675f0c3b050c2bba12f4408bc48cf8a10dc65c62b9998740feb2ef6",
+      "bytes": 63175,
+      "title": "MI210 big-model residency + acceleration roadmap",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 73,
+          "checked": true,
+          "text": "Gating experiment 3: 122B IQ2 eval-parity (PASSED judge-free d0.0pp 2026-07-05) ✅",
+          "key": "h:d664:2815:c85a:c9b4"
+        },
+        {
+          "line": 74,
+          "checked": true,
+          "text": "Gating experiment 1: expert-routing-skew profile (Zipfian? -> offload/REAP viability). Production-representative repeat completed: near-uniform global aggregate (`top_32=15.19%`, entropy `0.9987`) with weak layer-local skew (median layer `top_32=39.19%`). Do not build generic GLM hot-expert offload/REAP from this evidence. Reopen trigger **rewritten 2026-09-07**: an **SRP/SCH measurement on per-token routing traces**, not \"a cacheable Zipfian hot set\". The 2026-07-17 artifact is a cumulative per-expert histogram over a mixed calibration corpus — it has no time axis, so it cannot observe segment-level locality (`intake-1328#00`), and corpus-mixing alone collapses the signal (per-domain entropy 0.79–0.85 → 0.9453 mixed; Gini 0.62–0.71 → 0.3889; top-10% share 0.42–0.58 → 0.252, recomputed from released traces, `intake-1336#01`). The `/mnt/raid0/llm/tmp/expert-routing-skew-glm52-*` directories no longer exist; this prose is the only record. **Payoff bound, so a positive signal is not by itself a reopen**: trained routing locality is worth **+1.58% to +2.03% end-to-end** on this host (ReMoE best simulated µMiss reduction 7.34% @C=6 / 9.41% @C=12 applied to the intake-1318 expert path, 20.96 ms of a 99.1 ms token, perfect-hit ceiling +27% = 10.09 → 12.80 t/s on qwen4exp) — `intake-1338#03`, and that is an upper bound assuming a fill-bound expert path, which ours is not. Measurement instrument: the routing tap (INF-72, [moe-routing-tap-and-locality-measurement.md](moe-routing-tap-and-locality-measurement.md)). The kill stands. ✅ 2026-07-17",
+          "key": "h:555b:b3bf:9f9f:8711"
+        },
+        {
+          "line": 75,
+          "checked": false,
+          "text": "Replay production routing traces at capacity-matched points — global LRU vs prefill-updated vs static — in the GLM-5.2 UD-IQ2 large-model regime only (~239 GB → 64/239 = 27% capacity, near the 37% Qwen3.6 point). EXCLUDE qwen4exp: routed pool ~66 GB (1.296 GB/token × 512/10, derived) ≈ the whole card, so the comparison degenerates. Offline analysis, no inference. Gated on the INF-72 tap producing traces. intake-1318#01",
+          "key": "h:2c3d:83d6:ae1c:8ca5"
+        },
+        {
+          "line": 76,
+          "checked": true,
+          "text": "Gating experiment 2a: GPU-draft N5 alpha feasibility (`n5_spec_on` accepted `376/376`) ✅ 2026-07-16",
+          "key": "h:b73a:8ce1:c685:db8c"
+        },
+        {
+          "line": 77,
+          "checked": true,
+          "text": "Gating experiment 2b-Stage-1: CPU-target + MI210 external-drafter speed economics failed (`0.915x` decode, `508/508` accepted) ✅ 2026-07-17",
+          "key": "h:d3d5:bbb3:705c:a4cc"
+        },
+        {
+          "line": 78,
+          "checked": true,
+          "text": "Gating experiment 2c-Stage-2: frontdoor + drafter co-resident speed economics failed (`native MTP 0.948x`, external drafter `0.355x` vs GPU no-spec) ✅ 2026-07-17",
+          "key": "h:c348:dbb0:fe46:d76a"
+        },
+        {
+          "line": 79,
+          "checked": true,
+          "text": "Axis-B DR-1 break-even model: external Stage-1/2 are not acceptance-blocked; they are overhead/control-cost blocked, so future lanes must satisfy `E(α,K) > F(K)+H(K)` before build. Evidence: [docs/reference/gpu-drafter-break-even-model-2026-07-18.md](../../docs/reference/gpu-drafter-break-even-model-2026-07-18.md). ✅ 2026-07-18",
+          "key": "h:2f5e:7391:5d2a:bf51"
+        },
+        {
+          "line": 80,
+          "checked": true,
+          "text": "Gate-R candidate frontdoor residency row: same-window CPU re-anchor, MI210 no-spec, and MI210 native-MTP 8K/1024-token `n=5` reps completed; native MTP wins this longer repetitive shape (`119.69 t/s`, `7.00x` CPU, `100%` accepted drafts) ✅ 2026-07-18",
+          "key": "h:e84d:9f99:d4e2:7f84"
+        },
+        {
+          "line": 81,
+          "checked": true,
+          "text": "Qwen3.6-27B dense current-v7 MI210 context row recorded: `data/gpu-mi210/qwen36-27b-dense-v7-context-20260718T2225Z`, prompt `854.17/807.61/666.62 t/s`, decode `29.64 t/s`; observation-only because ratified `P-GPU-1` requires a production-named kernel ✅ 2026-07-18",
+          "key": "h:5809:be23:deee:b24c"
+        },
+        {
+          "line": 82,
+          "checked": true,
+          "text": "Draft `P-GPU-1` ratification package for operator review: `docs/reference/p-gpu-1-ratification-package-2026-07-18.md` maps required MEASUREMENT fields to existing Gate-R/K35 MI210 artifacts and keeps the amendment itself human-only ✅ 2026-07-18",
+          "key": "h:d0bc:7e1c:27f8:c3d6"
+        },
+        {
+          "line": 83,
+          "checked": true,
+          "text": "Ratify/update `P-GPU-1` now that MI210 exists ✅ 2026-07-19: `/workspace/MEASUREMENT.md` is signed with a production-named-kernel-only claim path. Existing experimental-v7 Gate-R/K35/AXA rows remain observation-grade; Gate-R decision-grade certification now targets `production-consolidated-v7`.",
+          "key": "h:17a8:4926:959e:9d52"
+        },
+        {
+          "line": 84,
+          "checked": true,
+          "text": "Probe gemma4-IQ4 mid-precision residency: current experimental-v7 `d1e5a20eb` MI210 observation at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/gemma4_26b_ud_iq4xs_mi210_v7_20260718T162446Z/summary.json` loaded `gemma-4-26B-A4B-it-UD-IQ4_XS.gguf` fully resident, measured `pp2048 2449.01 t/s`, `tg256 81.91 t/s`, and a server/chat 8K coherence probe with `6971` prompt tokens at `2257.80 t/s` plus `201` completion tokens at `76.02 t/s`; cleanup proof shows no KFD PIDs. Follow-up optimized lane at `/mnt/raid0/llm/epyc-inference-research/data/gemma4_iq4_residency/mtp_ab_local_20260718T170739Z/summary.json` measured no-spec q8-KV `pp2048 2450.51 t/s`, `tg512 81.41 t/s`, and external assistant-head MTP `117.01 t/s` with `360/362` drafts accepted. Strict JSON content was not clean, so quality retention/template cleanup remains open before any role claim. ✅ 2026-07-18",
+          "key": "h:410c:7e36:eb46:0ffd"
+        },
+        {
+          "line": 85,
+          "checked": true,
+          "text": "Axis B / DR-0: measure quant-asymmetric self-spec acceptance and implied `F(K)+H(K)`; alpha alone is insufficient after DR-1 ✅ 2026-07-20",
+          "key": "h:3e6e:dfe9:2612:e167"
+        },
+        {
+          "line": 86,
+          "checked": true,
+          "text": "DR-0a: procure/build/register an aggressive same-model IQ drafter artifact (IQ1/IQ2_XXS or REAP+IQ1)",
+          "key": "h:2393:685e:5e6f:2603"
+        },
+        {
+          "line": 93,
+          "checked": true,
+          "text": "DR-0b task-class acceptance/economics first pass: source-head v7 MI210 probes on the",
+          "key": "h:ec6e:9dca:3a2b:eafd"
+        },
+        {
+          "line": 102,
+          "checked": true,
+          "text": "DR-0d live quant-asymmetric CPU-verifier + MI210-drafter run completed ✅ 2026-07-20:",
+          "key": "h:dcab:295c:8dd3:f728"
+        },
+        {
+          "line": 110,
+          "checked": true,
+          "text": "DR-0e telemetry/quality rerun: add `F(K)`/`H(K)` observability and repeat under",
+          "key": "h:1259:f1d3:7528:1307"
+        },
+        {
+          "line": 113,
+          "checked": true,
+          "text": "DR-0e.1 telemetry live ✅ 2026-07-20: experimental-v7 server timing fields now",
+          "key": "h:c6b8:484d:0994:696f"
+        },
+        {
+          "line": 119,
+          "checked": true,
+          "text": "DR-0e.2 quality/stability rerun ✅ 2026-07-20: inference-research final artifact",
+          "key": "h:a693:bbeb:3daf:59de"
+        },
+        {
+          "line": 126,
+          "checked": true,
+          "text": "DR-2 serving/routing design ✅ 2026-07-20: reference design",
+          "key": "h:abc1:5ffc:a626:7787"
+        },
+        {
+          "line": 132,
+          "checked": false,
+          "text": "DR-3 broader K2 admission runner/package: implement the dry-run-first K2",
+          "key": "h:6849:757f:1c63:6097"
+        },
+        {
+          "line": 134,
+          "checked": true,
+          "text": "DR-3a dry-run package scaffold ✅ 2026-07-20: inference-research",
+          "key": "h:4afe:ad23:2ebd:2591"
+        },
+        {
+          "line": 140,
+          "checked": true,
+          "text": "DR-3b live admission executor + 8K smoke ✅ 2026-07-20:",
+          "key": "h:aa68:333d:b20e:5609"
+        },
+        {
+          "line": 148,
+          "checked": true,
+          "text": "DR-3c default 8K+16K admission package ✅ 2026-07-20:",
+          "key": "h:5eaf:e4f6:8300:8a92"
+        },
+        {
+          "line": 155,
+          "checked": true,
+          "text": "DR-3d frontdoor opportunity-cost gate ✅ 2026-07-20:",
+          "key": "h:0718:9c25:c91a:e762"
+        },
+        {
+          "line": 161,
+          "checked": false,
+          "text": "DR-3e production-named `P-GPU-1` certification: after the 2026-07-20",
+          "key": "h:163f:8853:7b16:a051"
+        },
+        {
+          "line": 164,
+          "checked": false,
+          "text": "GLM-5.2 endgame: expert-offload / REAP+IQ2 path (operator-gated)",
+          "key": "h:7f9f:3e23:7061:907a"
+        },
+        {
+          "line": 165,
+          "checked": true,
+          "text": "**stream-K `nsm→k·nsm` + compact-LDS residual — zero-build artifact read CLOSED ✅ 2026-07-18** (v7-audit LANE B B2): artifact recovery found the original MI210 campaign under `/mnt/raid0/llm/tmp/mi210-build/campaign/`, including `mmq-compact-lds-NEGATIVE.patch`, `kernels/fused-prefetch-NEGATIVE.patch`, and rocprof CSVs under `moe-agg/prof/`. Read verdict: stream-K is already the live Q8 MMQ path (`mul_mat_q` plus `mul_mat_q_stream_k_fixup`); B32 Q8 MMQ dispatches use grid `53248 = 512 * 104 CUs`, i.e. one persistent workgroup per CU, with fixup grid `53248`, LDS `512`. The compact-LDS patch is explicitly negative and should not be revived. The only surviving idea is a distinct `2*nsm=208` persistent-grid experiment, but that is a new operator-gated build/bench with a narrow `+0–10%` IQ2/capacity ceiling, not a zero-inference closeout or saved-patch apply.",
+          "key": "h:8acb:27c6:7123:b9cf"
+        },
+        {
+          "line": 166,
+          "checked": true,
+          "text": "**K28 — GDN long-prefill recurrence kernel CLOSED NO-GO ✅ 2026-08-11** (GPU; `ggml/src/ggml-cuda/gated_delta_net.cu:191` TODO): governed whole-model attribution completed the cheap gate and found no admission case for a prototype. GDN summed-kernel share falls from 15.397% at p2048 to 12.180% at p32768; the optimistic 4x-op ceiling falls from 11.548% to 9.135%, below the requirement to materially beat higher-EV alternatives. Closeout: [k28-fused-chunked-gdn-kernel-research.md](../completed/k28-fused-chunked-gdn-kernel-research.md).",
+          "key": "h:a40f:aa4f:ec8e:5d54"
+        },
+        {
+          "line": 167,
+          "checked": true,
+          "text": "**K28.1 — ROCm backend support/correctness/perf profile ✅ 2026-07-20**:",
+          "key": "h:2a01:7d82:8681:b717"
+        },
+        {
+          "line": 182,
+          "checked": true,
+          "text": "**K28.2 — existing graph-chunked route A/B CLOSED NEGATIVE ✅ 2026-07-20**:",
+          "key": "h:a847:a14a:ae9f:7c61"
+        },
+        {
+          "line": 195,
+          "checked": true,
+          "text": "**K28.3 — BF16 recurrent GDN state speed A/B CLOSED NEUTRAL ✅ 2026-07-20**:",
+          "key": "h:1fb1:4d7e:a338:425f"
+        },
+        {
+          "line": 205,
+          "checked": true,
+          "text": "**K28.4 — Phase 0 op-rerun + ceiling model CLOSED ✅ 2026-07-20**:",
+          "key": "h:2377:dc47:6e9d:fcd9"
+        },
+        {
+          "line": 220,
+          "checked": true,
+          "text": "**K28.4a — direct GDN timing hook CLOSED ✅ 2026-07-20**:",
+          "key": "h:58a0:375e:27e8:9228"
+        },
+        {
+          "line": 235,
+          "checked": true,
+          "text": "**K28.5 — fused recurrence prototype gate CLOSED NO-GO ✅ 2026-08-11**:",
+          "key": "h:2ffa:6f9d:d557:d96e"
+        },
+        {
+          "line": 244,
+          "checked": true,
+          "text": "**K28.5a — pinned verbose trace scaffold audit CLOSED ✅ 2026-07-20**:",
+          "key": "h:ee75:7f87:5533:c2dd"
+        },
+        {
+          "line": 255,
+          "checked": true,
+          "text": "**K28-R1 — Adopt the SGLang `fla/` four-stage decomposition as K28's named reference ✅ 2026-08-11**",
+          "key": "h:348c:8999:eef0:eac4"
+        },
+        {
+          "line": 265,
+          "checked": true,
+          "text": "**K28-R2 — SGLang FLA torch-ROCm probe declined by the K28 gate ✅ 2026-08-11.** Direct",
+          "key": "h:734d:47cd:17c4:1c3c"
+        },
+        {
+          "line": 268,
+          "checked": true,
+          "text": "**K28-R3 — sequencing dependency retired with K28-R2 ✅ 2026-08-11.** Triton gfx90a itself is",
+          "key": "h:4ed2:b121:24b6:3bea"
+        },
+        {
+          "line": 270,
+          "checked": true,
+          "text": "**K28-R4 — fixed-64 blocking hypothesis retired with the failed K28 gate ✅ 2026-08-11.** It",
+          "key": "h:777e:8b1f:66a3:c3f8"
+        },
+        {
+          "line": 284,
+          "checked": true,
+          "text": "**AXA-1 — Fast-architect residency quality gate (bet #2) ✅ 2026-07-18**: 122B UD-IQ2_M GPU-resident is measured viable (43.7 t/s single / 148.7 agg@B32; IQ2==Q4 parity Δ0.0pp n=212) and the post-K22 grammar-constrained quality sidecar passed the bounded strict-IF/rubric probe. Evidence: `/mnt/raid0/llm/epyc-inference-research/data/axa1_fast_architect_residency/axa1-122b-iq2m-gbnf-20260718T161619Z/summary.json` on experimental v7 `d1e5a20eb`, 6 prompts total (`3` strict-IF + `3` rubric-authoring), strict-IF `3/3` schema-valid, rubric mean composite `1.0`, decode ~`40-42 t/s`, full cleanup recheck `0%` VRAM/no KFD PIDs. This is still observation-grade under ratified `P-GPU-1` because it was measured on experimental v7; it clears the bounded quality concern for the residency/teleport queue, not the MEASUREMENT trust boundary.",
+          "key": "h:d749:c92a:9c41:23f7"
+        },
+        {
+          "line": 285,
+          "checked": false,
+          "text": "**AXA-2 — Teleport axis (bet #4, design + validation experiments)**: CPU→GPU **stream teleport** for long-running turns. v1 should be **default-off re-prefill cutover only** (CPU stream begins, orchestrator snapshots `prompt + generated_so_far`, acquires a MI210 lease, sends that full prefix to the GPU lane as a fresh request, then returns `cpu_prefix + gpu_suffix`). The current implementation seam is `src/llm_primitives/primitives.py::evaluate_teleport_decision` plus `src/llm_primitives/teleport.py` and `src/gpu_lease.py`; `src/backends/llama_server.py` stays the transport/backend layer. It needs telemetry events (`teleport_candidate`, `gpu_lease_acquired`, `gpu_prefill_start/end`, `cutover`, `fallback`, `lease_released`). **Spec-dec catch-up is v1.1**, not v1: current llama-server HTTP has no clean \"verify these already-generated draft tokens then continue\" API. Orchestrator policy hooks: long-running signal (tokens-since-start / role / rate window), GPU-occupancy check (respect single-owner admission-smoke lane), migration cost model `expected_remaining_tokens × (1/cpu_tps − 1/gpu_tps) > load(0 if resident) + reprefill(P+N) + overhead`. Break-even estimate ≈150-250 remaining tokens (resident target) / 350-500 (cold load ~5-9s from RAID0). Validation experiments: (a) GPU prefill t/s at P+N sizes; (b) cold vs page-cache-hot load wall-clock; (c) cutover smoke and slot-release proof; (d) catch-up API/workaround probe; (e) **sampling-continuity divergence test** (same prompt, CPU vs HIP build, seed42 production sampling — find divergence point). **Operator decision (OP bundle): mid-stream quant change** — teleporting Q4-CPU→IQ2-GPU is a model swap mid-stream (re-prefill launders KV format, NOT quant/quality); options: restrict teleport to IQ2-acceptable tails/roles, or same-quant-only (forces sub-122B targets).",
+          "key": "h:3ac3:e921:3e92:05b7"
+        },
+        {
+          "line": 286,
+          "checked": true,
+          "text": "**AXA-2.1 — executable validation run sheet prepared ✅ 2026-07-19**: `docs/reference/mi210-axa-dr0-run-sheets-2026-07-19.md` defines the default-off re-prefill cutover scope, telemetry, validation experiments, pass/fail criteria, and the mid-stream quant-change operator decision. This closes design-prep only; live validation remains MI210-window work, with decision-grade GPU claims requiring the production-named `P-GPU-1` path.",
+          "key": "h:95bf:5a49:ecb6:c6fa"
+        },
+        {
+          "line": 287,
+          "checked": true,
+          "text": "**AXA-2.2 — partial MI210 prefill-sizing observation ✅ 2026-07-19**: 122B UD-IQ2_M resident prefill sizing on experimental v7 `6a8dd5ea6` completed `pp2048 342.06 t/s`, `pp8192 135.56 t/s`, and `pp16384 76.52 t/s` with q4_0/f16 KV and clean post-run KFD checks. Homogeneous 32K KV controls completed with b1024/ub256, t32, and clean post-run checks: f16/f16 `489.31 t/s`, q4_0/q4_0 `487.87 t/s`; current default no-warmup repeats stayed at f16/f16 `489.82 t/s` and q4_0/q4_0 `489.07 t/s`. The separate all-quants HIP build supplied a mixed q4_0/f16 32K row at `415.31 t/s`, but its homogeneous 32K controls were slower (f16/f16 `416.55 t/s`, q4_0/q4_0 `414.60 t/s`), so see AXA-2.3 for the build-gating caveat. Artifacts: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2-qwen35-122b-iq2m-prefill-sizing-20260719T060039Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_f16kv_b1024_ub256_20260719T065143Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4kv_b1024_ub256_20260719T071051Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_mixed_kv_validation_20260719T073906Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_regression_controls_20260719T074221Z/summary.json`, and `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_current_build_no_warmup_homogeneous_controls_20260719T074757Z/summary.json`. This is observation-grade cost-model input only; it does not ratify `P-GPU-1`.",
+          "key": "h:98ee:9cbd:bac2:68f9"
+        },
+        {
+          "line": 288,
+          "checked": true,
+          "text": "**AXA-2.2b — hot page-cache MI210 lease/load smoke ✅ 2026-07-19**: 122B UD-IQ2_M server with f16/f16 KV, `c32768`, b1024/ub256, and reasoning disabled reached health in `7052 ms`, returned exact `READY` in `315 ms`, and cleaned up with no KFD PIDs. Artifact: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_qwen35_122b_hot_load_lease_smoke_20260719T065557Z/summary.json`. This is resident-lane acquisition evidence only, not a cold-load cost.",
+          "key": "h:6ec7:0c3d:289a:98e6"
+        },
+        {
+          "line": 289,
+          "checked": true,
+          "text": "**AXA-2.3 — mixed-KV 32K prefix root-cause CLOSED ✅ 2026-07-19**: current default `build-hip` was not a valid mixed-flash 32K path. Current-build evidence showed mixed KV is not generally broken (`q4_0/f16 pp24576 144.07 t/s`; `q4_0/f16 pp4096` at `372.70` forced-FA / `564.27` auto / `567.23` FA-off; `f16/q4_0 pp512` forced-FA `454.67`), but `q4_0/f16 pp32768` held 60% VRAM, emitted no row, used 0% GPU, and burned host CPU. The code audit found `GGML_CUDA_FA_ALL_QUANTS=OFF`, which rejects mixed K/V CUDA/HIP flash-attn pairs. An isolated experimental build in `/mnt/raid0/llm/llama.cpp-experimental/build-hip-fa-all-quants-gfx90a` with `GGML_CUDA_FA_ALL_QUANTS=ON` compiled successfully and completed `q4_0/f16 pp32768` at `415.31 t/s` with 100% MI210 activity and clean KFD cleanup. Same-prefix homogeneous controls measured a build-choice caveat: current default no-warmup f16/f16 and q4_0/q4_0 were `489.82`/`489.07 t/s`, while all-quants f16/f16 and q4_0/q4_0 were `416.55`/`414.60 t/s`. Disposition: mixed-KV 32K is usable only on an all-quants flash-attn build; the current default HIP build's mixed-KV 32K cost remains rejected; and `FA_ALL_QUANTS` should stay lane-specific unless a later implementation removes the homogeneous regression. Artifacts: `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_24k_prefill_qwen35_122b_v1_q4k_f16v_b1024_ub256_20260719T072203Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_32k_prefill_qwen35_122b_v1_q4k_f16v_no_warmup_b1024_ub256_20260719T072934Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_mixed_kv_fa_matrix_current_build_20260719T073441Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_mixed_kv_validation_20260719T073906Z/summary.json`, `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_fa_all_quants_regression_controls_20260719T074221Z/summary.json`, and `/mnt/raid0/llm/epyc-inference-research/data/gpu-mi210/axa2_current_build_no_warmup_homogeneous_controls_20260719T074757Z/summary.json`.",
+          "key": "h:09c6:5a98:5955:80fd"
+        },
+        {
+          "line": 290,
+          "checked": true,
+          "text": "**AXA-2.4 — dry teleport policy trace scaffold ✅ 2026-07-19**: `epyc-orchestrator` `scripts/benchmark/axa2_teleport_policy_trace.py` now evaluates the real `TeleportPolicy` code path over JSONL trace/request rows and writes deterministic no-inference artifacts. Sample artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_policy_trace_20260719/` has `row_count=2`, `cutover_count=1`, `no_inference=true`, and `no_lease_acquire=true`: same-quant resident-tail cutover passes, while Q4→IQ2 is rejected by default as `quant_change_not_allowed`. This closes dry policy-trace scaffolding only; live cutover, lease-release smoke, and sampling-continuity divergence remain open.",
+          "key": "h:bb33:9971:0254:4562"
+        },
+        {
+          "line": 291,
+          "checked": true,
+          "text": "**AXA-2.5 — live cutover/continuity operator bundle prepared ✅ 2026-07-19**: `epyc-orchestrator` `scripts/benchmark/axa2_live_cutover_bundle.py` now writes a dry-run-first bundle for the remaining live AXA-2 checks. Dry artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_bundle_20260719/` has `status=prepared_no_inference`, `decision.should_cutover=true` under same-quant resident policy, `operator_run.sh`, `prompt.txt`, `policy_decision.json`, and the required live artifact checklist. `--execute` talks only to already-running CPU/GPU llama-server endpoints, emits `teleport_candidate/gpu_lease_acquired/gpu_prefill_start/gpu_prefill_end/cutover/lease_released`, records CPU-prefix/GPU-suffix request-response JSON, and records a CPU-vs-GPU seeded continuity comparison. This closes live-harness prep only; actual cutover, lease-release proof, and continuity divergence remain MI210-window work, and any decision-grade GPU throughput claim must use the production-named `P-GPU-1` path.",
+          "key": "h:c531:b81e:faed:119d"
+        },
+        {
+          "line": 292,
+          "checked": true,
+          "text": "**AXA-2.6 — live same-quant cutover/lease/continuity smoke executed ✅ 2026-07-20**: first same-quant IQ2 live attempt exposed a harness false-fail: `rocm-smi --showpids` parsing counted the VRAM byte column as a fake PID and treated the CPU-only llama-server's zero-VRAM KFD row as an unexpected GPU owner. `epyc-orchestrator` `scripts/benchmark/axa2_live_cutover_bundle.py` now parses KFD process rows by PID/process/GPU/VRAM columns and treats only nonzero-VRAM rows as GPU owners; focused unit tests pass. Rerun artifact `/mnt/raid0/llm/epyc-orchestrator/orchestration/reports/axa2_live_cutover_runs/axa2-live-samequant-iq2-20260720T052826Z/summary.json` has `status=executed`, `decision.should_cutover=true`, `quant_transition=iq2_m->iq2_m`, `global_gpu_preflight.exclusive_to_allowed=true`, `lease_released=true`, CPU/GPU seeded continuity exact-match (`first_char_divergence=null`, identical output hash), and `production_v6_touch_authorized=false`. Post-run process/GPU cleanup was clean. This closes the v1 same-quant live-smoke leg as observation-grade evidence only; decision-grade GPU claims still require a production-named `P-GPU-1` rerun after v7 promotion.",
+          "key": "h:be20:6d1e:b9a5:d094"
+        },
+        {
+          "line": 293,
+          "checked": true,
+          "text": "**AXA-3 — Class-3 autopilot knobs** ✅ 2026-07-19: `epyc-orchestrator` `c5abe0a3` declares default-off teleport/lease policy parameters in `orchestration/review_plane_knobs.yaml`, wires `config_applicator.apply_params`, and exposes a guarded `gpu_placement_policy` NumericSwarm surface for threshold/weight sweeps only. Cheap runtime knobs, no AutoPilot restart, no production-v6 touch.",
+          "key": "h:ea1e:8881:964f:cadc"
+        },
+        {
+          "line": 294,
+          "checked": true,
+          "text": "Draft default-off AXA-3 policy with `enabled=false`, `mode=v1_reprefill_cutover_only`, single-owner MI210 lease, positive-savings break-even, and release-proof requirements. ✅ 2026-07-19",
+          "key": "h:b169:4f30:fbc0:2b88"
+        },
+        {
+          "line": 295,
+          "checked": true,
+          "text": "Keep mixed-KV 32K teleport blocked on the current default HIP build; allow all-quants-build mixed-KV cost modeling only if the serving lane actually uses `GGML_CUDA_FA_ALL_QUANTS=ON`, and do not enable all-quants globally from AXA-2 because homogeneous 32K controls regressed in the isolated build. ✅ 2026-07-19",
+          "key": "h:fcae:2c38:04dc:6843"
+        },
+        {
+          "line": 296,
+          "checked": false,
+          "text": "Keep cold-load break-even unfilled until an operator-approved cold-cache or post-reboot protocol exists; current hot page-cache ready time is only a control. ✅ 2026-07-19  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*",
+          "key": "h:51ca:7edf:3cbd:d1f7"
+        },
+        {
+          "line": 297,
+          "checked": true,
+          "text": "Defer live enable/strategy activation until AXA-2 cost-model status is settled and any decision-grade GPU claim is rerun under production-named `P-GPU-1`; NumericSwarm cannot set `placement_policy.teleport_enabled`, and explicit true is rejected without `AUTOPILOT_AXA3_TELEPORT_ENABLE=1`. ✅ 2026-07-19",
+          "key": "h:0921:3e99:db48:2fa2"
+        },
+        {
+          "line": 298,
+          "checked": true,
+          "text": "Record the mid-stream quant-change policy as an operator decision and make AXA-2 fail closed by default: OP-5d tracks IQ2-acceptable tail roles versus same-quant-only teleport; `TeleportPolicy.quant_policy` now defaults to `same_quant_only`, rejects missing quant context, rejects cross-quant tails by default, and only permits cross-quant tails under `operator_approved_tail_roles` plus an explicit role allowlist. This records/enforces the gate; it does not grant cross-quant approval. ✅ 2026-07-19",
+          "key": "h:d815:fb89:c067:c07a"
+        },
+        {
+          "line": 302,
+          "checked": false,
+          "text": "**B3 (B, blocked on G1 in `log-linear-gated-deltanet-readiness.md`) — add a ≥20K-token greedy",
+          "key": "h:4b84:c747:9a9d:ed5d"
+        },
+        {
+          "line": 355,
+          "checked": false,
+          "text": "**G15 (G) — is a chunked GDN kernel actually faster on our MI210, with our model?** On",
+          "key": "h:393a:46d0:bd89:437f"
+        },
+        {
+          "line": 384,
+          "checked": false,
+          "text": "**G15a — short-prompt no-regression arm, conditional.** If G15 passes only with the occupancy floor rebuilt",
+          "key": "h:d6b4:e6a8:8e70:9baf"
+        },
+        {
+          "line": 390,
+          "checked": false,
+          "text": "**B5 (B, blocked on `G16` in",
+          "key": "h:d437:2aa7:bb6d:323b"
+        },
+        {
+          "line": 416,
+          "checked": false,
+          "text": "**PF1 (G) — measure the CPU-vs-MI210 prefill crossover for the served over-HBM MoE.** Artifact = the served",
+          "key": "h:c293:bdcf:da21:3994"
+        },
+        {
+          "line": 426,
+          "checked": true,
+          "text": "**PF1-pre — the v8 CPU prefill runner is retired, so the A0 arm cannot silently reuse it.** ✅ 2026-09-26 —",
+          "key": "h:55b7:91d8:53a3:7b32"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/moe-spec-cpu-spec-dec-integration.md",
+      "state": "active",
+      "sha256": "61b1f764d38a845ad1814e3bacd733be311c156d2b8572821d62a0af908c8a83",
+      "bytes": 55775,
+      "title": "MoE-Spec — CPU Speculative-Decoding Verification with Budgeted Expert Selection",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 402,
+          "checked": true,
+          "text": "**Former no-consumer blocker reassessed ✅ 2026-07-18**: the 2026-07-03 live MTP acceptance report proves current verification-batch consumers exist (`frontdoor` α=0.6582, `worker_general` α=0.8256, `architect_general` α=0.6854, failed MTP roles `[]`). Registry integration remains blocked until current sweep evidence exists.",
+          "key": "h:da9e:bd24:7548:0e57"
+        },
+        {
+          "line": 403,
+          "checked": true,
+          "text": "**REOPEN-ASSESS zero-inference decision ✅ 2026-07-18**: reopen to a current live-MTP MoE verifier B-sweep, not to registry integration.",
+          "key": "h:485f:6b57:53d6:0335"
+        },
+        {
+          "line": 404,
+          "checked": true,
+          "text": "**Current live-MTP MoE verifier B-sweep**: run on actual frontdoor/worker/architect verification batches with speed, acceptance, and quality/bit-exact guard before any registry integration. ✅ 2026-08-27 — **GATE MET (architect +10.7% at B=n_expert/2)**, decision-grade record at `epyc-inference-research/data/moe-spec-bsweep-2026-08-25/` (findings.md + summary.json + summary_receipt.json). Canonical run (region lock q0-q3, binary v10126 `c7c37a0d9` = MoE-Spec `6b2cbf539` on v9 `0db32c06e`, MTP posture, greedy, 3 reps/cell):",
+          "key": "h:d969:fb80:3716:da2e"
+        },
+        {
+          "line": 421,
+          "checked": false,
+          "text": "**Registry integration — now UNBLOCKED, and NOT yet done.** The prior gate was \"registry",
+          "key": "h:d144:0fbc:9c95:4533"
+        },
+        {
+          "line": 426,
+          "checked": false,
+          "text": "**Refresh `wiki/INDEX.md`'s uninformative-`tg128` framing**, which repeats the \"paired `tg128` row is",
+          "key": "h:53af:143a:120e:21ee"
+        },
+        {
+          "line": 429,
+          "checked": false,
+          "text": "**PREPARE the belief-kernel write-side wiring for the two MoE-Spec record sets** — neither carries a",
+          "key": "h:1462:2bc4:7df6:0dc4"
+        },
+        {
+          "line": 435,
+          "checked": false,
+          "text": "**Carry the reconstructed-substitute caveat onto every downstream quotation of the +10.7%**, including",
+          "key": "h:ab10:ce68:4eff:2e05"
+        },
+        {
+          "line": 440,
+          "checked": true,
+          "text": "**Operator decision RULED 2026-09-17 — Option A (confirm first). The reconciliation is done and the GPU row is",
+          "key": "h:9611:eb90:dc59:f6be"
+        },
+        {
+          "line": 535,
+          "checked": false,
+          "text": "**INF-40 confirm run (operator Option A, retargeted 2026-09-17) — GATED: waits for the end of the",
+          "key": "h:3d0d:4d96:1e74:1743"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/conversation-stack.md",
+      "state": "active",
+      "sha256": "a90aaeee8ed6922c8752eead0a69f327128fc3f994bc21a10582226192c5a07d",
+      "bytes": 46114,
+      "title": "Conversation stack: speech-native interlocutor, orchestrator voice-turn contract, cascade fallback",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 161,
+          "checked": true,
+          "text": "**CS-0a — audit the operator draft and ratify the vision.** ✅ 2026-09-24. Checked against the host, the code, prior research and primary sources, with four parallel read-only investigations. The operator settled D1–D12, recorded above.",
+          "key": "h:c60c:9892:8fbe:501c"
+        },
+        {
+          "line": 162,
+          "checked": true,
+          "text": "**CS-0b — file this handoff as the one home for speech.** ✅ 2026-09-24. The operator draft is preserved with a correction banner. S-14 and the Qwen-Audio-3.0 watch moved from INF-41, and the stale Path-C boxes were superseded. A KVU-11b cross-reference was added. INF-79 row added; INF-41's Next action re-pointed.",
+          "key": "h:1bf7:d8be:a7fe:3b16"
+        },
+        {
+          "line": 163,
+          "checked": true,
+          "text": "**CS-0c — file the belief-kernel write side before any run.** ✅ 2026-09-24. A prospective row in `scripts/vidya/adapters/README.md` plus VB-SPEECH-CONV-1. Implementing it is CS-3.",
+          "key": "h:48c6:e0d0:0018:8f92"
+        },
+        {
+          "line": 167,
+          "checked": false,
+          "text": "**CS-1 — run research intake on the design's sources.** None are in `research/intake_index.yaml` yet (checked 2026-09-24):",
+          "key": "h:efe3:90c6:67d7:3810"
+        },
+        {
+          "line": 178,
+          "checked": false,
+          "text": "**CS-2 — prepare the Annex S amendment package for operator ratification** (a human-only trust boundary; `MEASUREMENT.md:151-157`). Annex S admits only single-backend STT or TTS on `whisper_stt`/`qwentts_tts` (speech.md:7-19), so no interlocutor or end-to-end turn is measurable under it today. The package must:",
+          "key": "h:e73e:020c:0391:fb8d"
+        },
+        {
+          "line": 202,
+          "checked": false,
+          "text": "**CS-3 — wire the belief-kernel write side before the first measured run.** The task is VB-SPEECH-CONV-1 in [`vidya-belief-substrate-program.md`](vidya-belief-substrate-program.md). The source row is in `scripts/vidya/adapters/README.md` → *Known and candidate sources*, filed 2026-09-24. Every CS-8/CS-9/CS-12 harness emits `protocol_id`, reps, attestation and `metric_direction` at write time.",
+          "key": "h:1a2d:ee3b:ec36:eee5"
+        },
+        {
+          "line": 203,
+          "checked": false,
+          "text": "**CS-4 — build the voice evaluation corpus** under Annex S corpus rules: PCM-SHA-256 bound, in-repo and durable, selection and confirmation splits disjoint. It needs five sets.",
+          "key": "h:587c:6f3a:c432:e288"
+        },
+        {
+          "line": 209,
+          "checked": false,
+          "text": "**CS-5 — build the PyTorch reference harness for both candidates**, measurement-only per D4, in `epyc-inference-research`, with pinned upstream commits.",
+          "key": "h:c2bb:c171:248a:676c"
+        },
+        {
+          "line": 214,
+          "checked": false,
+          "text": "**CS-6 — write the second-GPU bench-window run plan**: an ordered run list, per-run duration estimates, the exact measurands, and exit criteria, so the window before 35B-A3B is commissioned is used fully. Order: CS-7, then CS-8 G1 (language, cheapest and most decisive), then CS-9, then the rest of CS-8, then CS-10.",
+          "key": "h:058d:738d:a8aa:802b"
+        },
+        {
+          "line": 218,
+          "checked": false,
+          "text": "**CS-7 — verify the second MI210 on arrival and place its host lane.** BLOCKED until the second MI210 is physically installed (an external event, expected about 2026-10).",
+          "key": "h:4413:0d39:7b3a:2158"
+        },
+        {
+          "line": 221,
+          "checked": false,
+          "text": "**CS-8 — run the interlocutor bake-off on the reference harness (CS-5), in gate order**, with the cascade measured on the same clips as the baseline. A candidate that fails a gate stops there. Gates:",
+          "key": "h:fc6b:f1d2:a8cc:f920"
+        },
+        {
+          "line": 228,
+          "checked": false,
+          "text": "**CS-9 — measure GPU co-residency and CU partitioning on the second MI210.** This is the D3 decision input. Run 35B-A3B as a test tenant at np {1, 4, 16} decoding at the same time as (a) the cascade and (b) each candidate interlocutor. Record both sides at p95: LLM tok/s per slot, speech TTFA and RTF.",
+          "key": "h:c688:f53b:01e9:5d33"
+        },
+        {
+          "line": 231,
+          "checked": false,
+          "text": "**CS-10 — probe latency hiding on the stock models (no training), on the reference harness.**",
+          "key": "h:19f0:3532:b4e8:3fd5"
+        },
+        {
+          "line": 237,
+          "checked": false,
+          "text": "**CS-11 — measure the CPU-placement alternative, for D3 completeness.** Measure the frontdoor (:8070) and :8074 under the `-t 56`@40-95 partition, which KVU-11b never measured, then compute the CPU-LLM loss against the GPU co-residency cost from CS-9. With the second MI210 present, this decides whether any speech component ever needs CPU placement. It can run before the second GPU arrives, in a quiet CPU window.",
+          "key": "h:9380:5d73:90cd:b010"
+        },
+        {
+          "line": 241,
+          "checked": false,
+          "text": "**CS-12 — prepare the stack-change package that puts the cascade (whisper + qwentts) on the second MI210 beside 35B-A3B.** It uses the `stack-change` skill and one operator signature, and is coordinated with whichever package commissions 35B-A3B there.",
+          "key": "h:0d84:0abb:7a8e:6e6c"
+        },
+        {
+          "line": 255,
+          "checked": false,
+          "text": "**CS-13 — write the voice-turn contract design note** at `docs/design/voice-turn-contract.md`. Keep it short and pick the most straightforward shape (D6).",
+          "key": "h:18ce:b5b5:9f08:9482"
+        },
+        {
+          "line": 259,
+          "checked": false,
+          "text": "**CS-14 — make token streaming real end to end.**",
+          "key": "h:6349:989f:cf38:4ccf"
+        },
+        {
+          "line": 265,
+          "checked": false,
+          "text": "**CS-15 — add a session-keyed conversation store.** Add a messages/turns table to `src/session/sqlite_store.py`, keyed by `session_id` (fields: role, text, spoken_text, display, timestamps, turn_id), with a retention policy.",
+          "key": "h:5dd9:b10e:0caf:db07"
+        },
+        {
+          "line": 269,
+          "checked": false,
+          "text": "**CS-16 — implement spoken form, display payload and preserve fields.**",
+          "key": "h:ff5b:c8f5:c4ac:23ac"
+        },
+        {
+          "line": 274,
+          "checked": false,
+          "text": "**CS-17 — implement voice routing as configuration.** The default voice cognition target is `architect_critic` (the :8083 27B; renamed by ARCHSWAP-20260927), per the operator requirement in KVU-11.",
+          "key": "h:b043:df21:c505:bf30"
+        },
+        {
+          "line": 277,
+          "checked": false,
+          "text": "**CS-18 — implement cancellation.** A barge-in cancels the in-flight orchestrator generation through the existing cancel path (`_cancel_only`, inference.py:1297). Expose the controller's retain/cancel decision: \"yeah, exactly\" retains the result; \"no, forget that\" cancels it.",
+          "key": "h:1f8c:f669:90ab:55a1"
+        },
+        {
+          "line": 278,
+          "checked": false,
+          "text": "**CS-19 — write the contract acceptance tests**:",
+          "key": "h:7613:8d72:e7e2:40dd"
+        },
+        {
+          "line": 288,
+          "checked": false,
+          "text": "**CS-20 — build the voice-controller skeleton and the interlocutor backend interface** in `epyc-orchestrator` (proposed `src/voice/`).",
+          "key": "h:2bb6:c5a2:5923:ab99"
+        },
+        {
+          "line": 292,
+          "checked": false,
+          "text": "**CS-21 — implement the cascade backend**: whisper :9000 → the voice-turn contract (Phase 3) → qwentts :9002, streaming PCM. This is the first end-to-end voice path, the permanent fallback (D8), and the bake-off baseline. It exercises the whole controller and contract before any new model exists.",
+          "key": "h:b8c1:c103:b2fb:fb07"
+        },
+        {
+          "line": 293,
+          "checked": false,
+          "text": "**CS-22 — add VAD and turn detection.**",
+          "key": "h:a557:3217:5f1d:16dc"
+        },
+        {
+          "line": 297,
+          "checked": false,
+          "text": "**CS-23 — implement the barge-in cancellation chain**: stop the queued audio, then the interlocutor generation and vocoder, then the orchestrator call (CS-18 policy). Measure the cancel latency in the harness with simulated overlap. Echo cancellation is a client concern and is deferred (D7).",
+          "key": "h:4e41:26ee:a992:2972"
+        },
+        {
+          "line": 298,
+          "checked": false,
+          "text": "**CS-24 — implement the D5 routing policy in the controller and measure it.** Options:",
+          "key": "h:0031:a852:04e3:5a0a"
+        },
+        {
+          "line": 304,
+          "checked": false,
+          "text": "**CS-25 — implement interlocutor context management.**",
+          "key": "h:f221:0695:576d:6a34"
+        },
+        {
+          "line": 308,
+          "checked": false,
+          "text": "**CS-26 — implement degraded mode and language fallback.**",
+          "key": "h:a398:6be0:7eb9:d03c"
+        },
+        {
+          "line": 311,
+          "checked": false,
+          "text": "**CS-27 — add a persona voice (nice-to-have, D10)** under the carried voice-cloning guardrail (default deny):",
+          "key": "h:cbb1:f7c3:38b1:1b12"
+        },
+        {
+          "line": 323,
+          "checked": false,
+          "text": "**CS-28 — decide where the port lives and design it, after CS-8 names the winner.**",
+          "key": "h:95a5:8a68:1b0e:f4bb"
+        },
+        {
+          "line": 327,
+          "checked": false,
+          "text": "**CS-29 — port the decoder and conversion.**",
+          "key": "h:04ec:e5dc:5010:eb5b"
+        },
+        {
+          "line": 330,
+          "checked": false,
+          "text": "**CS-30 — port the audio encoder as an mtmd projector.**",
+          "key": "h:ee71:a185:cc0c:cbe4"
+        },
+        {
+          "line": 333,
+          "checked": false,
+          "text": "**CS-31 — port speech output to ggml with streaming.**",
+          "key": "h:d995:6b32:8e23:380a"
+        },
+        {
+          "line": 337,
+          "checked": false,
+          "text": "**CS-32 — prove numerics parity against the PyTorch reference (CS-5).**",
+          "key": "h:bf4e:c3e5:bb7b:2217"
+        },
+        {
+          "line": 341,
+          "checked": false,
+          "text": "**CS-33 — run the quantization ladder on the AR core only**: BF16 → Q8 → Q6 → Q5 → Q4. The encoder, adapter and vocoder stay at higher precision initially.",
+          "key": "h:c746:2f57:6826:1aef"
+        },
+        {
+          "line": 344,
+          "checked": false,
+          "text": "**CS-34 — build the server surface and promote.**",
+          "key": "h:4cb0:0c3d:c347:41eb"
+        },
+        {
+          "line": 351,
+          "checked": false,
+          "text": "**CS-35 — prepare the stack-change package that makes the interlocutor resident** at the placement CS-9/CS-11 selected (the operator leans towards the second MI210). It includes:",
+          "key": "h:8f8c:5fd7:1b22:6c42"
+        },
+        {
+          "line": 357,
+          "checked": false,
+          "text": "**CS-36 — run end-to-end acceptance against the CS-2 protocol**: interlocutor against the cascade baseline on the CS-4 confirmation split. Report LOCAL and ORCH turn latencies, RTF, barge-in, routing, fidelity, and the co-tenant LLM slowdown.",
+          "key": "h:d7b9:c827:5758:fd8d"
+        },
+        {
+          "line": 361,
+          "checked": false,
+          "text": "**CS-37 — use the native bridge in production.** Step: spoken preamble, then tool call. Omni: a Thinker bridge sentence while the orchestrator works. Measure perceived latency (end of speech → first *meaningful* audio), not only compute latency.",
+          "key": "h:fdab:d3a4:8f18:b0be"
+        },
+        {
+          "line": 362,
+          "checked": false,
+          "text": "**CS-38 — stream the orchestrator's answer into the speech path.** Omni: Talker fed directly from `answer.delta`. Step: chunked injection. This uses CS-14 streaming and CS-10 findings.",
+          "key": "h:a065:28c3:a456:3bf2"
+        },
+        {
+          "line": 363,
+          "checked": false,
+          "text": "**CS-39 — implement untrained mid-generation injection in our runtime.** KV-append the oracle text at TA4 group boundaries in the CS-34 server, taking over from CS-10(b) once the port exists. Measure how often content is used and exact-value retention.",
+          "key": "h:eaeb:b111:100c:a2c7"
+        },
+        {
+          "line": 364,
+          "checked": false,
+          "text": "**CS-40 — test speculative orchestration (SHANKS-like).** Launch the orchestrator call from a *partial* user turn once intent is clear, then refine or cancel at end of turn. Measure the hit rate, the wasted cognition compute, and the perceived-latency gain. This needs streaming partial transcription from the interlocutor or cascade.",
+          "key": "h:9001:ac8f:fddc:f655"
+        },
+        {
+          "line": 368,
+          "checked": false,
+          "text": "**CS-41 — reassess model-decided routing (D5 → model-decided LOCAL answers).** Proceed only after CS-24 shows routing precision and recall at or above the operator-set target on the confirmation split. The operator decides.",
+          "key": "h:7b02:49dd:f553:8407"
+        },
+        {
+          "line": 369,
+          "checked": false,
+          "text": "**CS-42 — KAME-style oracle-stream fine-tune of the front-end.** Open this only after CS-39 shows untrained injection falls short on perceived latency or fidelity.",
+          "key": "h:ceff:ae32:b0a3:ff57"
+        },
+        {
+          "line": 404,
+          "checked": false,
+          "text": "**CS-43 — upstream the gfx90a argsort fix** (thread-strided bitonic sort) to the qwentts.cpp / ggml fork as hygiene. Moved 2026-09-24 from `multimodal-pipeline.md` S-14. It is operator-sanctioned and does not depend on our kernel cycle.",
+          "key": "h:beb3:9acf:76fd:e819"
+        },
+        {
+          "line": 405,
+          "checked": false,
+          "text": "**CS-44 — keep the Qwen-Audio-3.0 open-weights watch.** Moved 2026-09-24 from `multimodal-pipeline.md` (intake-826#record).",
+          "key": "h:cdf0:7cc5:2bce:1e25"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/log-linear-gated-deltanet-readiness.md",
+      "state": "active",
+      "sha256": "892b9d8ac5b9f65bb77da243749f7a6a231258d44ce35254a558989996c10bd3",
+      "bytes": 43494,
+      "title": "Log-Linear Gated DeltaNet — Readiness Tracker",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 74,
+          "checked": true,
+          "text": "Pretrained Log-Linear Gated DeltaNet model checkpoint publicly available (any size) ✅ 2026-08-12 — `hanguo/log-linear-attention`, folder `gdn/`, public since 2026-02-13",
+          "key": "h:230f:c2ee:316d:89dc"
+        },
+        {
+          "line": 75,
+          "checked": true,
+          "text": "Reference implementation (github.com/HanGuo97/log-linear-attention) includes inference code, not just training ✅ 2026-08-12 — `HGatedDeltaNetForCausalLM(…, GenerationMixin)` + `hattention/recurrent.py`; see the caveat below, it is not runnable as shipped",
+          "key": "h:f60e:ecb1:db90:11bd"
+        },
+        {
+          "line": 76,
+          "checked": true,
+          "text": "Model architecture documented sufficiently for GGUF converter implementation ✅ 2026-08-12 — full `config.json` + 423 named tensors read out of the safetensors header + HF modeling source",
+          "key": "h:c372:2cc1:6e28:57df"
+        },
+        {
+          "line": 86,
+          "checked": false,
+          "text": "**Gate 4 — a device-agnostic (non-Triton) numerical oracle exists.** Not \"reference code exists\"",
+          "key": "h:3242:3b53:9752:c970"
+        },
+        {
+          "line": 92,
+          "checked": false,
+          "text": "**Gate 5 — a ggml primitive exists for every mixer type in the architecture, or a",
+          "key": "h:1d41:c48a:1e11:cbbc"
+        },
+        {
+          "line": 198,
+          "checked": false,
+          "text": "Wire `hattention_recurrent()` into `HGatedDeltaNetAttention.forward` behind a `mode='fused_recurrent'`",
+          "key": "h:5ef0:26d1:d9d7:a62a"
+        },
+        {
+          "line": 202,
+          "checked": false,
+          "text": "Write the GGUF converter tensor map from the 423-name safetensors header; the only non-GDN names are",
+          "key": "h:deae:a4b9:735b:0679"
+        },
+        {
+          "line": 204,
+          "checked": false,
+          "text": "Re-scope plan step 4 below: `ggml_log_linear_state_update()` is the `cascade_weak()` counter machine plus",
+          "key": "h:ee0e:5d33:d5dd:c8b3"
+        },
+        {
+          "line": 207,
+          "checked": false,
+          "text": "Operator decision, once the oracle above exists: this checkpoint is a **795 M research model at f32 with a",
+          "key": "h:bbc4:34e7:ddef:f069"
+        },
+        {
+          "line": 341,
+          "checked": true,
+          "text": "**G1 (G) — #27442 boundary sweep on our CPU.** ✅ 2026-08-27 — **executed, gate verdict:",
+          "key": "h:3c20:6e2a:3593:c96f"
+        },
+        {
+          "line": 364,
+          "checked": false,
+          "text": "**B1 (B, blocked on G1) — repeat the sweep on MI210 HIP.** Our HIP GDN kernel is a distinct",
+          "key": "h:c61c:abcb:57f4:98be"
+        },
+        {
+          "line": 367,
+          "checked": false,
+          "text": "**G5 (G, blocked on G6 in `rocm-verify-profile-backend.md`) — HOLA frozen-backbone retrofit.**",
+          "key": "h:2115:0396:83a4:4461"
+        },
+        {
+          "line": 378,
+          "checked": false,
+          "text": "**B4 (B, blocked on G5) — hybrid-transfer A/B.** Repeat the retrofit on",
+          "key": "h:178a:3cff:6771:9c66"
+        },
+        {
+          "line": 384,
+          "checked": false,
+          "text": "**(Z) Record the m-a-p ratio-convention correction before anyone cites their band.** Their",
+          "key": "h:58d4:b065:64aa:3afe"
+        },
+        {
+          "line": 454,
+          "checked": false,
+          "text": "**G16 (G) — numerical fidelity of a chunked GDN kernel at long prompts.** On",
+          "key": "h:22a8:4749:ce20:09d2"
+        },
+        {
+          "line": 472,
+          "checked": false,
+          "text": "**G16a — make G16 fire the chunked kernel on MI210, or it is vacuous.** The H=32/d=128 long-prompt eval",
+          "key": "h:bf0a:94b5:4937:60f5"
+        },
+        {
+          "line": 480,
+          "checked": false,
+          "text": "**G16b — diagnostic arm if a dispatch-proven G16 fails 1e-7.** Rerun the failing shapes on a test build that",
+          "key": "h:0676:8bf1:a62e:d40d"
+        },
+        {
+          "line": 487,
+          "checked": false,
+          "text": "**B9 (B) — GDN-2 zero-loss retrofit initialization, and the β ∈ [0,2] control the paper",
+          "key": "h:fa3f:a726:607c:393d"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/heterogeneous-slot-fabric-residency.md",
+      "state": "active",
+      "sha256": "d5dfbd0b6e3324c94b401a4ae4f127a9a9f07c80456664d940000c3c7794d36d",
+      "bytes": 34099,
+      "title": "Heterogeneous CPU×GPU Slot Fabric + Dynamic Residency",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 146,
+          "checked": false,
+          "text": "Model GPU host threads as a fabric slot (`gpu-host`) — design only, gated on the residency verdict",
+          "key": "h:af06:ff46:4d3f:ae87"
+        },
+        {
+          "line": 149,
+          "checked": true,
+          "text": "Architecture designed + reconciled against the live placement fabric ✅ 2026-07-20",
+          "key": "h:1635:f033:adde:c5b9"
+        },
+        {
+          "line": 150,
+          "checked": false,
+          "text": "**Consume E5** — set the CPU (N,K) provisioning + resolve the lanes question from the sweep",
+          "key": "h:b1d1:a3e8:8653:5d05"
+        },
+        {
+          "line": 151,
+          "checked": false,
+          "text": "**Model-keyed capability records replace role-keyed NUMA/spec config** (operator-directed 2026-07-23; the model-side completion of the ratified optionality principle). Today `NUMA_CONFIG` + spec/launch recipes are keyed by ROLE (frontdoor's entry encodes the 35B's half-wins result; worker_general's encodes gemma's interleave/MTP quirks), so a model swap under a role is a bespoke lineup event (2026-05-08 worker swap precedent). Invert into per-model capability cards — model+quant → {optimal solo shape, NUMA-splitting potential, per-shape `-np` optima (E5 R4 rows are the first population), ctx/KV config, spec-dec recipe + accept rates, platform-labeled top specs, policy quirks} — with role entries and WP-12 fleets holding REFERENCES only. Payoffs: (a) model swap = flip the reference + §H recert, nothing else — this also yields the missing model-swap-under-role runbook (alias runbook + `new-model` skill are partial today); (b) contention-matrix rows indexed by (model_a, model_b, shape-pair) instead of role+instance become REUSABLE across swaps — the §H recert shrinks to never-measured pairs only (the derived `placement_overlap`/topology_hash layer is already deterministic recompilation; only the measured throughput verdicts are physical facts of the model stack).",
+          "key": "h:ab05:d797:e6c0:122c"
+        },
+        {
+          "line": 155,
+          "checked": false,
+          "text": "**Design the GPU-as-placement-target** extension to `ConcurrencyAwareBackend`/`NUMA_CONFIG` (GPU instance in the fabric)",
+          "key": "h:5e63:3e8b:78ed:8658"
+        },
+        {
+          "line": 157,
+          "checked": false,
+          "text": "**Layer-2 residency-actuator verb** on `orchestrator_stack.py` (allowlisted load/evict + kill-switch) + the swap protocol (session-handover drain)",
+          "key": "h:00f6:b04c:55ac:9253"
+        },
+        {
+          "line": 158,
+          "checked": false,
+          "text": "**Teleport-to-GPU** = the re-prefill-from-transcript variant of the existing migration transaction",
+          "key": "h:aa23:deb3:62ab:c0fa"
+        },
+        {
+          "line": 159,
+          "checked": false,
+          "text": "**Tracked-session index** (Option 3 predicate) wired to the router/escalation signals",
+          "key": "h:3fc4:e4e9:f904:e0e6"
+        },
+        {
+          "line": 161,
+          "checked": false,
+          "text": "**Layer-3** autopilot residency policy: shadow-measure → vet allowlist (Phase 1) → bounded auto-select (Phase 2)",
+          "key": "h:94fa:410a:2ecc:9ec0"
+        },
+        {
+          "line": 169,
+          "checked": false,
+          "text": "**N-dwell / hysteresis** for GPU swaps (extend the parent's anti-thrash with `N ≥ C·(1−X)/X`)",
+          "key": "h:3101:bb6d:67d4:8709"
+        },
+        {
+          "line": 170,
+          "checked": false,
+          "text": "**Prefill placement rule — fill R_cpu(L) and R_gpu(L, ub) from mi210-big-model-and-acceleration-roadmap.md PF1, then decide whether Layer 1 gets a length threshold** (design only; blocked on PF1)",
+          "key": "h:15f5:e0ba:d61c:557e"
+        },
+        {
+          "line": 238,
+          "checked": false,
+          "text": "**HYPOTHESIS ONLY — asynchronous separation of generation from candidate execution.**",
+          "key": "h:956e:0c53:7417:b6c0"
+        },
+        {
+          "line": 264,
+          "checked": false,
+          "text": "**HSF-1 — Write a launch-phase receipt on every production GPU launch; it is the measured swap cost C per",
+          "key": "h:f8f8:5a72:41a7:1362"
+        },
+        {
+          "line": 276,
+          "checked": false,
+          "text": "**HSF-2 — Add `--metrics` to CPU llama-server launch argv in the next stack-change package.** Today it is set",
+          "key": "h:c951:3e3b:7e78:dbb7"
+        },
+        {
+          "line": 279,
+          "checked": false,
+          "text": "**HSF-3 — Measure the per-session inter-call gap distribution from existing logs (zero inference).** Gap = model response complete → next enqueue for the same session, per role and per client class (OpenCode `/v1` harness, `/chat`/REPL, autopilot). Sources: inference-tap structured events (`request_keys.x_session_id`; orch `src/llm_primitives/inference.py:1198-1200`), progress-log session events (`orchestration/repl_memory/progress_logger.py:768-800`) and `/chat` session checkpoints (`src/session/sqlite_store.py:184`). Step 0 prices the source: count sessions carrying a session key plus completion and next-enqueue timestamps; a class with <50 such sessions is recorded as a gap and deferred to HS-4 P0.4/HS-14 runs. Publish p50/p90/p99 with n per class and a later-window replicate. Consumers: τ in the swap-protocol amendment (:93), the tracked-session TTL (:102), HS-16's idle-retention TTL, dynamic-stack-concurrency.md G5's gap lengths, kv-unified-stack-rollout.md KVU-14's forced-resume timeout. Talaria's τ=1 s is sized to its own sub-second p90 and is NOT carried (intake-1819#4, intake-1819#12). Plan approval 2026-09-26 authorizes this item. Belief kernel: VB-GAP-DIST.",
+          "key": "h:655f:20a0:460f:8283"
+        },
+        {
+          "line": 281,
+          "checked": true,
+          "text": "**HSF-3-SCHEMA-BOUNDARIES (NI05-32)** — add synthetic source-schema coverage/refusal cases for tap, progress and checkpoints alongside native exact/proxy positive controls. Report counters without inferring joins/enqueues/client brands; no live data, new grading class or distribution from fixtures.",
+          "key": "h:87d6:4489:8c7a:5dae"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/attention-matching-kv-compaction.md",
+      "state": "active",
+      "sha256": "1204469bb1e4de5105d9c16e24f65beace2e31b0157bab1d95085ca85f7ae4ac",
+      "bytes": 31004,
+      "title": "Attention Matching KV Compaction",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 271,
+          "checked": true,
+          "text": "P1 port HighestAttnKeys-fast + L1-L4/L4b native llama.cpp integration merged (81c9ad1ec, 7784b3d9c) ✅",
+          "key": "h:5361:92be:f41b:2b12"
+        },
+        {
+          "line": 272,
+          "checked": false,
+          "text": "P2 refresh validation against current-stack long-context/coding workload (Qwen3.6-era + Coder-32B), inference-window-gated",
+          "key": "h:28da:efa2:0326:ae04"
+        },
+        {
+          "line": 273,
+          "checked": false,
+          "text": "P3 compare AM quality vs Expected Attention at 5x/10x/20x",
+          "key": "h:25c6:9c2f:2601:5f23"
+        },
+        {
+          "line": 274,
+          "checked": false,
+          "text": "P4 test AM + Hadamard q4_0 stacking quality under dual compression",
+          "key": "h:58c8:09ae:2169:3af1"
+        },
+        {
+          "line": 275,
+          "checked": false,
+          "text": "Deferred L4c: true NNLS attention scoring (graph modification) - not yet needed",
+          "key": "h:4154:5c11:947d:01d9"
+        },
+        {
+          "line": 290,
+          "checked": true,
+          "text": "**KV-0a — Every KV slot save was failing; fixed.** ✅ 2026-08-20 `prefix_cache.py` built the filename with `os.path.join(...)`,",
+          "key": "h:34ef:f899:4ba2:10d9"
+        },
+        {
+          "line": 299,
+          "checked": true,
+          "text": "**KV-0b — Roles sharing one llama-server were evicting each other; fixed.** ✅ 2026-08-20 Under `shared_with`, several roles",
+          "key": "h:2551:62ba:4535:ba0e"
+        },
+        {
+          "line": 304,
+          "checked": true,
+          "text": "**KV-0c — `radix_cache.py` deleted** (480 lines + shim). ✅ 2026-08-20 Verified dead: its only two importers were the",
+          "key": "h:7fdd:2a3d:1094:73e4"
+        },
+        {
+          "line": 311,
+          "checked": false,
+          "text": "**KV-1 — Count DISTINCT hot prefixes per window against resolved slot count, per role and per",
+          "key": "h:e3c2:2cd2:ab2a:6abb"
+        },
+        {
+          "line": 317,
+          "checked": false,
+          "text": "**KV-2 — Pass `role` and `session_id` into `PrefixRouter.get_slot_for_prompt`.** Both are",
+          "key": "h:c33e:0550:27fd:0e58"
+        },
+        {
+          "line": 322,
+          "checked": false,
+          "text": "**KV-3 — Evaluate switching to llama.cpp's NATIVE token-level LCP slot selection.** It is",
+          "key": "h:dd8e:6de7:b128:9e51"
+        },
+        {
+          "line": 328,
+          "checked": false,
+          "text": "**KV-4 — If KV-1 shows working set > slot count, THEN consider workflow-aware eviction.**",
+          "key": "h:e57f:9cf4:1b1b:78bf"
+        },
+        {
+          "line": 336,
+          "checked": false,
+          "text": "**KV-6 — Measure `canonicalize_prompt` before optimising anything downstream of it.** It makes",
+          "key": "h:472c:8462:826e:708e"
+        },
+        {
+          "line": 341,
+          "checked": false,
+          "text": "**KV-7 — Price the prefix-cache interaction BEFORE adopting any prefix+sliding mask.** The",
+          "key": "h:0d98:35cb:d4f1:d100"
+        },
+        {
+          "line": 350,
+          "checked": true,
+          "text": "**KV-5 — Correct `wiki/kv-cache.md`** ✅ 2026-08-20 (done in the wrap-up wiki sweep) so KVFlow is named as the ORIGIN of workflow-aware KV",
+          "key": "h:1787:38e2:6a05:54e3"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/autokernel-concurrent-target-coordination.md",
+      "state": "active",
+      "sha256": "6d8126104521109550d648786c7b3a04b7ef25b9a1c6b024c3a11cc8b31cf8d7",
+      "bytes": 25961,
+      "title": "AutoKernel concurrent target coordination — implementation handoff for review",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 15,
+          "checked": true,
+          "text": "CTC-DOC: capture generic requirements, current code seams, evidence limitations, and proposed acceptance criteria. ✅ 2026-09-14",
+          "key": "h:235c:ed68:1168:976c"
+        },
+        {
+          "line": 16,
+          "checked": false,
+          "text": "CTC-REVIEW: operator review the proposal and authorize a subsequent implementation session.",
+          "key": "h:ffbe:7b6d:ff6b:a211"
+        },
+        {
+          "line": 20,
+          "checked": false,
+          "text": "CTC-1: derive stage footprints from recipes and preserve each target's execution adapter.",
+          "key": "h:0bac:99c3:df2e:b0b8"
+        },
+        {
+          "line": 21,
+          "checked": false,
+          "text": "CTC-2: add stage admission and remove conflicting whole-batch physical claims.",
+          "key": "h:95b7:8cfe:6623:4d44"
+        },
+        {
+          "line": 22,
+          "checked": false,
+          "text": "CTC-3: extend the existing supervisor for concurrent target preparation and fair stage admission.",
+          "key": "h:e2b0:c94b:a690:4d7b"
+        },
+        {
+          "line": 23,
+          "checked": false,
+          "text": "CTC-4: extend original interval accounting and continuation recovery for multiple stage windows.",
+          "key": "h:5cbc:2f5b:cb95:a8dc"
+        },
+        {
+          "line": 24,
+          "checked": false,
+          "text": "CTC-5: integrate existing cold-load/hot-residency admission and evaluate coexistence applicability.",
+          "key": "h:7420:b186:acbc:b59a"
+        },
+        {
+          "line": 25,
+          "checked": false,
+          "text": "CTC-6: preserve target histories, accumulators, anchor reuse and pruning through rollout.",
+          "key": "h:6f9b:4cf8:1496:846d"
+        },
+        {
+          "line": 26,
+          "checked": false,
+          "text": "CTC-7: publish accurate per-target phase, waiting reason and resource ownership in the dashboard.",
+          "key": "h:6194:0743:2931:df8d"
+        },
+        {
+          "line": 27,
+          "checked": false,
+          "text": "CTC-8: complete focused integration and approved hardware acceptance; leave campaigns continuous after acceptance.",
+          "key": "h:f365:dd34:f6ef:aff7"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/laguna-s21-cpu-port.md",
+      "state": "active",
+      "sha256": "3ac16feb4376d91d60d304d885442208bea21ee665cc6afc98d7893724573ad6",
+      "bytes": 15011,
+      "title": "Laguna S 2.1 CPU Port — Experimental Branch",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 37,
+          "checked": true,
+          "text": "Forward-port base Laguna arch (merged PR #25165 commits, ~350 LOC: `src/models/laguna.cpp` +332, `models.h`, 1-3-line touches to `llama-arch`/`llama-model`/`llama-vocab`, `conversion/laguna.py` +207) onto a FRESH-pulled `llama.cpp-experimental` off `production-consolidated-v7`; validate S-2.1 Q4_K_M loads + coherence/garbage smoke ✅ 2026-07-25 — landed as `afa770382` on `experimental-v8-refresh-20260724` (superset: includes the DFlash spec path NOT in the PR). Required CPU Q4 evidence is at `epyc-inference-research/data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`): base median `7.078103` t/s, DFlash median `8.028143` t/s, but acceptance `17.2267%` fails the lineup floor. Final hardened GPU IQ2 artifact `epyc-inference-research/data/gpu-mi210/laguna-iq2-kv-sweep-exact-tip/run-20260725T125201Z` is post-identity, `15/15`, and observation-only: A q8/FA-on `33.992845`, B f16/FA-on `35.490117`, C f16/FA-off `33.782293`; B/A `+4.404668%`. `test-llama-archs`/`test-chat-auto-parser` pass in ctest; 2026-07-25 audit verified graph idioms match sibling archs (NEOX rope group, Qwen3-style QK-RMSNorm, per-layer YaRN/plain-RoPE split sound, softplus gate width-checked on both target and drafter sides)",
+          "key": "h:d97b:148f:65ef:2773"
+        },
+        {
+          "line": 38,
+          "checked": true,
+          "text": "Confirm the PR-author-flagged \"GQA head-ratio backend dispatch\" bug does not hit the CPU build ✅ 2026-07-25 — exact-tip CPU Q4 evidence completed all `5/5` base and `5/5` DFlash replicates on the real S.2 model at `data/kernel-v8-candidate/laguna-cpu-dflash-exact-tip/run-20260725T112845Z-67a433bf4-noswap/` (nested `run-20260725T113030Z`; `q4_k_m_base`/`q4_k_m_dflash` both `status=complete`). Source audit confirms `laguna.cpp` reads per-layer `n_head` (`48` full / `72` SWA) with `n_head_kv=8` and passes both values to the shared `build_qkv` graph; `afa770382` changes no `ggml/` backend code. This closes the target CPU concern with real-model execution evidence, not a claim about every hypothetical Laguna variant.",
+          "key": "h:b3db:d122:3783:9a1e"
+        },
+        {
+          "line": 53,
+          "checked": true,
+          "text": "**L-1 (silent-wrong risk) — make the SWA contract explicit in conversion.** ✅ 2026-07-25 — landed in `89d55f161`.",
+          "key": "h:889a:6638:2b91:43fb"
+        },
+        {
+          "line": 59,
+          "checked": true,
+          "text": "**L-2 (integration gap) — validate encoder input width explicitly.** ✅ 2026-07-25 — landed in `89d55f161`. DFlash encoder",
+          "key": "h:c797:3436:e2c8:177f"
+        },
+        {
+          "line": 65,
+          "checked": true,
+          "text": "**L-3 (masking risk) — bound the non-finite feature sanitize.** ✅ 2026-07-25 — landed in `89d55f161`. `speculative.cpp`",
+          "key": "h:b7ab:ecc3:3b69:7bed"
+        },
+        {
+          "line": 69,
+          "checked": true,
+          "text": "**L-4 (harness defect) — fix `summarize()` attribution",
+          "key": "h:3f7b:93d3:1f5b:5461"
+        },
+        {
+          "line": 78,
+          "checked": true,
+          "text": "**L-5 (model finding, investigate before more prompt surgery) — the q8_0 base",
+          "key": "h:fb0e:529b:f0b2:bc48"
+        },
+        {
+          "line": 86,
+          "checked": true,
+          "text": "**L-6 (gate design) — add an acceptance/net-speed floor before any production DFlash",
+          "key": "h:2240:4534:3124:59ae"
+        },
+        {
+          "line": 94,
+          "checked": true,
+          "text": "**L-7 (minor) — tighten the normalize prompt.** ✅ 2026-07-25 — research commit",
+          "key": "h:a5d9:73d9:d2c1:ee69"
+        },
+        {
+          "line": 99,
+          "checked": true,
+          "text": "**L-8 (hygiene) — promote the ad-hoc GPU smoke artifact to a script.** ✅ 2026-07-29 — research",
+          "key": "h:7c18:86af:3128:abf4"
+        },
+        {
+          "line": 108,
+          "checked": true,
+          "text": "**L-9 (post-v8 candidate bench) — Laguna Q4_K_M CPU quant-axis screen** ✅ 2026-07-27.",
+          "key": "h:bc99:4be0:69fe:0394"
+        },
+        {
+          "line": 126,
+          "checked": false,
+          "text": "**L-9P — conditional CPU throughput/config discovery.** The prepared",
+          "key": "h:b99f:fe97:e7e7:4a6f"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/qwen-mtp-llamacpp-port.md",
+      "state": "active",
+      "sha256": "a1c788133f94805bbcbb0bcb7b3f60cc2f4b361ea094f23fcd78e5add0de8a05",
+      "bytes": 14705,
+      "title": "Qwen MTP llama.cpp Port (PR #22673 + #22400)",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 85,
+          "checked": true,
+          "text": "**P1** Reconcile `common/speculative.{cpp,h}`: merge upstream's `DRAFT_MTP` state machine INTO our version, keeping our EAGLE3 scaffold + tree/DySpec + ngram + suffix paths intact. This is the keystone — most other files follow once the type/enum + state class exist. ✅ 2026-07-11",
+          "key": "h:59e6:c547:cda9:815c"
+        },
+        {
+          "line": 86,
+          "checked": true,
+          "text": "**P2** `common/arg.cpp`: extend `--spec-type` enum to include `draft-mtp` (alongside our existing `none|mtp|ngram-*|suffix`); add `--spec-draft-n-max`. Note our fork already has a `mtp` spec-type (gemma4 external) — disambiguate `mtp` (gemma4 external assistant head) vs `draft-mtp` (in-GGUF NEXTN self-draft) or unify. ✅ 2026-07-11",
+          "key": "h:70ae:7565:8b4a:4bc2"
+        },
+        {
+          "line": 87,
+          "checked": true,
+          "text": "**P3** `include/llama.h` + `src/llama-context.cpp` + `src/llama-cparams.h`: add the MTP context type + decode/logits MTP APIs; reconcile with our context lifecycle. ✅ 2026-07-11",
+          "key": "h:95a5:a9ef:3016:0cd6"
+        },
+        {
+          "line": 88,
+          "checked": true,
+          "text": "**P4** `src/models/qwen35.cpp` / `qwen35moe.cpp` + `src/llama-arch.*` + `conversion/qwen.py`: the Qwen MTP graph (nextn layer) + metadata loader. ✅ 2026-07-11",
+          "key": "h:0948:0fde:76f1:0a50"
+        },
+        {
+          "line": 89,
+          "checked": true,
+          "text": "**P5** Resolve the remaining backend/test/doc files to compile; `cmake -B build && cmake --build build -j$(nproc)` (CPU: `-DGGML_CUDA=OFF`). ✅ 2026-07-11",
+          "key": "h:32c3:8c25:74d9:f157"
+        },
+        {
+          "line": 90,
+          "checked": true,
+          "text": "**P6a** Verify help surface: `llama-server --help` / `llama-speculative --help` show `--spec-type draft-mtp` + `--spec-draft-n-max`. ✅ 2026-07-11",
+          "key": "h:b709:8ba4:dd76:fd28"
+        },
+        {
+          "line": 91,
+          "checked": false,
+          "text": "**P6b** Operator-gated fresh-v8-experimental model-load + gate bench on `unsloth/Qwen3.6-35B-A3B-MTP-GGUF`, with matched Q4 no-spec vs Q4-MTP artifacts; then the parent T3/T4 benches.",
+          "key": "h:bde1:82d7:60b9:5652"
+        },
+        {
+          "line": 92,
+          "checked": false,
+          "text": "**P7 (optional): FR-Spec draft LM-head vocab-trim** (intake-740), only after P6b and only from the fresh v8 experimental surface. Build an EPYC-workload-matched frequency map, retain byte-exact temp-0 validation, and measure end-to-end before adopting; historical #22673/EAGLE3 reconciliation assumptions do not apply.",
+          "key": "h:46ad:fd00:85c5:6643"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/sarathi-serve-cpu-evaluation.md",
+      "state": "active",
+      "sha256": "a05d24e9d5b566f7cb142dad546e7b7e59214dc5c9a62941cbc59ddf2bfc3f15",
+      "bytes": 13915,
+      "title": "Sarathi-Serve / Chunked-Prefill Evaluation on EPYC NUMA",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 14,
+          "checked": false,
+          "text": "Re-evaluate Sarathi-Serve chunked-prefill for the eval-batch serving class (batched-decode E2 keep-candidate = the fired multi-tenant trigger)",
+          "key": "h:a651:6ec1:2b9c:73db"
+        },
+        {
+          "line": 145,
+          "checked": false,
+          "text": "DEPRIORITIZED: re-promote on workload shift to multi-tenant API / prefill-heavy serving (NOT empirically closed for multi-tenant)",
+          "key": "h:891c:82a4:7f4a:c6cd"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/gpu-candidates-surface-qwen38-update.md",
+      "state": "active",
+      "sha256": "44b6e3d52e95d1de44f42d0c0cc037626352261e325b254fc9b1db0036614a79",
+      "bytes": 10623,
+      "title": "GPU Candidates surface — add Qwen3.8-27B as the new stock-27B arm",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 75,
+          "checked": true,
+          "text": "**Populate the throughput row** — Qwen3.8-27B flat ~45 t/s MTP decode, pp512 prefill 727 t/s, era v9 `0db32c06e`.",
+          "key": "h:bc15:a706:da20:02f4"
+        },
+        {
+          "line": 76,
+          "checked": true,
+          "text": "**Prefill pp512** — `727.29 ± 28.00 t/s` (`llama-bench -ngl 999 -nkvo 1 -p 512 -r 3`).",
+          "key": "h:8f3c:eb34:bec9:f78f"
+        },
+        {
+          "line": 77,
+          "checked": true,
+          "text": "**Coding-ladder cell** — populated (LCB 52.8% / BCB 31.1% / agentic SWE 21/40 / oracle SWE 20/40). ✅ 2026-08-20",
+          "key": "h:8095:7306:722a:10ce"
+        },
+        {
+          "line": 78,
+          "checked": true,
+          "text": "**RAG-at-depth + MTP workload-gate** — measured: single-stream decode FLAT ~45 t/s (47.6@2k → 45.0@32k);",
+          "key": "h:3991:7fe3:570a:2d9d"
+        },
+        {
+          "line": 81,
+          "checked": true,
+          "text": "**Update the verdict prose** — bottom line + verdict card re-read with Qwen3.8-27B as the new 27B coding bar.",
+          "key": "h:3b1f:0634:0769:c1d7"
+        },
+        {
+          "line": 82,
+          "checked": true,
+          "text": "**SWE-40 finalised on BOTH protocols** ✅ 2026-08-20 — agentic **21/40 (52.5%)** (supersedes the",
+          "key": "h:4310:acf9:6c59:9dc3"
+        },
+        {
+          "line": 85,
+          "checked": true,
+          "text": "**Artifact reworked to best-configuration results only** ✅ 2026-08-20 — per operator instruction the",
+          "key": "h:6269:da3b:951e:a780"
+        },
+        {
+          "line": 90,
+          "checked": true,
+          "text": "**Re-collect the 24-cell np×depth grid at `n-max 8`** — the published grid was captured at",
+          "key": "h:5271:c740:95a5:e7bd"
+        },
+        {
+          "line": 118,
+          "checked": false,
+          "text": "**INF-61-ABA — same-window MTP n-max 4 vs 8 ABA at np>=2 on Qwen3.8-27B** before any grid cell ships.",
+          "key": "h:8270:5f9a:7ec6:8dea"
+        },
+        {
+          "line": 122,
+          "checked": false,
+          "text": "**Depth-sweep the other arms (A4, A3, A1, FF, Laguna)** — none was ever draft-depth swept, so",
+          "key": "h:6403:d54c:89ed:1552"
+        },
+        {
+          "line": 125,
+          "checked": false,
+          "text": "**Restore the MTP workload-gate finding somewhere durable** — it was removed from the artifact",
+          "key": "h:a049:4f53:d13c:b725"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/v9-kernel-per-request-speculative-params.md",
+      "state": "active",
+      "sha256": "893728d998f1b32b356b902b9de14d563e78f876745f4f551e9cdd6abdbe6305",
+      "bytes": 7803,
+      "title": "v9 kernel candidate — expose per-request speculative parameters",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 67,
+          "checked": true,
+          "text": "**V9-1. Expose only functional `speculative.n_max`** on an experimental branch; preserve the",
+          "key": "h:efc3:55ed:d24f:a4bc"
+        },
+        {
+          "line": 69,
+          "checked": true,
+          "text": "**V9-2. Prove request-local plumbing:** `0` disables, positive values cap the launch maximum,",
+          "key": "h:ae45:98ae:a5af:812c"
+        },
+        {
+          "line": 72,
+          "checked": true,
+          "text": "**V9-3. Report the effective value** in every completion's `generation_settings`, so a harness",
+          "key": "h:6841:5ecf:c044:d04c"
+        },
+        {
+          "line": 74,
+          "checked": true,
+          "text": "**V9-4. Keep unwired controls unavailable.** `n_min`, `p_min`, type selection, and ngram fields",
+          "key": "h:9467:08fb:ee7e:bc49"
+        },
+        {
+          "line": 76,
+          "checked": true,
+          "text": "**V9-5. Regression-check ordinary speculative requests.** Focused server tests pass on the",
+          "key": "h:4c43:cebf:1179:2b15"
+        },
+        {
+          "line": 79,
+          "checked": true,
+          "text": "**V9-6. Complete the kernel-promotion qualification procedure** against frozen v8: rebuild CPU",
+          "key": "h:5ac5:48cc:66ed:bd98"
+        },
+        {
+          "line": 82,
+          "checked": true,
+          "text": "**V9-7. Execute the authorized `production-consolidated-v9` cutover** and production-named",
+          "key": "h:2c68:8b0f:bd86:f794"
+        },
+        {
+          "line": 86,
+          "checked": false,
+          "text": "**V9-8. Implement and prospectively ratify the resident promotion fast path** described in",
+          "key": "h:1610:4323:a846:8686"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/qwen38-flash-next-fp8-evaluation.md",
+      "state": "active",
+      "sha256": "f26a157b75c1387af8131cfe794d2a176efcd114499ea5cef548196d1fdba1b1",
+      "bytes": 5923,
+      "title": "Qwen3.8-Flash-Next-FP8 — Future Inference Evaluation",
+      "owner_index": "inference-research-index.md",
+      "boxes": [
+        {
+          "line": 5,
+          "checked": false,
+          "text": "Re-acquisition decision: re-download the pinned FP8 checkpoint (revision `f88480ebce48…`, ~185 GB) once disk allows, or park this evaluation — fold into the disk-reclaim operator decision (2026-08-31)",
+          "key": "h:7682:7363:1acb:0569"
+        },
+        {
+          "line": 54,
+          "checked": true,
+          "text": "Verify artifact acquisition and integrity ✅ 2026-08-26 — exact payload and both upstream pins",
+          "key": "h:c443:c7ce:b3e7:cae3"
+        },
+        {
+          "line": 56,
+          "checked": false,
+          "text": "Select a compatible research backend and run a bounded load/coherence smoke on the downloaded FP8 artifact",
+          "key": "h:2b6f:f336:5c5e:6579"
+        },
+        {
+          "line": 61,
+          "checked": false,
+          "text": "Prove residency during the load/generation window — sample RAM and VRAM while the phenomenon is",
+          "key": "h:7a60:363d:dd8d:8c12"
+        },
+        {
+          "line": 64,
+          "checked": false,
+          "text": "Run bounded coherence smokes — five text prompts (greeting, code, reasoning, structured output,",
+          "key": "h:155f:d7bd:8493:a1f6"
+        },
+        {
+          "line": 67,
+          "checked": false,
+          "text": "Measure prefill, decode, context-depth behavior, and MTP on/off when the selected backend exposes",
+          "key": "h:874b:068b:aba9:647c"
+        },
+        {
+          "line": 70,
+          "checked": false,
+          "text": "Run a focused capability ladder for coding, reasoning, and tool use; include vision only if its",
+          "key": "h:dbfd:3771:9110:2fff"
+        },
+        {
+          "line": 72,
+          "checked": false,
+          "text": "Publish the `GO` / `WAIT` / `KILL` and disk-retention verdict. Any new measurement or verified",
+          "key": "h:cfa8:92ef:e7fb:46f4"
+        }
+      ]
+    }
+  ]
+}

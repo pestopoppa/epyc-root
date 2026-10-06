@@ -1,0 +1,26 @@
+{
+  "shard": "S05",
+  "accepted": true,
+  "files": 19,
+  "open_keys": 260,
+  "decisions": [
+    {
+      "id": "S05-VB-SERVE-TIMING-JEV-CALL-JOIN",
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "decision": "accepted_with_main_revision",
+      "original_sha256": "68e3e76deaa2928b91ff7aca3479ff1b0301d62e33cfd4cc51806c05bb104d79",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (VB-SERVE-TIMING-1)\n\nInclude a synthetic fixture for the already-defined typed judge-to-serving-call join (`request_id == call_id`), retaining native task/caller identity. Test unmatched and repeated IDs, record-hash/schema mismatch, absent timings and absent launch identity. Keep typed `record_llm_calls` accounting separate from server queue/placement/timing records; never double-count one inference. Use the native server record for serving metrics.\n\nPreserve the original absence rules: skip absent timings, never invent zeros, and leave absent server identity unscoped rather than inferring a launch or rejecting an otherwise valid unscoped observation. An ID match is necessary for a join, not proof of grading quality or complete provenance. This is offline reader/fixture preparation; change neither the Claude-owned judge producer nor its calibration, and keep window aggregation as the original separate decision. The shared grader alone determines warrant; add no source class or ladder.\n",
+      "new_sha256": "a5ab2be89a7cb6fc7f1fbf9384828423dd7d2bef13568bc0c2e38d7b7b3873fa",
+      "review_notes": "Corrected nonexistent schema symbol to build_response_schema; constrained-schema adapter must preserve independent reader. Corrected missing-identity treatment from refusal to unscoped and prevented ID join overclaim."
+    },
+    {
+      "id": "S05-CJ13-STRUCTURED-LOCAL-READER",
+      "path": "handoffs/active/canonical-judge-suite-revamp.md",
+      "decision": "accepted_with_main_revision",
+      "original_sha256": "258d744356456b12ba2ff32c4ed993957d94970807ef462713d024e8e0e5a493",
+      "applied_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (CJ-13)\n\nSeparate the ready parse/fixture repair from the existing gated local-reader comparison. Reuse canonical typed question/result and constrained-schema contracts (`build_response_schema`, `DecisionResult`, `ParseFailure`) plus the existing structured-output validation/repair seam where its contract fits. Reader B needs an explicit response-shape adapter: the current free-form reader payload is not automatically the typed runner's schema. Preserve reader B's independent prompt/reading role, frozen rubric/case identities and labels; do not turn agreement into accuracy by making both readers the same implementation.\n\nMocked valid, omitted, invalid and unresolved responses can test complete criterion mapping and all failure denominators without model calls. Report each reader's accuracy against frozen gold separately from jointly resolved agreement and projected adjudication. Fixture conformance does not establish model accuracy, cost, calibration or adoption: CJ-13's MI210-window/CJ-GATE acceptance remains open, CJ-16 remains its separate cascade owner, and the Claude-owned coherence judge is untouched.\n",
+      "new_sha256": "92f74553a70db228eb249eecb783f776cd148a4f8190e3f820c96a1e1126e401",
+      "review_notes": "Corrected nonexistent schema symbol to build_response_schema; constrained-schema adapter must preserve independent reader. Corrected missing-identity treatment from refusal to unscoped and prevented ID join overclaim."
+    }
+  ]
+}

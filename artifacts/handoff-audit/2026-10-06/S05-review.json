@@ -1,0 +1,2407 @@
+{
+  "shard_id": "S05",
+  "method": "For each of the 19 manifest paths, verified source SHA-256 against S05.json, parsed every unchecked box by its exact line, read the full checkbox continuation through the next checkbox/heading and captured the nearest section headings. Classified each task on its own stated deliverable/acceptance/owner gate; split offline preparation from any live-run acceptance. Inspected direct JEV candidates in the canonical-judge, typed-decision, serving-call and Vidya source contracts. Completed/inference-gated/parallel-owned work remains unchanged; no checkbox is closed.",
+  "files": [
+    {
+      "path": "handoffs/active/vidya-belief-substrate-program.md",
+      "source_sha256": "68e3e76deaa2928b91ff7aca3479ff1b0301d62e33cfd4cc51806c05bb104d79",
+      "reviewed_open_keys": [
+        "h:167e:08b8:7a9d:f0ee",
+        "h:67af:fc95:fe07:ed42",
+        "h:e671:9f63:5972:8d6d",
+        "h:68b2:72a5:6c0b:66e5",
+        "h:ad62:60e7:e9ff:08ba",
+        "h:1298:f071:d2d9:cd61",
+        "h:004e:e45d:061f:a909",
+        "h:3e73:7016:71b6:bed1",
+        "h:8c7d:1e6f:c56b:8bda",
+        "h:c464:c292:d858:5053",
+        "h:1dd9:76cc:3550:d8d9",
+        "h:891e:8796:75dc:4c2e",
+        "h:10f7:2a59:dfe8:ade9",
+        "h:7421:4f8b:904b:a15f",
+        "h:8a24:822a:d334:1eab",
+        "h:c9d7:7198:edc2:72d5",
+        "h:0748:28c6:a39a:2792",
+        "h:a037:eb4d:3f70:0a37",
+        "h:4d6a:5717:60f4:0591",
+        "h:f6d7:8e90:f6bc:0365",
+        "h:8b3f:4ede:215a:65e6",
+        "h:dacc:3b22:25ee:bb44",
+        "h:12fa:6f98:2b02:ea08",
+        "h:531b:971a:fff2:9b22",
+        "h:6fd4:863d:6d2c:3367",
+        "h:854f:fa02:d27c:3e6f",
+        "h:ab46:3cee:1dd2:7fb3",
+        "h:0c41:5714:fd2e:9bdf",
+        "h:2285:29b7:8b13:3653",
+        "h:6d58:56e5:6656:ddbc",
+        "h:5a39:6a0d:e454:41b8",
+        "h:6e1c:bfeb:eba1:59d8",
+        "h:0480:fec5:b793:83d9",
+        "h:e90e:99b6:5cb5:b755",
+        "h:4d86:0e1b:07e8:442a",
+        "h:ecea:f797:1173:50f3",
+        "h:d00b:1fc8:e082:0202",
+        "h:fb19:55da:171d:7f97",
+        "h:db92:70ea:bd3a:90c9",
+        "h:807b:1578:fd70:c330",
+        "h:444f:dffc:6ad4:a269",
+        "h:50d4:f7a0:77e5:9458",
+        "h:bdfc:d1e2:06f6:0d02",
+        "h:8c3c:d016:fa9f:40da",
+        "h:1aef:3093:e47a:806e",
+        "h:55d9:a36c:15fb:b196",
+        "h:dd06:7762:c773:a3a7",
+        "h:892d:768d:d376:2216",
+        "h:39b8:3fcb:e156:1014",
+        "h:f5c9:373e:b0d8:3559",
+        "h:185f:273b:6eb7:3a4d",
+        "h:2132:31ed:0cc3:30f2",
+        "h:7564:6869:f2a1:8b4d",
+        "h:a250:e65c:f949:a687",
+        "h:6f90:22ef:d76b:fc2b",
+        "h:7f74:7f67:d86b:9f95",
+        "h:595b:b716:4357:82b5",
+        "h:81a4:b86e:6627:d83b",
+        "h:190b:eaa4:25b0:1e7a",
+        "h:a53d:508b:08c6:5e61",
+        "h:f01c:202b:15ec:29a1",
+        "h:f4b5:5fb6:eae4:464d",
+        "h:c700:9118:efb0:7546",
+        "h:2add:450e:a1dc:a878",
+        "h:9dc8:07a0:6bed:6a69",
+        "h:5317:95e7:909d:2a50",
+        "h:0f8b:065d:2fdc:cc11",
+        "h:6e40:e528:befa:3a2e",
+        "h:5646:9951:0e39:7431",
+        "h:dbfc:4040:dac5:3fe6",
+        "h:135d:464b:339b:e6c3",
+        "h:4dfa:6926:e225:926a",
+        "h:c2bc:d74f:cd50:7c88",
+        "h:101d:2c01:9eea:7714",
+        "h:a1a3:3cd7:e293:9166",
+        "h:beff:3128:9b68:81dc",
+        "h:cf5d:d11f:5537:74ad",
+        "h:2758:5bc5:c2b9:3918",
+        "h:ab51:cf88:e7ed:dbf6",
+        "h:b2b9:474d:1033:a4e5",
+        "h:db7a:52f9:f549:3433",
+        "h:24e1:c0e9:e1c1:06e1",
+        "h:fe2c:fa27:46a3:75a7",
+        "h:a196:9bfb:43ac:6ce2",
+        "h:b717:22a0:0f99:a1bf",
+        "h:5400:cbc8:c422:fad9",
+        "h:35e1:df04:69d1:4d58",
+        "h:51a7:2b0c:3c20:e902",
+        "h:c40a:cc8f:7ab3:17e2",
+        "h:50a9:97df:3713:460d",
+        "h:c9d3:f0cf:8aa2:81da",
+        "h:cc92:ae35:b9dc:b64c",
+        "h:1486:175f:4b53:4f4c",
+        "h:cb95:20d9:cd03:04e9",
+        "h:4a16:d2ee:c305:9b62",
+        "h:0cc9:8b09:4fec:dac5",
+        "h:7f79:af4a:3256:b405",
+        "h:bae7:bee7:10ec:bbb7",
+        "h:a890:3ec2:72d4:b8dc",
+        "h:8ef1:d222:0912:8bc0",
+        "h:6b22:68c8:1637:8316",
+        "h:b36f:5f6b:4952:0588",
+        "h:53f5:9998:5604:5d56",
+        "h:a0fe:8801:f2d5:177d",
+        "h:d9a6:f4b5:c9e6:c56e",
+        "h:74b6:4eaa:c5f2:9016",
+        "h:48e5:1661:0a54:4ec6",
+        "h:2f8d:8a7a:d282:0073",
+        "h:f7a5:a178:b958:61ef",
+        "h:d8d7:b182:b52d:7679",
+        "h:709e:9669:6b80:367d",
+        "h:0b8f:821b:b5fc:6fce",
+        "h:3b6d:2c6e:180a:12db",
+        "h:d865:47e5:733f:4b41",
+        "h:4f9c:7d46:e57e:8bdb",
+        "h:49fe:9226:1c47:7828",
+        "h:b63d:591e:3972:a29f",
+        "h:cc77:c63d:8cbf:3998",
+        "h:0f80:f7c1:4b4c:dd30",
+        "h:6dea:b14f:639d:ff1e",
+        "h:1678:b225:9d1a:d584",
+        "h:d310:7c88:dc2a:c151",
+        "h:f607:981f:b6b3:a4a4",
+        "h:b548:0979:1e60:d582",
+        "h:7c23:8ea2:8f35:a979",
+        "h:5eac:e266:1072:e154",
+        "h:86bc:3907:8463:5fb1",
+        "h:7d14:39ff:057f:3400",
+        "h:9782:b8ab:e677:7644",
+        "h:763e:77a1:f998:8933"
+      ],
+      "status_assessment": "Active handoff; reviewed 130 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:167e:08b8:7a9d:f0ee"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC6-LIVE The hook takes effect for trials written **after autopilot next restarts** — the The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:67af:fc95:fe07:ed42"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] **SC32 — Wire future architect MMLU-Pro hardened controls prospectively.** The 2026-08-12 The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:e671:9f63:5972:8d6d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] **SC41 — Wire AutoKernel GPU discovery baseline and candidate-only screens prospectively.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:68b2:72a5:6c0b:66e5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] **SC42 — Wire the ODL-P2 model-gated arm (`odl_bench` Unlimited-OCR) on the write side, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:ad62:60e7:e9ff:08ba"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC21 **The contention matrix became gradeable on 2026-08-12 — wire it while the producer is warm** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:1298:f071:d2d9:cd61"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC20 **LoRA/SFT training runs need a write-side ClaimTuple hook — filed 2026-08-12 by `mainC` The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:004e:e45d:061f:a909"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC12 **Kernel promotion/certification and K35 paired kernel/speculation receipts need a The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:3e73:7016:71b6:bed1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC12-ARTIFACT **Model artifact acquisition/integrity receipts need a prospective write-side The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8c7d:1e6f:c56b:8bda"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC7 Ingest autopilot trials into the ledger once SC6-LIVE confirms rows are landing. Deferred No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:c464:c292:d858:5053"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC37 **The eval-tower resolution band needs a write-side ClaimTuple hook — filed 2026-08-15 The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:1dd9:76cc:3550:d8d9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC38 **Wire worker-pool completion reports on the write side — filed 2026-08-16 by the The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:891e:8796:75dc:4c2e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC39 **Wire headless audit verdicts (P2-7) on the write side — filed 2026-08-16, BEFORE The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:10f7:2a59:dfe8:ade9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC40 **Wire the loop-owned-fleet plan metrics on the write side BEFORE the first unattended The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7421:4f8b:904b:a15f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Open work — start here / ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?), this open task asks: - [ ] SC43 **Wire the verifier/selector measurement on the write side BEFORE the first RM-11 run is The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8a24:822a:d334:1eab"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] SC14-B **Promotion gate and shared resolution frames.** Gate only the CANDIDATE → No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:c9d7:7198:edc2:72d5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **SC55 — wire the INF-70 per-node / per-thread graph profiler as a measurement source, write side The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:0748:28c6:a39a:2792"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **SC54 — wire the qwen4exp `llama-perplexity` / KLD quality gate as a measurement source, write side The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a037:eb4d:3f70:0a37"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] SC18 **Wire the `test-backend-ops` property layer as a measurement source — write side FIRST** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:4d6a:5717:60f4:0591"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **VB-AK-GPU-CONTROLS — extend the existing governed-control source before its first direct GPU replay.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:f6d7:8e90:f6bc:0365"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **SC51 — Wire portfolio-v2 autonomous GPU-source screens on the write side before their first The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8b3f:4ede:215a:65e6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **SC52 — wire the INF-42 G1 S-NIAH-2 exact-match probe on the write side before any successor The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:dacc:3b22:25ee:bb44"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **VB-COPYSPEC — adapter for copy-spec results, and re-grade the 2026-07-30 ngram retraction claim's scope.** The retraction `intake-1153#record` measured non-copy prompts with crippled defaults; it must n The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:12fa:6f98:2b02:ea08"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Source coverage — opened 2026-08-10 (operator question: what about wiki/logs/progress?) / ### Consumption — opened 2026-08-10 (operator question: what consumes these beliefs?), this open task asks: - [ ] **VB-INF70-ARMS — adapter for the INF-70 serving-harness ARM records** (filed 2026-09-07 by The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:531b:971a:fff2:9b22"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Cross-cutting concerns / ## Reporting, this open task asks: - [ ] **SC48 — wire the MI210 power-sensor probe suite into the belief kernel on the write side** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6fd4:863d:6d2c:3367"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Cross-cutting concerns / ## Reporting, this open task asks: - [ ] **SC47 — evaluate the FlashInfer Trace schema as the carrier shape for kernel-candidate records.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:854f:fa02:d27c:3e6f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Cross-cutting concerns / ## Reporting, this open task asks: - [ ] **SC45 — wire ParEval runs into the belief kernel BEFORE the first run, not after.** Filed The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:ab46:3cee:1dd2:7fb3"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Reporting / ## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21), this open task asks: - [ ] **SC49 — build the adapter that projects these into `ClaimTuple`s.** It must **project, not The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:0c41:5714:fd2e:9bdf"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC49 — write-side hook for the research-intake compute-gated sweeps (filed 2026-08-21) / ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22), this open task asks: - [ ] **SC50 — build the adapters that project these into `ClaimTuple`s.** **Project, not grade** — The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:2285:29b7:8b13:3653"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22) / ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07), this open task asks: - [ ] **SC60 — rank open obligations by discharge leverage** (how many beliefs' gate outcomes would No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:6d58:56e5:6656:ddbc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22) / ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07), this open task asks: - [ ] **SC64 — a sequential certification that cannot fail.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:5a39:6a0d:e454:41b8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC50 — write-side hook for the wave-2 research-intake sweeps (filed 2026-08-22) / ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07), this open task asks: - [ ] **SC63 — wire blind read-back outcomes into the belief kernel.** RA-13b (landed 2026-09-07) The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6e1c:bfeb:eba1:59d8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07) / ## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07), this open task asks: - [ ] **SC65 — build the adapter that projects the PS-1 floor-sweep cells into ClaimTuples.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:0480:fec5:b793:83d9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07) / ## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07), this open task asks: - [ ] **SC66 — build the adapter that projects SRP/SCH/EOR tap output into ClaimTuples.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:e90e:99b6:5cb5:b755"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC56–SC60 — Prove2Me intake wave (filed 2026-09-07) / ## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07), this open task asks: - [ ] **SC74 — repair the blocking `intake-1300#record` citation in `docs/design/vidya-pilot-spec.md`.** The 2026-09-07 external-corroboration paragraph cites the entry at ENTRY level, so it inherits that entry The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:4d86:0e1b:07e8:442a"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## SC65–SC68 — research-intake wave 2026-09-07 (filed 2026-09-07) / ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10), this open task asks: - [ ] **VB-AK-LEGACY-SERVING-LIVE — verify a future post-hook direct-serving capture and No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:ecea:f797:1173:50f3"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED — wire the unified current loop before its first new measurement** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:d00b:1fc8:e082:0202"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-LIFECYCLE — bind prospective whole-lifecycle observations and loaded No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:fb19:55da:171d:7f97"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-PARENT — wire parent per-witness receipts prospectively.** Owner No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:db92:70ea:bd3a:90c9"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-DISCOVERY — wire the generic A2 runtime-screen producer prospectively.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:807b:1578:fd70:c330"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-PROFILE — wire selected target-profile results prospectively.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:444f:dffc:6ad4:a269"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **2026-09-17 sampled-location extension, before first live GLM use** (GLM-5.3-Flash deleted 2026-09-22; read as \"before first live use on the next CPU target\", e.g. DeepSeek-V4.1-Flash): write bounded per No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:50d4:f7a0:77e5:9458"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-PREPARATION — wire source/build preparation findings at write time.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:bdfc:d1e2:06f6:0d02"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-LEGACY-SERVING — direct serving comparison and CPU facts (2026-09-10) / ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09), this open task asks: - [ ] **VB-AK-UNIFIED-VALIDATION — wire owning objective and LOO decisions at write time.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8c3c:d016:fa9f:40da"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC76 (S3-VID-02) — claim_anchors are re-verified, not self-consistent.** The only hasher runs at The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:1aef:3093:e47a:806e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC77 (S3-VID-03) — research_intake adapter tier comes from a verified hash, not record shape.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:55d9:a36c:15fb:b196"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC78 (S3-VID-04) — dilemmatic regression fixtures for research-intake, scored mechanically.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:dd06:7762:c773:a3a7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC79 (S3-VID-05) — citation-class fixtures on the SC78 harness and SC76 re-verifier.** (a) The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:892d:768d:d376:2216"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC80 (S3-VID-06) — cite-check: an out-of-range claim index is dangling, not unknown.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:39b8:3fcb:e156:1014"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### VB-AK-UNIFIED — unified current-loop producer hook (filed 2026-09-09) / ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914), this open task asks: - [ ] **SC81 (S3-VID-07) — write-side wiring for AutoKernel workload census + blast-radius rows The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:f5c9:373e:b0d8:3559"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC76–SC81 — research-intake wave 2026-09-15 (noninf-20260914) / ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07), this open task asks: - [ ] **SC71 — vacuous obligation satisfaction in `impact.py:352` and `:318-329`.** An obligation The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:185f:273b:6eb7:3a4d"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## SC69–SC73 — kernel audit survivors, 2026-09-07 (filed 2026-09-07) / ## VB-GLM53-MTP — prospective validation producer (2026-09-08), this open task asks: - [ ] **VB-GLM53-MTP — wire the GLM53 text/MTP validation producer at write time.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:2132:31ed:0cc3:30f2"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-GLM53-MTP — prospective validation producer (2026-09-08) / ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22), this open task asks: - [ ] **VB-DSV41 — wire the `deepseek41` validation/serving producer at write time, before DS41-T1.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7564:6869:f2a1:8b4d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-GLM53-MTP — prospective validation producer (2026-09-08) / ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22), this open task asks: - [ ] **VB-AK-DS41-OPS — add a prospective write-side producer for AutoKernel actor-repair and planner-seat The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a250:e65c:f949:a687"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22) / ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep), this open task asks: - [ ] **VB-RUNNER-PATHS-3 — audit the other hard-coded root defaults in research** (filed No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:6f90:22ef:d76b:fc2b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22) / ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep), this open task asks: - [ ] **VB-PRB-T4-CAVEAT — mark the 24 ingested PRB-T4 TALE rows as sample-scoped (filed 2026-09-17, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7f74:7f67:d86b:9f95"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22) / ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep), this open task asks: - [ ] **VB-GPU-RUNNER — write hooks for the sub-gpu-runner recipe sweeps (filed 2026-09-16, sub-gpu-runner).** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:595b:b716:4357:82b5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-DSV41 — DeepSeek-V4.1-Flash port validation producer (2026-09-22) / ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep), this open task asks: - [ ] **VB-SL2-STEPS — decide whether the serving A/B's `target_sample_steps_est` block (INF-62 SL-2, research The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:81a4:b86e:6627:d83b"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep) / ## VB-HARNESS-AUDIT — harness source-audit findings (filed 2026-09-16, sub-harness), this open task asks: - [ ] **VB-HARNESS-AUDIT — decide how pinned source-audit findings enter the ledger, before HS-4 cites them.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:190b:eaa4:25b0:1e7a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep) / ## VB-HARNESS-AUDIT — harness source-audit findings (filed 2026-09-16, sub-harness), this open task asks: - [ ] **VB-MHS-GATES — wire the write side of the RTG-55 gate verdicts when AP-53's rejected-mutation The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a53d:508b:08c6:5e61"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep) / ## VB-HARNESS-AUDIT — harness source-audit findings (filed 2026-09-16, sub-harness), this open task asks: - [ ] **VB-MHS-OPS-HOOK — after `sub/gate-frontier-20260916` merges and AutoPilot restarts on it, set The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:f01c:202b:15ec:29a1"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-GPU-PREP — write-side hooks for three GPU-runner producers (filed 2026-09-16, sub-gpu-prep) / ## VB-HARNESS-AUDIT — harness source-audit findings (filed 2026-09-16, sub-harness), this open task asks: - [ ] **VB-AP-PROMO-RULE-INGEST — run `cli.py ingest autopilot-journal` after AutoPilot restarts on The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:f4b5:5fb6:eae4:464d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KBRAG-QLEN — KB-RAG live query-length telemetry (filed 2026-09-16, sub-tooling) / ## VB-EVCONF2 — eval-tower confidence-source calibration axes (filed 2026-09-16, sub-evconf2), this open task asks: - [ ] **VB-EVCONF2-CAVEAT — attach a speculative-decoding caveat to every belief or citation built on The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:c700:9118:efb0:7546"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-EVCONF2 — eval-tower confidence-source calibration axes (filed 2026-09-16, sub-evconf2) / ## SC84 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15 as SC76), this open task asks: - [ ] **SC84 (VB-VGPR-STATIC) — wire static compile-sweep register reads on the WRITE side** before AK-QL-7/AK-QL-8 run: each read emits a ClaimTuple (source commit, toolchain id, flag/pragma set, kernel symbol No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:2add:450e:a1dc:a878"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-EVCONF2 — eval-tower confidence-source calibration axes (filed 2026-09-16, sub-evconf2) / ## SC84 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15 as SC76), this open task asks: - [ ] **SC84a — widen the SC84 tuple for INF03-REGAUDIT-1 (intake-1823/1826).** Add agpr_count, accum_offset, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:9dc8:07a0:6bed:6a69"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## SC84 — VB-VGPR-STATIC: static compile-sweep register stats (filed 2026-09-15 as SC76) / ## SC82 — VB-AK-MAXPERF: champion max-performance serving sweeps (filed 2026-09-16), this open task asks: - [ ] **SC82 (VB-AK-MAXPERF) — wire max-performance serving sweeps on the WRITE side** before the next The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:5317:95e7:909d:2a50"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC83 — reviewer negative-control FA rate + machine-review envelopes (filed 2026-09-16) / ## SC85 — OCC-1 optical-compression runs (filed 2026-09-16), this open task asks: - [ ] **SC85b — codify the OCC protocol** under `measurement/protocols/`, and have the runner pass The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:0f8b:065d:2fdc:cc11"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-WIRE — `cli.py ingest` wiring and reconciliation of the 2026-09-16 filings (sub-vidya-wire) / ## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16), this open task asks: - [ ] **SC86 — wire HS-4 shell runs on the WRITE side**: each run emits a ClaimTuple carrying the harness pin, plugin and config hash, Harness Card version, `x_memory` arm, and the HS-14 column set; locator = r The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6e40:e528:befa:3a2e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-WIRE — `cli.py ingest` wiring and reconciliation of the 2026-09-16 filings (sub-vidya-wire) / ## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16), this open task asks: - [ ] **SC86b — codify the shell-run protocol** under `measurement/protocols/` (task suite, trials per task, serving at production `enable_thinking`, the HS-14 column definitions), and have the P0.4/HS-14 drive The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:5646:9951:0e39:7431"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC86 — HS-4 OpenCode-shell runs (filed 2026-09-16) / ## SC88 — AutoKernel fresh seeded operation correctness (filed 2026-09-17), this open task asks: - [ ] **SC88 — wire fresh seeded operation correctness on the WRITE side before first real invocation.** The opt-in producer emits a self-hashed ClaimTuple-shaped receipt joining arm ID, selected candidate sour The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:dbfc:4040:dac5:3fe6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## SC88 — AutoKernel fresh seeded operation correctness (filed 2026-09-17) / ## SC89 — AutoKernel observed plateau diagnostic provenance (filed 2026-09-17), this open task asks: - [ ] **SC89 — bind the read-only AK-plateau reporter on the WRITE side before its first real-store report.** Author a self-hashed ClaimTuple-shaped receipt with immutable input experiment row IDs/payload diges The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:135d:464b:339b:e6c3"
+          ],
+          "disposition": "source_recheck",
+          "reason": "Under ## SC89 — AutoKernel observed plateau diagnostic provenance (filed 2026-09-17) / ## VB-AK-LINEAGE — AutoKernel code-lineage diagnostic capture (filed 2026-09-17), this open task asks: - [ ] **VB-AK-LINEAGE — finish prospective AutoKernel lineage source/outcome binding before the first real diagnostic run.** The default-off source/patch capture helper and offline line-level detector do not th This concerns prior/saved claims; re-derive from the named immutable source before changing status, and do not backfill warrant."
+        },
+        {
+          "keys": [
+            "h:4dfa:6926:e225:926a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-LINEAGE — AutoKernel code-lineage diagnostic capture (filed 2026-09-17) / ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a), this open task asks: - [ ] **VB-NIAH-E1A — wire E1 NIAH arms on the WRITE side before the first E1 run.** One self-hashed ClaimTuple per arm (Base / D1 / D2) with strict and lenient accuracy together, `format_gap`, `scorer_id`, n/u The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:c2bc:d74f:cd50:7c88"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-NIAH-E1A — RLM E1 NIAH dual-scored arms (filed 2026-09-16, sub-e1a) / ## VB-TD-21-CENSUS — structured-output consumer audit capture (filed 2026-09-24), this open task asks: - [ ] **VB-TD-21-CENSUS — add a prospective, source-pinned evidence writer before the next consumer census or re-audit.** Capture consumer identity, parse/constraint path, failure disposition, and endpoint capa The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:101d:2c01:9eea:7714"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-TD-21-CENSUS — structured-output consumer audit capture (filed 2026-09-24) / ## VB-FW-1 — GUI-authored fuzzy workflows (filed 2026-09-17, FW-4), this open task asks: - [ ] **VB-FW-1 — wire the write side before the first GUI-authored workflow run.** Source row added to The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a1a3:3cd7:e293:9166"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-FW-1 — GUI-authored fuzzy workflows (filed 2026-09-17, FW-4) / ## VB-AK-HELDOUT — AutoKernel CPU held-out confirmation (filed 2026-09-18), this open task asks: - [ ] **VB-AK-HELDOUT — capture the held-out serving comparison and integrity-gate disposition at the write side.** Research `9eee67c1` introduced `epyc.autokernel.heldout_serving_confirm.v1` as plain per-candi The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:beff:3128:9b68:81dc"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-AK-HELDOUT — AutoKernel CPU held-out confirmation (filed 2026-09-18) / ## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22), this open task asks: - [ ] **VB-KVQ-V10-INGEST — ingest the first post-hook complete v10 KV-quant sweep.** After the The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:cf5d:d11f:5537:74ad"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-AK-HELDOUT — AutoKernel CPU held-out confirmation (filed 2026-09-18) / ## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22), this open task asks: - [ ] **VB-KVQ-V10-RECONSIDER — flag archived AutoPilot decisions that declared reliance when their Vidya support is corrected or retracted.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:2758:5bc5:c2b9:3918"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22) / ## VB-AK-BELIEF — generic belief-kernel reader for the AutoKernel planner (filed 2026-09-25, main-ak-seat), this open task asks: - [ ] **VB-AK-BELIEF-1 — land the generic reader after Codex signs off the receipt.** Research The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:ab51:cf88:e7ed:dbf6"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-KVQ-V10 — MI210 KV-quant decode sweep at v10 (filed 2026-09-22) / ## VB-AK-BELIEF — generic belief-kernel reader for the AutoKernel planner (filed 2026-09-25, main-ak-seat), this open task asks: - [ ] **VB-AK-RELIANCE-REVIEW — flag AutoKernel proposals whose relied-on claims are corrected or retracted.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b2b9:474d:1033:a4e5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-BELIEF — generic belief-kernel reader for the AutoKernel planner (filed 2026-09-25, main-ak-seat) / ## VB-VRAM-1 — MI210 per-process VRAM decomposition (filed 2026-09-23), this open task asks: - [ ] **VB-VRAM-1 — author the read-side adapter for the VRAM headroom probe.** The producer already The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:db7a:52f9:f549:3433"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-VRAM-1 — MI210 per-process VRAM decomposition (filed 2026-09-23) / ## VB-ARCH-CPU-QUAL — architect quality gate, CPU live-serving and GPU (filed 2026-09-23), this open task asks: - [ ] **VB-ARCH-CPU-QUAL — author the read-side adapter for the architect quality gate, covering BOTH the The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:24e1:c0e9:e1c1:06e1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ARCH-CPU-QUAL — architect quality gate, CPU live-serving and GPU (filed 2026-09-23) / ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24), this open task asks: - [ ] **VB-MFVBS-1 — author the read-side adapter for the verify-before-stop measurement.** Producer: The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:fe2c:fa27:46a3:75a7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ARCH-CPU-QUAL — architect quality gate, CPU live-serving and GPU (filed 2026-09-23) / ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24), this open task asks: - [ ] **VB-EVALDISC-1 — author the read-side adapter for the eval-suite discriminability audit.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a196:9bfb:43ac:6ce2"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24) / ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-AK-SEAT-b2 — arm-record producer in the seat A/B driver.** Emit `epyc.autokernel.seat_ab_arm.v1` The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:b717:22a0:0f99:a1bf"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24) / ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-AK-SEAT-b1w — fill `server.build_info` and `server.served_model` in the call record.** Both are `null` The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:5400:cbc8:c422:fad9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24) / ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-AK-SEAT-b1x — accept the `orchestrator` backend kind (INF-78 OAB-2).** Root side done The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:35e1:df04:69d1:4d58"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24) / ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-AK-METRICS-1 — make `epyc.autokernel.actor_call_metrics.v1` contract-grade, then project it** (filed The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:51a7:2b0c:3c20:e902"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-MFVBS-1 / VB-EVALDISC-1 — two orchestrator analysis sources (filed 2026-09-24) / ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-AK-CTX-1 — join `epyc.autokernel.actor_context_bundle.v1` manifests to their call records** (filed No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:c40a:cc8f:7ab3:17e2"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat) / ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-KVU-1 — write side for the np × ctx `--kv-unified` driver, before the KVU-8 rerun.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:50a9:97df:3713:460d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat) / ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-KVU-1a — the two production-follow-up producers in the same study directory** (added 2026-09-24, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:c9d3:f0cf:8aa2:81da"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat) / ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-SPEECH-CPU-1 — write side for `speech_cpu_bench.py`, before any CPU speech re-measurement** (KVU-11 B/C). The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:cc92:ae35:b9dc:b64c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-AK-SEAT — AutoKernel actor-seat efficiency records (filed 2026-09-24, main-ak-seat) / ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat), this open task asks: - [ ] **VB-SPEECH-CPU-1a — write side for `live_llm_contention.py`** (the addendum-3 harness, research The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:1486:175f:4b53:4f4c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVU-1 / VB-SPEECH-CPU-1 — stack-window measurement sources (filed 2026-09-24, main-ak-seat) / ## VB-SPEECH-CONV-1 — conversation-stack voice measurements (filed 2026-09-24, speech vision session), this open task asks: - [ ] **VB-SPEECH-CONV-1 — write side for the conversation-stack harnesses, before the first CS-8/CS-9 run.** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:cb95:20d9:cd03:04e9"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-09-25 (shared screen evidence) / ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26), this open task asks: - [ ] **VB-ROUTE-LAT — wire the write side of routing-decision latency telemetry** (`routing-intelligence.md` The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:4a16:d2ee:c305:9b62"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Research Intake Update — 2026-09-25 (shared screen evidence) / ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26), this open task asks: - [ ] **VB-UFH12-RETR — wire the write side of the UFH-12 retrieval eval** (`repl-embedding-retrieval.md` No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:0cc9:8b09:4fec:dac5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-09-25 (shared screen evidence) / ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26), this open task asks: - [ ] **VB-UFH12-PLACEMENT-DISC — make `embedder-placement-gate` discovery recurse into `arms/`** (filed The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7f79:af4a:3256:b405"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Research Intake Update — 2026-09-25 (shared screen evidence) / ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26), this open task asks: - [ ] ❄ FROZEN 2026-09-27 — resume only once TD-28 unfreezes (v11 promoted AND autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-TD-ADVICE — wire the write side No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:bae7:bee7:10ec:bbb7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-V1-BACKPRESSURE — wire the write side of `/v1` backpressure receipts** (`harness-selection-and-integration.md` HS-OD-9) before the first live bounce: one receipt per bounce with the dispatch-ledger s The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a890:3ec2:72d4:b8dc"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] ❄ FROZEN 2026-09-27 — resume only once DAR-LAT-3 unfreezes (autopilot has trained on the swapped stack AND UFH-13 re-opened; operator ruling 2026-09-29) — **VB-SEL-LOADAB — wire the write side of the sele The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8ef1:d222:0912:8bc0"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-SWAP-C — wire the write side of the launch-phase receipts (heterogeneous-slot-fabric-residency.md HSF-1).** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6b22:68c8:1637:8316"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-PREFILL-XOVER — wire PF1 on the WRITE side before its first cell runs.** Emit one self-hashed ClaimTuple-shaped record per cell (artifact + binary digests, build line, protocol id or observation, n,  The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:b36f:5f6b:4952:0588"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-DS41-C57 — project the DS41-C57 barrier-sleep probe records (INF-77, 2026-09-27).** Source row in The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:53f5:9998:5604:5d56"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-DS41-C95 — project the DS41-C95 blind-graded planner-harness records (INF-77 DS41-C95/C101, 2026-10-01).** Source row in The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a0fe:8801:f2d5:177d"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-ROUTE-LAT / VB-UFH12-RETR / VB-UFH12-PLACEMENT / VB-TD-ADVICE — routing and REPL-retrieval measurement sources (filed 2026-09-26) / ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake), this open task asks: - [ ] **VB-MT-REPLAY — wire the write side of the multi-turn replay** (`dynamic-stack-concurrency.md` \"(G) #25592\" row and its G5 extension) before the first replay: per-turn rows keyed by `x_session_id` with p No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:d9a6:f4b5:c9e6:c56e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake) / ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan), this open task asks: - [ ] **VB-THESIS-1 — wire the write side of the thesis experiment before its first scored item (UFH-13 TE-4).** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:74b6:4eaa:c5f2:9016"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-V1-BACKPRESSURE / VB-SEL-LOADAB / VB-SWAP-C / VB-PREFILL-XOVER / VB-GAP-DIST / VB-MT-REPLAY — orchestration prior-art intake sources (filed 2026-09-26, research-intake) / ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan), this open task asks: - [ ] **VB-THESIS-2 — write the `ufh13-thesis-measurement` adapter (read side for VB-THESIS-1).** Project research The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:48e5:1661:0a54:4ec6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-THESIS-1 — the thesis experiment's per-item receipts (filed 2026-09-27, narrowed plan) / ## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design), this open task asks: - [ ] ❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **VB-DISPATCH-S2 — wire the write side of the stage-2 dispatch receipts before the gate shadow run (HS-19d P3a) The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:2f8d:8a7a:d282:0073"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design) / ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build), this open task asks: - [ ] **VB-RI18 — write the read-side adapter for RI-18's `belief_measurements.jsonl` sidecar** (research The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:f7a5:a178:b958:61ef"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-DISPATCH-S2 — HS-19 stage-2 dispatch receipts (filed 2026-09-27, hs19-stage2 design) / ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build), this open task asks: - [ ] **VB-RI18a — close the gap between the RI-18 sidecar and its contract, and make the run durable.** (filed The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:d8d7:b182:b52d:7679"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-SERVING-DF2 — wire the write side for three new serving measurement sources** (filed 2026-10-03, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:709e:9669:6b80:367d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-FA-MASKSKIP — write side for the KVU-19a masked-block-skip measurements** (filed 2026-10-03, workspace-ec; The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:0b8f:821b:b5fc:6fce"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-FA-MASKSKIP-b — write side for the KVU-19b `gpu_slot2.sh` records** (filed 2026-10-04, workspace-ec, from The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:3b6d:2c6e:180a:12db"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-FA-MASKSKIP-c — write side for the champion-fold GPU slot (`gpu_slot_fold.sh`) and the standing receipt** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:d865:47e5:733f:4b41"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-KVU16H — write side for the KVU-16h VRAM attribution (allocator shim + phase replay)** (filed 2026-10-04, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:4f9c:7d46:e57e:8bdb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-CPU-FA-VKQ — write side for the CPU FlashAttention FP16-VKQ harness and probe** (filed 2026-10-04, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:49fe:9226:1c47:7828"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-V11FA — write side for the v11 FA routing A/B slot and the DF2-9 model probe** (filed 2026-10-04, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:b63d:591e:3972:a29f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-LONGCTX-KERNEL — write side for the DCA perplexity and FA-INT64-OFFSET slots** (filed 2026-10-04, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:cc77:c63d:8cbf:3998"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Under ## VB-REVIEW-GATE / VB-RI18 — review-gate telemetry and the RI-18 counterfactual (filed 2026-09-30, RI-18 build) / ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03), this open task asks: - [ ] **VB-SERVE-TIMING-1 — read side for the orchestrator per-call serving records** (`epyc.orchestrator.serving_call.v1`, orchestrator `src/backends/serving_calls.py`, orch main 9a0d38e0; filed 2026-10-03 fro See the source-verified JEV-specific finding in this file record; preserve the original live-run gate."
+        },
+        {
+          "keys": [
+            "h:0f80:f7c1:4b4c:dd30"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-SERVING-DF2 — production serving producers from STACKCHG-DFLASH2 (filed 2026-10-03) / ## VB-KVU-P3 — 2026-10-03 MI210 X0-window measurements (filed 2026-10-03, ak-ds41-main), this open task asks: - [ ] **VB-KVU-P3 — write side + projection for the 2026-10-03 X0-window measurement records** (CLAUDE.md *Belief The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6dea:b14f:639d:ff1e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVU-P3 — 2026-10-03 MI210 X0-window measurements (filed 2026-10-03, ak-ds41-main) / ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main), this open task asks: - [ ] **VB-KQROUTE-1 — write side + projection for the GPU kernel-route A/B harness** (CLAUDE.md *Belief Kernel — The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:1678:b225:9d1a:d584"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVU-P3 — 2026-10-03 MI210 X0-window measurements (filed 2026-10-03, ak-ds41-main) / ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main), this open task asks: - [ ] **VB-CPU-XFER-1 — write side + projection for the CPU transfer A/B harness (`q38fn-transfer` `report.py`)** The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:d310:7c88:dc2a:c151"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main) / ## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec), this open task asks: - [ ] **VB-COHGATE-1 — write side for `coherence_gate` verdicts.** (CLAUDE.md *Belief Kernel — wiring new sources*; The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:f607:981f:b6b3:a4a4"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "Under ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main) / ## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec), this open task asks: - [ ] **VB-SC75-CLS — SC75 sidecars must say which classifier labelled them (patch 05, owner workspace-ec under The source explicitly names another owner; retain that ownership and avoid a duplicate implementation."
+        },
+        {
+          "keys": [
+            "h:b548:0979:1e60:d582"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main) / ## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec), this open task asks: - [ ] **VB-YARN-E1 — write side for the INF-59 long-context needle runs (E0 runner, E1 window).** (CLAUDE.md *Belief The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7c23:8ea2:8f35:a979"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KQROUTE-1 / VB-CPU-XFER-1 — 2026-10-03/04 kernel A/B harnesses (filed 2026-10-04, ak-ds41-main) / ## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec), this open task asks: - [ ] **VB-YARN-DEPTH-RECIPE — write side and adapter for the q36 depth-recipe native-window validation** (filed 2026-10-05, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:5eac:e266:1072:e154"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-COHGATE-1 / VB-SC75-CLS / VB-YARN-E1 — coherence verdicts and the long-context needle runs (filed 2026-10-04, workspace-ec) / ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main), this open task asks: - [ ] **VB-KVU-PF — write side + projection for RTG-58's measurement records** (CLAUDE.md *Belief Kernel*). Producers: The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:86bc:3907:8463:5fb1"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVU-PF — KV prefix-fork program measurement sources (filed 2026-10-04, ak-ds41-main) / ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4), this open task asks: - [ ] **VB-RI-OPS-WIRE — Capture and project the selected operational probe findings before their first run.** Register the six prospective source rows above at filing; integrate producer-authored claim element The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:7d14:39ff:057f:3400"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-10-04 (decision tools, operator-approved Stage 4) / ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main), this open task asks: - [ ] **VB-KVU-16B — write side + projection for the KVU-16b concurrent-residency replay** (CLAUDE.md *Belief The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:9782:b8ab:e677:7644"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## VB-KVU-16B — concurrent-residency replay records (filed 2026-10-04, ak-ds41-main) / ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main), this open task asks: - [ ] **VB-AK-LONGCTX — write side + projection for INF-81's long-context measurement sources** (CLAUDE.md *Belief The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:763e:77a1:f998:8933"
+          ],
+          "disposition": "conditional",
+          "reason": "Under ## VB-AK-LONGCTX — AutoKernel long-context surfaces and the production context-bucket analysis (filed 2026-10-04, ak-ds41-main) / ## Non-inference campaign source wiring — 2026-10-05, this open task asks: - [ ] **VB-LINKAGE-GUARD — bind prospective static ggml dependency receipts at write time.** JEV can only be a conditional host-side pre-action freshness check; it does not replace this task’s native receipt or produce linkage evidence."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S05-VB-SERVE-TIMING-JEV-CALL-JOIN",
+          "task_keys": [
+            "h:cc77:c63d:8cbf:3998"
+          ],
+          "title": "Include typed-judge calls in the existing per-call serving adapter via the already-defined call-id join",
+          "original_premise": "VB-SERVE-TIMING-1 reads the self-hashed `serving_call.v1` log and has no reader yet; the caller schema already carries task/request identity, while JEV coherence-judge calls separately document a `request_id == call_id` join.",
+          "revised_deliverable": "Keep the single `serving_call.v1` source and existing ClaimTuple projection. Add synthetic adapter fixtures for a typed-judge call with matched call/request ID, different calls that must not join, bad hash, missing timings, and absent server identity. Verify task/workload attribution (`coherence_judge` where present), and ensure the typed-decision `call_recorder` timing is not double-counted as server timings.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/coherence_judge.py",
+              "symbol": "call_id / request_context",
+              "what": "Already specifies the join from judge-call to serving-call record on request_id == call_id; treat as an example producer under existing source."
+            },
+            {
+              "path": "src/backends/serving_calls.py",
+              "symbol": "record_digest / SCHEMA / recorded_call",
+              "what": "Native producer self-hashes each server call and records server launch/provenance/timing identity; source of truth for serving metrics."
+            },
+            {
+              "path": "src/typed_decisions/call_recorder.py",
+              "symbol": "record_llm_calls / CallLog",
+              "what": "JEV local call accounting captures model call tokens/prompt/gen time; useful complementary accounting only, not a substitute for server queue, instance, launch, or decode timings."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/vidya-belief-substrate-program.md",
+              "lines": "2234-2254",
+              "observation": "Specifies strict `serving_call.v1` self-hash/schema checks, per-call metrics, provenance, absent-timing/identity treatment and Judged/Located grade."
+            },
+            {
+              "path": "src/typed_decisions/coherence_judge.py",
+              "lines": "38-59",
+              "observation": "Describes a serving_call join on request_id == call_id and task_id coherence_judge; do not edit this Claude-owned subsystem."
+            },
+            {
+              "path": "src/backends/serving_calls.py",
+              "lines": "29-42,62,463-481",
+              "observation": "Producer identity/timing contract and canonical record digest are already implemented."
+            },
+            {
+              "path": "src/typed_decisions/call_recorder.py",
+              "lines": "1-40,90-155",
+              "observation": "Captures model-side per-call token/prompt/gen fields, not serving placement/launch identity."
+            }
+          ],
+          "non_inference_scope": "Synthetic JSONL adapter fixtures only. No API/runtime reload, server sampling, or model invocation.",
+          "inference_acceptance": "No performance claim: per-call records remain n=1 Judged/Located; window share/percentiles require the already-specified window manifest and protocol.",
+          "gate": "Adapter implementation/test can proceed offline; any inference interpretation remains governed by MEASUREMENT.md and the existing window aggregation contract.",
+          "ownership": "VB-SERVE-TIMING-1 adapter owner. Do not change `coherence_judge.py` or its source registration; Claude owns that subsystem.",
+          "roi": "medium",
+          "effort": "medium",
+          "verification": "source_verified",
+          "proposed_handoff_append": "**Proposed JEV-aware fixture refinement (no new source class):** Add mock-only cases for existing `coherence_judge` calls joining the existing `serving_call.v1` row only when request/call IDs match; retain the call log’s `task_id`/caller identity. Keep `call_recorder` prompt/generation accounting distinct from `serving_call.v1` server timings and never sum the same inference twice. Preserve refusal on bad record hashes/schema and absent timings/launch identity. This is read-side conformance only; it does not change or newly claim the Claude-owned judge producer, enable a runtime, or promote per-call data beyond Judged/Located."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/autopilot-decision-plane-audit-2026-07-22.md",
+      "source_sha256": "e95db226feb9586c3199edc876b878950d152c5ad57ceb9da6fe85230f6e824e",
+      "reviewed_open_keys": [
+        "h:c17a:3c8c:ad5b:b449",
+        "h:394c:3173:0350:2ddd"
+      ],
+      "status_assessment": "Active handoff; reviewed 2 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c17a:3c8c:ad5b:b449"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Era-registry row — NO new row required / ### What remains (owner action, out of this session's scope), this open task asks: - [ ] Non-owned audit findings untouched (other owners / other agents' flux files): H2 No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:394c:3173:0350:2ddd"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ### Deploy plan (operator boundary — NOT executed here) / ### Deliverables / checkboxes, this open task asks: - [ ] **EV-CONF-2 — salient-token confidence source** (filed 2026-07-23): math AUROC 0.40 both arms = geomean anti-discrimination (length confounding). Build answer-token/salient-token confidence; re-baseline m The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/eval-tower-architecture-audit-2026-07-20.md",
+      "source_sha256": "e77b24232e375613a03908f477132ae8795b39bdc6b5a2bbdc65a0120bc01702",
+      "reviewed_open_keys": [
+        "h:2345:706a:cb4f:c2f1",
+        "h:2076:bc72:3fe0:4902",
+        "h:e30e:2683:8a18:2690"
+      ],
+      "status_assessment": "Active handoff; reviewed 3 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2345:706a:cb4f:c2f1"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Phase D — durability & observability / ### Phase E — structure & test architecture, this open task asks: - [ ] **E1 [loop·coord, after its queue] ARCH-1 — split the god-module** *(PARTIAL 2026-07-21 verified: trace-IR/trace-bank → `eval_tower_trace_feedback.py` (`0d6f0a41`/`d11baf66`), calibration metrics → `stat_ No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:2076:bc72:3fe0:4902"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### Phase D — durability & observability / ### Phase E — structure & test architecture, this open task asks: - [ ] **E3 [agent] TEST-3/TEST-2/TEST-4 — pin the landmines, fix the bug-enshrining tests** *(MOSTLY ✅ 2026-07-20: ECE pin committed (locks ev11b_closed_bin era, guards revert + un-relabeled change); three gate The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:e30e:2683:8a18:2690"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Phase D — durability & observability / ### Phase E — structure & test architecture, this open task asks: - [ ] **E5 [agent] remaining LOWs sweep** — ET-8 watchdog=0 fail-fast; ET-15 suite-health freshness bound + stat-race guard; ET-14 `on_question` thread-contract note + locked tap write; DRIFT-4 lazy rlvr facade No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/design-backlog-triage-2026-07-23.md",
+      "source_sha256": "edb17642e4c673d6ab3690e6a38535593189e32d492b1323a744714ec48a7ff5",
+      "reviewed_open_keys": [],
+      "status_assessment": "Active handoff; reviewed 0 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/evidence-plane-ledger-and-sequential-verdicts.md",
+      "source_sha256": "7b0cc6217c383929ead2732f833e7d8d6f17be24282ace19909c33c8de63b5bf",
+      "reviewed_open_keys": [
+        "h:64cd:c51c:ed2d:47f0"
+      ],
+      "status_assessment": "Active handoff; reviewed 1 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:64cd:c51c:ed2d:47f0"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Why / ## Waypoints, this open task asks: - [ ] **W8b — live candidate evidence after guard deploy**: continue W8 candidate attempts under the live selectable-action coordinator plus outcome-stall guard. Verify a keepable replayable candidate, then col No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/per-request-reasoning-budget.md",
+      "source_sha256": "bc262ffffed0393c6bd0f0f664f8f589a3ec2c0b9c2a0145413e1098b9a6ebfa",
+      "reviewed_open_keys": [
+        "h:dfa9:70fb:a31e:2613",
+        "h:5645:37c9:9f99:aacf",
+        "h:6748:377c:1236:752e",
+        "h:7d81:5ec9:0ebc:547c",
+        "h:8a34:2ea8:4519:3fb7"
+      ],
+      "status_assessment": "Active handoff; reviewed 5 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:dfa9:70fb:a31e:2613"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Stop-signal abstraction — design only (2026-07-29) / ## Progress checklist, this open task asks: - [ ] Step 3: implement fix (force </think> / suppress think scaffold at budget=0 for hybrid SSM), needs running server No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:5645:37c9:9f99:aacf"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Stop-signal abstraction — design only (2026-07-29) / ## Progress checklist, this open task asks: - [ ] Step 4: verify budget>0 caps reasoning at N tokens; no regression on pure MoE No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:6748:377c:1236:752e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Stop-signal abstraction — design only (2026-07-29) / ## Progress checklist, this open task asks: - [ ] Thread thinking.budget_tokens through ChatRequest per role No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:7d81:5ec9:0ebc:547c"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### PRB-T3 findings — a top-level `reasoning_effort` is DROPPED / ### PRB-T2 findings — TALE-EP evaluation design (design only; the run is PRB-T4), this open task asks: - [ ] **PRB-T4** — **Run the PRB-T2 TALE-EP evaluation.** Gated on an exclusive inference window (no The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8a34:2ea8:4519:3fb7"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### PRB-T3 findings — a top-level `reasoning_effort` is DROPPED / ### PRB-T2 findings — TALE-EP evaluation design (design only; the run is PRB-T4), this open task asks: - [ ] **PRB-T4-RERUN — GPU re-run of livecodebench + mmlu_pro (and math/olympiadbench at n=400)** after the The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/canonical-judge-suite-revamp.md",
+      "source_sha256": "258d744356456b12ba2ff32c4ed993957d94970807ef462713d024e8e0e5a493",
+      "reviewed_open_keys": [
+        "h:2574:fc73:f4a0:bc44",
+        "h:aba7:bb71:5b03:78a3",
+        "h:bfb7:d483:7dae:e836",
+        "h:fbaa:49c4:4044:f941",
+        "h:9e6b:0da1:cf42:c0dc",
+        "h:1265:ccb1:4f79:514d",
+        "h:3445:accc:2699:2389",
+        "h:ad09:baed:231a:2a3b",
+        "h:f749:206c:208f:6a90",
+        "h:c379:e3c9:dd0f:87f7",
+        "h:58e8:a272:791f:3476",
+        "h:def7:b973:39ea:e95e",
+        "h:f96e:b4f7:fe58:65f7",
+        "h:1aed:75b3:1bdf:424d",
+        "h:e72f:eca2:16f6:047a",
+        "h:f79d:b82c:142e:aad5",
+        "h:775f:1e75:04a5:10bf",
+        "h:94bf:1f59:9d90:14d9",
+        "h:e12b:5f7a:f632:6055",
+        "h:b830:ec19:b4d5:15a7",
+        "h:af35:d06b:5bb7:e036",
+        "h:b8c2:d269:4d01:f04b",
+        "h:0130:5910:7cc7:07e5",
+        "h:1284:e9ea:6440:c6e2",
+        "h:0dae:38ac:a3bc:d602",
+        "h:42d3:5e14:c7f0:9988",
+        "h:1dca:c03a:bf3f:abec",
+        "h:dea2:76b4:3a30:161d",
+        "h:53b5:d95f:ccd8:a023",
+        "h:4a60:29fa:700d:0af6",
+        "h:fdaa:74ba:a088:4c2f",
+        "h:8674:a409:5c6d:6f9b",
+        "h:aa75:f569:30fd:f03d",
+        "h:6860:8779:becd:6aae"
+      ],
+      "status_assessment": "Active handoff; reviewed 34 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "direct",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2574:fc73:f4a0:bc44"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Tasks / ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost), this open task asks: - [ ] **CJ-1e. Verify discrimination across ≥2 fleet models** — vendor keys already span the fleet The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:aba7:bb71:5b03:78a3"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost) / ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it), this open task asks: - [ ] **CJ-2a. Acquire corpus** — a **post-cutoff v5/v6 date window**, not the cached 2023-05→2024-03 The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:bfb7:d483:7dae:e836"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost) / ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it), this open task asks: - [ ] **CJ-2b. Size on disk** — cached release measured at 8.8G / 400 rows; **v6 size unknown**. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:fbaa:49c4:4044:f941"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost) / ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it), this open task asks: - [ ] **CJ-2c. Execution requirement** — substrate exists (`code_exec_scorer.py` + `code_execution` The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:9e6b:0da1:cf42:c0dc"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost) / ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it), this open task asks: - [ ] **CJ-2d. Wire a representative sample** — reuse the existing hard-slice construction (n=53 No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:1265:ccb1:4f79:514d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-1 — GPQA-Diamond (start here: unsaturated at this tier, zero acquisition cost) / ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it), this open task asks: - [ ] **CJ-2e. Verify discrimination across ≥2 fleet models** — the strongest candidate for The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:3445:accc:2699:2389"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it) / ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy), this open task asks: - [ ] **CJ-3d. Wire a representative sample** — note that the orchestrator's production tool path is The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:ad09:baed:231a:2a3b"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-2 — LiveCodeBench (contamination-resistant via date-windowing; all six models publish it) / ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy), this open task asks: - [ ] **CJ-3e. Verify discrimination across ≥2 fleet models** — this is the highest-value fix in the The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:f749:206c:208f:6a90"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy) / ### CJ-4 — tau-bench (multi-step agentic), this open task asks: - [ ] **CJ-4a. Acquire corpus** — nothing on disk. Lowest priority of the four; treat as a stretch No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:c379:e3c9:dd0f:87f7"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy) / ### CJ-4 — tau-bench (multi-step agentic), this open task asks: - [ ] **CJ-4b. Size on disk** — **unknown, needs sizing.** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:58e8:a272:791f:3476"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy) / ### CJ-4 — tau-bench (multi-step agentic), this open task asks: - [ ] **CJ-4c. Execution requirement** — **unknown, needs determination.** It needs a simulated-user No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:def7:b973:39ea:e95e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy) / ### CJ-4 — tau-bench (multi-step agentic), this open task asks: - [ ] **CJ-4d. Wire a representative sample** — only after CJ-4c says the oracle is objective. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:f96e:b4f7:fe58:65f7"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-3 — BFCL (execution-verified tool use; would replace the 9-question LLM-judged proxy) / ### CJ-4 — tau-bench (multi-step agentic), this open task asks: - [ ] **CJ-4e. Verify discrimination across ≥2 fleet models** — note no fleet model publishes The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:1aed:75b3:1bdf:424d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-4 — tau-bench (multi-step agentic) / ### CJ-5 — Cross-cutting, this open task asks: - [ ] **CJ-5a. Record every result under an explicit benchmark key** in the The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:e72f:eca2:16f6:047a"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-4 — tau-bench (multi-step agentic) / ### CJ-5 — Cross-cutting, this open task asks: - [ ] **CJ-5b. Report the saturation and spread statistics for every candidate**, not just the mean: No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:f79d:b82c:142e:aad5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-4 — tau-bench (multi-step agentic) / ### CJ-5 — Cross-cutting, this open task asks: - [ ] **CJ-5c. Decide the fate of the existing 79-question suite** — retire, retain as a regression The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:775f:1e75:04a5:10bf"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6a. Acquire the corpus** — `allenai/IFBench`, Apache-2.0 code, ODC-BY data. 300 prompts / No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:94bf:1f59:9d90:14d9"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6b. Size on disk** and record it in the same table as CJ-1…CJ-4. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:e12b:5f7a:f632:6055"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6c. Determine execution requirement** — scoring is judge-free, network-free and No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b830:ec19:b4d5:15a7"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6d. Wire a representative sample** through our own generation harness, handing the scorer a No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:af35:d06b:5bb7:e036"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6e. Record the noise floor BEFORE wiring, not after the first false alarm.** At n=300: one No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b8c2:d269:4d01:f04b"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6f. Preconditions before first run.** Pin the repo by **COMMIT SHA** — no tags or releases No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:0130:5910:7cc7:07e5"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6g. Record the saturation fact; pin the tier argument to our own scores.** A third-party No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:1284:e9ea:6440:c6e2"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-5 — Cross-cutting / ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147), this open task asks: - [ ] **CJ-6h. Verify it discriminates across ≥2 fleet models**, per the block contract, then report No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:0dae:38ac:a3bc:d602"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-7a — inverse-mutation fixtures as a judge-free edit-application suite** (intake-1150#record). Take The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:42d3:5e14:c7f0:9988"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-7b — `anti-apply` as a cheap capability probe** (intake-1151, Diff-XYZ). Given new code and No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:1dca:c03a:bf3f:abec"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-7c — paired descriptive/lazy instructions + hidden execution tests** (intake-1157, No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:dea2:76b4:3a30:161d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-7d — suite-construction principle** (intake-1154): build the suite to *provoke* the specific The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:53b5:d95f:ccd8:a023"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-10 — Transcribe the question-anchored BEAM judge prompt; do not author one** The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:4a60:29fa:700d:0af6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### CJ-6 — IFBench (execution-verified precise instruction following; NEW 2026-08-15, intake-1147) / ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18), this open task asks: - [ ] **CJ-17 — Repoint the judge before running anything** (intake-1330#record; numbered CJ-11 until 2026-09-30, The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:fdaa:74ba:a088:4c2f"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ### CJ-7 — judge-free suite designs from the oh-my-pi / edit-format cohort (2026-08-18) / ## Decision gate (OPERATOR), this open task asks: - [ ] **CJ-GATE. Which suites to adopt is an OPERATOR decision, not the executor's.** Once CJ-1…CJ-4 The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:8674:a409:5c6d:6f9b"
+          ],
+          "disposition": "refine_jev",
+          "reason": "Under ## Reporting / ## Research Intake Update — 2026-09-17 (independent judge evidence; intake-1475/1486/1490), this open task asks: - [ ] **CJ-13 — Two-cheap-readers redundancy arm (typed judge + local LLM judge).** Report pairwise agreement and human-disagreement cost per the intake-1475/1486 methodology; label \"agreement is not accuracy\"; See the source-verified JEV-specific finding in this file record; preserve the original live-run gate."
+        },
+        {
+          "keys": [
+            "h:aa75:f569:30fd:f03d"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Reporting / ## Research Intake Update — 2026-09-17 (independent judge evidence; intake-1475/1486/1490), this open task asks: - [ ] **CJ-14 — Adopt the dinostomp measurement discipline for new judge instruments:** hashed manifests/run records, a blind probe as the lower bound, pre-registered per-item distributions (intake-1490). The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:6860:8779:becd:6aae"
+          ],
+          "disposition": "duplicate_candidate",
+          "reason": "Under ## Research Intake Update — 2026-09-18 (judge redundancy measured; CJ-13/CJ-14) / ## Research Intake Update — 2026-09-25 (typed judge cascades), this open task asks: - [ ] **CJ-16 — Bounded LOCAL judge-cascade shadow (retargeted 2026-09-29 from hosted Jev; operator ruling Q1: local models only).** After CJ-15 is frozen, run a local first-stage typed judge (the typed-decisio The source names an existing canonical owner/fold; resolve through that owner instead of creating a second task."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S05-CJ13-STRUCTURED-LOCAL-READER",
+          "task_keys": [
+            "h:8674:a409:5c6d:6f9b"
+          ],
+          "title": "Repair the second-reader parse path using the shipped typed-decision schema before the gated CJ-13 rerun",
+          "original_premise": "CJ-13 remains open because the 2026-09-18 free-form reader failed to parse 63/72 criteria; the only 9 jointly-resolved criteria agreed, so the 0.875 adjudication rate is parse failure, not disagreement. CJ-15 is already a frozen local stress fixture; CJ-13 is still inference/window-gated.",
+          "revised_deliverable": "Add a deterministic, fixture-only structured-response adapter for the existing local second reader against the already-frozen CJ-15 cases. Reuse the existing typed output schema and repair/parse refusal behavior; preserve the same case order, gold criterion labels and invalid denominator. Show that resolved pairs, unresolved/failure counts, agreement, accuracy against frozen gold, and adjudication projection are separately computed. Do not change the live judge or declare the operational goal accepted until the existing MI210 window rerun.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "symbol": "_run_typed_case / _run_llm_case / _extract_json_object",
+              "what": "Current harness already freezes per-criterion expected labels, uses typed `Question`/`DecisionResult` for reader A, and parses free-form reader B; replace only the deterministic fixture path with the existing structured schema/repaired-output API and retain failure outcomes."
+            },
+            {
+              "path": "src/typed_decisions/schema.py",
+              "symbol": "response_schema / build_schema",
+              "what": "Use canonical constrained response shape instead of hand-rolled labels; test invalid/omitted verdicts as failures, never defaults."
+            },
+            {
+              "path": "src/typed_decisions/runner.py",
+              "symbol": "run_typed_decisions",
+              "what": "Reuse typed failure/refusal representation and test via injected/mock response; do not launch a model."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/canonical-judge-suite-revamp.md",
+              "lines": "549-558",
+              "observation": "CJ-13 explicitly records the 63/72 parse failures, 9/72 resolved agreement denominator, and requires structured/repaired reader before the same-rubric comparison."
+            },
+            {
+              "path": "handoffs/active/canonical-judge-suite-revamp.md",
+              "lines": "574-585",
+              "observation": "CJ-16 is separately a local cascade shadow with threshold/fallback/sequential-latency measurement and must not be conflated with CJ-13."
+            },
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "lines": "741-840",
+              "observation": "The existing harness has a typed reader, free-form JSON extraction, frozen expected criteria and explicit parse-failure records."
+            },
+            {
+              "path": "src/typed_decisions/types.py",
+              "lines": "90-145",
+              "observation": "DecisionResult preserves decisions and ParseFailure rather than substituting a silent answer."
+            }
+          ],
+          "non_inference_scope": "Offline synthetic fixture tests with injected structured/malformed judge responses; no inference, benchmark window, live backend, or judge authority changes.",
+          "inference_acceptance": "CJ-13 itself remains gated on `GATE: mi210-window`; only after fixture acceptance should the same-rubric local comparison rerun. Report accuracy, pair agreement and disagreement-based adjudication separately.",
+          "gate": "MI210 measurement window per existing operator ruling; no new approval request for the offline code/fixture slice.",
+          "ownership": "Canonical judge suite owner; do not modify coherence_judge/calibration subsystem (parallel-owned). CJ-13 is the single owner of cheap-judge redundancy; CJ-16 stays separate.",
+          "roi": "high",
+          "effort": "medium",
+          "verification": "source_verified",
+          "proposed_handoff_append": "**Proposed JEV implementation refinement (no new task or warrant):** Before CJ-13’s existing `mi210-window` rerun, reuse `typed_decisions.schema` and the existing runner’s typed `DecisionResult`/`ParseFailure` semantics to make reader B emit a constrained structured verdict on the already-frozen CJ-15 rubric cases. Add mock-only conformance for valid verdicts, omitted/invalid outputs, and refusal; retain every invalid case in the denominator. Compute resolved-pair agreement separately from each reader’s accuracy against the frozen labels and from the disagreement-based adjudication projection. This closes only the local parse/fixture defect; the local model comparison, realized cost, and adoption remain under the existing CJ-13/CJ-GATE boundaries. No hosted Jev, no new grading ladder, and no model call in the fixture tests."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/evidence-plane-instrument-repair.md",
+      "source_sha256": "22d8a46445d9b2b4780f8bfa560da7c1a5c22a9dbe3ef2a1a0b4cc3883a77bd7",
+      "reviewed_open_keys": [
+        "h:a5bb:b644:9353:fc74",
+        "h:97b2:6637:34ee:1679",
+        "h:6a5c:d7ee:d753:1096",
+        "h:d004:187d:3e70:6db0"
+      ],
+      "status_assessment": "Active handoff; reviewed 4 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:a5bb:b644:9353:fc74"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Why / ## Waypoints, this open task asks: - [ ] **W5 — designed core_v2** (impl 2.1, 2–3 days + calibration): `benchmarks/prompts/core_v2.jsonl` (~40 items, per-item p∈[0.2,0.8], stratified), versioned `core_id` journaled per trial. **Current-lineage c The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:97b2:6637:34ee:1679"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Why / ## Waypoints, this open task asks: - [ ] **W6 — rotating audit block** (impl 2.2, 1 day): +10 fresh stratified pool questions/trial, trial-id-seeded; overfit alarm (core-delta vs audit-delta correlation) + pool-level estimator. **Current-lineage The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:6a5c:d7ee:d753:1096"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Why / ## Waypoints, this open task asks: - [ ] **W8 — promotion evals** (impl 2.4, ~1 day wiring): `confirmed` candidates trigger a fresh stratified n=200–500 draw; promotion needs core-confirmed AND promotion-delta CI excluding regression. Acceptance No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:d004:187d:3e70:6db0"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Checkpoints / ## Research Intake Update — 2026-08-21 (Stage-2b, intake-1279#record), this open task asks: - [ ] **(Z) Fix the llama-server log retention hole.** A correctness question about production No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/repl-session-memory-maturity.md",
+      "source_sha256": "2b644e1ea9b6c34c49c226b42046180a95b51eb70798ffb59c25fe7b2df81335",
+      "reviewed_open_keys": [
+        "h:d829:d406:006f:a22e",
+        "h:3b33:d31c:f199:e5f6",
+        "h:c3d9:1f64:14a6:e6ce",
+        "h:5e62:fd74:edb1:a560",
+        "h:d206:99b7:329b:2a32",
+        "h:aeb6:de10:90e4:66a3",
+        "h:7d1e:ab03:57ad:c805",
+        "h:140f:87e8:04b5:8c1a",
+        "h:b717:c1ba:c941:bf47",
+        "h:6257:b605:e9ac:d176",
+        "h:e9f6:ba31:a4b0:c107",
+        "h:18bb:db08:d6f0:6d8e",
+        "h:5337:6717:61ad:8ab6",
+        "h:83f9:132d:7913:841d",
+        "h:ea2d:b4eb:2bad:c72a",
+        "h:b762:9c14:cbd4:db80"
+      ],
+      "status_assessment": "Active handoff; reviewed 16 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d829:d406:006f:a22e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## What we already have — do not re-derive / ## Tasks, this open task asks: - [ ] D-a5 — **If DataFrame persistence is ever wanted, use a typed columnar codec, not the No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:3b33:d31c:f199:e5f6"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Tasks / ## Why D-a needed a decision, not just effort (verified 2026-07-27), this open task asks: - [ ] D-c — **Code-log resume.** Carry the executed code log into the resume preamble instead of The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:c3d9:1f64:14a6:e6ce"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Tasks / ## Why D-a needed a decision, not just effort (verified 2026-07-27), this open task asks: - [ ] D-c1 — **Measure from real workloads, not a synthetic arm.** Instrument resumed sessions to The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:5e62:fd74:edb1:a560"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Tasks / ## Why D-a needed a decision, not just effort (verified 2026-07-27), this open task asks: - [ ] D-c2 — Decide D-c on D-c1's numbers, or close it if the measured re-derivation cost is No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:d206:99b7:329b:2a32"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Tasks / ## Why D-a needed a decision, not just effort (verified 2026-07-27), this open task asks: - [ ] D-d — **Curation layer.** An agent-facing annotate/pin call layered over the existing auto-save, The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:aeb6:de10:90e4:66a3"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Tasks / ## Why D-a needed a decision, not just effort (verified 2026-07-27), this open task asks: - [ ] D-e1 — Decide whether to raise the 12/8 defaults. Same evidence question as D-c No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:7d1e:ab03:57ad:c805"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-f1 — Verify the lease under the live 6-worker API** once the API is back up: two concurrent No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:140f:87e8:04b5:8c1a"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-f2 — Decide whether findings, documents and tags are fenced too.** D-f fences the session row, No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b717:c1ba:c941:bf47"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-f3a — Give `graph_snapshots` a reader or a retention bound.** Nothing reads the table yet No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:6257:b605:e9ac:d176"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-g — Journal uncertain external side effects before resume can replay them.** Add a durable The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:e9f6:ba31:a4b0:c107"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-h — The namespace digest is NOT a rendering job; shape capture must be ADDED first** No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:18bb:db08:d6f0:6d8e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Notes / ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010), this open task asks: - [ ] **D-i — Enumerate and BOUND every kernel-to-context channel; make auto-rendering of the cell No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:5337:6717:61ad:8ab6"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010) / ## Research Intake Update — 2026-10-04, this open task asks: - [ ] **D-RI-PICKLE-PASS — Preserve pickled_globals through both existing checkpoint constructors.** Forward the already-signed payload through /chat and SessionPersister into Checkpoint; preserve size limits,  The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:83f9:132d:7913:841d"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## 2026-08-07 — process-safe ownership and uncertain-effect recovery (intake-1009/1010) / ## Research Intake Update — 2026-10-04, this open task asks: - [ ] **D-RI-TIMEOUT-STATE — Make a timed-out REPL environment terminal for reuse and persistence.** Mark timeout at the worker-await boundary, stop further execution in that environment and suppress its API/pe The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:ea2d:b4eb:2bad:c72a"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-10-04 / ### Contained CPython and restricted Monty slice, this open task asks: - [ ] **D-RI-CONTAIN — Add a killable, resource-limited CPython execution lane behind the existing REPL interface.** Keep an opt-in spawned/exec'd child warm across a request's cells; acquire the existing sessi The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:b762:9c14:cbd4:db80"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-10-04 / ### Contained CPython and restricted Monty slice, this open task asks: - [ ] **D-RI-MONTY-SLICE — Implement and run a restricted Monty adapter on twelve existing EPYC REPL cases.** Return the existing ExecutionResult shape and exercise persistent feeds for peek/grep, list/dict/com The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/frontier-f3-data-flywheel.md",
+      "source_sha256": "2ed85e923afe9971e975fc84378a4e2b139b2948abb75d6091a6b9435960803b",
+      "reviewed_open_keys": [
+        "h:2767:121e:06c5:8758",
+        "h:3be1:dc8f:2150:68ab",
+        "h:844d:4232:ace6:2a78",
+        "h:5046:1913:e958:289a"
+      ],
+      "status_assessment": "Active handoff; reviewed 4 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2767:121e:06c5:8758"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Why / ## Waypoints, this open task asks: - [ ] **W3 — GPU fine-tunes (MI210 present since 2026-07-02; the HW gate is CLEARED. The DATA gate is now satisfied by 100 trusted reviewed triage labels plus initial F2 gold tuples; gfx90a TRAINING-VIABILITY i The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:3be1:dc8f:2150:68ab"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Waypoints / ## Gates & pitfalls, this open task asks: - [ ] **A GRPO run that demonstrates LEARNING, not just execution.** The 2026-08-12 smoke proved the loop runs; it proved nothing about optimisation, because `clipped_ratio: 1` meant every completion hit the to The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:844d:4232:ace6:2a78"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Waypoints / ## Gates & pitfalls, this open task asks: - [ ] Repeat the W3(a) fit check on the real Qwen3.5-9B once its HF weights are local (~19 GB download, operator No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:5046:1913:e958:289a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Waypoints / ## Gates & pitfalls, this open task asks: - [ ] **Environment split is deliberate — do not \"consolidate\" it.** Two training venvs exist on purpose, each internally consistent: `geak-v1-rocm62-py312` (torch `2.5.1+rocm6.2`, system ROCm 6.2) carries **SF The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/scorer-fork-drift-audit-2026-07-22.md",
+      "source_sha256": "ccea9c8ec5f9038593ebf97d974ef63b031fb6d2a984af866a875cf6119e1661",
+      "reviewed_open_keys": [
+        "h:d535:4510:cd09:a796"
+      ],
+      "status_assessment": "Active handoff; reviewed 1 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d535:4510:cd09:a796"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ### Duplication / follow-up notes for later unification / ## Residual tasks (filed at 2026-07-22 wrap-up), this open task asks: - [ ] **ESCALATED, NOT PATCHED — needs an operator/coordinator call before the guard lands.** The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/repl-turn-efficiency.md",
+      "source_sha256": "50e5ed1021b8c6d04928dfef1d508f0ab50cb289421938ab8070d259e7dc7af5",
+      "reviewed_open_keys": [
+        "h:6a1d:7dd8:340f:849f",
+        "h:9fef:7bcf:8b34:1dd5",
+        "h:fbf4:50c8:382f:6a49",
+        "h:9972:7778:2d52:cf59",
+        "h:1a2d:26d7:741e:bc1f",
+        "h:78f1:d3e2:9fde:80cf",
+        "h:f445:e6f0:574b:ae1a",
+        "h:31a4:413e:476a:6e68",
+        "h:333e:786b:330f:ee87",
+        "h:1658:9141:4815:2737",
+        "h:646b:93cc:0bf6:e68f",
+        "h:d9e5:b38d:57da:e2d5",
+        "h:b258:423e:9492:09f4",
+        "h:3b5d:4fcf:e634:e771",
+        "h:efd1:8bd1:127f:4e5f",
+        "h:34b2:7ac3:30eb:cf3e",
+        "h:dd72:7887:7cad:7bbe"
+      ],
+      "status_assessment": "Active handoff; reviewed 17 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:6a1d:7dd8:340f:849f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Executor Start Here / ## Outstanding Tasks, this open task asks: - [ ] **S4 Omega A/B**: measure turns per task, token cost per task, and accuracy delta. This gates suggestion, verbosity, and any extra tool-surface changes. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:9fef:7bcf:8b34:1dd5"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Executor Start Here / ## Outstanding Tasks, this open task asks: - [ ] **S4-T1 — BUG: turns per task are never recorded.** `ChatResponse.turns` The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:fbf4:50c8:382f:6a49"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Executor Start Here / ## Outstanding Tasks, this open task asks: - [ ] **S4-T2 — the Omega A/B has an ARM but no RUNNER.** The intervention prompt landed The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:9972:7778:2d52:cf59"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Reporting Instructions / ## Research Intake Update — 2026-07-21 (RLM sub-call budget contracts + a verifiable span scorer), this open task asks: - [ ] Candidate: port the interval-F1 span scorer as an eval-tower scorer for evidence-grounded retrieval (also relevant to [internal-kb-rag.md](internal-kb-rag.md)). [intake-868] No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:1a2d:26d7:741e:bc1f"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Research Intake Update — 2026-07-21 (RLM sub-call budget contracts + a verifiable span scorer) / ## Deep-Dive Correction — 2026-07-21 (The scorer port is WITHDRAWN; take the prompt instead), this open task asks: - [ ] Only if an evidence-retrieval suite is separately justified: plumb HotpotQA's already-loaded-but-DISCARDED `supporting_facts` (`dataset_adapters.py:1524`) into the emitted record to create our first span- The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:78f1:d3e2:9fde:80cf"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Deep-Dive Correction — 2026-07-21 (The scorer port is WITHDRAWN; take the prompt instead) / ### Audit catch 2026-07-21 — two cheap levers from intake-867 that were never filed, this open task asks: - [ ] **Strategy-prompt-length ablation.** intake-867 measured an explicit task-strategy prompt cutting Sonnet 4.6 rollout time **90s → 30s (3x)**, and a 200-token compressed variant converging *lower and less  No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:f445:e6f0:574b:ae1a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Deep-Dive Correction — 2026-07-21 (The scorer port is WITHDRAWN; take the prompt instead) / ### Audit catch 2026-07-21 — two cheap levers from intake-867 that were never filed, this open task asks: - [ ] **Prefix-cache audit of our REPL scaffold.** intake-867's scaffold re-appends the user query every turn, so successive turns share NO prefix — every turn is a full-prompt cache miss, which on bandwidth-bo The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:31a4:413e:476a:6e68"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### Audit catch 2026-07-21 — two cheap levers from intake-867 that were never filed / ### RTE-Prefix audit checkpoint — 2026-08-13, this open task asks: - [ ] **Repair the RTE-Prefix A/B harness before spending compute**: use the live minimal builder and real turn state/executed-output semantics, include the live gathered/workspace/session/budget suffixes, inje No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:333e:786b:330f:ee87"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### Audit catch 2026-07-21 — two cheap levers from intake-867 that were never filed / ### RTE-Prefix audit checkpoint — 2026-08-13, this open task asks: - [ ] **Run the repaired RTE-Prefix live A/B and semantic gate** under a granted inference window; record isolated-arm cached/processed tokens and prefill latency plus S4 turns/task, token cost/task, and accura The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:1658:9141:4815:2737"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] **Standing caution on RLM-shaped fan-out.** intake-803 was filed keeping the promotional half of its source and dropping every negative — including the load-bearing one: in Needle-in-Haystack the plain LL No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:646b:93cc:0bf6:e68f"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] Adopt **Main Model Token Efficiency** (mean reward / mean main-model trajectory tokens, normalized to the no-scaffold arm) as a reported metric for scaffold A/Bs, paired with total-token and wall-clock co No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:d9e5:b38d:57da:e2d5"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] Compare RLM budget constants against ours (`ORCHESTRATOR_REPL_TURN_N_TOKENS`, swept over [256,4096]): recursion depth **exactly 1**; REPL output to the root capped at **8192 chars/turn** (the forcing func No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b258:423e:9492:09f4"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] Add the intake-537 **open-source-hardened RLM system prompt** (tuned on Minimax-M2.7 / GLM-5.1 — the only RLM prompt in the corpus tuned for open-weight drivers) as a third A/B arm beside the promoted Sky No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:3b5d:4fcf:e634:e771"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] Resolve the prefix-cache contradiction: intake-537 claims sub-agent calls hit KV cache ~90% of the time (static system prompt, append-only transcript) while this handoff records the RLM scaffold sharing n The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:efd1:8bd1:127f:4e5f"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] **Context knee at ~7K tokens, measured under attention masking.** intake-1118 (arXiv:2510.05381v1, EMNLP 2025 Findings, dive-verified) isolates pure LENGTH from retrieval quality by attention-masking the  No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:34b2:7ac3:30eb:cf3e"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] **Width should taper with session phase, and the main should not choose its own width.** intake-1125#02 and intake-1125#03 (arXiv:2602.07359v1, dive-verified) finds optimal parallel width FALLS as the ste The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:dd72:7887:7cad:7bbe"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### RTE-Prefix audit checkpoint — 2026-08-13 / ## 2026-07-25 — intake Stage-2a dive: RLM prefill→decode caution (intake-803 was mis-filed), this open task asks: - [ ] **Critical Steps is the right SHAPE for the S4 metric at line 115, and nothing more.** Σ_t(S_main + max_i S_sub,i) is a critical-path makespan in STEPS (intake-1106, dive-verified) and is exactly the prop No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/strand-rust-coder-rustevo2-verification.md",
+      "source_sha256": "17ff46ecbfc5d8586ad2201e6188d22c51e9c86a2ccc5c0f1a348ce09a382d6d",
+      "reviewed_open_keys": [
+        "h:e529:bc0a:3602:60ac",
+        "h:1373:2200:863b:bfbb",
+        "h:b16c:5f08:8d86:c142"
+      ],
+      "status_assessment": "Active handoff; reviewed 3 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:e529:bc0a:3602:60ac"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ### gemma-4-12B coder fine-tune (intake-702 → C-3) / ## Progress checklist, this open task asks: - [ ] Phase B single-instance RustEvo2 bench (USER APPROVAL REQUIRED) - Strand, Qwen2.5-Coder-14B base, gemma4 worker, sequential The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:1373:2200:863b:bfbb"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### gemma-4-12B coder fine-tune (intake-702 → C-3) / ## Progress checklist, this open task asks: - [ ] Phase C score table + decision matrix disposition; report base-model number to isolate fine-tune delta No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:b16c:5f08:8d86:c142"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### gemma-4-12B coder fine-tune (intake-702 → C-3) / ## Progress checklist, this open task asks: - [ ] Push GO/NO-GO disposition into intake-616 and flip swarm-dataset-distillation status if GO No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/re4-protocol-redesign.md",
+      "source_sha256": "c0950fc204bc3bfb6ee281c0409fdbdaf223eee7f540a450c199f7a92f8bce0a",
+      "reviewed_open_keys": [
+        "h:2a73:c8e0:e1f3:bc2f",
+        "h:d580:8a1e:02d6:5524",
+        "h:9128:3765:0cde:1666",
+        "h:6988:b3e9:f26e:27c8"
+      ],
+      "status_assessment": "Active handoff; reviewed 4 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:2a73:c8e0:e1f3:bc2f"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 6. Runner code-change SPEC (`scripts/benchmark/longcot_mini_stack_runner.py`) / ## 7. Probe → full-run sequence, this open task asks: - [ ] **RE-4.2 — non-saturation probe** (operator quiet-window, current v8 topology re-attested, autopilot stopped): frontdoor-only, two-phase, `R=4096`, 30 stratified rows. Score with `score_longcot_run.py`. * No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:d580:8a1e:02d6:5524"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 6. Runner code-change SPEC (`scripts/benchmark/longcot_mini_stack_runner.py`) / ## 7. Probe → full-run sequence, this open task asks: - [ ] **RE-4.3 — full reference run** (only if RE-4.2 in-band): both roles, two-phase, `R=4096`, all 402 rows. Record per-model deterministic accuracy vs. the 90% saturation line, per-domain, canary-leak count  No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:9128:3765:0cde:1666"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## 6. Runner code-change SPEC (`scripts/benchmark/longcot_mini_stack_runner.py`) / ## 7. Probe → full-run sequence, this open task asks: - [ ] **RE-4.4 — reasoning-budget ladder** (follow-on curve; the reasoning-compression signal): re-run the 402 rows at `R∈{512,1024,2048,4096}` (both roles). Emit accuracy(R) per role/domain and the **rescue se The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:6988:b3e9:f26e:27c8"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## 6. Runner code-change SPEC (`scripts/benchmark/longcot_mini_stack_runner.py`) / ## 7. Probe → full-run sequence, this open task asks: - [ ] **RE-4.5 — package + ledger**: package artifacts to `coordination/inference-batch/bundles/RE-4/`; write the terminal ledger row (`DONE_PASS` / `DONE_MARGINAL_OBS` per the fork); flip `K-LCM-1` only on `DO The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/fable5-window2-findings-03-portfolio-and-master-queue.md",
+      "source_sha256": "ddbc731f48e6e0ac278e09ec794a0e01aa434acb926cd6beb112b1a4aa6ae21a",
+      "reviewed_open_keys": [
+        "h:5c18:4281:b462:1912",
+        "h:fc88:e1bd:c25d:3d04",
+        "h:9e37:2238:327d:e0b7",
+        "h:7221:bb0a:fe87:cde0",
+        "h:3e87:22a7:f5ee:2297",
+        "h:5a12:7e83:b3cf:3a31",
+        "h:a376:5b91:56b7:112e",
+        "h:34d6:2100:2063:c2c6",
+        "h:3375:a532:9a1b:1f64",
+        "h:f441:23db:1a8c:5364",
+        "h:cdf2:3335:e0c4:cccf",
+        "h:864d:a325:7bf5:7b44",
+        "h:2d13:2db9:5e7b:9597"
+      ],
+      "status_assessment": "Active handoff; reviewed 13 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:5c18:4281:b462:1912"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **G1 · Ratify P-GPU-1** (operator; measurement trust boundary — human-amendment-only). [findings-02 §5] The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:fc88:e1bd:c25d:3d04"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **G2 · Canonical-tree HIP build + `qwen35moe`/`qwen3next` op-coverage smoke** (no window needed; LD_LIBRARY_PATH hazard documented). [findings-02 M1-prereq] No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:9e37:2238:327d:e0b7"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **G3 · Frontdoor residency bench under P-GPU-1 → Gate R decision** (≥1.8× → R12 plumbing; 1.3–1.8× → HIP-kernel track critical; <1.3× → residency demotes to eval-only hosting). [findings-02 M1] No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:7221:bb0a:fe87:cde0"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **I2 · Ledger-derived core_v2 selection** (read-only rebuild; demote 2026-06-15 calibration lineage to prior; compare item sets). [findings-01 R2] The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:3e87:22a7:f5ee:2297"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] Accrue a current-era, trusted ledger that yields at least 40 eligible core items before preparing any new `autopilot_quality` era row or activating a replacement core; the present 2-item artifact is evide No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:5a12:7e83:b3cf:3a31"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **I3 · DAR-1 regret replay over live ledger** (offline; the routing-unfreeze gate IS this replay). [R16] The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:a376:5b91:56b7:112e"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## 4. PROPOSED master queue rewrite (replacement for master-index §A/§B — delivered as proposal, not applied) / ### A. NOW — this week, this open task asks: - [ ] **N2-tail · W8 promotion-eval evidence** (unchanged owner: evidence-plane-ledger-and-sequential-verdicts.md). No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:34d6:2100:2063:c2c6"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **R12 · Orchestrator GPU plumbing** (gate: G3 ≥1.8×): registry device/accel block → lean compile → launch args → runtime attestation (three-gates lesson). No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:3375:a532:9a1b:1f64"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **M2/M3/M4 · architect `-ncmoe` sweep · op-offload prefill probe · batch-K verify curve** (GPU lane; M4 wants a brief window). No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:f441:23db:1a8c:5364"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **I4 · 33-flip-item discriminating re-run** (conc 1 vs 3, error_detail on; 1–2 h window). [findings-01 R3] The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:cdf2:3335:e0c4:cccf"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **C1 · Campaign re-plan post-Gate-R**: substrate field per manifest entry; quiesce window shrinks to CPU-topology probes (shape-keyed bracket, J2/J3, E1); eval-shaped items (J12/J15, G5 remainder, K-MEM s No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:864d:a325:7bf5:7b44"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **C2 · Accept-path bundle, per-item, flag-isolated** (after W8): K-DIV-1 thresholds → EV-4/H5 (H7 first) → K-SKILL-1 → J11/BSV-2 → J16 premise re-verify. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:2d13:2db9:5e7b:9597"
+          ],
+          "disposition": "retain",
+          "reason": "Under ### A. NOW — this week / ### B. NEXT — gated on NOW outputs, this open task asks: - [ ] **HOLD-pending-Gate-R: E3 8×8 GEMM SIMD; MoE-Spec CPU Phase-0; sarathi-serve gate re-read.** [R15] No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/backlog-roi-audit-2026-07-14.md",
+      "source_sha256": "1567b08b29affeed9a42a85dc74bfaba9e1fdc0b2aa876d9895de14dc406cb87",
+      "reviewed_open_keys": [
+        "h:c38e:a291:52e7:9cbd",
+        "h:875a:fb7b:bb6e:ca8a",
+        "h:9f34:8a2f:0f9c:1bb9",
+        "h:8e48:985b:14cc:ff2b"
+      ],
+      "status_assessment": "Active handoff; reviewed 4 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:c38e:a291:52e7:9cbd"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Method / ## A. Verified missed ROI tasks (5) — now filed with owners, this open task asks: - [ ] **RE-1 · Math-Verify scoring flip + re-baseline** (S, med-ROI; intake-377/379) — the `math_verify` scorer is landed in orchestrator but **zero** pool questions use it (1,319 math `exact_match`, 500 `subst No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:875a:fb7b:bb6e:ca8a"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Method / ## A. Verified missed ROI tasks (5) — now filed with owners, this open task asks: - [ ] **RE-2 · Execution-free patch verifier as gating signal** (M, med-ROI; intake-757) — Dockerless execution-free patch verdicts as a coder_escalation pre-gate / eval-tower verifier signal at zero inference  No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:9f34:8a2f:0f9c:1bb9"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Method / ## A. Verified missed ROI tasks (5) — now filed with owners, this open task asks: - [ ] **RE-3 · Review-finding-F1 suite (EV-NEW formalized)** (M, med-ROI; intake-658) — local code-review benchmark from the Factory methodology deep-dive (Augment v1 145-bug golden set, ~80-LOC scorer, ≤2pp ju The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:8e48:985b:14cc:ff2b"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Method / ## A. Verified missed ROI tasks (5) — now filed with owners, this open task asks: - [ ] **RE-4 · LongCoT-Mini calibration run** (M, med-ROI; intake-386) — ~500-easy deterministic long-horizon reasoning suite on local models; adds a non-saturated suite exactly where EV-9 found production suit The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/sliders-local-validation.md",
+      "source_sha256": "aca23f941108c10746148e72962068fd5ded28a9e4917408f4ded0c6d071f0b1",
+      "reviewed_open_keys": [
+        "h:9de2:dcc6:b608:1803",
+        "h:100d:24b7:c566:dd52",
+        "h:6061:b378:0ea8:6784",
+        "h:271b:abfd:ab1b:0291",
+        "h:fa35:31d1:a88f:c20a",
+        "h:2bc6:de47:d958:92d1",
+        "h:1f11:49e9:c82c:e126",
+        "h:11c0:5c85:b84d:0a69",
+        "h:ccec:da2c:ab23:5afb"
+      ],
+      "status_assessment": "Active handoff; reviewed 9 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:9de2:dcc6:b608:1803"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under # Handoff: SLIDERS Local-LLM Validation, this open task asks: - [ ] Operator decision: KB-RAG K7 precondition fired — evaluate SLIDERS DB+SQL alternative (Phase 0 falsification) now, or keep parked? The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:100d:24b7:c566:dd52"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Why this is gated, not an active workstream / ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work), this open task asks: - [ ] **0.1 Catalogue GPT-4.1 call sites**: clone `github.com/stanford-oval/sliders` (MIT) into a scratch directory under `/mnt/raid0/llm/scratch/sliders/`. Read every Python file. Produce `data/sliders_validat The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:6061:b378:0ea8:6784"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Why this is gated, not an active workstream / ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work), this open task asks: - [ ] **0.2 Local-model substitution**: substitute the OpenAI client at all sites with our local OpenAI-compatible Coder-30B endpoint. Use the existing `epyc-orchestrator` Coder-30B wrapper as the Python adapte The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:271b:abfd:ab1b:0291"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Why this is gated, not an active workstream / ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work), this open task asks: - [ ] **0.3 FinQ5 end-to-end run**: pick the first 5 questions from FinQ100 (we will need to regenerate the corpus from SEC EDGAR via SLIDERS' `experiments/sec_10q.py` — this is bounded, ~30 minutes if EDGAR is The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:fa35:31d1:a88f:c20a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Why this is gated, not an active workstream / ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work), this open task asks: - [ ] **0.4 Gate decision**: write `data/sliders_validation/04_phase0_verdict.md` containing one of: The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:2bc6:de47:d958:92d1"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work) / ## Phase 1 — Conditional: FinanceBench Subset (only after Phase 0 GO), this open task asks: - [ ] **1.1** Run SLIDERS+Coder-30B on a 10-question FinanceBench subset (FinanceBench corpus is referenced by SLIDERS as one of its three existing-benchmark baselines). Record same metrics as Phase 0.3. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:1f11:49e9:c82c:e126"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work) / ## Phase 1 — Conditional: FinanceBench Subset (only after Phase 0 GO), this open task asks: - [ ] **1.2** Run our internal-kb-rag K7 evaluation pipeline on the *same* 10 questions but with a chunk-RAG over the FinanceBench corpus. Compare answer accuracy and recall on the same questions, with the ~1pp The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:11c0:5c85:b84d:0a69"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Phase 0 — Falsification Gate (mandatory before any Phase 1+ work) / ## Phase 1 — Conditional: FinanceBench Subset (only after Phase 0 GO), this open task asks: - [ ] **1.3** Decision: does SLIDERS-on-Coder-30B beat ColBERT-on-Coder-30B on this benchmark by enough to justify maintaining a parallel architecture? If delta < 5 pp, close as `phase_1_inconclusive_no_advanta The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:ccec:da2c:ab23:5afb"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Phase 1 — Conditional: FinanceBench Subset (only after Phase 0 GO) / ## Phase 2 — Conditional & Speculative: Alternative-Architecture Scoping (only after Phase 1 escalates), this open task asks: - [ ] **2.1** SCOPING ONLY. Produce a written scope for \"SLIDERS as alternative architecture for K3/K4 of KB-RAG\". Consider: parallel paths (maintain both ColBERT and SLIDERS, route per-query) vs replacement (d No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/eval-benchmark-cost-reduction.md",
+      "source_sha256": "4fa4fe61aca4dd2ef868c05e866042920390eb1504d0b8372b236703a56843db",
+      "reviewed_open_keys": [
+        "h:9f4a:a92c:52a1:f8cb",
+        "h:8d93:ee8b:cc0d:e38d",
+        "h:3fc5:51cc:17e2:5c68"
+      ],
+      "status_assessment": "Active handoff; reviewed 3 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:9f4a:a92c:52a1:f8cb"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ## Notes / ## Progress checklist, this open task asks: - [ ] BLOCKED: needs Harbor adapter + TB Core baseline (agent-world-env-synthesis) before MR/TB filter applies The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        },
+        {
+          "keys": [
+            "h:8d93:ee8b:cc0d:e38d"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Under ## Research Intake Update — 2026-07-11 / ### New Related Research, this open task asks: - [ ] RESIDUAL (**owned by the inference-batch `/loop`, not this handoff**): `screen_paired_arms` output is currently **observation-grade** — it is reported in the result dict but is not reachable through a cod The checkbox itself requires operator/approval authority; preparation does not consume that decision."
+        },
+        {
+          "keys": [
+            "h:3fc5:51cc:17e2:5c68"
+          ],
+          "disposition": "deterministic",
+          "reason": "Under ### New Related Research / ## Research Intake Update — 2026-09-17 (external cost anchors + citation hygiene; intake-1475, intake-1492#record), this open task asks: - [ ] **ECR-TD-2 — External dashboard citations must be snapshot-captured** (payload hash or rendered snapshot) before entering a claim tuple; the 3–329 s baseline citation is not derivable from its cited live  The implementation/preparation portion can use captured or synthetic inputs offline; its later live acceptance remains governed by the task’s stated gate."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/intake-reverification.md",
+      "source_sha256": "34a15c7dd0ad15447a131ebade4e447735e1950e4a46e503507bb422887f54fb",
+      "reviewed_open_keys": [
+        "h:18ea:6c41:4b5b:6b52",
+        "h:bbfd:9048:9913:d976",
+        "h:b334:f18d:30c5:1b9a",
+        "h:5210:0b36:77f2:c4d8",
+        "h:987e:4bc5:ba9f:5de2",
+        "h:3d12:527f:e78e:5f85",
+        "h:7de9:6b27:12c8:e855"
+      ],
+      "status_assessment": "Active handoff; reviewed 7 open boxes from full checkbox-to-checkbox/heading spans, including continuation text and section context. Checkboxes stay open. Live acceptance and owner gates are separately stated per item; no work status was inferred from a citation or adjacent completed row.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:18ea:6c41:4b5b:6b52"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-1 — Generate the at-risk list.** Run the script above on current `research/intake_index.yaml`; save TSV and counts to the scratch dir. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:bbfd:9048:9913:d976"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-2 — Run cite-check and citation grep.** `cite-check --as-of <ts>` plus `grep` for `intake-NNN` across handoffs, wiki and docs; join onto the TSV as `cited_by`. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:b334:f18d:30c5:1b9a"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-3 — Triage.** Apply the rubric; emit RE-DIVE / DEMOTE / KEEP with a one-line reason each. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:5210:0b36:77f2:c4d8"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-4 — Stage-3 plan for the re-dives.** Plan-mode audit of the RE-DIVE set, operator approval before any handoff edits. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:987e:4bc5:ba9f:5de2"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-5 — Re-dive batches.** Waves of at most 10 under the fixed skill; record verdict changes and `dive_corrections`. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        },
+        {
+          "keys": [
+            "h:3d12:527f:e78e:5f85"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-6 — Demotions.** Apply approved DEMOTE rows to the index; run `validate_intake.py` (exit 0) and `cite-check`. The completion criterion explicitly requires live model/benchmark evidence; saved-artifact protocol/fixture prep can proceed independently, but cannot satisfy that criterion."
+        },
+        {
+          "keys": [
+            "h:7de9:6b27:12c8:e855"
+          ],
+          "disposition": "retain",
+          "reason": "Under ## Procedure / ## Tasks, this open task asks: - [ ] **IRV-7 — Final report.** Counts by class, verdict changes, affected handoffs; move this handoff to `completed/` and delete its index row. No concrete gap in this task is closed by a JEV API; preserve the current task and its stated gates."
+        }
+      ],
+      "findings": []
+    }
+  ]
+}

@@ -72,3 +72,11 @@ Flip checkboxes `✅ YYYY-MM-DD`; HG-4 cadence + HG-6 enablement are operator de
 ## Evidence Base (intake)
 
 intake-840/841 debate regime analysis (martingale, consultancy degradation, plateau/cost) · intake-836 overcorrection tail · intake-846 HITL-as-policy-boundary · audit doc 2026-07-16.
+
+## MAIN-reviewed JEV refinement — 2026-10-06 (HG-9)
+
+Strengthen Step 1 into a concrete detector-to-fixer contract: map the eligible detector pool, fixer target, evidence-anchored finding, emitted-finding trigger and current `EscalationPolicy` path. Identify the bounded rubric/role choices that can reuse `Question`/`DecisionResult`, while leaving free-text explanations and patch generation outside the closed-set decision. Reuse the existing host-owned prepared-action validation where a menu is selected; typed output never grants permission or establishes correctness.
+
+The no-inference preparation includes explicit schema/mapping and mocked boundary cases for malformed, unresolved, empty or stale findings, a changed offered-role catalogue, an unavailable fixer and attributed incumbent fallback. Detection must finish before the fixer consumes its findings: dependent stages are not independent heads in one shared-state call. Keep detection and repair costs separately attributable with the existing call-accounting seam, preserving absent fields rather than inventing zeros.
+
+This prepares an option for the existing AutoPilot mutation/evaluation path; it does not activate a selector, tune routing or alter the incumbent. Step 2 remains subject to EV-13b and judge-stable detection scoring, and Step 3 retains its paired fix-acceptance/cost comparison and promotion gates. Coordinate any later core changes with the existing escalation/typed-decision owners; add no parallel routing framework.

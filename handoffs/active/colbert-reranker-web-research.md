@@ -655,3 +655,9 @@ or alter the current snippet-only pipeline.
 
 ### Deep-Dive Refinement (2026-06-12) — methodology-reuse, not dataset-reuse
 OBLIQ-Bench IS released (HF `dianetc/OBLIQ-Bench`, CC-BY-4.0) but its corpora (tweets / WildChat / Congress / writing-style) are **out-of-domain** for our code/doc retrieval — **do NOT fold OBLIQ rows into the Phase-B eval corpus**. Reuse only the `gap(t)=V_t−R_t` metric + 5-stage oblique-query construction recipe to author an oblique **code/KB** slice on the Phase-B corpus. **LateOn's OBLIQ scores (NDCG@10 0.003–0.149) are floor-level/out-of-domain and must NOT be cited against LateOn adoption** — the S3b/S4b/S5 gates are unchanged (LateOn evidence stays BEIR 57.22 / decontaminated 60.36). Core thesis (bottleneck = first-stage **recall**, not verification) supports keeping/strengthening the LLM-rerank stage. Oracle is closed GPT-5.2; reproduce only a lower-bound `gap_open` via an open verifier route (architect_general/frontdoor, `enable_thinking=False`). Full: `research/deep-dives/2026-06-12-obliq-bench-retrieval-eval.md`.
+
+## MAIN-reviewed current-toolkit refinements — 2026-10-06
+
+### S04-F4 — Add the ColBERT singleton locking contract before concurrent slots are enabled
+
+**Source verification (JEV audit, 2026-10-06):** `refresh_model_dir()` clears `_session`/`_tokenizer` and `ensure_loaded()` repopulates the globals without synchronization. Before any concurrent KB-RAG/reranker enablement, define a narrow lock contract covering refresh/load/encode and test deterministic fake-object interleavings. This is local state integrity only; no reranker activation or runtime performance claim.

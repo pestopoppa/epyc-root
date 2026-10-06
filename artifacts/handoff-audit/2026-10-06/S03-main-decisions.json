@@ -1,0 +1,8 @@
+{
+  "shard": "S03",
+  "accepted": true,
+  "files": 18,
+  "open_keys": 305,
+  "main_review": "MAIN checked corrected PAW manifest/adapter and agent-collab allowlist/fixtures versus held-out acceptance; preserve Claude context owner. No model output substitutes for label truth or safe pruning.",
+  "decisions": []
+}

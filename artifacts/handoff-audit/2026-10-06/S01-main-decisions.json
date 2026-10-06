@@ -1,0 +1,18 @@
+{
+  "shard": "S01",
+  "accepted": true,
+  "files": 15,
+  "open_keys": 205,
+  "main_review": "MAIN checked CS24 original three-arm task and actual runner/shadow/default-off interfaces. Accepted with explicit JSON and no feature activation; other kernel/measurement tasks retain original gates.",
+  "decisions": [
+    {
+      "id": "S01-CS24-JEV-1",
+      "path": "handoffs/active/conversation-stack.md",
+      "decision": "accepted_with_revision",
+      "original_sha256": "a90aaeee8ed6922c8752eead0a69f327128fc3f994bc21a10582226192c5a07d",
+      "new_sha256": "2585c1505c76ac3067b15598839574858a814cd0cccf14bc85bb26f31c57e521",
+      "applied_append": "## JEV-aware refinement — MAIN reviewed 2026-10-06\n\nCS-24 option (ii) can reuse the existing local `QuestionKind.CHOICE` / `run_typed_decisions` runner with explicit `mode=\"json\"`. Freeze its catalogue to CS-4's annotation labels; introduce an unknown/abstain label only if that annotation contract supports it. Reuse the default-off, bounded `submit_shadow` path beside the incumbent decision. Confidence is logging-only, never a routing threshold. Host routing remains authoritative.\n\nThe bounded non-inference preparation is the option-(ii) contract and mocked-primitive fixtures for valid labels, schema/transport failure, unsupported labels and incumbent preservation. Do not enable the feature or call a model in this slice. Dependent controller stages remain staged. The original comparison of all three arms on CS-4, precision/recall, routing logs for CS-41, latency and actual call cost remains required before choosing a policy. Native scoring and production routing gates remain in force.",
+      "review_notes": "Original CS4 labels govern catalogue; mocked prep only, preserve incumbent, compare all arms before choosing policy."
+    }
+  ]
+}

@@ -1,0 +1,3170 @@
+{
+  "id": "S08",
+  "name": "routing-and-optimization-1",
+  "files": [
+    {
+      "path": "handoffs/active/session-bus-thin-dispatcher.md",
+      "state": "active",
+      "sha256": "9c996ed15b8bd44ff2d5080b655e1f2b209b9d41df9038a1229c28c222ab24e0",
+      "bytes": 280274,
+      "title": "Session Bus + Thin Coordinator — N-main-thread control structure",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 331,
+          "checked": true,
+          "text": "**R1 — CPU-region claim for benches (A0).** ✅ 2026-07-27 — Three disjoint exclusion domains",
+          "key": "h:08e1:dcdb:1b99:c1f5"
+        },
+        {
+          "line": 339,
+          "checked": false,
+          "text": "**R1a — end-to-end bench claim never fired (open gap, inference-gated).** The wiring is",
+          "key": "h:e809:925a:a1b4:f79a"
+        },
+        {
+          "line": 346,
+          "checked": true,
+          "text": "**R2 — retire per-run operator approval (A1).** ✅ 2026-07-27 — ratified and applied by the",
+          "key": "h:2137:3cff:fd20:452d"
+        },
+        {
+          "line": 353,
+          "checked": true,
+          "text": "**R3 — declare both subsystems instances of the ratified fabric contract.** ✅ 2026-07-27",
+          "key": "h:1b3b:fdb2:c8f6:14f3"
+        },
+        {
+          "line": 387,
+          "checked": true,
+          "text": "**R4 — lease authority and revocation-by-drain.** ✅ 2026-07-27 — new `lease-revoke`",
+          "key": "h:6a73:ddce:cb74:b3bf"
+        },
+        {
+          "line": 409,
+          "checked": true,
+          "text": "**R5 — priority classes, yield, and pausability.** ✅ 2026-07-27 — classes",
+          "key": "h:3304:ee83:1620:1b51"
+        },
+        {
+          "line": 429,
+          "checked": true,
+          "text": "**R6 — coordinator-agent as integration owner.** ✅ 2026-07-27 — the mechanizable half is",
+          "key": "h:445b:732d:10b2:f83f"
+        },
+        {
+          "line": 447,
+          "checked": true,
+          "text": "**R6b — coordinator-agent instantiated and made re-instantiable.** ✅ 2026-07-29 — R6 built",
+          "key": "h:a81f:dd7e:d734:b7d9"
+        },
+        {
+          "line": 461,
+          "checked": true,
+          "text": "**R6c — post-reboot brief promoted to a first-class coordinator artifact.** ✅ 2026-07-29 —",
+          "key": "h:b6be:56e3:3798:2cbf"
+        },
+        {
+          "line": 483,
+          "checked": true,
+          "text": "**R7 — coordinator integrity.** ✅ 2026-07-27 — three layers, each catching what the",
+          "key": "h:d66b:96b1:9acb:c1ec"
+        },
+        {
+          "line": 509,
+          "checked": true,
+          "text": "**R7a — the two checks the audit cannot make, moved to where the actor is known.**",
+          "key": "h:9327:b6ba:ed97:2c83"
+        },
+        {
+          "line": 526,
+          "checked": true,
+          "text": "**R8 — consolidated unblock artifact.** ✅ 2026-07-27 —",
+          "key": "h:d17d:71ca:10d2:d8b3"
+        },
+        {
+          "line": 562,
+          "checked": false,
+          "text": "**R9 — replay-eligibility screen at queue admission (M1/M3).** *Enforcement DONE",
+          "key": "h:f66c:03ad:4a8c:a9d3"
+        },
+        {
+          "line": 573,
+          "checked": true,
+          "text": "**R10 — interference hooks.** ✅ 2026-07-27 —",
+          "key": "h:ae24:7fd2:a784:2943"
+        },
+        {
+          "line": 593,
+          "checked": true,
+          "text": "**M1 — skeleton + manual round-trip.** ✅ 2026-07-27 — layout, `BUS_PROTOCOL.md`,",
+          "key": "h:ac29:6e34:1004:5ea6"
+        },
+        {
+          "line": 617,
+          "checked": true,
+          "text": "**M2 — hub visibility.** ✅ 2026-07-27 — `/api/bus` (roster, per-agent liveness, inbox",
+          "key": "h:99d9:02e3:cfbb:1514"
+        },
+        {
+          "line": 628,
+          "checked": false,
+          "text": "**M3 — coordinator-daemon, read-only advisory.** *BUILT ✅ 2026-07-27* —",
+          "key": "h:cacd:07aa:076e:12c3"
+        },
+        {
+          "line": 668,
+          "checked": true,
+          "text": "**M3a — supervisor running.** ✅ 2026-07-27 — started by the operator's instruction;",
+          "key": "h:eaee:5317:7768:67cb"
+        },
+        {
+          "line": 671,
+          "checked": true,
+          "text": "**M3b — supervisor could never start (fd-9 self-lockout).** ✅ 2026-07-27 —",
+          "key": "h:697a:2fa4:fb4f:43e0"
+        },
+        {
+          "line": 677,
+          "checked": true,
+          "text": "**M3c — the supervisor test killed the live daemon.** ✅ 2026-07-27 — it scoped",
+          "key": "h:fccb:1d94:71e1:93a2"
+        },
+        {
+          "line": 681,
+          "checked": false,
+          "text": "**M3d — the queue must hold real work for the evidence to mean anything.** Seeded",
+          "key": "h:39ce:aac7:49b9:bbbf"
+        },
+        {
+          "line": 685,
+          "checked": false,
+          "text": "**M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*",
+          "key": "h:21ca:480a:46c6:0a41"
+        },
+        {
+          "line": 725,
+          "checked": true,
+          "text": "**C-OWN — the C-series needs a new owner.** **CURRENT OWNER: `mainD`, by operator decision",
+          "key": "h:3d91:3fa8:30d0:eb12"
+        },
+        {
+          "line": 735,
+          "checked": true,
+          "text": "**C22 (NEW) — `roster_window_names()` is dead code still carrying the last-writer-wins idiom.**",
+          "key": "h:14cb:47a6:666f:5013"
+        },
+        {
+          "line": 741,
+          "checked": true,
+          "text": "**C23 — triage disposition should not require an identical payload per `corr_id`.** ✅ 2026-08-11 — `mainD` implemented the bulk form; original protocol-shape disposition 2026-07-29 verified against `BUS_PROTOCOL.md` C23 rule and commit `01142ba5`; deliberately no adapter workaround.",
+          "key": "h:9a0c:5d54:8bb7:ecd2"
+        },
+        {
+          "line": 766,
+          "checked": true,
+          "text": "**REOPENED 2026-07-29 — \"the workaround is discipline\" HAS NOW FAILED IN PRACTICE, twice in",
+          "key": "h:beba:6d95:3f65:cb36"
+        },
+        {
+          "line": 792,
+          "checked": true,
+          "text": "**`auditor`'s review note answered: there is NO vendored-schema consumer, and the",
+          "key": "h:5c15:71e2:a7d5:a348"
+        },
+        {
+          "line": 812,
+          "checked": true,
+          "text": "**Scoped, not general.** ✅ N distinct answers still want N rows; a bulk row that flattens",
+          "key": "h:b7bd:3330:449d:c2d1"
+        },
+        {
+          "line": 816,
+          "checked": true,
+          "text": "**C11 — the independent review C9's own filing called for was never paid.** ✅ 2026-07-29 —",
+          "key": "h:630c:93c2:1a32:1942"
+        },
+        {
+          "line": 822,
+          "checked": true,
+          "text": "**C17 — a live window no roster row claims.** ✅ 2026-07-29 — **no action, correctly",
+          "key": "h:56ef:5673:07bb:1fa3"
+        },
+        {
+          "line": 826,
+          "checked": true,
+          "text": "**C18a — `codex-bus-tests` carries `role: retired` with a stale heartbeat.** *Re-verified",
+          "key": "h:e192:ff4b:709b:85af"
+        },
+        {
+          "line": 890,
+          "checked": false,
+          "text": "**M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*",
+          "key": "h:b05d:fefc:df60:a026"
+        },
+        {
+          "line": 898,
+          "checked": true,
+          "text": "**C6 — nudge submission verification.** ✅ 2026-07-28 — commit `8033f039`. Attempt 1",
+          "key": "h:02fb:26d1:8121:474b"
+        },
+        {
+          "line": 926,
+          "checked": true,
+          "text": "**C7 — roster-bound writer containment** ✅ 2026-07-28 — heartbeat/outbox appends require",
+          "key": "h:752e:2f1f:9e77:a10d"
+        },
+        {
+          "line": 929,
+          "checked": true,
+          "text": "**Bus protocol test suite** ✅ 2026-07-28 — first-ever automated coverage for the session",
+          "key": "h:e3f0:94ef:016f:3b1d"
+        },
+        {
+          "line": 932,
+          "checked": true,
+          "text": "**C1 — no inbound route for coordinator-agent.** ✅ 2026-07-28 — added",
+          "key": "h:2f27:3a52:0358:b79c"
+        },
+        {
+          "line": 934,
+          "checked": true,
+          "text": "**C2 — daemon never relayed agent-authored outbox messages.** ✅ 2026-07-28 — added",
+          "key": "h:c3e7:2f1b:7a81:d47f"
+        },
+        {
+          "line": 937,
+          "checked": true,
+          "text": "**C3 — drain failed open on a missing inbox.** ✅ 2026-07-28 — drain now exits 2 on a",
+          "key": "h:182e:3e7e:9331:13ab"
+        },
+        {
+          "line": 939,
+          "checked": true,
+          "text": "**C4 — ack redelivery and cursor-rewind enforcement.** ✅ 2026-07-28 — one durable tagged",
+          "key": "h:bf71:9b77:d397:07b0"
+        },
+        {
+          "line": 943,
+          "checked": true,
+          "text": "**C8 — durable task-boundary surfacing + endpoint-lint coverage.** ✅ 2026-07-28 —",
+          "key": "h:8b17:d128:1b14:d19a"
+        },
+        {
+          "line": 950,
+          "checked": true,
+          "text": "**Guard self-idiom regression** ✅ 2026-07-28 — `agents_reference_guard.sh` now resolves",
+          "key": "h:c044:1a96:e611:7328"
+        },
+        {
+          "line": 953,
+          "checked": false,
+          "text": "**M5a — `--min-interval-s` default of 600s is the implementer's guess, not an operator",
+          "key": "h:2543:88b2:ebc0:fef6"
+        },
+        {
+          "line": 955,
+          "checked": true,
+          "text": "**M5b — operator disposition for preserved roster orphans.** ✅ 2026-08-11 — `mainD`,",
+          "key": "h:2a9f:fb0b:bb14:97ab"
+        },
+        {
+          "line": 979,
+          "checked": false,
+          "text": "**M5c — standing instructions do not reach running sessions.** A CLAUDE.md rule added at",
+          "key": "h:8b29:5f1d:64e9:7462"
+        },
+        {
+          "line": 982,
+          "checked": true,
+          "text": "**C9 — `cmd_spawn` caps a daily action count, not live concurrency.** ✅ 2026-07-28 —",
+          "key": "h:eec6:6fb8:c3a6:05f9"
+        },
+        {
+          "line": 1036,
+          "checked": true,
+          "text": "**C10 — the standalone adapter suite is not collected, so it rots unrun.** ✅ 2026-07-28.",
+          "key": "h:9d96:1d35:dac0:c598"
+        },
+        {
+          "line": 1062,
+          "checked": true,
+          "text": "**C16 — a bare repo-wide `pytest` cannot run, which is why C10 could hide.** ✅ 2026-07-28",
+          "key": "h:a4f2:3f2d:9076:7e01"
+        },
+        {
+          "line": 1086,
+          "checked": true,
+          "text": "**C11 — C9 landed without the independent review its own filing required.** ✅ Paid",
+          "key": "h:6512:ac9b:2150:4b31"
+        },
+        {
+          "line": 1100,
+          "checked": true,
+          "text": "**C12 — the nudge fragment can collide with the transcript.** ✅ 2026-08-11 — `mainD`.",
+          "key": "h:3e9f:88d7:d90f:1f10"
+        },
+        {
+          "line": 1116,
+          "checked": true,
+          "text": "**C13 — nudge refuses `@` anywhere in the message, which is broader than the hazard.**",
+          "key": "h:4ebf:aab8:353f:cb56"
+        },
+        {
+          "line": 1127,
+          "checked": true,
+          "text": "**C14 — a roster row whose window is unmatchable is invisible to the concurrency count,",
+          "key": "h:564b:b6a7:460d:7ac3"
+        },
+        {
+          "line": 1168,
+          "checked": true,
+          "text": "**C19 — the whole-repo test result depends on WHICH PATH you invoke it from.** ✅ CLOSED",
+          "key": "h:c888:58f2:12c2:b47b"
+        },
+        {
+          "line": 1188,
+          "checked": true,
+          "text": "**C17 — a live window that NO roster row claims is silently excluded from the count.**",
+          "key": "h:c982:e4cf:035c:39d1"
+        },
+        {
+          "line": 1218,
+          "checked": true,
+          "text": "**C18 — a routed message to a dead session is dropped silently.** ✅ 2026-07-29 —",
+          "key": "h:fca2:8f6a:289c:9c0d"
+        },
+        {
+          "line": 1250,
+          "checked": true,
+          "text": "**ACTIVATION for (b)** ✅ 2026-07-29 — operator restarted the daemon to **epoch 9**",
+          "key": "h:70d8:962d:915b:f234"
+        },
+        {
+          "line": 1256,
+          "checked": true,
+          "text": "**SECOND HALF: the warning needed a reader too** ✅ 2026-07-29. After (b), a routed",
+          "key": "h:d01c:911d:86a2:b097"
+        },
+        {
+          "line": 1269,
+          "checked": true,
+          "text": "**ACTIVATION for the second half: the daemon at epoch 9 predates it.** ✅ 2026-08-11 —",
+          "key": "h:4445:020b:b1a6:d492"
+        },
+        {
+          "line": 1282,
+          "checked": true,
+          "text": "Relay fan-out + unreachable-recipient defect advisories landed (fable-auditor,",
+          "key": "h:e5a5:89f1:0436:23f8"
+        },
+        {
+          "line": 1289,
+          "checked": true,
+          "text": "ACTIVATION GAP CLOSED ✅ 2026-07-29 — the operator restarted the daemon (**epoch 8**,",
+          "key": "h:f833:7c94:88bc:32ca"
+        },
+        {
+          "line": 1296,
+          "checked": true,
+          "text": "Delete dead `roster_window_names()` in `tmux_adapter.py` ✅ 2026-07-29 — zero callers",
+          "key": "h:ca2c:9235:f044:7229"
+        },
+        {
+          "line": 1301,
+          "checked": true,
+          "text": "**C21 — `check_pytest_safety.sh` matched `-n <num>` anywhere in a compound command.**",
+          "key": "h:0f2b:f493:114f:cb9d"
+        },
+        {
+          "line": 1320,
+          "checked": false,
+          "text": "**C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone",
+          "key": "h:9633:94b4:60c0:566b"
+        },
+        {
+          "line": 1337,
+          "checked": false,
+          "text": "**C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked",
+          "key": "h:0666:9344:4c14:593e"
+        },
+        {
+          "line": 1367,
+          "checked": true,
+          "text": "**C24 — `cmd_spawn` seeded the heartbeat only-if-absent, so every RE-spawned roster id was",
+          "key": "h:0716:b189:131f:3822"
+        },
+        {
+          "line": 1396,
+          "checked": true,
+          "text": "**C24 review — needs an independent reviewer, not the author.** ✅ 2026-07-29 — `auditor`,",
+          "key": "h:1538:e682:9f63:11d0"
+        },
+        {
+          "line": 1414,
+          "checked": true,
+          "text": "**C24 ledger — the reset must leave a durable trace.** ✅ 2026-07-29 — commit `2eb51796`.",
+          "key": "h:06d0:1aa0:5c71:a7d1"
+        },
+        {
+          "line": 1420,
+          "checked": true,
+          "text": "**C25 — `cmd_spawn` names the window after the roster ID, `resolve_target` verifies the",
+          "key": "h:9c3a:f3fe:31f1:24e1"
+        },
+        {
+          "line": 1447,
+          "checked": true,
+          "text": "**C26 — the coordinator-daemon's `status` reports a live daemon from a stale state file, with",
+          "key": "h:fd99:44c3:d036:55b1"
+        },
+        {
+          "line": 1469,
+          "checked": true,
+          "text": "**C27 — two operator SIGNATURE REQUESTS were never relayed, and the documented cold start",
+          "key": "h:01f6:c7cb:f749:3359"
+        },
+        {
+          "line": 1515,
+          "checked": true,
+          "text": "**The old test asserted the defect.** ✅ 2026-07-29 —",
+          "key": "h:dc00:0522:41e9:c5e6"
+        },
+        {
+          "line": 1519,
+          "checked": true,
+          "text": "**C32 (NEW) — `resolve_target` exempted INDEX endpoints from its own verification and reported",
+          "key": "h:d231:20c6:1c15:9882"
+        },
+        {
+          "line": 1539,
+          "checked": true,
+          "text": "**C33 (NEW) — a `token-request` refused for lack of dry-run evidence tells nobody.**",
+          "key": "h:a471:9cff:d201:19ca"
+        },
+        {
+          "line": 1561,
+          "checked": false,
+          "text": "**OPEN — align the schema with the relay contract so `append` refuses at AUTHORING time.**",
+          "key": "h:431b:9b11:65ba:cb7b"
+        },
+        {
+          "line": 1567,
+          "checked": true,
+          "text": "**C34 (NEW) — the two sides of the bus run different validators, and only one says so.**",
+          "key": "h:0fe8:6d57:0d94:34e7"
+        },
+        {
+          "line": 1589,
+          "checked": true,
+          "text": "**DISPOSITION of the 151 residual rows — recommendation, 2026-08-11 `mainD`.**",
+          "key": "h:429b:6285:94c8:ad1d"
+        },
+        {
+          "line": 1609,
+          "checked": true,
+          "text": "**OPEN — make the two sides agree, and unstick the 217 rows.** ✅ Both done 2026-08-11;",
+          "key": "h:0d15:80e0:d5c8:4235"
+        },
+        {
+          "line": 1618,
+          "checked": true,
+          "text": "**C28 — relay is tracked by destination FILE, not by message identity, so moving an inbox",
+          "key": "h:9d81:c103:9760:9807"
+        },
+        {
+          "line": 1651,
+          "checked": true,
+          "text": "**C29 — `drain --agent <non-roster-id>` fails OPEN.** ✅ 2026-07-29 — `auditor`, commit",
+          "key": "h:0245:d75c:c80a:e6eb"
+        },
+        {
+          "line": 1679,
+          "checked": false,
+          "text": "**C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a",
+          "key": "h:fddd:7fed:b3a4:bb82"
+        },
+        {
+          "line": 1709,
+          "checked": false,
+          "text": "**(a) STILL OPEN — the launch command belongs in the roster row as data.** `cmd_spawn",
+          "key": "h:af34:7bac:f256:b196"
+        },
+        {
+          "line": 1715,
+          "checked": true,
+          "text": "**C31 — the nudge rate limit is keyed to the roster ID, not the window instance, so a",
+          "key": "h:86da:df0a:e072:11a2"
+        },
+        {
+          "line": 1747,
+          "checked": true,
+          "text": "**C35 — a `working` heartbeat wedges a session forever, because the code that would clear it",
+          "key": "h:7460:e6a7:1078:03b0"
+        },
+        {
+          "line": 1804,
+          "checked": true,
+          "text": "**C36 — liveness is decided by the RUNTIME, not by the agent's self-report.** ✅ 2026-07-29 — `auditor`, commits `33eb7306` (signal + backend identification) and `dd9e61d2` (probe wiring). **Codex mains are decided by the runtime; Claude mains fall back and `probe` says so.** Both directions act and both report: runtime ACTIVE blocks whatever the heartbeat says — a protection the pre-C36 guard did not have at all, since a main whose heartbeat wrongly read `idle` mid-generation was nudged without hesitation; runtime IDLE clears both the `working` heartbeat AND its staleness, because once the runtime has spoken a self-report is not evidence about anything. UNAVAILABLE changes nothing and never becomes `idle`. Every other guard stands (pinned by its own test). The PREMISE is asserted as a live test against the real corpus (120/120 tails parse, 118/120 terminal), so a CLI format change fails loudly instead of silently reporting every settled agent as ACTIVE. 18 tests, mutation-verified on five separate mutants incl. the fail-open. Live end-to-end: 4 Codex decided by runtime, 3 Claude falling back explicitly.",
+          "key": "h:f583:78b4:f005:51c8"
+        },
+        {
+          "line": 1805,
+          "checked": false,
+          "text": "**OPEN — the Claude source is an operator/coordinator call.** Escalated: my subagent obtained part of its evidence by decompiling the shipped bundle, which the design doc §7 rules out as a basis. Recommended option is the vendor's documented `claude agents --json` (filtered to `kind == interactive` — it is currently emitting a stale 2026-07-23 background record) with per-pass caching for its ~2s cost. Until answered, Claude mains stay on the heartbeat chain and `probe` reports them as UNAVAILABLE rather than pretending coverage.",
+          "key": "h:346d:4c6d:9387:f8fc"
+        },
+        {
+          "line": 1806,
+          "checked": false,
+          "text": "**C36 residual (superseded framing kept for history)** *Operator-approved",
+          "key": "h:3342:0e2d:2a70:ebba"
+        },
+        {
+          "line": 1828,
+          "checked": true,
+          "text": "**Signal #2 (rollout terminal record) VERIFIED, with four corrections that change the",
+          "key": "h:fb25:b75c:4bb5:58ae"
+        },
+        {
+          "line": 1856,
+          "checked": false,
+          "text": "**BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and",
+          "key": "h:a740:7ba5:4c95:4c79"
+        },
+        {
+          "line": 1863,
+          "checked": true,
+          "text": "**C37 (NEW) — a dead daemon reported itself healthy for 243 hours, and the pid check that",
+          "key": "h:5840:f9b2:27a0:cdad"
+        },
+        {
+          "line": 1889,
+          "checked": true,
+          "text": "**The pull-only gap is closed IN-BAND, with no host change.** ✅ 2026-08-11 — `mainD`,",
+          "key": "h:9bd9:a89e:3a23:4ac4"
+        },
+        {
+          "line": 1898,
+          "checked": false,
+          "text": "**OPERATOR (still open, now a belt-and-braces item rather than the only line of defence) —",
+          "key": "h:f41d:ae93:bb7b:34ce"
+        },
+        {
+          "line": 1910,
+          "checked": false,
+          "text": "**C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in",
+          "key": "h:f2ee:af27:17ef:c212"
+        },
+        {
+          "line": 1918,
+          "checked": true,
+          "text": "**The tick-path read.** ✅ 2026-08-11 — `mainD`, commit `2e01d5dd`. Done together with",
+          "key": "h:610b:01cf:7c6f:76f4"
+        },
+        {
+          "line": 1926,
+          "checked": true,
+          "text": "**Rotation.** ✅ 2026-08-11 — `mainD`, and **only possible because C28 landed first**, as",
+          "key": "h:751d:2e23:81e8:b764"
+        },
+        {
+          "line": 1932,
+          "checked": true,
+          "text": "**`load_relay_state` now bootstraps across EVERY `advisory*.jsonl` shard.** ✅ The one way",
+          "key": "h:297f:1ebb:2e4f:99a7"
+        },
+        {
+          "line": 1937,
+          "checked": true,
+          "text": "**C39 — the token relay is RECEIPT-BLIND: it presents gates the operator already",
+          "key": "h:5be3:3969:f527:2ddd"
+        },
+        {
+          "line": 1962,
+          "checked": true,
+          "text": "**The 55 MB scan is a one-shot, never the tick path.** ✅ The legacy receipts carry the",
+          "key": "h:bfa6:ab5a:adf0:7b7f"
+        },
+        {
+          "line": 1969,
+          "checked": true,
+          "text": "**The notice loop no longer mislabels.** ✅ It consumed EVERY advisory row carrying a",
+          "key": "h:e2b0:0695:cef4:d6aa"
+        },
+        {
+          "line": 1974,
+          "checked": false,
+          "text": "**DEPLOY — the running daemon is executing the old code.** `pid 496387` started",
+          "key": "h:4572:fa8d:14c6:d2d8"
+        },
+        {
+          "line": 1980,
+          "checked": true,
+          "text": "**The link exists but is not a contract.** Both receipts DO contain the literal gate id —",
+          "key": "h:70f1:6b32:8a0b:f7b2"
+        },
+        {
+          "line": 1992,
+          "checked": true,
+          "text": "**So the gap is now DETECTABLE rather than remembered.** ✅ 2026-08-11 — `mainD`.",
+          "key": "h:8af4:c075:6096:53d0"
+        },
+        {
+          "line": 1996,
+          "checked": true,
+          "text": "**Class closed by `auditor` in `ebce92a2`, and the class was WIDER than my count.**",
+          "key": "h:4c1e:8ea8:5ecd:384c"
+        },
+        {
+          "line": 2010,
+          "checked": true,
+          "text": "**My `--check` success line was an overclaim, and now states its scope.** ✅ 2026-08-11 —",
+          "key": "h:3ee2:a823:63fd:1659"
+        },
+        {
+          "line": 2016,
+          "checked": true,
+          "text": "**Fix by ANNOTATING, never by suppressing.** A relay that silently withholds a gate because",
+          "key": "h:e095:6a4f:a143:6bcd"
+        },
+        {
+          "line": 2021,
+          "checked": false,
+          "text": "**Same shape, same fix:** the C33 pre-validation notice re-fires every tick against",
+          "key": "h:7bb5:c279:3005:cb00"
+        },
+        {
+          "line": 2024,
+          "checked": false,
+          "text": "**C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail",
+          "key": "h:c3bd:6a90:4591:f1c8"
+        },
+        {
+          "line": 2038,
+          "checked": true,
+          "text": "**The signal goes to STDERR and to the `via:` line — never into the payload.** ✅ Two",
+          "key": "h:ffd5:4c74:b63b:4fd0"
+        },
+        {
+          "line": 2046,
+          "checked": true,
+          "text": "**An unreadable `ts` is neither fresh nor stale.** ✅ `message_age_h` returns None and the",
+          "key": "h:e13a:4c2c:5499:2bff"
+        },
+        {
+          "line": 2048,
+          "checked": true,
+          "text": "**Silent when everything is current.** ✅ A banner on every drain trains the reader to skip",
+          "key": "h:ec2d:56ac:3e5a:5146"
+        },
+        {
+          "line": 2050,
+          "checked": false,
+          "text": "**Not done, and deliberately not guessed: the spawn mark.** The filing also proposed",
+          "key": "h:257e:4e2b:3008:0bd6"
+        },
+        {
+          "line": 2057,
+          "checked": true,
+          "text": "**C41 — `backlog_row_check.section_is_guarded` answers a SECTION question about a BOX,",
+          "key": "h:44ea:e081:c95a:f1a5"
+        },
+        {
+          "line": 2083,
+          "checked": true,
+          "text": "**The `THESE SIX BOXES` banner turned out to be RIGHT.** ✅ Counted before trusting the",
+          "key": "h:a901:336c:8b44:4eda"
+        },
+        {
+          "line": 2088,
+          "checked": true,
+          "text": "**Scanning the box's continuation lines was tried and REVERTED.** ✅ It looks like",
+          "key": "h:cfe1:699f:e727:9a5f"
+        },
+        {
+          "line": 2095,
+          "checked": true,
+          "text": "**Compliant path tested.** ✅ The enumerated boxes stay guarded, the inline markers stay",
+          "key": "h:bbc4:9c35:0bc0:1675"
+        },
+        {
+          "line": 2098,
+          "checked": true,
+          "text": "**The blind spot the fix could not reach, closed separately: `--audit-guards`.**",
+          "key": "h:d53f:1f54:cb67:30de"
+        },
+        {
+          "line": 2114,
+          "checked": true,
+          "text": "**R1 (NEW, P0) — the nudge guard HARDENED as the condition worsened, and the whole fleet",
+          "key": "h:8bc4:3356:a384:a91d"
+        },
+        {
+          "line": 2131,
+          "checked": true,
+          "text": "**Compliant path pinned, and it is the one that matters.** ✅ A stale heartbeat on a pane",
+          "key": "h:38bf:3525:e316:de2e"
+        },
+        {
+          "line": 2134,
+          "checked": true,
+          "text": "**The fail-open that hid it.** ✅ `last_nudge_ts`/`last_nudge_sig` were written ONLY on",
+          "key": "h:5d2f:d80e:9da1:e90b"
+        },
+        {
+          "line": 2140,
+          "checked": true,
+          "text": "**A test asserted the deadlock as correct.** ✅ `test_c35_the_override_touches_only_the",
+          "key": "h:4d48:4741:2f17:47eb"
+        },
+        {
+          "line": 2145,
+          "checked": true,
+          "text": "**R2 — daemon-side progress-log currency check.** ✅ 2026-08-11 — `mainD`. Built",
+          "key": "h:0ea9:8e3c:0851:93f5"
+        },
+        {
+          "line": 2157,
+          "checked": true,
+          "text": "**CORRECTION, same day, caught by the operator: it escalated into `advisory.jsonl`, not",
+          "key": "h:f12a:c243:b4e1:7142"
+        },
+        {
+          "line": 2166,
+          "checked": true,
+          "text": "**R2, filed:** a daemon-side progress-log-stale defect routed to the",
+          "key": "h:43b1:6b1a:8b1d:c33a"
+        },
+        {
+          "line": 2171,
+          "checked": true,
+          "text": "**C42 (NEW) — the supervisor could not tell a daemon running OLD CODE from a healthy one, and",
+          "key": "h:0d06:5672:c60e:b65e"
+        },
+        {
+          "line": 2187,
+          "checked": true,
+          "text": "**Three bugs found building it, two by the EXISTING suite going 5/5 → 4/5.** ✅",
+          "key": "h:b5d0:8968:9f36:322f"
+        },
+        {
+          "line": 2194,
+          "checked": true,
+          "text": "**My own test had missed both `set -e` bugs because it ran without `set -e`.** ✅ The test",
+          "key": "h:5306:4f8e:d737:abf4"
+        },
+        {
+          "line": 2198,
+          "checked": true,
+          "text": "**Predicate-only scope, deliberately.** ✅ The test never sources the supervisor and never",
+          "key": "h:7beb:e870:df5f:a3c5"
+        },
+        {
+          "line": 2201,
+          "checked": true,
+          "text": "**C42 BUGFIX — the loop's healthy path never reached the check.** ✅ 2026-08-12 — `mainD`.",
+          "key": "h:c2db:16d9:14a8:ae7b"
+        },
+        {
+          "line": 2213,
+          "checked": true,
+          "text": "**C43 SECOND HALF — the relaunch RACES the dying supervisor's lock release.** ✅ 2026-08-12",
+          "key": "h:0c85:aa9f:5acf:a4a7"
+        },
+        {
+          "line": 2229,
+          "checked": true,
+          "text": "**C43 FIRST HALF — lock contention exits 0 with no evidence.**",
+          "key": "h:86f7:27c5:66eb:81bc"
+        },
+        {
+          "line": 2239,
+          "checked": true,
+          "text": "**THE BOOTSTRAP CHAIN CLOSED, AND C42 FIRED FOR THE FIRST TIME IN PRODUCTION.**",
+          "key": "h:79f3:c80a:7425:7f00"
+        },
+        {
+          "line": 2274,
+          "checked": true,
+          "text": "**C34 residual disposition — CLOSED as a decision, routed as work.** ✅ 2026-08-11.",
+          "key": "h:7511:ab02:5b11:0050"
+        },
+        {
+          "line": 2279,
+          "checked": true,
+          "text": "**`mainD`'s 49 triaged.** ✅ First answer — \"none is still live\" — **was wrong**, and the",
+          "key": "h:ed10:59f7:51f7:4433"
+        },
+        {
+          "line": 2286,
+          "checked": true,
+          "text": "**Each other owner routed their own list.** ✅ `mainB` 81 (78 additionalProperties, 7",
+          "key": "h:4a25:7eef:cad0:de68"
+        },
+        {
+          "line": 2292,
+          "checked": true,
+          "text": "**The RECEIPT PRESENT marker — BUILT 2026-08-12, and deliberately narrower than proposed.**",
+          "key": "h:5be8:f5a8:c7de:9813"
+        },
+        {
+          "line": 2308,
+          "checked": true,
+          "text": "**The earlier deferral was the right call at the time.** ✅ Accepted by the",
+          "key": "h:6c5c:ad02:9d0a:3376"
+        },
+        {
+          "line": 2332,
+          "checked": true,
+          "text": "**C44 — the token relay is WITHDRAWAL-BLIND: a gate whose own requester has moved on is still",
+          "key": "h:f321:ae5d:8bf6:aa2e"
+        },
+        {
+          "line": 2337,
+          "checked": true,
+          "text": "**C45 — every nudge guard exists because nudges carry PAYLOAD, and the payload never needed the",
+          "key": "h:c994:9c3f:f782:736f"
+        },
+        {
+          "line": 2349,
+          "checked": true,
+          "text": "**`logs/agent_audit.log` untracked — a concurrently-appended tracked file is permanent merge",
+          "key": "h:22ee:8714:24bd:2441"
+        },
+        {
+          "line": 2357,
+          "checked": true,
+          "text": "**C46 — the pattern-kill hook forbade an idiom a project skill instructs.** ✅ 2026-08-12 —",
+          "key": "h:ec96:e589:511b:cd5e"
+        },
+        {
+          "line": 2364,
+          "checked": true,
+          "text": "**C47 — the hook blocked the message REPORTING the incident it guards.** ✅ 2026-08-12 —",
+          "key": "h:3636:f1cd:6694:724e"
+        },
+        {
+          "line": 2366,
+          "checked": true,
+          "text": "**C48 — supervisor liveness was derived from a pid file, not from the lock.** ✅ 2026-08-12 —",
+          "key": "h:e557:7a15:712e:aece"
+        },
+        {
+          "line": 2374,
+          "checked": true,
+          "text": "**The destructive-revert guard (hook 2) reverted.** ✅ 2026-08-12 — commit `3d8800e6`, reverting",
+          "key": "h:b561:a30d:cf3d:00b4"
+        },
+        {
+          "line": 2378,
+          "checked": true,
+          "text": "**`start_orchestrator_test` name-pattern kills removed — twice, at two levels.** ✅ 2026-08-12",
+          "key": "h:ce7f:3901:a703:e164"
+        },
+        {
+          "line": 2386,
+          "checked": true,
+          "text": "**Bus-root resolution canonicalised — one strategy.** ✅ 2026-08-12 — commit `8b308468`",
+          "key": "h:0f58:3aaf:dc5f:4446"
+        },
+        {
+          "line": 2393,
+          "checked": true,
+          "text": "**Worktree machinery + migration doc.** ✅ 2026-08-12 — commit `724b5f85` (P1/4).",
+          "key": "h:d85d:0a74:0bcd:d1d8"
+        },
+        {
+          "line": 2401,
+          "checked": true,
+          "text": "**Test coverage for the three worktree items.** ✅ 2026-08-12 — commit `fbff4c22` (P1/5). Four",
+          "key": "h:7a38:8572:67e3:8ff2"
+        },
+        {
+          "line": 2406,
+          "checked": true,
+          "text": "**`worktrees/` gitignored — and the premise it was routed on corrected in the same commit.**",
+          "key": "h:94f7:fe57:8f82:a842"
+        },
+        {
+          "line": 2413,
+          "checked": true,
+          "text": "**Hardware-idle backfill runner + queue-empty detector.** ✅ 2026-08-12 — commit `5af987ef`.",
+          "key": "h:4b6b:735a:9c91:2653"
+        },
+        {
+          "line": 2419,
+          "checked": true,
+          "text": "**The daemon's own pick now reaches a reader.** ✅ 2026-08-12 — commit `e9a11f08`.",
+          "key": "h:8a05:dc09:b865:85a9"
+        },
+        {
+          "line": 2429,
+          "checked": true,
+          "text": "**Residency is not work — the idle model that locked the queue.** ✅ 2026-08-12 — commit",
+          "key": "h:eec8:a82a:8e91:42c0"
+        },
+        {
+          "line": 2439,
+          "checked": true,
+          "text": "**The device-claim expiry check was disarmed for exactly the claim that monopolised the",
+          "key": "h:d1bb:037e:a426:fd12"
+        },
+        {
+          "line": 2445,
+          "checked": true,
+          "text": "**Three operator decisions applied to `config.yaml`.** ✅ 2026-08-12 — commit `6d8b5999`.",
+          "key": "h:c245:f02a:ad36:a339"
+        },
+        {
+          "line": 2454,
+          "checked": true,
+          "text": "**The coordinator's status-from-memory replaced by an artifact-per-row ledger.** ✅ 2026-08-12",
+          "key": "h:1fdc:e7e9:436e:ddc4"
+        },
+        {
+          "line": 2464,
+          "checked": true,
+          "text": "**C49 — the operator escalation misclassifies `action_required`, and reported 11 items when",
+          "key": "h:2481:d6ef:2a12:2a19"
+        },
+        {
+          "line": 2495,
+          "checked": false,
+          "text": "**The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired",
+          "key": "h:5151:7e9a:819c:ffb5"
+        },
+        {
+          "line": 2501,
+          "checked": false,
+          "text": "**C50 — the picker serves a STALE READY set, and this is DISTINCT from the authority gag.**",
+          "key": "h:d696:26f9:48f8:ce92"
+        },
+        {
+          "line": 2511,
+          "checked": true,
+          "text": "**Establish whether the READY set is cached or re-derived per tick** ✅ 2026-08-12 — `mainD`.",
+          "key": "h:8ec1:7f56:1bea:8779"
+        },
+        {
+          "line": 2527,
+          "checked": false,
+          "text": "**Re-anchor picks on row identity rather than `file:line`** — NOT done, split out honestly.",
+          "key": "h:4dcc:4135:eb0b:fceb"
+        },
+        {
+          "line": 2532,
+          "checked": true,
+          "text": "**Reporting-unit rule for any scheduler/backlog figure — write it into the shared",
+          "key": "h:1a54:c77a:97e8:6514"
+        },
+        {
+          "line": 2539,
+          "checked": true,
+          "text": "**`advisory*.jsonl` rotation keeps no durable history** ✅ 2026-08-12 (`mainB`) — sealed",
+          "key": "h:80d8:9e36:43a3:5261"
+        },
+        {
+          "line": 2562,
+          "checked": true,
+          "text": "**Nothing on this host explains the deletion of `logs/bus_supervisor.pid`, and nobody owns it.**",
+          "key": "h:a158:3061:cbdd:16dc"
+        },
+        {
+          "line": 2582,
+          "checked": true,
+          "text": "**Per-agent shards for the concurrently-appended log files.** ✅ 2026-08-12 Implemented for",
+          "key": "h:b525:0a53:47c9:2848"
+        },
+        {
+          "line": 2637,
+          "checked": false,
+          "text": "**Worktree isolation phase 2 — the cutover.**",
+          "key": "h:9cf4:61b0:777c:f2b4"
+        },
+        {
+          "line": 2639,
+          "checked": false,
+          "text": "**Re-register the 3 worktrees still holding RELATIVE gitdir pointers.** Measured",
+          "key": "h:338a:ff27:cdcc:e363"
+        },
+        {
+          "line": 2649,
+          "checked": false,
+          "text": "**Decide whether to install the pre-push serialization guard.** Built and tested",
+          "key": "h:4569:f3c8:6a10:d230"
+        },
+        {
+          "line": 2656,
+          "checked": false,
+          "text": "**Compile 4 pending wiki sources.** `compile_sources.py` reports `total_new: 4` —",
+          "key": "h:9d89:57f5:5187:886d"
+        },
+        {
+          "line": 2664,
+          "checked": true,
+          "text": "**Close the `repos/` gap, or record that it stays open.** ✅ 2026-08-12 — **RECORDED AS",
+          "key": "h:ab53:d7fc:d3f8:8a1a"
+        },
+        {
+          "line": 2675,
+          "checked": true,
+          "text": "**`unblock_artifact.py` stays pinned to `/workspace` — a decision, not an oversight.**",
+          "key": "h:46d8:325a:de64:f270"
+        },
+        {
+          "line": 2687,
+          "checked": false,
+          "text": "**Per-agent shards for the concurrently-appended log files.** Option 2 from the",
+          "key": "h:6d2f:d82a:6bac:fcfd"
+        },
+        {
+          "line": 2693,
+          "checked": true,
+          "text": "**Worktree isolation phase 2 — the cutover.** ✅ 2026-08-12 — all five lane worktrees created and",
+          "key": "h:0085:118f:e091:8f52"
+        },
+        {
+          "line": 2712,
+          "checked": false,
+          "text": "**\"This main is working serially\" must become an observable condition, not something the",
+          "key": "h:ead4:e0e0:32c1:98fb"
+        },
+        {
+          "line": 2726,
+          "checked": false,
+          "text": "**Adopt \"serial collapse\" as the name for the condition above, and build the detector ourselves.**",
+          "key": "h:8247:8c23:e4ef:89b6"
+        },
+        {
+          "line": 2742,
+          "checked": true,
+          "text": "**C51 — the submit step is verified against the BUFFER, not the keystrokes.** ✅ 2026-08-12 —",
+          "key": "h:fee6:69e8:ea13:b5f6"
+        },
+        {
+          "line": 2750,
+          "checked": true,
+          "text": "**C52 — a `state: working` heartbeat must be CORROBORATED before it refuses.** ✅ 2026-08-12 —",
+          "key": "h:4376:7b7e:49c8:aca8"
+        },
+        {
+          "line": 2755,
+          "checked": true,
+          "text": "**C53 — the cursor is NOT at the end of pending input.** ✅ 2026-08-12 — `b6ea8679`. Measured on",
+          "key": "h:e9f1:1e89:38b6:5879"
+        },
+        {
+          "line": 2761,
+          "checked": true,
+          "text": "**C54 — `clear` and `submit`, the detector's missing remedy half.** ✅ 2026-08-12 — `b6ea8679`.",
+          "key": "h:897d:da4e:40e4:f324"
+        },
+        {
+          "line": 2769,
+          "checked": false,
+          "text": "**DP-1** (HIGH): **the composer needs a `<char>`-then-`Enter` sequence and the adapter does not",
+          "key": "h:7612:89ca:9959:84da"
+        },
+        {
+          "line": 2778,
+          "checked": false,
+          "text": "**DP-2** (HIGH): **`clear` and `submit` do not work on Claude panes.** The C54 verbs were",
+          "key": "h:2e39:1766:5c14:a5a9"
+        },
+        {
+          "line": 2785,
+          "checked": false,
+          "text": "**DP-3** (MED): **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not",
+          "key": "h:3a5d:a69f:e495:e41b"
+        },
+        {
+          "line": 2795,
+          "checked": false,
+          "text": "**DP-4** (HIGH): **shared child clones are reachable from inside every lane worktree, so worktree",
+          "key": "h:2377:6903:cc66:bdbf"
+        },
+        {
+          "line": 2811,
+          "checked": false,
+          "text": "**DP-5** (HIGH): **`cmd_clear`/`cmd_submit` send a BARE keystroke, and a Claude composer ignores",
+          "key": "h:a0b0:b0d3:6728:85be"
+        },
+        {
+          "line": 2841,
+          "checked": false,
+          "text": "**OBS-1** (MED): **`scripts/coordination/bus_supervisor.sh` adopts the observation contract.**",
+          "key": "h:4940:c76c:244b:b2f8"
+        },
+        {
+          "line": 2883,
+          "checked": false,
+          "text": "**OBS-11** (MED): **`scripts/coordination/fleet_watch.sh` adopts the observation contract.**",
+          "key": "h:48be:89df:66ea:0ca7"
+        },
+        {
+          "line": 2905,
+          "checked": false,
+          "text": "**FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**",
+          "key": "h:bc92:52d3:05c8:63e6"
+        },
+        {
+          "line": 2917,
+          "checked": false,
+          "text": "**FW-2** (MED): **five of the six mains have NO runtime liveness signal, so `IDLE-CANDIDATE`",
+          "key": "h:097a:4bfb:2d69:afa1"
+        },
+        {
+          "line": 2931,
+          "checked": false,
+          "text": "**FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts",
+          "key": "h:f6ae:e97c:7d3c:111c"
+        },
+        {
+          "line": 2944,
+          "checked": true,
+          "text": "**WT-1 — the five `.orphan-20260812T1035Z` backup checkouts could write into the LIVE lanes.**",
+          "key": "h:78c8:18f4:a0f6:b2cd"
+        },
+        {
+          "line": 2956,
+          "checked": true,
+          "text": "**DSP-1 — 11 `opendataloader-pipeline-integration--*` queue rows cannot be dispatched by",
+          "key": "h:ea5c:29fc:d092:b9ab"
+        },
+        {
+          "line": 2981,
+          "checked": true,
+          "text": "**DSP-2 — decide whether an unestimated row should ever become auto-dispatchable.**",
+          "key": "h:9c4d:98f4:c94c:1829"
+        },
+        {
+          "line": 3001,
+          "checked": true,
+          "text": "**AIR-1 — define stable role contracts and remove generic Auditor scheduling.** ✅ 2026-08-13",
+          "key": "h:a5f7:0358:b450:84ed"
+        },
+        {
+          "line": 3005,
+          "checked": true,
+          "text": "**AIR-2 — route completed main work through an independent audit loop.** ✅ 2026-08-13",
+          "key": "h:4212:14dd:d75c:d04e"
+        },
+        {
+          "line": 3009,
+          "checked": true,
+          "text": "**AIR-3 — add reconstructible compute-resource leases.** ✅ 2026-08-13",
+          "key": "h:78cd:c380:9dc5:4f07"
+        },
+        {
+          "line": 3013,
+          "checked": true,
+          "text": "**AIR-4 — route persistent compute idle to the Inference Main.** ✅ 2026-08-13",
+          "key": "h:73ba:f54c:1204:5807"
+        },
+        {
+          "line": 3017,
+          "checked": true,
+          "text": "**AIR-5 — require an operator choice for special-role instantiation.** ✅ 2026-08-13",
+          "key": "h:855a:d367:7541:9416"
+        },
+        {
+          "line": 3021,
+          "checked": false,
+          "text": "**AIR-6 — deploy and canary live audit plus CPU lease enforcement.** `coordinator-agent`, as",
+          "key": "h:2b0d:5f62:765f:23c2"
+        },
+        {
+          "line": 3039,
+          "checked": false,
+          "text": "**AIR-7 — enable delegated GPU leases only after a general physical-claim provider exists.**",
+          "key": "h:2ae3:f181:1928:ee6a"
+        },
+        {
+          "line": 3044,
+          "checked": true,
+          "text": "**AIR-8 — independently audit the Rule-11 compute-dialogue schema change.** ✅ 2026-08-13",
+          "key": "h:bd41:e243:a7ef:aa69"
+        },
+        {
+          "line": 3051,
+          "checked": false,
+          "text": "**AIR-9 — fail-close Rule-11 compute-dialogue authority, routing, and payload shape.** Enforce",
+          "key": "h:19b1:e3e3:ee81:f544"
+        },
+        {
+          "line": 3059,
+          "checked": true,
+          "text": "**AIR-10 — independently disposition the first live role-admission failure.** ✅ 2026-08-13",
+          "key": "h:f267:8b30:d192:e96a"
+        },
+        {
+          "line": 3074,
+          "checked": true,
+          "text": "**AIR-11 — measure the blocked-on-dispatch rate BEFORE building anything against it** ✅ 2026-09-07 — MEASURED; see the result note below this row.",
+          "key": "h:dbf4:a5f9:1796:447b"
+        },
+        {
+          "line": 3123,
+          "checked": true,
+          "text": "**AIR-12 — make premise screening non-optional on the dispatch path, and fix its probe",
+          "key": "h:1c0f:de61:bb6f:3f54"
+        },
+        {
+          "line": 3134,
+          "checked": true,
+          "text": "**AIR-13 — have the row screener consult `.index-graph.json` readiness, advisory only.**",
+          "key": "h:0e6c:5c37:8711:4b22"
+        },
+        {
+          "line": 3141,
+          "checked": true,
+          "text": "**AIR-14 — add a nullable `screen_result` to the queue row** (`premise`, `blocked_by`,",
+          "key": "h:da92:0340:d74e:bbb3"
+        },
+        {
+          "line": 3152,
+          "checked": false,
+          "text": "**Decide the fate of the two daemon-written TRACKED bus files.** `coordination/session-bus/{alarm_state.json,relay_state.json}` are tracked but written by the running bus/relay daemons, so they are perpetually dirty and any broad pathspec commit sweeps them. Filed from the 2026-08-25 staged-rollback resolution (they were excluded from the restore as daemon-owned). Options: (a) `.gitignore` them + keep a committed schema/config twin (`alarm_config.yaml` already covers the config side), (b) `git update-index --assume-unchanged` for the two paths, or (c) leave tracked-and-dirty and rely on hunk-selective commits (status quo). Recommendation: (a) — the state is regenerable runtime data, exactly the class `.gitignore` exists for; the config (`alarm_config.yaml`) stays tracked.",
+          "key": "h:abd9:525c:dfa6:ed9f"
+        },
+        {
+          "line": 3159,
+          "checked": false,
+          "text": "**WS-1 — Artifact reconciliation at the drain boundary.** Compare **worker-written completion",
+          "key": "h:ae47:cbad:6040:cd58"
+        },
+        {
+          "line": 3166,
+          "checked": false,
+          "text": "**WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in",
+          "key": "h:266d:34ef:5ee0:04ae"
+        },
+        {
+          "line": 3174,
+          "checked": false,
+          "text": "**WS-3 — RAISE AS AN EXPLICIT DECISION, not an implementation detail: store-before-deliver.**",
+          "key": "h:095b:9839:fa62:ae2b"
+        },
+        {
+          "line": 3182,
+          "checked": false,
+          "text": "**WS-4 — asyncRewake wake spike (merged).** Spike a **Stop `asyncRewake` hook that exits 2** to",
+          "key": "h:91fd:7cf4:5de8:b7dd"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/decision-aware-routing.md",
+      "state": "active",
+      "sha256": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700",
+      "bytes": 73475,
+      "title": "Decision-Aware Routing for Q-Scorer",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 71,
+          "checked": false,
+          "text": "Implement SPO+ (Smart Predict-then-Optimize) loss:",
+          "key": "h:4ee3:f9c6:34d7:11da"
+        },
+        {
+          "line": 76,
+          "checked": false,
+          "text": "Add epsilon-greedy exploration to `_select_model()` at `retriever.py` L225-368 (10% random routing)",
+          "key": "h:14e3:4942:7fed:1384"
+        },
+        {
+          "line": 77,
+          "checked": false,
+          "text": "Accumulate counterfactual data: for each prompt, observe outcomes from at least 2 different models",
+          "key": "h:bc16:eb9f:5bc7:c265"
+        },
+        {
+          "line": 78,
+          "checked": false,
+          "text": "Replace TD update with SPO+ gradient: only update when the routing decision would change",
+          "key": "h:ffa4:5598:adc5:0dff"
+        },
+        {
+          "line": 79,
+          "checked": false,
+          "text": "Measure: routing accuracy, average task quality, average latency, Q-value convergence speed",
+          "key": "h:323b:b542:4c70:abe9"
+        },
+        {
+          "line": 80,
+          "checked": false,
+          "text": "Connect exploration flag to existing `staged_scorer` exploration bonus mechanism",
+          "key": "h:406f:4646:8a5d:4707"
+        },
+        {
+          "line": 86,
+          "checked": false,
+          "text": "Replace per-action Q-values with bilinear scorer:",
+          "key": "h:37bc:e518:f1ff:702b"
+        },
+        {
+          "line": 90,
+          "checked": false,
+          "text": "Model features (already available in `ScoringConfig` L34-117):",
+          "key": "h:ca34:8d53:a9cc:5630"
+        },
+        {
+          "line": 97,
+          "checked": false,
+          "text": "Create new `bilinear_scorer.py` module",
+          "key": "h:2366:6f12:78dd:4946"
+        },
+        {
+          "line": 98,
+          "checked": false,
+          "text": "Modify `retriever.py` selection logic to use bilinear scorer instead of per-action Q lookup",
+          "key": "h:dc5b:461c:07ff:338e"
+        },
+        {
+          "line": 99,
+          "checked": false,
+          "text": "Test: add a simulated new model with known features, measure cold-start convergence vs current approach",
+          "key": "h:aeef:a6a9:1f06:cd75"
+        },
+        {
+          "line": 100,
+          "checked": false,
+          "text": "Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing history needed",
+          "key": "h:86df:36a6:d93f:b17c"
+        },
+        {
+          "line": 113,
+          "checked": true,
+          "text": "Add a 2-D preference vector `ω = (ω_perf, ω_cost)` on the simplex (`ω_perf + ω_cost = 1`) read from request metadata (default ω = (0.5, 0.5)).",
+          "key": "h:8cb4:cc61:493f:3aa0"
+        },
+        {
+          "line": 114,
+          "checked": true,
+          "text": "Add calibrated cost scaling parameter τ as a runtime knob (env var `DAR_COST_TAU`, default 1.0; canonical env `ORCHESTRATOR_MEMRL_RETRIEVAL_COST_TAU` takes precedence). τ multiplies the normalized-cost penalty.",
+          "key": "h:8077:954b:f5ba:1d60"
+        },
+        {
+          "line": 115,
+          "checked": true,
+          "text": "Inference-time score: `selection_score = 2 * (ω_perf * Q(prompt, model) - ω_cost * cost_lambda * τ * normalized_cost(model))`. The default `ω=(0.5,0.5), τ=1.0` preserves the existing `Q - cost_lambda * normalized_cost` selector exactly.",
+          "key": "h:7394:7c39:325a:8b28"
+        },
+        {
+          "line": 116,
+          "checked": true,
+          "text": "Per-task ω override wired through `ChatRequest.routing_preferences`, TaskIR canonicalization, chat routing, and `retrieve_for_routing()`. Per-tenant policy defaults remain future work only if a concrete tenant/workload policy is needed.",
+          "key": "h:3b76:2588:6794:39fd"
+        },
+        {
+          "line": 117,
+          "checked": true,
+          "text": "No retraining required. The deployed path applies only inference-time scalarization to the existing per-action Q-table selector; bilinear DAR-4 remains separately open.",
+          "key": "h:93f0:2bd5:4b51:69e9"
+        },
+        {
+          "line": 118,
+          "checked": false,
+          "text": "Measure: routing decision distribution shift across ω sweeps; latency-quality Pareto curve.",
+          "key": "h:00ba:2ee4:bf6a:1d86"
+        },
+        {
+          "line": 137,
+          "checked": true,
+          "text": "**DAR-5.1**: Implement IRT prompt-difficulty scorer over BGE prompt embeddings. Output: per-prompt `(latent_difficulty, latent_discrimination)` 2-D embedding. Trained via maximum-likelihood on existing 174K routing memories with observed model outcomes as IRT responses. Calibrated via Platt scaling. ✅ 2026-07-22",
+          "key": "h:d743:7382:ea49:4cb8"
+        },
+        {
+          "line": 138,
+          "checked": false,
+          "text": "**DAR-5.2**: Replace hard-coded `v_model = [baseline_tps, baseline_quality, memory_cost, param_count_log, is_moe, quant_bits]` in DAR-4 bilinear scorer with a learned d-dim model identity vector `v_model ∈ ℝ^d` (d=8 starting point), initialized from the hard-coded spec values, then trained jointly with the bilinear weights.",
+          "key": "h:6f5d:776d:01fe:dbdb"
+        },
+        {
+          "line": 139,
+          "checked": false,
+          "text": "**DAR-5.3**: Augment `v_prompt` with the IRT 2-D output concatenated to the BGE embedding. New `v_prompt = [BGE_embedding | irt_difficulty | irt_discrimination]`.",
+          "key": "h:ae9d:4879:9176:c0c3"
+        },
+        {
+          "line": 140,
+          "checked": false,
+          "text": "**DAR-5.4**: A/B against frozen-DAR-4 (hard-coded features) on val set. Decision gate: if IRT+identity-vectors improves routing accuracy by ≥ 2 points val acc, promote to default.",
+          "key": "h:83d0:6cfd:8765:1e4a"
+        },
+        {
+          "line": 141,
+          "checked": true,
+          "text": "**DAR-5.5**: Future-onboarding note ✅ 2026-07-29 — initialize a new model's learned identity vector from its declared spec features only after DAR-4/DAR-5 are re-authorized on the fixed reward; this is an initialization, never an admission or routing-default decision. Refine it only through LRC P5.2's promotion-grade **observed-outcome** IRT run, not label-proxy scores; P5.2 currently rejects its cached label-proxy result and P5.3 remains conditional on P5.2's acceptance gate. The current DAR-5 prerequisite is the reward redesign (including the wall-clock axis), so no cold-start execution follows from this note.",
+          "key": "h:3d80:c12c:b75e:cc44"
+        },
+        {
+          "line": 169,
+          "checked": true,
+          "text": "**DAR-6.1 ✅ 2026-05-27** (epyc-orchestrator commit pending): Feature flag `swarm_fanout` added to `src/features.py` registry (`SWARM_FANOUT` env var; default-off in BOTH test and prod). `Features.swarm_fanout` boolean field. **Production routing is not affected** until a caller explicitly invokes `dispatch_swarm_fanout` AND the flag is on — two safety layers.",
+          "key": "h:e14d:f5e8:9224:eeae"
+        },
+        {
+          "line": 170,
+          "checked": false,
+          "text": "**DAR-6.2 (NOT YET BUILT — prereq for production gating)**: Trigger signal — extend the injection-risk classifier (or reuse the existing factual-risk classifier from [`routing-intelligence.md`](routing-intelligence.md) if it carries an injection axis) to produce a 0–1 score; threshold tunable. For the cheap-first DAR-6.5 A/B variant ([J14](bulk-inference-campaign.md) in bulk-inference), this can be deferred — fan unconditionally on a fixed injection-prompt set first.",
+          "key": "h:aac0:aaee:0687:486a"
+        },
+        {
+          "line": 171,
+          "checked": true,
+          "text": "**DAR-6.3 ✅ 2026-05-27 — SUPERSEDED/REMOVED 2026-06-16 (code deleted by orchestrator `771348c8`; see the note below)**: `dispatch_swarm_fanout(request, targets, ...)` in **`src/swarm_fanout.py`** fans the request to N≥2 backends concurrently via `ThreadPoolExecutor`. Per-backend failures (exceptions OR `success=False` results) are caught and surfaced as `SwarmCompletion(success=False, error=...)` rather than crashing the dispatch. Returns a `SwarmFanoutResult` with all N completions, per-role wall-clock, and optional aggregation.",
+          "key": "h:1f83:57b6:097d:4383"
+        },
+        {
+          "line": 172,
+          "checked": true,
+          "text": "**DAR-6.4 ✅ 2026-05-27 — SUPERSEDED/REMOVED 2026-06-16 (aggregator deleted by orchestrator `771348c8`; `src/bradley_terry.py` itself survives)**: `bradley_terry_aggregate(pairwise_scorer)` builds an aggregator that calls **`src/bradley_terry.py`** (moved from scripts/autopilot/ on 2026-05-27 to keep it a single-source-of-truth for the three consumers — autopilot P17.BT-2, DAR-6.4 here, swarm-dataset-distillation Phase 3). The aggregator returns `(winner_completion, diagnostics)` carrying BT log_skills, warnings, Condorcet cycles, and dominance skew. Also included: `length_proxy_aggregator` as an explicit cheap-baseline (BT on length-difference sigmoid) — labeled in its docstring as \"NOT a meaningful aggregation\" so no future agent confuses it with a real peer-judged scorer.",
+          "key": "h:e2d2:7fd0:7877:0baa"
+        },
+        {
+          "line": 174,
+          "checked": false,
+          "text": "**DAR-6.5 (INFERENCE-GATED — J14 in bulk-inference)**: Decision gate — run a 2-arm A/B on the chosen injection suite (single-model escalation vs swarm-fanout). Gate: must show ≥3pp absolute reduction in injection-success rate AND ≤30% per-stream throughput regression (roofline). If both met → enforce; otherwise stay shadow-only.",
+          "key": "h:930d:b004:cabd:f277"
+        },
+        {
+          "line": 225,
+          "checked": false,
+          "text": "**URE-1 — Uncertainty-quantified escalation signal.** Add a calibrated decision-uncertainty estimate as an escalation trigger *orthogonal* to the quality Q-value. Candidate inputs: routing classifier confidence/entropy, top-2 margin, Q-value spread, conformal abstention score, MC-dropout variance if enabled, and disagreement between rule/router/Q-scorer. High-uncertainty decisions route up even when the point Q-estimate looks fine. Connects to the DAR-1 finding that Q-values were near-uniform (96%) — uncertainty may carry signal the flat Q-band does not. Required gate before enforcement: ECE ≤ target from eval-tower P8, abstention precision above baseline escalation precision, and no >10% latency regression in shadow mode.",
+          "key": "h:8e28:eb02:b2fc:10c6"
+        },
+        {
+          "line": 232,
+          "checked": false,
+          "text": "**URE-2 — Approval/escalation as harness state.** Persist each escalation/approval decision into the trace store, not just as a transient routing event. Minimum record: `request_id`, `task_signature`, selected role/model, alternatives considered, quality score, uncertainty score and components, trigger reason, approval boundary (\"what this approval permits\"), human/system actor if any, downstream outcome, and linked behavior signature. Wires into [`unified-trace-memory-service.md`](unified-trace-memory-service.md) (see EXM-3).",
+          "key": "h:193b:b33e:21f7:2f5a"
+        },
+        {
+          "line": 233,
+          "checked": false,
+          "text": "**URE-2a — Non-authoritative live cascade shadow.** After CJ-16 — now a LOCAL judge cascade (operator ruling Q1, 2026-09-29: local models only, no hosted Jev) — clears its frozen-fixture quality and operations gate, execute both the local first-stage choice and incumbent fallback on a frozen later-time traffic window, but continue returning the incumbent result. Persist the manifest and policy-baseline identities, per-item first-stage and fallback outputs, accepted/fallback attribution, threshold-selection split, confidence components, requested/resolved model identities, retries, typed failures, abstentions, queueing, disagreements, final outcome, end-to-end sequential p50/p95, and actual total cost from first-stage start through fallback completion. Retain every failure and abstention in the denominator and predeclare the stop/promotion rule under the [minimum viable research execution contract](eval-tower-verification.md#minimum-viable-research-execution-contract). Keep this result separate from offline substitution curves. URE-1 calibration gates authority and promotion; it does not block measurement-only shadow execution. Source: intake-1606#record.",
+          "key": "h:f924:3249:efb5:2255"
+        },
+        {
+          "line": 234,
+          "checked": false,
+          "text": "**URE-3 — Uncertainty as a routing feature.** If URE-1's estimate is calibrated, feed it back as a routing feature (revisits `difficulty_signal.py`, routing-index cross-cutting concern #12). Gated on URE-1 calibration quality and an ablation showing uncertainty improves routing or escalation decisions beyond existing difficulty/risk features. Start in shadow mode; do not let uncertainty recursively train itself without frozen labels.",
+          "key": "h:aecd:a2df:3c4b:b769"
+        },
+        {
+          "line": 265,
+          "checked": false,
+          "text": "**Prompt-cache-aware routing reward term** — add a `cache_affinity_bonus` (+ cold re-prefill penalty) favoring the role-server already holding the conversation prefix in slot-KV. This is a direct lever on **the flat-escalation-across-difficulty-bands open problem**: escalate only when `quality_gap` justifies the re-prefill cost.",
+          "key": "h:5888:ebb6:bc0d:ed0f"
+        },
+        {
+          "line": 266,
+          "checked": false,
+          "text": "**Session-sticky + per-request hybrid** — we decide per-request only; add a session-stickiness state to the outer coordinator (keep the role across turns unless escalation threshold crossed), combined with the cache-affinity term to stop flapping/cache-thrash.",
+          "key": "h:8532:9e32:e18f:1bc0"
+        },
+        {
+          "line": 267,
+          "checked": false,
+          "text": "**Reasoning-level as a first-class routing action** — make the action space `model × thinking-level` (not a fixed per-role thinking constant), operationalizing the phase-based spec/execution split.",
+          "key": "h:63e3:1e08:5e7c:a56d"
+        },
+        {
+          "line": 299,
+          "checked": false,
+          "text": "**OPERATOR DECISION (frozen gate — human-amendment-only, not an agent edit):** does fable5-02's \">=5% regret\" criterion mean *selector self-consistency regret* (current implementation, definitionally ~0) or *counterfactual outcome regret* (~8.1-8.4pp)? Nothing is unfrozen pending this ruling.",
+          "key": "h:6221:f03e:bcfc:db5b"
+        },
+        {
+          "line": 308,
+          "checked": false,
+          "text": "**DAR-SPLIT-1 — Fix dar_decisive_subset.py selection leakage before any DAR-3 triage number is reused.** Select the decisive subset on fold A only and score on fold B; today gaps (L101-102) use all observations. Replace raw max-minus-min decisiveness (dar_common.py L170-175) with a binomial-null test. Re-state the ticked DAR-3 triage gate's number from the fixed script. Zero inference. Evidence: intake-1527.",
+          "key": "h:43e8:f10a:3dc6:eff0"
+        },
+        {
+          "line": 309,
+          "checked": true,
+          "text": "Reward-saturation audit (zero inference, ~1 session): invert `q = 0.5 + r/2` on `update_count=0` rows, histogram reward by role and task_class. **Decision flip:** if per-decision reward entropy <1 bit AND role-conditional means differ <2pp, close DAR-3/4/5 as `not_pursued — signal-bound` rather than leaving them frozen behind a metric that can never fire. ✅ 2026-07-22",
+          "key": "h:9622:5e2f:6a98:fafb"
+        },
+        {
+          "line": 310,
+          "checked": true,
+          "text": "Write-path audit: is `update_count=0` on 99.69% of rows intentional (append-only replay buffer per the LRC design) or a dedup defect? Verify DAR-2 is live-*effective*, not just live-ON. ✅ 2026-07-22",
+          "key": "h:1e5c:e5a5:6f36:dcb3"
+        },
+        {
+          "line": 311,
+          "checked": true,
+          "text": "Do NOT run DAR-3's 10% epsilon-greedy exploration to manufacture counterfactuals ✅ 2026-07-29 — epyc-root `bc4a7aa7` established that 386K already exist in the store for free; degrading production to collect what we already hold is strictly dominated.",
+          "key": "h:b47b:b884:6574:e503"
+        },
+        {
+          "line": 312,
+          "checked": false,
+          "text": "**STANDING — do NOT run DAR-3's 10% epsilon-greedy exploration in production to manufacture",
+          "key": "h:0d61:fae9:b9bc:7380"
+        },
+        {
+          "line": 319,
+          "checked": true,
+          "text": "Raise the 200-char `objective` truncation before any counterfactual/competence analysis is run at promotion grade (runtime embedding path is NOT truncated, so live routing is unaffected). ✅ 2026-07-22",
+          "key": "h:5ed0:c270:2d09:c84b"
+        },
+        {
+          "line": 328,
+          "checked": true,
+          "text": "Reward-saturation audit executed — entropy 0.6877 bits (saturated) but role-conditional spread 11.06pp (separating). Split verdict; close-as-signal-bound does NOT fire. ✅ 2026-07-21",
+          "key": "h:3c9a:7700:d158:ed62"
+        },
+        {
+          "line": 329,
+          "checked": false,
+          "text": "Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not policy**: the target is a *gate* that identifies the ~22% of objectives where role choice is outcome-relevant, not a better global argmax. Re-scope DAR-3/4/5 accordingly before considering any unfreeze. ✅ 2026-07-29 — already executed in the same handoff's **DAR-3 / DAR-4 / DAR-5 RESCOPE** section: DAR-3 is the decisive-subset triage gate with no epsilon-greedy collection, DAR-4 is retained only for fixed-reward retraining, and DAR-5 is gated on the wall-clock reward redesign.  *(Restored to `- [ ]` 2026-08-11 by `mainC` — standing constraint with no completion state; the dated evidence below is kept, the rule is live again.)*",
+          "key": "h:8ba6:442f:4c2e:1576"
+        },
+        {
+          "line": 330,
+          "checked": true,
+          "text": "Highest-value next measurement (zero inference): restrict the existing DAR-2 contrastive objective — and any future policy eval — to the matched decisive subset, and report lift THERE rather than over all traffic. A policy that improves the 22% while leaving the 78% untouched is invisible in every metric used so far. ✅ 2026-07-22",
+          "key": "h:02d9:9c94:3cea:a0f9"
+        },
+        {
+          "line": 331,
+          "checked": false,
+          "text": "Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, this is a success/failure flag wearing a continuous type. Graded reward on the decisive subset is likely worth more than any loss-function change.",
+          "key": "h:4d5f:29f6:75db:6450"
+        },
+        {
+          "line": 343,
+          "checked": true,
+          "text": "Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before drawing any conclusion about how much of the corpus is genuinely role-indifferent. Current estimate (21.9% decisive) is derived from a T0/T1-dominated sample and is probably a floor. Zero inference — the tier label needs to be recoverable from the stored context/objective or joined from the eval-tower record. ✅ 2026-07-22",
+          "key": "h:da24:7520:3d8d:2e51"
+        },
+        {
+          "line": 344,
+          "checked": false,
+          "text": "Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quality and the current `reward` collapses to success/failure. This is a prerequisite for the majority regime, where cost is the operative term.",
+          "key": "h:e428:9d6d:9519:fabd"
+        },
+        {
+          "line": 356,
+          "checked": true,
+          "text": "Root-caused the reward saturation to a `role` vs `producer_role` key mismatch; fixed with regression tests; replayed on 20,526 historical completions (0.0000 → 2.4580 bits). ✅ 2026-07-21",
+          "key": "h:9f32:0db5:5c59:86e0"
+        },
+        {
+          "line": 357,
+          "checked": true,
+          "text": "Add a **wall-clock task-duration** term as the speed axis, derived from `task_started`→`task_completed`, and demote the tokens/sec term to a secondary signal. Per-role p50/p90 baselines above are computable from the retained logs — derive them under a protocol id rather than hand-setting constants.",
+          "key": "h:ef81:e02c:2940:fa22"
+        },
+        {
+          "line": 358,
+          "checked": true,
+          "text": "**Implemented, landed DEFAULT-OFF** ✅ 2026-09-24 — orch `b8035db9` + `88e24ef0`. Baselines: `scripts/analysis/derive_duration_baselines.py` → `orchestration/derived/duration_baselines_by_role.json` (protocol id `RTG09-DURATION-BASELINE-v1`, an analysis id not a MEASUREMENT.md protocol; 137,256 pairs, 117 logs 2026-02-27..09-23, min n 30/role — e.g. frontdoor p50 27.6s/p90 116.1s, worker_general 16.2/55.1, coder_escalation 9.1/75.4; toolrunner and worker_explore under n=30). `compute_reward` Dimension 0: 0 at the role's p50 → full `cost_lambda_duration` at p90, saturating; a missing duration or a role with no baseline skips only that dimension and warns once. `task_duration_s` wired at all 3 call sites (`QScorer._score_task`, replay engine, `rescore_rewards_from_progress.py`). Lands with `cost_lambda_duration=0.0`, `cost_penalty_lambda=0.15`: the live reward is byte-identical (tested), because a reward-distribution change is a `routing_reward` era boundary (cf. E9) and rewards feed Q-updates continuously. 120 tests pass.",
+          "key": "h:0d88:5459:368e:8823"
+        },
+        {
+          "line": 359,
+          "checked": true,
+          "text": "**Operator: apply the RTG-09 ratification** — `bash scripts/operator/ratify_rtg09_duration_reward_20260924.sh --show`, then `--apply`: flips 0.20 / 0.05 and appends era `E18-routing-reward-duration-axis` in one orchestrator commit, then reload the API. Ticking this ticks the parent box and unblocks DAR-5. ✅ 2026-09-24 (operator: \"apply OP-47\") — orch `60bfc4c4` RATIFIED: era `E18-routing-reward-duration-axis` from 2026-09-24T10:02:39Z; defaults 0.20 / 0.05. The script's post-flip test gate refused the first apply because 8 tests encoded the default-off contract; they moved with the flip in the same commit (121 pass). A `set -e`+`pipefail` bug in the script (zero-match `grep | wc -l`) was fixed first (root `c9450f9f`). API reloaded 10:13:35Z; live `ScoringConfig()` = 0.2 / 0.05 with 10 role baselines. DAR-5 is unblocked.",
+          "key": "h:6fd1:547f:bfb1:fc5d"
+        },
+        {
+          "line": 360,
+          "checked": false,
+          "text": "Record the instrument-era boundary for reward values before any pre/post-fix comparison is made or any policy is trained across it.",
+          "key": "h:9f2e:2269:2474:6345"
+        },
+        {
+          "line": 361,
+          "checked": true,
+          "text": "**Pre-validated human-amendment token authored ✅ 2026-07-29**: `RATIFY-E9-ROUTING-REWARD-ERA-20260729` is in `outbox/mainB.jsonl` with an append-only, SHA-pinned command and copy-only YAML validation (`dry_run_exit=0`). Await operator signature; agents did not edit `orchestration/instrument_eras.yaml`.",
+          "key": "h:7f0f:23e8:5ec1:12d1"
+        },
+        {
+          "line": 362,
+          "checked": false,
+          "text": "Optional: replay-rescore historical rows so the episodic store carries post-fix rewards. Not indispensable (the logs are the source of truth and can be replayed on demand), but it would make the 174K-row store trainable without a join.",
+          "key": "h:e0ad:47ca:5e60:a16a"
+        },
+        {
+          "line": 372,
+          "checked": true,
+          "text": "**DAR-3 (was SPO+/epsilon-greedy) → triage gate.** Build a classifier that separates *cost-dominated* objectives (any role clears quality; choose cheapest/fastest) from *quality-decisive* objectives (role choice changes the outcome). Report lift on the decisive subset, never on all traffic — a policy that fixes the 22% and leaves the 78% alone is invisible in every metric used to date. **Do NOT run the original 10% epsilon-greedy exploration**: 386K counterfactual decisions already exist in the store for free, so degrading production to manufacture them is strictly dominated. ✅ 2026-07-22",
+          "key": "h:72d9:8348:271e:8914"
+        },
+        {
+          "line": 373,
+          "checked": false,
+          "text": "**DAR-4 (bilinear descriptor-conditioned predictor) → retained, but retrain on the fixed reward.** Its prior null (P4.1.3: label-proxy IRT +9.02pp, observed-outcome IRT 0.00pp) is now explained — the observed outcome was constant. Re-run before drawing any conclusion about the model class.",
+          "key": "h:d94e:a8ff:d167:db7b"
+        },
+        {
+          "line": 374,
+          "checked": false,
+          "text": "**DAR-5 → gated behind the reward redesign, not behind a regret replay.** Precondition is a reward carrying a wall-clock speed axis (above), since the cost-dominated majority is where most traffic lives and the current reward cannot price it.",
+          "key": "h:d11d:6efc:6892:0fa8"
+        },
+        {
+          "line": 375,
+          "checked": true,
+          "text": "Re-run the matched within-objective analysis **stratified by task tier (T0/T1/T2/T3)** before sizing any of this. 21.9% is derived from a T0/T1-dominated sample and is expected to rise at T3, where routing errors are most expensive. ✅ 2026-07-22",
+          "key": "h:2d34:7333:f11f:da15"
+        },
+        {
+          "line": 381,
+          "checked": true,
+          "text": "Validated `role`/`force_role` at the API boundary via the existing `Role.from_string` (rejects free text, case-normalizes, passes pipeline sentinels); added a warn-once at the reward site for any role with no `baseline_tps_by_role` entry, so the miss can never be silent again. `epyc-orchestrator 6344fbdb`, 16 tests. ✅ 2026-07-21",
+          "key": "h:6aa0:dcad:fa8f:d5f0"
+        },
+        {
+          "line": 382,
+          "checked": true,
+          "text": "Blast-radius verified by call-site analysis (gitnexus segfaulted): every production `force_role` value survives, including legacy aliases `reviewer`/`reviewer_agent`/`architect_coding`. One documented behaviour change — `memrl.should_skip_background_scoring` is `bool(force_role) and bool(real_mode)`, so an invalid `force_role` rewritten to `\"\"` no longer suppresses background scoring; pinned by test in both directions. ✅ 2026-07-21",
+          "key": "h:cd81:d026:98a4:3280"
+        },
+        {
+          "line": 383,
+          "checked": true,
+          "text": "Confirmed `architect_coding` is genuinely deprecated (rows stop 2026-06-13), so its post-fix `+1.0000` is historical replay, not a live scoring gap; allow-listed alongside `mock`/`plan_review` to keep rescores quiet. ✅ 2026-07-21",
+          "key": "h:6e47:5f7c:9f50:f9ce"
+        },
+        {
+          "line": 384,
+          "checked": false,
+          "text": "Consider splitting a separate `stage` field out of `producer_role`: the same field currently carries real roles AND pipeline sentinels (`plan`, `stream_init`, `proactive_delegation`, `mock`). Harmless today, but overloading the key that prices the reward is how this class of bug recurs.",
+          "key": "h:4bc4:53ec:91c9:2a22"
+        },
+        {
+          "line": 405,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-1 — Build the shared `SlotCapacity` snapshot and `expected_wait_s(role)` on the ONE admission ledger.**",
+          "key": "h:068e:f830:f6b5:96eb"
+        },
+        {
+          "line": 419,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-2 — Add the static per-role latency prior + saturation guard to `HybridRouter._apply_priors`",
+          "key": "h:a3af:427e:efe9:abcc"
+        },
+        {
+          "line": 431,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3 — Load-sweep A/B on the single-instance saturating tier under a TTFT-bound workload:",
+          "key": "h:5946:d996:5f16:71fe"
+        },
+        {
+          "line": 443,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3a — Freeze the pre-registration.**",
+          "key": "h:5668:565e:0770:e2a7"
+        },
+        {
+          "line": 458,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3g — GATE (acquire, never observe):**",
+          "key": "h:fcd5:06ab:ebc8:ea45"
+        },
+        {
+          "line": 477,
+          "checked": true,
+          "text": "**DAR-LAT-3h — Prepare the `:8074` recipe-reconciliation stack-change package that unblocks 3g.** ✅ 2026-09-27 —",
+          "key": "h:cdee:260d:1395:38ce"
+        },
+        {
+          "line": 482,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29), or the operator reopens it — **DAR-LAT-3i — Decide `GGML_FA_SPLIT_KV=0` for the `:8074` Flash-Next server (`architect_general` since ARCHSWAP-20260927) at its served context.** The operator split it",
+          "key": "h:8c18:c381:2d1c:f7b9"
+        },
+        {
+          "line": 499,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3b — Run W1** (calibration, then the arm sweep plus the 24 A1/A1 floor pairs). Stop on any",
+          "key": "h:d3b3:02e8:5c5b:20d5"
+        },
+        {
+          "line": 502,
+          "checked": false,
+          "text": "❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ruling 2026-09-29) — **DAR-LAT-3c — Holdout W2 (≥24 h later, ρ=1.25, ABBA, fresh seeds) + verdict.** PAIRED-CI-1 within a window",
+          "key": "h:0633:4e82:bb50:1276"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "state": "active",
+      "sha256": "c481e2b4c80cadcc2c8ccece859cbc26abdba42955bf016c52417a38ef27873c",
+      "bytes": 55169,
+      "title": "KV prefix fork and paged attention: cross-slot prefix sharing, cache-aware dispatch, per-sequence KV views",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 194,
+          "checked": false,
+          "text": "**KPF-01: create the P1 worktree and index it.** `git -C /mnt/raid0/llm/llama.cpp worktree add",
+          "key": "h:7299:4f48:741f:01b5"
+        },
+        {
+          "line": 198,
+          "checked": true,
+          "text": "**KPF-02: GitNexus impact pass on the P1 worktree.** ✅ 2026-10-04 Run `context` + `impact --direction upstream` on",
+          "key": "h:8f40:fdd3:7fbc:ed09"
+        },
+        {
+          "line": 204,
+          "checked": false,
+          "text": "**KPF-03: belief-kernel wiring, VB-KVU-PF.** Prepare (a) a source row in `scripts/vidya/adapters/README.md`:",
+          "key": "h:71fc:e056:c34e:772e"
+        },
+        {
+          "line": 210,
+          "checked": false,
+          "text": "**KPF-04: compile the radix lesson (above) into `wiki/kv-cache.md`** at the first wiki sweep after KPF-18",
+          "key": "h:c410:c265:d492:09b5"
+        },
+        {
+          "line": 219,
+          "checked": true,
+          "text": "**KPF-11: cross-slot fork-source selection.** ✅ 2026-10-04 Add `find_fork_source(task)` to `server_context_impl`, called",
+          "key": "h:e914:827a:f76c:46ee"
+        },
+        {
+          "line": 228,
+          "checked": true,
+          "text": "**KPF-12: attention-only zero-copy share.** ✅ 2026-10-04 Add an explicit attention-only copy so the recurrent half is never",
+          "key": "h:529b:cd37:1608:eff2"
+        },
+        {
+          "line": 236,
+          "checked": true,
+          "text": "**KPF-13: recurrent and drafter state from the checkpoint.** ✅ 2026-10-04 Into dst: `ckpt.load_tgt(ctx_tgt, dst.id,",
+          "key": "h:7b59:26e5:8f50:5c1b"
+        },
+        {
+          "line": 243,
+          "checked": true,
+          "text": "**KPF-14: launch ordering and seq-bit safety.** ✅ 2026-10-04",
+          "key": "h:7aa5:036e:b833:baf9"
+        },
+        {
+          "line": 250,
+          "checked": true,
+          "text": "**KPF-15: explicit junction checkpoint, request field `checkpoint_at`.** ✅ 2026-10-04",
+          "key": "h:af3e:56a6:8826:bffe"
+        },
+        {
+          "line": 258,
+          "checked": true,
+          "text": "**KPF-16: fork telemetry.** ✅ 2026-10-04",
+          "key": "h:2043:6197:3e92:c447"
+        },
+        {
+          "line": 265,
+          "checked": false,
+          "text": "**KPF-17: tests.**",
+          "key": "h:fbc0:a5aa:cc9b:cb89"
+        },
+        {
+          "line": 274,
+          "checked": false,
+          "text": "**KPF-17a: shared-trunk cases for KVU-19a/19b's `test_flash_attn_ext_unified`, applied at the 19a/19b fold.**",
+          "key": "h:10a8:5956:8f14:eaeb"
+        },
+        {
+          "line": 287,
+          "checked": false,
+          "text": "**KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched",
+          "key": "h:42b0:abdf:977b:721c"
+        },
+        {
+          "line": 312,
+          "checked": false,
+          "text": "**KPF-19: rebase watch.** `server-context.cpp` is upstream's most-churned file. At the v11 rebase,",
+          "key": "h:f019:84eb:0ba8:13c5"
+        },
+        {
+          "line": 320,
+          "checked": false,
+          "text": "**KPF-20: GitNexus on a fresh orchestrator worktree.**",
+          "key": "h:8b2a:5f78:f894:8b21"
+        },
+        {
+          "line": 327,
+          "checked": false,
+          "text": "**KPF-21: trunk-first fan-out.** Wherever N children share a trunk (scouting `scout_stage.py`, HS-19",
+          "key": "h:38d9:d422:121b:d1d2"
+        },
+        {
+          "line": 332,
+          "checked": false,
+          "text": "**KPF-22: LPM ordering in the admission queue.** Add a bounded longest-prefix-match bypass (at most one skip",
+          "key": "h:1391:ca9d:f36e:93ac"
+        },
+        {
+          "line": 336,
+          "checked": false,
+          "text": "**KPF-23: reconcile with `PrefixRouter`.**",
+          "key": "h:5056:6851:89c0:a73f"
+        },
+        {
+          "line": 343,
+          "checked": false,
+          "text": "**KPF-24: the KV-pool gate counts unique cells.** In `kv_pool_admission._fits` / `reservation_tokens`, reserve",
+          "key": "h:cc2b:cc58:e05e:67df"
+        },
+        {
+          "line": 347,
+          "checked": false,
+          "text": "**KPF-25: byte-stable trunks.** Audit the fan-out prompt builders for anything that varies across siblings",
+          "key": "h:248d:c845:339c:cb32"
+        },
+        {
+          "line": 351,
+          "checked": false,
+          "text": "**KPF-26: P2 gate.** Replay a real fan-out (an HS-19 scouting round or a delegate wave) through :8000 on the",
+          "key": "h:6d5f:d02d:ac1b:39e4"
+        },
+        {
+          "line": 354,
+          "checked": false,
+          "text": "**KPF-27: revived prefix index (radix tree) — orchestrator side, behind `ORCHESTRATOR_PREFIX_INDEX`",
+          "key": "h:7017:7648:4a44:5fb5"
+        },
+        {
+          "line": 365,
+          "checked": true,
+          "text": "KPF-27a: audit of the January `radix_cache.py` (keep LPM semantics; fix stale-slot bug and missing",
+          "key": "h:e71a:6611:0d19:6098"
+        },
+        {
+          "line": 368,
+          "checked": true,
+          "text": "KPF-27b: wiring — serving-record observation (`recorded_call`, `passthrough.write_serving_record`),",
+          "key": "h:2ba5:660e:32fb:8935"
+        },
+        {
+          "line": 377,
+          "checked": true,
+          "text": "KPF-27b-ack: workspace-ec acknowledges the HIGH blast radius of branch B (acquire/_admissible/release)",
+          "key": "h:ccd1:d6e8:c161:06e0"
+        },
+        {
+          "line": 384,
+          "checked": true,
+          "text": "KPF-27c: flag-off proof (`tests/unit/test_prefix_index_flag_off.py`) and wiring tests through the",
+          "key": "h:28f8:3d04:26c7:3f02"
+        },
+        {
+          "line": 387,
+          "checked": false,
+          "text": "KPF-27d: land on main (owning session), then a **shadow window** on :8083 with the flag on and",
+          "key": "h:d985:f269:36a3:12ad"
+        },
+        {
+          "line": 391,
+          "checked": false,
+          "text": "KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI",
+          "key": "h:b1b4:afea:5bb0:903c"
+        },
+        {
+          "line": 414,
+          "checked": false,
+          "text": "**KPF-30: measure the mixed-block fraction.** Add a debug counter to KVU-19a's block-liveness scan kernel, or",
+          "key": "h:5d41:bfdf:4751:bf19"
+        },
+        {
+          "line": 420,
+          "checked": false,
+          "text": "**KPF-31: GitNexus on `find_slot`**, plus `apply_ubatch` and `llama_kv_cells` (`src/llama-kv-cells.h`), in",
+          "key": "h:cf10:41dd:a7a3:38cc"
+        },
+        {
+          "line": 422,
+          "checked": false,
+          "text": "**KPF-32: affine allocator.** In `find_slot` (`llama-kv-cache.cpp:901-1075`), give each sequence a cursor into",
+          "key": "h:c235:dfd8:e031:6c25"
+        },
+        {
+          "line": 426,
+          "checked": false,
+          "text": "**KPF-33: P3 gate.**",
+          "key": "h:fccc:a0a2:bc61:0d5f"
+        },
+        {
+          "line": 440,
+          "checked": false,
+          "text": "**KPF-40: pre-check (read-only, zero compute).** Read the v11 audit. Re-derive which of our ubatch shapes",
+          "key": "h:2411:b189:2ce8:51d5"
+        },
+        {
+          "line": 449,
+          "checked": false,
+          "text": "**KPF-41: port.** If #29510 has merged upstream by v11, it arrives with the rebase. Otherwise port it onto the",
+          "key": "h:da90:de63:f358:54e1"
+        },
+        {
+          "line": 457,
+          "checked": false,
+          "text": "**KPF-42: P4 gate, A/B vs KVU-19b.** Run on the KVU-18 cells (0/1/2/3 neighbours), 4×16k and 4×80k",
+          "key": "h:e2ab:a87a:cef5:0ac3"
+        },
+        {
+          "line": 464,
+          "checked": false,
+          "text": "**KPF-50: rocprof profile first (GPU window).** On the P1 build, at 4 × 80k with a 60k forked trunk and",
+          "key": "h:0c52:020f:4f4a:e59f"
+        },
+        {
+          "line": 469,
+          "checked": false,
+          "text": "**KPF-51: design.**",
+          "key": "h:55da:a1ca:6163:a838"
+        },
+        {
+          "line": 479,
+          "checked": false,
+          "text": "**KPF-52: kernels on the v11 FA paths** (MMA/MFMA for verify and batched; vec for decode), not on v10 rocWMMA.",
+          "key": "h:47a6:6c04:af4d:82d3"
+        },
+        {
+          "line": 481,
+          "checked": false,
+          "text": "**KPF-53: P5 gate.** Decode tok/s at 4 × 80k with a 60k trunk, paired with greedy equivalence vs non-cascade",
+          "key": "h:7729:4edf:f7a4:ad57"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "state": "active",
+      "sha256": "047a5f5576641b31a67990b77aa6c7d533d86160736c6d85f83c7cdc359ae19a",
+      "bytes": 49730,
+      "title": "Unified Trace / Memory Service",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 106,
+          "checked": true,
+          "text": "**T1: Schema + ingest skeleton** — `epyc-orchestrator/src/trace/store.py` with the SQLite schema above + `ensure_schema()` + idempotent upsert helpers. Unit tests on synthetic records. ~2 h.",
+          "key": "h:b5b8:8f12:2213:c829"
+        },
+        {
+          "line": 107,
+          "checked": true,
+          "text": "**T2: agent_audit.log parser** — Parse `logs/agent_audit.log` produced by `scripts/utils/agent_log.sh` (lines like `[ts] [session_uuid] [task_name] [status]`). Emit normalized events. ~2 h.",
+          "key": "h:76d9:b053:ebe5:d119"
+        },
+        {
+          "line": 108,
+          "checked": true,
+          "text": "**T3: autopilot journal parser** — Parse `autopilot_journal.tsv` (one row per trial) + `autopilot_journal.jsonl` (full detail). Cross-link via `trial_id`. Optionally include `autopilot_state.json` snapshots as `category=controller_snapshot` events. ~2 h.",
+          "key": "h:f4c0:678b:585d:031c"
+        },
+        {
+          "line": 109,
+          "checked": true,
+          "text": "**T4: progress/ markdown parser** — Walk `progress/YYYY-MM/*.md` for date-keyed sessions; treat each top-level `## ` heading as a session record with `summary` from the heading and `detail_json` from the section body. Where a sibling `.jsonl` exists, prefer that for granular events. ~2 h.",
+          "key": "h:69ea:8d77:0d85:bebf"
+        },
+        {
+          "line": 110,
+          "checked": true,
+          "text": "**T5: CLI + Python API** — `python -m epyc.trace query [--from TS] [--to TS] [--session ID] [--trial N] [--role R] [--category C] [--text \"...\"] [--limit N]` returning ranked event rows. Python module exports `query(...)` returning dicts. ~2 h.",
+          "key": "h:02ef:f2fa:acc4:54f9"
+        },
+        {
+          "line": 111,
+          "checked": true,
+          "text": "**T6: Cross-source join recipes** — Document 3–4 high-value recipes in the handoff body or a `docs/` page: (a) \"all events for trial N\" (autopilot + agent_audit by time range), (b) \"session timeline for date D\" (progress + agent_audit), (c) \"all failures + their preceding 5 actions\". ~1 h. **2026-06-28 refresh**: `trial_context(...)` and `python3 -m src.trace.cli trial-context --trial N` now provide the primary trial recipe directly, with exact trial events and configurable nearby agent/progress/autopilot context.",
+          "key": "h:48bf:0f95:9209:91c7"
+        },
+        {
+          "line": 112,
+          "checked": false,
+          "text": "**T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize into events. Gated on whether Hermes goes into production use (currently CLI-only validation). ~2 h. Defer until Hermes outer-shell graduates from validation to daily use.",
+          "key": "h:ee88:e43e:5a60:4289"
+        },
+        {
+          "line": 113,
+          "checked": true,
+          "text": "**UTM-P1 — Add pairing keys to the unified trace event schema**: harness identity, seed, and a horizon/turn ordinal, at `src/trace/store.py:94-197`. Today **two runs cannot be paired on the same task across harnesses at all**, and `EventSource.HERMES_SESSION` (`store.py:36`) is a declared constant with **no ingester and no producer** — the dead constant is T7's stub. This blocks ANY cross-harness comparison, not just one metric, and it bites the moment HS-4 closes and a second harness goes live (soft-blocks HS-4 follow-through). **Schema-only change, no inference.** `intake-1341#04`. Zero compute. ✅ 2026-09-17 — orchestrator `dd24ed10` (on `origin/main`): event schema v2 adds nullable `harness` / `seed` / `turn_ordinal` / `task_key` plus a per-row `schema_version` (`src/trace/store.py` `EVENT_SCHEMA_VERSION`, `EVENT_PAIRING_COLUMNS`, `migrate_event_pairing_columns`). v1 stores migrate by idempotent additive ALTER with no back-fill (legacy rows read `schema_version` NULL = \"never captured\"); `query()` NULL-projects the columns on an unmigrated store and gains pairing filters; new `paired_runs(task_key, seed=...)` returns `{turn_ordinal: {harness: [events]}}`; the live-emit content key includes the pairing keys only when set (pre-v2 keys unchanged); `ReviewTracingProcessor` threads `harness`/`seed`/`task_key` from `Trace.metadata` and `turn_ordinal` from span data. `task_key` was added beyond the three named keys because \"same task\" has no other cross-harness identity. Tests: `tests/unit/test_trace_pairing_keys.py` (13); 180 adjacent trace/ledger tests green.",
+          "key": "h:f623:7dbd:0459:2738"
+        },
+        {
+          "line": 114,
+          "checked": true,
+          "text": "**UTM-P1a — wire producers to stamp the pairing keys**: no live producer sets `harness`/`seed`/`turn_ordinal`/`task_key` yet (the AutoPilot live push `autopilot_live` and the eval tower are the first candidates; the file ingesters have nothing to stamp). Until one does, `paired_runs()` returns `{}` on the real store. Zero compute.",
+          "key": "h:b223:8c19:2cef:3625"
+        },
+        {
+          "line": 126,
+          "checked": true,
+          "text": "**UTM-P1a.2 — second producer, so `paired_runs()` is cross-harness on real data.** Three named",
+          "key": "h:a94c:3edc:8684:0d1d"
+        },
+        {
+          "line": 137,
+          "checked": false,
+          "text": "**UTM-P1a.3 — make the pairing reachable on REAL data.** The keys are now stamped on both sides, but",
+          "key": "h:d75a:9938:89c3:4b70"
+        },
+        {
+          "line": 148,
+          "checked": false,
+          "text": "**UTM-P1b — T7 (Hermes ingest) must stamp `harness=\"hermes\"` plus `task_key`/`seed`/`turn_ordinal`** when it lands, or Hermes rows cannot be one side of a pair.",
+          "key": "h:42b3:2086:b322:c3ba"
+        },
+        {
+          "line": 195,
+          "checked": true,
+          "text": "**EXM-1 — Index FAILED trajectories as first-class avoidance cases.** §3.2.3 (experiential memory; ExpeL / Evo-Memory / MemGovern) argues failures should be stored and *retrieved for pattern-matched avoidance*, not just logged. We have a `failure_graph` (partial). Extend the unified trace store with a queryable \"failure case\" view: given a current (task, context) signature, return prior failed trajectories with similar signatures so a role can avoid repeating them. Minimum fields for a `failure_case` view/table: `failure_id`, `task_signature`, `suite`, `role_path`, `tool_sequence_hash`, `files_touched`, `error_class`, `root_cause_label`, `avoidance_advice`, `evidence_event_ids`, `resolved_by_event_id`, `governance_level`, and `validity_score`. Retrieval should combine lexical FTS, structured filters, and optional embedding similarity only after a cheap first pass. *(Highest-value here — cheap, reuses the store.)* **DONE 2026-06-27** in `epyc-orchestrator` `f470c519`: the schema already had the minimum `failure_case` fields; this slice added `failure_case_fts`, rebuild-on-schema-ensure for existing rows, insert-time indexing, exact-match-first lexical retrieval, and `_match_type`/`_matched_terms` annotations so callers can explain why a prior failure was surfaced. GitNexus impact was LOW for `find_failure_cases` and `insert_failure_case`; `GovernanceLevel` was LOW (`impactedCount=20`, import-level dependants). Validation: `python3 -m py_compile src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run ruff check src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run pytest -q tests/unit/test_harness_schema.py tests/unit/test_trace_store.py` -> `30 passed`.",
+          "key": "h:ccb9:f481:7509:6472"
+        },
+        {
+          "line": 196,
+          "checked": true,
+          "text": "**EXM-2 — Externalize working state (LLMs fail at latent-state persistence).** §3.2.1 cautions that raw LLMs lose working state across long horizons, so working memory should be *externalized* rather than held in-context. Audit where the orchestrator relies on the model to \"remember\" mid-task state vs. where it externalizes to the trace/scratchpad store; pull the former into the store where cheap. Add a `working_state` record family with `state_id`, `scope` (`request|trial|session|handoff`), `owner`, `key`, `value_json`, `created_from_event_id`, `expires_at`, and `supersedes_state_id`. Complements context-folding (which evicts) by keeping authoritative state outside the window. **DONE 2026-06-27** in `epyc-orchestrator` `25b3d4fc`: the scoped `working_state` table and supersession helpers already existed; this slice closed the missing lifecycle rule by marking expired live rows `superseded=1` before reads/writes so stale state is preserved for history but no longer returned as current. GitNexus impact was LOW for `set_working_state`, `get_working_state`, and `WorkingStateScope`. Validation: `python3 -m py_compile src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run ruff check src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run pytest -q tests/unit/test_harness_schema.py tests/unit/test_trace_store.py` -> `32 passed`.",
+          "key": "h:c0d7:f13f:3f59:1386"
+        },
+        {
+          "line": 197,
+          "checked": true,
+          "text": "**EXM-3 — Governed-experience tier (MemGovern).** Distinguish *governed* experiences (human-reviewed/approved outcomes) from raw trajectories when scoring retrieval relevance, so high-trust cases outrank noisy ones. Ties to the URE-2 approval-as-harness-state record in [`decision-aware-routing.md`](decision-aware-routing.md). Proposed levels: `raw`, `auto_verified`, `human_reviewed`, `approved_baseline`, `deprecated`. Retrieval should down-rank raw failures when a governed resolution exists, and should never present deprecated advice without a warning. **DONE 2026-06-27** in `epyc-orchestrator` `2af20d53`: `find_failure_cases()` now annotates retrieval rows with `_governance_rank` and `_governance_warning`; raw rows warn when a governed alternative exists for the same task signature, and deprecated rows warn when explicitly included. GitNexus impact was LOW for `find_failure_cases` and `GovernanceLevel` (`impactedCount=20`, import-level dependants). Validation: `python3 -m py_compile src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run ruff check src/trace/harness_schema.py tests/unit/test_harness_schema.py`; `uv run pytest -q tests/unit/test_harness_schema.py tests/unit/test_trace_store.py` -> `34 passed`.",
+          "key": "h:0d32:482e:cbfe:ae05"
+        },
+        {
+          "line": 231,
+          "checked": false,
+          "text": "Operator-review candidate: prototype a **read-only 5-tool navigation surface over the already-landed `src/trace/` FTS5 store — NO RL** (search/get by `event_id` + `read_file` on a progress summary), plus an **RRF(k=60) hybrid** fusing FTS5 lexical + a vector index (existing BGE embedders :8090-8095). ~89%-of-value path; days of inference-free work. Cadence to copy: records flush at 1/2/4/5-turn boundaries; tracks >20 new records; profile >50.",
+          "key": "h:406a:af98:78f4:237e"
+        },
+        {
+          "line": 232,
+          "checked": true,
+          "text": "Read-only navigation primitive landed in `epyc-orchestrator` commit `d364835a`: `src/trace/navigation.py` exposes `search_records`, `search_conversation`, `get_records`, `get_conversation`, allowlisted/size-bounded `read_file`, and pure RRF(k=60) fusion over caller-supplied vector candidates. No ingestion/schema/runtime mutation and no embedding-server calls. ✅ 2026-07-11",
+          "key": "h:edc7:c44a:9954:b239"
+        },
+        {
+          "line": 233,
+          "checked": true,
+          "text": "CLI access for the five read tools landed in `epyc-orchestrator` commit `e1e6d271`: `trace search-records`, `trace search-conversation`, `trace get-records`, `trace get-conversation`, and `trace read-file`, covered by `tests/unit/test_trace_cli.py`. ✅ 2026-07-11",
+          "key": "h:f6fe:0dfa:4983:4892"
+        },
+        {
+          "line": 236,
+          "checked": true,
+          "text": "AutoMem write-schema primitive landed in `epyc-orchestrator` commit `bf315b11`: `orchestration/repl_memory/memory_actions.py` adds default-inert `APPEND`/`CREATE`/`UPSERT` actions with coordinate/key dedup and generated `status`/`inventory`/`strategy`/`plan`/`log` projections under the agent-facing memory path. `src/trace/` remains read-only. ✅ 2026-07-11",
+          "key": "h:92c8:fdc5:22e9:75cb"
+        },
+        {
+          "line": 245,
+          "checked": false,
+          "text": "Operator-review candidate: consider an **importance-scored background consolidation pass** (periodic insight-generation + compaction over the agent-facing episodic/strategy store) as an optional extension of the AutoMem write surface — inference-free, mirrors the GCP loop, and is distinct from the read-only trace store.",
+          "key": "h:327d:16f5:3c0a:1ec9"
+        },
+        {
+          "line": 253,
+          "checked": true,
+          "text": "**UTM-M1 — Adopt the ReasoningBank STORE SHAPE: append-only, raw trajectory retained alongside derived `{title, description, content}` items.** ✅ 2026-07-29 — `epyc-orchestrator`'s default-inert `MemoryActionStore` now has an additive `pattern` channel. Each non-tombstone pattern requires an immutable bounded `source_event_ids` list, `title`, `description`, `content`, applicability boundary (`when_not_to_use`), `embedding_version`, and explicit `retention_state`; it is persisted to the append-only JSONL ledger and rendered as a separate projection. Existing raw trajectories remain authoritative in their current stores; no trace migration, embedding backfill, runtime wiring, or live BGE request occurred. The legacy high-blast-radius `SkillBank` contract was deliberately left untouched.",
+          "key": "h:19d2:aeeb:8444:578e"
+        },
+        {
+          "line": 254,
+          "checked": true,
+          "text": "**UTM-M2 — Scope the dual-layer experience bank as an ADDITIVE upper layer on `src/trace/`. ✅ 2026-07-29** The per-case lower layer remains `src/trace`'s read-only `events.sqlite` + FTS5 store. The upper layer is a separate agent-memory ledger: immutable raw-event references plus derived pattern records, each with source-event ids, an applicability boundary, embedding version, and retention state. Retrieval must fuse FTS5 and vector candidates only at an explicit agent-facing consumer; it must not mutate or become a dependency of trace ingestion/query. Start with bounded per-pattern provenance and a declared capacity/eviction policy before any embedding backfill; no live BGE request, trace-store migration, or runtime wiring is authorized by this scope.",
+          "key": "h:9675:7b9e:3500:de95"
+        },
+        {
+          "line": 255,
+          "checked": true,
+          "text": "**UTM-M3 — Adopt SkillOS's three-verb write API (`insert` / `update` / `delete`) plus its \"When NOT to Use\" section** in every stored skill/pattern record. ✅ 2026-07-29 — default-inert `MemoryActionStore` now accepts append-only `DELETE` tombstones: a matched delete removes the current generated projection but retains the prior row, tombstone rationale, actor, and `previous_event_id` in `memory_actions.jsonl`; a missing delete is a non-mutating `missing` result. Strategy records require and render a `When Not To Use` applicability boundary. Focused suite: `tests/unit/test_memory_actions.py` 11 passed.",
+          "key": "h:8482:e06c:cbfa:7916"
+        },
+        {
+          "line": 256,
+          "checked": true,
+          "text": "**UTM-M4 — Mine the Apache-2.0 ReasoningBank repo for the three prompts** (extraction-on-success, extraction-on-failure, binary judge; plus the MaTTS contrast prompt) **and the JSON store schema.** ✅ 2026-07-29 — source audit of `google-research/reasoning-bank`: `SUCCESSFUL_SI` / `FAILED_SI` each cap non-overlapping generalizable items at 3 with `{Title, Description, Content}` Markdown fields; `build_text_eval_prompt` is the binary judge (`Status: success|failure`) with completeness, grounding, and exact-target checks; `PARALLEL_SI` is the MaTTS contrast prompt (success/failure comparison, ≤5 transferable items). `induce_memory.py` persists JSONL rows with `task_id`, `query`, `think_list`, `action_list`, `status`, `memory_items`, and `template_id`. Import prompts + schema only — **not** the BrowserGym/Vertex-coupled harness.",
+          "key": "h:56cc:9ae8:e649:eeed"
+        },
+        {
+          "line": 260,
+          "checked": true,
+          "text": "**UTM-M5 — Build the PER-WINDOW (non-cumulative) success-rate-vs-store-size instrument.** ✅ 2026-07-29 — `epyc-orchestrator` `05e0b8bf` adds read-only `scripts/analysis/memory_store_growth_curve.py`: chronological, non-cumulative success rate per window, cumulative store size, and unknown outcomes reported separately from a SQLite `mode=ro` connection. Focused suite `tests/unit/test_memory_store_growth_curve.py` 2 passed; Ruff and `git diff --check` clean. Output is observation-grade until a named protocol and attestation exist; it gates no adoption decision by itself. **No paper in the set reports this curve** — not ReasoningBank (intake-930), not CORE (intake-888), not SkillOS (intake-935), not EvoMemBench (intake-936); SkillOS's own Future Work concedes the gap. ReasoningBank's Figure 1 is **cumulative** and therefore structurally incapable of showing intake-899-style late decay: a per-window curve can fall while the cumulative curve still rises.",
+          "key": "h:336b:3e30:716e:67ce"
+        },
+        {
+          "line": 264,
+          "checked": true,
+          "text": "**UTM-M6 — File the EvoMemBench 128K finding as a distinct failure mode.** Independent third party, **DeepSeek-V3.2 backbone**: at a **128K** context budget, **six of fifteen memory methods score BELOW the no-memory baseline** (worst: MemoryOS **−7.0pp**). Counts by budget are **3 / 4 / 3 at 16K / 32K / 64K and DOUBLE at 128K**. **CRUCIAL: the mechanism is context-budget COMPETITION — injected memory displacing live history — NOT store growth.** It must **not** be conflated with intake-899 (late decay from store growth). Two different diseases; conflating them will produce the wrong fix. ✅ 2026-07-29 — source-backed in `intake-936` (`dive-overturned`): its fixed-update-schedule context-budget sweep isolates prompt-space competition, while intake-899 concerns accumulated-store decay.",
+          "key": "h:78cf:9232:63ac:c8f4"
+        },
+        {
+          "line": 265,
+          "checked": true,
+          "text": "**UTM-M7 — Make trace/memory retrieval BUDGET-CONDITIONAL (design consequence (a)).** ✅ **Re-implemented and integrated 2026-09-16** (`sub-utm-m78`, orchestrator `74418b3c`, merge `d748b4c7` on `main`; `tests/unit/test_trace*.py` 44 passed). The original 2026-07-29 tick was false: `select_budgeted_records()` had never been committed to any epyc-orchestrator ref. — `src/trace/navigation.py` now provides default-off `select_budgeted_records()`: it returns no retrieval rows when `history_is_truncated` is false (the untruncated history fits), and otherwise requires the caller to declare both history/window tokens and the pressure threshold. It does not search, infer token counts, call embeddings, or inject prompts; caller wiring remains a separately reviewed change.",
+          "key": "h:6e91:e859:5bc4:02dc"
+        },
+        {
+          "line": 266,
+          "checked": true,
+          "text": "**UTM-M8 — Cap injection as a FRACTION OF REMAINING BUDGET, not a fixed k (design consequence (b)).** ✅ **Re-implemented and integrated 2026-09-16** (same change as UTM-M7: orchestrator `74418b3c`, merge `d748b4c7`). The 2026-07-29 tick was false (code never committed). — the same pure selector admits only rows carrying an explicit positive `estimated_tokens` value and caps their total at `remaining_budget_fraction × (window_tokens - history_tokens)`. This makes unknown token cost fail closed and prevents a fixed count from overrunning a nearly-full context. No runtime retrieval/injection behavior changed.",
+          "key": "h:c37a:9be4:a0ad:7611"
+        },
+        {
+          "line": 267,
+          "checked": false,
+          "text": "**UTM-M9 — Add a NO-MEMORY control arm to the eval tower for every memory A/B.** Six published methods lose to no-memory at 128K and **would have shipped undetected without one**. Eval-tower rows are a human-amendment-only trust boundary (MEASUREMENT.md) — this is an operator-gated ask, filed here as the owning rationale.",
+          "key": "h:786e:b4fe:a0ee:f48e"
+        },
+        {
+          "line": 271,
+          "checked": true,
+          "text": "**UTM-M10 — Correct the ReasoningBank standing in every place this repo restates it ✅ 2026-07-29.** Root `683f70de` had introduced the stale wording in intake-930; this correction fixes it: intake-936 places ReasoningBank **LAST of 13** memory methods on **Cross-Episode Knowledge (Easy split)**; the earlier \"second behind ACE\" reading was **wrong**. It **is** best-among-memory-methods on **In-Episode Execution at 16K / 32K / 128K** — but even there a **long-context baseline beats all fifteen** methods. SkillOS-base also wins the WebShop-like domain, so no family-wide gradient-free ranking remains. Keep the store-shape adoption (UTM-M1), drop the \"best overall\" framing wherever it appeared.",
+          "key": "h:363e:1111:d1cd:838b"
+        },
+        {
+          "line": 275,
+          "checked": false,
+          "text": "**UTM-V1 — Complete the append-only memory-operation envelope and state-transition engine.** Add",
+          "key": "h:e8bd:bb7b:0e4f:aee8"
+        },
+        {
+          "line": 285,
+          "checked": false,
+          "text": "**UTM-V2 — Add a local scoped write proposer, not an authoritative writer.** Combine Mem0's",
+          "key": "h:bb94:2894:dce3:6800"
+        },
+        {
+          "line": 293,
+          "checked": false,
+          "text": "**UTM-V3 — Separate structural and semantic verification and calibrate both.** Structural checks",
+          "key": "h:3b16:6a0d:0514:b1b9"
+        },
+        {
+          "line": 301,
+          "checked": false,
+          "text": "**UTM-V4 — Test answer-time evidence distillation independently of memory writing.** Preserve",
+          "key": "h:d811:2528:4c56:0fe4"
+        },
+        {
+          "line": 307,
+          "checked": false,
+          "text": "**UTM-V5 — Emit per-operation credit in shadow, without RL training.** Record deterministic",
+          "key": "h:43a7:5da8:f215:7546"
+        },
+        {
+          "line": 314,
+          "checked": false,
+          "text": "**UTM-V6 — Run a complete memory evaluation matrix with a mandatory no-memory control.** Include",
+          "key": "h:8fa5:d413:c604:836e"
+        },
+        {
+          "line": 324,
+          "checked": false,
+          "text": "**UTM-B1 — Register the already-built read surface as a model-facing `ms.search` / `ms.expand`",
+          "key": "h:739c:347c:733e:0261"
+        },
+        {
+          "line": 332,
+          "checked": false,
+          "text": "**UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a",
+          "key": "h:557c:261f:5603:c39d"
+        },
+        {
+          "line": 337,
+          "checked": false,
+          "text": "**UTM-B3 — Record the ingest FILTER in the run artifact as a first-class experimental",
+          "key": "h:be8b:7939:963f:655e"
+        },
+        {
+          "line": 341,
+          "checked": false,
+          "text": "**UTM-B4 — Route the Tulving `retrieved` arm through this surface** — the backend half of",
+          "key": "h:79e2:0bd2:5821:b742"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/wp12-fleet-layer-design.md",
+      "state": "active",
+      "sha256": "f7fe7843349cbe4d68690b7b835f354469fb1b159fe8a8cfd4a231c9e710a858",
+      "bytes": 40175,
+      "title": "wp12-fleet-layer-design",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 223,
+          "checked": true,
+          "text": "§2.1 `ServerFleet` build from registry `server_mode` SoT (`src/fleet.py`; env/runtime-facts producers structurally not consulted; port-resolved `is_full`; per-FLEET degraded literal) ✅ 2026-07-23",
+          "key": "h:f4e7:68e9:06d8:a59a"
+        },
+        {
+          "line": 224,
+          "checked": true,
+          "text": "§2.2 `RoleBinding` policy layer (fleet_ref + model_binding; `capacity_cap`/`placement_policy_override` carried as data, enforcement deliberately deferred) ✅ 2026-07-23",
+          "key": "h:948b:517c:4a66:3d48"
+        },
+        {
+          "line": 225,
+          "checked": true,
+          "text": "§3 one breaker/lock identity per fleet endpoint (CAB `health_tracker` injection, per-dispatched-endpoint recording, circuit-aware SM candidates, all-open fail-fast; §3 parity invariant fails the build closed) ✅ 2026-07-23",
+          "key": "h:899a:0e98:e00a:9c25"
+        },
+        {
+          "line": 226,
+          "checked": true,
+          "text": "§7 one-CAB-per-fleet collapse (flag-gated `_init_fleet_backends`; logical role threaded per-call; use_chat_completions fleet-consensus-or-fail-closed) ✅ 2026-07-23",
+          "key": "h:1e02:afe2:f1a1:e81a"
+        },
+        {
+          "line": 227,
+          "checked": true,
+          "text": "§4 same-fleet fallback compiled to no-ops (`compiled_fleet_fallback_map` + flag-gated `get_fallback_roles`) ✅ 2026-07-23",
+          "key": "h:a6d7:624b:6a48:3cbf"
+        },
+        {
+          "line": 228,
+          "checked": true,
+          "text": "§6 acceptance cases 1–9 as offline/mocked tests (33 tests: `test_fleet_layer_build.py` 1/3/8/9+parity+degraded, `test_fleet_layer_dispatch.py` 2/7+flag-off identity, `test_fleet_layer_breaker.py` 4+5-fail-fast, `test_fleet_layer_fallback.py` 5/6) ✅ 2026-07-23",
+          "key": "h:c065:7723:7499:4011"
+        },
+        {
+          "line": 233,
+          "checked": true,
+          "text": "Merge `wp12-fleet-layer-impl` (3c0b4ce4) → `spec-dec-mtp-refresh-2026-06-22` = merge commit `4ca6859a` ✅ 2026-07-23",
+          "key": "h:54aa:7845:b8d5:5047"
+        },
+        {
+          "line": 234,
+          "checked": true,
+          "text": "Acceptance cases 1–9 re-run on the MERGED tree: 33/33 + targeted regression 53/53 ✅ 2026-07-23",
+          "key": "h:177b:96a6:3a2d:4f46"
+        },
+        {
+          "line": 235,
+          "checked": true,
+          "text": "Launch-env wiring: `ORCHESTRATOR_FLEET_LAYER=1` durable `env.setdefault` (`a172d2dd`); rollback = reload with `ORCHESTRATOR_FLEET_LAYER=0` in the shell env ✅ 2026-07-23",
+          "key": "h:b98f:68c8:509a:7dbe"
+        },
+        {
+          "line": 236,
+          "checked": true,
+          "text": "Pre-reload preflight: fleet build from LIVE registry+priors+NUMA = 4 fleets (frontdoor + worker_general quarters-shared, architect single, ingest quarters), §3 parity green, 8 bindings, none degraded ✅ 2026-07-23",
+          "key": "h:cd81:2941:100d:4507"
+        },
+        {
+          "line": 237,
+          "checked": true,
+          "text": "One API-only reload (new PID 3051676) + no-inference attestation: `ORCHESTRATOR_FLEET_LAYER=1` in worker env (attest_orchestrator_workers), API healthy, /health backend probes now group the shared fleet (`coder_escalation/frontdoor/worker_summarize` as one probe) ✅ 2026-07-23",
+          "key": "h:b79f:3302:dd12:83e9"
+        },
+        {
+          "line": 238,
+          "checked": true,
+          "text": "Both boundary commits pushed to origin ✅ 2026-07-23",
+          "key": "h:4b17:2f1c:443d:8228"
+        },
+        {
+          "line": 240,
+          "checked": false,
+          "text": "**Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL ownership, Fix-A delegations, `_LEGACY_SERVER_URL_FALLBACKS`, generator alias-ports inheritance, and their guard tests (4 in `test_full_slot_demotion.py` + convergence test in `test_stack_priors_compiler.py`) — once the fleet layer survives its soak and the operator retires the flag-off rollback",
+          "key": "h:60d0:1dfc:e93f:2201"
+        },
+        {
+          "line": 278,
+          "checked": true,
+          "text": "§6 case 10 live gate — **PASS** ✅ 2026-07-23 (operator inference grant same day; evidence bundle `coordination/inference-batch/bundles/WP12-case10-live-gate/` + terminal ledger row `WP12-case10-live-gate`): worker_math 4-wide burst → **4 disjoint busy quarters** (8082/8182/8282/8382, all four simultaneously decoding, peak /slots sample all-busy), fleet identity on every dispatch (tap `topology_role=worker_general`), zero same-fleet fallback, zero phantom-full, migration counters 0→0. J2/J3 replay executed faithfully (identical params, `--workers 1` API-only reload, 12/12 OK, n_aborted=0) — verdict INCONCLUSIVE is **structurally correct**: both fleets are quarters-only (no full endpoint), so the full↔quarter migration surface is dormant (C10-F2). Two findings, neither a fleet-layer defect:",
+          "key": "h:1464:1718:0727:04e7"
+        },
+        {
+          "line": 282,
+          "checked": true,
+          "text": "**C10-F1 follow-up — fleet-derived role concurrency LANDED flag-off** ✅ 2026-07-23 (orchestrator `94ab796f`): `ORCHESTRATOR_FLEET_ROLE_CONCURRENCY=1` derives `get_role_max_concurrency` from the role's realized fleet (disjoint-quarter capacity; big instance never adds capacity since it overlaps; fail-open to legacy on fleet unavailability, never wider). **Default OFF — enabling is a deploy decision** (raises in-process within-role concurrency; placement SM + region locks own disjointness; recommend enabling alongside a WP-8-style eval-fanout validation window). Until enabled, eval fan-out concurrency remains 6-process spread × per-process `Semaphore(1)`.",
+          "key": "h:10ef:1e60:4424:7207"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/dynamic-stack-concurrency.md",
+      "state": "active",
+      "sha256": "6dd2acbf6503beb64425b7a7ed1aeafb75cfe164257fa388ce8cce49a48a7b0e",
+      "bytes": 37378,
+      "title": "Dynamic Stack Assembly & Concurrency Management",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 22,
+          "checked": true,
+          "text": "**DS-E1 — Phase E evidence packet**: collect current evidence before coding scheduler changes. `epyc-orchestrator` owns a read-only packet generator; write fresh packet artifacts with a current timestamp:",
+          "key": "h:1204:221a:b342:096b"
+        },
+        {
+          "line": 25,
+          "checked": true,
+          "text": "RI-10 escalation/canary data for architect burst frequency: current DS-E1 packet reports canary evidence ready.",
+          "key": "h:5e68:4e50:170d:dcfa"
+        },
+        {
+          "line": 26,
+          "checked": true,
+          "text": "DS-5/autoresearch model roster and role-quality findings: generated stack-prior roster is packaged, and research `docs/MODEL_MANIFEST.md` now references the current stack-prior contract. DS-E1 accepts same-version timestamp drift only when every live role is still represented.",
+          "key": "h:e20d:282e:179c:ca04"
+        },
+        {
+          "line": 27,
+          "checked": true,
+          "text": "Production KV size measurements at 2K/8K/32K tokens: direct measurement artifacts now satisfy the DS-E1 packet gate. Keep `scripts/benchmark/ds_e1_kv_measurements.sh --execute` as the rerun harness if topology or model context changes.",
+          "key": "h:1704:6a25:9a9e:87f8"
+        },
+        {
+          "line": 28,
+          "checked": true,
+          "text": "Mixed-role NUMA contention evidence, especially same-node cross-model interference: `orchestration/contention_matrix.yaml` is fresh for measured contention-role topology `df373c79cc4af06f`; full live topology is `5d19b3e4edf6fc27` because it includes launcher-only auxiliary `eval_batch_frontdoor`, which is excluded from the measured matrix check. The current serving wiki records full/quarter overlap hazards.",
+          "key": "h:38db:b18e:a2bf:8570"
+        },
+        {
+          "line": 29,
+          "checked": true,
+          "text": "**DS-7-live — Profile codification from evidence**: `stack_templates/default.yaml` now carries `metadata.ds7_profile=steady_state_static_prewarm` and `metadata.ds7_decision.status=retain_default`, backed by `orchestration/reports/ds7_profile_decision_20260704T194020Z.{json,md}`. Validation command `python3 scripts/server/orchestrator_stack.py start --stack-profile default --validate-only` passed with `17` roles, `28` instances, and `657` GB RAM estimate. This records a profile decision, not a live stack change.",
+          "key": "h:f8be:9d79:a8ed:8bf1"
+        },
+        {
+          "line": 30,
+          "checked": true,
+          "text": "**DS-7-guard — Default template/generated-prior parity** ✅ 2026-07-06: `epyc-orchestrator` `464aca54` extends `validate_template()` so the production `default` profile fails if deployable role ports drift from generated live stack-prior serving ports, while alias roles pass only when their generated serving ports are covered by the alias target. Experimental templates remain flexible and embedding-only helper roles remain outside the live-prior parity surface.",
+          "key": "h:569a:e267:39c5:d4dc"
+        },
+        {
+          "line": 31,
+          "checked": false,
+          "text": "**DS-6-live — QuarterScheduler revalidation gate**: parked. Only implement dynamic quarter reassignment if future DS-E1-equivalent evidence shows static pre-warm leaves material throughput or latency on the table. If triggered, implement the already-resolved design:",
+          "key": "h:ee3b:496f:96bf:d72a"
+        },
+        {
+          "line": 35,
+          "checked": false,
+          "text": "**DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction.md) P2 validates coding-context compaction, prototype q4_0 offset estimation. Proceed only if shared-codebase task quality remains >95%; otherwise defer KVCOMM until f16 KV or a different sharing primitive is practical.",
+          "key": "h:6833:d164:b4d9:5ef1"
+        },
+        {
+          "line": 36,
+          "checked": false,
+          "text": "**DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `ConcurrencyAwareBackend` cache-aware routing, and add `prefill_speedup_coder_pool` metrics.",
+          "key": "h:27de:2fd5:b766:44d4"
+        },
+        {
+          "line": 42,
+          "checked": false,
+          "text": "**Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|claude|codex)$'` in `/etc/default/earlyoom`) to shield agent sessions — under `--sort-by-rss` a `claude`/`codex` session can otherwise be a victim before a small runaway. Non-blocking; operator edit + `systemctl restart earlyoom`.",
+          "key": "h:7372:6005:2165:80d9"
+        },
+        {
+          "line": 60,
+          "checked": false,
+          "text": "**Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #309); mlock'd pages free slowly, so it can kill several processes in ~100 ms succession before headroom is reflected. Is a pause-new-model-loads hook (triggered by the `-N` audit hook's sentinel, or by the autopilot) worth wiring into `orchestrator_stack.py`?",
+          "key": "h:bfcd:f27c:5eb2:00c3"
+        },
+        {
+          "line": 61,
+          "checked": false,
+          "text": "**Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_caches/throttle-check) *before* a kill? Risk: a pre-kill script that itself allocates under memory pressure is dangerous — must be allocation-free if used.",
+          "key": "h:c4a7:9b2b:279d:9ea2"
+        },
+        {
+          "line": 150,
+          "checked": true,
+          "text": "**K4 (Z) — the frontdoor's `-ub 8192` is silently inert.** `cparams.n_ubatch = std::min(cparams.n_batch, n_ubatch)`",
+          "key": "h:9b40:25d8:f6a5:720d"
+        },
+        {
+          "line": 155,
+          "checked": false,
+          "text": "**K4a — the research master still declares `server_defaults.ubatch_size: 8192`** (mirrored into orch `model_registry.yaml:46` / `_full.yaml:490`). No code reads it today, so it is informational drift, but it restates the inert value; set it to 2048 in the master and recompile (SSU owns the master registry).",
+          "key": "h:b2a4:2d98:9ed4:91e5"
+        },
+        {
+          "line": 156,
+          "checked": false,
+          "text": "**G4 (G) — measure our actual post-restore prompt-reuse rate.** We call",
+          "key": "h:181f:a3f6:73e2:4640"
+        },
+        {
+          "line": 213,
+          "checked": true,
+          "text": "**(Z) Fix the misnamed `VERIFIED` migration state — it verifies transport, not reuse.**",
+          "key": "h:56b2:49c0:95c4:3ae6"
+        },
+        {
+          "line": 241,
+          "checked": false,
+          "text": "**(Z) Guard the prefix-stability assumption.** Full reuse after migration depends on the next",
+          "key": "h:bfad:5712:4093:1eb3"
+        },
+        {
+          "line": 246,
+          "checked": false,
+          "text": "**(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live",
+          "key": "h:38d1:0699:b76d:4970"
+        },
+        {
+          "line": 258,
+          "checked": false,
+          "text": "**G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-level scheduler work** (2026-09-26, intake-1816#1, intake-1816#7). Same instrument (dedicated `-lv 4` instance on the served artifact and production recipe, never a production server), on the kv-unified shape (`--kv-unified --cache-ram`, kv-unified-stack-rollout.md) and on the frontdoor. N ∈ {1, np, 2·np}; gap lengths = HSF-3's harness-class p50/p90 (heterogeneous-slot-fabric-residency.md). Per turn, keyed by `x_session_id`: `cache_n` vs `prompt_n`, with each forced re-prefill attributed to one cause — (a) hybrid checkpoint (`forcing full prompt re-processing`, the #25592 class above), (b) prefix rewrite (request bytes differ at or before the cached prefix), (c) cross-session eviction during the gap (neither a nor b). Only (c) is what session-keyed admission (kv-unified-stack-rollout.md KVU-14) fixes; ThunderAgent matched vLLM within noise when the working set fit (intake-1816#7). Decision rule: KVU-14 opens only if cause-(c) re-prefilled tokens are ≥10% of all prompt tokens at some N ≤ 2·np in BOTH windows; otherwise BOUNDED-NULL-1 with the N and gap range covered. Belief kernel: VB-MT-REPLAY.",
+          "key": "h:3006:1db2:f06f:e2fd"
+        },
+        {
+          "line": 334,
+          "checked": false,
+          "text": "**Evaluate llama.cpp #25592 as a v10 candidate.** **Upstream item: the `(G) #25592 is the",
+          "key": "h:4b58:fa6b:3bb5:11a7"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/dashboard-architecture-restructure.md",
+      "state": "active",
+      "sha256": "0c6b40a3ebe4dfaec904973ee9e94457fd6fcd506c289e468c2eaf96a468d3e5",
+      "bytes": 35951,
+      "title": "Dashboard Architecture Restructure — audit + action plan",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 215,
+          "checked": true,
+          "text": "`dashboard/registry.json` (moved out of `static/` — it is read+embedded, not served as-is)",
+          "key": "h:e58c:e385:d1f3:069f"
+        },
+        {
+          "line": 221,
+          "checked": true,
+          "text": "Shared nav include (`dashboard/static/nav.js` + generated `/nav.js` asset with the registry",
+          "key": "h:0f69:5d27:0cb3:f566"
+        },
+        {
+          "line": 226,
+          "checked": true,
+          "text": "`:8000` `dashboard.html` hub link replaced by the shared-nav bootstrap with an onerror",
+          "key": "h:b35b:1d44:6769:83bf"
+        },
+        {
+          "line": 230,
+          "checked": true,
+          "text": "Hub root directory strip (`#dash-directory`): every registered dashboard + probe badge",
+          "key": "h:780c:eb4a:82ef:0c61"
+        },
+        {
+          "line": 233,
+          "checked": true,
+          "text": "Drift guard `tests/test_dashboard_nav.py` (277 lines): registry schema, bidirectional",
+          "key": "h:71a0:8c07:c4bb:6267"
+        },
+        {
+          "line": 240,
+          "checked": true,
+          "text": "New hub page `:8100/machine` (1,018 lines) — topology (ROGUE/expected derivation, NUMA",
+          "key": "h:11d2:2a38:76fe:29e8"
+        },
+        {
+          "line": 249,
+          "checked": true,
+          "text": "Orchestrator: `src/api/dashboard_cors.py` — pure-ASGI, path-scoped",
+          "key": "h:45c3:d62d:ae31:f75e"
+        },
+        {
+          "line": 256,
+          "checked": true,
+          "text": "New hub page `:8100/autopilot` (1,541 lines) — phase/control (5-state loop posture;",
+          "key": "h:1750:9b01:cc3c:a1aa"
+        },
+        {
+          "line": 262,
+          "checked": true,
+          "text": "Registry + nav entries for both new pages; hub `/api/health` unchanged (probes stay out",
+          "key": "h:2817:4326:9453:f3bf"
+        },
+        {
+          "line": 265,
+          "checked": true,
+          "text": "The OLD `:8000/dashboard` page: untouched except the additive shared-nav include",
+          "key": "h:de9c:d836:ca28:61f1"
+        },
+        {
+          "line": 305,
+          "checked": true,
+          "text": "Tap SSE stream bypassed the slot_progress funnel — operator caught a 32,851-token prefill",
+          "key": "h:6e0e:47a7:d445:1be3"
+        },
+        {
+          "line": 309,
+          "checked": true,
+          "text": "Page retention overlay (fix 10): live-observed slot_progress retained per request",
+          "key": "h:eae4:69ff:93de:fa80"
+        },
+        {
+          "line": 313,
+          "checked": false,
+          "text": "Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually",
+          "key": "h:d7b8:a1b5:5380:d3bb"
+        },
+        {
+          "line": 316,
+          "checked": true,
+          "text": "Data plane (small): tap writer records terminal `n_prompt_tokens` per request so completed",
+          "key": "h:0e4f:44c6:389f:64fe"
+        },
+        {
+          "line": 324,
+          "checked": true,
+          "text": "Data plane (small): manifest-declared substrate for non-running `expected-stack-server`",
+          "key": "h:3732:d0dc:c04e:ed96"
+        },
+        {
+          "line": 335,
+          "checked": false,
+          "text": "**Trimmed machine-frame endpoint**: the snapshot document is ~3.9 MB/frame",
+          "key": "h:01b9:ed61:8bee:4b0b"
+        },
+        {
+          "line": 339,
+          "checked": false,
+          "text": "**/slots fan-out answered 0/19 during buildout** — machine-state truth issue (RTG-03",
+          "key": "h:2f9b:24f9:c3bf:35de"
+        },
+        {
+          "line": 345,
+          "checked": false,
+          "text": "Operator runs old + new in parallel and confirms `/machine` + `/autopilot` cover the",
+          "key": "h:7811:e82c:47fb:ce70"
+        },
+        {
+          "line": 347,
+          "checked": false,
+          "text": "`:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)",
+          "key": "h:dbb2:9811:7328:4770"
+        },
+        {
+          "line": 350,
+          "checked": false,
+          "text": "Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary",
+          "key": "h:ced0:8569:9ed9:68fe"
+        },
+        {
+          "line": 352,
+          "checked": false,
+          "text": "Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards",
+          "key": "h:a35e:e8c7:b26f:f370"
+        },
+        {
+          "line": 357,
+          "checked": false,
+          "text": "Machine-truth derivation: realized-state (manifest/`/proc`)-first for `stack_numa_mode` /",
+          "key": "h:6fba:c2c9:4acc:c2f3"
+        },
+        {
+          "line": 360,
+          "checked": false,
+          "text": "(If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.",
+          "key": "h:be88:4678:47af:35f4"
+        },
+        {
+          "line": 361,
+          "checked": false,
+          "text": "Freshness-grammar harmonization at the seam: one envelope vocabulary",
+          "key": "h:2599:9cf5:535d:c8d2"
+        },
+        {
+          "line": 367,
+          "checked": true,
+          "text": "Write the plane rule into `dashboard/README.md` (+ one-line CLAUDE.md pointer):",
+          "key": "h:b2a9:c696:42b1:2ccb"
+        },
+        {
+          "line": 383,
+          "checked": true,
+          "text": "Rationalize supervision with OP-9's resolution: one documented lifecycle story for the hub",
+          "key": "h:cf25:dffb:6490:03ae"
+        },
+        {
+          "line": 393,
+          "checked": false,
+          "text": "H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →",
+          "key": "h:355c:1519:f143:14fe"
+        },
+        {
+          "line": 395,
+          "checked": true,
+          "text": "**D-1 (HIGH) — the production-kernel panel is absence-tolerant, QUIETLY.** ✅ 2026-08-12 — FIXED by `inference`, verified by `mainC` **from the ref, not the working tree**. `origin/main`'s `kernel.html` now renders the unavailable branch as a `headline fail` reading **ATTESTATION UNAVAILABLE**, plus a `detail fail` sentence — *\"Production identity is unasserted; do not infer freeze or checkout state.\"* That is the absence_means sentence the defect asked for, at the same visual weight as the healthy headline; the `muted` line is gone. **Cosmetic residual, not reopening:** `_production_kernel_summary` still returns `error: None` for a merely-absent file, so the third line falls back to a generic \"attestation not found\" rather than naming the path the way `_read_kernel_contract` synthesises one. The alarm is loud, which was the defect; the reason is still unnamed, which is a nicety. Filed 2026-08-12 by",
+          "key": "h:5f6e:f31c:da74:135d"
+        },
+        {
+          "line": 407,
+          "checked": true,
+          "text": "**D-2 (LOW) — the Kernel-R&D registry entry points at the TRANSPORT probe.** ✅ 2026-08-12 — FIXED by `inference` in `6188197f`, verified from the ref: `registry.json` `health_path` moved `/health` → `/api/kernel/health`, i.e. from the transport probe that stays green over a dead producer to a semantic data-health probe. Landed with 74 lines of server change and ~110 lines of tests. Same audit.",
+          "key": "h:8c62:f841:d47f:9702"
+        },
+        {
+          "line": 413,
+          "checked": false,
+          "text": "**D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say \"I cannot tell\", and its stale-source",
+          "key": "h:1e04:20a3:57f0:2d0e"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+      "state": "active",
+      "sha256": "8fbc4560146c089332e30ea22a2f09496687ed88990bd39106ea4399da9e7602",
+      "bytes": 33710,
+      "title": "Scaffold CoT Cost-Lever — Autopilot Deployment (DESIGN Handoff)",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 104,
+          "checked": false,
+          "text": "**T0.1 — Confirm AutoPilot is stopped before touching `scripts/autopilot/*` or the registry.** *(Precondition restated 2026-08-11 by `mainC`: this read \"coordinate with the live autopilot agent\", and there is no such agent — AutoPilot is intentionally stopped and has been since 2026-07-27, so the step could never be satisfied as written. Verify the daemon is down directly, e.g. no `autopilot.py` process and no journal activity, rather than coordinating with anyone.)* Get operator approval for the capability-registry row (CLAUDE.md: no registry changes via sub-agents without explicit operator request). *Accept:* written go-ahead recorded here.",
+          "key": "h:e76b:b8d0:9efd:d4e2"
+        },
+        {
+          "line": 105,
+          "checked": true,
+          "text": "**T0.1a — Close bounded Qwable strict-output/schema harness evidence.** Quiet-host runner evidence landed for IQ4/Q8 standalone format, strict IQ4 prompt JSON, CPU baseline, and top-level `json_schema`; scaffold/selector stubs remain non-deployable. ✅ 2026-07-17",
+          "key": "h:eb03:af15:a876:dbf0"
+        },
+        {
+          "line": 106,
+          "checked": true,
+          "text": "**T0.1b — Close first Qwable IQ4_XS vs Q8_0 task-quality slice.** Bounded server/chat runner passed `6/6` on MI210 for IQ4_XS (`112.15 t/s`) and Q8_0 (`113.62 t/s`), and `6/6` on CPU for IQ4_XS (`17.11 t/s`) and Q8_0 (`13.66 t/s`); no Q8-only quality advantage in the small deterministic slice. ✅ 2026-07-17",
+          "key": "h:52d5:c3ea:7493:ec3a"
+        },
+        {
+          "line": 107,
+          "checked": true,
+          "text": "**T0.1c — Close expanded Qwable IQ4_XS standalone-routing quality gate.** Calibrated `default+expanded` suite passed `18/18` on MI210 plain (`106.65 t/s`), MI210 `ngram-mod` (`106.66 t/s`, neutral), and CPU plain (`15.96 t/s`). Research routing now prefers plain reasoning-off IQ4_XS standalone; scaffold remains beneficiary-must-answer fallback. ✅ 2026-07-17",
+          "key": "h:9877:900e:372c:eb90"
+        },
+        {
+          "line": 108,
+          "checked": true,
+          "text": "**T0.1d — Check CPU standalone verifier artifact.** Artifact `qwable_cpu_verifier_standalone_20260719T021216Z` is execution-clean (`exit_code=0`), CPU-only (`--device none -ngl 0`), cleanup-clean (`No KFD PIDs currently running`), and records strict/fenced JSON responses for the baseline and verifier-selector stub arms. The compact artifact is tracked; raw run logs remain scratch unless explicitly retained. ✅ 2026-07-19",
+          "key": "h:0ab7:90ff:83f8:6d25"
+        },
+        {
+          "line": 109,
+          "checked": false,
+          "text": "**T0.2 — Stand up the GPU reasoner as a stack-managed service.** Add `start_scaffold_reasoner()` to `scripts/server/orchestrator_stack.py` mirroring `start_whisper()` (:1836): launch `/mnt/raid0/llm/llama.cpp-mi210-hip/build-hip/bin/llama-server` with `Qwable-v1.IQ4_XS.gguf`, pick a stable port, health-probe. Add a `scaffold_reasoner` entry to `orchestration/model_registry.yaml` with `device: gpu`. *Accept:* `orchestrator_stack.py status` shows the reasoner healthy; a manual `/v1/chat/completions` to its port returns a `<think>` block. *(No autonomous llama-bench — speed characterization needs a per-run go-ahead, `feedback_speed_verify_via_llama_bench`.)*",
+          "key": "h:90a8:2055:856f:d0c4"
+        },
+        {
+          "line": 112,
+          "checked": false,
+          "text": "**T1.1 — Build the scaffold-then-nothink composite executor.** New path (verify attach point in `src/api/routes/chat_pipeline/`): call `scaffold_reasoner` → inject its output (assistant-prefix `continue_final_message` **or** system/context advisory — the study's mode answer is distribution-conditional, so make it a parameter) → call the beneficiary with `enable_thinking=false` (via the backend path in `src/backends/llama_server.py`). Issue as **one timed request** so `elapsed_s` (`eval_tower.py:1063`) captures both stages. *Accept:* one composite request returns the beneficiary's answer with the scaffold visible in the trace; beneficiary decode-token count is in the ~100–175 band the study observed.",
+          "key": "h:6839:892e:89a3:ac39"
+        },
+        {
+          "line": 113,
+          "checked": false,
+          "text": "**T1.2 — Attach it to the reasoning-effort ladder.** Wire the composite as one rung in `src/graph/think_harder.py` (`_build_think_harder_config`, :130) rather than a parallel mechanism, so per-role ROI tracking (`_expected_think_harder_roi`, :29) already covers it. *Accept:* `think_harder` can select `scaffold_then_nothink` as an effort level for an eligible role.",
+          "key": "h:b738:a3da:62a6:8941"
+        },
+        {
+          "line": 116,
+          "checked": false,
+          "text": "**T2.1 — Decide + implement the blended-cost representation.** Resolve the §3.1/§3.2 split: (i) ensure the composite request's total wall-clock (GPU gen + CPU prefill + CPU decode) lands in the `speed` axis via the single-timed-request design (T1.1); AND (ii) extend the episodic `cost_metrics` contract in `orchestration/repl_memory/q_reward.py` to carry a **second-device term** (GPU `generation_ms`) so `compute_reward`'s `cost_ratio` reflects blended cost, not just the beneficiary's single-role wall-clock. Options: a composite pseudo-role with a blended `baseline_tps`, or an additive GPU-cost term. *Accept:* a scaffold trial and an ownthink trial on the same task produce `cost_ratio`/`speed` values whose ordering matches the study's blended-cost inequality (scaffold cheaper in the over-reason regime).",
+          "key": "h:3807:6405:0f83:f841"
+        },
+        {
+          "line": 117,
+          "checked": false,
+          "text": "**T2.2 — Verify the Pareto `cost` axis is not misused.** Confirm the scaffold does **not** get mis-scored on the memory `cost_tier` axis (`eval_tower.py:1383-1385`) as if it were free — the GPU residency is a real capacity cost. Decide whether the reasoner's residency should raise the composite route's `cost_tier`. *Accept:* documented decision + `cost_tier` assignment for the composite route.",
+          "key": "h:495e:40c2:b006:3d5c"
+        },
+        {
+          "line": 120,
+          "checked": false,
+          "text": "**T3.1 — Add the scaffold-eligibility signal to episodic memory.** Introduce a `sub_decision`/`action_type` value (e.g. `scaffold_eligible`) in `src/classifiers/subdecision_taxonomy.py` + `orchestration/repl_memory/episodic_store.py` and a `retrieve_for_scaffold_eligibility` (or reuse `retrieve_for_routing`, `retriever.py:160`) keyed on task embedding × `difficulty_band` (`src/classifiers/difficulty_signal.py`). *Accept:* store/retrieve round-trips a scaffold Q-value for a (task-class, difficulty) cell; unit test alongside `tests/unit/test_episodic_store.py`.",
+          "key": "h:4f01:d38b:5add:1aa8"
+        },
+        {
+          "line": 121,
+          "checked": false,
+          "text": "**T3.2 — Reward wiring so Q-values learn the gate.** Ensure the composite route's outcome feeds `q_reward.compute_reward` (T2.1) so `update_q_value` (`episodic_store.py:618`) reinforces \"apply scaffold\" only where it wins (correct **and** blended-cost-cheaper). *Accept:* replay of a synthetic weak-and-overthinking trace drives the scaffold Q-value up; a saturated-task trace drives it down (matches the headroom-conditional finding).",
+          "key": "h:443f:ec46:2c13:21c7"
+        },
+        {
+          "line": 124,
+          "checked": false,
+          "text": "**T4.1 — Offline replay to learn the gating policy from existing traces.** Use the read-only journal replay path (`scripts/autopilot/journal_snapshot_replay.py` → `src/autopilot_core/journal_snapshot_replay.py`, `build_snapshot_replay_diagnostic`) and/or `scripts/autopilot/core_v2_select.py` to replay historical task traces and estimate, per task-class, where nothink fails + the beneficiary over-reasons (the eligible regime) — **without** live daemon perturbation. *Accept:* a per-task-class eligibility table with support counts, written to a report under `orchestration/reports/`.",
+          "key": "h:86d2:3ebe:6c45:22bb"
+        },
+        {
+          "line": 125,
+          "checked": false,
+          "text": "**T4.2 — Register the lever (operator-gated).** After T0.1 approval, add a `scaffold_then_nothink` row to `orchestration/capability_registry.yaml` (kind per the §3.4 fork decision; `promotion_state: placeholder`; `kill_condition` written; roles = the eligible beneficiaries). Validate with `scripts/registry/compile_capability_registry.py` + `tests/unit/test_capability_registry.py`. *Accept:* loader accepts the row; row stays `placeholder`/gated until the measurement gate (§8) passes.",
+          "key": "h:e56c:5cbd:4b23:7ae6"
+        },
+        {
+          "line": 128,
+          "checked": false,
+          "text": "**T5.1 — Codified measurement protocol for the deploy gate** (see §8). *Accept:* protocol-id assigned; quality-parity + blended-cost recipe written, operator-approved.",
+          "key": "h:5bf6:8af4:bc41:3f69"
+        },
+        {
+          "line": 129,
+          "checked": false,
+          "text": "**T5.2 — Canary / shadow rollout.** Shadowed trials on the eligible task-classes only; verify no regression on the saturated/nothink-works classes; then promote the registry row past `placeholder` per W4 preconditions. *Accept:* canary meets the §8 gate; W4 (1) applicator wired, (2) range validated, (3) kill_condition, (4) shadowed trial attested — all satisfied.",
+          "key": "h:f7c8:d966:a65e:e873"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md",
+      "state": "active",
+      "sha256": "10513afa05f704221e2144ea0b771f7e3b77e29c26abb2dd8911100f1d8b6d0c",
+      "bytes": 31658,
+      "title": "Autopilot / Orchestrator Dashboard Fidelity Audit — 2026-07-22",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 237,
+          "checked": true,
+          "text": "**[C1] Realized-fleet-first NUMA-mode resolution** ✅ 2026-07-22 —",
+          "key": "h:1ab0:9e1e:df8a:7533"
+        },
+        {
+          "line": 243,
+          "checked": true,
+          "text": "**[C1] Realized probe runs in-process at request time, TTL-cached** ✅ 2026-07-22 —",
+          "key": "h:f982:ecdb:a7d3:9294"
+        },
+        {
+          "line": 247,
+          "checked": true,
+          "text": "**[C1/H4] Visible provenance annotation** ✅ 2026-07-22 — `stack_numa_mode_provenance`",
+          "key": "h:a2a6:484b:d43c:bf29"
+        },
+        {
+          "line": 251,
+          "checked": true,
+          "text": "**[M2] `expected`/rogue + `launch_selected` inversion fixed** ✅ 2026-07-22 —",
+          "key": "h:cc66:83e2:d4e2:f1a8"
+        },
+        {
+          "line": 256,
+          "checked": true,
+          "text": "**Tests** ✅ 2026-07-22 — realized-over-env, inversion regression,",
+          "key": "h:5e1c:698e:5dc8:647e"
+        },
+        {
+          "line": 267,
+          "checked": false,
+          "text": "**[C1 fix #2] Manifest writer intent-not-realized gap** — writer lives in",
+          "key": "h:f261:5497:0030:29d2"
+        },
+        {
+          "line": 283,
+          "checked": false,
+          "text": "**[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch",
+          "key": "h:0ab8:f4e5:c327:9242"
+        },
+        {
+          "line": 285,
+          "checked": true,
+          "text": "**[E8-PANELS] Era-honest pareto/GEPA plots for E8** ✅ 2026-07-27 — implemented in",
+          "key": "h:877f:067e:e839:9129"
+        },
+        {
+          "line": 295,
+          "checked": true,
+          "text": "**[E8-PANELS-a] Reconcile the rerun counter fields** ✅ 2026-08-11 (`mainB`,",
+          "key": "h:215c:4735:ca16:2fa8"
+        },
+        {
+          "line": 315,
+          "checked": true,
+          "text": "**[E8-PANELS-b] Commit the ratified era-registry row**: an uncommitted `eval_quality`",
+          "key": "h:6008:e32c:97ed:164c"
+        },
+        {
+          "line": 343,
+          "checked": true,
+          "text": "**[E8-PANELS-c] Hub pct presentation** ✅ 2026-08-12 (`mainB`) — `pct_all_done` reads intake",
+          "key": "h:f838:502c:3a65:7f1d"
+        },
+        {
+          "line": 364,
+          "checked": true,
+          "text": "**[E8-TRIALS-COLD] Validate restart-surface trial speed samples for cold-start",
+          "key": "h:0a52:fa8c:093e:7180"
+        },
+        {
+          "line": 390,
+          "checked": true,
+          "text": "**[E8-TRIALS-COLD-GUARD] Enforce restart/cold eligibility in future frontier",
+          "key": "h:0d04:1b53:cb76:90e2"
+        },
+        {
+          "line": 398,
+          "checked": false,
+          "text": "**[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).",
+          "key": "h:d03f:d092:5c5b:cbb2"
+        },
+        {
+          "line": 399,
+          "checked": false,
+          "text": "**[H2] REL-1 eval error-rate surface** — deferred (stretch).",
+          "key": "h:5b59:12df:7dc4:7c8b"
+        },
+        {
+          "line": 400,
+          "checked": false,
+          "text": "**[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set",
+          "key": "h:9337:2af5:e757:a6bb"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/multi-file-coding-completion-capability.md",
+      "state": "active",
+      "sha256": "50d3593ad3f8cde348997b8c8de2a74f36bc85a2c4c3404acc85f0dbb02248e2",
+      "bytes": 29255,
+      "title": "Multi-file coding completion — diagnosed agentic read→edit→finish protocol gap",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 288,
+          "checked": false,
+          "text": "**If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent 35.21 GB frontdoor.** This avoids a bf16 download plus conversion (~100 GB against ~180 GB free, with `/mnt/raid0/llm` at 95%). **Do NOT bundle the APEX-MTP variant into the quality A/B** — a base-trunk MTP head on a fine-tuned trunk is a separate, unmeasured question and would confound the quality axis with a spec-dec axis.",
+          "key": "h:30b6:9b28:c8be:8198"
+        },
+        {
+          "line": 292,
+          "checked": true,
+          "text": "Diagnosis: protocol/tooling gap not capability (one-shot ablation 5/5) ✅",
+          "key": "h:efe5:79c5:03f2:65c9"
+        },
+        {
+          "line": 293,
+          "checked": true,
+          "text": "edit_transaction module + force_mode=edit wiring + 5-point hardening (built/validated 2026-05-27) ✅",
+          "key": "h:d7b5:208b:03fc:fca1"
+        },
+        {
+          "line": 294,
+          "checked": true,
+          "text": "Explicit target-file selection (994f168) + functional-verifier-in-loop (2026-06-28) ✅",
+          "key": "h:b1ea:53ac:c1fd:047b"
+        },
+        {
+          "line": 295,
+          "checked": false,
+          "text": "Production rollout decision: when/how routine coding edits auto-route to edit-mode",
+          "key": "h:55be:e5b6:ba32:06e0"
+        },
+        {
+          "line": 296,
+          "checked": false,
+          "text": "Clean-window A/B evidence: >=50 routine edit tasks, quality/reliability/speed gates",
+          "key": "h:71ee:ce5e:a4c1:6722"
+        },
+        {
+          "line": 297,
+          "checked": false,
+          "text": "Promote edit_transaction_auto_routing row from actionable_by=operator toward autopilot",
+          "key": "h:94b8:0d94:476e:c569"
+        },
+        {
+          "line": 302,
+          "checked": true,
+          "text": "**MF-FIN-1 — `FINAL('done')` instruction rejected by the status guard.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `0b261dde`). The loop-guard HALT (`src/graph/helpers.py:788-789`) and `INTERLEAVED_EDIT_INSTRUCTIONS` (`src/batch_edit_parse.py:61+`) tell the model to finish with `FINAL('done')`; the status-message guard rejects `\"done\"` (`helpers.py:1229-1231`; asserted by `tests/integration/test_execute_turn.py:248`), burning nudges toward `MAX_CONSECUTIVE_NUDGES`. Fixed with a turn-local `_edit_finish_sanctioned` flag set only where the interleaved-edit rider or the loop-guard HALT is injected; exactly `done` is then accepted, every other status phrase is still rejected, and normal-mode rejection is unchanged (3 new tests in `tests/integration/test_execute_turn.py`). `batch_edit_mode` is not exempted (its instructions never ask for `FINAL('done')`). `intake-1351#record`.",
+          "key": "h:1a1d:4538:ed20:b178"
+        },
+        {
+          "line": 303,
+          "checked": true,
+          "text": "**MF-VBS-1 — Measure the verify-before-stop failure rate** from existing BEP/REPL traces (FINAL after `file_write_safe` with no later execution), including the \"delegates execution to the user\" variant, before building any gate. External prior: stock OpenCode + GPT-OSS-20B-low stopped after an unexecuted edit in 110/248 voluntary stops. `intake-1362#04`, `intake-1351#record`. ✅ 2026-09-24 — orch `86471b1f` (`scripts/analysis/mf_vbs1_verify_before_stop.py` + `data/analysis/mf_vbs1_verify_before_stop_result.json`, reproducible). The only corpus with per-turn `file_write_safe`/FINAL granularity is `data/bep_sandbox` (62 real trajectories, 2026-05-27, `coder_escalation` Qwen3.6-35B-A3B, 5 tasks × 2 arms). **Verification never happens:** 0/38 edited trajectories ever call `run_shell`/`run_python_code` (Wilson 95% 90.8–100%), and a main-thread re-check found 0/14 write-bearing traces that import, assert or call the edited code afterwards. Voluntary stops: 15/15 edit-without-execution (79.6–100%), vs the external 110/248; the delegates-to-user variant is 0/62 (every final payload is code or a patchset, since the rider hard-codes `FINAL(\"done\")`). Not like-for-like: the interleaved-edit rider (`src/batch_edit_parse.py:61`) defines done as \"every file written\" and never asks for verification, 8/15 voluntary stops are single-turn auto-finalizes, and only `t1_create_util` ever stops voluntarily — t2–t5 hit the 8-turn cap or error in every run. The 6 `py_compile` \"sandbox-verified\" stops are the promotion path's automatic syntax check, not a model-chosen test. **Verdict: build the gate** as a verify-before-FINAL step in the edit rider / batch-edit finish contract (task below), and measure it on t2–t5 once those reach a voluntary stop at all.",
+          "key": "h:f3df:f8df:5634:d865"
+        },
+        {
+          "line": 304,
+          "checked": false,
+          "text": "**MF-VBS-2 — Verify-before-FINAL gate.** Add an explicit \"run the acceptance check with `run_python_code`/`run_shell` before `FINAL`\" step to `INTERLEAVED_EDIT_INSTRUCTIONS` and the batch-edit finish contract, then re-run the BEP sandbox (inference) and re-measure with `mf_vbs1_verify_before_stop.py`. The effect on multi-file tasks cannot be sized until t2–t5 reach voluntary stops (their forced-stop rate is the bigger, separate defect). Basis: MF-VBS-1.",
+          "key": "h:d367:ca2d:34e0:7311"
+        },
+        {
+          "line": 305,
+          "checked": false,
+          "text": "**MF-FS-1 — t2–t5 never stop voluntarily in the BEP sandbox.** Found by MF-VBS-1 (2026-09-24): across",
+          "key": "h:6837:1aea:0669:be1b"
+        },
+        {
+          "line": 310,
+          "checked": false,
+          "text": "**MF-NDG-1 — Announced-action nudge.** The empty/comment-only nudge (`helpers.py:383-386`, \"Call FINAL now\") steers a prose-announced action toward stopping. Measure how often empty-code turns announce an action, then reword to \"execute it\". `intake-1351#record`.",
+          "key": "h:597a:a370:abe9:0ed0"
+        },
+        {
+          "line": 311,
+          "checked": false,
+          "text": "**MF-RR-1 — Reasoning-runaway repair.** When a turn hits the token cap with no code/tool call, retry with thinking disabled and a single-concise-action prompt (extends the one-shot conciseness retry at `helpers.py:969-997`). Measure the cutoff-without-code rate first. External: the largest single promoted step (+5/38 tasks) in a determinism-gated harness search. `intake-1355#02`.",
+          "key": "h:089b:f2d7:a648:5b86"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/promptforge-mutation-safety-contract.md",
+      "state": "active",
+      "sha256": "a8d4893c72c0853d7c2271a7995ad5907741fd42700e89dc4747d27b5dc95db1",
+      "bytes": 22661,
+      "title": "PromptForge mutation safety contract (RTG-55)",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 25,
+          "checked": true,
+          "text": "**MHS-1 — Typed return-effect contract.** Constrain what a mutation may DO (a closed per-site",
+          "key": "h:e946:d2ab:f25b:c320"
+        },
+        {
+          "line": 35,
+          "checked": true,
+          "text": "**MHS-2 — Close the MH-9 inertness hole.** The AutoMem `schema_evolution` `new_file` lane",
+          "key": "h:4cad:0d05:8682:1db5"
+        },
+        {
+          "line": 54,
+          "checked": true,
+          "text": "**MHS-3 — Missing half of the transfer guard.** ✅ 2026-09-17 (landed with the AutoPilot merge train, orchestrator `a1a0251a` on main, which contains `6df6f0d8`; the notes below that say \"not yet on main\" predate the landing). `_UNIVERSAL_TRANSFER_RE`",
+          "key": "h:b602:e8ad:e32e:d9a7"
+        },
+        {
+          "line": 104,
+          "checked": true,
+          "text": "**MHS-3a — remove the pool leak MHS-3 found in live harness text** ✅ 2026-09-16 (orchestrator",
+          "key": "h:c61d:a2d6:b079:a8c5"
+        },
+        {
+          "line": 110,
+          "checked": true,
+          "text": "**MHS-3b — close the rewind hole: operator RATIFY of the checkpoint prompt re-pin.** ✅ 2026-09-17 RATIFIED by the operator (root `b8379d42`): all 10 checkpoint copies re-pinned to `18f8ea01`, originals in `/mnt/raid0/llm/backups/ckpt-leak-20260916/`. Operator chose",
+          "key": "h:ed54:7566:dfcb:6ca7"
+        },
+        {
+          "line": 116,
+          "checked": true,
+          "text": "**MHS-3c — clean the out-of-scope leak copies** ✅ 2026-09-17 (all three scopes purged; `--verify` PASS on each) that MHS-3b leaves: 4 HumanEval/55 task memories in",
+          "key": "h:2d02:d732:6110:daef"
+        },
+        {
+          "line": 120,
+          "checked": true,
+          "text": "Offline stores and state backups purged ✅ 2026-09-17: 11 checkpoint/backup `episodic.db` copies",
+          "key": "h:67c7:2314:17c6:ee5d"
+        },
+        {
+          "line": 123,
+          "checked": true,
+          "text": "Live store purged ✅ 2026-09-17 during the API stop window (API down, verified): 4 memories removed,",
+          "key": "h:76a6:481a:0489:95b2"
+        },
+        {
+          "line": 125,
+          "checked": true,
+          "text": "Pinned production_best (multitier_v10) store ✅ 2026-09-17: purged with operator approval, 4 rows + FAISS, health OK, verify PASS incl. live+pinned.",
+          "key": "h:f1c6:d1fa:bbc0:50f8"
+        },
+        {
+          "line": 128,
+          "checked": false,
+          "text": "**MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host terminal:",
+          "key": "h:d8a1:d256:d7f9:67f6"
+        },
+        {
+          "line": 135,
+          "checked": true,
+          "text": "**MHS-4 — ANTI-OVERRIDE risk prior.** ✅ 2026-09-17 (landed with the AutoPilot merge train: orchestrator `8219d8e8` and `4f28e6c3` are on main via `a1a0251a`; the \"pending merge\" and \"NOT YET ON MAIN\" notes below predate that). Rank/gate mutations by CONSTRAIN (add a check, block a bad",
+          "key": "h:f2f9:0344:bfc7:8781"
+        },
+        {
+          "line": 154,
+          "checked": true,
+          "text": "**MHS-5 — Mine `examples/heldout_generalization/` as a labelled contrastive corpus.** ✅ 2026-09-17 (orchestrator `4f28e6c3` on main via the train merge `a1a0251a`; the \"unmerged\" notes below predate that). 23",
+          "key": "h:0264:0a63:edd9:655c"
+        },
+        {
+          "line": 181,
+          "checked": false,
+          "text": "**MHS-6 (record, no work) — Optimizer budget shape.** Record it as **\"constant in training-set",
+          "key": "h:756a:fbcd:9187:a0e5"
+        },
+        {
+          "line": 187,
+          "checked": false,
+          "text": "**MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly",
+          "key": "h:4a10:b763:7973:33b7"
+        },
+        {
+          "line": 190,
+          "checked": false,
+          "text": "**MHS-8 — tighten the apply gate to \"only screened effects apply\"**, since only `MutationEffect.UNSAFE`",
+          "key": "h:69be:9583:7442:ba30"
+        },
+        {
+          "line": 194,
+          "checked": false,
+          "text": "**MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit",
+          "key": "h:10bf:b86f:d580:3d19"
+        },
+        {
+          "line": 197,
+          "checked": false,
+          "text": "**MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on",
+          "key": "h:3e63:df81:412f:a3ee"
+        },
+        {
+          "line": 200,
+          "checked": false,
+          "text": "**MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,",
+          "key": "h:5109:9157:def0:02b7"
+        },
+        {
+          "line": 203,
+          "checked": false,
+          "text": "**MHS-12 — eval-identity screen for code_mutation.** Refuse (MutationEffect.UNSAFE with",
+          "key": "h:b522:a5a9:12c9:38a4"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/model-capability-descriptors.md",
+      "state": "active",
+      "sha256": "8fa7479c1046508a4588b72c18da30f2943d4b9dba3a890bec44012111f065d2",
+      "bytes": 20332,
+      "title": "Model-Capability Descriptors: The Model-Agnosticism Interface",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 29,
+          "checked": true,
+          "text": "**W1 — schema** (~1 day): `orchestration/model_descriptors.yaml`, one entry per MODEL (canonical id `family-params-quant`), NEVER per role; fields per spec 2.1: quality suite_vector with source/eval_protocol, speed with bench provenance, acceleration (spec_type, draft_compat, enable_thinking, kv), serving (binary, numa_policy, mlock), descriptor_version + compiled_at. Landed live in `epyc-orchestrator` as `17731a7` (`Add model capability descriptor seed`), a current-lineage cherry-pick of branch-ready `578eb8a`. W1 deliberately records role/server conflicts as explicit `known_gaps` instead of resolving them by hand.",
+          "key": "h:cce3:8946:0961:0e57"
+        },
+        {
+          "line": 30,
+          "checked": true,
+          "text": "**W2 — compiler** (~2 days): `scripts/registry/compile_descriptors.py`; sources = research registry + lean registry + bench artifacts; REFUSES to emit a descriptor with missing load-bearing fields (lists gaps instead); runs at stack launch (compose with the existing `--compile-registry` path) and on registry change; converts free-text provenance comments into structured `measured: {date, protocol, value}` fields. Implementation landed live as `86a7387` (`Add model descriptor compiler`) + `545eb57` (`Enrich model descriptors from registry evidence`): default-off `--compile-descriptors`, strict refusal, `--allow-incomplete` diagnostic mode, focused tests, read-only research-registry enrichment for `ctx_max`/thinking evidence, role-endpoint serving evidence for dedicated VL roles, and benchmark-date extraction from nested performance blocks. Follow-ups closed the strict descriptor evidence tranche: GGUF header extraction in `b8477b0`, REAP quality projection in `2ea28dd`, structured thinking-control projection in `865b2b1`, shared-runtime alias provenance in `54b7c77`, and descriptor-native VL projector requirements in `3e8121d`. Generated descriptors now have `status: compiled`; stack prior records have empty `known_gaps`.",
+          "key": "h:1e97:4e2b:bcd2:e71a"
+        },
+        {
+          "line": 31,
+          "checked": true,
+          "text": "**W3 — first consumers** (~2 days, no router redesign): q_scorer cost model (replaces routing-truth-restoration W5 stopgap), seeder per-role eval config, `orchestrator_stack` acceleration args (spec/MTP/enable_thinking travel with the model), eval-tower/planner model signatures replacing hand-maintained `orchestration/model_quality_signatures.yaml` (stale since 2026-04-16, fed to the planner every trial). First consumer landed in `73ed436`: AutoPilot planner signatures now prefer `orchestration/model_descriptors.yaml`, render descriptor `compiled_at`, keep the legacy YAML fallback, and pass focused tests. Seeder per-role discovery landed in `2e31055`: default/eval role discovery now prefers generated stack priors, restores live `worker_vision` and `vision_escalation` coverage, excludes shared non-default aliases, and preserves registry fallback. q_scorer alias-quality propagation landed in `9ed177d`: `worker_explore` now receives stack-prior quality from live `worker_general`, matching TPS/memory alias behavior. Launch command construction landed in `7121f38`: `orchestrator_stack.py` now prefers generated `orchestration/derived/stack_priors.yaml` runtime/requirements for vision escalation, worker vision, `worker_general` MTP launch, and generic role launch arguments while keeping explicit degraded fallbacks. Acceptance: planner-prompt signatures show descriptor `compiled_at`; stack-change no-inference promotion gate is green at `7121f38`.",
+          "key": "h:ce5d:fc3b:d991:8212"
+        },
+        {
+          "line": 32,
+          "checked": true,
+          "text": "**W4 — simulated model-SWAP CI** (~1 day): replace one role's descriptor with a candidate model's; replay a day of routing decisions + launch-arg generation; PASS = data-only change, zero code edits. Acceptance: passes for 2 candidate models. Current no-inference coverage: the canonical stack-change promotion gate now exercises data-only frontdoor/coder shared-runtime swap, shared alias runtime descriptor provenance, retired-role enum removal, generated operator-summary refresh, q_scorer source provenance, and runtime/context/KV/acceleration drift rejection via `tests/unit/test_stack_change_pipeline_simulated_fixtures.py`. The fixture suite now also covers a second worker candidate swap in the same promotion-gate path, and the replay meta-agent now exposes `MetaAgentWorkflow.generate_candidate_swap_report()` / `--swap-replay` so archive-backed candidate swaps can be replayed directly.",
+          "key": "h:c16b:157c:f9c6:6978"
+        },
+        {
+          "line": 40,
+          "checked": false,
+          "text": "**W5 — GATED tail: unified cascade (Phase 3)** (2–3 weeks IF ever opened): one calibrated bilinear `P(success | task_features, model_descriptor)` (isotonic, ECE-reported, abstain band) + explicit `cost(model, placement_state)` + ω scalarization; cheap-first/escalation/think-harder become arms of the same argmax; 2-week shadow then staged migration per spec 3.3. Gate: DAR-1 regret replay ≥5% AND per-question eval vectors exist (findings-01). Prediction on record: stays gated.",
+          "key": "h:0428:fad3:5dd6:f468"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/prompt-construction-determinism.md",
+      "state": "active",
+      "sha256": "aa7cee6d91978f7e9b56ac91cc2bc97799f4b550ae2cf087fbbae822f81a3625",
+      "bytes": 11563,
+      "title": "Prompt-Construction & Sampling Determinism",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 65,
+          "checked": true,
+          "text": "**D1 — git commit** ✅ **DONE 2026-06-26** — orchestrator `f4a8a3ca` (llama_server.py, inference/model_server.py, registry/stack_priors.py, derived/stack_priors.yaml), root: this docs commit (docs). **Unpushed** — operator pushes manually.",
+          "key": "h:1cca:ca88:18cb:31a7"
+        },
+        {
+          "line": 66,
+          "checked": true,
+          "text": "**D2 — J12 architect think-loop probe** ✅ **DONE 2026-07-06** *(Queue-2 quiesce window; REVERT-GATE for change #4)*. Clean-window run with AutoPilot stopped wrote `epyc-orchestrator/orchestration/reports/j12_think_loop_probe_20260706T143621Z/{results.jsonl,summary.json}`. Result: `frontdoor` `15/15`, `architect_general` `14/15`, `0` empty outputs, `0` HTTP/error answers, `0` `<think>` leaks, `0` known wait-reference loops, and `0` repetition loops on both roles. The architect jinja/chat-completions flip has no D2 revert trigger. The prior 2026-06-27 live-load probe was only non-claim-grade telemetry because AutoPilot was active.",
+          "key": "h:1b35:4e2f:f763:22bc"
+        },
+        {
+          "line": 67,
+          "checked": false,
+          "text": "**D3 — manual canonical bench (sampling quality cert)** *(clean window; certifies #1–3)*. Greedy→sampled(0.1–0.3)+seed shifts output behavior. Certify via P-BENCH canonical recipe (`bench_canonical.sh`/`canonical_recipe.py`) per `/workspace/MEASUREMENT.md`. **Co-schedule with the N13 v6-iqk post-reboot bench** — both want the same clean window.",
+          "key": "h:cdc6:8752:5019:3104"
+        },
+        {
+          "line": 68,
+          "checked": false,
+          "text": "**D4 — sampling-quality instrument-era row** *(human-authored; AFTER D2+D3)*. The N13 kernel/AutoPilot-speed fence is now applied in orchestrator `dcd60332` (`E5-cpu-kernel`, `E5-autopilot-speed`, live AutoPilot `pareto_exclude_before_ts=2026-06-26T22:07:11Z`). The remaining D4 work here is the separate **sampling-determinism `autopilot_quality` boundary** after D2/D3, because greedy→sampled quality should not be certified until the architect revert-gate and canonical bench resolve. Its note should use DEMOTE-TO-PRIOR for pre-boundary quality numbers. `instrument_eras.yaml` remains a human-amendment surface (MEASUREMENT.md §4/§5).",
+          "key": "h:3a2a:fb26:75f0:9ae0"
+        },
+        {
+          "line": 105,
+          "checked": true,
+          "text": "**PCD-T1** — Record a constraint on any chat-template substitution: a chat template is",
+          "key": "h:5c07:8bae:8c2f:463c"
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/bep-dcp-falsification-harness.md",
+      "state": "active",
+      "sha256": "521e017a53fda16db96c280ceae23fe39c638885d568ebdc91d1a1d924d355d0",
+      "bytes": 8759,
+      "title": "BEP-2 / DCP-6 Falsification Harness",
+      "owner_index": "routing-and-optimization-index.md",
+      "boxes": [
+        {
+          "line": 16,
+          "checked": true,
+          "text": "**DCP-6 offline replay**: CLOSED 2026-06-12. Scratch/task-root replay over 5 historical BEP tasks confirmed bundles read task files, not orchestrator files; all 7 existing required files were selected and budgets 500/1000/2000 all fit.",
+          "key": "h:730c:9ea9:d9b9:378b"
+        },
+        {
+          "line": 17,
+          "checked": true,
+          "text": "**DCP-6a content-depth/freshness repair**: branch `fix/dcp6a-context-depth-current` commit `530128b7` changes task-root search/packing so tiny task files are included as full files or padded slices instead of one-line snippets, and populates manifest `content_sha256`. Equivalent code landed on the current live branch at `2e2e0d3`. Focused current-lineage tests: 30 passed after landing.",
+          "key": "h:7723:018c:4e77:2865"
+        },
+        {
+          "line": 18,
+          "checked": true,
+          "text": "**DCP-6b J7 runner safety prep**: ✅ 2026-07-06. Orchestrator `7c84f102` corrects `scripts/benchmark/dcp_j7_ab.py` so default mode is no-inference stub/schema validation; live inference now requires explicit `--real --host-quiet-confirmed` and still refuses while AutoPilot is running. Stub artifact `benchmarks/results/runs/dcp_j7/stub-20260706T033205Z/` validates the result schema and records the expected insufficient decision (`missing_latency_delta`, `quality_not_scored`).",
+          "key": "h:55e6:4415:dff1:c1ff"
+        },
+        {
+          "line": 19,
+          "checked": false,
+          "text": "**DCP-6 deploy attestation + inference gate**: launch-code provenance is satisfied (`server_launch_git_sha=eeb8cce`, ancestor of `2e2e0d3` and `756c96b`; current API `git_sha=27e09a1`). Orchestrator `670aab4` records the 2026-06-19 `dcp6a-deploy-boundary-check` attestation with GitNexus drift clean and all 6 API workers sampled, but it is not a clean deploy gate because **feature-flag intent diffs remain** and the run still needs an **operationally clean host-quiet window**. Clear that remaining attestation warning at the next host-quiet boundary, then run inference and record top-up rate, token overhead, and success deltas.",
+          "key": "h:6409:06e0:bf9f:bc7b"
+        },
+        {
+          "line": 21,
+          "checked": false,
+          "text": "**J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself still needs a keep/kill result. It is no longer a blocker for multi-file coding completion.",
+          "key": "h:b295:0377:e760:2ed9"
+        },
+        {
+          "line": 22,
+          "checked": true,
+          "text": "**Cross-handoff cleanup**: keep production rollout decisions in [multi-file-coding-completion-capability.md](multi-file-coding-completion-capability.md), not here. ✅ 2026-07-29 — this handoff records DCP/BEP evidence and gates only; the multi-file capability handoff owns any rollout decision.",
+          "key": "h:9697:555c:f14d:5918"
+        }
+      ]
+    }
+  ]
+}

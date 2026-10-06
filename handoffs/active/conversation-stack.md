@@ -482,3 +482,9 @@ The primary sources were checked on 2026-09-24. None are ingested yet (CS-1):
 3. Append to `progress/YYYY-MM/`.
 
 Operator decisions go through the master index's decision queue as options with tradeoffs and a recommendation: CS-2 ratification, the CS-8 winner, CS-17's default target, the CS-12 and CS-35 packages, and CS-41. Every measurement goes through CS-3 wiring before it runs.
+
+## JEV-aware refinement — MAIN reviewed 2026-10-06
+
+CS-24 option (ii) can reuse the existing local `QuestionKind.CHOICE` / `run_typed_decisions` runner with explicit `mode="json"`. Freeze its catalogue to CS-4's annotation labels; introduce an unknown/abstain label only if that annotation contract supports it. Reuse the default-off, bounded `submit_shadow` path beside the incumbent decision. Confidence is logging-only, never a routing threshold. Host routing remains authoritative.
+
+The bounded non-inference preparation is the option-(ii) contract and mocked-primitive fixtures for valid labels, schema/transport failure, unsupported labels and incumbent preservation. Do not enable the feature or call a model in this slice. Dependent controller stages remain staged. The original comparison of all three arms on CS-4, precision/recall, routing logs for CS-41, latency and actual call cost remains required before choosing a policy. Native scoring and production routing gates remain in force.

@@ -1,0 +1,49 @@
+{
+  "agent": "/root/next_ni_routing",
+  "task_boundary": "Closed on MAIN instruction; read-only handoff review and scratch artifact preparation only.",
+  "main_approved_scope": [
+    "S01, S02, S03, S11, and S14 semantic triage/review artifacts",
+    "Portable review validator preparation and coverage-only verification",
+    "Draft report preparation for MAIN review"
+  ],
+  "outputs": [
+    {
+      "path": "S01-review.json",
+      "result": "15 files / 205 unchecked keys; one MAIN-approved CS-24 refinement with mocked/default-off shadow preparation and original three-arm inference acceptance preserved."
+    },
+    {
+      "path": "S02-review.json",
+      "result": "19 files / 189 unchecked keys; deterministic/offline source-specific preparation preserved for C6-21/22/23; measurement and operator boundaries retained."
+    },
+    {
+      "path": "S03-review.json",
+      "result": "18 files / 305 unchecked keys; PAW-3 and agent-harness preparation separated from later evaluation/activation; no JEV-as-truth or permission use proposed."
+    },
+    {
+      "path": "S11-review.json",
+      "result": "12 files / 132 unchecked keys; semantic mixed-scope corrections retained; redundant HS-TD proposal withdrawn."
+    },
+    {
+      "path": "S14-review.json",
+      "result": "113 historical files / 315 residual unchecked keys; classified historical-only without reopening work."
+    },
+    {
+      "path": "validate_reviews.py",
+      "result": "Portable scratch validator checks original Git blob hashes, exact manifest/shard row identity, disjoint 528-file/3558-key coverage, and MAIN decisions/appends; supports --repo, --applied-ref, and --coverage-only. Coverage-only completed with zero errors."
+    },
+    {
+      "path": "audit-report-draft.md",
+      "result": "Prepared 831-word report draft; MAIN subsequently rewrote the final report."
+    }
+  ],
+  "verification": {
+    "coverage_only": "528 files, 3558 unchecked keys, 10 findings; no errors.",
+    "semantic_review": "MAIN approved corrected S01/S02/S03/S11/S14 work and validator/report preparation."
+  },
+  "limitations": [
+    "No canonical handoff, index, progress, wiki, or MAIN log edits were made by this agent; MAIN owns/applied canonical changes.",
+    "No implementation, inference/model call, benchmark, build, embedding, service reload, or production-kernel change was performed.",
+    "Review coverage and accepted handoff refinements do not prove task completion, scientific validity, JEV calibration, or deployment authorization.",
+    "S08-S10 were outside this agent's review assignment and remain subject to MAIN's correction/decision boundary."
+  ]
+}

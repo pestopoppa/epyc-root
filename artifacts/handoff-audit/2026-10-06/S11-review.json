@@ -1,0 +1,1192 @@
+{
+  "shard_id": "S11",
+  "method": "Verified all 12 file SHA-256 values against the assigned ROOT snapshot. Extracted all unchecked-box keys/text from S11.json, read every unchecked task line in its source, checked source contexts/status and cross-links, and source-checked the one grouped JEV refinement against accepted APP typed-decision APIs. Browser/historical references were not treated as new tasks. No inference/build/service actions. Re-read multiline active task text for semantic boundaries; split source-only/code-fixture preparation from live acceptance instead of treating any inference keyword as blocking the entire item. Retained no HS-TD finding because the accepted HS-TD-4 consumer contract already specifies those three tasks and their receipt path.",
+  "files": [
+    {
+      "path": "handoffs/active/reasoning-compression.md",
+      "source_sha256": "239d3bdda2241c885db98f051ac1e0835bef3e04ab2bab92590c26eecdf1fc01",
+      "reviewed_open_keys": [
+        "h:620b:fa9c:701b:47fe",
+        "h:176e:98ce:5f87:0986",
+        "h:c85e:8a6e:ae06:31d4",
+        "h:7878:7d6c:803d:2dcf",
+        "h:8c8f:292b:6c58:c08f",
+        "h:71ae:73e2:eadc:cddc"
+      ],
+      "status_assessment": "active; reviewed 6 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:620b:fa9c:701b:47fe"
+          ],
+          "disposition": "conditional",
+          "reason": "If validated: implement enforce mode (route easy→worker, hard→architect) The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:176e:98ce:5f87:0986"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Generate SEAL control vectors for Qwen3-32B (Action 8 — 2-day experiment). **Prep DONE 2026-04-09**: `generate_pairs.py` (80 contrastive problems The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:c85e:8a6e:ae06:31d4"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Summarizer quality assessment — shared with `context-folding-progressive.md` Phase 2 (Claude-as-Judge eval of consolidation across model tiers; S The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:7878:7d6c:803d:2dcf"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**RC-RE-2** — run RE-Bench against compressed vs uncompressed reasoning to validate compression safety The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:8c8f:292b:6c58:c08f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "RC-XLLM-PREFILL-1 asks for a bounded teacher/student endpoint-prefill smoke. The CPU/eager, batch-one, short-input runner and artifact/hash binding can be implemented and validated first; if those CPU paths execute correctly, only the ROCm phase waits for the coordinated GPU window. Preserve the 8-core/8-GiB/30-minute limits and stop-on-first-unsupported-op rule."
+        },
+        {
+          "keys": [
+            "h:71ae:73e2:eadc:cddc"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The Loopie task is explicitly a release watch before port/evaluation planning. Recheck the named GitHub/Hugging Face sources and update the scope only if artifacts are now released; no port, model download, or evaluation is authorized by this item."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/tool-output-compression.md",
+      "source_sha256": "63a0ea5ee5d745d857872a3165dd387add6c9f1c9e4c0ae5debb16b655dcf051",
+      "reviewed_open_keys": [
+        "h:20c7:a3e6:cf49:df0b",
+        "h:0b77:1f93:9d20:162b",
+        "h:b57a:dcc8:f680:7544",
+        "h:0218:714f:8a92:a9e8",
+        "h:0de0:98da:258f:4989",
+        "h:bf03:82cb:3339:c03b",
+        "h:b17d:4ce3:f4a8:5e1d",
+        "h:f8d1:7930:02e8:d13d",
+        "h:aebc:5b2d:0c49:bdfd",
+        "h:4331:ece6:efbb:9126"
+      ],
+      "status_assessment": "active; reviewed 10 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:20c7:a3e6:cf49:df0b"
+          ],
+          "disposition": "inference_gated",
+          "reason": "The transfer claim is a two-arm first-party comparison on frontdoor Qwen3.6-35B-A3B and architect Qwen3.5-122B, with wall-clock and log-growth/grep-latency required. The per-task chronological trajectory artifact and repeatable grep/Python scorer can be prepared first; the actual model A/B is the remaining inference acceptance. JEV cannot provide those performance or task-quality observations."
+        },
+        {
+          "keys": [
+            "h:0b77:1f93:9d20:162b"
+          ],
+          "disposition": "deterministic",
+          "reason": "A/B-CTRL explicitly says to resolve whether the nominal control exists before scheduling compute. Resolve the control definition and available fixture/source evidence in documentation now; keep any candidate-model comparison for the later A/B. This is protocol clarification, not an inference blocker on the clarification itself."
+        },
+        {
+          "keys": [
+            "h:b57a:dcc8:f680:7544"
+          ],
+          "disposition": "deterministic",
+          "reason": "A/B-C asks that the context budget C be held equal across backbones and recorded in the pre-registration. Add the equality check to the run manifest and fixtures now; this prevents a confounded later A/B but does not itself require model execution."
+        },
+        {
+          "keys": [
+            "h:0218:714f:8a92:a9e8"
+          ],
+          "disposition": "deterministic",
+          "reason": "A/B-INSTR records LOCA-bench as evaluated and declined. Preserve that prior suite decision with its intake rationale and ensure the planned comparison uses the accepted suite; no new LOCA run is asked for."
+        },
+        {
+          "keys": [
+            "h:0de0:98da:258f:4989"
+          ],
+          "disposition": "deterministic",
+          "reason": "The trajectory prerequisite asks for a grep-able per-task artifact and an audit of live peek/grep, including the `spill_pointer_follows` and retrieval-vs-execution split. The event/schema audit and deterministic fixture can proceed now; any compression A/B that consumes it stays separate. JEV is not a substitute for trajectory provenance."
+        },
+        {
+          "keys": [
+            "h:bf03:82cb:3339:c03b"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The text itself says total-token aggregation is already implemented in `src/graph/session_log.py` and explicitly calls it a telemetry primitive; recheck why the box is open and whether the actual unresolved item is wiring this field into a future A/B artifact. Do not repeat the already-landed aggregation. The comparison itself remains separately gated."
+        },
+        {
+          "keys": [
+            "h:b17d:4ce3:f4a8:5e1d"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The premise says an integer-key query is a thin read over spill pointers, but the handoff continuation records the actual pointer key is `(task_id,label,turn)` encoded as a path and recommends a manifest option. Resolve that mismatch against current spill source before implementing an API; preserve existing emitted pointers. This is a premise/source correction, not a new retrieval abstraction."
+        },
+        {
+          "keys": [
+            "h:f8d1:7930:02e8:d13d"
+          ],
+          "disposition": "deterministic",
+          "reason": "TOC-SP-3 has a ready code-and-fixture slice: add exact-substring quote verification, reconcile status only when a command receipt supplies it, require failure evidence in an accepted quote, and exercise adversarial synthetic spills. Its separate real-failing-log retention comparison remains inference-gated; _spill_output alone accepts only text and cannot invent an exit status. JEV does not prove byte provenance."
+        },
+        {
+          "keys": [
+            "h:aebc:5b2d:0c49:bdfd"
+          ],
+          "disposition": "operator_gated",
+          "reason": "TOC-RD-1a explicitly couples widening OPENSSH/ED25519 detection with a reviewed allow-list for credential-fixture test files; the hook owner must preserve both blocking and fixture coverage. Draft the paired pattern/allow-list and negative-control tests; apply the hook policy only with its stated review."
+        },
+        {
+          "keys": [
+            "h:4331:ece6:efbb:9126"
+          ],
+          "disposition": "deterministic",
+          "reason": "TOC-RD-1b identifies a reproducible markdown-table false positive on perf sample periods and requires an account-number negative control in the same hook change. Implement only the narrow perf-column exemption plus that refusal fixture; its own text says do not widen other hook behavior."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/agentic-serving-harness-fixes.md",
+      "source_sha256": "66c151018ca2009d16dfeb93895bfe3ff04ce4319ffc571cba381f7ebece4c9c",
+      "reviewed_open_keys": [
+        "h:f0f4:5df1:08c6:0f9c",
+        "h:608d:11c2:7c87:ea6e",
+        "h:a47c:fa8c:7ed9:027b",
+        "h:b661:bd1f:77d0:c039",
+        "h:c463:7dbc:8de7:b0a9",
+        "h:6808:c244:cd1d:10c8",
+        "h:ce36:9f33:cfab:263f",
+        "h:1522:d93f:5b5e:c3c6",
+        "h:c8d0:8e15:1e9a:5a6a",
+        "h:1aab:8769:d6b2:9b91",
+        "h:018f:b151:effd:485f",
+        "h:8f18:c65a:d911:9d5a",
+        "h:71a6:3edc:6a7b:2af6",
+        "h:7115:9164:6c99:b751",
+        "h:5c2d:899c:630c:574b",
+        "h:61e2:e32e:cbef:dfa9",
+        "h:c101:655a:878b:f628",
+        "h:329e:b811:ae7a:95f5",
+        "h:41bb:e5d2:886b:6f46",
+        "h:851d:a379:8b26:ce92",
+        "h:ff2c:e458:7f2d:b1e7",
+        "h:2b23:db56:843c:816c",
+        "h:ded6:a38a:2fd8:b93a",
+        "h:8789:0e9e:f413:aba9",
+        "h:1c80:72b2:7542:163a",
+        "h:6195:f8b8:3f90:1648",
+        "h:af01:ad85:4ebd:31b1",
+        "h:05ba:b7c1:5eb8:612e",
+        "h:9928:4821:ac29:4c74",
+        "h:629d:a447:f00d:fd8b",
+        "h:8f95:1a3f:0406:22f2"
+      ],
+      "status_assessment": "active; reviewed 31 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:f0f4:5df1:08c6:0f9c"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "**UFH14-A3a — re-measure the warm leg unperturbed, with ONE warm request.** (filed 2026-10-04) The 10-03 warm leg issued two warm requests (one p This specific item names an external owner/session or shared hardware window. Independent source/fixture prep can proceed, while that owner retains the shared-state or live acceptance step."
+        },
+        {
+          "keys": [
+            "h:608d:11c2:7c87:ea6e"
+          ],
+          "disposition": "deterministic",
+          "reason": "UFH14-A4a can be advanced from the already captured compaction and next-request prompts: diff the rendered prompts, identify the suffix mismatch, and add a deterministic prompt-construction fixture that preserves the compaction prefix. A live post-compaction re-measure is a separate acceptance check."
+        },
+        {
+          "keys": [
+            "h:a47c:fa8c:7ed9:027b"
+          ],
+          "disposition": "deterministic",
+          "reason": "UFH14-A6’s policy work and planted-read test can be implemented with an owned synthetic campaign-store sentinel: verify Landlock denies it while keeping owned workspace/result/proxy paths accessible. The named real-call isolation proof remains distinct and must not be claimed from the fixture."
+        },
+        {
+          "keys": [
+            "h:b661:bd1f:77d0:c039"
+          ],
+          "disposition": "deterministic",
+          "reason": "UFH14-A6a has two independently actionable parts: trace the 101 known contamination hits through bundle/clone/binary allow paths, then add a denial-log cross-check to `scan_contamination` and a planted-read fixture. A real call is still needed only for the stated real-store denial proof."
+        },
+        {
+          "keys": [
+            "h:c463:7dbc:8de7:b0a9"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-A5.** Phase A verdict: which fixes measurably change P(keep), wall time and prefill seconds on the 27B. Wire the results to the belief ke This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:6808:c244:cd1d:10c8"
+          ],
+          "disposition": "deterministic",
+          "reason": "UFH14-A7 is explicitly a code-read/report/scripts task backed by frozen v10 source and existing F12 wire logs. Derive where divergent history forces hybrid re-prefill and prepare the script/report from those records; do not alter frozen production v10 or claim a new serving result."
+        },
+        {
+          "keys": [
+            "h:ce36:9f33:cfab:263f"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B1.** Move the demonstrated client fixes (D1–D5) out of the C95 experiment drivers (`/mnt/raid0/llm/tmp/ds41-c95/run2.py`, `proxy2.py`) i This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:1522:d93f:5b5e:c3c6"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B1c — opencode/codex provider configs used with local models outside the actor seats.** Apply the same derived parameters. This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:c8d0:8e15:1e9a:5a6a"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B1d — STACKCHANGE: per-role request timeouts cannot cover a full-context prefill.** (filed 2026-10-04, This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:1aab:8769:d6b2:9b91"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B1e — port the `PROVISIONAL(answer)` REPL primitive behind its own flag, default off.** (filed This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:018f:b151:effd:485f"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B1f — wire the per-turn thinking budget behind its own flag, default off.** (filed 2026-10-04, This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:8f18:c65a:d911:9d5a"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "UFH14-B1g is marked as workspace-ec-owned and asks for an enable decision on `repl_answer_force` (F2). Prepare the decision evidence/interface if useful, but the feature decision remains with workspace-ec; do not activate it from this audit."
+        },
+        {
+          "keys": [
+            "h:71a6:3edc:6a7b:2af6"
+          ],
+          "disposition": "deterministic",
+          "reason": "UFH14-B1h says the replacement rate is already measured and asks to retire the hard-coded 250 TPS floor. Update the parameter source/test to consume the measured rate and keep the exact evidence reference; applying it to a live stack remains a separate stack-change boundary."
+        },
+        {
+          "keys": [
+            "h:7115:9164:6c99:b751"
+          ],
+          "disposition": "retain",
+          "reason": "**Open sub-task: the full-pool concurrent-residency proof.** The 4 × 90k probe held (all 200, zero memory-slot This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:5c2d:899c:630c:574b"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B4.** Prefix-cache and `--cache-ram` policy per server. Covers D5 and D6 on the server side. This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:61e2:e32e:cbef:dfa9"
+          ],
+          "disposition": "conditional",
+          "reason": "**UFH14-B4a — PFX-SEL-1 stack-change package, after a metric window.** Design §3.8 / §4.4: master The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:c101:655a:878b:f628"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**UFH14-B4b — A/B: the stable head as a system message (design R2, §4.2 item 1).** Split the prompt at a The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:329e:b811:ae7a:95f5"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**UFH14-B4c — A/B: `prefix_stable_order` on in production (design R1, §4.2 item 2).** `src/features.py:236`; The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:41bb:e5d2:886b:6f46"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**UFH14-B4d — A/B: move CoT prefixes and worker RAG snippets to the tail (design R6, §4.2 item 3).** The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:851d:a379:8b26:ce92"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B4f — belief-kernel write side for the per-port prefix-cache report.** Add the report's per-port rows as This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:ff2c:e458:7f2d:b1e7"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**UFH14-B4g — re-measure the 27B DFlash2 prompt-cache entry cost (design §4.4).** It was to ride B3's relaunch The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:2b23:db56:843c:816c"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B4j — stack change: `--no-cache-idle-slots` on :8083, as a PFX-SEL-1 field.** (filed 2026-10-04, This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:ded6:a38a:2fd8:b93a"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-B6a-1 — structured `blockers` and `wait_ms` on refusal records, and a test per gate.** (filed This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:8789:0e9e:f413:aba9"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "UFH14-B6d is explicitly part of workspace-ec’s branch. Review its source contract and prepare integration notes independently; code changes/validation belong to that owner."
+        },
+        {
+          "keys": [
+            "h:1c80:72b2:7542:163a"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-DEPLOY-EC — deploy orch `integ/api-reload-2-ec` (B6, B4 API part, KVU-15a, RI-18c, test fixes).** This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:6195:f8b8:3f90:1648"
+          ],
+          "disposition": "conditional",
+          "reason": "**UFH14-DEPLOY-EC-2 — the live proofs, after the :8083 restore (KVU-16e).** Status at 15:00Z: The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:af01:ad85:4ebd:31b1"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-DEPLOY-EC-2c — RI-18c: one COMPLETED live `/chat` with `review_gate`/`review_verdict` null.** Needs This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:05ba:b7c1:5eb8:612e"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-DEPLOY-EC-2d — B4: one dispatched primitives-lane record carrying `request.prefix_fp`.** No This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:9928:4821:ac29:4c74"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-DEPLOY-EC-2e — `deploy_ec2_lease.py`: the default lane B must send `x_session_id`.** (filed This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:629d:a447:f00d:fd8b"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-DIAG-EC-b — an expired diagnostic override must reach its owner, not only the attestation.** This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:8f95:1a3f:0406:22f2"
+          ],
+          "disposition": "retain",
+          "reason": "**UFH14-C1.** A full review of how the A and B fixes fold into orchestrator management across every model in the stack: CPU and GPU roles, frontd This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/harness-selection-and-integration.md",
+      "source_sha256": "2192c7d0d1a0451e9ebf249bd668eaec3184ce664ef67a84fdf49bd15ffec7eb",
+      "reviewed_open_keys": [
+        "h:889c:b1af:68c6:a502",
+        "h:631b:9c06:6d6b:40bd",
+        "h:af88:94d3:9061:37a5",
+        "h:eb2b:279f:b499:566a",
+        "h:9e8f:c974:3ebd:e6f1",
+        "h:d8ed:d525:d647:25de",
+        "h:7c69:3aa4:166e:faf0",
+        "h:3b93:1b7d:68a5:498d",
+        "h:d9fa:e34e:d63f:1cde",
+        "h:42b3:9510:cdac:f7dd",
+        "h:59b2:4ddb:3810:7a80",
+        "h:3e7b:56d9:c18e:8e04",
+        "h:cb26:6afb:cd97:0b34",
+        "h:8f45:6752:0bf5:699d",
+        "h:b17b:e680:8f6a:667d",
+        "h:fba6:1e66:d067:7784",
+        "h:5e45:8ee8:99e0:17c5",
+        "h:6a60:a263:ead6:c41f",
+        "h:ad24:f752:151b:9674",
+        "h:7c69:e80b:d37a:59f7",
+        "h:731d:bfc5:8712:785d",
+        "h:5691:f0e5:9638:a8c0",
+        "h:85ac:9251:975f:ada2",
+        "h:735c:ff57:9fbc:4198",
+        "h:b69e:8bab:c7ff:5ba9",
+        "h:6346:d964:6ca6:38af",
+        "h:dbe7:5cdc:8c83:3491",
+        "h:875b:45e4:a160:de9f",
+        "h:1c5e:27d1:e4fc:940d",
+        "h:e607:6d5e:0fe4:7e51",
+        "h:b289:57f8:88e1:8932",
+        "h:ed4f:acb5:202b:9796",
+        "h:1b8f:21b4:b026:b9b4",
+        "h:c4ea:1211:f2dd:843f",
+        "h:91f4:d4d9:1bbc:1c9a",
+        "h:4ff9:2b88:c32f:1103",
+        "h:b207:1eea:5e55:c220",
+        "h:5078:e887:e779:51b1",
+        "h:3697:d130:7501:0b26"
+      ],
+      "status_assessment": "active; reviewed 39 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "direct",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:889c:b1af:68c6:a502"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P0 — shell integration, zero features** (doc §4). Per-step state (boxes are ticked by the owning session at the P0.4 live gate; evidence r This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:631b:9c06:6d6b:40bd"
+          ],
+          "disposition": "deterministic",
+          "reason": "P0.4b is a zero-inference card update with exact known pin/config/served-role/build fields. The live P0.4 run already passed in the adjacent P0-split text; publish only the configuration-specific card evidence, without claiming new live validation."
+        },
+        {
+          "keys": [
+            "h:af88:94d3:9061:37a5"
+          ],
+          "disposition": "deterministic",
+          "reason": "P0.4c is source/version bookkeeping: record the released tag v1.18.31=014614d35b39 as the frozen install pin and 350c726a only as audit anchor. No benchmark or operator selection remains in this box."
+        },
+        {
+          "keys": [
+            "h:eb2b:279f:b499:566a"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-4 P0-split’s trigger is explicitly marked met (P0.4 passed 2026-09-26) and the operator approved the split. Move Phase 0 into its own handoff/index row and leave the candidate/Phase 1–5 decision record here; no live run is required."
+        },
+        {
+          "keys": [
+            "h:9e8f:c974:3ebd:e6f1"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P0.4 preflight follow-up — pin `opencode-ai@1.18.31` in `.devcontainer/Dockerfile`** so a container rebuild keeps the audited version (tod This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:d8ed:d525:d647:25de"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**HS-4 P0.4 carry — live `/v1` override validation, shell-agnostic** (moved 2026-09-16 from the closed [`hermes-outer-shell.md`](../completed/her The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:7c69:3aa4:166e:faf0"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P1 — server-side compaction with a session fold cache** (doc §3.6). Mechanism owner: [`context-folding-progressive.md`](context-folding-pr This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:3b93:1b7d:68a5:498d"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-4 P2 identifies a dead `/v1` profile/notes injection path and points to M-12 for the later memory-on/off measurement. The zero-inference slice is to wire the feature path and deterministic no-injection/on-injection fixtures; do not claim memory benefit before M-12."
+        },
+        {
+          "keys": [
+            "h:d9fa:e34e:d63f:1cde"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P2 carry — `memory_*` MCP tools declare `session_id`.** If the P2 memory tools ship as a separate MCP server (a `memory_` prefix), give th This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:42b3:9510:cdac:f7dd"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P3 — `session_search` via `/v1` trace write-side + `ms.search` MCP** (doc §3.3). Mechanism owner: [`unified-trace-memory-service.md`](unif This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:59b2:4ddb:3810:7a80"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-4 P4 — delegation MCP tool + `/v1` routing parity** (doc §3.5). This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:3e7b:56d9:c18e:8e04"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-4 P5 is explicitly proposal-only background review and names M-12 as its eventual protocol owner. Draft the proposal shape and boundary now; no background execution or inference is authorized by this box."
+        },
+        {
+          "keys": [
+            "h:cb26:6afb:cd97:0b34"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-4 P6 already specifies the code target and acceptance: export four shared read tools from the orchestrator MCP server with task-root/cap enforcement, point actor config at that one server, and remove duplicate implementations while leaving profile tools with the actor. This is deterministic code/fixture work; JEV is not relevant."
+        },
+        {
+          "keys": [
+            "h:8f45:6752:0bf5:699d"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-4 P7 names a concrete client defect and reference fix: move prompts from positional argv to stdin, audit every local opencode launcher, and add a guard that argv never contains the prompt. Source/fixture work is zero-inference; acceptance does not require an LLM call."
+        },
+        {
+          "keys": [
+            "h:b17b:e680:8f6a:667d"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-1f — score `earendil-works/pi` as an HS-4 candidate.** Never previously listed, and it is the **upstream of both** oh-my-pi (intake-1148#rec This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:fba6:1e66:d067:7784"
+          ],
+          "disposition": "conditional",
+          "reason": "HS-1f.1 explicitly fires only if OpenCode fails P0.4 and pi becomes the actual fallback. Since OpenCode remains the selected shell, leave the custom-provider `/v1` request dormant; its request/parameter checklist can stay recorded without sending a live request."
+        },
+        {
+          "keys": [
+            "h:5e45:8ee8:99e0:17c5"
+          ],
+          "disposition": "conditional",
+          "reason": "**HS-5b — score editor-side trainability as a SEPARATE axis, and treat it as strictly downstream of HS-4.** Editor-side trainability is a distinc The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:6a60:a263:ead6:c41f"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-9 — Open-weight interpreter feasibility probe** — the one genuinely novel transfer question in the set. All NLAH arms ran on `gpt-5.4-mini`; This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:ad24:f752:151b:9674"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-E1 — add the harness-null-pool evidence packet to HS-4.** File intake-1444 (30 budget-matched harnesses / 3.1M rollouts / no universally sup This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:7c69:e80b:d37a:59f7"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-OD-4 — `max_tokens` is not a generation cap in the default mode.** In REPL mode it is read only as `max_turns = max_tokens // 500`, clamped  This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:731d:bfc5:8712:785d"
+          ],
+          "disposition": "conditional",
+          "reason": "**HS-OD-9 — derive the backpressure delay from live queue state (after HS-OD-8; consumes decision-aware-routing.md DAR-LAT-1's `expected_wait_s`) The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:5691:f0e5:9638:a8c0"
+          ],
+          "disposition": "retain",
+          "reason": "HS-TD-1 already says closed-set risk/intent classification, shadow logging beside incumbent decision, no gating. Existing HS-TD-4 consumer text names HS-TD-1 and the existing decision receipt; no additional JEV mechanism or acceptance rewrite is justified. Preserve real-session agreement evidence and uncalibrated confidence handling."
+        },
+        {
+          "keys": [
+            "h:85ac:9251:975f:ada2"
+          ],
+          "disposition": "retain",
+          "reason": "HS-TD-2 already defines a typed noul self-check, logging-only behavior and worker cost/disagreement review. The HS-TD-4 consumer contract already covers receipt/timing/outcome fields. Do not add a second runner or treat confidence as calibrated correctness."
+        },
+        {
+          "keys": [
+            "h:735c:ff57:9fbc:4198"
+          ],
+          "disposition": "retain",
+          "reason": "HS-TD-3 already describes choosing from a closed candidate set, deterministic assembly and a frozen-workload quality A/B. HS-TD-4 already records offered choices/read-set and validation. No new JEV abstraction is needed; preserve the frozen workload acceptance."
+        },
+        {
+          "keys": [
+            "h:b69e:8bab:c7ff:5ba9"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-19 — prepare the harness↔orchestrator INTERFACE discussion for the operator (operator-requested 2026-09-26; This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:6346:d964:6ca6:38af"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19b — a hierarchy of shared REPLs (Q2).** Today each req The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:dbe7:5cdc:8c83:3491"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19c — generalized scouting: the orchestrator decides to  The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:875b:45e4:a160:de9f"
+          ],
+          "disposition": "retain",
+          "reason": "**HS-19d — stage 2 \"Scheduled\": dispatch subagent work (gate → plan → size → select → aggregate; operator-approved This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:1c5e:27d1:e4fc:940d"
+          ],
+          "disposition": "deterministic",
+          "reason": "HS-19d.P0 is explicitly a zero-inference preflight. Its readiness checklist can be source-checked now; later frozen P1+ stages remain gated on UFH-13’s A2 result."
+        },
+        {
+          "keys": [
+            "h:e607:6d5e:0fe4:7e51"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P1 — `epyc.dispatch_plan.v1` schema, validator and T The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:b289:57f8:88e1:8932"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P2 — dispatcher (flag `dispatch_scheduler`).** The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:ed4f:acb5:202b:9796"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3a — gate in shadow (flag `dispatch_gate_shadow`).* The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:1b8f:21b4:b026:b9b4"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3b — front door A live (flag `dispatch_plan`).** The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:c4ea:1211:f2dd:843f"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P3c — HS-19c scouting through the gate (flag `dispat The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:91f4:d4d9:1bbc:1c9a"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4a — front door B Size (flag `v1_subagent_schedule` The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:4ff9:2b88:c32f:1103"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4b — `orchestrator_dispatch` MCP tool (needs HS-17) The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:b207:1eea:5e55:c220"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P4c — capacity note (flag `v1_capacity_note`).** A f The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:5078:e887:e779:51b1"
+          ],
+          "disposition": "inference_gated",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P5 — eval (inference, coordinated window).** The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:3697:d130:7501:0b26"
+          ],
+          "disposition": "conditional",
+          "reason": "❄ FROZEN 2026-09-27 — resume only once the UFH-13 thesis experiment shows A2 pays — **HS-19d.P6 — stage 2.5 pointer results (flag `dispatch_point The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/thesis-experiment-orchestrator-vs-strongest-model.md",
+      "source_sha256": "5784d2b49cfc69855dd305ec246a05acbeeef110bcad8205e3969c7b4712f2ff",
+      "reviewed_open_keys": [
+        "h:05ec:6d5c:6cb3:a6f4",
+        "h:c849:d009:af80:cd23",
+        "h:5b5e:5beb:2087:2c31",
+        "h:f613:4fd8:155b:0560",
+        "h:c574:fa2a:b9f2:3287",
+        "h:634a:bdcb:f551:ea09",
+        "h:4622:4ed5:addc:0a49",
+        "h:32dc:dc48:875d:7b30",
+        "h:5704:66be:8012:5063"
+      ],
+      "status_assessment": "active; reviewed 9 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:05ec:6d5c:6cb3:a6f4"
+          ],
+          "disposition": "deterministic",
+          "reason": "TE-3 explicitly says zero inference: construct and freeze the manifest before any measured item. Manifest identity/provenance preparation is independent of the later ARCHSWAP run."
+        },
+        {
+          "keys": [
+            "h:c849:d009:af80:cd23"
+          ],
+          "disposition": "retain",
+          "reason": "**TE-4 — belief-kernel write side before the first scored item** (`vidya-belief-substrate-program.md` VB-THESIS-1; This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:5b5e:5beb:2087:2c31"
+          ],
+          "disposition": "retain",
+          "reason": "**ARCHSWAP-3 — bring-up B1: one API-only reload, fused with TE-reload** (PACKAGE §7 steps 5-7). This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:f613:4fd8:155b:0560"
+          ],
+          "disposition": "retain",
+          "reason": "**ARCHSWAP-3b — P1-P3 serving proofs** (split from ARCHSWAP-3 on 2026-09-28). This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:c574:fa2a:b9f2:3287"
+          ],
+          "disposition": "conditional",
+          "reason": "The A-3 side-effect sample from ARCHSWAP-3: during the next scout stage on the frontdoor after 2026-09-29, The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:634a:bdcb:f551:ea09"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**TE-pilot — measure the A2 escalation rate before the full window.** Run `pilot 20` on non-suite items. The The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:4622:4ed5:addc:0a49"
+          ],
+          "disposition": "conditional",
+          "reason": "**TE-reopen — reopen the experiment once escalation is trained on the swapped stack** (operator, 2026-09-28). The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:32dc:dc48:875d:7b30"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**TE-5 — run (inference; coordinated window; the main session runs it).** The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:5704:66be:8012:5063"
+          ],
+          "disposition": "conditional",
+          "reason": "**TE-6 — verdict.** Apply the frozen rule and record SUPPORTED / REFUTED / NO GAP / INCONCLUSIVE, with n, CIs, The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/memento-block-reasoning-compression.md",
+      "source_sha256": "2ec14ae6d963f2875981f975981f855f67e8bdbdf2a8ffedeb23f0950b1a93c0",
+      "reviewed_open_keys": [
+        "h:fe57:5f9c:ad06:fd8b",
+        "h:2c44:b356:4ad0:3748",
+        "h:9c7f:68b8:3aee:cad1",
+        "h:29fd:b3b0:e788:eda3",
+        "h:dda1:2fb6:ec60:7952"
+      ],
+      "status_assessment": "active; reviewed 5 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:fe57:5f9c:ad06:fd8b"
+          ],
+          "disposition": "deterministic",
+          "reason": "S2-CGE-1’s non-inference core is the opt-in target selector and preparation-only entrypoint plus byte-bound independent-label filtering, dedup/split/quota and tokenizer/sequence-cap fixtures. Those can be implemented without constructing weights; only the actual SFT training/evaluation is a separate gated phase."
+        },
+        {
+          "keys": [
+            "h:2c44:b356:4ad0:3748"
+          ],
+          "disposition": "inference_gated",
+          "reason": "S2 Stage-1 format-learning smoke on Qwen3-0.6B (fill compliance/compression/MATH-500 table) The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:9c7f:68b8:3aee:cad1"
+          ],
+          "disposition": "retain",
+          "reason": "S2 validation target: Qwen3-1.7B LoRA (promote/stop decision) This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:29fd:b3b0:e788:eda3"
+          ],
+          "disposition": "conditional",
+          "reason": "S3 deployment integration (BLOCKED on S2 pass): wire block masking flag into orchestrator_stack.py The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:dda1:2fb6:ec60:7952"
+          ],
+          "disposition": "retain",
+          "reason": "S3: Fold/Unfold toggle + short-m@k voting + Hadamard+q4_0 stacking This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/repl-embedding-retrieval.md",
+      "source_sha256": "06167c7b289b9f9062679fba69b8ef0318caca29ea71d40741bace25d1b64861",
+      "reviewed_open_keys": [
+        "h:cf96:22c7:662f:ac43",
+        "h:6497:2b22:e3c4:6f90",
+        "h:9c20:7008:876a:f5a2",
+        "h:c3d2:d3ff:8c51:6d7e",
+        "h:18cb:88dc:d9a5:e1d9",
+        "h:44b8:adba:d438:bb9c",
+        "h:4729:6093:2000:fd26",
+        "h:5663:4ee1:a71e:bfb3",
+        "h:8145:7629:ea85:fed6",
+        "h:7c3a:3102:a600:e4e0",
+        "h:c2f9:bd3c:0c70:3ebf",
+        "h:b0f6:0227:abc9:bd6e"
+      ],
+      "status_assessment": "active; reviewed 12 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:cf96:22c7:662f:ac43"
+          ],
+          "disposition": "conditional",
+          "reason": "REPL-EMB-0.3 is frozen until Phase-2 shows dense retrieval pays. A manifest/package design can be prepared, but do not provision or launch a GPU embedder before the stated evaluation trigger."
+        },
+        {
+          "keys": [
+            "h:6497:2b22:e3c4:6f90"
+          ],
+          "disposition": "conditional",
+          "reason": "REPL-EMB-1.4 is explicitly frozen until Phase-2 retrieval evaluation; the in-flight cap design and deterministic busy-frontdoor fixture can be prepared now, while G1 re-measurement remains gated on the retrieval verdict."
+        },
+        {
+          "keys": [
+            "h:9c20:7008:876a:f5a2"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**REPL-EMB-2.2 — offline eval**: corpus = real spill files, context bundles, UFH-07's 45 behavioural The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:c3d2:d3ff:8c51:6d7e"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**REPL-EMB-2.3 — online shadow**: run all arms, show one, and log which returned spans the model The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:18cb:88dc:d9a5:e1d9"
+          ],
+          "disposition": "deterministic",
+          "reason": "REPL-EMB-2.4 requests prospective write-side wiring of the already-specified memory-retrieval measurement tuple before the evaluation. Draft/add the adapter source row and SC task first; actual grading of measured claims remains with `claim_tuple.grade()` and the later eval."
+        },
+        {
+          "keys": [
+            "h:44b8:adba:d438:bb9c"
+          ],
+          "disposition": "retain",
+          "reason": "**REPL-EMB-3.1 — replace `_spill_output`'s summary** (`src/repl_environment/environment.py` This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:4729:6093:2000:fd26"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**REPL-EMB-3.2 — A/B** the replacement vs the current summary on latency, accuracy and re-fetches. The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:5663:4ee1:a71e:bfb3"
+          ],
+          "disposition": "retain",
+          "reason": "**REPL-EMB-4.1 — `context.search()`**: `repl_view` closure + namespace key, `op=\"search\"` pull This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:8145:7629:ea85:fed6"
+          ],
+          "disposition": "retain",
+          "reason": "**REPL-EMB-4.2 — replace `DocumentREPLEnvironment.search_sections`** (`src/repl_document.py:221`) This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:7c3a:3102:a600:e4e0"
+          ],
+          "disposition": "inference_gated",
+          "reason": "**REPL-EMB-4.3 — evaluate via `rlm-contested-claims` E3b.** The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:c2f9:bd3c:0c70:3ebf"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "REPL-EMB-5.1 names INF-78 as another owner’s work. The SEARCH primitive can be specified against the existing context retrieval interface, but avoid duplicating INF-78 implementation or overlapping its session."
+        },
+        {
+          "keys": [
+            "h:b0f6:0227:abc9:bd6e"
+          ],
+          "disposition": "conditional",
+          "reason": "**REPL-EMB-B.2 — speed baseline (after B.1; the operator deferred speed comparison)**: large MoE hybrid The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/fuzzy-workflow-authoring-gui.md",
+      "source_sha256": "4ad4aa8871b3432805f460401b1a83a13945925cfbe11af1e71474cad7f2d011",
+      "reviewed_open_keys": [
+        "h:ff57:bfe0:0a0b:e8f7",
+        "h:3772:5b8d:0219:50ca",
+        "h:e6cb:0a7b:0723:8ee7"
+      ],
+      "status_assessment": "active; reviewed 3 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ff57:bfe0:0a0b:e8f7"
+          ],
+          "disposition": "retain",
+          "reason": "**FW-1 — Requirement sketch + one worked example.** Take one recurring fuzzy subtask from PAW-5's This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        },
+        {
+          "keys": [
+            "h:3772:5b8d:0219:50ca"
+          ],
+          "disposition": "deterministic",
+          "reason": "FW-2 says no operator choice remains and gives the destination plus acceptance: draft the workflow contract/schema and endpoint list in epyc-orchestrator, then prepare the hub registry-row draft for its owning session. The actual row write stays with the hub owner; nothing is implemented in the shell."
+        },
+        {
+          "keys": [
+            "h:e6cb:0a7b:0723:8ee7"
+          ],
+          "disposition": "retain",
+          "reason": "**FW-3 — Survey prior art (≤1 day).** Flow-authoring UIs with LLM nodes (e.g. Dify/LangFlow-class) and This is an independently actionable local/document/code/fixture task as written. Keep its stated bounded acceptance; JEV is unnecessary where deterministic host code or direct source evidence settles the question."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/minddr-deep-research-mode.md",
+      "source_sha256": "3c393889c8322b7fc1c60f23bd639a61ce87150c6857938440de82740350a15e",
+      "reviewed_open_keys": [
+        "h:3ffd:9ae6:0484:c7c6",
+        "h:04d1:5fa5:62f1:aaef",
+        "h:6671:658d:9cd7:e207",
+        "h:6064:805d:1aa3:3f11",
+        "h:3970:3d1c:022f:21d3",
+        "h:f830:c97c:3026:55ae",
+        "h:6d02:c057:ddd9:3e2a",
+        "h:87ea:e75e:e7ec:3d1f",
+        "h:8d90:4b5a:6958:8a96"
+      ],
+      "status_assessment": "active; reviewed 9 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:3ffd:9ae6:0484:c7c6"
+          ],
+          "disposition": "conditional",
+          "reason": "MindDR Phase-2 is countermanded until E5 Stage-B releases the host because a Python ROCm trainer is invisible to the current CPU-affinity/SMT gates. The pinned compatible environment may be specified off-host, but no install or smoke may run before the host-release trigger."
+        },
+        {
+          "keys": [
+            "h:04d1:5fa5:62f1:aaef"
+          ],
+          "disposition": "deterministic",
+          "reason": "MD-PB-2 asks whether PaperBench belongs in the already-defined MD-9 rubric. Compare its rubric/protocol requirements to the local sentinel suite and document the inclusion decision; do not run MD-9 as part of this design task."
+        },
+        {
+          "keys": [
+            "h:6671:658d:9cd7:e207"
+          ],
+          "disposition": "inference_gated",
+          "reason": "MD-9 A/B test sentinel suite with deep_research_mode 0/1 (>=+5pp gate, INFERENCE-GATED) The live measurement/benchmark remains the acceptance gate; the source text still permits non-inference preparation (freeze inputs, review code/recipe, or validate artifact/runner) before that window. JEV cannot supply the measured outcome."
+        },
+        {
+          "keys": [
+            "h:6064:805d:1aa3:3f11"
+          ],
+          "disposition": "conditional",
+          "reason": "The dispatcher wiring is explicitly contingent on MD-9 passing. Its one-line feature-flagged branch can be prepared in a patch plan/fixture design, but do not wire it into request dispatch until the named MD-9 acceptance is satisfied."
+        },
+        {
+          "keys": [
+            "h:3970:3d1c:022f:21d3"
+          ],
+          "disposition": "parallel_owned",
+          "reason": "EV-9 is explicitly handed to eval-tower. Specify the needed multi-dimensional rubric interface and its consumer contract with that owner; do not duplicate an eval-tower scoring ladder or block this design handoff on running MD-9."
+        },
+        {
+          "keys": [
+            "h:f830:c97c:3026:55ae"
+          ],
+          "disposition": "conditional",
+          "reason": "Phase 2 MD-10..MD-13 four-stage RL (GPU-gated, deferred) The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:6d02:c057:ddd9:3e2a"
+          ],
+          "disposition": "conditional",
+          "reason": "Phase 3 MD-14 architect role refactor (conditional on durable >=5pp uplift) The text binds this item to its stated trigger/prerequisite; preparatory design/source review can proceed, but implementation or measurement should wait until that condition is true."
+        },
+        {
+          "keys": [
+            "h:87ea:e75e:e7ec:3d1f"
+          ],
+          "disposition": "deterministic",
+          "reason": "The MindDR row labels this an operator-review candidate, but the open task is a detailed prompt-level design proposal: prospective rubric generation, per-step state evaluation, and a Review stage. Record the candidate as proposal-only and separate the excluded RL/GPU credit-assignment work; no operator action is needed to draft it."
+        },
+        {
+          "keys": [
+            "h:8d90:4b5a:6958:8a96"
+          ],
+          "disposition": "deterministic",
+          "reason": "The MindDR trajectory-capture candidate is a local instrumentation proposal: SearxNG already returns engine/score fields; specify a record shape for query/URL/snippet on eval runs so later leakage review can inspect it. Keep any actual evaluation runs separate; the box does not ask for operator approval."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/harness-improvement-loop.md",
+      "source_sha256": "c7dfa4de3d15ed168d0286e72ed63d24b6116dd79cc21878c2998cafffae6855",
+      "reviewed_open_keys": [
+        "h:06b4:556f:1007:bdb0",
+        "h:2e25:14af:c2e7:91a5",
+        "h:6cce:6e85:8497:a687",
+        "h:f24c:54ec:58e0:57f5",
+        "h:e89f:81da:e915:31ac"
+      ],
+      "status_assessment": "active; reviewed 5 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:06b4:556f:1007:bdb0"
+          ],
+          "disposition": "deterministic",
+          "reason": "HIL-1 has a complete local acceptance: populate a two-column table from the landed §3 feature homes, one row per §3.x entry. The handoff explicitly states HIL-1..5 are zero-inference design tasks; no live suite run is required."
+        },
+        {
+          "keys": [
+            "h:2e25:14af:c2e7:91a5"
+          ],
+          "disposition": "deterministic",
+          "reason": "HIL-2 asks to define feature-specific objective axes and eval suites, then identify which axes need a human-ratified protocol. Drafting this map is zero-inference; the explicit HS-5b ordering forbids tuning until P0.4 freeze, not writing the design."
+        },
+        {
+          "keys": [
+            "h:6cce:6e85:8497:a687"
+          ],
+          "disposition": "deterministic",
+          "reason": "HIL-3 asks for an importable-substrate extraction plan and refactor cost while explicitly preserving live AutoPilot behavior. This is a source/design audit and can be completed without changing the live loop; RTG-55 forbids duplicate task boxes, so keep implementation tasks in this handoff/RTG-02."
+        },
+        {
+          "keys": [
+            "h:f24c:54ec:58e0:57f5"
+          ],
+          "disposition": "deterministic",
+          "reason": "HIL-4 is a decision package whose own text says it closes once HIL-2 and HIL-3 fill in the costs. Complete those independent design inputs first, then compare A/B/C; no operator choice blocks preparing the package."
+        },
+        {
+          "keys": [
+            "h:e89f:81da:e915:31ac"
+          ],
+          "disposition": "deterministic",
+          "reason": "HIL-5 explicitly requires prospective write-side preparation before HIL-2’s first suite run: draft the measurement source-table row and SC task here, with the file owner applying the row. No measurement run is needed; the handoff explicitly says HIL-1..5 are zero-inference design tasks."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/amd-ai-lab-website-publication.md",
+      "source_sha256": "19cfa533cfbb8ac39b33dc78f459b532940dbcb342da574dd9e554ab85ef4c54",
+      "reviewed_open_keys": [
+        "h:ba9c:e2c3:c96e:1435",
+        "h:993a:eb88:f9dd:d121",
+        "h:8ca8:0004:3874:f2e4"
+      ],
+      "status_assessment": "active; reviewed 3 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ba9c:e2c3:c96e:1435"
+          ],
+          "disposition": "operator_gated",
+          "reason": "**WEB-1 — operator publication choice:** provide the contact destination (email, booking link, or contact page) and confirm the reviewed page is  This specific item assigns the choice/approval to an operator; agents can prepare the listed options, checks, or publication artifact, but cannot ratify it. JEV output cannot grant that authority."
+        },
+        {
+          "keys": [
+            "h:993a:eb88:f9dd:d121"
+          ],
+          "disposition": "operator_gated",
+          "reason": "**WEB-2 — publish the reviewed snapshot:** configure GitHub Pages for the private `epyc-web` repo under the available plan, verify its public URL This specific item assigns the choice/approval to an operator; agents can prepare the listed options, checks, or publication artifact, but cannot ratify it. JEV output cannot grant that authority."
+        },
+        {
+          "keys": [
+            "h:8ca8:0004:3874:f2e4"
+          ],
+          "disposition": "conditional",
+          "reason": "WEB-3 is conditional on an independently produced frozen-kernel throughput sweep, and the task explicitly says this box does not authorize running it. The artifact-card update is straightforward once that evidence exists; until then preserve the existing unmeasured grid and do no measurement."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/browser-agent-surface.md",
+      "source_sha256": "b9f0d5080416e34d7e79451be715c7a15bb3dd259169f77b288051ddccc6b808",
+      "reviewed_open_keys": [],
+      "status_assessment": "active; reviewed 0 unchecked boxes from source-pinned snapshot; see per-box dispositions. Historical/measurement/operator gates preserved.",
+      "jev_fit": "none",
+      "task_dispositions": [],
+      "findings": []
+    }
+  ]
+}

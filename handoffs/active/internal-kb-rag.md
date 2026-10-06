@@ -992,3 +992,17 @@ dim 96. This is a **projection, not a measurement.** Two conditions on any adopt
       ModernBERT/RoPE with `max_position_embeddings: 8192`, so it is *architecturally* free to encode
       long queries, unlike the 512-position BERT-family checkpoints the paper studies. **H2** supplies
       the traffic distribution that says whether the question is live at all.
+
+## MAIN-reviewed current-toolkit refinements — 2026-10-06
+
+### S04-F1 — Finish KB-WM-6 as an advisory graph freshness check
+
+- Bounded completion (JEV audit, 2026-10-06): compare the checkout `.index-graph.json` with `build_graph(state)` in `index_state.py --check` and emit a non-fatal warning for missing/stale graph files. Preserve provenance-only/silent-on-absence screener behavior. Add current/stale/missing fixtures; this is deterministic integrity checking, not a model decision or retrieval-quality claim.
+
+### S04-F2 — Narrow K2 to the remaining hard-coded internal KB caps
+
+**JEV-aware source narrowing (2026-10-06):** `_load_declared_config()` and `max_query_tokens()` / `max_document_tokens()` now exist; `src/tools/web/colbert_reranker.py` already uses the helper. Remaining fixed values are in `src/retrieval/kb_rag.py` (`_QUERY_MAX_TOKENS=48`, `_DOC_MAX_TOKENS=256`) and its encode call sites. Close only this KB-RAG cap plumbing with synthetic declared/absent/invalid-config fixtures and preserve index metadata/stamp semantics. Do not re-embed or claim retrieval improvement; any stored-index cap transition stays under OP-24.
+
+### S04-F3 — Complete the missing tokenizer identity half of K3
+
+**JEV-aware source narrowing (2026-10-06):** `_stamp_meta()`/`_check_embedding_dim()` already guard width, but `_read_meta()` has no tokenizer digest and `colbert_encoder` loads `_TOKENIZER_PATH`. Finish only the missing tokenizer SHA-256 stamp/read check; test same hash, mismatch refusal, and legacy unstamped catalog behavior with temp files. This is deterministic encoder identity integrity, not a JEV/model decision or retrieval-quality claim.

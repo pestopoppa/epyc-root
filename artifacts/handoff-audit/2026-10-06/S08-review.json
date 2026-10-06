@@ -1,0 +1,1858 @@
+{
+  "shard_id": "S08",
+  "method": "Reviewed all 14 assigned handoffs, each open checkbox with its task text, adjacent section context, task-specific acceptance/gating language, and assigned snapshot content hashes. Used manifest keys as identity, not line numbers. Findings limited to directly supported JEV seams; no inference/live acceptance claimed.",
+  "files": [
+    {
+      "path": "handoffs/active/session-bus-thin-dispatcher.md",
+      "source_sha256": "9c996ed15b8bd44ff2d5080b655e1f2b209b9d41df9038a1229c28c222ab24e0",
+      "reviewed_open_keys": [
+        "h:e809:925a:a1b4:f79a",
+        "h:f66c:03ad:4a8c:a9d3",
+        "h:cacd:07aa:076e:12c3",
+        "h:39ce:aac7:49b9:bbbf",
+        "h:21ca:480a:46c6:0a41",
+        "h:b05d:fefc:df60:a026",
+        "h:2543:88b2:ebc0:fef6",
+        "h:8b29:5f1d:64e9:7462",
+        "h:9633:94b4:60c0:566b",
+        "h:0666:9344:4c14:593e",
+        "h:431b:9b11:65ba:cb7b",
+        "h:fddd:7fed:b3a4:bb82",
+        "h:af34:7bac:f256:b196",
+        "h:346d:4c6d:9387:f8fc",
+        "h:3342:0e2d:2a70:ebba",
+        "h:a740:7ba5:4c95:4c79",
+        "h:f41d:ae93:bb7b:34ce",
+        "h:f2ee:af27:17ef:c212",
+        "h:4572:fa8d:14c6:d2d8",
+        "h:7bb5:c279:3005:cb00",
+        "h:c3bd:6a90:4591:f1c8",
+        "h:257e:4e2b:3008:0bd6",
+        "h:5151:7e9a:819c:ffb5",
+        "h:d696:26f9:48f8:ce92",
+        "h:4dcc:4135:eb0b:fceb",
+        "h:9cf4:61b0:777c:f2b4",
+        "h:338a:ff27:cdcc:e363",
+        "h:4569:f3c8:6a10:d230",
+        "h:9d89:57f5:5187:886d",
+        "h:6d2f:d82a:6bac:fcfd",
+        "h:ead4:e0e0:32c1:98fb",
+        "h:8247:8c23:e4ef:89b6",
+        "h:7612:89ca:9959:84da",
+        "h:2e39:1766:5c14:a5a9",
+        "h:3a5d:a69f:e495:e41b",
+        "h:2377:6903:cc66:bdbf",
+        "h:a0b0:b0d3:6728:85be",
+        "h:4940:c76c:244b:b2f8",
+        "h:48be:89df:66ea:0ca7",
+        "h:bc92:52d3:05c8:63e6",
+        "h:097a:4bfb:2d69:afa1",
+        "h:f6ae:e97c:7d3c:111c",
+        "h:2b0d:5f62:765f:23c2",
+        "h:2ae3:f181:1928:ee6a",
+        "h:19b1:e3e3:ee81:f544",
+        "h:abd9:525c:dfa6:ed9f",
+        "h:ae47:cbad:6040:cd58",
+        "h:266d:34ef:5ee0:04ae",
+        "h:095b:9839:fa62:ae2b",
+        "h:91fd:7cf4:5de8:b7dd"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:e809:925a:a1b4:f79a"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**R1a — end-to-end bench claim never fired (open gap, inference-gated).** The wiring is': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:f66c:03ad:4a8c:a9d3"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**R9 — replay-eligibility screen at queue admission (M1/M3).** *Enforcement DONE'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:cacd:07aa:076e:12c3"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**M3 — coordinator-daemon, read-only advisory.** *BUILT ✅ 2026-07-27* —'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:39ce:aac7:49b9:bbbf"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**M3d — the queue must hold real work for the evidence to mean anything.** Seeded'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:21ca:480a:46c6:0a41"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**M4 — assignment authority.** *CODE BUILT ✅ 2026-07-27, acceptance pending.*'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:b05d:fefc:df60:a026"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**M5 — flag-gated extensions** (each independent). *Send-keys/spawn BUILT ✅ 2026-07-27*'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:2543:88b2:ebc0:fef6"
+          ],
+          "disposition": "operator_gated",
+          "reason": "M5a explicitly says the 600-second interval is an implementer guess and asks for the operator’s choice; implementation can be prepared, but the default cannot be ratified by JEV/model output."
+        },
+        {
+          "keys": [
+            "h:8b29:5f1d:64e9:7462"
+          ],
+          "disposition": "retain",
+          "reason": "M5c asks for standing-instruction propagation to running sessions. This is a delivery/wiring problem with a deterministic test seam; “instruction” does not make it an inference task."
+        },
+        {
+          "keys": [
+            "h:9633:94b4:60c0:566b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C20 — after a reboot, `tmux_adapter.py spawn` cannot spawn ANYTHING until someone'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:0666:9344:4c14:593e"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C15 — `caps.max_concurrent_mains: 4` is saturated at 4/4. STILL 4, not 6** — checked'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:431b:9b11:65ba:cb7b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**OPEN — align the schema with the relay contract so `append` refuses at AUTHORING time.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:fddd:7fed:b3a4:bb82"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C30 — the backend a main runs on is invisible to the bus, and spawn reports success for a'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:af34:7bac:f256:b196"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**(a) STILL OPEN — the launch command belongs in the roster row as data.** `cmd_spawn'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:346d:4c6d:9387:f8fc"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The source explicitly says the Claude source is an operator/coordinator call and recommends the documented CLI instead of prohibited bundle decompilation; choice of authorized evidence source belongs to that owner."
+        },
+        {
+          "keys": [
+            "h:3342:0e2d:2a70:ebba"
+          ],
+          "disposition": "historical_only",
+          "reason": "This key is explicitly labeled “C36 residual (superseded framing kept for history)”; it should not be treated as a live task or operator gate."
+        },
+        {
+          "keys": [
+            "h:a740:7ba5:4c95:4c79"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**BLOCKED-ON / dependency: C30(a).** C36 must branch on which backend a roster id runs, and'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:f41d:ae93:bb7b:34ce"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The line is an explicit “OPERATOR” disposition, now a belt-and-braces policy item; preserve the human authorization boundary stated there."
+        },
+        {
+          "keys": [
+            "h:f2ee:af27:17ef:c212"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C38 (NEW) — `advisory.jsonl` is 1,028 MiB / 2,986,358 rows and the daemon re-parses it in'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:4572:fa8d:14c6:d2d8"
+          ],
+          "disposition": "retain",
+          "reason": "“DEPLOY” reports stale daemon code, but the actionable task is source/deployment reconciliation at the existing owner boundary; not an inference requirement. No deployment performed by this audit."
+        },
+        {
+          "keys": [
+            "h:7bb5:c279:3005:cb00"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Same shape, same fix:** the C33 pre-validation notice re-fires every tick against'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:c3bd:6a90:4591:f1c8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C40 (NEW) — a relayed backlog carries no age, so a fresh session cannot tell 12-day-old mail'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:257e:4e2b:3008:0bd6"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Not done, and deliberately not guessed: the spawn mark.** The filing also proposed'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:5151:7e9a:819c:ffb5"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**The fix is a POSITIVE marker, not a tightened negative.** Neither predicate can be repaired'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:d696:26f9:48f8:ce92"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**C50 — the picker serves a STALE READY set, and this is DISTINCT from the authority gag.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:4dcc:4135:eb0b:fceb"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Re-anchor picks on row identity rather than `file:line`** — NOT done, split out honestly.'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:9cf4:61b0:777c:f2b4"
+          ],
+          "disposition": "retain",
+          "reason": "Worktree-isolation cutover is filesystem/git metadata work; this task text does not make inference or human policy the acceptance criterion."
+        },
+        {
+          "keys": [
+            "h:338a:ff27:cdcc:e363"
+          ],
+          "disposition": "retain",
+          "reason": "Re-registering three worktrees with relative gitdir pointers is deterministic repository metadata repair; “measured” describes premise evidence, not a runtime inference gate."
+        },
+        {
+          "keys": [
+            "h:4569:f3c8:6a10:d230"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The source premise “Deliberately NOT installed” is stale: `/workspace/.git/config` sets `core.hooksPath=/workspace/.git/hooks`, and the executable `/workspace/.git/hooks/pre-push` says installed 2026-08-12 by operator approval and chains `pre_push_serialization_guard.sh` with Git LFS. Re-resolve this checkbox to record the already-selected local Phase-0 installation; retain the original caveat that a local hook is bypassable and is not server-side structural enforcement."
+        },
+        {
+          "keys": [
+            "h:9d89:57f5:5187:886d"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Compile 4 pending wiki sources.** `compile_sources.py` reports `total_new: 4` —'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:6d2f:d82a:6bac:fcfd"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Per-agent shards for the concurrently-appended log files.** Option 2 from the'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:ead4:e0e0:32c1:98fb"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**\"This main is working serially\" must become an observable condition, not something the'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:8247:8c23:e4ef:89b6"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Adopt \"serial collapse\" as the name for the condition above, and build the detector ourselves.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:7612:89ca:9959:84da"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DP-1** (HIGH): **the composer needs a `<char>`-then-`Enter` sequence and the adapter does not'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2e39:1766:5c14:a5a9"
+          ],
+          "disposition": "retain",
+          "reason": "DP-2 is a concrete adapter keystroke defect (`clear`/`submit`) and can be corrected with fake-pane/composer fixtures; no live model call is needed to establish the keystroke behavior."
+        },
+        {
+          "keys": [
+            "h:3a5d:a69f:e495:e41b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"**DP-3** (MED): **`bus_supervisor.sh`'s stale-source check is mitigated by a config constant, not\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2377:6903:cc66:bdbf"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DP-4** (HIGH): **shared child clones are reachable from inside every lane worktree, so worktree'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:a0b0:b0d3:6728:85be"
+          ],
+          "disposition": "retain",
+          "reason": "DP-5 identifies bare keystrokes ignored by the Claude composer; reproduce and verify with deterministic adapter fixtures. This is a transport/control bug, not an inference acceptance gate."
+        },
+        {
+          "keys": [
+            "h:4940:c76c:244b:b2f8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**OBS-1** (MED): **`scripts/coordination/bus_supervisor.sh` adopts the observation contract.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:48be:89df:66ea:0ca7"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**OBS-11** (MED): **`scripts/coordination/fleet_watch.sh` adopts the observation contract.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:bc92:52d3:05c8:63e6"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**FW-1** (MED): **the Codex EMPTY composer is excluded BY NAME, and that calibration can rot.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:097a:4bfb:2d69:afa1"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**FW-2** (MED): **five of the six mains have NO runtime liveness signal, so `IDLE-CANDIDATE`'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:f6ae:e97c:7d3c:111c"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**FW-3** (LOW): **nothing supervises the watcher.** If `fleet_watch.sh` dies, nothing restarts'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2b0d:5f62:765f:23c2"
+          ],
+          "disposition": "inference_gated",
+          "reason": "AIR-6 explicitly calls for deployment plus live audit/canary. Separate code/fixture prep from the canary and lease enforcement acceptance; this status is only for the latter."
+        },
+        {
+          "keys": [
+            "h:2ae3:f181:1928:ee6a"
+          ],
+          "disposition": "standing",
+          "reason": "AIR-7 explicitly conditions delegated GPU leases on a general physical-claim provider. Keep provider construction separate; do not enable lease authority before that dependency."
+        },
+        {
+          "keys": [
+            "h:19b1:e3e3:ee81:f544"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**AIR-9 — fail-close Rule-11 compute-dialogue authority, routing, and payload shape.** Enforce'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:abd9:525c:dfa6:ed9f"
+          ],
+          "disposition": "operator_gated",
+          "reason": "The task explicitly asks to decide the fate of tracked daemon-written files, with competing repository ownership/clean-tree consequences. This is a policy/ownership decision, not a typed or measured choice."
+        },
+        {
+          "keys": [
+            "h:ae47:cbad:6040:cd58"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**WS-1 — Artifact reconciliation at the drain boundary.** Compare **worker-written completion'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:266d:34ef:5ee0:04ae"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**WS-2 — Durable processed watermark.** A monotonic `seq` on bus rows plus a `processed_seq` in'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:095b:9839:fa62:ae2b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**WS-3 — RAISE AS AN EXPLICIT DECISION, not an implementation detail: store-before-deliver.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:91fd:7cf4:5de8:b7dd"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**WS-4 — asyncRewake wake spike (merged).** Spike a **Stop `asyncRewake` hook that exits 2** to'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S08-F1",
+          "task_keys": [
+            "h:4569:f3c8:6a10:d230"
+          ],
+          "title": "Resolve pre-push guard decision as already installed; retain local-vs-server boundary",
+          "original_premise": "The active task says the guard was deliberately not installed and asks the operator to choose install-as-is, server-side, or neither. Current source contradicts that premise: the configured hook is installed and operator-approved.",
+          "revised_deliverable": "Replace the stale decision prompt with a source-backed resolution record: local Phase-0 guard is installed and chained with Git LFS; do not claim server-side protection. Keep a server-side pre-receive guard as a distinct future proposal only if its owner reopens it.",
+          "toolkit_reuse": [],
+          "source_evidence": [
+            {
+              "path": "/workspace/.git/config",
+              "lines": "core.hooksPath",
+              "observation": "Git configuration resolves hooks from /workspace/.git/hooks."
+            },
+            {
+              "path": "/workspace/.git/hooks/pre-push",
+              "lines": "1-12",
+              "observation": "Executable chained pre-push hook states operator-approved installation on 2026-08-12, invokes the serialization guard, then Git LFS."
+            },
+            {
+              "path": "/workspace/scripts/hooks/pre_push_serialization_guard.sh",
+              "lines": "9-10",
+              "observation": "Guard file correctly says it does not install itself; separate hook is the installation artifact."
+            },
+            {
+              "path": "/workspace/scripts/coordination/serialized_push.py",
+              "lines": "1-15",
+              "observation": "Installed hook invokes the repository serialization mechanism; implementation is present in the accepted root source."
+            }
+          ],
+          "non_inference_scope": "No inference, runtime service, or measurement is needed to confirm installation; source/config/hook inspection resolves the stale premise.",
+          "inference_acceptance": "Not applicable. Local hook installation is verified; this does not establish any serving/inference result.",
+          "gate": "No pending install decision identified. The existing hook is advisory and bypassable; server-side pre-receive remains a separate unimplemented structural boundary and must not be claimed as complete.",
+          "ownership": "MAIN may amend the active handoff to remove the stale install decision; any new server-side enforcement proposal needs its owning repository/operator boundary.",
+          "roi": "high",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "### Source recheck — pre-push guard decision already resolved\n\nThe local Phase-0 guard is installed: `/workspace/.git/config` selects `/workspace/.git/hooks`, whose executable `pre-push` chains `scripts/hooks/pre_push_serialization_guard.sh` and Git LFS. Its header records operator approval and installation on 2026-08-12. The guard’s own script correctly says it does not install itself. Record the existing local installation as the disposition of this decision. Preserve the original limitation: a local hook can be bypassed (`--no-verify` or plain pushes through other paths) and does not provide server-side structural enforcement. Do not reopen server-side pre-receive work absent a separate current authorization."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/decision-aware-routing.md",
+      "source_sha256": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700",
+      "reviewed_open_keys": [
+        "h:4ee3:f9c6:34d7:11da",
+        "h:14e3:4942:7fed:1384",
+        "h:bc16:eb9f:5bc7:c265",
+        "h:ffa4:5598:adc5:0dff",
+        "h:323b:b542:4c70:abe9",
+        "h:406f:4646:8a5d:4707",
+        "h:37bc:e518:f1ff:702b",
+        "h:ca34:8d53:a9cc:5630",
+        "h:2366:6f12:78dd:4946",
+        "h:dc5b:461c:07ff:338e",
+        "h:aeef:a6a9:1f06:cd75",
+        "h:86df:36a6:d93f:b17c",
+        "h:00ba:2ee4:bf6a:1d86",
+        "h:6f5d:776d:01fe:dbdb",
+        "h:ae9d:4879:9176:c0c3",
+        "h:83d0:6cfd:8765:1e4a",
+        "h:aac0:aaee:0687:486a",
+        "h:930d:b004:cabd:f277",
+        "h:8e28:eb02:b2fc:10c6",
+        "h:193b:b33e:21f7:2f5a",
+        "h:f924:3249:efb5:2255",
+        "h:aecd:a2df:3c4b:b769",
+        "h:5888:ebb6:bc0d:ed0f",
+        "h:8532:9e32:e18f:1bc0",
+        "h:63e3:1e08:5e7c:a56d",
+        "h:6221:f03e:bcfc:db5b",
+        "h:43e8:f10a:3dc6:eff0",
+        "h:0d61:fae9:b9bc:7380",
+        "h:8ba6:442f:4c2e:1576",
+        "h:4d5f:29f6:75db:6450",
+        "h:e428:9d6d:9519:fabd",
+        "h:9f2e:2269:2474:6345",
+        "h:e0ad:47ca:5e60:a16a",
+        "h:d94e:a8ff:d167:db7b",
+        "h:d11d:6efc:6892:0fa8",
+        "h:4bc4:53ec:91c9:2a22",
+        "h:068e:f830:f6b5:96eb",
+        "h:a3af:427e:efe9:abcc",
+        "h:5946:d996:5f16:71fe",
+        "h:5668:565e:0770:e2a7",
+        "h:fcd5:06ab:ebc8:ea45",
+        "h:8c18:c381:2d1c:f7b9",
+        "h:d3b3:02e8:5c5b:20d5",
+        "h:0633:4e82:bb50:1276"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:4ee3:f9c6:34d7:11da"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Implement SPO+ (Smart Predict-then-Optimize) loss:'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:14e3:4942:7fed:1384"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Add epsilon-greedy exploration to `_select_model()` at `retriever.py` L225-368 (10% random routing)'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:bc16:eb9f:5bc7:c265"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Accumulate counterfactual data: for each prompt, observe outcomes from at least 2 different models'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:ffa4:5598:adc5:0dff"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Replace TD update with SPO+ gradient: only update when the routing decision would change'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:323b:b542:4c70:abe9"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Measure: routing accuracy, average task quality, average latency, Q-value convergence speed': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:406f:4646:8a5d:4707"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Connect exploration flag to existing `staged_scorer` exploration bonus mechanism'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:37bc:e518:f1ff:702b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Replace per-action Q-values with bilinear scorer:'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:ca34:8d53:a9cc:5630"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Model features (already available in `ScoringConfig` L34-117):'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:2366:6f12:78dd:4946"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Create new `bilinear_scorer.py` module'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:dc5b:461c:07ff:338e"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Modify `retriever.py` selection logic to use bilinear scorer instead of per-action Q lookup'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:aeef:a6a9:1f06:cd75"
+          ],
+          "disposition": "deterministic",
+          "reason": "The task explicitly tests a simulated new model with known feature values; this is a synthetic cold-start convergence fixture and needs no live model call. Keep deployment/new-model generalization outside this fixture result. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:86df:36a6:d93f:b17c"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Zero cold-start: when a new model joins the fleet, its features are known from specs — no routing hi'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:00ba:2ee4:bf6a:1d86"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Measure: routing decision distribution shift across ω sweeps; latency-quality Pareto curve.': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:6f5d:776d:01fe:dbdb"
+          ],
+          "disposition": "retain",
+          "reason": "DAR-5.2 is an implementation/replacement of a feature vector with a learned identity embedding, conditional on DAR-4. Source does not require live inference for code/schema/fixture preparation. The eventual training/reward comparison remains conditional on the separately stated fixed reward and measured-data gates. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:ae9d:4879:9176:c0c3"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DAR-5.3**: Augment `v_prompt` with the IRT 2-D output concatenated to the BGE embedding. New `v_pr'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:83d0:6cfd:8765:1e4a"
+          ],
+          "disposition": "retain",
+          "reason": "DAR-5.4 names a held-out validation-set threshold, not an operator decision. Preserve the ≥2-point criterion; distinguish implementing/running the validation harness from any later default promotion authorization."
+        },
+        {
+          "keys": [
+            "h:aac0:aaee:0687:486a"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DAR-6.2 (NOT YET BUILT — prereq for production gating)**: Trigger signal — extend the injection-risk classifier (': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:930d:b004:cabd:f277"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**DAR-6.5 (INFERENCE-GATED — J14 in bulk-inference)**: Decision gate — run a 2-arm A/B on the chosen injection suit': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:8e28:eb02:b2fc:10c6"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**URE-1 — Uncertainty-quantified escalation signal.** Add a calibrated decision-uncertainty estimate as an escalati': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:193b:b33e:21f7:2f5a"
+          ],
+          "disposition": "deterministic",
+          "reason": "URE-2 is a trace-schema/write-path deliverable with specified fields. Recording an approval boundary does not itself authorize an action. Implement/schema-fixture work is independent; any actual approval remains represented as an actor field and governed by host policy. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:f924:3249:efb5:2255"
+          ],
+          "disposition": "inference_gated",
+          "reason": "URE-2a explicitly describes a non-authoritative local cascade shadow that continues returning incumbent output; it requires live calls on a later frozen traffic window after CJ-16 fixture quality/operations acceptance. URE-1 calibration gates authority/promotion, and the text says it does not block measurement-only shadow. Keep normal resource/window gate, but do not misstate the task as awaiting operator approval. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:aecd:a2df:3c4b:b769"
+          ],
+          "disposition": "inference_gated",
+          "reason": "URE-3 explicitly depends on URE-1 calibration and an ablation showing incremental routing/escalation value; code wiring can be prepared, but the claim/feature acceptance needs the specified evaluation."
+        },
+        {
+          "keys": [
+            "h:5888:ebb6:bc0d:ed0f"
+          ],
+          "disposition": "retain",
+          "reason": "The cache-affinity reward is a source change to the existing routing reward. Implement/test its deterministic feature plumbing separately; validating its effect on difficulty-band escalation/cache reuse is a later measured comparison, not a reason to gate preparation."
+        },
+        {
+          "keys": [
+            "h:8532:9e32:e18f:1bc0"
+          ],
+          "disposition": "retain",
+          "reason": "The session-sticky hybrid is an implementation proposal (“we decide per-request” describes current behavior, not an operator ruling). Keep routing-state and flapping tests as preparation; preserve any stated evaluation before changing defaults."
+        },
+        {
+          "keys": [
+            "h:63e3:1e08:5e7c:a56d"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Reasoning-level as a first-class routing action** — make the action space `model × thinking-level`'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:6221:f03e:bcfc:db5b"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '**OPERATOR DECISION (frozen gate — human-amendment-only, not an agent edit):** does fable5-02\\'s \">=5% regret\" crite': The task explicitly assigns a human/operator ruling, approval, review, or action; that authority boundary is real and cannot be inferred from a model result."
+        },
+        {
+          "keys": [
+            "h:43e8:f10a:3dc6:eff0"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DAR-SPLIT-1 — Fix dar_decisive_subset.py selection leakage before any DAR-3 triage number is reuse'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:0d61:fae9:b9bc:7380"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins \"**STANDING — do NOT run DAR-3's 10% epsilon-greedy exploration in production to manufacture\"; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:8ba6:442f:4c2e:1576"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Do NOT close DAR-3/4/5 as `not_pursued — signal-bound`. The correct reframing is **triage, not polic'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:4d5f:29f6:75db:6450"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Reconsider the reward itself before the policy: at 89.05% at exactly +1.0 with a −0.4 penalty tail, '; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:e428:9d6d:9519:fabd"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"Any redesigned reward MUST carry the speed axis, not just the outcome flag — autopilot's objective is speed × quali\": The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:9f2e:2269:2474:6345"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Record the instrument-era boundary for reward values before any pre/post-fix comparison is made or a'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:e0ad:47ca:5e60:a16a"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins 'Optional: replay-rescore historical rows so the episodic store carries post-fix rewards. Not indispe'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:d94e:a8ff:d167:db7b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DAR-4 (bilinear descriptor-conditioned predictor) → retained, but retrain on the fixed reward.** I'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:d11d:6efc:6892:0fa8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DAR-5 → gated behind the reward redesign, not behind a regret replay.** Precondition is a reward c'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:4bc4:53ec:91c9:2a22"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Consider splitting a separate `stage` field out of `producer_role`: the same field currently carries'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:068e:f830:f6b5:96eb"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:a3af:427e:efe9:abcc"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:5946:d996:5f16:71fe"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:5668:565e:0770:e2a7"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:fcd5:06ab:ebc8:ea45"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:8c18:c381:2d1c:f7b9"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:d3b3:02e8:5c5b:20d5"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        },
+        {
+          "keys": [
+            "h:0633:4e82:bb50:1276"
+          ],
+          "disposition": "operator_gated",
+          "reason": "Task-specific correction for '❄ FROZEN 2026-09-27 — resume only once autopilot has trained on the swapped stack AND UFH-13 re-opened (operator ru': The item itself names an operator ruling/reopen/amendment as the authorization boundary; downstream code or measurements cannot lift that freeze."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/kv-prefix-fork-and-paged-attention.md",
+      "source_sha256": "c481e2b4c80cadcc2c8ccece859cbc26abdba42955bf016c52417a38ef27873c",
+      "reviewed_open_keys": [
+        "h:7299:4f48:741f:01b5",
+        "h:71fc:e056:c34e:772e",
+        "h:c410:c265:d492:09b5",
+        "h:fbc0:a5aa:cc9b:cb89",
+        "h:10a8:5956:8f14:eaeb",
+        "h:42b0:abdf:977b:721c",
+        "h:f019:84eb:0ba8:13c5",
+        "h:8b2a:5f78:f894:8b21",
+        "h:38d9:d422:121b:d1d2",
+        "h:1391:ca9d:f36e:93ac",
+        "h:5056:6851:89c0:a73f",
+        "h:cc2b:cc58:e05e:67df",
+        "h:248d:c845:339c:cb32",
+        "h:6d5f:d02d:ac1b:39e4",
+        "h:7017:7648:4a44:5fb5",
+        "h:d985:f269:36a3:12ad",
+        "h:b1b4:afea:5bb0:903c",
+        "h:5d41:bfdf:4751:bf19",
+        "h:cf10:41dd:a7a3:38cc",
+        "h:c235:dfd8:e031:6c25",
+        "h:fccc:a0a2:bc61:0d5f",
+        "h:2411:b189:2ce8:51d5",
+        "h:da90:de63:f358:54e1",
+        "h:e2ab:a87a:cef5:0ac3",
+        "h:0c52:020f:4f4a:e59f",
+        "h:55da:a1ca:6163:a838",
+        "h:47a6:6c04:af4d:82d3",
+        "h:7729:4edf:f7a4:ad57"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:7299:4f48:741f:01b5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-01: create the P1 worktree and index it.** `git -C /mnt/raid0/llm/llama.cpp worktree add': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:71fc:e056:c34e:772e"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-03: belief-kernel wiring, VB-KVU-PF.** Prepare (a) a source row in `scripts/vidya/adapters/README.md`:': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:c410:c265:d492:09b5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-04: compile the radix lesson (above) into `wiki/kv-cache.md`** at the first wiki sweep after KPF-18': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:fbc0:a5aa:cc9b:cb89"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-17: tests.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:10a8:5956:8f14:eaeb"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**KPF-17a: shared-trunk cases for KVU-19a/19b's `test_flash_attn_ext_unified`, applied at the 19a/19b fold.**\": The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:42b0:abdf:977b:721c"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**KPF-18: P1 gate (GPU window, :8083 production argv on the fork build; workspace-ec).** The matched': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:f019:84eb:0ba8:13c5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**KPF-19: rebase watch.** `server-context.cpp` is upstream's most-churned file. At the v11 rebase,\": The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:8b2a:5f78:f894:8b21"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-20: GitNexus on a fresh orchestrator worktree.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:38d9:d422:121b:d1d2"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-21: trunk-first fan-out.** Wherever N children share a trunk (scouting `scout_stage.py`, HS-19'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:1391:ca9d:f36e:93ac"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-22: LPM ordering in the admission queue.** Add a bounded longest-prefix-match bypass (at most one skip': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:5056:6851:89c0:a73f"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-23: reconcile with `PrefixRouter`.**': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:cc2b:cc58:e05e:67df"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-24: the KV-pool gate counts unique cells.** In `kv_pool_admission._fits` / `reservation_tokens`, reserve': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:248d:c845:339c:cb32"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-25: byte-stable trunks.** Audit the fan-out prompt builders for anything that varies across si'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:6d5f:d02d:ac1b:39e4"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-26: P2 gate.** Replay a real fan-out (an HS-19 scouting round or a delegate wave) through :800'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:7017:7648:4a44:5fb5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-27: revived prefix index (radix tree) — orchestrator side, behind `ORCHESTRATOR_PREFIX_INDEX`': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:d985:f269:36a3:12ad"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'KPF-27d: land on main (owning session), then a **shadow window** on :8083 with the flag on and'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:b1b4:afea:5bb0:903c"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"KPF-27e: when P1's INTERFACE.md lands, map its fields (content epoch, `id_slot`/`id_task` on OAI\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:5d41:bfdf:4751:bf19"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**KPF-30: measure the mixed-block fraction.** Add a debug counter to KVU-19a's block-liveness scan kernel, or\": The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:cf10:41dd:a7a3:38cc"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-31: GitNexus on `find_slot`**, plus `apply_ubatch` and `llama_kv_cells` (`src/llama-kv-cells.h`), in': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:c235:dfd8:e031:6c25"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-32: affine allocator.** In `find_slot` (`llama-kv-cache.cpp:901-1075`), give each sequence a cursor into': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:fccc:a0a2:bc61:0d5f"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-33: P3 gate.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2411:b189:2ce8:51d5"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-40: pre-check (read-only, zero compute).** Read the v11 audit. Re-derive which of our ubatch s'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:da90:de63:f358:54e1"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-41: port.** If #29510 has merged upstream by v11, it arrives with the rebase. Otherwise port i'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:e2ab:a87a:cef5:0ac3"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-42: P4 gate, A/B vs KVU-19b.** Run on the KVU-18 cells (0/1/2/3 neighbours), 4×16k and 4×80k': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:0c52:020f:4f4a:e59f"
+          ],
+          "disposition": "inference_gated",
+          "reason": "Task-specific correction for '**KPF-50: rocprof profile first (GPU window).** On the P1 build, at 4 × 80k with a 60k forked trunk and': The stated acceptance requires live/model runtime evidence or training outputs; design, code, fixtures, and offline validation remain separable and do not satisfy that gate."
+        },
+        {
+          "keys": [
+            "h:55da:a1ca:6163:a838"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-51: design.**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:47a6:6c04:af4d:82d3"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**KPF-52: kernels on the v11 FA paths** (MMA/MFMA for verify and batched; vec for decode), not on v10 rocWMMA.': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:7729:4edf:f7a4:ad57"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**KPF-53: P5 gate.** Decode tok/s at 4 × 80k with a 60k trunk, paired with greedy equivalence vs non'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "source_sha256": "047a5f5576641b31a67990b77aa6c7d533d86160736c6d85f83c7cdc359ae19a",
+      "reviewed_open_keys": [
+        "h:ee88:e43e:5a60:4289",
+        "h:d75a:9938:89c3:4b70",
+        "h:42b3:2086:b322:c3ba",
+        "h:406a:af98:78f4:237e",
+        "h:327d:16f5:3c0a:1ec9",
+        "h:786e:b4fe:a0ee:f48e",
+        "h:e8bd:bb7b:0e4f:aee8",
+        "h:bb94:2894:dce3:6800",
+        "h:3b16:6a0d:0514:b1b9",
+        "h:d811:2528:4c56:0fe4",
+        "h:43a7:5da8:f215:7546",
+        "h:8fa5:d413:c604:836e",
+        "h:739c:347c:733e:0261",
+        "h:557c:261f:5603:c39d",
+        "h:be8b:7939:963f:655e",
+        "h:79e2:0bd2:5821:b742"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "supporting",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ee88:e43e:5a60:4289"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**T7 (optional): Hermes session ingest** — Walk `~/.hermes/sessions/*.json` if present, normalize in'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:d75a:9938:89c3:4b70"
+          ],
+          "disposition": "conditional",
+          "reason": "The task itself separates deterministic prerequisite fixes (non-destructive replay DB mode/merge, stable corpus↔live ids, turn-alignment path) from running replay, which explicitly needs inference. The review should preserve those offline adapter/fixture steps instead of making the whole task inert or treating them as satisfying real-data pairing. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:42b3:2086:b322:c3ba"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-P1b — T7 (Hermes ingest) must stamp `harness=\"hermes\"` plus `task_key`/`seed`/`turn_ordinal`**'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:406a:af98:78f4:237e"
+          ],
+          "disposition": "retain",
+          "reason": "This explicitly calls for an inference-free prototype and read-only API surface. The “operator-review candidate” label is a later review of adoption, not a prerequisite to build the prototype."
+        },
+        {
+          "keys": [
+            "h:327d:16f5:3c0a:1ec9"
+          ],
+          "disposition": "retain",
+          "reason": "This is a candidate design for background consolidation, not an instruction to activate it. Investigate/code the opt-in prototype and deterministic store tests separately from any human adoption decision or quality evaluation."
+        },
+        {
+          "keys": [
+            "h:786e:b4fe:a0ee:f48e"
+          ],
+          "disposition": "operator_gated",
+          "reason": "MAIN rejected reviewer downgrading: UTM-M9 expressly names eval-tower rows as a human-amendment-only MEASUREMENT.md trust boundary. A decision package or isolated fixture proposal may be prepared, but applying the control-arm amendment remains operator-gated. The later in-file note confirms this gate."
+        },
+        {
+          "keys": [
+            "h:e8bd:bb7b:0e4f:aee8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-V1 — Complete the append-only memory-operation envelope and state-transition engine.** Add'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:bb94:2894:dce3:6800"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"**UTM-V2 — Add a local scoped write proposer, not an authoritative writer.** Combine Mem0's\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:3b16:6a0d:0514:b1b9"
+          ],
+          "disposition": "refine_jev",
+          "reason": "MAIN accepts UTM-owned semantic-grader fixture/receipt mechanics reuse with its own human gold and later calibration; host structural checks remain deterministic."
+        },
+        {
+          "keys": [
+            "h:d811:2528:4c56:0fe4"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-V4 — Test answer-time evidence distillation independently of memory writing.** Preserve'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:43a7:5da8:f215:7546"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-V5 — Emit per-operation credit in shadow, without RL training.** Record deterministic'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:8fa5:d413:c604:836e"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-V6 — Run a complete memory evaluation matrix with a mandatory no-memory control.** Include'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:739c:347c:733e:0261"
+          ],
+          "disposition": "deterministic",
+          "reason": "UTM-B1 states the read surface is already built and names the missing pieces exactly: MCP registration and orchestrator wiring. Registration/contract fixtures are source/code preparation, not inference. For schema reuse, JEV tool_args only handles closed enums, booleans, bounded integer ranges and enum arrays; it explicitly skips other/free-text shapes, so do not force arbitrary search strings through it. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        },
+        {
+          "keys": [
+            "h:557c:261f:5603:c39d"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-B2 — Expose the FTS5 store + `navigation.py` (RRF k=60) as the memory backend for a'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:be8b:7939:963f:655e"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**UTM-B3 — Record the ingest FILTER in the run artifact as a first-class experimental'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:79e2:0bd2:5821:b742"
+          ],
+          "disposition": "deterministic",
+          "reason": "UTM-B4 explicitly says the Tulving adapter routing is zero compute to write. Keep actual retrieval evaluation under its existing compute gate; the adapter/wiring slice can be prepared independently. MAIN independently reviewed the source context; preparation does not waive acceptance."
+        }
+      ],
+      "findings": [
+        {
+          "id": "S08-UTMV3-JEV-1",
+          "task_keys": [
+            "h:3b16:6a0d:0514:b1b9"
+          ],
+          "title": "UTM-V3 semantic-verifier fixture and receipt discipline can reuse the existing isolated judge harness pattern",
+          "original_premise": "Keep deterministic structural checks separate from a versioned semantic judge; build human-labeled adversarial cases and report false-pass/false-fail by class. Do not inherit the external VerMem paper result.",
+          "revised_deliverable": "Before any live semantic judging, prepare the human-labeled case manifest and deterministic mock-primitive/parser fixtures using the existing judge_redundancy receipt pattern: frozen case/rubric hashes, explicit per-criterion outputs, parse/transport failure as unresolved, and separate agreement from accuracy against human gold. Reuse existing Question/DecisionResult where an output is truly a closed choice; preserve arbitrary memory-operation explanation/payload as source data. No new grading ladder, no import of CJ-13 synthetic ground truth, no semantic-validity claim from reader agreement, and no live judge call required for this preparation.",
+          "toolkit_reuse": [
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "symbols": "RubricCase, case_sha256, rubric_set_sha256, _parse_verdicts, run_judge_redundancy",
+              "what": "Demonstrates frozen hashed evaluator cases, strict output parsing, unresolved failures, and a structural distinction between accuracy against known ground truth and reader-reader agreement. Reuse fixture/receipt mechanics only; UTM’s human-labeled cases remain its own ground truth."
+            },
+            {
+              "path": "src/typed_decisions/types.py; src/typed_decisions/runner.py",
+              "symbols": "Question, DecisionResult, ParseFailure, run_typed_decisions",
+              "what": "Typed choices can capture a genuinely closed decision; parse/schema failure is carried explicitly rather than defaulted. Not suitable as a substitute for arbitrary semantic rationale or host-side structural validation."
+            }
+          ],
+          "source_evidence": [
+            {
+              "path": "handoffs/active/unified-trace-memory-service.md",
+              "lines": "293-298",
+              "observation": "UTM-V3 explicitly separates deterministic structural verification from a semantic judge and requires human labels/adversarial classes."
+            },
+            {
+              "path": "src/typed_decisions/judge_redundancy.py",
+              "lines": "1-28,824-852",
+              "observation": "Existing isolated grader scaffold hashes frozen cases and distinguishes accuracy from agreement; malformed or unresolved emissions do not become verdicts."
+            },
+            {
+              "path": "src/typed_decisions/runner.py",
+              "lines": "1-34",
+              "observation": "Typed runner returns per-question ParseFailure and does not silently default missing decisions."
+            }
+          ],
+          "non_inference_scope": "Own human-gold manifest/rubric design plus mocked output/failure/receipt fixtures. No model call or memory mutation.",
+          "inference_acceptance": "UTM own versioned semantic judge, human gold and per-class false-pass/false-fail calibration; do not transfer CJ synthetic gold.",
+          "gate": "Host structural checks and UTM-M9 human amendment remain separate; no live activation or new belief ladder.",
+          "ownership": "UTM handoff owner; proposal only for owner/main review. No APP code changes or ROOT edits made.",
+          "roi": "high",
+          "effort": "small",
+          "verification": "source_verified",
+          "proposed_handoff_append": "## MAIN-reviewed JEV refinement — 2026-10-06 (UTM-V3)\n\nPrepare the semantic-verifier case manifest and mocked parser/readout fixtures using the existing `judge_redundancy.py` fixture/receipt pattern: frozen case and rubric hashes, explicit criterion outcomes, unresolved parse/transport failures and denominators, and reader agreement reported separately from accuracy against gold. Reuse `Question`/`DecisionResult` only for genuinely closed rubric choices; memory payloads and explanations remain source data. Structural schema/scope/provenance/transition checks remain deterministic host checks.\n\nUTM must author and adjudicate its own human-labelled conflicting, stale, poisoned, private, manipulated, duplicate, missing-source and delete/restore cases. CJ's synthetic rubric truth does not transfer to memory semantics. Mocked conformance proves representation and failure handling only; the separately versioned live semantic judge still needs UTM-V3's per-class false-pass/false-fail calibration. Add no belief grading ladder and grant no write authority. UTM-M9's human-amendment-only eval-tower gate remains unchanged."
+        }
+      ]
+    },
+    {
+      "path": "handoffs/active/wp12-fleet-layer-design.md",
+      "source_sha256": "f7fe7843349cbe4d68690b7b835f354469fb1b159fe8a8cfd4a231c9e710a858",
+      "reviewed_open_keys": [
+        "h:60d0:1dfc:e93f:2201"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:60d0:1dfc:e93f:2201"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**Post-soak §5 cleanup (code + tests as ONE change)**: retire the legacy per-role build path — ServerURLsConfig URL': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/dynamic-stack-concurrency.md",
+      "source_sha256": "6dd2acbf6503beb64425b7a7ed1aeafb75cfe164257fa388ce8cce49a48a7b0e",
+      "reviewed_open_keys": [
+        "h:ee3b:496f:96bf:d72a",
+        "h:6833:d164:b4d9:5ef1",
+        "h:27de:2fd5:b766:44d4",
+        "h:7372:6005:2165:80d9",
+        "h:bfcd:f27c:5eb2:00c3",
+        "h:c4a7:9b2b:279d:9ea2",
+        "h:b2a4:2d98:9ed4:91e5",
+        "h:181f:a3f6:73e2:4640",
+        "h:bfad:5712:4093:1eb3",
+        "h:38d1:0699:b76d:4970",
+        "h:3006:1db2:f06f:e2fd",
+        "h:4b58:fa6b:3bb5:11a7"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:ee3b:496f:96bf:d72a"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DS-6-live — QuarterScheduler revalidation gate**: parked. Only implement dynamic quarter reassignment if future D': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:6833:d164:b4d9:5ef1"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DS-F1 — KVCOMM feasibility fork**: after [`attention-matching-kv-compaction.md`](attention-matching-kv-compaction': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:27de:2fd5:b766:44d4"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**DS-F2/F3/F4 — Cache-aware routing fork**: if DS-F1 passes, design the anchor pool, wire `Concurren'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:7372:6005:2165:80d9"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**Optional `--ignore` tweak**: add `claude|codex` to earlyoom's `--ignore` regex (e.g. `'^(llama-server|sd-server|c\": The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:bfcd:f27c:5eb2:00c3"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**Open question — pause-loads-after-kill hook**: earlyoom has no built-in post-kill backoff (issue #'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:c4a7:9b2b:279d:9ea2"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Open question — pre-kill `-P` hook**: worth firing the autopilot host-health remediation (drop_cac'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:b2a4:2d98:9ed4:91e5"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**K4a — the research master still declares `server_defaults.ubatch_size: 8192`** (mirrored into orch `model_registr': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:181f:a3f6:73e2:4640"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**G4 (G) — measure our actual post-restore prompt-reuse rate.** We call': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:bfad:5712:4093:1eb3"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**(Z) Guard the prefix-stability assumption.** Full reuse after migration depends on the next': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:38d1:0699:b76d:4970"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**(G) #25592 is the LARGER exposure and should be measured first.** It fixes the **live': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:3006:1db2:f06f:e2fd"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**G5 (G) — extend this replay to N concurrent sessions with tool gaps, before any program-level scheduler work** (2': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:4b58:fa6b:3bb5:11a7"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**Evaluate llama.cpp #25592 as a v10 candidate.** **Upstream item: the `(G) #25592 is the': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/dashboard-architecture-restructure.md",
+      "source_sha256": "0c6b40a3ebe4dfaec904973ee9e94457fd6fcd506c289e468c2eaf96a468d3e5",
+      "reviewed_open_keys": [
+        "h:d7b8:a1b5:5380:d3bb",
+        "h:01b9:ed61:8bee:4b0b",
+        "h:2f9b:24f9:c3bf:35de",
+        "h:7811:e82c:47fb:ce70",
+        "h:dbb2:9811:7328:4770",
+        "h:ced0:8569:9ed9:68fe",
+        "h:a35e:e8c7:b26f:f370",
+        "h:6fba:c2c9:4acc:c2f3",
+        "h:be88:4678:47af:35f4",
+        "h:2599:9cf5:535d:c8d2",
+        "h:355c:1519:f143:14fe",
+        "h:1e04:20a3:57f0:2d0e"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d7b8:a1b5:5380:d3bb"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"Re-eyeball the tap's ACTIVE/streaming card path + live ↑/↓ counters once inference actually\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:01b9:ed61:8bee:4b0b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**Trimmed machine-frame endpoint**: the snapshot document is ~3.9 MB/frame'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2f9b:24f9:c3bf:35de"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**/slots fan-out answered 0/19 during buildout** — machine-state truth issue (RTG-03'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:7811:e82c:47fb:ce70"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Operator runs old + new in parallel and confirms `/machine` + `/autopilot` cover the': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:dbb2:9811:7328:4770"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '`:8000/dashboard` becomes a redirect to `:8100/autopilot`; `dashboard.html` (7,649 lines)'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:ced0:8569:9ed9:68fe"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Registry entry for the legacy page removed; `dashboard/README.md` ownership boundary': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:a35e:e8c7:b26f:f370"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Orchestrator `dashboard_panels.py` survives as the DATA-plane registry (it guards'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:6fba:c2c9:4acc:c2f3"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Machine-truth derivation: realized-state (manifest/`/proc`)-first for `stack_numa_mode` /'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:be88:4678:47af:35f4"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '(If D3 = exporter) standalone machine-state exporter or hub-side reader; taps remain :8000.'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:2599:9cf5:535d:c8d2"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Freshness-grammar harmonization at the seam: one envelope vocabulary'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:355c:1519:f143:14fe"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'H1/H2 blind-spot panels (owned by RTG-03) get homes assigned post-split: breaker/fallback →'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:1e04:20a3:57f0:2d0e"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**D-3 / OBS-2 (MED) — `hub_supervisor.sh` cannot say \"I cannot tell\", and its stale-source'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/scaffold-autopilot-cost-lever-deployment.md",
+      "source_sha256": "8fbc4560146c089332e30ea22a2f09496687ed88990bd39106ea4399da9e7602",
+      "reviewed_open_keys": [
+        "h:e76b:b8d0:9efd:d4e2",
+        "h:90a8:2055:856f:d0c4",
+        "h:6839:892e:89a3:ac39",
+        "h:b738:a3da:62a6:8941",
+        "h:3807:6405:0f83:f841",
+        "h:495e:40c2:b006:3d5c",
+        "h:4f01:d38b:5add:1aa8",
+        "h:443f:ec46:2c13:21c7",
+        "h:86d2:3ebe:6c45:22bb",
+        "h:e56c:5cbd:4b23:7ae6",
+        "h:5bf6:8af4:bc41:3f69",
+        "h:f7c8:d966:a65e:e873"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:e76b:b8d0:9efd:d4e2"
+          ],
+          "disposition": "retain",
+          "reason": "T0.1 is a safety precondition to inspect/confirm before edits, not an operator-only decision. Verify AutoPilot is stopped at the task boundary; if it is running, defer the dependent mutation to its safe boundary."
+        },
+        {
+          "keys": [
+            "h:90a8:2055:856f:d0c4"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T0.2 — Stand up the GPU reasoner as a stack-managed service.** Add `start_scaffold_reasoner()` to `scripts/server': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:6839:892e:89a3:ac39"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T1.1 — Build the scaffold-then-nothink composite executor.** New path (verify attach point in `src/api/routes/cha': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:b738:a3da:62a6:8941"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**T1.2 — Attach it to the reasoning-effort ladder.** Wire the composite as one rung in `src/graph/th'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:3807:6405:0f83:f841"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T2.1 — Decide + implement the blended-cost representation.** Resolve the §3.1/§3.2 split: (i) ensure the composit': The concrete action is offline replay, source/code/schema/instrumentation work, or deterministic fixtures; the text does not require a live inference run or operator authorization for that preparatory deliverable. Preserve any separately named downstream acceptance gate."
+        },
+        {
+          "keys": [
+            "h:495e:40c2:b006:3d5c"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T2.2 — Verify the Pareto `cost` axis is not misused.** Confirm the scaffold does **not** get mis-scored on the me': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:4f01:d38b:5add:1aa8"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**T3.1 — Add the scaffold-eligibility signal to episodic memory.** Introduce a `sub_decision`/`actio'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:443f:ec46:2c13:21c7"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"**T3.2 — Reward wiring so Q-values learn the gate.** Ensure the composite route's outcome feeds `q_r\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:86d2:3ebe:6c45:22bb"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**T4.1 — Offline replay to learn the gating policy from existing traces.** Use the read-only journal'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:e56c:5cbd:4b23:7ae6"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T4.2 — Register the lever (operator-gated).** After T0.1 approval, add a `scaffold_then_nothink` row to `orchestr': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:5bf6:8af4:bc41:3f69"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T5.1 — Codified measurement protocol for the deploy gate** (see §8). *Accept:* protocol-id assigned; quality-pari': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:f7c8:d966:a65e:e873"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**T5.2 — Canary / shadow rollout.** Shadowed trials on the eligible task-classes only; verify no regression on the ': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/autopilot-dashboard-fidelity-audit-2026-07-22.md",
+      "source_sha256": "10513afa05f704221e2144ea0b771f7e3b77e29c26abb2dd8911100f1d8b6d0c",
+      "reviewed_open_keys": [
+        "h:f261:5497:0030:29d2",
+        "h:0ab8:f4e5:c327:9242",
+        "h:d03f:d092:5c5b:cbb2",
+        "h:5b59:12df:7dc4:7c8b",
+        "h:9337:2af5:e757:a6bb"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:f261:5497:0030:29d2"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**[C1 fix #2] Manifest writer intent-not-realized gap** — writer lives in'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:0ab8:f4e5:c327:9242"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**[C1 fix #3] One env / one SoT across the `--workers 6` pool** — process/launch'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:d03f:d092:5c5b:cbb2"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**[H1] Circuit-breaker / forced-role-fallback panel** — deferred (stretch).'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:5b59:12df:7dc4:7c8b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**[H2] REL-1 eval error-rate surface** — deferred (stretch).'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:9337:2af5:e757:a6bb"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**[H3] Contention-panel per-worker provenance**, **[M1] region_locks held-set'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/multi-file-coding-completion-capability.md",
+      "source_sha256": "50d3593ad3f8cde348997b8c8de2a74f36bc85a2c4c3404acc85f0dbb02248e2",
+      "reviewed_open_keys": [
+        "h:30b6:9b28:c8be:8198",
+        "h:55be:e5b6:ba32:06e0",
+        "h:71ee:ce5e:a4c1:6722",
+        "h:94b8:0d94:476e:c569",
+        "h:d367:ca2d:34e0:7311",
+        "h:6837:1aea:0669:be1b",
+        "h:597a:a370:abe9:0ed0",
+        "h:089b:f2d7:a648:5b86"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:30b6:9b28:c8be:8198"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**If a coder-role A/B is authorized, use bartowski's Q8_0 (34.38 GB) for a quant-matched run against the incumbent \": The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:55be:e5b6:ba32:06e0"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins 'Production rollout decision: when/how routine coding edits auto-route to edit-mode'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:71ee:ce5e:a4c1:6722"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Clean-window A/B evidence: >=50 routine edit tasks, quality/reliability/speed gates': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:94b8:0d94:476e:c569"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for 'Promote edit_transaction_auto_routing row from actionable_by=operator toward autopilot': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:d367:ca2d:34e0:7311"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**MF-VBS-2 — Verify-before-FINAL gate.** Add an explicit \"run the acceptance check with `run_python_code`/`run_shel': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:6837:1aea:0669:be1b"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**MF-FS-1 — t2–t5 never stop voluntarily in the BEP sandbox.** Found by MF-VBS-1 (2026-09-24): acros'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:597a:a370:abe9:0ed0"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**MF-NDG-1 — Announced-action nudge.** The empty/comment-only nudge (`helpers.py:383-386`, \"Call FINAL now\") steers': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:089b:f2d7:a648:5b86"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**MF-RR-1 — Reasoning-runaway repair.** When a turn hits the token cap with no code/tool call, retry with thinking ': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/promptforge-mutation-safety-contract.md",
+      "source_sha256": "a8d4893c72c0853d7c2271a7995ad5907741fd42700e89dc4747d27b5dc95db1",
+      "reviewed_open_keys": [
+        "h:d8a1:d256:d7f9:67f6",
+        "h:756a:fbcd:9187:a0e5",
+        "h:4a10:b763:7973:33b7",
+        "h:69be:9583:7442:ba30",
+        "h:10bf:b86f:d580:3d19",
+        "h:3e63:df81:412f:a3ee",
+        "h:5109:9157:def0:02b7",
+        "h:b522:a5a9:12c9:38a4"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:d8a1:d256:d7f9:67f6"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**MHS-3d — operator RATIFY of the v10 episodic re-pin** (`RATIFY-V10-EPISODIC-REPIN-20260917`). From a host termina': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:756a:fbcd:9187:a0e5"
+          ],
+          "disposition": "source_recheck",
+          "reason": "The task text begins '**MHS-6 (record, no work) — Optimizer budget shape.** Record it as **\"constant in training-set'; completion/current-state is a source-status question, not a model decision; recheck implementation before proposing any JEV work."
+        },
+        {
+          "keys": [
+            "h:4a10:b763:7973:33b7"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**MHS-7 — force the isolated mutation path.** `apply_code_mutation` writes the live tree directly'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:69be:9583:7442:ba30"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**MHS-8 — tighten the apply gate to \"only screened effects apply\"**, since only `MutationEffect.UNSA'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:10bf:b86f:d580:3d19"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins \"**MHS-9 — narrow `revert_code_mutation`'s new-file revert from `git add -A <path>` to an explicit\"; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:3e63:df81:412f:a3ee"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**MHS-10 — land a standalone formatting commit for `prompt_forge.py`**, which is format-dirty on'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        },
+        {
+          "keys": [
+            "h:5109:9157:def0:02b7"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for \"**MHS-11 — replace the operator guide's `prompt_forge.py` line-number citations with symbol names**,\": The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:b522:a5a9:12c9:38a4"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**MHS-12 — eval-identity screen for code_mutation.** Refuse (MutationEffect.UNSAFE with'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/model-capability-descriptors.md",
+      "source_sha256": "8fa7479c1046508a4588b72c18da30f2943d4b9dba3a890bec44012111f065d2",
+      "reviewed_open_keys": [
+        "h:0428:fad3:5dd6:f468"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:0428:fad3:5dd6:f468"
+          ],
+          "disposition": "retain",
+          "reason": "The task text begins '**W5 — GATED tail: unified cascade (Phase 3)** (2–3 weeks IF ever opened): one calibrated bilinear `'; it describes a concrete implementation/protocol/data-plane task. The text does not identify a closed-set decision whose uncertainty JEV resolves, so retain its existing contract."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/prompt-construction-determinism.md",
+      "source_sha256": "aa7cee6d91978f7e9b56ac91cc2bc97799f4b550ae2cf087fbbae822f81a3625",
+      "reviewed_open_keys": [
+        "h:cdc6:8752:5019:3104",
+        "h:3a2a:fb26:75f0:9ae0"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:cdc6:8752:5019:3104"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**D3 — manual canonical bench (sampling quality cert)** *(clean window; certifies #1–3)*. Greedy→sampled(0.1–0.3)+s': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        },
+        {
+          "keys": [
+            "h:3a2a:fb26:75f0:9ae0"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**D4 — sampling-quality instrument-era row** *(human-authored; AFTER D2+D3)*. The N13 kernel/AutoPilot-speed fence ': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    },
+    {
+      "path": "handoffs/active/bep-dcp-falsification-harness.md",
+      "source_sha256": "521e017a53fda16db96c280ceae23fe39c638885d568ebdc91d1a1d924d355d0",
+      "reviewed_open_keys": [
+        "h:6409:06e0:bf9f:bc7b",
+        "h:b295:0377:e760:2ed9"
+      ],
+      "status_assessment": "Active handoff; reviewed each manifest-open item against its own task text and adjacent acceptance/gate language.",
+      "jev_fit": "conditional",
+      "task_dispositions": [
+        {
+          "keys": [
+            "h:6409:06e0:bf9f:bc7b"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**DCP-6 deploy attestation + inference gate**: launch-code provenance is satisfied (`server_launch_git_sha=eeb8cce`': The surrounding task text does not specify an operator-only decision or live inference prerequisite for this step; retain it as independently executable preparation and preserve any later gate as written."
+        },
+        {
+          "keys": [
+            "h:b295:0377:e760:2ed9"
+          ],
+          "disposition": "retain",
+          "reason": "Task-specific correction for '**J8 optional provenance**: run the legacy batch-edit vs interleaved-REPL A/B only if the batch-edit path itself st': The task states a comparison/metric gate but does not establish that implementation preparation itself requires live inference or operator approval; keep the numeric acceptance criterion, and verify whether its specified dataset/runner is offline before scheduling any live run."
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "correction_note": "2026-10-06 parent-review correction: re-resolved every prior operator_gated/inference_gated item from its full task text and explicit prerequisites. Words such as decision, approval/escalation-as-state, metric gate, bench, or model do not alone establish an operator boundary/live inference requirement; offline replay, simulations, deterministic tests and code/schema preparation stay separable. Existing freezes, owner boundaries, and stated numerical/runtime acceptance criteria are preserved. Focused task-context fixes: distinguished offline simulation/replay and deterministic code prep from runtime measurement; approval/escalation trace content is not operator authorization; only explicit operator decisions or frozen human boundaries remain operator_gated. Final MAIN source check: the S08 pre-push guard item is a stale premise; accepted shared-root config and installed hook prove the operator-approved local Phase-0 installation already exists. This is a source-recheck disposition, not a new operator approval request.",
+  "main_semantic_review": "MAIN applies focused crosscheck corrections and UTM-M9 explicit human-gate restoration. UTMV3 recommendation accepted with own human truth/rubric and no live call."
+}

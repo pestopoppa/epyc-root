@@ -1,0 +1,171 @@
+{
+  "scope": "Focused semantic cross-check of five zero-finding live shards; not a second full audit. Screened exact candidate task text/context against frozen 818841 ROOT snapshot and APP 07b352d0 JEV source. No canonical writes.",
+  "shard_checks": [
+    {
+      "shard_id": "S02",
+      "files": 19,
+      "unchecked_keys": 189,
+      "source_pinned": true
+    },
+    {
+      "shard_id": "S03",
+      "files": 18,
+      "unchecked_keys": 305,
+      "source_pinned": true
+    },
+    {
+      "shard_id": "S08",
+      "files": 14,
+      "unchecked_keys": 201,
+      "source_pinned": true
+    },
+    {
+      "shard_id": "S09",
+      "files": 16,
+      "unchecked_keys": 214,
+      "source_pinned": true
+    },
+    {
+      "shard_id": "S10",
+      "files": 15,
+      "unchecked_keys": 116,
+      "source_pinned": true
+    }
+  ],
+  "classification_corrections": [
+    {
+      "shard": "S08",
+      "path": "handoffs/active/decision-aware-routing.md",
+      "key": "h:aeef:a6a9:1f06:cd75",
+      "line": 99,
+      "from": "inference_gated",
+      "recommend": "deterministic",
+      "reason": "The task explicitly tests a simulated new model with known feature values; this is a synthetic cold-start convergence fixture and needs no live model call. Keep deployment/new-model generalization outside this fixture result."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/decision-aware-routing.md",
+      "key": "h:6f5d:776d:01fe:dbdb",
+      "line": 138,
+      "from": "inference_gated",
+      "recommend": "retain",
+      "reason": "DAR-5.2 is an implementation/replacement of a feature vector with a learned identity embedding, conditional on DAR-4. Source does not require live inference for code/schema/fixture preparation. The eventual training/reward comparison remains conditional on the separately stated fixed reward and measured-data gates."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/decision-aware-routing.md",
+      "key": "h:193b:b33e:21f7:2f5a",
+      "line": 232,
+      "from": "operator_gated",
+      "recommend": "deterministic",
+      "reason": "URE-2 is a trace-schema/write-path deliverable with specified fields. Recording an approval boundary does not itself authorize an action. Implement/schema-fixture work is independent; any actual approval remains represented as an actor field and governed by host policy."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/decision-aware-routing.md",
+      "key": "h:f924:3249:efb5:2255",
+      "line": 233,
+      "from": "operator_gated",
+      "recommend": "inference_gated",
+      "reason": "URE-2a explicitly describes a non-authoritative local cascade shadow that continues returning incumbent output; it requires live calls on a later frozen traffic window after CJ-16 fixture quality/operations acceptance. URE-1 calibration gates authority/promotion, and the text says it does not block measurement-only shadow. Keep normal resource/window gate, but do not misstate the task as awaiting operator approval."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "key": "h:739c:347c:733e:0261",
+      "line": 324,
+      "from": "source_recheck",
+      "recommend": "deterministic",
+      "reason": "UTM-B1 states the read surface is already built and names the missing pieces exactly: MCP registration and orchestrator wiring. Registration/contract fixtures are source/code preparation, not inference. For schema reuse, JEV tool_args only handles closed enums, booleans, bounded integer ranges and enum arrays; it explicitly skips other/free-text shapes, so do not force arbitrary search strings through it."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "key": "h:79e2:0bd2:5821:b742",
+      "line": 341,
+      "from": "retain",
+      "recommend": "deterministic",
+      "reason": "UTM-B4 explicitly says the Tulving adapter routing is zero compute to write. Keep actual retrieval evaluation under its existing compute gate; the adapter/wiring slice can be prepared independently."
+    },
+    {
+      "shard": "S08",
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "key": "h:d75a:9938:89c3:4b70",
+      "line": 137,
+      "from": "retain",
+      "recommend": "inference_gated_with_deterministic_prep",
+      "reason": "The task itself separates deterministic prerequisite fixes (non-destructive replay DB mode/merge, stable corpus↔live ids, turn-alignment path) from running replay, which explicitly needs inference. The review should preserve those offline adapter/fixture steps instead of making the whole task inert or treating them as satisfying real-data pairing."
+    }
+  ],
+  "missed_jev_refinement": {
+    "path": "handoffs/active/unified-trace-memory-service.md",
+    "key": "h:3b16:6a0d:0514:b1b9",
+    "line": 293,
+    "title": "UTM-V3 semantic-verifier fixture and receipt discipline can reuse the existing isolated judge harness pattern",
+    "original_contract": "Keep deterministic structural checks separate from a versioned semantic judge; build human-labeled adversarial cases and report false-pass/false-fail by class. Do not inherit the external VerMem paper result.",
+    "proposed_bounded_refinement": "Before any live semantic judging, prepare the human-labeled case manifest and deterministic mock-primitive/parser fixtures using the existing judge_redundancy receipt pattern: frozen case/rubric hashes, explicit per-criterion outputs, parse/transport failure as unresolved, and separate agreement from accuracy against human gold. Reuse existing Question/DecisionResult where an output is truly a closed choice; preserve arbitrary memory-operation explanation/payload as source data. No new grading ladder, no import of CJ-13 synthetic ground truth, no semantic-validity claim from reader agreement, and no live judge call required for this preparation.",
+    "toolkit_reuse": [
+      {
+        "path": "src/typed_decisions/judge_redundancy.py",
+        "symbols": "RubricCase, case_sha256, rubric_set_sha256, _parse_verdicts, run_judge_redundancy",
+        "what": "Demonstrates frozen hashed evaluator cases, strict output parsing, unresolved failures, and a structural distinction between accuracy against known ground truth and reader-reader agreement. Reuse fixture/receipt mechanics only; UTM’s human-labeled cases remain its own ground truth."
+      },
+      {
+        "path": "src/typed_decisions/types.py; src/typed_decisions/runner.py",
+        "symbols": "Question, DecisionResult, ParseFailure, run_typed_decisions",
+        "what": "Typed choices can capture a genuinely closed decision; parse/schema failure is carried explicitly rather than defaulted. Not suitable as a substitute for arbitrary semantic rationale or host-side structural validation."
+      }
+    ],
+    "source_evidence": [
+      {
+        "path": "handoffs/active/unified-trace-memory-service.md",
+        "lines": "293-298",
+        "observation": "UTM-V3 explicitly separates deterministic structural verification from a semantic judge and requires human labels/adversarial classes."
+      },
+      {
+        "path": "src/typed_decisions/judge_redundancy.py",
+        "lines": "1-28,824-852",
+        "observation": "Existing isolated grader scaffold hashes frozen cases and distinguishes accuracy from agreement; malformed or unresolved emissions do not become verdicts."
+      },
+      {
+        "path": "src/typed_decisions/runner.py",
+        "lines": "1-34",
+        "observation": "Typed runner returns per-question ParseFailure and does not silently default missing decisions."
+      }
+    ],
+    "ownership": "UTM handoff owner; proposal only for owner/main review. No APP code changes or ROOT edits made.",
+    "verification": "source_verified",
+    "confidence_limits": "This is a test/evidence-shape reuse recommendation, not evidence that CJ-13 graders work for memory semantics. The UTM human label set and semantic rubric require their own authoring/adjudication."
+  },
+  "explicit_no_append_decisions": [
+    {
+      "path": "handoffs/active/fleet-fanout-measurement.md",
+      "key": "FM-2",
+      "reason": "Already requires human-graded validation for faithfulness and rejects agreement-only validation. Existing JEV synthetic rubric truth is not a substitute for human labels on fleet traces; no new grader/ladder should be added."
+    },
+    {
+      "path": "handoffs/active/agent-collab-rnd-harness.md",
+      "key": "S3-ACH-01",
+      "reason": "This is a host PreToolUse allowlist that blocks unauthorized actions. PreparedAction/DecisionResult cannot grant command authority; preserve deterministic host enforcement and fail-closed unknown commands."
+    },
+    {
+      "path": "handoffs/active/learned-routing-controller.md",
+      "key": "LRC-SDM-ACTION-SCORER",
+      "reason": "It estimates independent observed correctness rates per admissible role and explicitly separates rates from softmax confidence. Do not coerce it into a single JEV confidence/choice; preserve unsupported and incumbent fallback behavior."
+    },
+    {
+      "path": "handoffs/active/unified-trace-memory-service.md",
+      "key": "UTM-V1/V2",
+      "reason": "Only bounded closed operation enums might map through tool_args; arbitrary operation payloads are unsupported and must remain structural host-validated data. No evidence justifies a blanket JEV rewrite."
+    }
+  ],
+  "source_hashes": {
+    "ROOT:handoffs/active/decision-aware-routing.md": "f29f3a56c2f1cbd222380ba2571f69c3943785314d2a54177fb7a1ae98247700",
+    "ROOT:handoffs/active/unified-trace-memory-service.md": "047a5f5576641b31a67990b77aa6c7d533d86160736c6d85f83c7cdc359ae19a",
+    "ROOT:handoffs/active/fleet-fanout-measurement.md": "e0cb9d022126660aa5fb67bc17fbbd111dae97cf8468c06ac549ab03d3ded61b",
+    "APP:src/typed_decisions/judge_redundancy.py": "bd0f4ba14513005a3e1906e97233a2a9d8ff12e6913d23926e131f615140006b",
+    "APP:src/typed_decisions/tool_args.py": "36143fea0cabba1d5f4e893c7ad3a72169962b4464db7ee16bfdafb9f16ac82a",
+    "APP:src/typed_decisions/runner.py": "29cf2de3cddd46ad0f918c730388257f4c5ebbb024c7c77e40a7446f2512c51d",
+    "APP:src/typed_decisions/types.py": "8b5e2ec7f76a95ad0ff93e3af0f19153410fa68e61b2bae7f06eaa94a4e31bd1"
+  }
+}
