@@ -16,7 +16,6 @@ ROOT_CARRIER_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_PIN = "70096b763939a43409a1f1827ab633d62425a6c1"
 PYTHON_PIN = "3.13.15"
 NODE_PIN = "v22.18.0"
-NODE_OPTIONS_PIN = "--experimental-strip-types"
 SELECTIONS = (
     "tests/harness/test_hs4_p04_acceptance.py",
     "tests/harness/test_hs19a_acceptance.py",
@@ -126,8 +125,6 @@ def main() -> int:
         node_version = subprocess.check_output(["node", "--version"], text=True).strip()
         if node_version != NODE_PIN:
             raise RuntimeError(f"Node runtime differs from pin: {node_version}")
-        if os.environ.get("NODE_OPTIONS") != NODE_OPTIONS_PIN:
-            raise RuntimeError("Node TypeScript stripping option differs from reviewed recipe")
         if os.environ.get("NI08_INSTALL_COMMAND") != INSTALL_COMMAND:
             raise RuntimeError("install command differs from reviewed recipe")
         expected = {"recipe": os.environ["GITHUB_SHA"], "carrier": ROOT_CARRIER_PIN,
@@ -151,7 +148,6 @@ def main() -> int:
         environment = result / "environment.json"
         environment.write_text(json.dumps({
             "python": sys.version, "node": node_version, "platform": platform.platform(),
-            "node_options": NODE_OPTIONS_PIN,
             "repositories": pins, "selections": list(SELECTIONS),
             "expected_case_count": EXPECTED_CASES,
             "dependency_lock": {"repo": "app", "pin": APP_PIN, "path": APP_LOCK,
@@ -160,7 +156,7 @@ def main() -> int:
             "dependency_basis": (
                 "Three exact ROOT harness test modules use pytest plus Python stdlib. Their only "
                 "external executable is the OpenCode config linter, run by Node 22.18.0 from "
-                "checked-in TypeScript sources with the explicit type-stripping flag; no npm "
+                "checked-in TypeScript sources with built-in type stripping; no npm "
                 "install/build. Python package versions "
                 "and wheel hashes are checked against the pinned APP uv.lock and the local "
                 "requirements hashlock."

@@ -22,7 +22,6 @@ jobs:
       PYTHONDONTWRITEBYTECODE: '1'
       PYTHONHASHSEED: '0'
       PYTHONUNBUFFERED: '1'
-      NODE_OPTIONS: --experimental-strip-types
 
     steps:
       - name: Initialize outcome artifact before setup
