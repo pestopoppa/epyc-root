@@ -8,7 +8,7 @@ No dispatch or local fixture execution has occurred for this proposal.
 ## Pinned source and readset
 
 The APP checkout is fixed at `c0263f8c36f3042e9a8145d03dfda63952ade199`; the
-producer/carrier checkout is ROOT `f5a316b64ac4078df0afc7d6e67a62645564037c`.
+producer/carrier checkout is ROOT `4c0c653baf1654c8c25c66433cf39c8faefd8e52`.
 `mf_vbs2_ast_fixture.py` checks APP HEAD, tracked cleanliness and each following
 Git blob before generating or loading test code:
 
@@ -74,10 +74,10 @@ stubs `_record_session_turn`, and every test redirects the repository root to
 `tmp_path`. The snapshot test monkeypatches the same actual runner module object used
 by the helper namespace.
 
-The installed test dependency closure is the exact APP `uv.lock` set for Python 3.11:
+The installed test dependency closure is the exact APP `uv.lock` set for Python 3.13.15:
 pytest 9.0.3, pytest-asyncio 1.3.0, iniconfig 2.3.0, packaging 26.0, pluggy 1.6.0,
-Pygments 2.20.0, and typing-extensions 4.15.0. The driver checks every version against
-the lock and installs with `--no-deps`; the complete venv package freeze and install
+Pygments 2.20.0. The Python 3.13 lock marker excludes typing-extensions. The driver checks
+each installed version against the lock and installs with `--no-deps`; the complete venv package freeze and install
 requirements are retained and hashed. The workflow uses `--noconftest`, disables
 plugin autoload and explicitly enables `pytest_asyncio.plugin`.
 
@@ -92,10 +92,19 @@ execute model output as a command.
 The driver calls the existing ROOT `native_conformance.capture_fixture_execution`
 with three clean repository identities, exact selections and declared read paths.
 It retains the original JUnit, request, receipt, command log and readset artifacts.
+The run is accepted only when the JUnit has exactly the nine selected case identities,
+all nine pass, and collected/executed/pass counts are 9 with zero skips, failures or
+errors. Projection must produce exactly one row and the shared grade must be
+`Judged/Located`; any mismatch makes the capture fail.
 It then reopens that receipt through `native_rows` and `project_ci_conformance`, calls
 the existing shared `claim_tuple.grade`, and hashes every native artifact before and
 after projection/grading. The separate `shared-grade-analysis.json` records the
 result and both hash maps; it does not rewrite an original.
+The native readset also carries a sorted Git path/mode/blob manifest for all tracked
+Python and selected configuration inputs (`.py`, `.pyi`, `.toml`, `.yaml`, `.yml`,
+`.ini`, `.cfg`, `.lock`, `.json`) in each checkout, alongside the directly loaded
+workflow, recipe, generated fixture, source modules, environment, requirements and
+package-freeze files. Git identity and clean tracked status are checked around capture.
 
 The evidence claim is limited to those nine named fixture bodies on the pinned
 source and runner. It does not establish full graph/app execution, arbitrary owner

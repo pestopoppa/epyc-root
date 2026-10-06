@@ -1,5 +1,12 @@
 name: MF-VBS2 selected native fixture capture
 on:
+  push:
+    branches: [codex/ni08-mf-vbs2-native-recipe-20261006]
+    paths:
+      - .github/workflows/mf-vbs2-native-fixtures.yml
+      - scripts/ci/mf_vbs2_capture.py
+      - scripts/ci/mf_vbs2_ast_fixture.py
+      - scripts/ci/mf-vbs2-native-fixtures.md
   workflow_dispatch:
 permissions:
   contents: read
@@ -9,7 +16,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      ROOT_PIN: f5a316b64ac4078df0afc7d6e67a62645564037c
+      ROOT_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
       APP_PIN: c0263f8c36f3042e9a8145d03dfda63952ade199
       PYTHONDONTWRITEBYTECODE: '1'
       PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
@@ -39,10 +46,10 @@ jobs:
           ref: ${{ env.APP_PIN }}
           path: app
           persist-credentials: false
-      - name: Set up pinned Python minor
+      - name: Set up pinned Python patch release
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.13.15'
       - name: Create isolated interpreter
         run: python -m venv "$RUNNER_TEMP/mf-vbs2-venv"
       - name: Capture selected original fixtures through existing carrier

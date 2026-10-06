@@ -1,7 +1,7 @@
 """Capture the approved bounded MF-VBS2 original fixtures on a hosted runner only.
 
-This producer intentionally has no local-dispatch mode. The workflow invoking it is
-manual-only; MAIN must review the full recipe and readset before any hosted execution.
+This producer intentionally has no local-dispatch mode. The workflow invoking it
+captures only a reviewed source commit on a hosted runner.
 """
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ import sys
 import tomllib
 import traceback
 
-ROOT_PIN = "f5a316b64ac4078df0afc7d6e67a62645564037c"
+ROOT_PIN = "4c0c653baf1654c8c25c66433cf39c8faefd8e52"
 APP_PIN = "c0263f8c36f3042e9a8145d03dfda63952ade199"
 APP_BLOBS = {
     "src/graph/helpers.py": "64e8fb412a42c608d07c1880593a905dff82e2bc",
@@ -83,30 +83,28 @@ def install_lock_pinned_test_dependencies(app: Path, venv_python: Path) -> tuple
         item["name"].lower().replace("_", "-"): item["version"]
         for item in lock.get("package", [])
     }
-    # The APP's locked pytest 9.0.3 / pytest-asyncio 1.3.0 closure on the pinned
-    # Ubuntu 24.04 / Python 3.11 runner. Each entry is verified against uv.lock
-    # before installation; conditional edges match the lock's Python/platform markers.
+    # The APP's locked pytest closure on the pinned Ubuntu 24.04 / Python 3.13.15
+    # runner. Conditional typing-extensions edge is excluded by the lock marker.
     closure = {
-        "iniconfig": ("2.3.0", None),
-        "packaging": ("26.0", None),
-        "pluggy": ("1.6.0", None),
-        "pygments": ("2.20.0", None),
-        "pytest": ("9.0.3", None),
-        "pytest-asyncio": ("1.3.0", None),
-        "typing-extensions": ("4.15.0", "python_full_version < '3.13'"),
+        "iniconfig": "2.3.0", "packaging": "26.0", "pluggy": "1.6.0",
+        "pygments": "2.20.0", "pytest": "9.0.3", "pytest-asyncio": "1.3.0",
     }
-    if sys.version_info < (3, 11) or sys.version_info >= (3, 13):
-        raise RuntimeError("capture dependency closure is pinned for Python 3.11/3.12")
-    for name, (version, _marker) in closure.items():
+    if sys.version_info[:3] != (3, 13, 15):
+        raise RuntimeError("capture runner must use Python 3.13.15")
+    for name, version in closure.items():
         if locked.get(name) != version:
             raise RuntimeError(f"APP uv.lock dependency pin changed: {name}")
-    lines = [f"{name}=={version}" + (f" ; {marker}" if marker else "")
-             for name, (version, marker) in sorted(closure.items())]
+    lines = [f"{name}=={version}" for name, version in sorted(closure.items())]
     install_file = Path(os.environ["RUNNER_TEMP"]) / "mf-vbs2-requirements.txt"
     install_file.write_text("\n".join(lines) + "\n", encoding="utf-8")
     command = [str(venv_python), "-m", "pip", "install", "--disable-pip-version-check",
                "--no-deps", "-r", str(install_file)]
     subprocess.run(command, check=True)
+    import importlib.metadata
+    for name, version in closure.items():
+        actual = importlib.metadata.version(name)
+        if actual != version:
+            raise RuntimeError(f"installed test dependency mismatch: {name}=={actual}, expected {version}")
     installed = subprocess.check_output([str(venv_python), "-m", "pip", "freeze", "--all"], text=True)
     freeze_path = Path(os.environ["RUNNER_TEMP"]) / "mf-vbs2-pip-freeze.txt"
     freeze_path.write_text(installed, encoding="utf-8")
@@ -179,6 +177,16 @@ def main() -> int:
         }
         env_path = result / "environment.json"
         env_path.write_text(json.dumps(env, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+        # Bind every tracked Python/source-config input by path, mode and Git blob ID.
+        # This includes adapter imports; the immutable Git tree plus the captured
+        # manifest makes the wider source context reviewable without copying data files.
+        context = []
+        selector = "*.py *.pyi *.toml *.yaml *.yml *.ini *.cfg *.lock *.json"
+        for label, repo in (("recipe", recipe), ("carrier", carrier), ("app", app)):
+            entries = git(repo, "ls-files", "--stage", "--", *selector.split()).splitlines()
+            context.extend(f"{label}\t{line}" for line in entries)
+        context_path = result / "tracked-source-config-context.tsv"
+        context_path.write_text("\n".join(sorted(context)) + "\n", encoding="utf-8")
         read_paths = [
             recipe / ".github/workflows/mf-vbs2-native-fixtures.yml",
             recipe / "scripts/ci/mf_vbs2_capture.py",
@@ -196,6 +204,7 @@ def main() -> int:
             app / "tests/unit/test_graph_helpers_batch_edit.py",
             test_path,
             env_path,
+            context_path,
             *install_artifacts,
         ]
         argv = [
@@ -215,13 +224,25 @@ def main() -> int:
             selections=selected,
         )
 
+        expected_names = [selection.rsplit("::", 1)[1] for selection in SELECTIONS]
+        cases = record.get("summary", {}).get("cases", [])
+        counts = record.get("summary", {}).get("counts", {})
+        expected_identities = [("test_mf_vbs2_selected_original", name) for name in expected_names]
+        actual_identities = [(case.get("classname"), case.get("name")) for case in cases]
+        expected_counts = {"passed": 9, "failure": 0, "error": 0,
+                           "skipped": 0, "collected": 9, "executed": 9}
+        if actual_identities != expected_identities or counts != expected_counts:
+            raise RuntimeError(f"native result is not exactly the selected nine: identities={actual_identities!r}, counts={counts!r}")
+
         original_paths = sorted(path for path in native_output.rglob("*") if path.is_file())
         originals_before = {str(path.relative_to(native_output)): file_digest(path) for path in original_paths}
         rows = adapter.native_rows(native_output / "receipt.json")
         grade_result = None
-        if rows:
+        if len(rows) == 1:
             tuple_value = adapter.project_ci_conformance(rows[0])
             grade_result = claim_tuple.grade(tuple_value)
+        if len(rows) != 1 or not grade_result or grade_result[0] != "Judged" or grade_result[1] != "Located":
+            raise RuntimeError(f"expected exactly one shared-grade Judged/Located row; rows={len(rows)}, grade={grade_result!r}")
         originals_after = {str(path.relative_to(native_output)): file_digest(path)
                            for path in sorted(path for path in native_output.rglob("*") if path.is_file())}
         if originals_before != originals_after:
@@ -229,6 +250,10 @@ def main() -> int:
         analysis = {
             "scope": "prospective selected MF-VBS2 fixture observation only",
             "native_rows": len(rows),
+            "expected_case_names": expected_names,
+            "expected_case_identities": expected_identities,
+            "actual_case_identities": actual_identities,
+            "counts": counts,
             "shared_grade": grade_result,
             "original_artifact_sha256_before": originals_before,
             "original_artifact_sha256_after": originals_after,
