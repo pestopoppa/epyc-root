@@ -139,3 +139,7 @@ bullets below are the working detail.
 - **zsh doesn't word-split $var; use explicit per-item commands in process-control scripts.** (origin: 2026-10-06 — a `for p in $pids; do kill $p; done` hung in zsh on a variable whose items were space-separated because zsh preserves the string literal)
 - **recal_serving_floor writes the legacy serving floor, not the matched-process floor.** (origin: 2026-10-06 — tool name was misleading; the matched floor — the peer floor under the loop's matched instrument — is in the loop's own `loop-status.json` result)
 - **A killed parent's child `sleep` can hold a watchdog flock; wait for it before restarting.** (origin: 2026-10-06 — a parent loop was killed, leaving a grandchild `sleep` holding a gpu-quiet flock; the watchdog restart hung on the same lock)
+
+## Research Intake Application and Routing
+
+- **When applying a research intake entry, route its actionable techniques in the same step.** Kernel ideas → inbox notes in the owning AK lanes (hypotheses, cite intake-NNN#record); serving or speculation ideas → a handoff to the stack owner; report the routing with the intake. The sparkglm (intake-1923#record) and TensorFold (intake-1924#record) techniques sat unrouted for hours after application, caught by the operator at wrap-up; immediate routing is part of completing the intake application task. (origin: 2026-10-06, DS41 intake-routing lapse)
