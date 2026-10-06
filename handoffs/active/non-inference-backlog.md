@@ -339,6 +339,8 @@ RATIFY-SCRATCH-LIFECYCLE-20261004 (`8061e48d`) and RATIFY-AK-DS41-LESSONS-202610
         `bash scripts/operator/install_supervision_cron_20260916.sh --all` runs **on the host**. It cannot run from the
         container: attempted 2026-10-04 and failed. Operator queue row prepared. Close it with a `host_hygiene_tick`
         heartbeat line in its log after the re-pin.
+        2026-10-06 — operator chose 2A: preview and install approved. Host execution remains required;
+        no activation or heartbeat is claimed from chat approval, and bus_supervisor remains DOWN.
 - [x] **LR-7** — the DS41 load-bearing worktrees are declared with git locks: `root-main-epyc-root-repo` and
       `research-ds41-run10`. ✅ 2026-10-04 (INF-77 DS41-C113a)
 - [ ] **LR-8** — **merge the periodic cleanups into one tick, after LR-6a.** The standalone

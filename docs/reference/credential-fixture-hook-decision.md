@@ -1,9 +1,15 @@
-# Credential-fixture scanner exception: operator choice
+# Credential-fixture scanner decision
 
-TOC-RD-1a explicitly reserves the fixture exception as an operator decision. The ED25519 recognition child is complete; this proposal remains unapplied.
+**DECIDED 2026-10-06: operator chose 1B — keep both credential-redaction test files scanned.** The two proposed global whole-file exclusions are rejected and remain unapplied. No scanner exemption is granted.
 
-The [exact two-entry patch](../../artifacts/operator/decisions/TOC-RD-1a-credential-fixtures-20261006.patch) exempts `tests/unit/test_credential_redaction.py` and `tests/unit/test_credential_redaction_truncated_pem.py` from the shared staged-blob scanner. These exact repo-relative patterns apply in any repository using the hook. They skip the entire matching file, so a future real token or key anywhere inside it would also evade this scanner. No wildcard is proposed.
+`tests/unit/test_credential_redaction.py` and `tests/unit/test_credential_redaction_truncated_pem.py` remain subject to ordinary staged-blob scanning in every repository using the shared hook. Preserve the realistic regression literals; do not split or obscure them to evade scanning. Passing synthetic tests does not create policy authority.
 
-Approve these two exact exclusions to preserve the deliberate credential-shaped regression literals, or retain scanning and leave those literal-fixture edits blocked. The hook's existing rationale rejects hiding credential literals by splitting the existing APP fixtures. MAIN recommends an explicit choice; passing synthetic tests confer no exemption or privacy authority. Any approved implementation must add exact-path and nonallowlisted/near-miss staged-index controls before promotion.
+The [rejected exact patch](../../artifacts/operator/decisions/TOC-RD-1a-credential-fixtures-20261006.patch) is retained unchanged as historical proposal evidence. It would have skipped both entire files, including future real credentials. SHA-256 `c26bd1965aa272a00e5f7595bd17ba0379de270b067c3cf67bc54cbfe6875df2`; the earlier static checks and `git apply --check` did not apply it. [ED25519 recognition](../../artifacts/ni07/run-37474797195/README.md) is separately completed and confers no fixture exception.
 
-The corrected patch passed `git apply --check` without application and static exact/near-miss regex checks. SHA-256 `c26bd1965aa272a00e5f7595bd17ba0379de270b067c3cf67bc54cbfe6875df2`. Original [ED25519 synthetic evidence](../../artifacts/ni07/run-37474797195/README.md) does not include this exception.
+## Narrower route for a future concrete fixture edit
+
+The existing `scripts/hooks/fixture_snapshot_provenance.py` reads exact staged Git blobs and validates reviewed hash/source identities plus complete native receipt/readset custody. Its candidates are copies under `artifacts/ni05/.../native-.../read-N.bin`; it does not exempt ordinary APP test-file edits. It currently registers the older credential-redaction fixture, not the truncated-PEM fixture. Extending the table alone would therefore not solve the APP editing workflow.
+
+A future proposal must identify the actual blocked APP edit, review its exact synthetic bytes, and define an APP-side staged-content authorization bound to repository, immutable source revision and exact fixture hash. Changed or unknown content, an added credential, missing or ambiguous custody, wrong repository/revision/path, unsupported index mode and an unmerged index must retain ordinary scanning. Required controls include both exact fixtures, changed bytes, same-path unreviewed content, near-miss paths, wrong provenance and unrelated real-pattern credentials. No path or directory wildcard and no global whole-file skip.
+
+This is preparation guidance, not an approved scanner-policy change. No content-based exception has been applied, and the settled 1B decision is not reopened. A concrete security-policy exception would require its own reviewed package before application.

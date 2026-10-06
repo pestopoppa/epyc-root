@@ -1,0 +1,21 @@
+{
+  "kind": "operator-choice-record",
+  "recorded_at_utc": "2026-10-06T16:32:34.806312+00:00",
+  "operator_message": "1B and 2A as recommended.",
+  "scanner": {
+    "id": "OP-TOC-RD-1A",
+    "choice": "1B",
+    "decision": "Keep both credential-redaction files scanned",
+    "whole_file_patch": "rejected and unapplied",
+    "source_policy_change": false
+  },
+  "host_activation": {
+    "id": "OP-73 / LR-6a",
+    "choice": "2A",
+    "authorized": "Host-side preview and installation of supervision cron including necessary published registry deployment for hygiene observer and approved reaper keeper",
+    "execution_status": "not executed by this container session",
+    "acceptance_required": "actual host installation plus hygiene heartbeat; NIB2-88 separately requires observed post-restart reaper recovery",
+    "bus_supervisor_restart_authorized": false
+  },
+  "scope": "Durable record of explicit chat choices; not a signed measurement-policy ratification or proof of deployment."
+}

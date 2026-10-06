@@ -1533,3 +1533,9 @@ The [pinned research checkout/test seams](../docs/reference/hermetic-research-pr
 ## 2026-10-06 terminal REPL timeout
 
 [Terminal state guard](../docs/reference/repl-terminal-timeout-state.md) refuses reuse/checkpoints and suppresses FINAL/artifact rescue while preserving API lease cleanup. [Native evidence](../artifacts/ni07/run-37469999403/README.md) passes123/123 including Event-controlled late-worker tests. Threads may still finish and cause host effects; D-f1 live lease acceptance remains open.
+
+## Scanner choice and host activation approval — 2026-10-06
+
+Operator choice 1B keeps both credential-redaction fixture files subject to staged-blob scanning; the global whole-file exclusions are rejected and remain unapplied. Existing native fixture provenance recognizes only exact artifact copies, not ordinary APP edits; an APP-side exception requires a separate concrete reviewed scope. See the [resolved scanner decision](../docs/reference/credential-fixture-hook-decision.md).
+
+Choice 2A approves the OP-73/LR-6a host cron preview and installation. Approval does not establish deployment: host execution and a hygiene heartbeat are required; the bus supervisor stays DOWN. [Canonical host gate](../handoffs/active/non-inference-backlog.md).

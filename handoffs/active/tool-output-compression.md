@@ -2,10 +2,11 @@
 
 **Status**: Phase 2 implemented (output compression); Phase 2b monitoring wired (2026-04-11); Phase 3a-c done (definition audit, compression, AP-16 runtime measurement); A/B done (+4pp REPL, suite-dependent); Phase 4a-d MCP wrapper/telemetry/registration landed; P3d fallback chain now landed in orchestrator runtime scope; P3d.5 done
 **Created**: 2026-04-04 (via research intake deep dive)
-**Updated**: 2026-07-16
+**Updated**: 2026-10-06
 **Categories**: context_management, agent_architecture
 **Priority**: MEDIUM
 **Depends on**: None (independent workstream)
+**Scratch**: `/mnt/raid0/llm/tmp/codex-ni06-main-20261006/` (MAIN review and decision custody; KEEP-marked).
 
 ---
 
@@ -532,7 +533,7 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
   - Not changed: the `root_lm_system.txt` peek doc (a prompt change, so left for the owner).
 - [ ] **TOC-SP-3 — Verified-quote receipt for the spill worker summary.** `_spill_output` (`environment.py:716-800`; synchronous `role="worker"`, `n_tokens=512` `llm_call` at :780) summarises only the last 4,000 chars and accepts it unverified. Replace with quotes byte-verified against the full spill, exit-status agreement, failure evidence required inside quote content (stricter than SoL-Pi's label-only check), fail-open to head/tail. Measure evidence retention vs the current summary on real failing test logs (inference). `intake-1350#03`.
 - [x] **TOC-RD-1 — Redact before compressing.** ✅ 2026-09-14 — merged to epyc-orchestrator main `35b05fde` (pushed to origin 2026-09-14) (commit `118b65e5`). `tool_output_compressor_mcp.py` returned output without redaction; now `redact_if_enabled` runs on raw text before compression, on the returned text, and inside direct `run_bash_compressed` calls (after the 200k cap). The `redaction.py` PEM rule now also redacts from an unterminated BEGIN header to end-of-text (terminated keys unchanged). Note: an unterminated key redacts everything after it, by design. New PEM tests live in `tests/unit/test_credential_redaction_truncated_pem.py` because the root `pii_precommit.sh` hook blocks edits to the existing credential test file.
-  - [ ] **TOC-RD-1a — PII pre-commit hook gaps (root `scripts/hooks/pii_precommit.sh`).** Re-resolved against ROOTc6e810e1 and APP733623f4 on 2026-10-06: OPENSSH is already supported; ED25519 is absent. NI07-31 owns only header recognition and original staged-index controls. Both credential-redaction test files contain deliberate fake credentials and remain scanned/blocked. Operator decision remains whether to exempt exactly those two entire files: that also hides any future real credential added anywhere in them. MAIN will present a concrete exact-path patch separately; no exemption is inferred from synthetic CI or broad implementation authorization. `intake-1350#record`.
+  - [x] **TOC-RD-1a — PII pre-commit hook gaps (root `scripts/hooks/pii_precommit.sh`).** ✅ 2026-10-06 — ED25519 recognition is complete under NI07-31. Operator chose 1B: retain scanning of both credential-redaction fixture files; the proposed two global whole-file exclusions are rejected and unapplied. This closes the remaining operator-choice deliverable, not fixture editability. Exact source/content/custody guidance for any future concrete fixture edit is in the [resolved decision](../../docs/reference/credential-fixture-hook-decision.md); no exception is authorized. `intake-1350#record`.
   - [ ] **TOC-RD-1b — PII hook over-blocks perf sample periods in markdown table cells** (filed 2026-09-24,
     main-ak-seat). Committing research `ce5800cb`'s fixture (`loop/fixtures/ds41-run8-planner-prompt.txt`, a real
     DS41 planner prompt) tripped the `account_number` rule (`\b[0-9]{12,19}\b`) on 12-13-digit `perf` sample periods
@@ -550,6 +551,6 @@ _Via /research-intake Stage-4 (operator-approved plan 2026-09-14). Sources: inta
       rewrote the files in place, with `[period redacted]`, rather than blocking. So evidence copies silently
       stop being byte-exact, and the artifact README has to say so. Same exemption shape, second instance.
 
-- [x] **TOC-RD-1a-NI-ED25519 — staged header recognition child.** ✅ 2026-10-06 — ROOT staged-blob scanner recognizes ED25519 while retaining RSA/OPENSSH; source/recipe promoted eb870f0fe697f02f887bedecaeaccaf24df2d531; native run 37474797195 TRUE9/9. This closes only the implementation child. Parent TOC-RD-1a remains unchecked/open for the operator's global whole-file fixture exemption choice.
+- [x] **TOC-RD-1a-NI-ED25519 — staged header recognition child.** ✅ 2026-10-06 — ROOT staged-blob scanner recognizes ED25519 while retaining RSA/OPENSSH; source/recipe promoted eb870f0fe697f02f887bedecaeaccaf24df2d531; native run 37474797195 TRUE9/9. This closes only the implementation child. Parent TOC-RD-1a is resolved by operator choice 1B: both fixture files remain scanned, with no whole-file exemption applied.
 
-[Exact two-file exception decision package](../../docs/reference/credential-fixture-hook-decision.md), including the valid unapplied patch and global whole-file risk; no scanner exemption inferred.
+[Resolved scanner decision and narrower preparation guidance](../../docs/reference/credential-fixture-hook-decision.md); the rejected exact patch remains unchanged historical evidence.
