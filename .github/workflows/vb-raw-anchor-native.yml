@@ -1,0 +1,58 @@
+name: VB RAW anchor bounded native conformance capture
+on:
+  push:
+    branches: [codex/ni08-vb-raw-anchor-capture-20261006]
+permissions:
+  contents: read
+jobs:
+  raw-anchor-native-source-fixtures:
+    name: retained-raw-source-anchor-controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      APP_LOCK_PIN: cfcf3768716de888a971bf66489397f5b91241df
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - name: Initialize retained outcome before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/vb-raw-anchor/result"
+          printf '{"state":"setup_pending","exit_code":null}\n' > "$RUNNER_TEMP/vb-raw-anchor/result/status.json"
+      - name: Checkout the exact ROOT source proposal
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: root
+          persist-credentials: false
+      - name: Checkout the APP lock source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_LOCK_PIN }}
+          path: app
+          persist-credentials: false
+      - name: Set up the accepted Python patch release
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13.15'
+      - name: Create isolated runner environment
+        run: python -m venv "$RUNNER_TEMP/vb-raw-anchor/venv"
+      - name: Capture bounded synthetic controls through the existing carrier
+        id: capture
+        run: |
+          set +e
+          "$RUNNER_TEMP/vb-raw-anchor/venv/bin/python" root/scripts/ci/run_vb_raw_anchor_capture.py "$GITHUB_WORKSPACE/app" "$RUNNER_TEMP/vb-raw-anchor/result/capture" > "$RUNNER_TEMP/vb-raw-anchor/result/driver.log" 2>&1
+          rc=$?
+          cat "$RUNNER_TEMP/vb-raw-anchor/result/driver.log"
+          printf '{"state":"capture_finished","exit_code":%s}\n' "$rc" > "$RUNNER_TEMP/vb-raw-anchor/result/status.json"
+          exit "$rc"
+      - name: Preserve status, original JUnit, native receipt and validation
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vb-raw-anchor-native-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/vb-raw-anchor/result/
+          if-no-files-found: error
+          retention-days: 90
