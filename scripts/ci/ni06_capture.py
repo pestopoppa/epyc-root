@@ -57,7 +57,7 @@ def main():
                 "PYTHONPATH", "ORCHESTRATOR_MOCK_MODE", "ORCHESTRATOR_LOG_DIR",
                 "KB_RAG_QUERY_LENGTH_LOG",
             )},
-            "isolation": "inert package shells; selected modules only" if job == "cj13" else "normal imports",
+            "isolation": "inert package shells; fake-only noninstantiable LLMPrimitives sentinel; real class/getter branch excluded" if job == "cj13" else "normal imports",
         }, indent=2) + "\n")
         junit = result / "junit.xml"
         if junit.exists():

@@ -1,7 +1,8 @@
 """Selected CJ fixture conformance only; inert package shells bypass eager imports.
 
-Actual selected source/test modules remain unchanged. This does not validate
-application package initialization or live backend schema compatibility.
+Actual selected source/test modules remain unchanged. A noninstantiable sentinel
+excludes the real LLMPrimitives class/getter branch, package initialization and
+live backend schema compatibility from this fake-only validation.
 """
 import os
 import sys
@@ -20,6 +21,13 @@ for name, relative in (
     parent, _, child = name.rpartition(".")
     if parent:
         setattr(sys.modules[parent], child, package)
+
+class _UnavailableRealPrimitives:
+    def __new__(cls, *args, **kwargs):
+        raise RuntimeError("real primitives unavailable in this fake-only runner")
+
+
+sys.modules["src.llm_primitives"].LLMPrimitives = _UnavailableRealPrimitives
 
 import pytest
 
