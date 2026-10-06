@@ -1,0 +1,70 @@
+name: NI07 K7 report catalog dependency synthetic custody
+on:
+  push:
+    branches: [codex/ni07-15-k7-report-catalog-20261006]
+    paths:
+      - .github/workflows/ni07-k7-report-catalog.yml
+      - scripts/ci/ni07_k7_report_catalog_capture.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-k7-report:
+    name: synthetic-k7-report
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      APP_PIN: 847a9b154f5513ff735e9cb882ccaa905576efd3
+      ROOT_CARRIER_PIN: 4c0c653baf1654c8c25c66433cf39c8faefd8e52
+      NI07_RUNNER_CONTEXT: ubuntu-latest
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '0'
+      ORCHESTRATOR_MOCK_MODE: '1'
+      ORCHESTRATOR_LOG_DIR: /dev/null
+      ORCHESTRATOR_SERVING_CALLS_LOG: off
+      ORCHESTRATOR_COHERENCE_JUDGE_LOG: off
+      KB_RAG_QUERY_LENGTH_LOG: off
+      PYTHONUNBUFFERED: '1'
+      NI07_K7_INSTALL_COMMAND: python -m pip install pytest==8.4.2 numpy==2.3.2 PyYAML==6.0.2
+    steps:
+      - name: Initialize outcome artifact before setup
+        run: |
+          mkdir -p "$RUNNER_TEMP/ni07-k7-report/result"
+          printf '{"state":"setup_pending","job":"k7-report-catalog","exit_code":null}\n' > "$RUNNER_TEMP/ni07-k7-report/result/status.json"
+      - name: Checkout exact recipe
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: recipe
+          persist-credentials: false
+      - name: Checkout reviewed native capture carrier
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-root
+          ref: ${{ env.ROOT_CARRIER_PIN }}
+          path: carrier
+          persist-credentials: false
+      - name: Checkout reviewed APP source
+        uses: actions/checkout@v4
+        with:
+          repository: pestopoppa/epyc-orchestrator
+          ref: ${{ env.APP_PIN }}
+          path: app
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned offline fixture dependencies
+        run: python -m pip install pytest==8.4.2 numpy==2.3.2 PyYAML==6.0.2
+      - name: Capture original K7 report fixture receipt
+        run: |
+          export PYTHONPATH="$GITHUB_WORKSPACE/app"
+          python recipe/scripts/ci/ni07_k7_report_catalog_capture.py
+      - name: Preserve custody artifacts on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ni07-k7-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ni07-k7-report/result/
+          if-no-files-found: error
