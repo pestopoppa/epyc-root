@@ -1165,3 +1165,8 @@ The curation-layer row (D-d in the REPL session-memory handoff) gained two accep
 ### Source References
 - [REPL session memory maturity](../handoffs/active/repl-session-memory-maturity.md) — the D-d acceptance (added 2026-09-26).
 - [Orchestration prior-art Stage-3 plan](../docs/research-intake/orch-prior-art-stage3-plan-20260926.md) — P1-F and P4-12.
+
+
+## 2026-10-06 synthetic structural conformance
+
+The [UTM conformance contract](../docs/reference/utm-synthetic-conformance-contract.md) characterizes eight native store categories and separates five typed-parser batches/six attempts. [Original off-host CI37444684189](../artifacts/ni07/run-37444684189/README.md) passes2/2 with generated readout captured at execution and custody reopened by MAIN. Existing store acceptance of a record does not establish privacy, source resolution or semantic correctness; all six axes remain unassessed and gold accuracy is null. Human semantic calibration and UTM-M9 remain open.

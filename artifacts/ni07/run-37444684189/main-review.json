@@ -1,0 +1,72 @@
+{
+  "generated_output_sha256": "4906fbdd73f1707c9531636cfc09468f3daa4b16bf89edc0b6f5d57edec25e74",
+  "git_bound_source_entries": 3336,
+  "junit_counts": {
+    "collected": 2,
+    "error": 0,
+    "executed": 2,
+    "failure": 0,
+    "passed": 2,
+    "skipped": 0
+  },
+  "junit_identities_valid": true,
+  "native_diagnostic": "",
+  "native_proposition": true,
+  "original_exit_code": 0,
+  "readset_entries": 3338,
+  "repositories": {
+    "app": "b5c80d42b04ae1fa01a9e8495c73cdf84e626f67",
+    "carrier": "4c0c653baf1654c8c25c66433cf39c8faefd8e52",
+    "recipe": "c2fb509280526c47dbec011d89723b9f4bea051f"
+  },
+  "scenario": "utm",
+  "selected": [
+    "tests/unit/test_utm_v3_conformance.py"
+  ],
+  "zip_sha256": "57e361eb0af532e510aa3803467ee55b7d9791c40a4dd52d4f1e286079450302",
+  "run": 37444684189,
+  "attempt": 1,
+  "artifact_id": 11403101513,
+  "zip_size": 16784525,
+  "zip_extracted_members": 3347,
+  "receipt_file_sha256": "35aff5c68fd48fa2c9fddfbdca14fa4c57ce6fcdfd3ac3fa0d9df0e742a099d3",
+  "receipt_self_sha256": "c00cef8202ec860bc89ec692fbbef0dbccea21bb2d83d193fe7c8b8c7e20158d",
+  "readset_count": 3338,
+  "argv": [
+    "/opt/hostedtoolcache/Python/3.13.15/x64/bin/python",
+    "-m",
+    "pytest",
+    "--noconftest",
+    "-o",
+    "addopts=",
+    "-p",
+    "no:cacheprovider",
+    "-q",
+    "tests/unit/test_utm_v3_conformance.py",
+    "--junitxml=/home/runner/work/_temp/ni07-utm/result/original-junit.xml"
+  ],
+  "cwd": "/home/runner/work/epyc-root/epyc-root/app",
+  "counts": {
+    "collected": 2,
+    "error": 0,
+    "executed": 2,
+    "failure": 0,
+    "passed": 2,
+    "skipped": 0
+  },
+  "shared_grade": [
+    {
+      "Q": "Judged",
+      "T": "Located",
+      "reasons": [
+        "no protocol citation \u2014 this is an OBSERVATION, never decision-gating (MEASUREMENT.md:13)",
+        "verifier class (binding_kind='identity'): a verifier confirms, it does not measure \u2014 the Q ceiling is Verified, and protocol-admissible measurement is the only route to Witnessed (docs/design/vidya-pilot-spec.md \u00a74.5)"
+      ]
+    }
+  ],
+  "contexts_are_runner_asserted": true,
+  "originals_preserved": true,
+  "independent_git_bindings": 3336,
+  "source_main": "dbc8a3e5504d89915624456c046830af45c88609",
+  "recipe_main": "a714f3e85b33397037f63bab0a05bcaddac7a026"
+}
