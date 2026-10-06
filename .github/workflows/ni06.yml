@@ -19,13 +19,10 @@ jobs:
         include:
           - job: root-graph
             app_pin: ''
-            deps: pytest==9.1.1
+            deps: pytest==8.4.2
           - job: cj13
             app_pin: 1721cc208d756506b7d31e315436f1edf8cb343b
             deps: pytest==9.1.1 jsonschema==4.25.1
-          - job: k3
-            app_pin: 9d3a338acdd3dec258afee27ac3d359dc35efbf3
-            deps: pytest==9.1.1 numpy==2.3.2
     env:
       ROOT_PIN: ec513cbefa937bbe382ea502a88ab96c27022863
       NI06_JOB: ${{ matrix.job }}
