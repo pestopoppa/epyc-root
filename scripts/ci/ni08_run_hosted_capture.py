@@ -14,7 +14,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
-EXPECTED_APP_COMMIT = "cfcf3768716de888a971bf66489397f5b91241df"
+EXPECTED_APP_COMMIT = "5caebd5f0a30b336a62114cd9c41b765392b07ea"
 NODEIDS = (
     "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_mf_producer_snapshot_round_trips_through_root_adapter",
     "tests/vidya/test_analysis_producer_roundtrip.py::test_actual_eval_producer_snapshot_round_trips_with_native_reps",
