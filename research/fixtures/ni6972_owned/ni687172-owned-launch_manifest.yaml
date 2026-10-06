@@ -1,0 +1,981 @@
+# =============================================================================
+# LAUNCH MANIFEST — the launcher's declared input
+# =============================================================================
+#
+# Everything the launcher needs to know about WHAT to launch and WHERE. Until
+# 2026-08-01 this lived as Python literals in scripts/server/stack_manifest.py;
+# that module is now a thin loader over this file and exports the same names
+# with the same types.
+#
+# WHY THIS FILE EXISTS. The audit that produced it found that nearly every
+# severe launcher finding had the same shape: the compiled artifact was CORRECT
+# and something else won anyway — a `--device none` hardcoded over a declared
+# `device: ROCm0` (a 27B ran on CPU with the GPU at 0%), a `slots: 2` mode
+# literal shadowing a declared `slots: 1`, a probe list hitting seven dead ports
+# while missing a live one. Those local copies existed BECAUSE the manifest was
+# code: a Python table invites a second Python table beside it, and a fallback
+# dict is one `try/except ImportError` away. Data does not invite that.
+#
+# PHASE STATUS. Phase 1 was EXTRACTION ONLY (Python literals -> this file).
+# Phase 2 (2026-08-02) stops RESTATING what the master registry already declares:
+#
+#   DERIVED from orchestration/model_registry.yaml `server_mode` (no longer
+#   declared here at all — stack_manifest.py reads master):
+#     * slots        -> server_mode.<role>.slots      (drives -np)
+#     * device       -> server_mode.<role>.device     (vision worker)
+#     * shared_with  -> server_mode.<role>.shared_with (role aliases)
+#
+#   STILL DECLARED HERE, because master has no counterpart for most rows, but
+#   now covered by the import-time parity guard `validate_declaration_parity()`
+#   so the rows that DO exist in both can never drift:
+#     * port, tier, kv_quant, n_ctx, and the numa_ports/numa_instances
+#       projection of stack_topology.yaml
+#
+# HOW TO CHANGE IT. Edit the data. Do not add a fallback table in a consumer;
+# a consumer that cannot load this file must fail, not guess. Two import-time
+# validators in stack_manifest.py fail loudly at process start rather than at
+# launch time:
+#   `_validate_role_classification()`  — this file vs stack_topology.yaml
+#   `validate_declaration_parity()`    — this file vs the MASTER registry
+# -----------------------------------------------------------------------------
+schema_version: launch_manifest.v1
+
+# Path placeholders expanded at load time from scripts/server/stack_paths._PATHS
+# (which itself reads src/config). Expansion is a literal substring replacement,
+# so a value containing braces for any other reason is left alone.
+#   {models_dir} {model_base} {project_root} {cache_dir} {llm_root} {tmp_dir}
+
+
+# =============================================================================
+# Port assignments by role (primary ports — full-speed 1×96t instances)
+# Pre-warm (2026-03-29): primary port is the full-speed instance.
+# Sub-full instances on offset ports: since the 2026-07-30 half-fleet cutover
+# these are the two HALVES 8080/8180 (2x48t); the 8280/8380 quarters are retired.
+# =============================================================================
+# KEPT (phase 2, option b): master declares `server_mode.<role>.port` for 11 of
+# the 28 rows below — every serving role and alias, but none of the embedder
+# pool, worker_fast/worker_coder, eval_batch_frontdoor, orchestrator,
+# document_formalizer, sd_server or whisper. Deriving 11 rows and declaring 17
+# would split one table across two files, which is worse than one table plus a
+# guard. `validate_declaration_parity()` asserts the 11 matched rows agree, so
+# the half that IS doubly declared cannot drift.
+port_map:
+  worker: 8070
+  frontdoor: 8070          # Full-speed 1×96t (halves: 8080, 8180 — quarters 8280/8380 retired 2026-07-30)
+  # 2026-08-01 W1 CUTOVER: coder_escalation LEFT frontdoor's :8070 35B process.
+  # It is now an alias on architect_general's :8083 MI210 27B dense Q8 — a
+  # DIFFERENT model on a DIFFERENT device, so the coder chain is a real
+  # escalation for the first time since the 2026-05-09 consolidation.
+  # 2026-09-27 ARCHITECT SWAP (operator-decided): same :8083 process, whose host
+  # label is now architect_critic (was architect_general).
+  coder_escalation: 8083   # Alias -> architect_critic shared Qwen3.8-27B GPU server (host was architect_general until 2026-09-27; Qwen3.6-27B until 2026-08-20)
+  worker_summarize: 8070   # Alias -> frontdoor shared Qwen3.6 server (its ONLY alias now)
+  worker_general: 8070     # Alias -> frontdoor shared Qwen3.6-35B-A3B server (gemma4 retired 2026-09-22; halves 8080/8180)
+  worker_explore: 8070     # Alias -> frontdoor (legacy name; pre-2026-03-19)
+  worker_math: 8070        # Alias -> frontdoor, shares the 35B-A3B server
+  toolrunner: 8070         # Alias -> frontdoor, shares the 35B-A3B server
+  worker_vision: 8086      # Dedicated VL server — Qwen3-VL-30B-A3B Q4_K_M on MI210 (2026-08-01)
+  vision_escalation: 8086  # Alias -> worker_vision, SAME process (was :8087 own 7B server)
+  eval_batch_frontdoor: 18070  # Warm eval-batch Qwen3.6 frontdoor lane (-np 2)
+  worker_coder: 8102       # Fast coding worker semantic role (1.5B backend) — DEPRECATED (worker_pool)
+  worker_fast: 8102        # Fast worker (1.5B, WARM, 4 slots) — DEPRECATED (worker_pool)
+  # Specialists (no pre-warm — already multi-instance or too large for quarters)
+  # 2026-09-27 ARCHITECT SWAP (operator-decided): the labels swapped over
+  # unchanged processes. architect_general = Qwen3.8-Flash-Next UD-IQ4_XS on the
+  # full CPU instance (:8074, the terminal escalation rung); architect_critic =
+  # Qwen3.8-27B Q8 on the MI210 (:8083), host of coder_escalation +
+  # ingest_long_context.
+  # History: 2026-08-01 W1 CUTOVER — architect_critic took the full CPU instance
+  # the 122B UD-Q4_K_M vacated in architect_general; from the 2026-09-22 lineup
+  # change it served Qwen3.8-Flash-Next on that instance (122B retired).
+  # Port 8074 is deliberate: 8084 and 8071 belonged to the removed
+  # architect_coding role and stack_change_guard.py L326/L346 reject them.
+  architect_general: 8074
+  architect_critic: 8083
+  # architect_coding REMOVED 2026-05-06 — REAP-246B 70% coder < frontdoor 97%; role eliminated. 139 GB freed.
+  ingest_long_context: 8083  # Alias -> architect_critic Qwen3.8-27B GPU server (host was architect_general until 2026-09-27; Next-80B retired 2026-09-22)
+  # Embedding servers (6 parallel instances for redundancy)
+  embedder: 8090           # Primary embedding server
+  embedder_1: 8091
+  embedder_2: 8092
+  embedder_3: 8093
+  embedder_4: 8094
+  embedder_5: 8095
+  embedder_granite_97m_r2: 8096
+  embedder_multilingual_e5_base: 8097
+  embedder_bge_m3: 8098
+  orchestrator: 8000
+  document_formalizer: 9001
+  sd_server: 8190          # Qwen-Image-2.1 compatibility service (CPU-only Diffusers)
+  whisper: 9000            # whisper.cpp STT (transcription service, not llama-server)
+  tts: 9002                # qwentts.cpp TTS (registered 2026-08-02, W4)
+
+# Stack-managed auxiliaries whose startup failure is non-fatal but must remain
+# visible in the read-only status surface even when no state row was created.
+# Loaded as a frozenset.
+optional_auxiliary_roles:
+  - whisper
+  - tts
+
+# HOT roles (always started) - NUMA-optimized
+# 2026-05-06: architect_coding removed, ingest_long_context promoted (see registry).
+# DERIVABLE (phase 2): the master registry's process_layout.hot_resident says the
+# same thing, and validate_against_registry() already cross-checks the two.
+hot_roles:
+  - frontdoor
+  - coder_escalation
+  - worker_general
+  - embedder
+  - architect_general  # 2026-09-27 swap: now the :8074 Flash-Next process, which D1 keeps hot
+  - architect_critic   # 2026-08-01 W1: tier hot per OPERATOR DECISION D1 ("keep it hot"); the :8083 27B since the 2026-09-27 swap
+  - ingest_long_context
+  # worker_vision / vision_escalation REMOVED STACKCHG-DFLASH2-20261003: :8086 is a COLD (warm-tier) CPU
+  # role while the MI210 carries DFlash2. Keeping them here would make the /health fallback
+  # probes report a deliberately-stopped server as down.
+
+# Roles that must never run concurrently (large/latency-sensitive paths).
+#
+# 2026-08-02 PHASE 2 — THIS IS AN ADMISSION POLICY, NOT A SERVER SHAPE.
+# It answers "how many requests will the orchestrator have in flight for this
+# role" (src/api/admission.py), NOT "how many slots is the server launched
+# with". Those are different questions and a role may legitimately run a 2-slot
+# server while admission serialises it. The launcher no longer derives `-np`
+# from this set: `-np` comes from the DECLARED `server_mode.<role>.slots` in the
+# master registry (see `launch_shape.fallback_slots` below for what happens when
+# master declares nothing). Do not re-couple them — the coupling is how a
+# `slots: 1` declaration ended up launching `-np 2`.
+#
+# 2026-05-06: removed architect_coding (role eliminated) + thinking_reasoning (role eliminated, no GGUF).
+#
+# 2026-08-01 W1 CUTOVER — this set is aligned to the PROCESS, not the role
+# name, so two aliases on one server disagreeing about serialization is
+# incoherent by construction.
+#   - coder_escalation REMOVED: it is now an alias on architect_general's :8083
+#     GPU process, which declares slots: 2 and is NOT serial. It was serial only
+#     because it used to share frontdoor's single-slot CPU 35B.
+#   - worker_vision ADDED: it and vision_escalation are now ONE :8086 process
+#     declaring slots: 1. Serializing one alias but not the other served no one.
+#   - architect_critic ADDED: one full 0-95 instance that holds all four CPU
+#     region locks while it runs. Concurrency here serializes the whole machine.
+#
+# 2026-09-27 ARCHITECT SWAP (operator-decided): the full 0-95 Flash-Next process
+# (:8074) now serves architect_general, so it is architect_general that is serial
+# (aligned to the PROCESS). architect_critic is now the :8083 27B GPU process
+# (slots: 2, not serial), host of coder_escalation.
+serial_roles:
+  - worker_summarize
+  - architect_general
+  - worker_vision
+  # 2026-05-11: frontdoor added to test -np 1 vs -np 2 single-instance throughput.
+  # -np 2 was inherited from quarter-mode (4×48t) where two slots gave round-robin
+  # admission. In full-mode 1×96t single-user serving, slot 2 is just preallocated
+  # KV that we never use — wastes L3. If -np 1 measurably improves throughput,
+  # keep frontdoor in SERIAL_ROLES; otherwise revert.
+  - frontdoor
+  # architect_general REMOVED 2026-05-09: -np 1 + speculative tree decode
+  # (draft_max=24, p_split=0) trips a llama.cpp assertion in
+  # common_speculative_state_tree::draft — `init: ... starting position of Y < cache position X`
+  # → `decode: failed to initialize batch` →
+  # `init: invalid seq_id[1][0] = 1 >= 1` →
+  # `GGML_ASSERT(logits != nullptr)` in common/sampling.cpp:152.
+  # Build b8957-2ffbdbbba (production llama.cpp). Re-enable when upstream patches
+  # M-RoPE rollback or we move to a binary that supports it. Throughput cost: spec
+  # decode previously +25% (4.3→12.6 t/s with moe8+spec_q8); MoE-expert-reduction
+  # path stays active so we keep the moe-budget gain (12.19 t/s probe-B canonical).
+  - ingest_long_context
+  - vision_escalation
+  - formalizer
+  - toolrunner
+
+
+# =============================================================================
+# Single source of truth for "which roles run where" (refactored 2026-05-06)
+# =============================================================================
+# Pre-2026-05-06: HOT_SERVERS + WARM_SERVERS were two parallel hand-edited lists
+# of dicts that duplicated wiring data already in NUMA_CONFIG. This made it easy
+# to forget one when adding/removing/renaming a role and ship a broken config.
+#
+# Post-2026-05-06: HOT_SERVERS / WARM_SERVERS are COMPUTED from:
+#   1. role_launch_meta (below) — small classification dict: per-role tier +
+#      launch mode + aliases + mode-specific kwargs.
+#   2. numa_config (orchestration/stack_topology.yaml) — wiring spec: per-role
+#      NUMA instances list.
+#
+# Adding a new role now requires editing TWO places consistently:
+#   a) Add the role's NUMA wiring in stack_topology.yaml numa_config (or set
+#      `no_numa: true` here if the role takes no numa_config wiring, e.g.
+#      worker_fast; the embedder pool is no_numa but pinned per port by
+#      `embedding.placement`).
+#   b) Add a role_launch_meta entry with tier/mode/aliases.
+# A consistency check (`_validate_role_classification()` in stack_manifest.py)
+# catches common mismatches at module load time.
+#
+# ORDER IS LOAD-BEARING. HOT_SERVERS / WARM_SERVERS are emitted in this order.
+#
+# PHASE 2 — `shared_with_first_n` IS NO LONGER DECLARED HERE. It is DERIVED, per
+# role, from `server_mode.<role>.shared_with` in the master registry:
+#
+#     shared_with_first_n = launcher_only_aliases + master shared_with
+#
+# `launcher_only_aliases` (below, on worker_general only) carries alias names the
+# launcher must attach that master does not list. Extras lead so the historical
+# roles-list order is preserved byte-for-byte. `shared_with_first_n_count` stays
+# declared here: it says which INSTANCES get the aliases, which is a launcher
+# concept master has no way to express.
+#
+# `tier` stays declared here (option b): master covers 6 of these 17 rows —
+# the embedder pool, worker_fast and eval_batch_frontdoor have no server_mode
+# row at all. The parity guard asserts the 6 matched rows agree.
+role_launch_meta:
+  # worker_general and ingest_long_context role_launch_meta entries REMOVED
+  # 2026-09-22 (lineup change): both became ALIASES and no longer launch a
+  # server of their own. Every other alias -- coder_escalation,
+  # worker_summarize, vision_escalation, worker_explore, toolrunner,
+  # worker_math -- is likewise absent here, so this follows the convention
+  # rather than adding a no_numa flag to a role that has no launch to flag.
+  # ---- HOT tier (always started) ----
+  # 2026-05-09: coder_escalation + worker_summarize CONSOLIDATED onto frontdoor's
+  # llama-server. All three share the same Qwen3.6-35B-A3B Q8 GGUF since the
+  # 2026-05-06 model swap; running them as separate processes wasted 36 GB of
+  # mlocked RAM and ran two competing 96-thread OMP teams (-40% to -69%
+  # throughput on the cohabiting roles per 2026-05-09 measurements). The
+  # orchestrator API routes by role name → registry's url field (all three
+  # roles point at port 8070 in the registry).
+  frontdoor:
+    tier: hot
+    mode: default
+  # 2026-09-27 ARCHITECT SWAP (operator-decided): the two architect launch rows
+  # swapped labels over unchanged processes.
+  # architect_general — the full CPU instance, port 8074, tier hot per OPERATOR D1.
+  # Qwen3.8-Flash-Next UD-IQ4_XS (served as architect_critic 2026-09-22 → 2026-09-27;
+  # the 122B UD-Q4_K_M as architect_critic from 2026-08-01, and as architect_general
+  # on this instance before that).
+  architect_general:
+    tier: hot
+    mode: default
+  # architect_critic — a dense 27B Q8 on MI210 (ROCm0), port 8083, HOSTS
+  # coder_escalation and ingest_long_context as aliases on its :8083 process.
+  # Model: Qwen3.6-27B from 2026-08-01, Qwen3.8-27B-Q8_0 since 2026-08-20; served
+  # as architect_general until the 2026-09-27 swap.
+  architect_critic:
+    tier: hot
+    mode: default
+    # aliases DERIVED: server_mode.architect_critic.shared_with -> [coder_escalation, ingest_long_context]
+  # 2026-08-01 W1 CUTOVER: one MI210 vision process serving BOTH role names.
+  # vision_escalation lost its own entry — it no longer launches anything.
+  worker_vision:
+    tier: warm   # STACKCHG-DFLASH2-20261003: CPU, cold — `start` skips it; start --only/--include-warm worker_vision
+    mode: vision
+    vision_type: worker
+    # aliases DERIVED: server_mode.worker_vision.shared_with -> [vision_escalation]
+  # Embedders — not in numa_config (no region locks, no contention-matrix
+  # cells), fixed single port each. `no_numa` means exactly that and no more:
+  # they ARE pinned, by the per-port `embedding.placement` cpusets below, not
+  # by stack_topology.yaml (UFH-12 Phase 0, 2026-09-26).
+  embedder:   {tier: hot, mode: embedding, no_numa: true, port: 8090}
+  embedder_1: {tier: hot, mode: embedding, no_numa: true, port: 8091}
+  embedder_2: {tier: hot, mode: embedding, no_numa: true, port: 8092}
+  embedder_3: {tier: hot, mode: embedding, no_numa: true, port: 8093}
+  embedder_4: {tier: hot, mode: embedding, no_numa: true, port: 8094}
+  embedder_5: {tier: hot, mode: embedding, no_numa: true, port: 8095}
+  # Dense-retriever Phase B candidates. Warm/default-off so production
+  # BGE-large episodic memory behavior stays unchanged until explicitly launched.
+  embedder_granite_97m_r2:
+    tier: warm
+    mode: embedding
+    no_numa: true
+    port: 8096
+  embedder_multilingual_e5_base:
+    tier: warm
+    mode: embedding
+    no_numa: true
+    port: 8097
+  embedder_bge_m3:
+    tier: warm
+    mode: embedding
+    no_numa: true
+    port: 8098
+  # ---- WARM tier (optional, --include-warm) ----
+  # 2026-05-06: worker_pool deprecated in registry; warm 1.5B worker retained as inert.
+  worker_fast:
+    tier: warm
+    mode: worker_pool
+    worker_type: fast
+    no_numa: true
+    port: 8102
+  # P-BENCH-3/A7: explicit-only batch-serving lane for EvalTower traffic.
+  # launcher_only keeps this warm process out of lean-registry and descriptor
+  # compile inputs; it is not a distinct model-routing role.
+  eval_batch_frontdoor:
+    tier: warm
+    mode: eval_batch_frontdoor
+    launcher_only: true
+  # architect_coding REMOVED 2026-05-06 (REAP-246B role eliminated; 139 GB freed)
+  # ingest_long_context PROMOTED to HOT 2026-05-06 (Stage 1 of three_stage_summarization)
+  # thinking_reasoning REMOVED 2026-05-06 (GGUF deleted from disk 2026-03-06)
+
+
+# =============================================================================
+# Model paths
+# =============================================================================
+# DERIVABLE (phase 2): the master registry declares a `path` (or model_id +
+# descriptor binding) for every serving role. These are second copies.
+models:
+  # Embedding model: BGE-large-en-v1.5 (purpose-built for embeddings, 1024 dims)
+  # 6 parallel instances provide redundancy and reduce latency via fan-out
+  embedding_model_path: "{models_dir}/bge-large-en-v1.5-f16.gguf"
+
+  # Worker pool models (FIXED paths to existing files)
+  # NOTE: worker_coder uses the fast 1.5B worker backend on port 8102.
+  worker_pool:
+    # gemma4-26B-A4B Q4_K_M MTP — swapped 2026-05-08 from Qwen3-Coder-30B-A3B Q4_K_M.
+    # +18pp on tool_compliance (96% vs 78%), +6pp on full suite (90% vs 84%),
+    # +36% tps on tool_compliance (60.7 vs 44.7), 3× more concise output.
+    # NB: requires ik_llama.cpp PR #1744 binary (Phase 2 wires runtime_requirements
+    # through the launcher; until then this path is informational only — production
+    # launcher still uses default LLAMA_SERVER and will fail on gemma4 arch).
+    # 2026-06-26 v6 cutover: ORIG base GGUF — old gemma-4-26B-A4B-it-Q4_K_M.gguf garbles on v6.
+      # 2026-09-23: the gemma4 path this named was DELETED with the model.
+      # worker_explore is now an ALIAS on frontdoor's Qwen3.6-35B-A3B-MTP process
+      # (server_mode.frontdoor.shared_with), so this pool entry selects nothing at
+      # launch today -- but it named an ABSENT file, which is exactly the shape that
+      # makes a launcher surface lie. Repointed at the artifact the lane actually
+      # resolves to, so the entry stays valid if the pool path is reactivated.
+    explore: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    fast: "{model_base}/QuantFactory/Qwen2.5-Coder-1.5B-GGUF/Qwen2.5-Coder-1.5B.Q4_K_M.gguf"
+
+  # Draft model for MTP speculative decoding on explore worker.
+  # gemma4 assistant Q8 — in-house GGUF converted from google/gemma-4-26B-A4B-it-assistant
+  # safetensors (no community GGUF existed). 4-layer drafter, 58% acceptance at draft_max=2.
+  # 2026-06-26 v6 cutover: v6 MTP head — old -assistant-Q8_0.gguf is the ik gemma4_mtp format, incompatible with v6.
+  # 2026-09-23: the gemma4 v6 MTP head was DELETED with the model. The explore lane
+  # now resolves to frontdoor's Qwen3.6-35B-A3B-MTP artifact, whose MTP head is FUSED
+  # into the same GGUF (mtp_capable: true) rather than living in a separate drafter
+  # file, so there is no external draft model to name here any more.
+  explore_draft_model: null
+
+  # Dev-mode tiny model (orchestrator_stack --dev)
+  dev_model: Qwen2.5-Coder-0.5B-Instruct-Q8_0.gguf
+
+
+# Embedding server fleet.
+# EMBEDDER_PORTS + EMBEDDING_SERVER_RECIPES are built from this block: every
+# pool port gets the same recipe (with models.embedding_model_path injected as
+# model_path), then the per-port recipes below are merged on top.
+embedding:
+  pool_ports: [8090, 8091, 8092, 8093, 8094, 8095]
+  pool_recipe:
+    model_name: BGE-large-en-v1.5 (embeddings)
+    # 2026-09-26 UFH-12 Phase 0 (REPL-EMB-0.1): 512 -> 2048. With -np 4 the
+    # per-slot context was 512/4 = 256 tokens, half of BGE-large's 512-token
+    # training window, and every launch logged the n_ctx_seq WARN
+    # (wiki/kv-cache.md "Rollout candidates" #2). 2048/4 = 512 per slot = the
+    # model's window. BGE is an encoder with no KV cache, so an input that
+    # already fit is expected to embed identically (proof P6 in the package
+    # checks it); only 257-512-token inputs change, from a server error to an
+    # embedding.
+    context_tokens: 2048
+    threads: 4
+    slots: 4
+    pooling: cls
+    flash_attn: true
+    # 2026-09-26 UFH-12 Phase 0: private weights so the per-instance membind
+    # below is REAL. Under shared mmap the GGUF's pages sit wherever the first
+    # instance (or the page cache) put them and a membind is accepted and
+    # silently does nothing (stack_topology.yaml, the cross-role mmap note).
+    # Cost: 6 x 0.62 GiB = 3.7 GiB private RAM, inside capacity.host_os_reserve_gib.
+    no_mmap: true
+  # ── 2026-09-26 UFH-12 Phase 0 — DECLARED PLACEMENT (REPL-EMB-0.1) ─────────
+  # Until this block existed the pool had NO placement: `no_numa: true` plus an
+  # empty spawn prefix, and the canonical OMP env (OMP_PROC_BIND=spread,
+  # OMP_PLACES=cores) then bound all six servers' 4 compute threads to the SAME
+  # four core places, 0/96 32/128 48/144 88/184 (read from /proc/<pid>/task/*/
+  # status on 2026-09-26). Six servers delivered one server's compute, from
+  # inside frontdoor's 0-95.
+  #
+  # One cpuset per port, honoured EXACTLY: the launcher wraps the spawn in
+  # `numactl --membind=<node> -- taskset -c <cpuset>`, where <node> is the one
+  # NPS4 node the cpuset lies in (derived, never declared). The bench guard may
+  # REFUSE a declared cpuset; it may never re-pin it (same contract as the aux
+  # services' `cpuset`). stack_manifest asserts at import that every pool port
+  # is declared, the cpusets are pairwise disjoint, each lies in ONE NPS4 node,
+  # `threads` equals the cpuset size, and none SMT-folds onto the speech
+  # services' cpusets or the GPU host lane.
+  #
+  # WHY SMT SIBLINGS. No logical CPU on this host lacks a physical sibling in
+  # 0-95 (kernel-verified 2026-09-07), so "free cores" do not exist; the choice
+  # is only WHO pays. Siblings charge frontdoor/Flash-Next (:8074) only while an embedder
+  # computes (KMP_BLOCKTIME=10 releases idle teams); carving physical cores out
+  # of 0-95 would charge every decode forever and re-shape NUMA_FULL. The cost
+  # is a MEASUREMENT GATE (G1 in the package), not an assumption.
+  #   96-119  siblings of whisper 0-23  -> excluded (speech hangs on
+  #   120-135 siblings of tts 24-39     -> excluded  unmeasured layouts)
+  #   184-191 GPU host lane             -> excluded
+  #
+  # NEXT TO EACH SERVING MODEL (operator D1, 2026-09-26). The node is what the
+  # scheduler's "instance sharing the requesting model's hardware" reads:
+  #   node 1 (136-143) -> half A :8080 (nodes 0,1)
+  #   node 2 (144-151) -> half B :8180 (nodes 2,3)
+  #   node 3 (176-183) -> the GPU host lane 184-191 (:8083 27B, :8086 VL), and half B
+  #   full :8070 / Flash-Next :8074 (architect_general since the 2026-09-27 swap)
+  #   span all four nodes, so every instance is adjacent.
+  placement:
+    8090: {cpuset: "136-139"}   # node 1, siblings of 40-43
+    8091: {cpuset: "140-143"}   # node 1, siblings of 44-47
+    8092: {cpuset: "144-147"}   # node 2, siblings of 48-51
+    8093: {cpuset: "148-151"}   # node 2, siblings of 52-55
+    8094: {cpuset: "176-179"}   # node 3, siblings of 80-83
+    8095: {cpuset: "180-183"}   # node 3, siblings of 84-87
+    # Warm Phase-B candidate (UFH-12 D1 leading model). NOT a model switch:
+    # 8096 stays warm/default-off; this only stops it landing on 0-191 when the
+    # Phase-2 offline eval launches it. 16 logical cpus = its recipe's -t 16.
+    8096: {cpuset: "152-167"}   # node 2, siblings of 56-71
+    # 168-175 (node 3, siblings of 72-79) deliberately left unallocated.
+    # 8097 / 8098 (warm e5 / bge-m3) stay undeclared: default affinity, as today.
+  extra_recipes:
+    8096:
+      model_path: /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q8_0.gguf
+      model_name: granite-embedding-97m-multilingual-r2 Q8_0
+      context_tokens: 32768
+      threads: 16
+      slots: 4
+      pooling: cls
+      flash_attn: true
+    8097:
+      model_path: /mnt/raid0/llm/models/multilingual-e5-base-Q8_0.gguf
+      model_name: multilingual-e5-base Q8_0
+      context_tokens: 512
+      threads: 16
+      slots: 4
+      pooling: mean
+      flash_attn: true
+    8098:
+      model_path: /mnt/raid0/llm/models/bge-m3-Q8_0.gguf
+      model_name: BGE-M3 Q8_0 dense-only
+      context_tokens: 8192
+      threads: 16
+      slots: 4
+      pooling: cls
+      flash_attn: true
+
+
+# Vision models (VL) with multimodal projector
+# 2026-08-01 W1 CUTOVER: Qwen2.5-VL-7B -> Qwen3-VL-30B-A3B-Instruct Q4_K_M on
+# MI210 (ROCm0). Gated on MMMU-250: 159/250 (63.6%) vs 131/250 (52.4%), +11.2 pp,
+# paired exact McNemar p=0.0011. The 7B weights REMAIN ON DISK as the rollback
+# target (7685 vs 21049 MB VRAM).
+vision:
+  worker:
+    model: "{model_base}/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf"
+    mmproj: "{model_base}/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf"
+    # device DERIVED (phase 2) from server_mode.worker_vision.device. It used to
+    # read `device: ROCm0` right here, a second copy of the declaration whose
+    # whole failure history is being shadowed: `--device none` beat a declared
+    # `device: ROCm0` and a 27B ran on CPU with the GPU idle. Master also
+    # declares the :8083 27B's device (architect_critic since the 2026-09-27
+    # swap; architect_general before), which this block had no way to
+    # express — so master's coverage strictly contains the launcher's and the
+    # launcher-side copy bought nothing but a second thing to forget.
+    # Two launch flags this model DEPENDS ON, both discovered 2026-07-31:
+    #   --image-min-tokens 1024  upstream warns Qwen-VL misbehaves below this
+    #   --cache-ram 0            prompt cache is pure churn on vision traffic; every
+    #                            request carries a different image, so it never hits
+    image_min_tokens: 1024
+    cache_ram: 0
+  # Do NOT pass --override-kv qwen3vlmoe.expert_used_count. The GGUF default is 8
+  # of 128; the 2026-07-17 K35 runs forced 4 and that is NOT the production recipe.
+  # vision_escalation is now an ALIAS on this same process, not a second server —
+  # so its model/mmproj/device are `same_as_worker`, not a second declaration.
+  # Declaring them separately is what let :8087 drift into a different model.
+  escalation:
+    same_as_worker: true
+    reasoning: "off"
+
+
+# Effective launch shape. These witness the actual llama-server CLI path;
+# descriptors may preserve broader model capability metadata.
+#
+# PHASE 2 status of the two tables below (option b, both):
+#   kv_quant — 9 launcher rows, 3 have a master counterpart, all 3 agree.
+#   n_ctx    — 7 launcher rows, 1 has a master counterpart (worker_vision), agrees.
+# Master's coverage is a small minority in both cases, so deleting the launcher
+# tables would leave most roles undeclared. Both are in the parity guard, so the
+# matched rows cannot drift; when master grows counterparts for the rest, flip
+# them to DERIVED the way `slots` / `device` / `shared_with` already are.
+launch_shape:
+  default_effective_context_tokens: 32768
+  # K4 (handoffs/active/dynamic-stack-concurrency.md): llama.cpp clamps
+  # cparams.n_ubatch = min(n_batch, n_ubatch), and the launcher passes -b only
+  # for a server that DECLARES serving_shape.batch (STACKCHG-8083BATCH-20261004:
+  # :8083 at -b 512 -ub 512), so n_batch defaults to 2048 for every role built
+  # off this value.
+  # A declared 8192 here was misrepresenting itself: the EFFECTIVE micro-batch
+  # was already 2048 for every server, silently. This value must equal the
+  # clamp until a future change adds -b and validates a real >2048 batch shape
+  # under a measured window (raising it is NOT a config-only change).
+  default_ubatch_tokens: 2048
+
+  # ---------------------------------------------------------------------------
+  # SLOT FALLBACKS — the ONLY slot numbers the launcher still owns.
+  # ---------------------------------------------------------------------------
+  # `-np` is DERIVED from `server_mode.<role>.slots` in the master registry.
+  # This table is consulted ONLY for a role master says nothing about, and every
+  # value carries the launch mode it belongs to so its source is nameable: a
+  # config surface with fallbacks and no source label has that absence as its
+  # first bug. `stack_manifest.resolve_slots()` returns the value AND where it
+  # came from ("master:<row>" or "manifest:fallback_slots.<key>"), so no caller
+  # has to guess which of the two it got.
+  #
+  # These are NOT admission limits. See the note on `serial_roles:` above.
+  #
+  # Reachability today (2026-08-02): every SERVING role has a master
+  # declaration, so only the embedder pool, worker_fast and the eval-batch lane
+  # actually land here.
+  fallback_slots:
+    default: 2                 # generic llama-server role, no master row
+    worker_pool: 1             # MTP fuses draft+target; -np 2 asserts on ik PR #1744
+    worker_pool_fast: 4        # 1.5B burst worker — 4 parallel slots
+    vision: 1                  # was 2, and that literal is the phase-2 exhibit:
+                               # it shadowed `server_mode.worker_vision.slots: 1`
+                               # and launched a serial-admitted role with -np 2
+    embedding: 4               # matches embedding.pool_recipe.slots
+    # The August-3 fleet-wide /4 ratification reduced serving widths
+    # 16->4, 8->2, and 4->1. This launcher-only lane was outside the registry
+    # compiler and was accidentally left at its pre-boundary width of 8.
+    eval_batch_frontdoor: 2
+
+  # ---------------------------------------------------------------------------
+  # CONTEXT FALLBACKS — the ONLY -c values the launcher still owns.
+  # ---------------------------------------------------------------------------
+  # 2026-08-02: `n_ctx` is now DERIVED from
+  # `server_mode.<role>.serving_shape.n_ctx`, exactly as `slots` already was.
+  # Seven rows were deleted from here (worker_general, worker_vision,
+  # vision_escalation, architect_general, architect_critic, ingest_long_context,
+  # and the implicit frontdoor default): every one of them now lives in master,
+  # grouped with the `slots_by_shape` and `kv_quant` it is arithmetically tied
+  # to. A launcher-side copy of n_ctx could be edited without master's capacity
+  # check ever seeing it, which is precisely the class of change the group
+  # exists to make impossible.
+  #
+  # What remains is what master has no row for. `worker_fast` is a launcher-only
+  # 1.5B burst pool with no server_mode entry; if it ever gets one, delete the
+  # row here rather than reconciling the two.
+  context_tokens:
+    worker_fast: 16384
+    # The eval-batch lane's OWN context, declared for the same
+    # reason its `-np 2` is declared in fallback_slots rather than inherited:
+    # the lane borrows frontdoor's MODEL and runtime priors but not its serving
+    # shape. It had no row here and read frontdoor's compiled context instead,
+    # so when frontdoor moved 32768 -> 262144 on 2026-08-02 this lane silently
+    # followed it to a shape nothing has measured. A borrowed number that tracks
+    # its lender is not a declaration.
+    eval_batch_frontdoor: 32768
+
+  # kv_quant_configs: DELETED 2026-08-02 — DERIVED from
+  # `server_mode.<role>.serving_shape.kv_quant`. It held 9 rows while master held
+  # 2, so on this field the launcher was the authority and the registry was the
+  # incomplete copy — backwards, since the KV element type only means anything
+  # next to the `n_ctx` it multiplies. All 9 rows were verified against the LIVE
+  # `-ctk`/`-ctv` in `/proc/<pid>/cmdline` before being written to master, so the
+  # move recorded reality rather than changing it. `parity.derived_from_master`
+  # now fails the import if the key comes back.
+
+  # 2026-06-26 v6 cutover: architect_general MTP enabled (NEXTN draft-mtp) — the
+  # 122B process of that date, which is the :8074 instance that serves
+  # architect_general again since the 2026-09-27 swap;
+  # M-RoPE assertion resolved in v6, smoke-gated at cutover.
+  no_spec_decode_roles: []
+
+
+# =============================================================================
+# CAPACITY — host-side policy for the serving_shape capacity guard
+# =============================================================================
+# `stack_manifest.validate_serving_shape_capacity()` sums the declared lineup's
+# weights + KV per DEVICE and refuses an oversubscribed one at import.
+#
+# The GPU leg needs nothing here: src/scheduling/device_model.py already owns the
+# declared VRAM total (orchestration/gpu_shadow_lane_np_ceiling.yaml,
+# vram_total_gib) and the 2.0 GiB first-execution headroom, and the check calls
+# its `vram_fit` rather than re-deriving them. The HOST leg has no such owner —
+# device_model is VRAM-only — so its one policy number lives here as data.
+capacity:
+  # Reserved out of MemTotal for the OS, page cache, the orchestrator API, the
+  # embedder pool, docker services and every non-llama-server tenant. MemTotal
+  # itself is read from /proc/meminfo (a host fact, not a knob); this is the
+  # share of it the model fleet may not claim.
+  #
+  # 64 GiB on a 1133 GiB host (5.6%). Sized against the measured steady state
+  # rather than guessed: the declared CPU lineup at n_ctx 262144 needs ~334 GiB
+  # of weights + ~244 GiB of KV = ~578 GiB, so this reserve is not the binding
+  # constraint today and is not tuned to make anything fit. It exists so the
+  # gate fails BEFORE the machine starts swapping, not at the moment it does.
+  host_os_reserve_gib: 1
+# =============================================================================
+# GPU shadow lane launch constants (docs/gpu-shadow-lane.md; gpu-serving-tie-in
+# P2-6/P0-2). Tenancy is registry data: the launcher borrows priors from the
+# registry role below (eval_batch_frontdoor source_role pattern). Duty swap =
+# repoint the ONE tenant-role constant. These constants are INERT until the
+# registry proposal adds the `gpu_shadow_lane` role_launch_meta + numa_config +
+# port_map entries — no code path reaches them before then (the mode branch in
+# _build_servers_from_classification only fires for an entry with mode
+# "gpu_shadow_lane", and none exists).
+# =============================================================================
+gpu_shadow_lane:
+  tenant_role: coder_escalation_shadow
+  device: ROCm0
+  reasoning: "off"
+  # Fallback serving shape ONLY (priors override at launch; the authoritative
+  # source is the serving_shape block of orchestration/gpu_shadow_lane_np_ceiling.yaml,
+  # compiled into the tenant's stack-prior cache by src/registry/stack_priors.py).
+  # These mirror the phase2_resident_set default: -np 8 x 8192-token slots.
+  fallback_slots: 8
+  fallback_context_tokens: 65536
+
+
+# Optional orchestrator API launch profiles for repeatable debugging runs.
+orchestrator_profiles:
+  contention-debug:
+    ORCHESTRATOR_UVICORN_WORKERS: "6"
+    ORCHESTRATOR_FRONTDOOR_TRACE: "1"
+    ORCHESTRATOR_DELEGATION_TRACE: "1"
+    ORCHESTRATOR_DELEGATION_TOTAL_MAX_SECONDS: "55"
+    ORCHESTRATOR_DELEGATION_SPECIALIST_MAX_SECONDS: "25"
+    ORCHESTRATOR_INFERENCE_LOCK_TIMEOUT_EXCLUSIVE_S: "45"
+    ORCHESTRATOR_INFERENCE_LOCK_TIMEOUT_SHARED_S: "45"
+  gate3-tool-telemetry:
+    AUTOPILOT_TOOL_SENTINELS: "1"
+    ORCHESTRATOR_STRUCTURED_TOOL_OUTPUT: "1"
+
+
+# =============================================================================
+# PARITY GUARD — every field declared in BOTH this file and the master registry
+# =============================================================================
+# `stack_manifest.validate_declaration_parity()` runs at module import and
+# RAISES on any disagreement. Scope is computed, not listed: for each field
+# below it takes the launcher rows and the master rows, intersects them on role
+# name (through the same binding master uses — direct row, then `model_role`,
+# then `shared_with`), and compares. A field that is DERIVED is checked the
+# other way round: the guard asserts this file does NOT re-declare it, because
+# the way a derivation dies is someone helpfully adding the value back.
+#
+# Adding a field to `checked:` is how you extend the guard. Adding a row to
+# `exceptions:` is how you record a disagreement you have decided not to fix
+# yet — it needs a reason and it shows up in the guard's failure text, so it is
+# an argument, not a silence.
+parity:
+  # Fields this file no longer declares at all. The guard fails if they come back.
+  derived_from_master:
+    - slots          # -> server_mode.<role>.slots  +  serving_shape.slots_by_shape
+    - device         # -> server_mode.<role>.device (vision worker)
+    - shared_with    # -> server_mode.<role>.shared_with (+ launcher_only_aliases)
+    # 2026-08-02 — the KV-FEASIBILITY GROUP moved to master and became derived:
+    - n_ctx          # -> server_mode.<role>.serving_shape.n_ctx
+    - kv_quant       # -> server_mode.<role>.serving_shape.kv_quant
+    # These two joined `slots` because the three are ONE decision, not three:
+    # KV bytes = KiB_per_token(model, kv_quant) * n_ctx, and per-slot context is
+    # n_ctx / slots. Declared apart they can be walked into an infeasible
+    # combination one plausible commit at a time; declared together
+    # `validate_serving_shape_capacity()` can refuse the combination at import.
+    # Note the guard shapes differ: `n_ctx` still has a launcher fallback table
+    # for roles master does not cover (worker_fast), so the check is "no row for
+    # a role master DOES declare"; `kv_quant_configs` is gone entirely, so the
+    # check is "the key must not exist".
+
+  # Fields declared in both. The guard fails if any matched row disagrees.
+  checked:
+    - port
+    - tier
+    - numa_ports
+    - numa_instances
+
+  # Known, argued-for disagreements. Anything NOT listed here fails the guard.
+  # Known, argued-for disagreements. Anything NOT listed here fails the guard.
+  exceptions: []
+  # 2026-08-02: the sole exception (shared_with / worker_general / worker_explore) was
+  # RESOLVED at its own `resolves_when` — the research master now declares
+  # server_mode.worker.shared_with: [worker_explore, worker_math, toolrunner].
+  # The guard caught the exception the moment it went stale and refused to import until
+  # it was deleted, which is the point: a waiver that outlives its cause silently
+  # pre-excuses the next real divergence.
+
+# =============================================================================
+# Docker Services (NextPLAID retrieval + SearXNG metasearch + Crawl4AI extraction)
+# =============================================================================
+docker_services:
+  - name: nextplaid-code
+    port: 8088
+    image: ghcr.io/lightonai/next-plaid:cpu-1.0.4
+    model: lightonai/LateOn-Code
+    description: Multi-vector code retrieval (ColBERT)
+    # Separate index subdir to avoid cross-contamination (different models = incompatible embeddings)
+    volumes:
+      - "{project_root}/cache/next-plaid/code-indices:/data/indices"
+      - "{cache_dir}/huggingface:/root/.cache/huggingface"
+    args: ["--host", "0.0.0.0", "--port", "8080", "--index-dir", "/data/indices",
+           "--model", "lightonai/LateOn-Code", "--int8"]
+  - name: nextplaid-docs
+    port: 8089
+    image: ghcr.io/lightonai/next-plaid:cpu-1.0.4
+    model: /mnt/raid0/llm/models/gte-moderncolbert-v1-onnx
+    description: Multi-vector doc retrieval (ColBERT)
+    volumes:
+      - "{project_root}/cache/next-plaid/docs-indices:/data/indices"
+      - "{cache_dir}/huggingface:/root/.cache/huggingface"
+      - /mnt/raid0/llm/models/gte-moderncolbert-v1-onnx:/models/gte-moderncolbert-v1-onnx:ro
+    args: ["--host", "0.0.0.0", "--port", "8080", "--index-dir", "/data/indices",
+           "--model", "/models/gte-moderncolbert-v1-onnx", "--int8"]
+  - name: searxng
+    # 8888 (not 8090): the embedder pool occupies 8090-8095, so leaving
+    # searxng on 8090 collides with embedder_0 and the container fails
+    # docker-run networking. 8888 sits outside both the llama-server
+    # 80xx range and the reembed_episodic_store.py probe range.
+    port: 8888
+    image: docker.io/searxng/searxng:latest
+    description: Metasearch aggregator (JSON API for web_search)
+    volumes:
+      - "{project_root}/config/searxng:/etc/searxng:Z"
+    args: []          # Config via mounted settings.yml, not CLI args
+    health_path: /    # SearXNG serves HTML on /, not /health
+  - name: crawl4ai
+    # Crawl4AI's maintained Docker deployment serves on 11235. Do not use
+    # the old handoff hint of 8086; that is the worker_vision port.
+    port: 11235
+    container_port: 11235
+    image: unclecode/crawl4ai:latest
+    description: Browser-backed page extraction for web_research
+    shm_size: 1g
+    run_timeout: 180
+    args: []
+    health_path: /health
+
+# =============================================================================
+# Aux services — stack-managed processes that are NOT llama-server roles
+# =============================================================================
+#
+# Added 2026-08-02 (W5/W4). Before this section existed, every auxiliary had a
+# bespoke `start_<name>()` in orchestrator_stack.py and `cmd_reload` dispatched to
+# it through a hand-written `elif` chain. Two of the four auxiliaries were never
+# added to that chain, so `reload whisper` and `reload sd_server` fell through to
+# the generic `elif component in PORT_MAP:` branch — which killed the listener and
+# then called `start_server()`, the llama-server path, which cannot start a service
+# that has no registry role. The service was killed and never restarted.
+#
+# That defect was structural, not clerical: the dispatch chain had no relationship
+# to the set of things that can be started, so nothing forced the two to agree.
+# Declaring services as DATA makes the registry the single source of both, which is
+# why this had to land before registering any further service.
+#
+# Schema per entry:
+#   name            state key + status label + `reload <name>` component
+#   port            listener port
+#   optional        startup failure is non-fatal (mirrors optional_auxiliary_roles)
+#   argv            launch argv; tokens {python} {project_root} {llm_root} are expanded
+#   backend         OPTIONAL kernel backend (cpu|gpu|stt|tts). When set, argv[0] is
+#                   replaced by the backend's server binary and LD_LIBRARY_PATH is
+#                   derived from src/registry/kernel_paths.py and RESOLVED AT LAUNCH,
+#                   never at import — a dangling kernel symlink must fail that one
+#                   service, not the orchestrator's import.
+#   cwd             working directory
+#   env             plain env vars, applied verbatim
+#   pythonpath      entries PREPENDED to PYTHONPATH
+#   ld_library_path explicit LD_LIBRARY_PATH entries (ignored when `backend` is set)
+#   ld_library_path_mode  prepend | replace. Defaults to `replace` when `backend` is
+#                   set, `prepend` otherwise. See stack_env.compose_ld_library_path.
+#   verify_ggml_linkage  fail the launch unless every linked ggml/whisper/llama lib
+#                   resolves inside the backend tree. Three properties, audited
+#                   2026-08-12, that are not obvious from the name:
+#                     * REQUIRES `backend:`. The tree to check against is derived
+#                       from it, so setting this on a service without one does not
+#                       weakly degrade — orchestrator_stack.py aborts that service's
+#                       launch ("requests a linkage check but declares no backend").
+#                       On a non-optional service that is a stack-start outage.
+#                     * NOT implied by `backend:`. The loader defaults it to False;
+#                       only tests/unit/test_aux_service_env.py asserts backend =>
+#                       flag, so deleting a line below is silent to the loader and
+#                       caught only by that test.
+#                     * Only meaningful when argv[0] IS the ggml binary. The check
+#                       reads `ldd argv[0]`; a wrapper (`bash`, `{python}`) or a
+#                       statically-linked ggml yields ZERO libraries and the verifier
+#                       still prints PASS and exits 0. Enabling it there buys a green
+#                       light over nothing, not coverage.
+#                   Hence: on for whisper + tts, which are the only aux services whose
+#                   argv[0] is a dynamically-linked ggml binary. See notes below.
+#   health_path / health_timeout   readiness probe
+#   model_label     what `status` reports in the MODEL column
+#   log             log file name under LOG_DIR
+aux_services:
+  - name: document_formalizer
+    port: 9001
+    optional: false
+    description: LightOnOCR-2 document formalizer (OCR sidecar, Python)
+    # No `backend`/`verify_ggml_linkage` DELIBERATELY: argv[0] is the interpreter,
+    # which links no ggml. Its ggml exposure is per-request `llama-mtmd-cli` CHILDREN,
+    # which the service env-guards itself (lightonocr_llama_server.py
+    # `_mtmd_subprocess_env` prepends the cli's own dir, and `_probe_mtmd_cli` proves
+    # the binary runs under that same env). A launch-time ldd of python3 would inspect
+    # zero ggml libs and PASS vacuously.
+    argv: ["{python}", "{project_root}/src/services/lightonocr_llama_server.py", "--port", "9001"]
+    cwd: "{project_root}"
+    pythonpath: ["{project_root}"]
+    env:
+      LIGHTONOCR_WORKERS: "8"
+      LIGHTONOCR_THREADS: "12"
+      LIGHTONOCR_MAX_TOKENS: "2048"
+      LIGHTONOCR_TIMEOUT: "120"
+    health_path: /health
+    health_timeout: 60
+    model_label: LightOnOCR-2-1B-bbox
+    log: document_formalizer.log
+
+  - name: sd_server
+    port: 8190
+    optional: false
+    description: Qwen-Image-2.1 Diffusers image generation (CPU-only, sdapi-compatible)
+    # Keep the historical role and HTTP path so image_generate callers remain
+    # stable; implementation is now an isolated Diffusers process, not sd.cpp.
+    argv: ["bash", "{project_root}/scripts/diffusion/start_qwen_image_server.sh"]
+    cwd: "{project_root}"
+    env:
+      QWEN_IMAGE_PORT: "8190"
+      QWEN_CPU_THREADS: "96"
+    # Preserve the sdapi-compatible readiness probe for existing callers.
+    health_path: /sdapi/v1/samplers
+    health_timeout: 300
+    model_label: Qwen-Image-2.1 BF16 Diffusers (CPU only)
+    log: qwen_image_server.log
+
+  - name: whisper
+    port: 9000
+    optional: true
+    # 2026-08-02 W4 IMPLEMENTATION SWAP, NOT A NEW PORT. :9000 previously ran
+    # faster-whisper (CTranslate2 int8) via
+    # epyc-inference-research/scripts/voice/whisper_server.py, which hardcodes
+    # device="cpu" — CTranslate2 4.7.2 has no ROCm backend at all, so that service
+    # was CPU-only regardless of configuration. This entry moves :9000 onto
+    # whisper.cpp @ production-speech-v1, which is a HIP build and uses the MI210.
+    #
+    # API DELTA the operator must know about:
+    #   kept    POST /v1/audio/transcriptions  (via --inference-path)
+    #   kept    GET  /health
+    #   LOST    POST /v1/audio/translations    (whisper.cpp exposes translation as a
+    #           `translate` form field on the inference path, not a separate route)
+    #   LOST    GET  /v1/models
+    #   WAV ONLY — whisper.cpp's --convert needs ffmpeg, which is NOT installed on
+    #           this host. faster-whisper accepted arbitrary containers. Do not set
+    #           --convert until ffmpeg exists.
+    #
+    # 2026-09-24 GPU-RESIDENCY CHANGE SET: :9000 MOVES TO THE CPU (operator-directed),
+    # freeing ~2.2 GB of MI210 VRAM for architect_general's 4 slots (the :8083 27B,
+    # which serves architect_critic since the 2026-09-27 ARCHITECT SWAP). Same frozen
+    # production-speech-v1 binary and tree (`backend: stt`, linkage check unchanged);
+    # `-ng` + HIP_VISIBLE_DEVICES=-1 keep it off the GPU. Evidence and hazards:
+    # epyc-inference-research artifacts/speech_cpu_realtime_20260924/README.md.
+    #   * `-t` and `cpuset` are ONE measured pair. whisper.cpp HANGS (>60-300 s per
+    #     encode) on some layouts -- 20@0-19, 28@0-27, 24@0-31, 32@0-31, 32@24-55 --
+    #     and is healthy on others. 24@0-23 (with TTS 16@24-39) is healthy 3/3 solo and
+    #     real-time concurrently with TTS, frontdoor IDLE (STT RTF 0.20/0.24). Change
+    #     it only via scripts/voice/check_speech_layout.py, which enforces that rule.
+    #   * ⚠ A GENERATING CPU frontdoor collapses both speech servers (STT RTF 1.5-2.9,
+    #     TTS RTF 7.8-9.4): every core in 0-95 is in the frontdoor's -t 96 set. Voice
+    #     turns must reason on the GPU (the :8083 27B = architect_critic since the
+    #     2026-09-27 ARCHITECT SWAP; it was architect_general before) — voice-pipeline
+    #     requirement. architect_general is now Flash-Next on the full 0-95 CPU
+    #     instance, which collapses speech exactly like a generating frontdoor.
+    #   * cpuset is honoured exactly: the bench guard may refuse it, never re-pin it
+    #     (orchestrator_stack._aux_spawn_prefix).
+    #   * Latency: ~2 s per utterance of any length on CPU (30 s window padding) vs
+    #     0.12 s on the GPU.
+    description: whisper.cpp STT (large-v3-turbo, CPU; HIP hidden)
+    backend: stt
+    argv: ["whisper-server",
+           "-m", "{llm_root}/models/whisper-ggml/ggml-large-v3-turbo.bin",
+           "--host", "127.0.0.1",
+           "--port", "9000",
+           "--inference-path", "/v1/audio/transcriptions",
+           "-t", "24",
+           "-ng"]
+    cpuset: "0-23"
+    env:
+      HIP_VISIBLE_DEVICES: "-1"
+    cwd: "{llm_root}/whisper.cpp"
+    verify_ggml_linkage: true
+    health_path: /health
+    health_timeout: 90
+    model_label: whisper.cpp large-v3-turbo (CPU -ng, ggml 0.18.0)
+    log: whisper.log
+
+  - name: tts
+    port: 9002
+    optional: true
+    # 2026-08-02 W4: first registration. No TTS process has ever run under stack
+    # management; 9002 was verified free before being claimed.
+    #
+    # 2026-09-24 GPU-RESIDENCY CHANGE SET: :9002 RUNS ON THE CPU (operator decision).
+    # It was declared on the MI210 but could never fit there (2.62 GiB vs <1 GiB free).
+    # Same frozen production-speech-v1 binary; GGML_BACKEND=CPU + HIP_VISIBLE_DEVICES=-1
+    # keep it off the GPU. 16 threads @ cores 24-39, measured real-time concurrently with
+    # STT 24@0-23, frontdoor idle: RTF 0.59-0.61, first packet 91/311 ms
+    # (epyc-inference-research artifacts/speech_cpu_realtime_20260924/README.md).
+    #   * THREAD COUNT: the binary has no flag (src/backend.h: hardware_concurrency()/2,
+    #     affinity-blind -> 96 threads). scripts/voice/nprocs_shim.c, built OUT of the
+    #     frozen tree by scripts/voice/build_nprocs_shim.sh, is LD_PRELOADed with
+    #     SHIM_NPROCS=32 -> 16 threads. The launcher refuses to start the service if the
+    #     preload file is missing (glibc would otherwise ignore it with a warning and run
+    #     96 spinning threads on 16 cores). Serving proof: the log says `CPU threads: 16`.
+    #   * Same frontdoor-contention caveat as whisper above.
+    description: qwentts.cpp TTS server (Qwen3-TTS 12Hz 0.6B, CPU; HIP hidden)
+    backend: tts
+    argv: ["tts-server",
+           "--model", "{llm_root}/models/Qwen3-TTS-qwentts/qwen-talker-0.6b-base-Q8_0.gguf",
+           "--codec", "{llm_root}/models/Qwen3-TTS-qwentts/qwen-tokenizer-12hz-Q8_0.gguf",
+           "--alias", "qwen3-tts-12hz-0.6b",
+           "--host", "127.0.0.1",
+           "--port", "9002"]
+    cpuset: "24-39"
+    env:
+      GGML_BACKEND: "CPU"
+      HIP_VISIBLE_DEVICES: "-1"
+      SHIM_NPROCS: "32"
+      LD_PRELOAD: "/mnt/raid0/llm/cache/shims/nprocs_shim.so"
+    cwd: "{llm_root}/qwentts.cpp"
+    verify_ggml_linkage: true
+    health_path: /health
+    health_timeout: 90
+    model_label: Qwen3-TTS-12Hz-0.6B Talker Q8_0 + 12hz codec (CPU 16t, ggml 0.17.0)
+    # Prove it can SYNTHESISE, not just answer /health. This server returns
+    # HTTP 200 with ZERO audio bytes for a request it cannot satisfy (an unknown
+    # `voice`, a codec that failed to load), so a status-code check passes while
+    # the service is mute. Deliberately sends NO `voice` field: the model ships
+    # zero built-in speakers and voices are registered at runtime, so naming one
+    # would make a fresh start fail for the wrong reason.
+    smoke:
+      path: /v1/audio/speech
+      method: POST
+      json:
+        input: "stack check"
+        response_format: wav
+      min_bytes: 1024
+      timeout: 180
+    log: tts.log
+
+  - name: handoff_dashboard
+    port: 8100
+    optional: false
+    description: epyc-root handoff progress hub (stdlib only, runs under any interpreter)
+    argv: ["{python}", "-m", "dashboard.server", "--host", "0.0.0.0", "--port", "8100"]
+    # Served from the READ-ONLY VIEW (2026-09-16, operator-approved dashboard
+    # fix A): a standalone epyc-root clone detached at origin/main and marked
+    # `.epyc-view-readonly`. epyc-root scripts/dashboard/hub_supervisor.sh
+    # advances it via refresh_hub_view.sh every 180s. The previous source, the
+    # autokernel-unified-20260908 lane, sat 141 commits behind origin/main, so
+    # pushed handoff progress never reached the hub. Never point this at a lane
+    # or a linked worktree: the supervisor refreshes only a marked standalone view.
+    cwd: "{llm_root}/views/epyc-root-main"
+    pythonpath: ["{llm_root}/views/epyc-root-main"]
+    # AUTOKERNEL_LOOP_STORE_ROOT pin removed 2026-09-22: it pointed at the retired
+    # GLM-5.3 campaign store (deleted with GLM-5.3-Flash). The hub now resolves the
+    # serial-run pointer, then its default /mnt/raid0/llm/autokernel/loop-memory.
+    health_path: /health
+    health_timeout: 30
+    model_label: epyc-root handoff progress hub (stdlib)
+    log: handoff_dashboard.log

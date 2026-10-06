@@ -1,0 +1,24 @@
+{
+  "files": {
+    "ni69-72-sourceclone.py": {
+      "sha256": "d722d4c5639a53e5eb34266e2fd1a7882bf79409f4e9268c1c3766d5d2532515",
+      "size": 5412
+    },
+    "ni69-72-sourceclone-manifest.json": {
+      "sha256": "192e8fabd58cb18158042eb400d53805ada4d11472ce477e04d1fb0f8c6e6fb4",
+      "size": 408878
+    },
+    "ni687172-owned-launch_manifest.yaml": {
+      "sha256": "90091c8509352c28c29e75ab57ba7acb14953d0f2ac0ddcd7c53314f08beb775",
+      "size": 55279
+    },
+    "ni687172-owned-stack_topology.yaml": {
+      "sha256": "15d7cfa5a2ca4abc373f44d41313b1abb9468b35f1d85c87ac244d9dad1b8de1",
+      "size": 23487
+    },
+    "ni687172-owned-model_registry.yaml": {
+      "sha256": "dacc8204650c000dfeae12dc1040052a3b7bf9884fa87106aabbb9ba2a81fe8b",
+      "size": 149171
+    }
+  }
+}

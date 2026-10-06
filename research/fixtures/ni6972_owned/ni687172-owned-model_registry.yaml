@@ -1,0 +1,3046 @@
+# =============================================================================
+# AUTO-GENERATED — MASTER-COMPILED RUNTIME VIEW.
+#
+# This file is compiled at every `orchestrator_stack.py start` from the master
+# registry at /mnt/raid0/llm/epyc-inference-research/orchestration/model_registry.yaml
+# with drafter selection from /mnt/raid0/llm/worktrees/stackchg8083-orch-20261005T044423Z/orchestration/stack_topology.yaml
+# by src/registry/registry_compiler.py.
+#
+# Runtime stack truth lives in the MASTER registry. The next start detects master
+# changes by cache-key mismatch and regenerates this lean runtime view. To
+# temporarily skip the compile (e.g. during a master schema change), set
+# ORCHESTRATOR_REGISTRY_NO_COMPILE=1.
+#
+# Compiled at: 2026-10-05T04:58:10+00:00
+# Cache key:   50c56ac0f21f21d8...
+# Active roles: architect_critic, architect_general, coder_escalation, embedder, embedder_1, embedder_2, embedder_3, embedder_4, embedder_5, embedder_bge_m3, embedder_granite_97m_r2, embedder_multilingual_e5_base, frontdoor, ingest_long_context, toolrunner, vision_escalation, worker, worker_explore, worker_fast, worker_general, worker_math, worker_summarize, worker_vision
+# =============================================================================
+
+runtime_defaults:
+  quantization: Q4_K_M
+  draft_quantization: Q8_0
+  context_length: 8192
+  temperature: 0.2
+  threads: 96
+  numa_policy: interleave=all
+  model_base_path: /mnt/raid0/llm/models
+  binaries:
+    base_dir: /mnt/raid0/llm/llama.cpp/build/bin
+    completion: llama-completion
+    speculative: llama-speculative
+    lookup: llama-lookup
+    cli: llama-cli
+    server: llama-server
+    mtmd: llama-mtmd-cli
+    qwen2vl: llama-qwen2vl-cli
+    bench: llama-bench
+    embedding: llama-embedding
+    perplexity: llama-perplexity
+    quantize: llama-quantize
+  server_defaults:
+    port: 8080
+    context_length: 65536
+    startup_timeout: 600
+    request_timeout: 600
+    parallel_slots: 4
+    flash_attention: true
+    ubatch_size: 8192
+    kv_cache_type_k: q4_0
+    kv_cache_type_v: f16
+  agent_file_compression_operating_point: none
+  corpus_retrieval:
+    enabled: true
+    index_path: /mnt/raid0/llm/cache/corpus/v3_sharded
+    max_snippets: 3
+    max_chars: 3000
+    min_score: 0.0
+  prefix_cache:
+    enabled: true
+    prefix_length: 4096
+    canonicalize: true
+    cache_dir: /mnt/raid0/llm/cache/prefixes
+  context_limits:
+    default: 65536
+    llama2: 4096
+    llama3: 8192
+    llama3_instruct: 131072
+    qwen2: 131072
+    qwen3: 131072
+    deepseek_r1: 65536
+    gemma3: 131072
+  llm:
+    depth_role_overrides: 1:worker_general,2:worker_math
+    depth_override_max_depth: 3
+  timeouts:
+    default: 600
+    roles:
+      worker_explore: 60
+      worker_math: 60
+      worker_vision: 60
+      worker_summarize: 120
+      worker_general: 60
+      worker_coder: 30
+      worker_fast: 30
+      frontdoor: 180
+      coder_escalation: 120
+      vision_escalation: 60
+      ingest_long_context: 300
+      architect_general: 600
+      architect_critic: 600
+    server:
+      request: 600
+      connect: 5
+      health_check: 5
+      stack_startup: 300
+    services:
+      ocr_single_page: 120
+      ocr_pdf: 600
+      vision_inference: 120
+      vision_figure: 60
+      gradio_client: 300
+      ffmpeg_version: 5
+      ffmpeg_probe: 30
+      ffmpeg_extract: 600
+      exiftool: 30
+    pools:
+      warm_keepalive: 300
+      client_total: 300
+      client_connect: 10
+    benchmark:
+      test_execution: 300
+      optuna_trial: 300
+      seeding_default: 600
+      timeout_small: 120
+      timeout_medium: 180
+      timeout_large: 300
+      timeout_huge: 600
+      timeout_giant: 1200
+    repl:
+      session: 600
+      tool_execution: 30
+      shell_command: 30
+      restricted_executor: 120
+    gates:
+      format: 30
+      lint: 60
+      typecheck: 120
+      unit: 180
+    tools:
+      web_fetch: 30
+      lint: 60
+      base_default: 60
+      formalizer: 60
+      gate_runner: 60
+    external:
+      mcp_client: 30
+      review_service: 15
+    health:
+      server_startup: 120
+      quick_check: 10
+      vision_server: 120
+      worker_server: 90
+    scripts:
+      executor_default: 180
+      onboard_health: 60
+      temperature_opt: 180
+      orchestrator_phase: 3600
+    backends:
+      inference_default: 120
+      document_page: 120
+  paged_attention:
+    description: CPU paged attention for memory-bound large models (70B+)
+    enabled_threshold_gb: 39
+    default_block_size: 64
+    env_vars:
+      LLAMA_PAGED_ATTN: ${block_size}
+      LLAMA_PAGED_ATTN_MAX_BLOCKS: ${max_blocks}
+    benefits:
+      speedup: +76% generation speedup on 70B+ models via block prefetching
+      memory_savings: Up to 80% KV cache reduction with max_blocks
+    notes: 'PR #18747 submitted upstream. Cherry-picked to production-consolidated.'
+  repl_memory:
+    description: MemRL-inspired episodic memory for learned orchestration
+    enabled: true
+    database:
+      path: /mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/sessions
+      use_faiss: true
+    embedding:
+      model_path: /mnt/raid0/llm/models/bge-large-en-v1.5-f16.gguf
+      dim: 1024
+      threads: 8
+      fallback_enabled: true
+      server_urls:
+      - http://127.0.0.1:8090
+      - http://127.0.0.1:8091
+      - http://127.0.0.1:8092
+      - http://127.0.0.1:8093
+      - http://127.0.0.1:8094
+      - http://127.0.0.1:8095
+      server_url: http://127.0.0.1:8090
+      use_server: true
+      pooling: cls
+    retrieval:
+      semantic_k: 20
+      min_similarity: 0.3
+      min_q_value: 0.3
+      q_weight: 0.7
+      top_n: 5
+      confidence_threshold: 0.6
+    scoring:
+      learning_rate: 0.1
+      success_reward: 1.0
+      failure_reward: 0.0
+      partial_reward: 0.3
+      cost_penalty_lambda: 0.15
+      min_interval_seconds: 300
+      batch_size: 50
+    persistence:
+      flush_interval: 10.0
+      sync_on_shutdown: true
+    logging:
+      progress_dir: /mnt/raid0/llm/epyc-orchestrator/logs/progress
+      buffer_size: 10
+    cold_start:
+      min_samples: 3
+      fallback_to_rules: true
+      bootstrap_days: 30
+    claude_as_judge:
+      enabled: false
+      model_path: null
+      judge_binary: null
+    failure_graph:
+      enabled: true
+      description: Kuzu graph for failure pattern tracking (anti-memory)
+      db_path: /mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/kuzu_db
+      penalty_weight: 0.3
+    hypothesis_graph:
+      enabled: true
+      description: Kuzu graph for hypothesis confidence tracking
+      db_path: /mnt/raid0/llm/epyc-orchestrator/orchestration/repl_memory/kuzu_db
+      confidence_delta: 0.1
+      low_confidence_threshold: 0.2
+    graph_cache:
+      enabled: true
+      ttl_seconds: 60
+      maxsize: 500
+  three_stage_summarization:
+    description: Two-stage pipeline (Stage 0 compression DISABLED due to quality regression)
+    enabled: true
+    threshold_tokens: 5000
+    multi_doc_discount: 0.7
+    context_reduction_target: 0.15
+    stage1_role: ingest_long_context
+    stage2_role: frontdoor
+    compression:
+      enabled: false
+      model: microsoft/llmlingua-2-bert-base-multilingual-cased-meetingbank
+      device: cpu
+      min_chars: 30000
+      target_ratio: 0.5
+      stage1_context_limit: 20000
+      cache_model: true
+      expected_latency_ms: 50
+      quality_regression_notes: 'DISABLED 2026-01-27: LLMLingua-2 extractive compression causes:
+
+        - Prompt leakage in output
+
+        - Hallucinated citations [1], [2]
+
+        - Typos ("tokenizeize", "cUSTODY")
+
+        - 140s vs 74s (slower, not faster)
+
+        Root cause: Extractive compression produces choppy text that confuses LLM.
+
+        RECOMMENDATION: Wait for Cmprsr (abstractive) weights to become available.
+
+        '
+    cache:
+      enabled: true
+      ttl_hours: 24
+      dir: /mnt/raid0/llm/cache/drafts
+    expected_speedup:
+      10k_tokens: 1.4x
+      20k_tokens: 1.5x
+      50k_tokens: 1.6x
+      multi_doc_5x10k: 3.9x
+    notes: 'Three-stage pipeline: Stage 0 (compress) → Stage 1 (draft) → Stage 2 (review)
+
+      Stage 0 benefit: quality improvement from representative sampling vs truncation.
+
+      Breakeven at ~5K tokens. Below this threshold, overhead dominates.
+
+      Stage 1 captures grep hits during exploration for Stage 2 context.
+
+      Caching enables instant Stage 2 for repeated documents.
+
+      '
+  two_stage_summarization:
+    description: Alias for three_stage_summarization (deprecated)
+    redirect_to: three_stage_summarization
+worker_pool:
+  enabled: false
+  description: DEPRECATED 2026-05-06 — superseded by worker_general (Qwen3-Coder-30B-A3B Q4) NUMA 4×48t consolidation. See deprecation notes above.
+  prompt_lookup: true
+  expansion_threshold: 4
+  warm_timeout_seconds: 300
+  health_check_interval: 30
+  model_base_path: /mnt/raid0/llm/models
+  workers:
+    explore:
+      port: 8082
+      model: Qwen/Qwen2.5-7B-Instruct-GGUF/Qwen2.5-7B-Instruct-Q4_K_M.gguf
+      tier: hot
+      threads: 24
+      slots: 2
+      memory_gb: 4.4
+      task_types:
+      - explore
+      - summarize
+      - understand
+      description: DEPRECATED 2026-05-06 — Directory crawling, file summaries, codebase understanding. Canonical-recipe quality 27/61 (44%) on Qwen2.5-7B Q4_K_S; underperforms worker_general by 40pp.
+      expected_tps: 15
+    code:
+      port: 8092
+      model: Qwen/Qwen2.5-Coder-7B-Instruct-GGUF/Qwen2.5-Coder-7B-Instruct-Q4_K_M.gguf
+      tier: hot
+      threads: 24
+      slots: 2
+      memory_gb: 4.4
+      task_types:
+      - code_impl
+      - refactor
+      - test_gen
+      description: DEPRECATED 2026-05-06 — Code implementation. UNTESTED — GGUF file missing on disk. Family-scaling estimate puts quality below worker_general (Qwen3-Coder-30B-A3B Q4, 84% / 77% on coder).
+      expected_tps: 18
+    fast:
+      port: 8102
+      model: Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF/Qwen2.5-Coder-1.5B-Instruct-Q8_0.gguf
+      tier: warm
+      threads: 16
+      slots: 4
+      memory_gb: 1.0
+      task_types:
+      - boilerplate
+      - transform
+      - parallel_burst
+      description: 'DEPRECATED 2026-05-06 — Simple transformations, boilerplate, parallel-burst. Canonical-recipe Q4 proxy: 4/20 (20%) on think+gen; too weak even for trivial tasks. Q8 GGUF not on disk.'
+      expected_tps: 60
+  launch_flags:
+  - --flash-attn on
+  - --lookup-ngram-min 3
+  resource_summary:
+    hot_memory_gb: 8.8
+    warm_memory_gb: 2.0
+    hot_threads: 48
+    warm_threads: 24
+    total_slots: 8
+    deprecation_savings: 9.8 GB hot tier reclaimed (vs hypothetical active deployment); production already running without worker_pool enabled.
+  notes: 'DEPRECATED 2026-05-06.
+
+    Original design (2025-Q4 / 2026-Q1):
+
+    - HOT workers (7B) provide quality for complex tasks
+
+    - WARM workers (1.5B) provide 4x speed for simple tasks
+
+    - WARM workers spin up automatically when parallelism > 4
+
+    - Prompt lookup enabled by default for all workers
+
+
+    Superseded by worker_general consolidation (2026-03-19 onto Qwen3-Coder-30B-A3B
+
+    Q4_K_M, NUMA 4×48t, 84% canonical-recipe quality at ~156 t/s aggregate
+
+    throughput).
+
+
+    Integration code retained: src/services/worker_pool.py (gated off via
+
+    use_worker_pool=False default in primitives.py).
+
+    '
+process_layout:
+  hot_resident:
+  - frontdoor
+  - worker_summarize
+  - architect_general
+  - coder_escalation
+  - architect_critic
+  - worker_general
+  - worker_explore
+  - worker_math
+  - toolrunner
+  - ingest_long_context
+  warm_mmap:
+  - worker_vision
+  - vision_escalation
+escalation_chains:
+  coder:
+    description: 'Code generation escalation path. 2026-07-31: this became a REAL escalation — frontdoor (:8070, CPU, Qwen3.6-35B-A3B MoE Q8) now hands off to coder_escalation (:8083, MI210 ROCm0, Qwen3.6-27B
+      dense Q8). Between 2026-05-09 and 2026-07-31 both hops were the SAME GGUF in the SAME process, so escalating could only change the sampling seed.'
+    chain:
+    - frontdoor
+    - coder_escalation
+    triggers:
+    - error_categories:
+      - timeout
+      - inference_error
+      - internal_error
+    - output_too_short: 50
+    - explicit_request: true
+    max_escalations: 1
+  general:
+    description: General task escalation path
+    chain:
+    - worker_general
+    - frontdoor
+    - architect_critic
+    - architect_general
+    triggers:
+    - error_categories:
+      - timeout
+      - inference_error
+    - explicit_request: true
+    max_escalations: 3
+  reasoning:
+    description: Boosted-reasoning escalation — terminal hop is Qwen3.8-Flash-Next (architect_general since the 2026-09-27 ARCHSWAP; was the critic)
+    chain:
+    - frontdoor
+    - architect_critic
+    - architect_general
+    triggers:
+    - explicit_request: true
+    max_escalations: 2
+routing_hints:
+- if: '''boosted reasoning'' in objective or ''deep reasoning'' in objective'
+  use:
+  - architect_general
+- if: '''critique'' in objective or ''adversarial review'' in objective'
+  use:
+  - architect_critic
+- if: '''boosted_reasoning'' in constraints or ''adversarial_review'' in constraints'
+  use:
+  - architect_critic
+- if: task_type == 'chat' and priority == 'interactive'
+  use:
+  - frontdoor
+- if: task_type == 'code'
+  use:
+  - coder_escalation
+- if: task_type == 'code' and 'refactor' in objective
+  use:
+  - coder_escalation
+  - worker_general
+- if: task_type == 'code' and escalation.triggered
+  use:
+  - coder_escalation
+- if: task_type == 'ingest'
+  use:
+  - ingest_long_context
+- if: task_type == 'doc' and priority == 'interactive'
+  use:
+  - frontdoor
+  - worker_general
+- if: task_type == 'doc' and 'summarize' in objective
+  use:
+  - worker_summarize
+- if: task_type == 'manage'
+  use:
+  - frontdoor
+  - toolrunner
+  - worker_general
+- if: '''math'' in constraints or ''invariant'' in objective'
+  use:
+  - worker_math
+- if: '''image'' in inputs or ''screenshot'' in inputs or ''ui'' in objective'
+  use:
+  - worker_vision
+- if: '''math'' in objective and (''image'' in inputs or ''diagram'' in inputs)'
+  use:
+  - vision_escalation
+- if: '''video'' in inputs and priority != ''interactive'''
+  use:
+  - vision_escalation
+- if: task_type in ['code', 'math'] and complexity == 'high'
+  preprocess: formalizer
+  use:
+  - coder_escalation
+  - worker_math
+- if: '''optimize'' in objective or ''constraint'' in objective'
+  preprocess: formalizer
+  use:
+  - worker_math
+  - coder_escalation
+- if: '''prove'' in objective or ''verify'' in objective'
+  preprocess: formalizer
+  use:
+  - worker_math
+- if: '''algorithm'' in objective and ''design'' in objective'
+  preprocess: formalizer
+  use:
+  - coder_escalation
+- if: ambiguity_score > 0.7
+  preprocess: formalizer
+  notes: Frontdoor detects vague requirements needing formalization
+- if: escalation.max_level == 'B3' and task_type == 'code'
+  use:
+  - architect_general
+- if: escalation.max_level == 'B3' and 'reasoning' in objective
+  use:
+  - architect_general
+- if: escalation.max_level == 'B3'
+  use:
+  - architect_general
+command_templates:
+  speculative_decoding: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-speculative \\\n  -m {model_path} \\\n  -md {draft_path} \\\n  --draft-max {k} \\\n  -t {threads} \\\n  -n\
+    \ 100 \\\n  --temp {temperature}\n"
+  moe_expert_reduction: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-completion \\\n  -m {model_path} \\\n  --override-kv {override_key}=int:{experts} \\\n  -t {threads} \\\n\
+    \  -n 100 \\\n  --temp {temperature}\n"
+  prompt_lookup: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-lookup \\\n  -m {model_path} \\\n  --draft-max {k} \\\n  -t {threads} \\\n  -n 100 \\\n  --temp {temperature}\n"
+  baseline: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-completion \\\n  -m {model_path} \\\n  -t {threads} \\\n  -n 100 \\\n  --temp {temperature}\n"
+  vision: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-mtmd-cli \\\n  -m {model_path} \\\n  --mmproj {mmproj_path} \\\n  -t {threads}\n"
+  server_start: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \\\n  -m {model_path} \\\n  -t {threads} \\\n  --host 127.0.0.1 \\\n  --port {port} \\\n  -c {context_length}\n"
+  server_start_moe: "numactl --interleave=all \\\n  /mnt/raid0/llm/llama.cpp/build/bin/llama-server \\\n  -m {model_path} \\\n  -t {threads} \\\n  --host 127.0.0.1 \\\n  --port {port} \\\n  -c {context_length}\
+    \ \\\n  --override-kv {override_key}=int:{experts}\n"
+dflash_drafters:
+  Qwen3-8B-DFlash-b16:
+    path: /mnt/raid0/llm/cache/dflash/Qwen3-8B-DFlash-b16
+    source: z-lab/Qwen3-8B-DFlash-b16
+    params: 1B
+    block_size: 16
+    target_model: Qwen3-8B
+    format: safetensors
+    status: downloaded
+  Qwen3-Coder-30B-A3B-DFlash:
+    path: /mnt/raid0/llm/cache/dflash/Qwen3-Coder-30B-A3B-DFlash
+    source: z-lab/Qwen3-Coder-30B-A3B-DFlash
+    params: 0.5B
+    block_size: 16
+    target_model: Qwen3-Coder-30B-A3B
+    format: safetensors
+    status: downloaded
+deprecated_models:
+- model: gemma-4-26B-A4B-it (all quants + both MTP assistant heads)
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-{ORIG-Q8_0,ORIG-Q4_K_M,Q4_K_M,Q4_K_M-current,assistant-Q8_0,assistant-v6-Q8_0}.gguf
+  size_gb: 70
+  reason: 'RETIRED 2026-09-22 in the operator-directed lineup change and DELETED 2026-09-23 on explicit operator confirmation. worker_general / worker_math / worker_explore / toolrunner all moved onto frontdoor''s
+    Qwen3.6-35B-A3B-MTP-Q8_0 process via server_mode.frontdoor.shared_with, so ports :8072/:8082/:8182 were vacated. The seven *_local catalogue rows were marked deprecated FIRST and the registry validated
+    at 0 errors before a byte was removed. NOT retained as a rollback anchor: the operator''s call was that a re-download is acceptable if the 35B ever disappoints on worker traffic. NOTE the 35B swap has
+    NO measured quality on the worker battery -- recorded null in the lineup package -- so this deletion trades an untested fallback for disk.'
+  deleted: 2026-09-23
+- model: Qwen3-Next-80B-A3B-Instruct (Q4_K_M and i1-IQ2_M)
+  path_was: /mnt/raid0/llm/models/{lmstudio-community/Qwen3-Next-80B-A3B-Instruct-GGUF/,Qwen3-Next-80B-A3B-Instruct.i1-IQ2_M.gguf}
+  size_gb: 69
+  reason: 'RETIRED 2026-09-22 and DELETED 2026-09-23 on explicit operator confirmation. ingest_long_context moved onto architect_general''s Qwen3.8-27B GPU server at :8083 (n_ctx 196608), vacating :8085/:8185/:8285.
+    The role kept its NAME but lost its REASON: Next-80B held it for O(n) SSM scaling, whereas the 27B is the fleet''s KV-densest dense model. Recorded so nobody reads the surviving role name as continuity
+    of capability.'
+  deleted: 2026-09-23
+- model: Qwen3.5-122B-A10B (MTP UD-Q4_K_M 3-shard + UD-IQ2_M, and the unsloth Q4_K_M copy)
+  path_was: /mnt/raid0/llm/models/{Qwen3.5-122B-A10B-MTP-GGUF/,unsloth/Qwen3.5-122B-A10B-GGUF/}
+  size_gb: 180
+  reason: 'RETIRED 2026-09-22 and DELETED 2026-09-23 on explicit operator confirmation. architect_critic moved to Qwen3.8-Flash-Next UD-IQ4_XS on :8074. READ THIS BEFORE ASSUMING A ROLLBACK EXISTS: the
+    UD-Q4_K_M 3-shard set (72.89 GiB) was the DECLARED ROLLBACK ANCHOR for this role -- roles.qwen35_122b_q4km said so in its own deprecation text -- and it is gone. The assistant''s deletion overview failed
+    to surface that before the operator confirmed; the operator''s subsequent ruling was that no rollback path is needed and a re-download is acceptable. Flash-Next holds the role with NO quality evidence
+    (SSU-F2 open, stack-change gate skipped with --allow-known-gaps), so until that closes the role is unmeasured AND unbacked. The unsloth Q4_K_M copy was a second, never-deployed download of the same
+    weights.'
+  deleted: 2026-09-23
+- model: GLM-5.3-Flash-UD-Q4_K_XL (unsloth, 6 shards)
+  path_was: /mnt/raid0/llm/models/unsloth/GLM-5.3-Flash-GGUF/UD-Q4_K_XL/
+  size_gb: 186
+  blind_score:
+    pct: null
+    note: never admitted; INF-69 candidate c463f601b was not accepted, T2/T4 closed unrun
+  reason: 'Operator-directed 2026-09-22: retired in favour of DeepSeek-V4.1-Flash (INF-77). Never in the lineup, no registry role. glm5next port source survives as pushed fork branches experimental/glm53-text-mtp-20260908
+    (f8e2668b6), ak/champion-glm53-candidate-20260909 (c463f601b), experimental/glm53-mtp-longprefill-fix-20260909 (7c78663de); its 28 AutoKernel CPU keeps are ported onto v10 as experimental/glm53-keeps-on-v10-20260922
+    pending INF-77 DS41-K1. Cited evidence is tracked in epyc-root commit 68919e5c (glm53-evidence-20260922 under its autokernel artifacts dir).'
+  deleted: 2026-09-22
+- model: GLM-5.3-Flash-DFlash2-bf16.gguf
+  path_was: /mnt/raid0/llm/models/GLM-5.3-Flash-DFlash2-bf16.gguf
+  size_gb: 2.2
+  blind_score:
+    pct: null
+    note: drafter; target deleted
+  reason: DFlash2 block drafter for GLM-5.3-Flash; deleted with its target 2026-09-22 (operator-directed).
+  deleted: 2026-09-22
+- model: GLM-5.3-Flash-DFlash2-Q8_0.gguf
+  path_was: /mnt/raid0/llm/models/GLM-5.3-Flash-DFlash2-Q8_0.gguf
+  size_gb: 1.2
+  blind_score:
+    pct: null
+    note: drafter; target deleted
+  reason: DFlash2 block drafter for GLM-5.3-Flash; deleted with its target 2026-09-22 (operator-directed).
+  deleted: 2026-09-22
+- model: Meta-Llama-3-70B-Instruct-Q4_K_M
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Meta-Llama-3-70B-Instruct-GGUF/
+  size_gb: 40
+  blind_score:
+    pct: 36.0
+  reason: Very poor quality, superseded by Llama 3.1-70B (86.3%)
+  deleted: 2026-01-18
+- model: Hermes-4-70B-Q4_K_M
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Hermes-4-70B-GGUF/
+  size_gb: 40
+  blind_score:
+    pct: 85.2
+  reason: Superseded by Llama 3.1-70B (86.3%), marginal quality difference
+  deleted: 2026-01-18
+- model: DeepSeek-R1-Distill-Llama-70B-Q4_K_M
+  path_was: /mnt/raid0/llm/lmstudio/models/unsloth/DeepSeek-R1-Distill-Llama-70B-GGUF/
+  size_gb: 40
+  blind_score:
+    pct: 67.0
+  reason: Severe truncation issues, 1.0 t/s - too slow and low quality
+  deleted: 2026-01-18
+- model: Qwen2.5-72B.Q4_K_M
+  path_was: /mnt/raid0/llm/lmstudio/models/mradermacher/Qwen2.5-72B-GGUF/
+  size_gb: 45
+  blind_score:
+    pct: null
+    note: not scored
+  reason: Base model (not instruct) - keep Qwen2.5-72B-Instruct instead
+  deleted: 2026-01-18
+- model: Qwen2.5-Math-72B-Instruct-Q6_K
+  path_was: /mnt/raid0/llm/lmstudio/models/tensorblock/Qwen2.5-Math-72B-Instruct-GGUF/
+  size_gb: 61
+  blind_score:
+    pct: 77.0
+  reason: Q6_K duplicate, Q4_K_M version exists and performs better
+  deleted: 2026-01-18
+- model: gemma-3-27B-it-QAT-Q4_0
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/gemma-3-27B-it-qat-GGUF/
+  size_gb: 15
+  blind_score:
+    pct: 77.0
+  reason: SWA (Sliding Window Attention) breaks speculative decoding
+  deleted: 2026-01-18
+- model: Qwen3-Coder-53B-A3B-Instruct-TOTAL-RECALL-v2
+  path_was: /mnt/raid0/llm/lmstudio/models/mradermacher/Qwen3-Coder-53B-A3B-Instruct-TOTAL-RECALL-v2-MASTER-CODER-L-i1-GGUF/
+  size_gb: 30
+  blind_score:
+    pct: null
+    note: baseline 22%, moe6 97%
+  reason: Inverted quality curve - community finetune broke default expert routing. Must use MoE6 to work, not production-ready.
+  deleted: 2026-01-18
+- model: Qwen3-Coder-30B-A3B-Instruct-GGUF (lmstudio-community duplicate)
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen3-Coder-30B-A3B-Instruct-GGUF/
+  size_gb: 18
+  blind_score:
+    pct: null
+    note: not scored
+  reason: Duplicate - unsloth version retained for production
+  deleted: 2026-01-18
+- model: Qwen3-Next-80B-A3B-Instruct-Q2_K
+  path_was: /mnt/raid0/llm/models/Qwen3-Next-80B-A3B-Instruct-Q2_K.gguf
+  size_gb: 28
+  blind_score:
+    pct: null
+    note: not scored
+  reason: Lower quality Q2_K quant - Q4_K_M version retained
+  deleted: 2026-01-18
+- model: DeepSeek-R1-Distill-Qwen-32B (duplicates in models/)
+  path_was: /mnt/raid0/llm/models/DeepSeek-R1-Distill-Qwen-32B-*.gguf
+  size_gb: 31
+  blind_score:
+    pct: 85.0
+  reason: Duplicate - lmstudio version retained
+  deleted: 2026-01-18
+- model: MiniMax-M2.1-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/unsloth/MiniMax-M2.1-GGUF/
+  size_gb: 304
+  reason: Not in registry, never used in orchestrator
+  deleted: 2026-02-17
+- model: GLM-4.7-REAP-218B-A32B-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/unsloth/GLM-4.7-REAP-218B-A32B-GGUF/
+  size_gb: 123
+  reason: Not in registry
+  deleted: 2026-02-17
+- model: Qwen3-30B-A3B-Thinking-2507-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-30B-A3B-Thinking-2507-GGUF/
+  size_gb: 47
+  reason: Not in registry, non-Coder variant
+  deleted: 2026-02-17
+- model: Qwen3-Next-80B-A3B-Thinking-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/unsloth/Qwen3-Next-80B-A3B-Thinking-GGUF/
+  size_gb: 43
+  reason: Duplicate — lmstudio-community Q4_K_M version in use for orchestrator
+  deleted: 2026-02-17
+- model: Qwen2.5-72B-Instruct-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen2.5-72B-Instruct-GGUF/
+  size_gb: 45
+  reason: No compatible draft model for speculative decoding
+  deleted: 2026-02-17
+- model: Qwen2.5-Math-72B-Instruct-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Qwen2.5-Math-72B-Instruct-GGUF/
+  size_gb: 45
+  reason: No compatible draft model for speculative decoding
+  deleted: 2026-02-17
+- model: Meta-Llama-3.1-70B-Instruct-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Meta-Llama-3.1-70B-Instruct-GGUF/
+  size_gb: 40
+  reason: Not in active orchestrator roles, PARD draft also deleted
+  deleted: 2026-02-17
+- model: Phi-4-reasoning-plus-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/lmstudio-community/Phi-4-reasoning-plus-GGUF/
+  size_gb: 23
+  reason: Not in registry
+  deleted: 2026-02-17
+- model: Meta-Llama-3-8B-Instruct-GGUF (bartowski duplicate)
+  path_was: /mnt/raid0/llm/lmstudio/models/bartowski/Meta-Llama-3-8B-Instruct-GGUF/
+  size_gb: 15
+  reason: Duplicate — lmstudio-community version retained
+  deleted: 2026-02-17
+- model: PARD-Llama-3.2-1B (all copies)
+  path_was: /mnt/raid0/llm/lmstudio/models/mradermacher/PARD-Llama-3.2-1B-GGUF/, fernandoruiz/, hf/, hf-cache/
+  size_gb: 3.2
+  reason: Orphaned draft — no Llama 3.2 target model on disk
+  deleted: 2026-02-17
+- model: Co-rewarding-II-Qwen3-1.7B-Base-MATH-GGUF
+  path_was: /mnt/raid0/llm/lmstudio/models/mradermacher/Co-rewarding-II-Qwen3-1.7B-Base-MATH-GGUF/
+  size_gb: 2.1
+  reason: One-off math experiment
+  deleted: 2026-02-17
+- model: EAGLE-1 (entire eagle/ directory)
+  path_was: /mnt/raid0/llm/eagle/
+  size_gb: 17
+  reason: Deprecated track — 0% acceptance rate due to quantization mismatch
+  deleted: 2026-02-17
+- model: Qwable-v1-GGUF (IQ4_XS)
+  path_was: /mnt/raid0/llm/models/Qwable-v1-GGUF/
+  size_gb: 53
+  reason: 'Failed all reviewer slates (RM-2.fast); never an active orchestrator role; operator-approved disk cleanup for 27B Q8 bench downloads. RESTORED 2026-08-09: originally appended to the LEAN registry
+    only (orchestrator ff0edb3b) and therefore dropped by the 2026-07-29 recompile f6691d79, which correctly regenerates the derived artifact from this master. Ledger entries belong HERE, not in the compiled
+    output.'
+  deleted: 2026-07-26
+- model: longcat-flash-lite-q4km
+  path_was: /mnt/raid0/llm/models/longcat-flash-lite-q4km/
+  size_gb: 38
+  reason: Research probe only (llama.cpp-longcat-probe worktree); never registered as a role; operator-approved disk cleanup. RESTORED 2026-08-09 — see the Qwable entry for the lean-only-append defect.
+  deleted: 2026-07-26
+- model: Qwen3.6-27B-MTP-f16-upcast
+  path_was: /mnt/raid0/llm/models/Qwen3.6-27B-MTP-f16-upcast.gguf
+  size_gb: 51
+  reason: Conversion intermediate, zero consumers; regenerable from MTP source; operator-approved disk cleanup. RESTORED 2026-08-09 — see the Qwable entry for the lean-only-append defect.
+  deleted: 2026-07-26
+- model: MiniMax-M2.7-GGUF (Q8_0)
+  path_was: /mnt/raid0/llm/models/MiniMax-M2.7-GGUF/
+  size_gb: 227
+  reason: 'G9-disk keep-vs-delete decision (filed 2026-07-26 in bulk-inference-campaign.md) resolved DELETE by operator. Never exercised: zero run artifacts on disk, G8/G9 stale since 2026-04-19, superseded
+    by the post-v8 architect-bench campaign. Do NOT re-download without a fresh operator decision. Master entry minimax_m27_q8 marked artifact_status.download=deleted.'
+  deleted: 2026-08-09
+- model: Qwen3.5-397B-A17B-GGUF (UD-Q4_K_XL)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-397B-A17B-GGUF/UD-Q4_K_XL/
+  size_gb: 204
+  reason: Operator-approved disk cleanup. Untouched since 2026-03-05, absent from lean registry and launch manifest, no run artifacts. Active-handoff mentions are fit-math assuming a ~400GB Q8 never held
+    locally; reviewer-control-plane-index lists the 397B arm as off-thesis. Master entry qwen35_397b_q4kxl marked deleted.
+  deleted: 2026-08-09
+- model: DeepSeek-V4-Flash (antirez Q4-mixed, chat-v2-imatrix)
+  path_was: /mnt/raid0/llm/models/deepseek-v4-flash/
+  size_gb: 153
+  reason: 'Operator-approved disk cleanup; superseded by DeepSeek-V4-Flash-0731 UD-Q8_K_XL (unsloth). Predates the 0731 revision and carries NextN/MTP metadata only, no DSpark. The deepseek4 arch now ships
+    in production-consolidated-v8 via upstream PR #24162, so the port objective is met and the port handoff moved to handoffs/completed/. Master entry deepseek_v4_flash_local_q4kexperts marked deleted.'
+  deleted: 2026-08-09
+- model: gemma-4-26B-A4B-it-ORIG-bf16
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-ORIG-bf16.gguf
+  size_gb: 47
+  reason: Operator-approved disk cleanup; quantization intermediate, regenerable; zero references in active handoffs or live config.
+  deleted: 2026-08-09
+- model: gemma-4-26B-A4B-it-ORIG-src (HF safetensors)
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-ORIG-src/
+  size_gb: 48
+  reason: Operator-approved disk cleanup; HF source tree for the ORIG GGUF family, all of whose derived quants remain on disk. No master registry entry existed. Re-downloadable from HF if a future requant
+    is needed.
+  deleted: 2026-08-09
+- model: gemma-4-31B-it-Q8_0
+  path_was: /mnt/raid0/llm/models/gemma-4-31B-it-Q8_0.gguf
+  size_gb: 30
+  reason: Operator-approved disk cleanup; zero references (the gemma-4-31B-it-Q4_K_M sibling remains on disk and is referenced).
+  deleted: 2026-08-09
+- model: Goedel-Code-Prover-8B-HF (safetensors)
+  path_was: /mnt/raid0/llm/models/Goedel-Code-Prover-8B-HF/
+  size_gb: 15
+  reason: Operator-approved disk cleanup; HF source tree only. The referenced GGUF build (Goedel-Code-Prover-8B-GGUF, master entry goedel_code_prover_8b_q4km) REMAINS on disk and is untouched.
+  deleted: 2026-08-09
+- model: unsloth/Qwen3.5-4B-GGUF (all quants)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-4B-GGUF/
+  size_gb: 10
+  reason: Operator-approved disk cleanup; unused Qwen3.5 ladder rung. The 0.8B/9B/27B/35B/122B rungs are referenced; 2B and 4B never were. Master entries qwen35_4b_q4km/q6k/q8 marked deleted.
+  deleted: 2026-08-09
+- model: unsloth/Qwen3.5-2B-GGUF (all quants)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-2B-GGUF/
+  size_gb: 4.5
+  reason: Operator-approved disk cleanup; unused Qwen3.5 ladder rung — see the 4B entry. Master entries qwen35_2b_q4km/q6k/q8 marked deleted.
+  deleted: 2026-08-09
+- model: Llama-3.2-1B-Instruct-f32
+  path_was: /mnt/raid0/llm/models/Llama-3.2-1B-Instruct-f32.gguf
+  size_gb: 4.6
+  reason: Operator-approved disk cleanup; f32 twin with zero references. The f16 copy is referenced and remains on disk. No master registry entry existed.
+  deleted: 2026-08-09
+- model: Qwen2.5-0.5B-Instruct-f32
+  path_was: /mnt/raid0/llm/models/Qwen2.5-0.5B-Instruct-f32.gguf
+  size_gb: 1.8
+  reason: Operator-approved disk cleanup; f32 twin with zero references. The f16 copy is referenced and remains on disk. No master registry entry existed.
+  deleted: 2026-08-09
+- model: gemma-4-26B-A4B-it-assistant-BF16
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-BF16.gguf
+  size_gb: 0.8
+  reason: Operator-approved disk cleanup; superseded by the assistant-v6 f16/Q8_0 drafter artifacts, one of which (-v6-Q8_0) is the LIVE production draft model. No master registry entry existed.
+  deleted: 2026-08-09
+- model: supergemma4-26b-abliterated-multimodal-8bit
+  path_was: /mnt/raid0/llm/models/supergemma4-26b-abliterated-multimodal-8bit/
+  size_gb: 27
+  reason: 'OP-31 disk reclaim (operator-approved minimal set, 2026-08-31). deprecated: true in this master; K35 vision gate resolved to Qwen3-VL-30B. Zero lean-registry references verified pre-deletion.'
+  deleted: 2026-08-31
+- model: nemotron-cascade-2
+  path_was: /mnt/raid0/llm/models/nemotron-cascade-2/
+  size_gb: 24
+  reason: 'OP-31 disk reclaim (operator-approved minimal set, 2026-08-31). deprecated: true in this master. Zero lean-registry references verified pre-deletion.'
+  deleted: 2026-08-31
+- model: Qwen3.5-35B-A3B-GGUF (unsloth)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-35B-A3B-GGUF/
+  size_gb: 19
+  reason: 'OP-31 disk reclaim (operator-approved minimal set, 2026-08-31). Superseded as frontdoor 2026-05-04. Zero lean-registry references verified pre-deletion. NOTE: a complete FP16 safetensors copy
+    of Qwen3.5-35B-A3B remains in the live HF cache (67 GB, Tier E of the OP-31 menu).'
+  deleted: 2026-08-31
+- model: Qwable-v1-GGUF (IQ4_XS) — re-execution
+  path_was: /mnt/raid0/llm/models/Qwable-v1-GGUF/
+  size_gb: 18
+  reason: 'Re-execution of the operator-approved 2026-07-26 deletion (entry above): the on-disk copy re-appeared 2026-07-28 after the ledgered deletion. OP-31 minimal set, 2026-08-31.'
+  deleted: 2026-08-31
+- model: GLM-5.2-UD-IQ2_M (unsloth, 6 shards)
+  path_was: /mnt/raid0/llm/models/GLM-5.2-UD-IQ2_M/
+  size_gb: 223
+  reason: 'OP-8 resolved KILL by operator ruling 2026-08-31: "we have GLM-5.3-flash to test so we will never have any reasons to run this model." Terminal C-CRAB admission failure already on record (this
+    master); zero lean-registry references and no live consumer verified pre-deletion. The GLM-MoE-DSA evaluation findings are preserved in handoffs/completed/glm51-reap-cpu-evaluation.md.'
+  deleted: 2026-08-31
+- model: DeepSeek-R1-Distill-Qwen-14B-GGUF (lmstudio-community copy)
+  path_was: /mnt/raid0/llm/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-14B-GGUF/
+  size_gb: 8.4
+  reason: OP-31 disk reclaim (operator-approved minimal set, 2026-08-31). This master already recorded the copy as deleted with the bartowski Q6_K_L retained; the on-disk copy contradicted the record.
+  deleted: 2026-08-31
+- model: Qwen3-Coder-REAP-246B-A35B Q4_K_M
+  path_was: /mnt/raid0/llm/models/Qwen3-Coder-REAP-246B-A35B-Q4_K_M.gguf
+  size_gb: 139
+  reason: LEDGER BACKFILL 2026-09-01 (audit). Deletion was already on record in this file's `deprecated_reason` for the role — "Role removed in the 2026-05 production stack consolidation; model REAP-246B
+    deprecated + GGUF deleted 2026-05-27" — but no deprecated_models row existed, so the machine-readable ledger could not see it. Former architect_coding (139 GB, 8.0 t/s, 82% quality).
+  deleted: 2026-05-27
+- model: SuperGemma4-31b-abliterated Q4_K_M
+  path_was: /mnt/raid0/llm/models/SuperGemma4-31b-abliterated.Q4_K_M.gguf
+  size_gb: null
+  reason: 'LEDGER BACKFILL 2026-09-01 (audit). Quoting the existing `deprecated_reason`: "GGUF deleted 2026-05-27 (unreferenced abliterated SuperGemma4-31b variant)." Size not recorded at deletion time
+    and deliberately left null rather than estimated.'
+  deleted: 2026-05-27
+- model: nexusraven-v2-13b Q4_K_M
+  path_was: /mnt/raid0/llm/models/nexusraven-v2-13b.Q4_K_M.gguf
+  size_gb: null
+  reason: 'LEDGER BACKFILL 2026-09-01 (audit). Quoting the existing `deprecated_reason`: "nexusraven-v2-13b GGUF deleted 2026-05-27 (unreferenced)." Size not recorded at deletion time and deliberately left
+    null rather than estimated.'
+  deleted: 2026-05-27
+- model: MiniCPM-o-4_5 (multimodal asset set)
+  path_was: /mnt/raid0/llm/models/MiniCPM-o-4_5-gguf/
+  size_gb: 22
+  reason: LEDGER BACKFILL 2026-09-01 (audit). Recorded in the handoff record as "RESOLVED 2026-07-31 — no longer parked; the decision was taken and it is NO. MiniCPM-o is DEPRECATED and the ~22 GB of assets
+    are DELETED", on 42 questions (OCRBench + ChartQA, MI210). Eleven separate paths in this registry (model quants, vision/audio/tts projectors, token2wav) cited the directory; none had a ledger row.
+  deleted: 2026-07-31
+- model: unsloth/Qwen3.5-27B-GGUF (Q6_K + Q4_K_M)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-27B-GGUF/
+  size_gb: 37
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue rows only. The hybrid-MTP line it served is closed NOT VIABLE ("DEAD - hybrid trap").
+  deleted: 2026-09-01
+- model: Nemotron-Nano-9B-v2-GGUF (bf16 + Q8_0)
+  path_was: /mnt/raid0/llm/models/Nemotron-Nano-9B-v2-GGUF/
+  size_gb: 26
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C rows; zero references in any active handoff.
+  deleted: 2026-09-01
+- model: unsloth/Qwen3.5-9B-GGUF (Q8_0 + Q6_K + Q4_K_M)
+  path_was: /mnt/raid0/llm/models/unsloth/Qwen3.5-9B-GGUF/
+  size_gb: 22
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue rows; its verification task T3 closed 2026-06-22.
+  deleted: 2026-09-01
+- model: unsloth/GLM-4.7-Flash-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/unsloth/GLM-4.7-Flash-GGUF/
+  size_gb: 18
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue row. Superseded in the GLM line by GLM-5.3-Flash (INF-69), which was itself deleted 2026-09-22 (operator-directed;
+    superseded by the DeepSeek-V4.1-Flash evaluation).
+  deleted: 2026-09-01
+- model: ternary-bonsai-27b (Q2_g64, Q2_0, dspark, mmproj)
+  path_was: /mnt/raid0/llm/models/ternary-bonsai-27b/
+  size_gb: 17
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C. Sub-2-bit breadth probes deprioritized by standing steering 2026-07-19; all rows closed.
+  deleted: 2026-09-01
+- model: Qwen_Qwen3.6-27B-Q4_K_M.gguf
+  path_was: /mnt/raid0/llm/models/Qwen_Qwen3.6-27B-Q4_K_M.gguf
+  size_gb: 17
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue row. Recorded as half of a confounded, non-comparable Q4_K_M pair.
+  deleted: 2026-09-01
+- model: Qwen3.6-27B-MTP-Q4_K_M.gguf
+  path_was: /mnt/raid0/llm/models/Qwen3.6-27B-MTP-Q4_K_M.gguf
+  size_gb: 16
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C, explicitly "catalogue-only MTP comparison row"; the other half of that confounded pair.
+  deleted: 2026-09-01
+- model: Qwen3.5-27B-MTP-Q4_K_M.gguf
+  path_was: /mnt/raid0/llm/models/Qwen3.5-27B-MTP-Q4_K_M.gguf
+  size_gb: 16
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C "catalogue-only MTP comparison row"; its line closed NOT VIABLE.
+  deleted: 2026-09-01
+- model: Qwen2.5-7B-Instruct-f16.gguf
+  path_was: /mnt/raid0/llm/models/Qwen2.5-7B-Instruct-f16.gguf
+  size_gb: 15
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. NO entry in either registry. Only past-tense validation references; a stale orchestrator port table still named it, but that
+    port serves gemma-4-26B.
+  deleted: 2026-09-01
+- model: lmstudio-community/Qwen3-VL-8B-Instruct-GGUF (Q8_0 + Q4_K_M + mmproj)
+  path_was: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-8B-Instruct-GGUF/
+  size_gb: 14
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C. Vision Phase 1 closed as a DECLINE; the 30B incumbent is retained.
+  deleted: 2026-09-01
+- model: gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-UD-IQ4_XS.gguf
+  size_gb: 13
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C "catalogue-only compression candidate"; measured NOT a worker replacement (ORIG is faster).
+  deleted: 2026-09-01
+- model: lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF Q8_0
+  path_was: /mnt/raid0/llm/models/lmstudio-community/DeepSeek-R1-0528-Qwen3-8B-GGUF/
+  size_gb: 8
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; zero active-handoff references.
+  deleted: 2026-09-01
+- model: lmstudio-community/gemma-3-12b-it-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/lmstudio-community/gemma-3-12b-it-GGUF/
+  size_gb: 8
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; zero active-handoff references.
+  deleted: 2026-09-01
+- model: lmstudio-community/Qwen3-VL-4B-Instruct-GGUF
+  path_was: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-4B-Instruct-GGUF/
+  size_gb: 7
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; appears only as a score row (29/42) in a closed comparison.
+  deleted: 2026-09-01
+- model: bonsai-27b (Q1_0 + dspark + mmproj)
+  path_was: /mnt/raid0/llm/models/bonsai-27b/
+  size_gb: 6
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; same deprioritized sub-2-bit line, all rows closed.
+  deleted: 2026-09-01
+- model: Qwen3-VL-8B-Instruct-GGUF (root copy)
+  path_was: /mnt/raid0/llm/models/Qwen3-VL-8B-Instruct-GGUF/
+  size_gb: 6
+  reason: 'Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177
+    active handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C "catalogue-only exact-path entry". NOTE: an earlier reclaim menu claimed live hermes smoke scripts consumed
+    this; verified FALSE - no script or active handoff references the root copy.'
+  deleted: 2026-09-01
+- model: Qwen3.5-9B-MTP-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/Qwen3.5-9B-MTP-GGUF/
+  size_gb: 6
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C "research-only MTP comparison artifact"; its task closed.
+  deleted: 2026-09-01
+- model: lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF/
+  size_gb: 5
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Appears only as a previous_model breadcrumb in both registries; no current role.
+  deleted: 2026-09-01
+- model: unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF/
+  size_gb: 5
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue row; zero active-handoff references.
+  deleted: 2026-09-01
+- model: lmstudio-community/DeepSeek-R1-Distill-Qwen-7B-GGUF Q4_K_M
+  path_was: /mnt/raid0/llm/models/lmstudio-community/DeepSeek-R1-Distill-Qwen-7B-GGUF/
+  size_gb: 4
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-B catalogue row; only a closed 2026-04 evaluation references it.
+  deleted: 2026-09-01
+- model: QuantFactory/Meta-Llama-3.1-8B-GGUF Q4_K_S
+  path_was: /mnt/raid0/llm/models/QuantFactory/Meta-Llama-3.1-8B-GGUF/
+  size_gb: 4
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; zero active-handoff references.
+  deleted: 2026-09-01
+- model: QuantFactory/Qwen2.5-7B-GGUF Q4_K_S
+  path_was: /mnt/raid0/llm/models/QuantFactory/Qwen2.5-7B-GGUF/
+  size_gb: 4
+  reason: Zero active consumer, verified 2026-09-01 against BOTH registries (no lean role), the retention-language sweep (no "rollback"/"retained"/"REMAIN ON DISK"/"kept per"/"preserved"), and all 177 active
+    handoffs (no open-task dependency). Operator-approved zero-consumer purge. Master tier-C; zero active-handoff references.
+  deleted: 2026-09-01
+- model: bge-m3-f16.gguf
+  path_was: /mnt/raid0/llm/models/bge-m3-f16.gguf
+  size_gb: 1.1
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: multilingual-e5-base-f16.gguf
+  path_was: /mnt/raid0/llm/models/multilingual-e5-base-f16.gguf
+  size_gb: 0.56
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: granite-embedding-97m-multilingual-r2-Q4_K_M.gguf
+  path_was: /mnt/raid0/llm/models/granite-embedding-97m-multilingual-r2-Q4_K_M.gguf
+  size_gb: 0.1
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf
+  path_was: /mnt/raid0/llm/models/Qwen3-TTS-12Hz-0.6B-Talker-Q8_0.gguf
+  size_gb: 0.75
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: gemma-4-26B-A4B-it-assistant-v6-f16.gguf
+  path_was: /mnt/raid0/llm/models/gemma-4-26B-A4B-it-assistant-v6-f16.gguf
+  size_gb: 0.8
+  reason: NIB2-65 safe set (2026-08-23 census). Referenced only in kb_rag RAG-index text and the historical llamacpp-v6-consolidation.md narrative (GEMMA-MTP-RESOLUTION, 2026-06-25) documenting how the
+    gemma4 MTP lineage mismatch was fixed; no live launch spec, lean registry, or master registry role points at this path. Disk-pressure reclaim (96% full, 2026-09-15).
+  deleted: 2026-09-15
+- model: tinyllamas-stories-260k-f32.gguf
+  path_was: /mnt/raid0/llm/models/tinyllamas-stories-260k-f32.gguf
+  size_gb: 0.0011
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf
+  path_was: /mnt/raid0/llm/models/DeepSeek-R1-Distill-Qwen-1.5B-Q4_K_M.gguf
+  size_gb: 1.04
+  reason: NIB2-65 safe set (2026-08-23 census). No references outside non-inference-backlog.md; not a lean/master role. Disk-pressure reclaim (96% full, 2026-09-15 sub-disk-investigation session).
+  deleted: 2026-09-15
+- model: empty model-root husk directories (MaziyarPanahi, Mungert, prithivMLmods, jiaojjjjje, hugging-quants)
+  path_was: /mnt/raid0/llm/models/{MaziyarPanahi,Mungert,prithivMLmods,jiaojjjjje,hugging-quants}/
+  size_gb: 0
+  reason: NIB2-65 safe set (2026-08-23 census). Verified empty (4-8K directory metadata only, no weight files) before removal. Disk-pressure reclaim (96% full, 2026-09-15).
+  deleted: 2026-09-15
+observations:
+  slot_admission_alignment_2026_02_20:
+    title: 'Slot/admission alignment: eliminated 50% KV cache waste across all backends'
+    type: bugfix
+    date: 2026-02-20
+    status: implemented
+    summary: 'Every backend had 2x more llama-server slots than admission controller allowed.
+
+      KV cache partitioned across all slots meant 50% was wasted on idle slots.
+
+
+      Alignment based on concurrent_sweep_20260219 results:
+
+      - frontdoor: 4→2 slots (sweep optimal at 2, p95 1.33x)
+
+      - coder_escalation: 4→1 slots + admission 2→1 (p95 1.98x at concurrency=2 — serial only)
+
+      # 2026-07-31: coder_escalation has had no independent slots since the 2026-05-09
+
+      # consolidation onto frontdoor''s :8070, and is now an alias on architect_general''s
+
+      # :8083 GPU process. This ratified finding describes a topology that no longer exists.
+
+      - worker: 8→1 slots + admission 4→1 (all concurrent levels rejected on p95)
+
+      - architect_general: 2→1 slots
+
+      - architect_coding: 2→1 slots
+
+      - ingest: 2→1 slots
+
+      - frontdoor timeout: 90→180s
+
+      '
+    rule: admission limit = server slots — no wasted KV cache on idle slots
+    impact: 50% reduction in idle KV cache pressure across all backends
+    sweep_date: 2026-02-19
+    sweep_data: concurrent_sweep_20260219_144159.summary.json
+  backend_saturation_504_429_investigation:
+    title: 'Backend saturation handoff: 504/429 under sequential load with 6 hypotheses'
+    type: discovery
+    date: 2026-02-20
+    status: active
+    location: handoffs/active/backend-saturation-504-429.md
+    summary: '10 prompts back-to-back causes 504 Gateway Timeout and 429 Too Many Requests after prompt 5-7.
+
+
+      6 hypotheses identified:
+
+      - H1: cumulative KV cache pressure (LIKELY)
+
+      - H2: feature pipeline latency amplification (CONTRIBUTING)
+
+      - H3: admission/circuit breaker cascade (CONTRIBUTING)
+
+      - H4: uvicorn worker starvation (POSSIBLE)
+
+      - H5: config reload not applied (CONFIRMED for timeout)
+
+      - H6: spec decode contention under concurrent load (POSSIBLE)
+
+      '
+    investigation: 6-step playbook with shell commands and timeline of all prior hardening work Feb 11-20
+    related_files:
+    - src/api/admission.py
+    - scripts/server/orchestrator_stack.py
+    - docs/reference/agent-config/ORCHESTRATION_DEBUG_PLAYBOOK.md
+optimized_params:
+  frontdoor:
+    temperature: 0.0736042256959058
+    speculative_k: 31
+    entropy_threshold: 4.09045566671701
+  formalizer:
+    temperature: 0.19014286128198324
+  specialists:
+    temperature: 0.3394633936788146
+    speculative_k: 10
+    early_abort_tokens: 65
+  workers:
+    temperature: 0.49279757672456204
+    repetition_threshold: 0.2697316968394073
+  _meta:
+    optimized: '2026-01-07T23:14:00.047514'
+    schema_version: 1
+runtime_quirks:
+  qwen25_coder_32b_instruct:
+    description: Qwen2.5-Coder-32B-Instruct
+    quirks:
+    - issue: llama-speculative errors with 'invalid argument:' when wrapped in timeout
+      workaround: Run without timeout wrapper, or use llama-cli instead
+      discovered: 2025-12-16
+    - issue: Low speculative decoding acceptance rate (~16%)
+      workaround: Use MoE models instead for high throughput
+      discovered: 2025-12-16
+    - issue: Baseline generation very slow (7 t/s) on CPU
+      workaround: Not recommended for high-throughput tasks - use Qwen3-Coder-30B-A3B instead
+      discovered: 2025-12-16
+  qwen3_coder_30b_a3b:
+    description: Qwen3-Coder-30B-A3B-Instruct
+    quirks:
+    - issue: Requires MoE expert override key specific to architecture
+      workaround: Use --override-kv qwen3moe.expert_used_count=int:4
+      discovered: 2025-12-16
+  qwen3_coder_53b_a3b:
+    description: Qwen3-Coder-53B-A3B-Instruct-TOTAL-RECALL-v2
+    quirks:
+    - issue: Larger model, slower than 30B variant despite similar quality
+      workaround: Use for complex tasks only, prefer 30B for standard coding
+      discovered: 2025-12-16
+  qwen3_coder_480b:
+    description: Qwen3-Coder-480B-A35B-Instruct
+    quirks:
+    - issue: BOS token mismatch - standard drafts incompatible
+      solution: jukofyork vocab transplant draft (draft_qwen3_coder_0_75b) — BOS matched (comma token 11)
+      status: VERIFIED WORKING (2026-02-13) — 74-82% acceptance, 2.16x speedup
+      discovered: 2025-12-15
+      updated: 2026-02-13
+    - issue: Prompt lookup net-negative despite working mechanically
+      details: 18.4% acceptance on refactoring, but -34% speed due to MoE verification overhead
+      workaround: Use spec decode instead (74% acceptance, +2.16x speed)
+      discovered: 2026-02-13
+    - issue: MOE2 (2 experts) produces garbage output despite being faster
+      workaround: Use MOE3 (3 experts) - 10.30 t/s with good quality (+58% speedup)
+      discovered: 2025-12-21
+      explanation: 'With parallel repack enabled (no OMP_NUM_THREADS=1):
+
+        - Baseline: 6.53 t/s (good output)
+
+        - MOE3: 10.30 t/s (+58% speedup, good output) ✓ OPTIMAL
+
+        - MOE4: 9.25 t/s (+42% speedup, good output) ✓ Safe fallback
+
+        - MOE5: 8.50 t/s (+30% speedup, good output)
+
+        - MOE2: 11.51 t/s (+76% speedup, GARBAGE output) ✗ UNUSABLE
+
+        The 480B model needs at least 3 experts for coherent output.
+
+        '
+  qwen3_thinking_models:
+    description: Qwen3-*-Thinking-2507 models (unsloth fine-tunes)
+    quirks:
+    - issue: Missing BOS token metadata in GGUF prevents speculative decoding
+      workaround: Use MoE expert reduction only (no spec decode)
+      discovered: 2026-01-12
+      explanation: 'The Qwen3-Thinking-2507 models from unsloth have tokenizer.ggml.eos_token_id but no tokenizer.ggml.bos_token_id in their GGUF metadata. Since all draft models have BOS tokens defined,
+        llama.cpp speculative decoding fails with "draft model special tokens must match target model to use speculation". MoE expert reduction still works normally for these models.
+
+        '
+  qwen2_vs_qwen2_5:
+    description: Qwen2 and Qwen2.5 tokenizer incompatibility
+    quirks:
+    - issue: Qwen2 drafts crash with Qwen2.5 targets (vocab mismatch)
+      workaround: Use Qwen2.5 drafts only (draft_qwen25, draft_qwen25_coder)
+      discovered: 2026-01-09
+      explanation: 'Qwen2: vocab_size=151,936, eos=151643
+
+        Qwen2.5: vocab_size=152,064, eos=151645
+
+        The 128 token difference causes crashes when target generates token ID >= 151,936.
+
+        '
+  qwen2_5_72b:
+    description: Qwen2.5-72B-Instruct and Qwen2.5-Math-72B
+    quirks:
+    - issue: Speculative decoding shows ~2% acceptance with ALL tested draft models
+      workaround: Do not use speculative decoding - use baseline or prompt lookup only
+      discovered: 2025-12-31
+      explanation: 'Tested draft models (all showed ~2% acceptance):
+
+        - Qwen2.5-Coder-0.5B (2.4%)
+
+        - Qwen2.5-Coder-1.5B Q4_K_M (2.4%)
+
+        - Qwen2.5-Coder-1.5B Q2_K (2.2%)
+
+        - Qwen2.5-0.5B base (2.3%)
+
+        - Qwen2.5-Math-1.5B (2.3%)
+
+        - Qwen2.5-Math-1.5B Q6K (2.3%)
+
+        All Qwen2.5 variants share the same tokenizer, so this is not a vocab mismatch.
+
+        Root cause unclear - possibly generation pattern differences in 72B models.
+
+        For comparison: Qwen2.5-Coder-32B achieves 11x speedup with the same drafts.
+
+        '
+  minimax_m21:
+    description: MiniMax M2.1 (230B MoE, 256 experts, 8 active)
+    quirks:
+    - issue: Chat template requires Jinja engine
+      workaround: Always use --jinja flag
+      discovered: 2026-01-19
+    - issue: llama-cli enters interactive mode by default
+      workaround: Use llama-completion instead of llama-cli for non-interactive use
+      discovered: 2026-01-19
+    - issue: Model outputs <think> tags (reasoning model)
+      workaround: Parse and strip tags for non-reasoning use, or let model reason
+      discovered: 2026-01-19
+    - issue: 256 experts causes sparse memory access patterns
+      workaround: Expected speed ~9.5 t/s despite 10B active params (lower than Qwen3 MoE)
+      discovered: 2026-01-19
+    - issue: Split across 3-4 GGUF files depending on quant
+      workaround: Point to first file (-00001-of-000XX), others auto-loaded
+      discovered: 2026-01-19
+    - issue: Unique vocab (200,064 tokens)
+      workaround: No compatible draft model - speculative decoding NOT possible
+      discovered: 2026-01-19
+  glm_47_flash:
+    description: GLM-4.7-Flash (30B MoE, 64 experts, 4 active, deepseek2 arch)
+    quirks:
+    - issue: Chat template requires Jinja engine
+      workaround: Always use --jinja flag
+      discovered: 2026-01-22
+    - issue: llama-cli may enter interactive mode
+      workaround: Use llama-completion for non-interactive use
+      discovered: 2026-01-22
+    - issue: Uses deepseek2 architecture with MLA (Multi-head Latent Attention)
+      workaround: No speculative decoding support - MLA incompatible
+      discovered: 2026-01-22
+    - issue: Already uses 4 experts by default (optimal)
+      workaround: No MoE reduction needed - already at minimum
+      discovered: 2026-01-22
+  glm_47_reap:
+    description: GLM-4.7-REAP-218B-A32B (218B MoE, 96 experts, 8 active, glm4moe arch)
+    quirks:
+    - issue: Chat template requires Jinja engine
+      workaround: Always use --jinja flag
+      discovered: 2026-01-22
+    - issue: llama-cli may enter interactive mode
+      workaround: Use llama-completion for non-interactive use
+      discovered: 2026-01-22
+    - issue: Split across 3 GGUF files (Q4_K_M)
+      workaround: Point to first file (-00001-of-00003), others auto-loaded
+      discovered: 2026-01-22
+    - issue: Uses glm4moe architecture - unique to GLM models
+      workaround: MoE override key is glm4moe.expert_used_count (needs testing)
+      discovered: 2026-01-22
+    - issue: No compatible draft model for speculative decoding
+      workaround: Use MoE expert reduction only
+      discovered: 2026-01-22
+  qwen3_next_80b:
+    description: Qwen3-Next-80B-A3B-Instruct (SSM+MoE hybrid)
+    quirks:
+    - issue: SSM models incompatible with all speculation methods
+      workaround: Only MoE expert reduction available, no spec decode
+      discovered: 2025-12-15
+  qwen3_235b_a22b:
+    description: Qwen3-235B-A22B (architect_general)
+    deprecated: true
+    deprecated_date: 2026-05-27
+    deprecated_reason: GGUF deleted from disk (operator-directed 2026-05-27) — swapped OUT 2026-03-19 for Qwen3.5-122B (architect_general); 133 GB reclaimed; re-downloadable if re-needed.
+    quirks:
+    - issue: Quality degrades severely at 2 experts
+      workaround: Use 4 experts minimum for coherent output
+      discovered: 2025-12-15
+    - issue: Split model (4 parts) - loading takes ~30s
+      workaround: Keep warm via mmap for faster reload
+      discovered: 2025-12-15
+  meta_llama_3_8b:
+    description: Meta-Llama-3-8B-Instruct (worker_general, toolrunner)
+    quirks:
+    - issue: None known - stable model
+      workaround: N/A
+      discovered: 2025-12-16
+  qwen25_math_7b:
+    description: Qwen2.5-Math-7B-Instruct (worker_math)
+    quirks:
+    - issue: Best with temperature 0.5 for spec decode
+      workaround: Use --temp 0.5 with speculative decoding for 7.3x speedup
+      discovered: 2025-12-15
+  qwen25_vl_7b:
+    description: Qwen2.5-VL-7B-Instruct — FORMER worker_vision / vision_escalation model, retired 2026-07-31
+    retired: 2026-07-31
+    retired_reason: 'Replaced on both vision roles by Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210. MMMU-250: 131/250 (52.4%) vs 159/250 (63.6%), +11.2 pp, paired exact McNemar p=0.0011. Weights REMAIN ON
+      DISK; this entry is the rollback target (7685 vs 21049 MB VRAM, 214.54 vs 112.20 t/s median decode).'
+    quirks:
+    - issue: Best with temperature 0.7 for spec decode
+      workaround: Use --temp 0.7 for 57.1 t/s (3.7x speedup)
+      discovered: 2025-12-15
+    - issue: Requires mmproj file for vision
+      workaround: Use -m MODEL --mmproj mmproj-model-f16.gguf
+      discovered: 2025-12-15
+  qwen3_vl_30b:
+    description: Qwen3-VL-30B-A3B-Instruct — PRODUCTION vision model 2026-07-31, serving BOTH worker_vision and vision_escalation from one MI210 (ROCm0) process on port 8086
+    quirks:
+    - issue: Expert reduction is AVAILABLE but must NOT be used. GGUF default is qwen3vlmoe.expert_used_count=8 (of 128). The 2026-07-17 K35 runs forced 4; that is NOT the production recipe.
+      workaround: Launch with GGUF defaults — do NOT pass --override-kv qwen3vlmoe.expert_used_count. (This entry previously PRESCRIBED int:4; corrected 2026-07-31.)
+      discovered: 2025-12-16
+      corrected: 2026-07-31
+    - issue: Requires mmproj file for vision
+      workaround: Use --mmproj mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf
+      discovered: 2025-12-16
+    - issue: Upstream warns at load that Qwen-VL needs >=1024 image tokens to function correctly.
+      workaround: Always launch with --image-min-tokens 1024.
+      discovered: 2026-07-31
+    - issue: Server prompt cache is pure churn on vision traffic — every request carries a different image, so it never hits.
+      workaround: Launch with --cache-ram 0.
+      discovered: 2026-07-31
+    - issue: Cold load ~15-20s for the 18GB model (CPU-era figure).
+      workaround: 'Superseded on the deployed path: MI210 with -ngl 999 cold-loads in 4.0 s (measured 2026-07-31). The 15-20 s figure applies to CPU launches only.'
+      discovered: 2025-12-16
+      superseded: 2026-07-31
+    - issue: DEPLOYED CONTEXT IS 16384, NOT ctx_max. Both the MMMU cutover (vision_final.py) and the 2026-07-31 GPU co-residency measurement ran -c 16384. The 21,049 MB VRAM figure is a 16384-context, np=1
+        figure.
+      workaround: Do not launch near ctx_max 262144 — the four-model steady state already sits at 62.59 of 63.98 GiB (1.40 GiB headroom).
+      discovered: 2026-07-31
+  qwen25_coder_0_5b:
+    description: Qwen2.5-Coder-0.5B (draft_qwen25_coder)
+    quirks:
+    - issue: Incompatible with Qwen3 MoE models
+      workaround: Only use with Qwen2.5 dense models
+      discovered: 2025-12-16
+  qwen25_0_5b:
+    description: Qwen2.5-0.5B-Instruct (draft_qwen25)
+    quirks:
+    - issue: Best K varies by target model
+      workaround: K=24 for 32B, K=16 for 72B, K=8 for 7B
+      discovered: 2025-12-15
+  gemma3_spec_decode:
+    description: Gemma-3 family speculative decoding notes
+    quirks:
+    - issue: 'RESOLVED: Earlier crash was MTP-branch specific, not upstream'
+      workaround: Use upstream llama.cpp b7684+ (works correctly)
+      discovered: 2026-01-09
+      resolved: 2026-01-09
+      explanation: 'The crash was caused by MTP-branch-specific code that incorrectly cast
+
+        llama_kv_cache_iswa_context* to llama_kv_cache_context*. This code does
+
+        not exist in upstream llama.cpp master. Tested working with 20.8% acceptance
+
+        rate on Gemma-3-27B-QAT + Gemma-3-1B-IT draft.
+
+        '
+    - issue: Vocab mismatch between Gemma-3-1B and Gemma-3-27B-QAT (64 tokens)
+      workaround: Works despite mismatch - target vocab is superset of draft
+      discovered: 2026-01-09
+  general_llama_speculative:
+    description: llama-speculative binary general quirks
+    quirks:
+    - issue: 'May print ''decode: n_tokens == 0'' errors'
+      workaround: Usually non-fatal, generation still completes
+      discovered: 2025-12-16
+    - issue: Timeout wrapper can cause 'invalid argument' errors
+      workaround: Use 'env OMP_NUM_THREADS=1' prefix with timeout
+      discovered: 2025-12-16
+  general_llama_cli:
+    description: llama-cli binary - AVOID FOR BENCHMARKING
+    quirks:
+    - issue: Auto-enables interactive/conversation mode for Instruct models with chat templates
+      workaround: Use llama-completion instead, or add --no-conversation flag
+      discovered: 2025-12-16
+    - issue: Hangs waiting for user input after prompt completion
+      workaround: Use llama-completion for non-interactive generation
+      discovered: 2025-12-16
+    - issue: Different behavior between versions - flags change frequently
+      workaround: Prefer llama-completion for reliable, reproducible benchmarks
+      discovered: 2025-12-16
+  general_timeout_commands:
+    description: Using timeout with llama.cpp commands
+    quirks:
+    - issue: '''timeout: failed to run command OMP_NUM_THREADS=1'' error'
+      workaround: Use 'timeout N env OMP_NUM_THREADS=1 ...' (put env after timeout)
+      discovered: 2025-12-16
+    - issue: OMP_NUM_THREADS=1 before timeout doesn't work
+      workaround: timeout runs in subshell, use 'env' to pass env vars
+      discovered: 2025-12-16
+  lightonocr_2_1b_bbox:
+    description: LightOnOCR-2-1B-bbox (document_formalizer)
+    quirks:
+    - issue: llama-mtmd-cli enters interactive chat mode without --image and -p flags
+      workaround: Always provide BOTH --image AND -p flags for non-interactive OCR
+      discovered: 2026-01-20
+    - issue: Empty -p "" causes "invalid argument" error
+      workaround: Use -p "OCR" or -p "Extract text" - never empty prompt
+      discovered: 2026-01-20
+    - issue: Vision encoding bottleneck ~8s regardless of thread count
+      workaround: Use worker pool for throughput (8×12 threads > 4×24 threads)
+      discovered: 2026-01-20
+    - issue: BOS token is comma (,) - unusual but functional
+      workaround: No action needed - works correctly despite unusual token
+      discovered: 2026-01-20
+    - issue: Default context 16384 uses ~1.8 GB KV cache per worker
+      workaround: Memory budget ~10GB for 8 workers
+      discovered: 2026-01-20
+    - issue: PyTorch version extremely slow (0.009 pg/s)
+      workaround: Use GGUF version via llama.cpp for 19x speedup (0.17 pg/s)
+      discovered: 2026-01-20
+  ring_mini_linear:
+    description: Ring-mini-linear-2.0 — Ant Group Lightning Attention hybrid (NEW arch)
+    quirks:
+    - issue: Custom Bailing Jinja chat template not in built-in list
+      workaround: Launch with --jinja (executor.py adds this when use_chat_api=true). Without it llama-server aborts with "this custom template is not supported".
+      discovered: 2026-04-30
+    - issue: New architecture (LLM_ARCH_BAILINGMOE_LINEAR / "bailingmoe-linear")
+      workaround: Requires kernel commit c9626faf8+ on production-consolidated-v5 (or descendant). Pre-c9626faf8 builds fail to load with "unknown architecture" error.
+      discovered: 2026-04-30
+    - issue: No compatible draft model for speculative decoding
+      workaround: bailingmoe2 tokenizer (vocab 157184) ≠ qwen2 (151936). Cross-tokenizer spec-dec is research-stage; same-family Ring-flash-linear-2.0 drafter relationship untested.
+      discovered: 2026-04-30
+    - issue: Linear-attention recurrence is sequential at decode (no batching across time)
+      workaround: Decode at 40 t/s on Q4_K_M is bandwidth/sequence-bound, not compute-bound. Multi-instance NUMA shards may help aggregate throughput; not benchmarked.
+      discovered: 2026-04-30
+    - issue: Always emits <think>...</think> blocks (reasoning model — no non-thinking variant)
+      workaround: Set reasoning=auto (default) and reasoning_budget=4096 to control reasoning trace length. For latency-sensitive use, set reasoning=off to suppress think emission.
+      discovered: 2026-04-30
+    - issue: GroupRMSNorm (group_norm_size=4) on linear-attn output is non-standard
+      workaround: Implemented in llama.cpp via reshape→ggml_rms_norm→reshape (NOT ggml_group_norm which is LayerNorm semantics). v1 commit 33b60b925 had a bug; fix in c9626faf8 (factual queries survive
+        bug, multi-step reasoning collapses without fix). If reasoning quality regresses on a future kernel, audit ring-linear.cpp for accidental ggml_group_norm reintroduction.
+      discovered: 2026-04-30
+kernel_audits:
+- audit_date: 2026-04-30
+  branch: production-consolidated-v5
+  tip_sha: 23bcd6aaf
+  base_branch: production-consolidated-v4
+  base_sha: e734a6828
+  repo: /mnt/raid0/llm/llama.cpp-experimental
+  handoff: handoffs/active/v5-push-cleanup-audit.md
+  bundle: data/cpu_optimization/2026-04-30-v5-cleanup-audit/
+  research_deep_dive: research/numa-weights-deep-dive.md
+  summary: '59 commits ahead of v4 (50 cherry-picks + 9 strip/refactor commits net ~-940 LOC of dead-by-default deprecated code). Stripped: CPU22 work-stealing, GGML_RMS_NORM_PARALLEL, GGML_GDN_K_PER_HEAD,
+    CPU15 Phase 1+2 (intra-process expert sharding + anon-mmap copies), GGML_NUMA_WEIGHTS family (NUMA_REPLICATE, =local warmup, EXPERT_CCD_LAYOUT, EXPERT_ANON_COPIES). Refactors: GGML_EP_VERBOSE info-log
+    gating, GGML_MUL_MAT_BLOCK named constant. Toolchain operator-applied at build (clang-20+libomp+znver5+PGO; per-role BOLT-libggml for Coder-30B). Deployment-draft staging at handoffs/active/model-registry-v5-deployment-draft.yaml
+    (gates on future orchestrator-stack rollout, NOT applied yet).
+
+    '
+  validation:
+    build:
+      toolchain: clang-20 + libomp 5.1 + -march=znver5 (no PGO for sanity build)
+      errors: 0
+      warnings: 1 pre-existing test-code (unused 'rc' in test-expected-attention-eviction.cpp:582)
+    tripwire:
+      model: Qwen3-Coder-30B-A3B-Instruct Q4_K_M
+      test: tg32 r=5 canonical
+      result_t_per_s: 47.13 ± 0.74
+      threshold: '>=47 cold-boot'
+      pass: true
+    ppl_bit_exact:
+      model: Qwen3-Coder-30B-A3B-Instruct Q4_K_M
+      chunks: 1-12 at n_ctx=512
+      v5_ppl: 11.1146 ± 0.62405
+      v4_reference: 11.1146 ± 0.62405
+      match: bit-exact
+    no_regression_tg:
+    - model: Qwen3-Coder-30B-A3B-Instruct Q4_K_M
+      test: tg32 r=5
+      result_t_per_s: 47.49 ± 0.17
+      threshold: '>=46.0'
+      pass: true
+    - model: Qwen3.6-35B-A3B-Q8_0
+      test: tg32 r=5
+      result_t_per_s: 22.79 ± 0.04
+      threshold: '>=22.5'
+      pass: true
+    - model: Qwen3-Coder-REAP-246B-A35B Q4_K_M
+      test: tg32 r=5
+      result_t_per_s: 6.25 ± 0.01
+      threshold: '>=6.15'
+      pass: true
+    - model: gemma-4-31B-it Q4_K_M
+      test: tg64 r=5
+      result_t_per_s: 7.11 ± 0.01
+      threshold: '>=6.25'
+      pass: true
+    ppl_informational:
+    - model: Qwen3.6-35B-A3B-Q8_0
+      ppl_chunks_1_12: 7.3804 ± 0.34202
+      note: no v4 reference documented; healthy value
+    - model: Qwen3-Coder-REAP-246B-A35B Q4_K_M
+      ppl_chunks_1_12: 12.7699 ± 0.66145
+      note: no v4 reference documented; healthy value
+    - model: gemma-4-31B-it Q4_K_M
+      ppl_chunks_1_12: 13357.8082 ± 1744.94
+      note: instruction-tuned model on raw wiki.test — anomalously high PPL is EXPECTED (chat-template not applied), not a v5 regression
+    smoke_per_role: DEFERRED (needs orchestrator integration)
+  decisions_resolved:
+    Q1_cpu22_strip_or_keep: STRIP (closure-via-test failed under canonical)
+    Q2_legacy_q8_0_8x8: REFACTOR-AND-KEEP (gateway flag, complementary to AVX path)
+    Q3_numa_weights: STRIP code + research deep-dive note (research/numa-weights-deep-dive.md)
+    Q4_v4_baseline: in-place workflow (both repos resolve v4 to same SHA e734a6828)
+    Q5_toolchain_ordering: AFTER cherry-picks (final commit before push, no CMake source change)
+- audit_date: 2026-04-30
+  branch: production-consolidated-v5
+  tip_sha: c9626faf8
+  base_sha: 23bcd6aaf
+  repo: /mnt/raid0/llm/llama.cpp (production worktree)
+  handoff: handoffs/active/lightning-attention-port.md
+  summary: 'Lightning Attention port v1 — adds LLM_ARCH_BAILINGMOE_LINEAR for Ant Group Ring-mini-linear-2.0 (and Ring-flash-linear-2.0 if downloaded). Hybrid Lightning Attention (linear, fixed per-(layer,head)
+    ALiBi-style decay) + softmax MoE. Uses existing GGML_OP_GATED_LINEAR_ATTN op with constant-`g` — no new ggml ops. Full validation chain: regression on Qwen3-Coder-30B and Qwen3.5-9B (existing arches
+    still load+decode), converter end-to-end on real Ring-mini BF16 weights → 32.9 GB GGUF, gguf-dump verifies arch metadata + per-layer linear/softmax shape dispatch correct, llama-quantize BF16→Q4_K_M
+    load-path test passes, llama-bench tg8 = 40.68 t/s on Q4_K_M (96t), llama-completion produces COHERENT FACTUALLY-CORRECT output with native `<think>` reasoning, AIME 2025 Problem 1 solved correctly
+    (answer = 70).
+
+    '
+  commits:
+  - sha: 33b60b925
+    scope: 8 files, +408 lines (incl. new src/models/ring-linear.cpp)
+    note: Initial port — converter + arch enum + load_hparams + load_tensors + graph builder + dispatch wiring
+  - sha: c9626faf8
+    scope: 1 file, +13/-6 lines
+    note: GroupRMSNorm fix — replaces ggml_group_norm (LayerNorm semantics) with reshape+ggml_rms_norm. Critical for reasoning quality — without it, the model loads but multi-step reasoning collapses into
+      degenerate repetition loops. Single-step factual retrieval ("capital of France") survived the bug, masking it from initial smoke tests.
+  validation:
+    build:
+      toolchain: cmake -B build -DGGML_CUDA=OFF -DGGML_NATIVE=ON
+      errors: 0
+      warnings: 0 (new code clean; pre-existing test-code warning unchanged)
+    no_regression_existing:
+    - model: Qwen3-Coder-30B-A3B-Instruct Q4_K_M
+      test: tg8 r=1
+      result_t_per_s: 25.96
+      pass: true (loads + decodes)
+    - model: Qwen3.5-9B Q4_K_M (LLM_ARCH_QWEN35 hybrid)
+      test: tg8 r=1
+      result_t_per_s: 10.21
+      pass: true (loads + decodes — confirms is_hybrid extension safe)
+    new_arch:
+    - model: Ring-mini-linear-2.0 Q4_K_M
+      test: tg8 r=1 build_lightning
+      result_t_per_s: 40.68
+      pass: true
+    - model: Ring-mini-linear-2.0 Q4_K_M
+      test: AIME 2025 Problem 1 (correct answer = 70)
+      result: CORRECT — full step-by-step reasoning chain, sum 21 + 49 = 70
+      pass: true
+    long_context:
+    - model: Ring-mini-linear-2.0 Q4_K_M
+      test: pp32768+tg128 combined
+      result_t_per_s: 560.2
+      pass: true (no crash, no recurrence drift through 32K)
+speculative_decoding_policy:
+  canonical: true
+  ratified_by: operator
+  ratified_on: 2026-07-31
+  amended_on: 2026-10-03
+  amended_by_receipt: RATIFY-STACKCHG-DFLASH2-20261003
+  supersedes: 'All prior per-role prose describing `draft-mtp` alone as the production recipe, and the `ngram_candidate_spec_type` field (RETIRED — see below).
+
+    '
+  default_spec_type: draft-mtp
+  statement: 'No n-gram composition: a role that speculates runs ONE drafter, never `ngram-mod,<drafter>`. WHICH drafter is a per-model list here (`roles.<model_role>.drafters`) and a per-server selection
+    in the orchestrator''s stack_topology.yaml (`drafter_selection`). Legacy rows without `drafters` still hand-carry `spec_type: draft-mtp` until migrated.
+
+    '
+  superseded_recipe: 'REVERSED 2026-07-31 (same day it was adopted). The composed recipe `ngram-mod,draft-mtp` was adopted on the expectation of a large upside on repetitive / token-reuse context, with
+    a measured -1.6% cost on ordinary text accepted in exchange. The long-context coding test that was supposed to demonstrate that upside instead falsified it, and the exception case was falsified independently.
+    The trade was made with eyes open and is now unmade on evidence.
+
+    '
+  evidence_for_reversal:
+    long_context_coding_35b: 'Qwen3.6-35B-A3B Q8, 12 matched prompts at 15k-28k context (extend / port / fill-in-the-middle / prose). Composed won 0 of 12. Mean -4.06% against the first draft-mtp baseline
+      and -8.24% against a second replicate of the SAME baseline config. Mechanism is in the counters: composed drafts MORE and accepts LESS (extend_3: 518 -> 708 drafts, acceptance 0.734 -> 0.540). Each
+      rejected draft costs a full verification pass.
+
+      '
+    long_context_coding_gemma: 'gemma-4-26B-A4B Q4_K_M, same 12 prompts. Mean -0.04%. The real result is structural, not numeric: n-gram produced ZERO drafts on 9 of 12 prompts — those arms are byte-identical
+      in acceptance, draft count and tok/s. Coding output does not contain n-grams repeated from its context. Where it did fire (the 3 fill-in-the-middle prompts) acceptance fell from 0.78/0.84/0.78 to
+      0.67/0.68/0.62.
+
+      '
+    ordinary_text: '-1.6% mean on non-repetitive prose/code. Independent distinct-prompt re-run (ngramfix): -4.2% to +1.3% composed vs draft-mtp; n-gram ALONE costs 23-31%.
+
+      '
+    retracted_positive: 'The 2.80x that originally motivated composed was RETRACTED — a warm-context self-copy artifact from repeating one prompt, so the model copied its own prior answer (mean accepted
+      length 3.58 -> 15.88, acceptance -> 1.000).
+
+      '
+    harness_caveat: 'The 35B coding run executed its arms sequentially and its two same-config replicates differ by +4.17% (11/11 consistent), i.e. monotonic host drift over the ~2h window. DIRECTION survives
+      — composed loses against both the early and the late baseline, 0/12 and 0/11 — but quoted MAGNITUDES are soft.
+
+      '
+  where_ngram_does_win: 'TASK-CLASS SCOPED, not a default. Composed wins only where the OUTPUT repeats itself or repeats the input verbatim, AND verification is cheap (small active parameter count). Measured
+    on fresh servers: gemma-4-26B-A4B Q4_K_M on a repetitive strict-JSON tool_call, 143.58 -> 330.57 t/s (2.30x); Qwen3.5-9B Q4_K_M generating 1024 literal repetitions of one word, 114.81 -> 466.47 t/s
+    (4.06x). The SAME gemma fixture on a non-repetitive coding explanation (harness-verified repeated_5grams = 0) gave +0.07% — a dead wash — and the n-gram arm FAILED a quality check the draft-mtp arm
+    passed. Large models lose outright: Qwen3-Coder-480B refactoring -34% at 18.4% acceptance. Re-enabling composed for a specific role requires measuring THAT role''s real traffic, not a synthetic repetitive
+    fixture.
+
+    '
+  exceptions:
+    ingest_long_context:
+      status: closed
+      closed_on: 2026-10-03
+      model: Qwen3-Next-80B-A3B-Instruct
+      spec_type: none
+      category: OPTIMUM
+      reason: 'Qwen3-Next-80B is an SSM/MoE hybrid. Its recurrent state cannot fork, so NO external draft-model path exists and none can be built. n-gram alone yields 1.6-4.7% acceptance, i.e. nothing.
+        `--spec-type none` is therefore the BEST AVAILABLE configuration for this model — it is this model''s OPTIMUM and BELONGS IN HEADLINE TABLES. It is emphatically NOT a baseline and must never be
+        excluded from a headline on the grounds that "speculation is off". That exact mistake was made on 2026-07-31.
+
+        '
+  measurement_categories:
+    BASELINE: 'An optimization the model HAS, deliberately switched OFF. Diagnostic only. Belongs in an addendum. NEVER a headline number. NEVER a comparison arm in a promotion decision. A BASELINE regression
+      does NOT block a promotion; a BASELINE improvement is NOT a promotion argument.
+
+      '
+    OPTIMUM: 'The best configuration AVAILABLE for that model. If a model has no draft path, running it with `--spec-type none` IS its OPTIMUM (see ingest_long_context above) — that is not a baseline and
+      it belongs in headline tables. Promotion decisions are made between OPTIMUM configs and nothing else.
+
+      '
+    CANDIDATE: 'Measured but NOT adopted. Must be labelled as such so it is never mistaken for what production runs.
+
+      '
+  promotion_rule: 'Promotion is decided on the production-OPTIMAL configuration alone. A regression in a BASELINE-category measurement is not a promotion blocker and must not be cited as one. See MEASUREMENT.md
+    / agents/shared/MEASUREMENT_POLICY.md for the ratified constitution-level wording.
+
+    '
+  effective_only_after: 'scripts/registry/stack_change_pipeline.py must regenerate orchestration/derived/stack_priors.yaml before a registry spec_type change reaches a launched server. A master-registry
+    edit alone does NOT change production behaviour.
+
+    '
+  runtime_switchability:
+    launch_fixed:
+      spec_type: 'LAUNCH-ONLY. `--spec-type` (common/arg.cpp:3934-3946) appends to `params.speculative.types` at server start. Which drafters are active — and therefore whether the n-gram lane is composed
+        in at all — is fixed for the life of the process. The per-request `speculative.type` field IS registered in the server schema (tools/server/server-schema.cpp:220-224) but sits inside `#if 0` (opened
+        at :210, closed at :234) under the upstream comment at :209 — "disable speculative parameter adjustments that are not wired per request". It is NOT compiled into the production binary. Autopilot
+        CANNOT switch drafter per request.
+
+        '
+      draft_model: 'LAUNCH-ONLY. `--spec-draft-model` / `-md` / `--model-draft` (common/arg.cpp:3927). No per-request equivalent exists in any compiled path.
+
+        '
+      ngram_composition: 'LAUNCH-ONLY, and NOT selectively disableable. The ngram lanes are configured exclusively by launch flags: `--spec-ngram-mod-n-min` / `-n-max` / `-n-match` (common/arg.cpp:3945-3973),
+        `--spec-ngram-simple-size-n` / `-size-m` / `-min-hits` (:3976-4004), `--spec-ngram-map-k-*` (:4007+). Their per-request counterparts (`speculative.ngram_size_n` / `_size_m` / `_min_hits`, server-schema.cpp:226-233)
+        are inside the same `#if 0`. Consequence: a request cannot turn ngram off while leaving draft-mtp on — under a composed launch the only per-request lever is the shared draft budget, which kills
+        BOTH arms together. Selective ngram requires SEPARATE SERVER INSTANCES.
+
+        '
+      draft_n_min_and_p_min: 'LAUNCH-ONLY. `--spec-draft-n-min` (common/arg.cpp:3868) and `--spec-draft-p-min` (:3883). The per-request `speculative.n_min` and `speculative.p_min` fields (server-schema.cpp:211-218)
+        are inside the `#if 0` and are not compiled in.
+
+        '
+    per_request:
+      speculative.n_max: "LIVE IN v9, AND LOWER-ONLY. `speculative.n_max` is registered OUTSIDE the `#if 0` (tools/server/server-schema.cpp:205-207, hard limits 0..INT32_MAX, \"0 disables speculation for\
+        \ the request\"). Post-processing then clamps it to the launch value — server-schema.cpp:542-547:\n  \"Per-request speculation may only reduce the launch-time budget. The\n   server sizes its output\
+        \ buffers from the launch parameters, so report\n   the clamped value that will actually be used by the slot.\"\n  params.speculative.draft.n_max = std::min(\n          params.speculative.draft.n_max,\n\
+        \          params_base.speculative.draft.n_max);\nThe slot applies it with a second min at server-context.cpp:437. So a request may LOWER the draft budget (down to 0 = no speculation for that request)\
+        \ but can NEVER raise it above the `--spec-draft-n-max` the server was launched with. Any autopilot search over n_max is therefore bounded ABOVE by the launch value and needs a relaunch to explore\
+        \ higher. NOTE the separate hazard recorded in SR-3 of epyc-root/handoffs/active/speculative-decoding-mtp-refresh.md: under a COMPOSED recipe `n_max` is a soft budget, not a cap — measured mean\
+        \ accepted run length 2.36-2.67 at n_max=2 — because the ngram lane has its own independent `--spec-ngram-mod-n-max`.\n"
+    v8_claim_corrected: 'A 2026-07-31 source read of v8 (`67a433bf4`) concluded that the ENTIRE per-request speculative surface was compiled out, `speculative.n_max` included. That was true of v8 and is
+      FALSE of v9: at 0db32c06e3e550065b78311a6031ef3dd2c4f27c the `#if 0` opens at :210, i.e. BELOW the `speculative.n_max` registration at :205, and the :542-547 clamp exists specifically to bound the
+      newly-live field. Do not carry the v8 claim forward. Any statement about this surface must name the kernel commit it was read at.
+
+      '
+    autopilot_implication: 'A per-request drafting policy is possible on v9 only in the LOWER direction and only for the shared budget: skip or shorten drafting for a request, never lengthen it, and never
+      per-lane. Everything else — which drafters, which draft model, the ngram parameters, n_min, p_min — is a RELAUNCH, and raising the ceiling above the launch budget is a relaunch too. Enabling the `#if
+      0` block would be a KERNEL CHANGE: it must ride the full experimental -> validate -> new-production cycle in CLAUDE.md, never a patch to a frozen production tree.
+
+      '
+  retired_fields:
+    ngram_candidate_spec_type: 'RETIRED 2026-07-31. This field previously carried `ngram-mod,draft-mtp` while `spec_type` carried `draft-mtp`, which read as "the real one is elsewhere" and directly caused
+      mis-launched measurement runs. The composed recipe is now the value of `spec_type` itself. Any surviving occurrence of this key is stale and MUST be deleted, not consulted.
+
+      '
+server_mode:
+  frontdoor:
+    no_mmap: true
+    url: http://localhost:8070
+    port: 8070
+    slots: 4
+    cache_ram: 32768
+    serving_shape:
+      n_ctx: 262144
+      slots_by_shape:
+        full: 4
+        half: 1
+      kv_quant:
+        k: q8_0
+        v: q8_0
+      kv_kib_per_token_f16: 0.001
+    chat_template_kwargs:
+      enable_thinking: false
+    chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+    chat_template:
+      provenance: epyc_built_terse_v1
+      served_template_bytes: 25808
+      served_template_sha256_12: 1443ea9ab4bb
+      base: froggeric v22.3 minus inline-tag scan plus Sharp terseness
+      evidence: 'CT-1b A/B artifacts: /workspace/artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/ct1b-terse/. E-7: frontdoor''s calibration stamps are voided by the template axis and must re-measure.'
+    model_role: qwen36_35b_a3b_mtp_q8_local
+    shared_with:
+    - worker_summarize
+    - worker_general
+    - worker_explore
+    - worker_math
+    - toolrunner
+    - worker
+    description: 'Root LM — Qwen3.6-35B-A3B MTP Q8 (quality 93%, May-4 Claude-as-Judge 170/183; v6 NEXTN self-draft). 2026-09-22: UNCHANGED MODEL, WIDENED TENANCY — this :8070 process now also serves worker_general,
+      worker_explore, worker_math and toolrunner, inherited from the retired gemma4-26B-A4B. The 170/183 stamp is frontdoor''s own and does NOT transfer to the worker battery; see roles.worker_general.performance.'
+    benchmark_date: 2026-05-04
+    benchmark_score: 170/183 (92.9%)
+    model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    memory_gb: 0.01
+    tier: hot
+    numa_instances: 2
+    numa_ports:
+    - 8080
+    - 8180
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      draft_max: 4
+      lookup: false
+      corpus_retrieval: true
+    throughput: 40.22
+    previous_model: Qwen3.5-35B-A3B-UD-Q4_K_M.gguf
+  coder_escalation:
+    no_mmap: true
+    url: http://localhost:8083
+    port: 8083
+    slots: 1
+    chat_template_kwargs:
+      enable_thinking: true
+      reasoning_effort: medium
+    model_role: qwen38_27b_q8_local
+    description: 'Coding escalation — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0. 2026-07-31: MOVED off frontdoor''s :8070 shared 35B process onto
+      architect_general''s :8083 GPU process; alias, launches no server of its own. 2026-09-27 ARCHSWAP: the :8083 host role is now architect_critic (same process, same model). Quality on this model NOT
+      yet measured for the coder suite. Former Qwen2.5-Coder-32B-Q4 preserved as qwen25_coder_32b_q4km.'
+    alias_of: architect_critic
+    benchmark_date: null
+    benchmark_score: null
+    model: Qwen3.8-27B-Q8_0.gguf
+    model_path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+    kv_quant:
+      k: q8_0
+      v: q8_0
+    memory_gb: 0.01
+    vram_gib: 36.7
+    tier: hot
+    acceleration:
+      type: none
+      inherits_spec_from: architect_critic
+      lookup: false
+      corpus_retrieval: true
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection:
+        server: architect_critic
+        model_role: qwen38_27b_q8_local
+        drafter: dflash2
+        source: stack_topology.drafter_selection
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+        inherited_by: coder_escalation
+    throughput: 47.79
+    previous_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+  worker:
+    url: http://localhost:8070
+    port: 8070
+    slots: 4
+    kv_quant:
+      k: q8_0
+      v: q8_0
+    alias_of: frontdoor
+    model_role: qwen36_35b_a3b_mtp_q8_local
+    description: 'Try-cheap-first worker — ALIAS on frontdoor''s :8070 Qwen3.6-35B-A3B MTP Q8 process. 2026-09-22: gemma4-26B-A4B Q4_K_M RETIRED; worker_general and its worker_explore / worker_math / toolrunner
+      aliases moved onto the 35B that was already serving frontdoor and worker_summarize. Not a distinct model and not a distinct server.'
+    model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    model_path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+    chat_template_kwargs:
+      enable_thinking: false
+    memory_gb: 0
+    tier: hot
+    previous_model: gemma-4-26B-A4B-it-ORIG-Q4_K_M.gguf
+    acceleration:
+      type: none
+      inherits_spec_from: frontdoor
+      spec_type: draft-mtp
+      draft_max: 4
+      lookup: false
+      corpus_retrieval: true
+    throughput: 40.22
+  worker_vision:
+    url: http://localhost:8086
+    port: 8086
+    slots: 1
+    serving_shape:
+      n_ctx: 65536
+      kv_quant:
+        k: q8_0
+        v: q8_0
+      kv_kib_per_token_f16: 0.001
+      vram_non_kv_gib: 0.01
+    shared_with:
+    - vision_escalation
+    description: Vision — Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210 (MMMU-250 63.6% vs Qwen2.5-VL-7B 52.4%, +11.2 pp, paired exact McNemar p=0.0011)
+    model:
+      name: Qwen3-VL-30B-A3B-Instruct
+      path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+      mmproj_path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf
+      quant: Q4_K_M
+      size_gb: 17.3
+      architecture: qwen3vlmoe
+      ctx_max: 262144
+    previous_model: Qwen2.5-VL-7B-Instruct-Q4_K_M.gguf
+    memory_gb: 0.01
+    vram_mb: 21049
+    tier: warm
+    device: none
+    acceleration:
+      type: baseline
+    throughput: 112.2
+  architect_critic:
+    no_mmap: true
+    url: http://localhost:8083
+    port: 8083
+    slots: 4
+    cache_ram: 65536
+    cache_idle_slots: false
+    serving_shape:
+      n_ctx: 393216
+      batch: 512
+      ubatch: 512
+      kv_unified: true
+      kv_quant:
+        k: q8_0
+        v: q8_0
+      kv_kib_per_token_f16: 0.001
+      vram_non_kv_gib: 0.01
+      vram_non_kv_drafter: dflash2
+      vram_non_kv_ubatch: 512
+    chat_template_kwargs:
+      enable_thinking: true
+      reasoning_effort: medium
+    chat_template_file: /mnt/raid0/llm/models/chat-templates/epyc-qwen3x-v1-terse.jinja
+    chat_template:
+      provenance: epyc_built_terse_v1
+      served_template_bytes: 25808
+      served_template_sha256_12: 1443ea9ab4bb
+      base: froggeric v22.3 minus inline-tag scan plus Sharp terseness
+      evidence: 'CT-1b A/B artifacts: /workspace/artifacts/chat-templates/epyc-qwen3x-v1/ab-cpu-20260821/ct1b-terse/ (measured on Qwen3.6-35B-A3B; UNMEASURED on this role''s Qwen3.8-27B). E-7: this role''s
+        calibration stamps are voided by the template axis and must re-measure. NOTE this REPLACES the Unsloth-embedded template documented under the qwen38_27b_q8_local role row.'
+    model_role: qwen38_27b_q8_local
+    description: 'System architecture — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0), at MEDIUM reasoning effort as of 2026-09-22. 2026-08-20: artifact swapped from Qwen3.6-27B-MTP-Q8_0 (rollback anchor: qwen36_27b_mtp_q8_local,
+      retained). 2026-07-31: 122B vacated to the new architect_critic role. PRIMARY for the :8083 GPU process; coder_escalation AND, from 2026-09-22, ingest_long_context are aliases on it. n_ctx raised
+      65536 -> 196608 once worker_vision vacated the card.'
+    shared_with:
+    - coder_escalation
+    - ingest_long_context
+    agent_file_compression_operating_point: none
+    model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+    memory_gb: 0.01
+    vram_gib: 36.7
+    tier: hot
+    acceleration:
+      type: speculative_decoding
+      lookup: false
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection: &id001
+        server: architect_critic
+        model_role: qwen38_27b_q8_local
+        drafter: dflash2
+        source: stack_topology.drafter_selection
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+    device: ROCm0
+    ngl: all
+    numa_instances: 1
+    numa_ports:
+    - 8083
+    throughput: 47.79
+    previous_model: Qwen3-235B-A22B-Q4_K_M.gguf
+    draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+  architect_general:
+    no_mmap: true
+    url: http://localhost:8074
+    port: 8074
+    slots: 1
+    cache_ram: 32768
+    serving_shape:
+      n_ctx: 262144
+      slots_by_shape:
+        full: 1
+      kv_quant:
+        k: f16
+        v: f16
+      kv_kib_per_token_f16: 0.001
+      kv_kib_per_token_f16_measured: 24.0
+      kv_kib_per_token_f16_mtp_head_observed: 9.0
+    chat_template_kwargs:
+      enable_thinking: false
+    model_role: qwen38_flash_next_ud_iq4xs_local
+    description: 'Adversarial plan critic — Qwen3.8-Flash-Next UD-IQ4_XS (qwen4exp, 512 experts / 10 active, SSM+attention hybrid, trained ctx 262144 verified from the GGUF header). 2026-09-22: replaces
+      Qwen3.5-122B-A10B UD-Q4_K_M (RETIRED). SOLE ROLE ON THIS PROCESS — ingest_long_context is NOT an alias here (operator ruling C2). Consultable (architect_critic.critique_plan) AND routable (boosted-reasoning
+      escalation).'
+    previous_wiring: architect_general_8083
+    previous_model: /mnt/raid0/llm/models/Qwen3.5-122B-A10B-MTP-GGUF/UD-Q4_K_M/Qwen3.5-122B-A10B-UD-Q4_K_M-00001-of-00003.gguf
+    agent_file_compression_operating_point: aggressive
+    model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+    draft_model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+    memory_gb: 0.01
+    tier: hot
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      draft_max: 4
+      draft_p_min: 0.5
+      draft_model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+      lookup: false
+    recipe:
+      recipe_id: qwen38-flash-next-cpu-mtp
+      module: epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py
+      surface: cpu-decode
+      threads: 48
+      cpu_shape: NUMA_FULL_T48
+      no_mmap: true
+      flash_attn: true
+      env:
+        GGML_NOHUGEPAGE_PROCESS: '1'
+        GGML_FA_SPLIT_KV: '0'
+      measured_at_context: 8192
+      measured_on_kernel: ef81196d5 / build 10241 (llama.cpp-experimental champion)
+      measured_artifact: IQ4_XS-uniform single-file (98,392,912,256 B)
+    numa_instances: 1
+    numa_ports:
+    - 8074
+    throughput: 52.7
+    throughput_measured_at_context: 8192
+    benchmark_date: 2026-09-14
+  ingest_long_context:
+    url: http://localhost:8083
+    port: 8083
+    slots: 4
+    kv_quant:
+      k: q8_0
+      v: q8_0
+    alias_of: architect_critic
+    model_role: qwen38_27b_q8_local
+    chat_template_kwargs:
+      enable_thinking: true
+      reasoning_effort: medium
+    description: 'Long-context ingest alias — resolves to the :8083 process (architect_general until 2026-09-27, architect_critic since the ARCHSWAP) (Qwen3.8-27B dense Q8, MI210 ROCm0, :8083). Not a distinct
+      model and not a distinct server. 2026-09-22: replaces Qwen3-Next-80B-A3B-Instruct-Q4_K_M (RETIRED), which ran three dedicated CPU instances on :8085/:8185/:8285.'
+    alias_note: '2026-10-03 (STACKCHG-KVPOOL-20261003): the role''s declared 262144 PER REQUEST is restored. :8083 now runs a UNIFIED 393216-token pool, and every request is capped at the model''s training
+      context 262144 (by the v10 server itself and by the orchestrator''s context limits). The pool is SHARED: one full 262144 request leaves 131072 for the other three slots, and two concurrent full-262144
+      requests do not fit — through the orchestrator the second one queues. History: 2026-09-24..10-03 the deployed context was a UNIFIED 196608-token pool, the 2026-09-22 operator allocation (VL-30B then
+      shared the card). See server_mode.architect_critic.serving_shape.'
+    previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf
+    agent_file_compression_operating_point: medium
+    model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+    memory_gb: 0
+    tier: hot
+    device: ROCm0
+    acceleration:
+      type: none
+      inherits_spec_from: architect_critic
+      lookup: false
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection:
+        server: architect_critic
+        model_role: qwen38_27b_q8_local
+        drafter: dflash2
+        source: stack_topology.drafter_selection
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+        inherited_by: ingest_long_context
+    throughput: null
+    throughput_previous_model: 14.4-20.8
+    benchmark_score: null
+    notes: '2026-09-22: ⚠ THE ARCHITECTURAL RATIONALE THAT SELECTED THE OLD MODEL DOES NOT SURVIVE. Qwen3-Next-80B won this role because SSM-hybrid linear attention scales O(n) per token and therefore outperforms
+      pure-attention models at extreme context. The Qwen3.8-27B is a DENSE model with 65 blocks x 4 kv-heads — the KV-densest artifact in the fleet, 3x the 35B''s per-token cost — and it is exactly that
+      density that caps this process at 196608. The role keeps its name and loses its reason. Recorded here rather than argued away; a long-context quality and cost re-measure is the gate, not an optional
+      follow-up. Stage-2 review of three_stage_summarization escalates to frontdoor, which is unchanged (Qwen3.6-35B-A3B Q8, CPU :8070), so that pipeline hop is NOT affected by this change.'
+roles:
+  frontdoor:
+    tier: A
+    description: 'Root LM — Qwen3.6-35B-A3B Q8 (E-7 2026-08-22 at terse template 1443ea9ab4bb: math 82.5%, mmlu_pro 37.5%, gpqa_diamond 55.0%, cruxeval 32.5%; May-4 judge 93% VOIDED by the template swap)'
+    agent_file_compression_operating_point: aggressive
+    backend:
+      type: local
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 37
+      architecture: qwen35moe
+      ctx_max: 262144
+      attention_layers: 28
+      previous_model: Qwen3.5-35B-A3B-UD-Q4_K_M (swapped 2026-05-04; +11pp, +80% t/s under canonical)
+      use_chat_api: true
+      disable_thinking: true
+      reasoning: auto
+      max_tokens_multiplier: 4
+    candidate_roles:
+    - frontdoor
+    - general
+    - ingest
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      draft_max: 4
+      draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      lookup: false
+      corpus_retrieval: true
+    performance:
+      baseline_tps: null
+      optimized_tps: 40.22
+      optimized_tps_attest: '[P-BENCH-PLACEMENT-1, n=3, 2026-07-30, attest data/numa_placement/20260730-P-BENCH-PLACEMENT-1/prodopt_results.txt]'
+      quality_pct: null
+      benchmark_date: null
+      math_suite: 33/40 (82.5%)
+      mmlu_pro_suite: 15/40 (37.5%)
+      gpqa_diamond_suite: 22/40 (55.0%)
+      cruxeval_suite: 13/40 (32.5%)
+    memory:
+      residency: hot
+      pinned: true
+    tool_permissions:
+      web_access: true
+      allowed_categories:
+      - web
+      - file
+      - data
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.3
+    system_prompt_suffix: 'Provide clear, user-friendly explanations.
+
+      Elaborate on specialist outputs when presenting to users.
+
+      Be direct — avoid filler, repetition, and unnecessary preamble.
+
+      '
+  coder_escalation:
+    tier: B
+    description: 'Coding escalation — Qwen3.8-27B dense Q8 MTP on MI210 (ROCm0). E-7 2026-08-22 at terse template 1443ea9ab4bb: math 85.0%, mmlu_pro 27.5%, gpqa_diamond 47.5%, cruxeval 22.5% (alias on architect_general''s
+      :8083; same stamps). 2026-07-31: MOVED off frontdoor. Alias on architect_general''s :8083 process; NO LONGER the same model as frontdoor and no longer shares its GGUF mmap. Absorbs the eliminated
+      architect_coding role. Former Qwen2.5-Coder-32B-Q4 preserved as qwen25_coder_32b_q4km.'
+    model:
+      name: Qwen3.8-27B-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 27.05
+      architecture: qwen35
+      attention_layers: 64
+      n_embd: 5120
+      ctx_max: 262144
+      previous_model: 'Qwen3.6-35B-A3B-MTP-Q8_0 (2026-07-31: role moved off frontdoor''s shared :8070 35B process onto architect_general''s :8083 GPU 27B). Prior: Qwen3-Coder-30B-A3B-Instruct-Q4_K_M (swapped
+        2026-05-06).'
+      use_chat_api: true
+      disable_thinking: false
+      reasoning: auto
+      max_tokens_multiplier: 4
+    candidate_roles:
+    - coder
+    - general
+    acceleration:
+      type: none
+      inherits_spec_from: architect_critic
+      lookup: false
+      corpus_retrieval: true
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection:
+        server: architect_critic
+        model_role: qwen38_27b_q8_local
+        drafter: dflash2
+        source: stack_topology.drafter_selection
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+        inherited_by: coder_escalation
+    performance:
+      inherits_from: architect_critic
+      baseline_tps: 30.87
+      optimized_tps: 47.79
+      optimized_tps_long_context: 36.71
+      optimized_tps_attest: '[published stack measurement record §01, 2026-07-31]'
+      contended_tps: 19.81
+      swe_verified_pct: null
+      swe_verified_raw: null
+      swe_verified_instrument: 'VOIDED 2026-08-22: was ''SWE-bench Verified, oracle-file, v4 tail replay, n=40, 2026-07-27'' measured on Qwen3.6-27B-MTP (arm A3). Alias now serves Qwen3.8-27B + terse template
+        on :8083.'
+      quality_pct: null
+      math_suite: 34/40 (85.0%)
+      mmlu_pro_suite: 11/40 (27.5%)
+      gpqa_diamond_suite: 19/40 (47.5%)
+      cruxeval_suite: 9/40 (22.5%)
+      gpqa_diamond_cot_suite: 45/60 (75.0%)
+      coder_suite: null
+      agentic_suite: null
+      speedup: 1.55x
+    memory:
+      residency: hot
+      pinned: false
+    escalation_from: frontdoor
+    use_cases:
+    - 'First failure from frontdoor on code tasks. 2026-07-31: this is now a REAL escalation to a DIFFERENT model on a DIFFERENT server (:8070 CPU 35B MoE -> :8083 GPU 27B dense). Until today it was the
+      same GGUF in the same process — "(separate slot)" was false since the 2026-05-09 consolidation.'
+    - Multi-file refactoring requiring broader context
+    - Hardest coding/architecture escalation (absorbs eliminated architect_coding role)
+    - Complex debugging spanning multiple components
+    benchmark_date: null
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.2
+    system_prompt_suffix: 'Output code only. No explanations unless requested.
+
+      Include minimal inline comments. No boilerplate or filler.
+
+      Handle edge cases explicitly.
+
+      '
+  ingest_long_context:
+    tier: B
+    description: 'Large document ingestion, synthesis & summarization. 2026-09-22: ALIAS on the :8083 MI210 process (host role architect_critic since the 2026-09-27 ARCHSWAP) (Qwen3.8-27B dense Q8) — was
+      three dedicated CPU instances of Qwen3-Next-80B-A3B-Instruct Q4_K_M on :8085/:8185/:8285, RETIRED.'
+    agent_file_compression_operating_point: medium
+    model:
+      name: Qwen3.8-27B-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 27.05
+      architecture: qwen35
+      attention_layers: 64
+      mtp_capable: true
+      ctx_max: 262144
+      shared_gguf_with: architect_critic
+      use_chat_api: true
+      disable_thinking: false
+      reasoning: auto
+      max_tokens_multiplier: 4
+      previous_model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M
+    candidate_roles:
+    - ingest
+    - summarization
+    - architect
+    acceleration:
+      type: none
+      inherits_spec_from: architect_critic
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection:
+        server: architect_critic
+        model_role: qwen38_27b_q8_local
+        drafter: dflash2
+        source: stack_topology.drafter_selection
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+        inherited_by: ingest_long_context
+    performance:
+      baseline_tps: null
+      optimized_tps: null
+      speedup: n/a
+      previous_model_record:
+        model: Qwen3-Next-80B-A3B-Instruct-Q4_K_M
+        baseline_tps: 10.12
+        optimized_tps: 10.12
+        long_context_tps_range: 14.4-20.8 t/s @ ~12K context (May-4 long_context suite)
+        summarization_benchmark: 73.8s for 464 tokens on Twyne whitepaper (10K context)
+        long_context_quality: 25/27 (93%) on canonical long_context suite, May-4 Claude-as-Judge
+      long_context_quality: null
+    memory:
+      residency: hot
+      pinned: true
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.2
+    system_prompt_suffix: 'Synthesize key points from the provided documents.
+
+      Use structured headings for organization.
+
+      Cite source locations when referencing specific content.
+
+      Be thorough but not verbose — prioritize signal over volume.
+
+      '
+  architect_general:
+    tier: A
+    description: 'System architecture, invariants, acceptance tests - emits IR only. 2026-09-27 ARCHSWAP (operator-decided): served by Qwen3.8-Flash-Next UD-IQ4_XS on the full CPU instance (:8074, the process
+      that was architect_critic) so the graph''s existing escalation paths reach the strongest model. Top of the escalation chain. The 27B''s E-7 stamps moved with the 27B to roles.architect_critic.'
+    agent_file_compression_operating_point: aggressive
+    backend:
+      type: local
+    model:
+      name: Qwen3.8-Flash-Next-UD-IQ4_XS
+      huggingface_id: unsloth/Qwen3.8-Flash-Next-GGUF
+      path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      quant: UD-IQ4_XS
+      size_gb: 87.25
+      split_count: 3
+      architecture: qwen4exp
+      block_count: 48
+      attention_layers: 12
+      expert_count: 512
+      expert_used_count: 10
+      ctx_max: 262144
+      multimodal: true
+      previous_model: Qwen3.5-122B-A10B-UD-Q4_K_M
+    candidate_roles:
+    - architect
+    - critic
+    - reasoning
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      draft_model: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+      draft_max: 4
+      draft_p_min: 0.5
+      k: 4
+      p_split: 0
+      lookup: false
+      kv_cache:
+        type_k: f16
+        type_v: f16
+      recipe_id: qwen38-flash-next-cpu-mtp
+      benchmarked: 2026-09-14
+    performance:
+      baseline_tps: 27.893
+      optimized_tps: 43.281
+      speedup: 1.55x
+      measurement_scope: -c 8192, -np 1, IQ4_XS-uniform, build 10241 — NOT the served shape
+      quality_score: null
+      general_suite_quality:
+        suite_mmlu_pro:
+          accuracy: 0.755
+          n: 200
+          truncated: 0
+          max_tokens: 8192
+        suite_gpqa:
+          accuracy: 0.6513
+          n: 195
+          truncated: 0
+          max_tokens: 16384
+        measured_on: 2026-09-23
+        kernel: production-consolidated-v10 (ffc1bac82, build 10303)
+        instrument_class: serving
+        scope: 'Live :8074 IN ITS DEPLOYED CONFIGURATION (-t 96, -c 262144, -np 1, f16/f16, --spec-draft-n-max 4, unsloth UD-IQ4_XS 3-shard). NOT a llama-bench arm and NOT the recipe''s measured shape --
+          the served process does not run its own recipe (SSU-F11: threads 48 and the recipe env block are declared and never read). So these are never comparable to optimized_tps above, which was taken
+          at -t 48 on build 10241 with the THP shim.'
+        cap_convergence: 'THE TOKEN CAP IS PART OF THE CLAIM, and these are the CONVERGED figures: the cap was raised per suite until truncation reached zero, so pooled == untruncated and nothing is scored
+          wrong merely for being cut off. At the promotion gate''s conventional 64-token cap this same model on these same 200 items scores 0.5650 with 46 truncated, which reads as a regression against
+          the retired Qwen3.5-122B''s 0.6450 and is not one: that model truncated 0/200 at the same cap because it answers with a letter while this one derives in the visible channel. NEVER quote a capped
+          figure against an uncapped one. See promotion_gates.yaml gates.quality.truncation_audit.'
+        incumbent_comparison: Qwen3.5-122B (retired) recorded mmlu_pro 0.6450 / gpqa 0.5692 at max_tokens 64 with 0 truncated. Those are its GATE numbers and were never re-run at a raised cap, so the comparison
+          is like-for-like only in that both sides are untruncated; treat the incumbent's as a lower bound of unknown tightness.
+      measurement_category: OBSERVATION
+      measurement_date: 2026-09-08
+      contention_note: 'This role''s single full instance on 0-95 holds ALL FOUR CPU region locks; while it runs it serializes the entire CPU NUMA topology (stack_numa.py:274-276). That is inherent and
+        accepted for this role, but it is the real cost of tier:hot — not the 69 GB — which is now 90 GiB. ⚠ 2026-09-22: THIS IS WHY ingest_long_context WAS NOT ALIASED HERE. An earlier draft merged it
+        onto this instance, which would have put routine traffic (Stage 1 of three_stage_summarization) behind the whole-machine lock. The D2 ruling (2026-07-31) narrowed the `reasoning` escalation chain
+        to explicit_request ONLY so routine traffic could never summon it, and D2''s named prerequisite — `region_lock_wait_s_by_holder` telemetry — still does not exist anywhere in the codebase. Operator
+        ruling C2 sent ingest_long_context to the GPU 27B instead. This instance remains single-role, and the `reasoning` chain remains the only routed path to it.'
+    memory:
+      residency: hot
+      pinned: true
+    paged_attention:
+      recommended: true
+      block_size: 64
+      reason: 87 GiB model is memory-bound, benefits from block prefetching
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.1
+    system_prompt_suffix: 'Be maximally concise. Use bullet points, not prose.
+
+      Output structured plans, not narrative.
+
+      Other agents will elaborate — stop once the decision is clear.
+
+      '
+  architect_critic:
+    tier: B
+    description: Adversarial plan critic — fatal flaws, unstated assumptions, and an explicit DELETE lens; emits structured critique only — 2026-09-27 ARCHSWAP (operator-decided), served by Qwen3.8-27B
+      Q8 on the MI210 (:8083, the process that was architect_general; host of coder_escalation + ingest_long_context). Reached by direct request and the critique_plan consult skill; not an escalation target.
+    agent_file_compression_operating_point: none
+    model:
+      name: Qwen3.8-27B-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 27.05
+      architecture: qwen35
+      attention_layers: 64
+      n_embd: 5120
+      ctx_max: 262144
+      use_chat_api: true
+      disable_thinking: false
+      reasoning: auto
+      max_tokens_multiplier: 4
+      previous_model: 'Qwen3.5-122B-A10B UD-Q4_K_M (2026-07-31: 122B vacated to the new architect_critic role, CPU :8074). Prior: Qwen3-235B-A22B-Q4_K_M (swapped 2026-03-19).'
+    candidate_roles:
+    - architect
+    - general
+    - coder
+    acceleration:
+      type: speculative_decoding
+      p_split: 0
+      lookup: false
+      notes: '2026-07-31: architect MTP via the MTP-embedded Qwen3.6-27B variant (draft = same GGUF as model; launcher omits -md for same-realpath drafts). Served on MI210 (ROCm0) with -ngl all -fa on.
+        The 122B NEXTN history moved with the model to architect_critic.
+
+        '
+      benchmarked: 2026-07-31
+      spec_type: draft-dflash
+      draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+      draft_max: 7
+      n_gpu_layers_draft: 99
+      k: 7
+      drafter_selection: *id001
+    performance:
+      superseded_model_history:
+        model: Qwen3-235B-A22B-Q4_K_M
+        note: category=BASELINE / historical. Never a headline, never a decision input.
+        baseline_tps: 5.3
+        moe4_baseline_tps: 3.87
+        moe4_spec_tps: 8.21
+        full_spec_tps: 6.08
+      superseded_model_history_122b:
+        model: Qwen3.5-122B-A10B UD-Q4_K_M
+        note: Relocated to roles.architect_critic. Retained here only as the swap breadcrumb.
+        qwen35_122b_probe_b_tps: 12.19
+        optimized_tps: 24.0
+        optimized_tps_long_context: 15.76
+        quality_score: 2.57/3
+        spec_acceptance_moe4: 54.8%
+        spec_acceptance_full: 52.7%
+      baseline_tps: 30.87
+      optimized_tps: 47.79
+      optimized_tps_long_context: 36.71
+      optimized_tps_attest: '[published stack measurement record §01, 2026-07-31, production-optimal rows]'
+      contended_tps: 19.81
+      speedup: 1.55x
+      vram_gib: 36.7
+      swe_verified_pct: null
+      swe_verified_raw: null
+      swe_verified_instrument: 'VOIDED 2026-08-22: was ''SWE-bench Verified, oracle-file, v4 tail replay, n=40, 2026-07-27'' measured on Qwen3.6-27B-MTP (arm A3). The role now serves Qwen3.8-27B + terse
+        template; SWE not re-measured.'
+      swe_verified_comparators: 'VOIDED with the row above. Historical: A1 37.5% (15/40) · A4 32.5% (13/40).'
+      swe_verified_shape_caveat: VOIDED with the row above.
+      swe_verified_transfer_basis: VOIDED with the row above.
+      math_suite: 34/40 (85.0%)
+      mmlu_pro_suite: 11/40 (27.5%)
+      gpqa_diamond_suite: 19/40 (47.5%)
+      cruxeval_suite: 9/40 (22.5%)
+      gpqa_diamond_cot_suite: 45/60 (75.0%)
+      quality_score: null
+      benchmark_date: 2026-08-22
+    memory:
+      residency: hot
+      pinned: false
+    paged_attention:
+      recommended: false
+      reason: '2026-07-31: the 69GB host-RAM-bandwidth rationale was the 122B''s. The 27B is VRAM-resident under -ngl all; revisit only with GPU-side evidence.'
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.1
+    system_prompt_suffix: 'Attack the plan, do not improve it.
+
+      Name fatal flaws and unstated assumptions, not stylistic objections.
+
+      You MUST populate should_not_build — parts to CUT, not fix. A critic that can only add
+
+      mechanism is a complexity pump.
+
+      Stop once the verdict is defensible.
+
+      '
+  worker_general:
+    tier: C
+    description: 'General worker — since the 2026-09-22 lineup change an ALIAS on frontdoor''s :8070 process (Qwen3.6-35B-A3B-MTP-Q8_0, halves :8080/:8180; binding server_mode.frontdoor.shared_with). gemma4-26B-A4B
+      Q4_K_M (MTP, 2026-05-08 .. 2026-09-22) is RETIRED; lineage before it: Meta-Llama-3-8B / Qwen3-Coder-30B-A3B. Mirrors the live orchestrator worker_general target for benchmark correctness.'
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 35.2
+      architecture: qwen35moe
+      mtp_capable: true
+      use_chat_api: true
+      disable_thinking: true
+      reasoning: auto
+      max_tokens_multiplier: 4
+      previous_model: gemma-4-26B-A4B-it-ORIG-Q4_K_M
+      env_vars:
+        OMP_PROC_BIND: spread
+        OMP_PLACES: cores
+        OMP_WAIT_POLICY: active
+        OMP_DYNAMIC: 'false'
+      kv_cache:
+        type_k: q8_0
+        type_v: q8_0
+      max_context: 262144
+    candidate_roles:
+    - worker
+    - general
+    - frontdoor
+    - try_cheap_first
+    - coder
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      draft_model: Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      draft_max: 4
+    constraints:
+      forbid:
+      - prompt_lookup
+      reason: 'legacy prompt_lookup remains disabled. It is NOT replaced by an ngram composition: production launches --spec-type draft-mtp ALONE (reversal a126e43d 2026-07-31; see top-level speculative_decoding_policy).
+        common_speculative CAN compose ngram-* with draft-mtp, but only at launch time and only if a future operator decision re-enables it for a measured role — spec type is launch-fixed, see speculative_decoding_policy.runtime_switchability.'
+    performance:
+      baseline_tps: null
+      optimized_tps: 40.22
+      optimized_tps_attest: '[P-BENCH-PLACEMENT-1, n=3, 2026-07-30, attest data/numa_placement/20260730-P-BENCH-PLACEMENT-1/prodopt_results.txt]'
+      quality_pct: null
+      tool_compliance_pct: null
+      draft_depth_sweep_observation: '2026-07-17 T5 production-shaped CPU worker sweep at data/t5_gemma_worker_draft_depth_20260717T213641Z/summary.json confirms draft_max=2: depth2 87.76 t/s with 492/666
+        accepted; depth3 76.38 t/s with 492/812 accepted; depth4 84.40 t/s with 494/734 accepted.'
+      mi210_ngram_mtp_repetition_observation: '2026-07-19 current-v7 MI210 strict repetitive JSON/tool-shaped fixture: no-spec passed at 74.15 t/s, draft-mtp passed at 113.45 t/s with 465/474 drafts accepted,
+        and ngram-mod,draft-mtp passed at 183.50 t/s with 625/1454 accepted. Artifact: /mnt/raid0/llm/epyc-inference-research/data/k11_gemma4_determinism/k11_gemma4_mi210_modes_20260719T004400Z/summary.json.'
+      mi210_ngram_mtp_prompt_diverse_observation: '2026-07-19 prompt-diverse MI210 follow-up: ngram-mod,draft-mtp reproduced the large repetitive-output speedup (330.57 t/s vs draft-mtp 143.58 and no-spec
+        85.77) but did not improve non-repetitive coding explanation speed and failed the required-heading contract under the 640-token cap; short edit was only marginally faster than draft-mtp and all
+        modes failed the exact patch contract. Treat ngram-mod,draft-mtp as a task-specific token-reuse lane, not the broad worker default. Artifact: /mnt/raid0/llm/epyc-inference-research/data/k11_gemma4_determinism/k11_gemma4_mi210_prompt_diverse_20260719T004626Z/compact_summary.json.'
+    memory:
+      residency: hot
+      pinned: true
+      max_instances: 4
+    tool_permissions:
+      web_access: false
+      allowed_categories:
+      - file
+      - data
+      forbidden_tools:
+      - write_file
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.3
+  worker_math:
+    tier: C
+    description: Edge cases, invariants, property-test generation
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 35.2
+      architecture: qwen35moe
+      mtp_capable: true
+      use_chat_api: true
+      disable_thinking: true
+      reasoning: auto
+      max_tokens_multiplier: 4
+      previous_model: gemma-4-26B-A4B-it-ORIG-Q4_K_M
+      env_vars:
+        OMP_PROC_BIND: spread
+        OMP_PLACES: cores
+        OMP_WAIT_POLICY: active
+        OMP_DYNAMIC: 'false'
+      kv_cache:
+        type_k: q8_0
+        type_v: q8_0
+      max_context: 262144
+    candidate_roles:
+    - math
+    - worker
+    - thinking
+    acceleration:
+      type: speculative_decoding
+      draft_role: draft_qwen25
+      k: 8
+    performance:
+      baseline_tps: 12.44
+      optimized_tps: 48.5
+      speedup: 3.9x
+    memory:
+      residency: hot
+      pinned: true
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.0
+    system_prompt_suffix: 'Output final answer on last line.
+
+      '
+  worker_vision:
+    tier: C
+    port: 8086
+    description: Vision + agentic vision — Qwen3-VL-30B-A3B-Instruct Q4_K_M on MI210 (ROCm0); single unified server, vision_escalation is an alias on this process
+    model:
+      name: Qwen3-VL-30B-A3B-Instruct
+      path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+      mmproj_path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf
+      quant: Q4_K_M
+      size_gb: 17.3
+      architecture: qwen3vlmoe
+      experts_total: 128
+      experts_used: 8
+      ctx_max: 262144
+      previous_model: Qwen2.5-VL-7B-Instruct-Q4_K_M (swapped 2026-07-31; MMMU-250 63.6% vs 52.4%, +11.2 pp, paired exact McNemar p=0.0011)
+    thinking_control:
+      mode: native_no_thinking_toggle
+      effective_mode: native_no_think_tags
+      evidence_strength: measured
+      evidence: '2026-07-31 MMMU-250 on MI210: all 250 turns returned message.content, 0 empty, the nothink fallback never fired. Observed, not inferred from the family.'
+    candidate_roles:
+    - vision
+    - agentic_vision
+    serving:
+      device: none
+      n_ctx: 16384
+      image_min_tokens: 1024
+      cache_ram: 0
+    acceleration:
+      type: baseline
+      disallowed:
+      - speculative_decoding
+      - prompt_lookup
+      reason: VL models with mmproj not supported by llama-speculative binary
+    performance:
+      baseline_tps: 112.2
+      optimized_tps: 112.2
+      decode_tps_range: 102.84 - 178.46
+      prefill_tps: 1356.95
+      cold_load_s: 4.0
+      vram_mb: 21049
+      vram_caveat: VRAM grows on first EXECUTION, not at load — the four-model steady state measured 62.59 of 63.98 GiB (1.40 GiB headroom) after each model ran once, vs 61.66 at load. Any budget built
+        from load-time figures runs ~1 GiB optimistic.
+      speedup: 1.0x
+      vl_score:
+        pct: 63.6
+        raw: 159/250
+      vl_score_protocol: 'MMMU-val, 250 multiple-choice single-image questions, MI210 (ROCm0), 2026-07-31. Paired exact McNemar vs Qwen2.5-VL-7B (131/250): +11.2 pp, p=0.0011.'
+      benchmark_date: 2026-07-31
+      evidence: data/vision_mmmu_cutover_20260731/results.json
+      evidence_harness: data/vision_mmmu_cutover_20260731/harness.py
+      cutover_observation: '2026-07-31 MMMU validation, 250 multiple-choice single-image questions, MI210 (ROCm0), llama.cpp-experimental build-v8-hip, one arm at a time, `--image-min-tokens 1024` on EVERY
+        arm, prompt cache disabled (`--cache-ram 0`). Qwen3-VL-30B-A3B Q4_K_M `159/250` (63.6%); Qwen2.5-VL-7B Q4_K_M incumbent `131/250` (52.4%); Qwen3-VL-8B Q8_0 `143/250` (57.2%); Qwen3-VL-4B Q8_0 `135/250`
+        (54.0%). Paired exact McNemar over the 250 aligned items: 49 candidate-only-correct vs 21 incumbent-only-correct, two-sided p=0.0011. COSTS, recorded because this swap is not free: decode is ~1.9x
+        SLOWER (112.20 vs 214.54 t/s median, same host, same harness) and VRAM is 2.7x larger (21049 vs 7685 MB). Quality was the binding constraint; speed was not. PARSE-FAIL ASYMMETRY: the candidate produced
+        17 unparseable answers, the incumbent 0. That asymmetry counts AGAINST the candidate in the score above, so +11.2 pp is a FLOOR. A further 23 candidate answers were truncated at the 2048-token rescue
+        cap and scored wrong.
+
+        '
+    memory:
+      residency: warm
+      pinned: false
+    server:
+      endpoint: http://localhost:8086
+      api_format: openai_multimodal
+      shared_with:
+      - vision_escalation
+    notes: 'ONE server, two role names. worker_vision (this entry) is the process; vision_escalation is
+
+      an alias on the same port whose trigger list is kept as documentation. There is NO second
+
+      VL model resident.
+
+      Supports tool calls (agentic vision). Qwen3-VL-30B-A3B-Instruct is now both the
+
+      tool-capable lane AND the best-measured arm on MMMU, so the 2026-03 split between
+
+      "agentic" (Qwen2.5-VL) and "figure quality" (vision_qwen3_vl_4b) no longer needs two models.
+
+      OPEN POST-CUTOVER CHECK — see vision_escalation.notes (K35 chart_tanzania).
+
+      '
+  vision_escalation:
+    alias_of: worker_vision
+    tier: C
+    port: 8086
+    description: Vision escalation alias — resolves to the worker_vision process (Qwen3-VL-30B-A3B-Instruct Q4_K_M, MI210 ROCm0). Not a distinct model.
+    model:
+      name: Qwen3-VL-30B-A3B-Instruct
+      path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/Qwen3-VL-30B-A3B-Instruct-Q4_K_M.gguf
+      mmproj_path: /mnt/raid0/llm/models/lmstudio-community/Qwen3-VL-30B-A3B-Instruct-GGUF/mmproj-Qwen3-VL-30B-A3B-Instruct-F16.gguf
+      quant: Q4_K_M
+      size_gb: 17.3
+      architecture: qwen3vlmoe
+      experts_used: 8
+      ctx_max: 262144
+      shared_gguf_with: worker_vision
+    thinking_control:
+      mode: native_no_thinking_toggle
+      effective_mode: native_no_think_tags
+      evidence_strength: measured
+      evidence: 'Inherited from worker_vision — same process, same weights. 2026-07-31 MMMU-250: 250/250 turns returned message.content, 0 empty, nothink fallback never fired.'
+    candidate_roles:
+    - vision
+    serving:
+      device: none
+      n_ctx: 16384
+    acceleration:
+      type: baseline
+      disallowed:
+      - speculative_decoding
+      - prompt_lookup
+      reason: VL models with mmproj not supported by llama-speculative binary
+    performance:
+      inherits_from: worker_vision
+      baseline_tps: 112.2
+      optimized_tps: 112.2
+      vl_score:
+        pct: 63.6
+        raw: 159/250
+      vl_score_protocol: 'MMMU-val, 250 multiple-choice single-image questions, MI210 (ROCm0), 2026-07-31. Paired exact McNemar vs Qwen2.5-VL-7B (131/250): +11.2 pp, p=0.0011.'
+      benchmark_date: 2026-07-31
+      evidence: data/vision_mmmu_cutover_20260731/results.json
+    memory:
+      residency: warm
+      pinned: false
+      note: No additional residency — shares worker_vision's single allocation (CPU since 2026-10-03; was 21049 MB VRAM). This role adds ZERO memory cost.
+    server:
+      endpoint: http://localhost:8086
+      api_format: openai_multimodal
+      alias_of: worker_vision
+    escalation:
+      from: worker_vision
+      auto_wired: false
+      triggers:
+      - math or equations in image
+      - complex multi-step diagram
+      - video longer than 10 minutes
+      - GUI automation failure
+      - cross-reference multiple image regions
+    paged_attention:
+      recommended: false
+      reason: alias — inherits worker_vision's serving configuration
+    notes: "2026-07-31 unification. This role no longer names a second model. It is a routing label on\nthe worker_vision process (:8086, Qwen3-VL-30B-A3B-Instruct Q4_K_M, MI210 ROCm0).\n\nCARRIED FORWARD\
+      \ — K35 chart-fixture observation. NOT deleted, NOT settled. The prior note\nsaid worker_vision (Qwen2.5-VL) passed 4/4 on the K35 fixtures while the Qwen3-VL-30B lane\npassed 3/4 and missed the chart\
+      \ fixture. That observation stands but describes a DIFFERENT\nconfiguration: CPU-only (--device none, -t 96, interleave=all), 4 forced experts, no\n--image-min-tokens 1024. HONEST READING: the miss\
+      \ REPRODUCED across three 2026-07-17 CPU\nconfigs (MoE4 -> \"Moldova\"; MoE4+image1024 -> \"Suriname\"; default experts -> \"Suriname\";\nexpected \"Tanzania\"), so the expert override alone does\
+      \ not explain it. What changed is the\nsurrounding evidence: same model is best arm on 42q OCRBench+ChartQA (36/42) and wins\nMMMU-250 by 28 questions. chart_tanzania appears in NEITHER 2026-07-31\
+      \ set, so it has never\nbeen retested under the deployed recipe.\n\nPOST-CUTOVER CHECK (owner: the session performing the live flip; cutover is not closed\nuntil recorded): re-run the four K35 fixtures\
+      \ against the LIVE :8086 process — GPU, default\nexperts, --image-min-tokens 1024 — and record chart_tanzania explicitly.\n  Fixtures: data/k35_vision_matrix_20260717T1500Z/ (commands.sh, plan.json)\n\
+      \  Chart fixture: epyc-orchestrator/benchmarks/images/vl/ocrbench/ocr_0619.png\n    prompt \"Which country has 7 years of compulsory education in the chart? Answer with\n    the country name only.\"\
+      \ expected `Tanzania`\n  Prior CPU artifacts (all 3/4):\n    data/k35_vision_matrix_20260717T1500Z/runs/vision_escalation_cpu_qwen3vl30b_moe4/result.json\n    data/k35_vision_escalation_image1024_20260717T1518Z/\n\
+      \    data/k35_vision_escalation_default_experts_20260717T1520Z/\n  DECISION RULE, fixed in advance: 4/4 -> configuration-bound, close the item. 3/4 with\n  chart_tanzania still wrong -> record as\
+      \ a bounded single-fixture blind spot on a model\n  that is +11.2 pp better overall. NOT grounds to roll back; IS grounds to carry a\n  chart-reading block into the next VL eval set.\n"
+  worker_summarize:
+    tier: C
+    description: Short-context document summarization (sub-5000 tokens; longer inputs trigger three_stage_summarization). Qwen3.6-35B-A3B Q8 — same model as frontdoor, shared GGUF mmap.
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 37
+      architecture: qwen35moe
+      ctx_max: 262144
+      attention_layers: 28
+      previous_model: 'Qwen2.5-Coder-32B-Instruct-Q4_K_M (swapped 2026-05-06; +16pp canonical quality, shared mmap with frontdoor). 2026-07-31 (Directive 3): coder_escalation left the :8070 process; worker_summarize
+        is now frontdoor''s ONLY alias.'
+      use_chat_api: true
+      disable_thinking: true
+      reasoning: auto
+      max_tokens_multiplier: 4
+    candidate_roles:
+    - summarization
+    - ingest
+    - general
+    acceleration:
+      type: none
+      lookup: false
+    performance:
+      baseline_tps: null
+      optimized_tps: 40.22
+      optimized_tps_attest: '[P-BENCH-PLACEMENT-1, n=3, 2026-07-30, attest data/numa_placement/20260730-P-BENCH-PLACEMENT-1/prodopt_results.txt]'
+      quality_pct: 93
+      general_suite: 30/30 (100%)
+      coder_suite: 29/30 (97%)
+      thinking_suite: 28/30 (93%)
+      long_context: 27/27 (100%) — beats prior worker_summarize on every dimension
+      speedup: shares_frontdoor_gguf
+    memory:
+      residency: hot
+      pinned: true
+    benchmark_date: 2026-05-04
+    notes: 'Replaces Qwen2.5-Coder-32B-Instruct Q4_K_M (was 77% canonical, 3.1 t/s baseline).
+
+      Long-document summarization (>=5000 tokens, or >=3500 multi-doc) is handled
+
+      by three_stage_summarization which routes Stage 1 to ingest_long_context
+
+      (Qwen3-Next-80B-A3B Q4, SSM-hybrid linear attention) and Stage 2 back to
+
+      frontdoor (this same model). worker_summarize handles the short-context
+
+      single-pass summarization cases that don''t trigger the three-stage pipeline.
+
+      '
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.2
+    system_prompt_suffix: 'Produce concise summaries. Focus on key points.
+
+      For document QA, cite specific sections.
+
+      '
+  toolrunner:
+    tier: C
+    description: Summarize tool outputs, triage logs, propose next commands
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 35.2
+      architecture: qwen35moe
+      mtp_capable: true
+      use_chat_api: true
+      disable_thinking: true
+      reasoning: auto
+      max_tokens_multiplier: 4
+      previous_model: gemma-4-26B-A4B-it-ORIG-Q4_K_M
+      env_vars:
+        OMP_PROC_BIND: spread
+        OMP_PLACES: cores
+        OMP_WAIT_POLICY: active
+        OMP_DYNAMIC: 'false'
+      kv_cache:
+        type_k: q8_0
+        type_v: q8_0
+      max_context: 262144
+    candidate_roles:
+    - worker
+    - general
+    acceleration:
+      type: speculative_decoding
+      draft_role: draft_qwen3_coder_0_75b
+      k: 8
+      p_split: 0
+      lookup: true
+    performance:
+      baseline_tps: 43.4
+      optimized_tps: 43.4
+      agentic_suite: 26/30 (87%)
+    memory:
+      residency: hot
+      pinned: true
+    generation_defaults:
+      n_tokens: -1
+      temperature: 0.2
+    system_prompt_suffix: 'Summarize tool output briefly. Focus on actionable results.
+
+      Propose next command if appropriate.
+
+      '
+  draft_qwen25:
+    tier: D
+    description: Default draft for Qwen2.5 (non-coder) family
+    model:
+      name: Qwen2.5-0.5B
+      path: QuantFactory/Qwen2.5-0.5B-GGUF/Qwen2.5-0.5B.Q8_0.gguf
+      quant: Q8_0
+      size_gb: 0.5
+      architecture: dense
+    candidate_roles:
+    - draft
+    compatible_targets:
+    - Qwen2.5-72B
+    - Qwen2.5-Math-72B
+    - Qwen2.5-Math-7B
+    - Qwen2.5-VL-7B
+    memory:
+      residency: hot
+      pinned: true
+  draft_qwen3_coder_0_75b:
+    tier: D
+    description: Draft model for Qwen3-Coder family (jukofyork) - vocab transplant for 480B BOS fix
+    model:
+      name: Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0
+      path: /mnt/raid0/llm/models/Qwen3-Coder-Instruct-DRAFT-0.75B-32k-Q4_0.gguf
+      quant: Q4_0
+      size_gb: 0.45
+      architecture: dense
+    candidate_roles:
+    - draft
+    memory:
+      residency: cold
+      pinned: false
+    compatible_targets:
+    - qwen3-coder-30b-a3b
+    - qwen3-coder-480b-a35b
+    notes: 'VERIFIED (2026-02-13) — works with ALL Qwen3-Coder targets. BOS=comma (token 11) matches. 30B-A3B: 70-78% accept (MoE6+spec+lookup = 47.11 t/s). 480B-A35B: 74-82% accept (full+spec = 9.00 t/s).
+      Previous testing (2026-01-28) showed 15%/8.65% — likely a build or config issue at the time.
+
+      '
+  qwen38_flash_next_ud_iq4xs_local:
+    tier: A
+    description: 'Qwen3.8-Flash-Next UD-IQ4_XS exact local artifact (3 shards). 2026-09-22: PROMOTED from research-campaign artifact to the PRODUCTION model backing architect_critic (:8074, CPU), single-role:
+      ingest_long_context is NOT aliased here — operator ruling C2 sent it to architect_general''s :8083 GPU Qwen3.8-27B (server_mode.ingest_long_context.alias_of, server_mode.architect_critic.shared_with).
+      ⚠ THIS IS NOT THE ARTIFACT THE CAMPAIGN MEASURED — the codified recipe''s TRUNK_GGUF is the IQ4_XS-uniform SINGLE FILE (98,392,912,256 B, sha256 4bfb9849...f8957). Reconciling served-vs-anchor is
+      PROD-3''s open job and the recipe module says so itself. Every performance figure attached to this model was taken on the uniform file.'
+    model:
+      name: Qwen3.8-Flash-Next-UD-IQ4_XS
+      path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/UD-IQ4_XS/Qwen3.8-Flash-Next-UD-IQ4_XS-00001-of-00003.gguf
+      quant: UD-IQ4_XS
+      size_gb: 87.25
+      split_count: 3
+      architecture: qwen4exp
+      block_count: 48
+      attention_layers: 12
+      expert_count: 512
+      expert_used_count: 10
+      ctx_max: 262144
+      mtp_capable: true
+      use_chat_api: true
+    artifact_status:
+      download: present
+      observed_date: 2026-09-22
+      file_bytes: 93682584224
+      provenance: unsloth/Qwen3.8-Flash-Next-GGUF
+    mtp_head:
+      path: /mnt/raid0/llm/models/unsloth/Qwen3.8-Flash-Next-GGUF/MTP/mtp-Qwen3.8-Flash-Next-shared-Q8_0.gguf
+      kind: shared-Q8_0
+      file_bytes: 2786568256
+      sha256: 5ff54097406a905cf3a724c709124ceb0e3e10235ee862298969e91c96fa96e6
+      provenance: hf:unsloth/Qwen3.8-Flash-Next-GGUF MTP/ @ revision 5d16c055
+      rejected_alternatives:
+        mtp-Qwen3.8-Flash-Next-Q8_0.gguf: 'self-contained head: +64.8% head working set'
+        mtp-shared-Q8_0-headIQ4_XS.gguf: B12 candidate, 1.097x wall vs borrowed q6_K — NO-GO
+        mtp-shared-Q8_0-headQ4_K.gguf: B12 candidate, 1.077x wall vs borrowed q6_K — NO-GO
+    candidate_roles:
+    - architect_general
+    - ingest_long_context
+    - architect
+    - critic
+    - reasoning
+    - ingest
+    acceleration:
+      type: speculative_decoding
+      spec_type: draft-mtp
+      recipe_id: qwen38-flash-next-cpu-mtp
+      recipe_module: epyc-inference-research/scripts/lib/qwen38_flash_next_recipe.py
+      optimal_cpu_serving:
+        date: 2026-09-08
+        recipe_revision: 2026-09-14
+        kernel: ef81196d5 / build 10241 (llama.cpp-experimental champion) — NOT production v10
+        prefix: taskset -c 0-95 numactl --interleave=all
+        threads: 48
+        flags: --no-webui -np 1 -c 8192 -t 48 --no-mmap -fa on -ctk f16 -ctv f16 -md <MTP_HEAD_GGUF> --spec-type draft-mtp --spec-draft-n-max 4 --spec-draft-p-min 0.5
+        env:
+          OMP_PROC_BIND: spread
+          OMP_PLACES: cores
+          OMP_WAIT_POLICY: active
+          OMP_DYNAMIC: 'false'
+          GGML_IQK: '1'
+          GGML_FUSED_DECODE_OFF: '1'
+          GGML_FA_SPLIT_KV: '0'
+          GGML_NOHUGEPAGE_PROCESS: '1'
+        decode_t_s: 43.281
+        decode_t_s_plain: 27.893
+        grade: observation
+      mtp_alpha:
+        kv_f16: 0.8274
+        kv_quantised: 0.8166
+    constraints:
+      forbid:
+      - production_stack_registration_without_ctx_262144_load_proof
+      - production_stack_registration_without_critic_quality_gate
+      - kv_cache_quantisation
+      reason: Deepest context ever SERVED on this model is 8192 and deepest ever BENCHED is d4096; :8074 declares 262144, so a load proof at the served shape is required before cutover. No critic-suite
+        or long-context quality gate has ever been run on qwen4exp. KV quantisation is refused by the recipe's own assert_kv_f16().
+    memory:
+      residency: hot
+      pinned: true
+      cpu_only_candidate: true
+      gpu_only_candidate: false
+      hybrid_candidate: true
+  qwen38_27b_q8_local:
+    tier: A
+    description: 'Qwen3.8-27B Q8_0 exact local artifact (unsloth build, embeds the nextn/MTP head). 2026-08-20: PROMOTED to the PRODUCTION model backing architect_general (:8083, MI210 ROCm0) and its coder_escalation
+      alias, replacing qwen36_27b_mtp_q8_local. 2026-09-22: it ALSO backs the ingest_long_context alias on the same process (operator ruling C2), and the process now runs thinking ON at MEDIUM reasoning
+      effort (ruling C1) with n_ctx raised 65536 -> 196608. ⚠ EVERY PERFORMANCE FIGURE BELOW WAS TAKEN WITH THINKING OFF, at np=1 and short context. None of it transfers to the medium-effort, 196608-context,
+      three-role configuration; those are the re-measurements this lineup change owes. That row is RETAINED unmodified as the rollback anchor — do not delete it. Same-file MTP self-draft, exactly like the
+      Qwen3.6 it replaces; the ggml-org mtp-*.gguf sidecar is redundant for this base.'
+    production_throughput:
+      optimized_tps: 55.46
+      baseline_tps: 27.78
+      optimized_tps_long_context: null
+      contended_tps: null
+      vram_gib: 37.22
+      attest: epyc-inference-research/artifacts/architect-bench-gpu-20260814/ — mtp_ab_20260819/ (plain-vs-MTP), mtp_nmax_sweep_20260819/ (depth sweep), q38_vram_shape_20260820/ (VRAM at production shape).
+        All OBSERVATIONS per MEASUREMENT.md.
+    model:
+      name: Qwen3.8-27B-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 27.05
+      architecture: qwen35
+      mtp_capable: true
+    artifact_status:
+      download: present
+      observed_date: 2026-08-20
+      file_bytes: 29047086048
+      provenance: unsloth/Qwen3.8-27B-GGUF
+    candidate_roles:
+    - architect_critic
+    - coder_escalation
+    - architect
+    - general
+    - reasoning
+    acceleration:
+      type: speculative_decoding
+      spec_type: native_mtp_candidate
+      optimal_gpu_serving:
+        date: 2026-08-19
+        kernel: production-consolidated-v9
+        binary: /mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server
+        device: MI210 (ROCm0)
+        spec_type: draft-mtp
+        spec_draft_n_max: 8
+        flags: -np 1 -c 32768 -t 8 -tb 8 -b 2048 -ub 2048 -ctk f16 -ctv f16 --device ROCm0 -ngl all -fa on --reasoning off --spec-type draft-mtp --spec-draft-n-max 8
+        decode_t_s: 55.46
+      challenger_under_evaluation:
+        name: dflash2-block8
+        status: SUPERSEDED_BY_drafters.dflash2
+        measured_2026_08_20:
+          np: 1
+          dflash2_block8_decode_t_s: 70.0
+          matched_mtp_n8_decode_t_s: 55.2
+          gain_vs_matched_mtp_pct: 26.81
+          mean_draft_acceptance: 0.62804
+          paired_identity: same 12 prompt fingerprints in order, 36/36 requests, zero errors
+        evidence:
+        - artifacts/architect-bench-gpu-20260814/dflash2_np1_20260820/campaign-summary.json
+        evidence_sha256: e4f9e21fd399c37fceca31e171be0299bcd4c35284d5a5828e3201a8bf50b053
+        manifest_sha256: ebfc55f5706d549e7c5e00cf814e968f299491fe9ab23466f83a7dfb6cb6be4e
+        build: 'llama.cpp-experimental ak/dflash2-qwen38-20260820 @ 2046c64e (PR #27342 forward-port; frozen v9 NOT edited). Requires this non-production binary — it cannot run on v9.'
+        blocking_before_selection:
+        - np2/4/8 scaling (this role serves np up to 8; the np1 win does not transfer by assumption, and the upstream PR's own reviewers report scaling problems at concurrency >1)
+        - exact greedy parity vs --spec-type none at temp 0 (losslessness is CLAIMED, not yet verified here; an unverified-parity config must not become a serving selection however fast it is)
+        - block-verify dispatch proof (our gfx90a MMQ patch a6b4b5263 is MTP-verify-shaped, ne11<=1; a block verify is ne11~8 and may miss that path)
+    drafters:
+      mtp:
+        spec_type: draft-mtp
+        draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf
+        draft_max: 4
+        evidence:
+        - artifacts/architect-bench-gpu-20260814/mtp_nmax_sweep_20260819/
+        - artifacts/np_context_kvu_study_20260924/q38_27b_q8_depth/
+      dflash2:
+        spec_type: draft-dflash
+        draft_model: /mnt/raid0/llm/models/Qwen3.8-27B-DFlash2-Q8_0.gguf
+        draft_max: 7
+        ngld: 99
+        recipe: artifacts/serving-recipes/qwen3.8-27b-q8-gpu-dflash2-np4.json
+        min_kernel: production-consolidated-v10
+        operator_rulings:
+        - '2026-08-27 epyc-root handoffs/active/autokernel-champion-aggregate.md ruling 3: DFlash2 for Qwen3.8-27B, rest of stack on MTP; lean compiler selects per role'
+        - '2026-10-01 operator: ALWAYS use dflash2 (for the 27B)'
+        evidence:
+        - artifacts/architect-bench-gpu-20260814/dflash2_np1_20260820/campaign-summary.json
+        qualification_note: v10 was qualified on candidate DFlash2 vs v9 MTP self-draft (/workspace/artifacts/operator/v10-qualification-20260921-ffc1bac82.json)
+    memory:
+      residency: cold
+      pinned: false
+      cpu_only_candidate: false
+      gpu_only_candidate: true
+      hybrid_candidate: false
+    chat_template:
+      provenance: unsloth_patched_not_stock
+      evidence_strength: direct_artifact_digest
+      served_template_bytes: 9993
+      served_template_sha256_12: 12827f24b742
+      upstream_template_bytes: 8952
+      upstream_template_sha256_12: c3cf9e34abf4
+      upstream_ref: Qwen/Qwen3.8-27B
+      trailing_marker: '{#- Unsloth fixes - developer role, merged system messages, tool calling #}'
+      evidence: 'Extracted 2026-08-21 from the GGUF header of /mnt/raid0/llm/models/Qwen3.8-27B-Q8_0.gguf without loading the model; 1,041 bytes larger than stock. Divergences that matter: reasoning_effort
+        ''high'' is silently coerced to ''xhigh'' (template :60-61) where stock raises; the xhigh default injects a 209-char instruction (:59, :66); and the assistant branch (:113-120) reads only message.reasoning_content,
+        never inline <think>, so inline-think history yields a duplicated blank <think></think>. All three sit inside the enable_thinking gate (:58) and are unreachable while chat_template_kwargs.enable_thinking
+        is false. Reachability audit: epyc-root handoffs/active/qwen38-27b-replace-qwen36.md -> Research Intake 2026-08-21 (Q38-T1/T3).'
+  qwen36_35b_a3b_mtp_q8_local:
+    tier: C
+    description: 'Qwen3.6-35B-A3B MTP Q8_0 exact local artifact. This is the file frontdoor (and its worker_summarize alias) actually launches — note server_mode.frontdoor.model_role points at `qwen36_q8_0`,
+      whose path is the NON-MTP /mnt/raid0/llm/models/Qwen_Qwen3.6-35B-A3B-Q8_0.gguf. THIS row is the deployed artifact; qwen36_q8_0 is the family row. 2026-07-31 (Directive 3): coder_escalation REMOVED
+      — it moved to Qwen3.6-27B-MTP-Q8_0 (qwen36_27b_mtp_q8_local) on :8083.
+
+      '
+    model:
+      name: Qwen3.6-35B-A3B-MTP-Q8_0
+      path: /mnt/raid0/llm/models/Qwen3.6-35B-A3B-MTP-Q8_0.gguf
+      quant: Q8_0
+      size_gb: 35.2
+      architecture: qwen35moe
+      mtp_capable: true
+      use_chat_api: true
+      disable_thinking: true
+    artifact_status:
+      download: present
+      observed_date: 2026-07-20
+      file_bytes: 37801097504
+      provenance: local_artifact_no_hf_sidecar_found
+    candidate_roles:
+    - frontdoor
+    - worker_summarize
+    acceleration:
+      type: speculative_decoding
+      spec_type: native_mtp_candidate
+      optimal_gpu_serving:
+        date: 2026-07-20
+        kernel: production-consolidated-v7
+        binary: /mnt/raid0/llm/llama.cpp/build-hip/bin/llama-server
+        device: MI210 (ROCm0)
+        spec_type: draft-mtp
+        spec_draft_n_max: 4
+        flags: -np 1 -c 32768 -t 8 -tb 8 -b 2048 -ub 2048 -ctk f16 -ctv f16 --device ROCm0 -ngl all -fa on --reasoning off --spec-type draft-mtp --spec-draft-n-max 4
+        decode_t_s: 104.0
+        grade: observation
+      gpu_spec_depth_sweep_observation: '2026-07-20 MI210 draft-depth sweep on production-consolidated-v7 (`10098 6ad45fa3f`, build-hip) at production sampling (temp 0.6, top_p 0.95, top_k 20, seed 42),
+        512-token generations, best of n=2, f16 KV, `-c 32768 -b/-ub 2048`, `-ngl all -fa on`: no-spec `84.8 t/s`; `draft-mtp` n-max 2 `94.5`, **n-max 4 `104.0`** (`1.23x`). Fastest decode of the three
+        architect-bench GPU arms, as expected for 3B active params. Observation-grade (pre-`P-GPU-1`); evidence: `artifacts/architect-bench-gpu-20260720/sweep_a4/results.jsonl`.
+
+        '
+    constraints:
+      forbid:
+      - production_stack_registration_without_mtp_quality_gate
+      reason: GPU-side numbers are observation-grade until P-GPU-1 ratification; role admission needs the role quality gates.
+    memory:
+      residency: cold
+      pinned: false
+      cpu_only_candidate: true
+      gpu_only_candidate: true
+      hybrid_candidate: true
