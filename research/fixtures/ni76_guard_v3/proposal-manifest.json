@@ -3,24 +3,24 @@
   "app_base": "b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1",
   "files": {
     "implementation.patch": {
-      "sha256": "226465c69f0198365fe9bef6c7fe94a2a1df8a2f8022655ac27a02d7703f0a40",
-      "size": 13576
+      "sha256": "74707e7d3d7013fe8ac1d461e6d8f4b4d1b404169094fbc607a592a948b96cef",
+      "size": 13761
     },
     "app.patch": {
-      "sha256": "9cdf5543602a56ab1ef202bc96122d1cbe5c971fb39315c8c85149df728f80e4",
-      "size": 13001
+      "sha256": "9241ec70bdd153751c8909c216546c7c59b2e275063f7ccfd083e32765b32036",
+      "size": 13186
     },
     "hosted-controls.py": {
-      "sha256": "d864872a576c361eaba6cb29172da6bb7b27b22a32fb659c81050ffbd27b5ac2",
-      "size": 12003
+      "sha256": "5580399907cccbb156e3f77ec64e0d8c7148dd6f2b1f2c68927a8c62926f3f82",
+      "size": 14585
     },
     "root/scripts/gitnexus-analyze.sh": {
       "sha256": "dacb98191be75abf64f73763d52fa89e8b738f5f3e6eac0e988159abe40d22c3",
       "size": 1071
     },
     "root/scripts/gitnexus-guard.py": {
-      "sha256": "e3534605c775380d4c39c04b20fc699172f099b93a8a2d0398fc795d051daef0",
-      "size": 8210
+      "sha256": "8ec8ef2e690f94bc6b9968de34b1508c1aca35848752913ad313b4211cf8c61f",
+      "size": 8393
     },
     "root/scripts/gitnexus-patch.js": {
       "sha256": "6c8052d3d055a24361cfb221b1927359759b12ed7d16b763f422ff55ca666d98",
@@ -35,8 +35,8 @@
       "size": 683
     },
     "app/scripts/gitnexus-guard.py": {
-      "sha256": "e3534605c775380d4c39c04b20fc699172f099b93a8a2d0398fc795d051daef0",
-      "size": 8210
+      "sha256": "8ec8ef2e690f94bc6b9968de34b1508c1aca35848752913ad313b4211cf8c61f",
+      "size": 8393
     },
     "app/scripts/gitnexus-writer.py": {
       "sha256": "ddf67e04ff3a82e8768d0e4373c5a88c3b42fd6a9d81959b8319fbd830ba96c0",
@@ -55,8 +55,8 @@
       "size": 18498
     },
     "test_native_controls.py": {
-      "sha256": "cc381f401ff19d25c3b58f6d3aebda18ab59c5ad4f6919ba8b84c627580836b6",
-      "size": 1461
+      "sha256": "60e21da23bb5709b023ae29590e11c19c4b4e61d8bd5ef4d21e59db84487671d",
+      "size": 1563
     }
   }
 }

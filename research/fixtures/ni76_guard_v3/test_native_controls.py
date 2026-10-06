@@ -1,4 +1,4 @@
-"""PREP: one native pytest case, distinct from 101 descriptive audit controls."""
+"""PREP: one native pytest case, distinct from 103 descriptive audit controls."""
 import json
 import os
 from pathlib import Path
@@ -18,9 +18,10 @@ def test_real_guard_audit_controls_conform():
     complete = json.loads((originals / "complete.json").read_text())
     cases = json.loads((originals / "cases.json").read_text())
     assert complete["passed"] is True
-    assert type(complete["cases"]) is int and complete["cases"] == 101
-    assert len(cases) == 101
-    assert len({case["label"] for case in cases}) == 101
+    assert type(complete["cases"]) is int and complete["cases"] == 103
+    assert len(cases) == 103
+    assert len({case["label"] for case in cases}) == 103
+    assert {'cpu-global-shared-inode', 'cpu-global-build-alias'} <= {case['label'] for case in cases}
     for case in cases:
         assert type(case["exit_code"]) is int
         assert type(case["expected"]) is int

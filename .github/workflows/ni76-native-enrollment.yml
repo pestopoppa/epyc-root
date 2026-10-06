@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
-      RECIPE_PARENT: 186fb9709a138d6b0f97ca265b56eea66c6faf0f
+      RECIPE_PARENT: 5269f3f52bf133716d98bfdde5ef5afcdf4a8c3c
       ROOT_BASE: e6c0c9db7282ab85acdc2cc4b9119c72bfab02e1
       APP_BASE: b27e5543199ba4f7a8c3fec87c263f35fb5bcbf1
-      MANIFEST_SHA: f12e62df1da7dcd623a64ba6428f3e360ca174a35982763a7a75f6366114e50d
+      MANIFEST_SHA: 1a49c473e0df909b1385674bad1acf50a027f4eef253967ebbfad82a62307181
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
@@ -72,7 +72,7 @@ jobs:
           a=Path(os.environ['assets']);m=json.loads((a/'proposal-manifest.json').read_text())
           assert m['root_base']==os.environ['ROOT_BASE'] and m['app_base']==os.environ['APP_BASE']
           import subprocess
-          expected={'.github/workflows/ni76-native-enrollment.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json','research/fixtures/ni76_guard_v3/hosted-controls.py'}
+          expected={'.github/workflows/ni76-native-enrollment.yml','research/fixtures/ni76_guard_v3/proposal-manifest.json','research/fixtures/ni76_guard_v3/hosted-controls.py','research/fixtures/ni76_guard_v3/test_native_controls.py','research/fixtures/ni76_guard_v3/implementation.patch','research/fixtures/ni76_guard_v3/app.patch','research/fixtures/ni76_guard_v3/root/scripts/gitnexus-guard.py','research/fixtures/ni76_guard_v3/app/scripts/gitnexus-guard.py'}
           actual=set(subprocess.check_output(['git','diff','--name-only',os.environ['RECIPE_PARENT'],'HEAD'],text=True).splitlines())
           assert actual==expected, ('unexpected recipe changed paths',sorted(actual^expected))
           for name,entry in m['files'].items():
@@ -154,7 +154,7 @@ jobs:
           assert pathlib.Path('/usr/bin/python3').is_file()
           names=['python-version.txt','node-version.txt','git-version.txt','native-python-version.txt','native-pytest-version.txt','native-install.stdout','native-install.stderr','source-before.json','mountinfo-before.txt','mount-absence-status.json','provenance.json']
           bindings={name:hashlib.sha256((o/name).read_bytes()).hexdigest() for name in names}
-          context={'native_python':{'path':sys.executable,'version':sys.version,'expected':'3.11.14'},'control_python':{'path':'/usr/bin/python3','version_file':'python-version.txt'},'tools':{'node':os.environ['NI76_REAL_NODE'],'git':shutil.which('git'),'timeout':shutil.which('timeout')},'github_hosted_verified':True,'mount_absence_proof_sha256':bindings['mount-absence-status.json'],'source_snapshot_sha256':bindings['source-before.json'],'pre_execution_bindings':bindings,'inherited_controlled_env':{key:os.environ[key] for key in ['HOME','PATH','NI76_SCOPE','NI76_ASSETS','NI76_REAL_NODE']},'test_env_fixed':{'GITHUB_ACTIONS':'true','PYTHONDONTWRITEBYTECODE':'1'},'case_custody':{'per_case':'exclusive-create label.case.json before original assertions','aggregate':'cases.json exact original record list streamed after completion or Python exception','abrupt_termination':'completed per-case originals survive; aggregate not fabricated'},'execution_payload':'entire pinned git archives with reviewed fixture patches; original full mutable-tree snapshot windows','native_cases':1,'descriptive_controls':101}
+          context={'native_python':{'path':sys.executable,'version':sys.version,'expected':'3.11.14'},'control_python':{'path':'/usr/bin/python3','version_file':'python-version.txt'},'tools':{'node':os.environ['NI76_REAL_NODE'],'git':shutil.which('git'),'timeout':shutil.which('timeout')},'github_hosted_verified':True,'mount_absence_proof_sha256':bindings['mount-absence-status.json'],'source_snapshot_sha256':bindings['source-before.json'],'pre_execution_bindings':bindings,'inherited_controlled_env':{key:os.environ[key] for key in ['HOME','PATH','NI76_SCOPE','NI76_ASSETS','NI76_REAL_NODE']},'test_env_fixed':{'GITHUB_ACTIONS':'true','PYTHONDONTWRITEBYTECODE':'1'},'case_custody':{'per_case':'exclusive-create label.case.json before original assertions','aggregate':'cases.json exact original record list streamed after completion or Python exception','abrupt_termination':'completed per-case originals survive; aggregate not fabricated'},'execution_payload':'entire pinned git archives with reviewed fixture patches; original full mutable-tree snapshot windows','artifact_transport':{'upload_compression_level':6,'inner_original_bytes_unchanged':True,'original_API_ZIP_digest_required':True},'native_cases':1,'descriptive_controls':103}
           (o/'native-pre-context.json').write_text(json.dumps(context,sort_keys=True)+'\n')
           PYCONTEXT
           reads=()
@@ -183,7 +183,7 @@ jobs:
           assert r['summary']['counts']=={'passed':1,'failure':0,'error':0,'skipped':0,'collected':1,'executed':1}
           xml=ET.fromstring((base/'native/original-junit.xml').read_bytes()); assert len(list(xml.iter('testcase')))==1
           assert len(rows)==1; q,t,reasons=grade(project_ci_conformance(rows[0]));assert(q,t)==('Judged','Located')
-          (base/'native-shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_case_count':1,'descriptive_control_count':101,'native_rows':1,'receipt_FILE_digest':digest,'scope':'Admission-only synthetic hosted guard controls; no deployed host/index claim'})+'\n')
+          (base/'native-shared-grade.json').write_text(json.dumps({'Q':q,'T':t,'reasons':reasons,'native_case_count':1,'descriptive_control_count':103,'native_rows':1,'receipt_FILE_digest':digest,'scope':'Admission-only synthetic hosted guard controls; no deployed host/index claim'})+'\n')
           PYGRADE
       - name: Independent source and payload custody postchecks
         if: always() && env.NI76_SCOPE != ''
@@ -222,5 +222,5 @@ jobs:
           name: ni76-v3-originals-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ env.NI76_SCOPE }}/originals/
           if-no-files-found: error
-          compression-level: 0
+          compression-level: 6
           retention-days: 30

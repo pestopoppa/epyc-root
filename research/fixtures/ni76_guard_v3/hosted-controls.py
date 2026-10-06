@@ -100,6 +100,58 @@ def all_denied(label, env=None):
             run(f'{label}-{repo}-{kind}', argv, 64, cwd=SCOPE / repo, env=env, denied=True)
 
 
+
+def cpu_hardlink_refusal(label, *, alias_build):
+    """Real ancestor flocks with stable aliased CPU pathnames; no fake kernel records."""
+    assert not HANDLES
+    saved = SCOPE / label
+    saved.mkdir(mode=0o700)
+    global_paths = [LOCKS / f'cpu_region.GLOBAL.{q}.lock' for q in QUADS]
+    build_paths = [LOCKS / f'cpu_region.build.{q}.lock' for q in QUADS]
+    build_bytes = [path.read_bytes() for path in build_paths]
+    handles = []
+    try:
+        for path in global_paths:
+            path.rename(saved / path.name)
+        for q, path in zip(QUADS, build_paths):
+            handle = path.open('r+b')
+            handles.append(handle)
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            payload = {'schema_version': 1, 'pid': os.getpid(), 'role': 'build',
+                       'region': q, 'regions': QUADS, 'request_tag': label,
+                       'started_at': time.time()}
+            handle.seek(0); handle.truncate()
+            handle.write((json.dumps(payload) + '\n').encode()); handle.flush()
+        if alias_build:
+            for path in global_paths:
+                os.link(build_paths[0], path)
+        else:
+            handle = global_paths[0].open('w+b')
+            handles.append(handle)
+            fcntl.flock(handle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            for path in global_paths[1:]:
+                os.link(global_paths[0], path)
+        global_ids = {(path.stat().st_dev, path.stat().st_ino) for path in global_paths}
+        build_ids = {(path.stat().st_dev, path.stat().st_ino) for path in build_paths}
+        assert len(global_ids) == 1 and len(build_ids) == 4
+        assert len(global_ids | build_ids) == (4 if alias_build else 5)
+        assert all(path.stat().st_nlink == (5 if alias_build else 4) for path in global_paths)
+        # One actual child guard invocation; its read-only refusal must preserve
+        # the complete owned namespace and must not invoke downstream tools.
+        run(label, endpoints('root')[0][1], 64, cwd=SCOPE / 'root', denied=True)
+    finally:
+        for handle in reversed(handles):
+            handle.close()
+        for path in global_paths:
+            if path.exists():
+                path.unlink()
+            backup = saved / path.name
+            if backup.exists():
+                backup.rename(path)
+        for path, data in zip(build_paths, build_bytes):
+            path.write_bytes(data)
+        saved.rmdir()
+
 def main():
     assert os.environ.get("GITHUB_ACTIONS") == "true", "hosted runner only"
     assert not Path("/workspace/repos").exists(), "canonical host paths forbidden"
@@ -200,6 +252,8 @@ if os.environ.get('NI76_HOLD_WRITER'):
                 child.terminate(); child.wait(timeout=5)
     release()
     all_denied('unlocked-stale-payload')
+    cpu_hardlink_refusal('cpu-global-shared-inode', alias_build=False)
+    cpu_hardlink_refusal('cpu-global-build-alias', alias_build=True)
     # A real same-UID sibling owner is not an ancestor: keep it alive until refusal captured.
     read_ready,write_ready=os.pipe(); read_stop,write_stop=os.pipe()
     child=os.fork()

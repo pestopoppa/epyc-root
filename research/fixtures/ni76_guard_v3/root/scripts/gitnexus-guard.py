@@ -102,8 +102,8 @@ def open_identity(path):
         fd = os.open(name, os.O_RDONLY | os.O_CLOEXEC | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=root_fd)
         try:
             opened = os.fstat(fd)
-            if not stat.S_ISREG(opened.st_mode):
-                deny("opened lock is not regular")
+            if not stat.S_ISREG(opened.st_mode) or opened.st_nlink != 1:
+                deny("opened lock is not single-link regular")
             if (before.st_dev, before.st_ino) != (opened.st_dev, opened.st_ino):
                 deny("lock path changed during open")
             if opened.st_uid != os.getuid():
@@ -113,7 +113,7 @@ def open_identity(path):
                 deny("oversized lock payload")
             after = os.stat(name, dir_fd=root_fd, follow_symlinks=False)
             final = os.fstat(fd)
-            if not stat.S_ISREG(final.st_mode) or final.st_uid != os.getuid():
+            if not stat.S_ISREG(final.st_mode) or final.st_uid != os.getuid() or final.st_nlink != 1:
                 deny("lock type or owner changed during read")
             if (after.st_dev, after.st_ino) != (final.st_dev, final.st_ino):
                 deny("lock path changed during read")
@@ -175,6 +175,8 @@ def admit():
             if role == "build":
                 valid_payload(payload, owner, q)
             identities.append((path, ident, owner, start))
+    if len({entry[1] for entry in identities}) != 8:
+        deny("CPU claims do not have eight distinct inode identities")
     owner_set = {entry[2] for entry in identities}
     if len(owner_set) != 1:
         deny("locks do not share one ancestor owner")
