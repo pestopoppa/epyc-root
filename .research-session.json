@@ -1,9 +1,9 @@
 {
  "session_id": "intake-q38fn-cluster-ec-20261006",
  "started_at": "2026-10-06T19:00:00Z",
- "last_checkpoint": "2026-10-06T19:40:00Z",
- "stage": "stage2-wave2-running",
- "phase": 5,
+ "last_checkpoint": "2026-10-06T21:00:00Z",
+ "stage": "stage2-complete-closeout-gate-open",
+ "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-q38fn-cluster",
  "branch": "lane/ec-intake-q38fn-cluster",
  "topic": "myllmbox/qwen38-flash-next-cluster-recipe (SHA d2721ecbd16f4a10b968b2755fc374da3c539502) - 2x DGX Spark Q38FN physics comparison; plus ROCm 10.1 blog",
@@ -19,10 +19,21 @@
   "intake-1945",
   "intake-1946",
   "intake-1947",
-  "intake-1948"
+  "intake-1948",
+  "intake-1949",
+  "intake-1950",
+  "intake-1951",
+  "intake-1952",
+  "intake-1953",
+  "intake-1954",
+  "intake-1955",
+  "intake-1956",
+  "intake-1957",
+  "intake-1958",
+  "intake-1959"
  ],
  "entries_remaining": [],
- "next_intake_id": 1949,
+ "next_intake_id": 1960,
  "expansion_cap": 10,
  "expansion_count": 10,
  "expansion_entries": [
@@ -5252,12 +5263,51 @@
      "intake-1944",
      "intake-1945",
      "intake-1948"
+    ]
+   },
+   {
+    "wave": 2,
+    "dived": [
+     "intake-1946",
+     "intake-1947",
+     "intake-1949",
+     "intake-1950",
+     "intake-1951",
+     "intake-1952",
+     "intake-1953",
+     "intake-1954",
+     "intake-1955",
+     "intake-1956"
+    ]
+   },
+   {
+    "wave": 3,
+    "dived": [
+     "intake-1957",
+     "intake-1958",
+     "intake-1959"
     ],
-    "status": "persisted dive-verified",
-    "note": "cap 10 respected; intake-1946 (b12x) was dived concurrently and is counted in wave 2"
+    "stop_reason": "stop early: wave 3 surfaced nothing that changes the physics verdict"
    }
   ],
+  "waves_used": 3,
   "max_waves": 4,
+  "stage2b_entries": [
+   "intake-1949",
+   "intake-1950",
+   "intake-1951",
+   "intake-1952",
+   "intake-1953",
+   "intake-1954",
+   "intake-1955",
+   "intake-1956",
+   "intake-1957",
+   "intake-1958",
+   "intake-1959"
+  ],
+  "closeout_gate": "open: dive-surfaced list presented in INTAKE_STAGE2.md; Stage 3 needs operator approval",
+  "anchors_total": 209,
+  "second_reader": "mechanical quote re-find only",
   "policy": "steering_ledger seq 1"
  }
 }

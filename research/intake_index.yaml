@@ -246326,25 +246326,118 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - README states it targets DGX Spark / RTX Blackwell, is explicitly not for production/datacenter, and carries GEMM, attention and collective kernels; supplies the one-shot RoCE all-reduce the cluster kit uses for per-step exchanges up to 2 MB.
-  notes: Repo is the post-redirect canonical path (lukealonso/b12x redirects to local-inference-lab/b12x, HTTP 200 on both). README read from the master branch.
+  - '4-node GB10 bf16 all-reduce latency, NCCL vs RoCEnante graph replay: 8 KB 52.6 vs 16.8 us (3.1x); 48 KB (6-token decode step) 65.5 vs 23.6 us (2.8x); 256 KB 174.3 vs 58.3 us; 1 MB 899.2 vs 238.9 us (3.8x). Eager RoCEnante 46.6/52.8/88.4/261.7 us.'
+  - All-gather [6,38720] logits shard 337.3 us NCCL vs 96.9 us graph (3.48x); at 7.4 MB shard both ~1.53 ms (bandwidth bound).
+  - 'Serving A/B (vLLM, 4 nodes): per-step decode latency c=1 62-64 vs 65-66 ms NCCL (~3-4 ms saved/step), c=16 194-212 vs 246-259 ms; c=4 throughput +6..+22%, c=16 +22..+32%; coding-peak c=1 within noise (-2%). Earlier GLM-5.3-Flash TP4 MTP5 run: coding-peak c=1 +12.7%.'
+  - 'Mechanism: GB10 unified memory lets NIC register pinned host memory with ibv_reg_mr; no GPUDirect RDMA; NCCL stays host-staged on Spark. Size cap 2 MB all-reduce.'
+  - 'Implied per-step all-reduce cost: with 48 KB payload, NCCL ~65 us per collective; a TP decoder issues ~2 per layer, so a few thousand us/step is possible; docs do not state the count. Our inference: 3-4 ms/step observed saving at c=1 is the evidence in-source.'
+  - 'Additional anchored statement (index added by integrator):  Source passage: `VLLM_ROCE_ALLREDUCE_MAX_SIZE` (2MB)'
+  notes: 'Repo is the post-redirect canonical path (lukealonso/b12x redirects to local-inference-lab/b12x, HTTP 200 on both). README read from the master branch. | DIVE 2026-10-06 read notes: The RoCE op is comm.roce "RoCEnante", one-shot RDMA all-reduce/all-gather for multi-node DGX Spark TP (ConnectX-7, 2 PCIe x4 functions striped). Constraint 2-16 ranks; vLLM adapter caps all-reduce at 2 MB, all-gather at 16 MB. Numbers were measured on FOUR nodes only (world size 4), bf16; I found no 2-node numbers.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1937
+    - intake-1950
+  credibility_score: 4
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Measured 4-node GB10 all-reduce latencies (NCCL 52.6/65.5 us vs RoCEnante graph 16.8/23.6 us at 8/48 KB) and ~3-4 ms/step saved; no 2-node numbers; knowledge for the interconnect term.
+  reader_should_conclude: RoCE one-shot all-reduce lowers 48 KB collective latency from ~65 to ~24 us on 4-node GB10, saving ~3-4 ms/step; it is not a 2-node measurement and not an explanation for tok/s above bandwidth roofline. Do not cite as 2-node numbers.
+  reported_results:
+  - op: all-reduce 8KB
+    nccl_us: 52.6
+    roce_eager_us: 46.6
+    roce_graph_us: 16.8
+  - op: all-reduce 48KB
+    nccl_us: 65.5
+    roce_eager_us: 52.8
+    roce_graph_us: 23.6
+  - op: all-reduce 256KB
+    nccl_us: 174.3
+    roce_eager_us: 88.4
+    roce_graph_us: 58.3
+  - op: all-reduce 1MB
+    nccl_us: 899.2
+    roce_eager_us: 261.7
+    roce_graph_us: 238.9
+  - op: all-gather [6,38720]
+    nccl_us: 337.3
+    roce_graph_us: 96.9
+  - setup: 4x GB10, bf16, world 4, both CX-7 functions, median CUDA-event, slowest rank
+  claim_anchors:
+  - claim_index: 0
+    kind: file-hash
+    locator: docs/rocenante.md Results table @a0af71b
+    quote: '| all-reduce 48 KB (6-token decode step) | 65.5 us | 52.8 us | 23.6 us | 2.8 |'
+    quote_sha256: 96c527431275eae5b5a5aa83f903e4f069980729791464262117ff735d9ae69b
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: file-hash
+    locator: docs/rocenante.md Results table
+    quote: '| all-reduce 8 KB | 52.6 us | 46.6 us | 16.8 us | 3.1 |'
+    quote_sha256: d58a4c9797a120a7df24fbe182142a1d9804f92c8e21ea61fc500d1599cbbff5
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: file-hash
+    locator: docs/rocenante.md Results table
+    quote: '| all-reduce 1 MB (128-token batch) | 899.2 us | 261.7 us | 238.9 us | 3.8 |'
+    quote_sha256: 6b339b889e152269b8d9fdbe6bd8d32ca79ea4fd96639458668015502b303539
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: file-hash
+    locator: docs/rocenante.md Results
+    quote: 'Measured configuration: four DGX Spark GB10 nodes'
+    quote_sha256: c06aad9acff856440f01edc59c1858d43f163ec49ebecf87a4005a650a1bba4e
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: file-hash
+    locator: docs/rocenante.md Results
+    quote: 'c=1 62-64
+
+      vs 65-66 ms'
+    quote_sha256: f904338a58041e6dead0c197cffe5cc6dab675881327d80852adc57c90126ae0
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: file-hash
+    locator: docs/rocenante.md vLLM integration
+    quote: '`VLLM_ROCE_ALLREDUCE_MAX_SIZE` (2MB)'
+    quote_sha256: 9ddbbe059622c89d6620e29cd160f141ea96f108bd088c3d100aac63ffde18ae
+    source_revision: local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: verbatim table; vendor/author self-measured, receipt JSON named but not read
+  - claim_index: 1
+    effect: unaffected
+    note: see dive_corrections
+  - claim_index: 2
+    effect: unaffected
+    note: see dive_corrections
+  - claim_index: 3
+    effect: narrowed
+    note: no 2-node numbers in rocenante.md; 4-node only
+  - claim_index: 4
+    effect: unaffected
+    note: see dive_corrections
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL: docs/rocenante.md read in full (228 lines); README grepped, other docs/code not read.; local-inference-lab/b12x master a0af71b17b3469dc5108b4de8ce4d4c1d37b64a3; README.md sha256[:12] 87fd277d3213). No 2-node figures exist in the doc: the 4-node table cannot be read as 2-node cost. Per-step collective saving in serving is 3-4 ms at c=1 (62-64 vs 65-66 ms), i.e. ~5% of the step, so comms is not the dominant term at c=1.'
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'For the physics note: 2 Sparks at ~54 tok/s TP2 = ~18.5 ms/token; cross-check vs 48 KB all-reduce 24-66 us each x (layers x2) to bound communication share. Layer count must come from the Q38FN config. [operator-review candidate; proposed disposition: fold into physics note (arithmetic)]'
 - id: intake-1947
   arxiv_id: null
   url: https://github.com/eugr/spark-vllm-docker
@@ -246359,25 +246452,123 @@
   discovered_via: expansion
   verdict: worth_investigating
   key_claims:
-  - README (129 KB) documents multi-node Spark clustering over QSFP/RoCE, recipes and a b12x image that the Int4-FAST kit recommends for about +5-7% speed.
-  notes: 'Stage-1: README saved, headers only.'
+  - 'Dual-Spark Q38FN recipe: TP=2 PP=1 over RoCE, b12x container (vllm-node-b12x), MTP with 4 speculative tokens, max_num_seqs 16, max_num_batched_tokens 4096, KV fp8, gpu_mem_util 0.7, 262144 ctx, VLLM_ENABLE_ROCE_ALLREDUCE=1 with a 2 MB max size (custom RoCE allreduce for small messages).'
+  - Solo Q38FN recipe is the same stack at TP=1, num_speculative_tokens 4, max_num_seqs 8, PLE tables on disk (VLLM_PLE_TABLE_MEMORY=disk, changelog 2026-09-10, allows 1M+ KV tokens).
+  - 'The repo publishes NO tok/s for Qwen3.8-Flash-Next (solo or dual) anywhere in README, recipes, or docs. Only other-model numbers: DeepSeek V4.1 Flash 3x/4x Sparks ~73 t/s speedbench coding; Qwen3.5-397B TP=4 ~37 tok/s single-user, ~103 aggregate at 4 users; GPT-OSS ~60 t/s single Spark.'
+  - 'Interconnect measurements in docs/NETWORKING.md (an example capture on a dual-Spark QSFP direct link): ib_write_bw 111.72 Gb/s peak (~14 GB/s) at 64 KiB, 4 QPs; ib_write_lat 2 B typical 1.47 us, min 1.42, p99 1.57, p99.9 1.93 us. It is a documentation example, not a stated Q38FN deployment measurement.'
+  - Benchmarking is delegated to the external llama-benchy tool; no benchmark results are shipped.
+  - 'Additional anchored statement (index added by integrator): Different model, not Q38FN. Source passage: Both use tensor parallelism and give you similar performance (~73 t/s speedbench coding).'
+  - 'Additional anchored statement (index added by integrator): Different model. Source passage: Benchmarked at ~37 tok/s single-user, ~103 tok/s aggregate (4 concurrent users).'
+  - 'Additional anchored statement (index added by integrator): Taken from README single-Spark section. Source passage: --speculative-config ''{"method":"mtp","num_speculative_tokens":4}'''
+  notes: 'Stage-1: README saved, headers only. | DIVE 2026-10-06 read notes: Read: README TOC, Quick start, Single Spark Q38FN section, changelog 2026-10-05 back to 2026-09-05 and later via grep for tok/s, latency, GB/s, RoCE, NCCL; both Q38FN recipes (solo, cluster) in full; docs/NETWORKING.md perf tests (L270-L450). NOT read: older changelog (2026-09-04 and earlier) beyond grep hits, build/launcher options sections, mods, the README section on the 3/4-node recipes beyond the changelog.'
   cross_references:
     chapters: []
     handoffs:
     - cpu-decode-roofline-program.md
     - qwen38-flash-next-fp8-evaluation.md
     experiments: []
-    intake_entries: []
-  credibility_score: null
+    intake_entries:
+    - intake-1937
+    - intake-1946
+  credibility_score: 4
   contradicting_evidence: null
   ingested_date: '2026-10-06'
-  verification: stage1-unverified
+  verification: dive-verified
   handoffs_updated: []
   handoffs_created: []
-  integration_disposition: awaiting_dive
+  integration_disposition: knowledge_only
   disposition_evidence:
-  - Stage 1 (2026-10-06) persisted from a curl-to-disk skim; Stage 2 primary-source dive pending.
-  reader_should_conclude: UNVERIFIED - do not cite any figure from this entry until a Stage-2 dive promotes it.
+  - Publishes no Q38FN tok/s; documents dual-recipe settings (TP2, MTP k=4, RoCE all-reduce 2 MB cap) and an ib_write_lat example of 1.47 us typical for 2 B messages (not a Q38FN-run measurement).
+  reader_should_conclude: 'This is a launcher/recipe repo: it fixes the 2x Spark Q38FN configuration (TP2, MTP k=4, RoCE allreduce) but gives no Q38FN tok/s. Do NOT cite it as evidence for 93-177 tok/s or for any bandwidth-vs-throughput conclusion; the 1.47 us / 112 Gb/s figures are an example capture in the networking guide, not a Q38FN-run measurement.'
+  reported_results:
+  - 'No Q38FN tok/s reported. Interconnect example: 111.7 Gb/s RDMA write BW, 1.47 us typical RDMA write latency (2 B). Other models: DSV4.1 Flash ~73 t/s (3x/4x), Qwen3.5-397B TP4 37 tok/s single / 103 aggregate.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: recipes/qwen3.8-flash-next-nvfp4-cluster.yaml:L18-L28 @ 73f01ce
+    quote: "  tensor_parallel: 2\n  pipeline_parallel: 1"
+    quote_sha256: ae694bed417a23eb85d834db9c79580167570c1fd91a989120388e39620029c0
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 1
+    kind: line-range
+    locator: recipes/qwen3.8-flash-next-nvfp4-cluster.yaml:L39-L40 @ 73f01ce
+    quote: "  VLLM_ENABLE_ROCE_ALLREDUCE: \"1\"\n  VLLM_ROCE_ALLREDUCE_MAX_SIZE: \"2MB\""
+    quote_sha256: 7b5b19e5aa97020dbbbd9d5a7e0e3af36b2aa4cf43626ef2e06528bb25050a55
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 2
+    kind: line-range
+    locator: recipes/qwen3.8-flash-next-nvfp4-cluster.yaml:L26-L27 @ 73f01ce
+    quote: "  max_num_seqs: 16\n  max_num_batched_tokens: 4096\n  num_speculative_tokens: 4"
+    quote_sha256: c6340d259a95e5b1ed0fa0cac8f650c05648bc6fc6d9362057fede4e864d8dc2
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 3
+    kind: line-range
+    locator: docs/NETWORKING.md:L314-L316 @ 73f01ce
+    quote: ' 65536      20000            111.72             111.71             0.213070'
+    quote_sha256: f8c6d2b0e1054ae6200d45846bc55f7e4ac53b9792aa74398981341e6680f45f
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 4
+    kind: line-range
+    locator: docs/NETWORKING.md:L351-L353 @ 73f01ce
+    quote: ' 2       1000          1.42           1.93         1.47                1.47             0.00            1.57                    1.93'
+    quote_sha256: e8bea4f3bb490c09cc54c04fa0c71420838a45182f99e6098327f1777054e0f2
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 5
+    kind: line-range
+    locator: README.md:L318 @ 73f01ce
+    quote: Both use tensor parallelism and give you similar performance (~73 t/s speedbench coding).
+    quote_sha256: d0eaf923372cdd07712a54fd2fb582b48b24df41249d4a5d0c3d982430627aad
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 6
+    kind: line-range
+    locator: README.md:L1094 @ 73f01ce
+    quote: Benchmarked at ~37 tok/s single-user, ~103 tok/s aggregate (4 concurrent users).
+    quote_sha256: ab1b31efcf66a5b59d3666562c0ae45530ca071caadc24e05fae505d36c0238a
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  - claim_index: 7
+    kind: line-range
+    locator: README.md:L156-L158 solo recipe @ 73f01ce
+    quote: --speculative-config '{"method":"mtp","num_speculative_tokens":4}'
+    quote_sha256: 2d397932dfdf633dd1bee40b26d3b437f499dff5d30af4541d35a417d0b00f88
+    source_revision: 73f01ce
+    verified_by: research-intake/stage2
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: From recipe file.
+  - claim_index: 1
+    effect: unaffected
+    note: Solo recipe lines grep-checked for num_spec=4 and max_num_seqs=8.
+  - claim_index: 2
+    effect: unaffected
+    note: Absence checked via grep for tok/s|t/s|tps across README, recipes, docs; Flash-Next appears only in recipes and memory-profile mod README.
+  - claim_index: 3
+    effect: unaffected
+    note: Numbers verbatim as example output of perftest; hardware identity (ConnectX-7 200GbE port) inferred, not stated in the snippet.
+  - claim_index: 4
+    effect: unaffected
+    note: Same.
+  - claim_index: 5
+    effect: unaffected
+    note: Different model, not Q38FN.
+  - claim_index: 6
+    effect: unaffected
+    note: Different model.
+  - claim_index: 7
+    effect: unaffected
+    note: Taken from README single-Spark section.
+  dive_corrections: '2026-10-06 Stage-2 dive (read_depth PARTIAL; 73f01ceea6369b8d4451462f094c20cb10559c11 (git clone --depth 1, 2026-10-06); README.md 129295 bytes). The Stage-1 premise that this entry carries Qwen3.8-Flash-Next two-node tok/s is not supported: it carries the recipe (TP2, MTP k=4, RoCE allreduce <=2MB) but no performance number for that model.'
+  read_depth: PARTIAL
+  recommended_actions:
+  - 'Use as the canonical config for the 2x Spark Q38FN reference setup: TP=2, MTP k=4, max_num_seqs 16, b12x kernels; any 93-177 tok/s claim from this stack must name batch size and K. [operator-review candidate; proposed disposition: record_only]'
+  - 'Record RDMA write latency ~1.5 us and ~112 Gb/s link bandwidth as the interconnect cost scale per TP allreduce hop (96 allreduces/step at 2 per layer x 48 layers would be ~0.15 ms latency floor, estimate not in source). [operator-review candidate; proposed disposition: record_only]'
 - id: intake-1948
   arxiv_id: null
   url: https://forums.developer.nvidia.com/t/qwen3-8-flash-next-on-1-2-and-4-dgx-sparks-with-nvidias-official-nvfp4-quant-64-tok-s-peak-single-stream/382476
@@ -246532,3 +246723,1583 @@
   - 'Compare our CPU 50-53 tok/s only against Spark MEDIAN/prose numbers (37-54 TP2, 29-44 TP1) and MTP-off floors (15.4 1 Spark, 24.5 TP2), never the 64 peak or 93-177 aggregate; note our MTP prompt-set differs. [operator-review candidate; proposed disposition: fold into physics comparison note]'
   - 'Measure acceptance-by-position on our Q38FN MTP K to compare with 89/74.5/60% (TP2) and 64% overall (TP1) from READMEs. [operator-review candidate; proposed disposition: probe (cheap, existing logs)]'
   - 'Reduced-vocabulary MTP draft head (65,536 / 47,149 ids of 250K) is claimed as the largest single bandwidth lever in the draft step; evaluate for llama.cpp MTP head output projection. [operator-review candidate; proposed disposition: worth_investigating]'
+- id: intake-1949
+  arxiv_id: null
+  url: https://github.com/tonyd2wild/Qwen3.8-Flash-Next-NVFP4-DGX-Spark
+  source_type: repo
+  title: Qwen3.8-Flash-Next NVFP4 on DGX Spark (vLLM, 1/2/4 node lanes)
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1948
+  verdict: worth_investigating
+  key_claims:
+  - 'Single Spark (GB10, 273 GB/s class), official nvidia NVFP4 checkpoint, PLE table left on NVMe: default (staged gather + decode CUDA graphs + reduced-vocab 65,536 MTP draft, MTP3, 6 seqs, fp8 KV, thinking off, 40 prompts x 8 categories, no prefix cache) = 43.9 tok/s MEDIAN single stream; prose 29.0, coding 44.3, JSON 49.3. x6 aggregate 68.8 (21.7/stream).'
+  - Single Spark morning stack (MTP4, piecewise graphs, full draft head) = 32.5 median; MTP4 acceptance 64%, 3.56 tokens/step stated; eager floor WITHOUT MTP or graphs = 15.4 tok/s on every category. Per-step latency p50 105 ms, 2.16 tok/step at one stream on prose (itl_probe), 6 streams 186 ms/step.
+  - '2 Sparks TP2 ''SPEED'' profile (table in unified memory, compile off, MTP3, 6 seqs, 4096 prefill chunk, fp8 KV): 53.7 median single stream, 97.9 aggregate at x6 (32.9/stream); with reduced-vocab draft 53.2 median, x6 105.0 aggregate. Count-to-100 ''ceiling'' footnote: 64 single / 309 aggregate x6; peak row 68.1/307 with draft vocab.'
+  - 'TP2 CONTEXT (table on disk): 35.8 median, x6 65.5 aggregate; TP4+EP CONTEXT 40.5 median, x6 87.4; TP4 table-in-RAM+compile 42.8 median, x6 91.6. Scaling from 1 to 2 to 4 nodes is weak on single stream (32.5 -> 35.8 -> 40.5), i.e. not bandwidth-proportional.'
+  - 'Biggest single lever on TP2: 4096-token prefill chunk raised 28.4 -> 45.1 median; adding MTP3 + 6 seqs gave 53.7. Chunk + torch.compile together collapsed decode to 8-15 tok/s (config interaction, not hardware).'
+  - Reduced-vocab MTP draft (head projects to 65,536 lowest ids, rest masked, target verifies full vocab) is worth ~+15% prose on one Spark alone (35.2 -> 37.7 median eager) and +35% stacked with staged gather vs morning stack; TP2 gain is half (draft projection already split).
+  - Headline numbers use thinking OFF, greedy-style harness; counting prompts excluded from headline but quoted as 'ceiling' footnote (49.4 single, 209.9 x6 on one Spark). Author explicitly labels peak vs median.
+  - No achieved-bandwidth (GB/s) or bytes/step number is stated in this repo's README. KV pool sizes and cold prefill (1,269-1,760 tok/s one Spark; 2,784 TP2 28K) are reported instead.
+  reported_results:
+  - setup: 1x Spark, NVFP4, PLE on NVMe staged, MTP3, dv65k, 6 seqs, thinking off, 40 prompts
+    metric: median single-stream tok/s
+    value: 43.9
+    aggregate_x6: 68.8
+    mtp_off_floor: 15.4
+    median_or_peak: median (peak 49.4/209.9 x6 count-to-100)
+  - setup: 1x Spark morning, MTP4 full draft head
+    metric: median tok/s
+    value: 32.5
+    acceptance: 64% overall, 3.56 tok/step (stated)
+    itl: step p50 105 ms, 2.16 tok/step at x1 prose
+  - setup: 2x Spark TP2 SPEED, MTP3, 6 seqs, chunk 4096
+    metric: median tok/s
+    value: 53.7
+    aggregate_x6: 97.9
+    peak_count: 63.7
+    median_or_peak: median; peak 63.7/309
+  - setup: 2x TP2 CONTEXT / 4x TP4 CONTEXT
+    metric: median tok/s
+    value: 35.8 / 40.5
+    aggregate_x6: 65.5 / 87.4
+  - setup: any
+    metric: achieved GB/s or bytes/step
+    value: not stated in this repo
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'README.md ## Default configuration @ 6ad1c8f'
+    quote: Median of all 40 prompts** | **43.9** | **0.30 s**
+    quote_sha256: fc30f2e6bf00e89fed934e123793a7ec8c869a8d0edd9048121e110ced3ef35e
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: 'README.md ## Numbers / Single stream @ 6ad1c8f'
+    quote: Eager floor without MTP or graphs is 15.4 tok/s on every category.
+    quote_sha256: 9f5559a2796659b21d7da8b1432c7c847cfe43cd1ecb10632218ae87c55c23e7
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: 'README.md ## SPEED and CONTEXT profiles @ 6ad1c8f'
+    quote: 53.7 tok/s median single stream, 97.9 aggregate at six streams, 180 ms TTFT
+    quote_sha256: 486880f66cafa9b9614e84d61a575324d22e208d0874961e6227baccfae5e3d6
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: 'README.md ## Four Sparks @ 6ad1c8f'
+    quote: Single stream, median of 40 prompts | 32.5 | 35.8 | 40.5 tok/s
+    quote_sha256: e2431f905868c2962c7f3aa0ba5107123f4f24eb978408142bcfc1a434739e5c
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: README.md SPEED profile paragraph @ 6ad1c8f
+    quote: The 4096 prefill chunk is the single biggest lever
+    quote_sha256: 2ec03b78930d3af38b4138e9b12696088ac8e66cee73428c315155f6f3c0e59f
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: README.md evening section @ 6ad1c8f
+    quote: the MTP draft head's output projection is computed only for the 65,536 lowest token ids
+    quote_sha256: f3c5371dfd80c685f303b1403a058c802d41337c27ba12269cbdd15e6372c8e0
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: line-range
+    locator: README.md default config @ 6ad1c8f
+    quote: 'Count-to-100 peak, footnote only: 49.4 at one stream, 209.9 aggregate at six'
+    quote_sha256: e60b8bd6bb71d3c5307a84a28a5087fefbfd5c03c9b2cbf1a7246be0837ac137
+    source_revision: 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 1
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 2
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 3
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 4
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 5
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 6
+    effect: narrowed
+    note: Numbers confirmed as stated in README text (author restatement, same-box harness, single operator); raw JSON not re-aggregated.
+  - claim_index: 7
+    effect: unaffected
+    note: Grep of whole repo found no GB/s or bytes/step statement for this model run.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; 6ad1c8f15cbab1ababd2048e8e5f94094dbfc4a0). The 93-177 tok/s class numbers are not single-stream medians here: single-stream medians are 32.5-53.7 tok/s (1-2 Sparks, thinking off). Anything above ~70 is multi-stream aggregate or count-to-100 peak.'
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Read root README.md in full (26 KB). Grepped whole repo for GB/s, bandwidth, bytes-per-step: no hits outside README prose. Did not read per-run JSON/logs line by line (categories_*.json hold raw outputs; ~60 files), KV ledger, launchers, patches, or lanes/sglang-tp2 beyond headline grep. Headline tables are the author restatement of those files; not re-derived from JSON.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1948
+    - intake-1950
+    - intake-1952
+  credibility_score: 4
+  contradicting_evidence:
+  - 1950 docs/CLAUDE/fable5-1-report.md models 2-Spark batch-1 decode as at the memory-bandwidth roofline (9.2 GiB/step/GPU), consistent with, not contradicting, these numbers. This repo reports 2-Spark TP2 53.7 median vs MiaAI 54-56; consistent.
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Single-stream, thinking-off medians on 273 GB/s Spark are 33-54 tok/s; the 15.4 tok/s MTP-off floor and 2.2-3.6 accepted tokens/step explain them. Do not carry aggregate x6 (69-105) or count-to-100 peaks (up to 309) as single-stream speeds, and do not infer a GB/s figure: none is reported here.'
+  recommended_actions:
+  - 'Treat reduced-vocab MTP draft head (FR-Spec style) as a bytes-per-draft-step lever to evaluate for our MTP on CPU: Q38FN head vocab 248,320 x 2560 bf16 = 1.18 GiB read per draft step (per 1950 README), cut to 0.22 GiB with 47k vocab. [operator-review candidate; proposed disposition: worth_investigating; compute our head size/quant and draft-step count first (analysis only)]'
+  - 'Record the MTP-off floor ratio (15.4 -> 32.5-43.9 on one Spark) as a measured speculative-decode multiplier of 2.1-2.9x for this model family when calibrating our ~50-53 tok/s CPU number. [operator-review candidate; proposed disposition: note in Q38FN physics assessment]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Independent 10-expert official-NVFP4 1/2/4-Spark numbers with MTP-off floor (15.4) and acceptance; decisive for the physics verdict; no repo action before Stage 3.
+- id: intake-1950
+  arxiv_id: null
+  url: https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Dual-DGX-Sparks
+  source_type: repo
+  title: Qwen3.8-Flash-Next NVFP4 vLLM Dual DGX Spark (TP2+EP+MTP3)
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1948
+  verdict: worth_investigating
+  key_claims:
+  - MTP off 24.5 tok/s vs MTP3 52.1 tok/s at batch-1 greedy (2.13x), TP2+EP, 262144 ctx, GMU 0.835, nvidia NVFP4; draft acceptance 72.8% (823/1131), by position 89% / 74.5% / 60%. Prompt set not named in that table.
+  - 'The 24.5 -> 52.1 jump is partly a config effect: MTP off also drops the draft-pass bytes; the author''s own bandwidth model gives ~9.2 GiB (9.9 GB) read per GPU per step at TP2/EP2 with MTP3 (4 lm_head passes = 2.36 GiB = 26%, experts ~2.1 GiB, GDN proj 1.95, HyperConnection 1.19 replicated bf16 ...).'
+  - 'Roofline arithmetic in the author''s analysis report (Claude Fable 5.1, analytical, NOT a live benchmark): 9.9 GB / 273 GB/s = 36 ms; at assumed 235-245 GB/s achieved = 40-42 ms/step, x ~2.2 tokens/step = 53-56 tok/s, matching README measured 55.8 batch-1 greedy. The 235-245 GB/s is an assumption, not a measurement.'
+  - 'Reduced draft vocab: checkpoint vocab 248,320, drafter has own bf16 lm_head 248320x2560x2 B = 1.18 GiB (0.59 GiB per GPU at TP2) read each draft step; 47,149-id vocab leaves ~0.22 GiB on the critical rank. Live A/B (TP2+EP, MTP3, fp8 KV, 600 tok, 3 repeats): prose 1 stream 49.2 -> 56.8 (+15.5%), code 62.0 -> 71.5 (+15.3%); x8 prose 213.4 -> 225.3 (+5.6%), code 312.4 -> 325.0 (+4.0%); mean +9.6%. Step time code 61.2 -> 54.0 ms, prose 59.9 -> 53.3 ms; tokens/step unchanged (code 3.80 -> 3.85, prose ~2.9).'
+  - 'Concurrency sweep (prose, shipped config): x1 54.4 agg/54.4 per stream, x2 86.5/45.1, x4 128.1/34.2, x6 169.7/29.7, x8 207.0/26.7 tok/s (TTFT 160-490 ms); author notes acceptance not measured per concurrency, so batching vs acceptance split unattributed. Code x8 aggregate 325.'
+  - 'Earlier 65,536-id experiments were a trade: balanced across 2 ranks cut head to 0.16 GiB per rank but acceptance fell 56.5% -> 47.8% and copy task fell below baseline (59.1 -> 56.5); corpus-padded vocab suspected.'
+  - 'Language-specific 65k vocab files: normalized +31..+36% for non-English, acceptance 0.81 -> 1.40 accepted/draft; boot-to-boot variance +-12% (49.4-64.0 tok/s same config).'
+  - 'Hardware: 2 Spark nodes, GB10, 121 GiB LPDDR5x ~273 GB/s theoretical each, ConnectX-7 200 GbE RoCE, PyNCCL only, ~106 cross-node collectives per step each 5-20 KB at est. 20-30 us = 2-3 ms/step (author estimate). Second CX7 link could double cross-node bandwidth (prefill only).'
+  reported_results:
+  - setup: 2x Spark TP2+EP, nvidia NVFP4, MTP off, batch-1 greedy
+    tok_s: 24.5
+  - setup: same, MTP3, fp8 KV default (GMU 0.835)
+    tok_s: 52.1
+    acceptance: 72.8%; pos 89/74.5/60
+  - setup: shipped (47k draft vocab), prose x1..x8 aggregate
+    tok_s: 54.4/86.5/128.1/169.7(x6)/207.0
+  - setup: 47k vs full head, code x1/x8 aggregate
+    tok_s: 62.0->71.5 / 312.4->325.0
+  - setup: v0.30 lane prose x1 / code x8
+    tok_s: 60.0 / 441 (vs day-0 56.3 / 422)
+  - setup: achieved memory bandwidth
+    value: NOT MEASURED; 235-245 GB/s per GPU is an analytical assumption; bytes/step model 9.9 GB per GPU (MTP3, TP2)
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'README.md ### MTP measured on this kit @ cd839d0'
+    quote: '| Decode (batch-1, greedy) | 24.5 tok/s | **52.1 tok/s (2.13x)** |'
+    quote_sha256: 7ff989cc87afd7af1aa65bd2a8e4ae7dfa2792b50f6a3520a78024210741b225
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: README.md MTP table @ cd839d0
+    quote: '| Acceptance by position | — | 89% / 74.5% / 60% |'
+    quote_sha256: 36982ea67b2ed1950291055ab90c6a93dd0e9dd7e159a97ff492d5393c10f8da
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: fable5-1-report.md section 2 @ cd839d0
+    quote: At 273 GB/s theoretical that is **36 ms/step**; at a realistic 235–245 GB/s achieved it is **40–42 ms/step**
+    quote_sha256: 95e2b25f57a1a217fe890b5ea5595bf1995b65ec07d6f4ec3b816e8359e2ec77
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: fable5-1-report.md section 2 table @ cd839d0
+    quote: '| **Total** | **≈ 9.2 GiB (9.9 GB)** | | |'
+    quote_sha256: 3bad1566a66008179aa6cefde55aa4a375bb62f106ec3a4002f1ce8a5987bd98
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: 'README.md ## Reduced-vocabulary MTP drafting @ cd839d0'
+    quote: 248320 × 2560 × 2 B = **1.18 GiB,
+    quote_sha256: 62027ea907764a12b06972a6eaebe6fcb96a8710b22618e226c97a34975fd7c1
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: README.md reduced-vocab table @ cd839d0
+    quote: '| prose, 1 stream | 49.2 | **56.8** | **+15.5%** |'
+    quote_sha256: 8685c36d45a4f16229f00010b844bb40faef6b17a92e98e9d908ce9325f89edc
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: README.md concurrency sweep @ cd839d0
+    quote: '| ×8 | **207.0 tok/s** | 26.7 tok/s | 432 ms |'
+    quote_sha256: 38b230f0e5f56afbd684136060b4fe811b88e04f5c2dda85e60dfa8396d0d7b7
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: README.md History 65,536-id experiments @ cd839d0
+    quote: acceptance falls 56.5% → 47.8%
+    quote_sha256: c800c77bdcd90cc6515109ec408aecc3665a5e4199bb113590c58b179675a7b7
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: fable5-1-report.md section 0 @ cd839d0
+    quote: No live benchmark.
+    quote_sha256: 30637750c56724adc581acd8d67255aa32eb2b46be2297e12bb056cc9bc5d41f
+    source_revision: cd839d0b62f6c737178a0c2037733420e0524ebf
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: In README as stated; author measurement, single operator; prompt set not specified so MTP-off vs MTP3 ratio is for an unnamed greedy prompt.
+  - claim_index: 1
+    effect: unaffected
+    note: Table in fable5-1-report.md section 2; analytical from parsed safetensors headers, not measured traffic.
+  - claim_index: 2
+    effect: narrowed
+    note: Arithmetic checks (9.9/273=36.3 ms; 9.9/240=41 ms; x2.2 = 54 tok/s). But 235-245 GB/s achieved is assumed; report states no live benchmark was run. Roofline consistency is a fit, not a bandwidth measurement.
+  - claim_index: 3
+    effect: unaffected
+    note: 'Recomputed: 248320*2560*2 B = 1.185 GiB; 47149 rows = 0.225 GiB; README tables match as quoted. Live measured on kit 2026-09-11.'
+  - claim_index: 4
+    effect: unaffected
+    note: Aggregate 207.0 at x8 prose is the stated measured value; note x8 aggregate is 3.8x x1, i.e. batching amortises weight bytes.
+  - claim_index: 5
+    effect: unaffected
+    note: Table in README history section.
+  - claim_index: 6
+    effect: narrowed
+    note: Quoted from README text; not re-derived.
+  - claim_index: 7
+    effect: narrowed
+    note: Hardware facts confirmed in report; collective latency figures are estimates.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; cd839d0b62f6c737178a0c2037733420e0524ebf). Do not read 24.5 -> 52.1 as MTP alone raising bandwidth efficiency: it is 2.13x tokens per step at ~same bytes. NCCL settings: PyNCCL over RoCE v2 on CX7, IB_GID_INDEX=3, one HCA per node by default; no interconnect bandwidth measured in the README.'
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Read README.md sections: MTP table, reduced-vocab drafting, concurrency sweep, defaults (lines ~1-140, 655-830, 985-1060); docs/CLAUDE/fable5-1-report.md lines 1-160 (bandwidth model). Greps over whole repo for bandwidth/bytes. Not read: CHANGELOG body, bench/*.py, patches, NCCL ground-truth section (report L341), rest of fable5-1 report, docs/bench/rerun-20260916.md. No raw result files exist beyond README tables (repo has bench scripts, no result JSON).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1948
+    - intake-1949
+    - intake-1956
+  credibility_score: 4
+  contradicting_evidence:
+  - 'None against physics: 52-56 tok/s batch-1 at ~9.9 GB/step and 2.2-3 tokens/step is consistent with 273 GB/s per node. Higher numbers (207-325) are 8-stream aggregates.'
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 2x Spark batch-1 is ~52-56 tok/s (prose 49-57, code 62-72 with reduced draft head); 24.5 is the MTP-off floor. The GB/s figure is an assumption in an analytical report, not a measurement. Do not carry 207/325 tok/s as single-user speed.
+  recommended_actions:
+  - 'Use the per-step byte-model template (bytes per GPU per step / achieved BW x tokens per step) to compute our CPU Q38FN bound: active-weight bytes per step incl. 4 lm_head passes vs 446.8 GB/s measured read-sum, compare to ~50-53 tok/s. [operator-review candidate; proposed disposition: analysis-only, no compute]'
+  - 'Quantify lm_head share on our CPU MTP path (draft-step lm_head re-reads) and whether a frequency-ranked reduced draft head is possible in llama.cpp MTP. [operator-review candidate; proposed disposition: worth_investigating]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Dual-Spark MTP-off 24.5 vs MTP3 52.1 and the reduced-draft-vocab A/B (+9.6% mean) are the cleanest accepted-tokens and head-bytes evidence; knowledge for the MTP draft-head lever.
+- id: intake-1951
+  arxiv_id: null
+  url: https://github.com/jschmied/qwen38-flash-next-gb10
+  source_type: repo
+  title: 'qwen38-flash-next-gb10: single-GB10 speed-of-light working record'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - ssm_hybrid
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1942
+  verdict: adopt_patterns
+  key_claims:
+  - Authors adopt 220 GB/s as the measured attainable DRAM rate on one GB10 (spec 273 GB/s), i.e. ~80.6% of peak; every floor in the repo is bytes/220 GB/s. The "det-231" measurement itself is not in the repo notes read.
+  - 'Plain (no-speculation) decode reads 6.6 GiB/token (10 of 512 experts x 48 layers + FP8 dense 2,551 MiB + BF16 leftovers 1,912 MiB + FP8 lm_head 606 MiB): floor 31.5 ms/tok = 31.8 tok/s at 220 GB/s, 25.4 ms = 39.4 tok/s at 273 GB/s.'
+  - 'Speculative decode amortizes weight bytes: one K=3 verify cycle (4 rows) touches 26.6 distinct experts/layer (independent would be 38.8), costs a 45.2 ms floor (target dense 21.3, target experts 16.1, lm_head 2.9, drafter 3.8, GDN state 1.0, QSA 0.2), measured 59.2 ms (1.31x), yielding 2.53 tokens: floor ~17.9 ms/tok (~56 tok/s) vs plain 31.8 tok/s.'
+  - 'K=5: floor 52.9-54.4 ms per cycle (6-row union ~37.2 experts/layer is INTERPOLATED not captured); code accepts 4.35 tokens/cycle so floor 80-82 tok/s single-stream vs measured 66.1 ms cycle = 1.21-1.25x (68.1-68.4 tok/s, accept 4.37, greedy code); prose accept 2.83-2.86, 42.2-42.4 tok/s.'
+  - 'Measured per-kernel achieved bandwidth (single GB10, L2 flushed): FP8 lm_head effective ~234 GB/s (0.94x of 220 floor); FP8 in_proj_qkvz 1.04x; GDN RecoverSSM commit 224 GB/s ("the DRAM floor"); HC combine_norm 234 GB/s; gate_mix 219; finalizeMoeRouting 224; doActivation 270 GB/s; copy test 218.5 GB/s read+write; GDN verify kernel 145-148 GB/s (latency-bound); TensorFold EXL3 expert kernel 192-214 GB/s at 1-64 rows (87-95% of 224); small 0.8 MB k/v 45-48 GB/s; 96x2560 in_proj_ba 22 GB/s (launch-bound).'
+  - 'Step-time breakdown (K=3, 55.0 ms profiled step, c=1): NVFP4 MoE grouped GEMM 18.2-20.7 ms, FP8 blockwise GEMM 14.9-16.3, BF16 GEMM/GEMV 16.2-16.7 (floor ~11.6, 1.44x), GDN update 0.85-1.5 (+1.05 commit), other ~5.3, GPU idle 2.4-2.55 ms (4%); routed MoE on aux streams only 4.6 of 20.7 ms overlapped so step is essentially serial. Weights dominate; attention (QSA) ~0.2 ms floor and GDN state ~1 ms; launch/sync overhead = idle 4% plus per-kernel mid-size-read overhead (~5 ms/cycle).'
+  - 'Concurrency amortizes the same bytes: code c=4 144.3-144.7 tok/s aggregate (K=5); prose c=4/8/16 = 83.6/123.1/161.9 (s1) and 80.8/122.2/165.0 (s2) tok/s; 16 streams is the max served. These are single-GB10 aggregate numbers, so ~144-165 tok/s aggregate is reachable on ONE 273 GB/s Spark without any second node.'
+  - 'Dual-Spark (second-hand, MiaAI-Lab SGLang TP2): single-stream k-curve 25.9/43.4/52.6/59.1/65.8 tok/s at k=0..4 (the-field.md L1104); another entry: MiaAI 64 tok/s single stream. Not measured by the authors; no interconnect latency or GB/s given.'
+  - Authors state weights-only changes are out of scope for later work ("we are not optimizing by changing weights but by making engine faster") and that every big decode cost is weight streaming at 75-95% of DRAM; remaining kernel headroom ~10% over three families of <=5%.
+  - 'Additional anchored statement (index added by integrator): Two starts, same config; vendor/author measurement, not independent. Source passage: | code c=4 | 135.0–138.3 tok/s | **144.67 / 144.31 tok/s** | in |'
+  - 'Additional anchored statement (index added by integrator): Table verbatim. Source passage: | prose c=4 / 8 / 16 aggregate | "~100 / 110 at 16 / 32" (old stack) | 83.6, 123.1, **161.9** / 80.8, 122.2, **165.0** tok/s |'
+  - 'Additional anchored statement (index added by integrator): 4 prompts, 700 tokens, first pass, includes cold PLE pages. Source passage: = **68.1 / 68.4 tok/s** (accept 4.37)'
+  - 'Additional anchored statement (index added by integrator): Numbers are a repo-quoted third-party report; primary MiaAI issue not read. Treat as hearsay. Source passage: MTP `num_speculative_tokens: 4`**, +11.4 % over 3, with the k-curve
+
+    monotonic 0→4 (25.9 / 43.4 / 52.6 / 59.1 / 65.8 tok/s)'
+  - 'Additional anchored statement (index added by integrator): Combined 201 GB/s with two concurrent kernels sharing DRAM. Source passage: contending with the concurrent router GEMM for DRAM (201 GB/s combined, the standalone rate)'
+  reported_results:
+  - '1x GB10 K=5 greedy code c=1: 68.1-68.4 tok/s (14.63-14.68 ms/tok, accept 4.37); sampled 58.8-61.4; prose 42.2-42.4.'
+  - '1x GB10 aggregate: code c=4 144.3-144.7 tok/s; prose c=8 122-123, c=16 162-165.'
+  - Plain-decode floor 31.8 tok/s at 220 GB/s; MTP floor ~80 tok/s single-stream on code (K=5).
+  - 'Verify cycle K=3: floor 45.2 ms, measured 54-59 ms.'
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: notes/speed-of-light.md:L15 @ 9b3fd4c
+    quote: Floor = bytes / 220 GB/s, our measured bandwidth (det-231). At the 273 GB/s spec sheet every floor drops ~20 %.
+    quote_sha256: 10ad34792638acfda624b154982af1da1087f534ef653a1c427f1d4ae83daa64
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: notes/speed-of-light.md:L59-L61 @ 9b3fd4c
+    quote: 'Without MTP each token routes to exactly 10 experts per layer, so nothing is unknown: 6.6 GiB per token →
+
+      **31.5 ms/tok at 220 GB/s (31.8 tok/s), 25.4 ms/tok at 273 GB/s (39.4 tok/s).**'
+    quote_sha256: d50e0ea2ad572483dd469ac035ecf19e05cf572db06b4f5595f37edaf78cfad5
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: notes/speed-of-light.md:L67-L68 @ 9b3fd4c
+    quote: '**This floor does not bound speculative decoding.** With MTP n=3 one verify cycle reads the target weights once for
+
+      4 tokens (26.6 distinct experts per layer, not 40) and yields 2.53 accepted tokens.'
+    quote_sha256: 90916bec6fa84e518ba3c9f6a30a9d7b46f14ce0fec97097afa248bddecbbca3
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: notes/speed-of-light.md:L84 @ 9b3fd4c
+    quote: '**Floor with measured routing: 45.2 ms per verify cycle at 220 GB/s** (36.4 at 273).'
+    quote_sha256: 793d5f0dad4617bbd5bc61ed184e8f241b1522e3b875eacab0bb7fdeefb92a78
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: notes/speed-of-light.md:L716-L717 @ 9b3fd4c
+    quote: 72 MiB per 12-layer launch in 330 µs = **224 GB/s, the DRAM floor.**
+    quote_sha256: c79031e10dc5c8f535c3b84cd5ef87bd117d73a564fc2c59d74153bb8b2e8183
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: notes/speed-of-light.md:L1306-L1308 (5q) @ 9b3fd4c
+    quote: '| code (4.35 accepted) | 52.9–54.4 ms | 15.2 × 4.35 = 66.1 ms | **1.21–1.25×** | 12.2–12.5 ms (80–82 tok/s) |'
+    quote_sha256: f24128594a10e0a673968d643ed1fff715d9887784fae703498c7f5eaf34e756
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: line-range
+    locator: notes/speed-of-light.md:L177-L181 (step 3) @ 9b3fd4c
+    quote: '| **BF16 GEMM (cuBLAS `cutlass_80_wmma` 32-thread blocks, 424 calls) + gemv** | **16.7** | ~11.6 (target 9.1 + drafter 2.5) | **1.44** |'
+    quote_sha256: 4e306a27f26b1ac88b9ac2e996b5a477a8f4201755f69eeaccd2bb47971243c5
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: line-range
+    locator: notes/speed-of-light.md:L3253-L3254 (5az) @ 9b3fd4c
+    quote: "Against ~224 GB/s\n  achievable"
+    quote_sha256: b04cc19b8df1940118ccbeee822d9c06690865663e30fc0f3e65c4bd71781876
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 8
+    kind: line-range
+    locator: notes/speed-of-light.md:L3403-L3404 (5bg) @ 9b3fd4c
+    quote: grouped kernel 211 / 196 / 203 / 210 / 214 / 204 / 192 GB/s at 1 / 2 / 4 / 8 / 16 / 32 / 64 rows
+    quote_sha256: 78bdcaaa9ceaa480bf7d49b9962244b556560cf9ef5efa5b45a7cc639df2536a
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 9
+    kind: line-range
+    locator: README.md:L1902-L1908 table via speed-of-light 5ad @ 9b3fd4c
+    quote: '| code c=4 | 135.0–138.3 tok/s | **144.67 / 144.31 tok/s** | in |'
+    quote_sha256: bfdc34fdb3a458e9fa4bb79160d1dc35fd7e0513374d5d33eeaeb77385329d00
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 10
+    kind: line-range
+    locator: notes/speed-of-light.md:L1908 (5ad) @ 9b3fd4c
+    quote: '| prose c=4 / 8 / 16 aggregate | "~100 / 110 at 16 / 32" (old stack) | 83.6, 123.1, **161.9** / 80.8, 122.2, **165.0** tok/s |'
+    quote_sha256: f550f03437985283786ac019564bb5eb84aaf892a0e1458fa44d05e9c85b136f
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 11
+    kind: line-range
+    locator: notes/speed-of-light.md:L1899 @ 9b3fd4c
+    quote: = **68.1 / 68.4 tok/s** (accept 4.37)
+    quote_sha256: 9c1476ec1f56d1f92e42270684ea2a37a3cfd57b6ae34792275ef41420ddde59
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 12
+    kind: line-range
+    locator: notes/the-field.md:L1104-L1106 (second-hand) @ 9b3fd4c
+    quote: 'MTP `num_speculative_tokens: 4`**, +11.4 % over 3, with the k-curve
+
+      monotonic 0→4 (25.9 / 43.4 / 52.6 / 59.1 / 65.8 tok/s)'
+    quote_sha256: 0d3fb18488e714318fab8b833ee2629f7db2924618825aafc947e8aee6eb948c
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  - claim_index: 13
+    kind: line-range
+    locator: notes/speed-of-light.md:L995 (5f) @ 9b3fd4c
+    quote: contending with the concurrent router GEMM for DRAM (201 GB/s combined, the standalone rate)
+    quote_sha256: 13a38774c46328388c4d333d69f026c2a919bf12d019d1e94973da9ad74accd4
+    source_revision: 9b3fd4c
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: narrowed
+    note: 220 GB/s and 273 spec both quoted; the derivation (det-231) not in notes read. Corroborated indirectly by 218.5 copy and 224/234 in-kernel rates (author-measured, not independent).
+  - claim_index: 1
+    effect: unaffected
+    note: Arithmetic stated in source; 6.6 GiB/220 GB/s=32 ms. Author estimate.
+  - claim_index: 2
+    effect: unaffected
+    note: Routing capture of 69,648 4-row calls gives 26.6; acceptance 2.53 measured. Author measurement.
+  - claim_index: 3
+    effect: unaffected
+    note: Part table sums to 45.1-45.2.
+  - claim_index: 4
+    effect: unaffected
+    note: 72 MiB/330us=229 GB/s decimal approx; source says 224.
+  - claim_index: 5
+    effect: narrowed
+    note: Floor is an estimate with an interpolated expert union; measured cycle includes ~7% cold-PLE pages.
+  - claim_index: 6
+    effect: unaffected
+    note: Numbers verbatim; BF16 overhead later attributed to a post-GDN dirty-L2 write-back (4o) and removed by RecoverSSM.
+  - claim_index: 7
+    effect: unaffected
+    note: Quoted ~224 GB/s achievable; TensorFold dense linears 157-206 GB/s.
+  - claim_index: 8
+    effect: unaffected
+    note: Microbench with random trellis, fresh pick set per call.
+  - claim_index: 9
+    effect: unaffected
+    note: Two starts, same config; vendor/author measurement, not independent.
+  - claim_index: 10
+    effect: unaffected
+    note: Table verbatim.
+  - claim_index: 11
+    effect: unaffected
+    note: 4 prompts, 700 tokens, first pass, includes cold PLE pages.
+  - claim_index: 12
+    effect: narrowed
+    note: Numbers are a repo-quoted third-party report; primary MiaAI issue not read. Treat as hearsay.
+  - claim_index: 13
+    effect: unaffected
+    note: Combined 201 GB/s with two concurrent kernels sharing DRAM.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; 9b3fd4cdc26a9a34e7f0ad2e3b2a27527db3e4ff (git clone --depth 1, 2026-10-06); notes/speed-of-light.md sha256[:12]=2ec6d82133d3; README.md ad6b93ae97bf). This repo is single-GB10 (TP=1) with a DIFFERENT checkpoint (NVFP4 experts, FP8 dense, BF16 mixers/shared experts, 4.84B dense params, PLE table mmap) and speculation K=5. It contains NO 2-node or interconnect data, so it cannot by itself validate the 93-177 tok/s 2x Spark numbers; it does show why single-stream tok/s > bytes-per-token floor is not a physics violation (speculation amortizes weight bytes across accepted tokens, and batching amortizes across streams). DECLINED surfaced sources (wave 3 stop-early, no new physics): jschmied the-field.md remainder (same repo, not a separate source); llama-benchy (benchmark tool, no Q38FN data).'
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1942). Read notes: Read WHOLE: README.md, speed-of-light.md L1-310 (step 1-3c) and L630-745 (4s-4w), plus 5aa head, 5ad, 5g, 5q, 5az, 5bg, plus single-stream-limit.md head and the-field.md excerpts. NOT read line-by-line: speed-of-light.md L310-630, L745-1031 (except grep), L1060-1296, L1317-1669, L1710-1890, L1963-3243, L3263-3393, L3422-4079 (grep-scanned for GB/s only). No multi-Spark, TP2 or interconnect measurement exists in this repo (grep for RoCE/NCCL/QSFP/TP2 found none); it is single-GB10 only. Section 4u L696-L728 and 5g L1031 verified read.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1942
+    - intake-1943
+  credibility_score: 5
+  contradicting_evidence:
+  - Within this repo the claimed single-stream rate (68 tok/s code) exceeds the plain-decode floor (31.8 tok/s at 220 GB/s) by 2.1x, which is explained by 4.37 accepted tokens/cycle; no contradiction with physics. Prose (acceptance 2.86) 42 tok/s is only 1.3x the plain floor.
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Single-GB10 reaches 68 tok/s code and ~145-165 tok/s aggregate (c=4-16) at ~220-234 GB/s achievable bandwidth, so reported 2x Spark 93-177 tok/s is explained by MTP acceptance (4.4 on code) and batching, not by exceeding bandwidth. Do NOT carry: any claim about interconnect or 2-node scaling from this repo (none exists); the K=5 floor (80 tok/s) as measured (it is an interpolated estimate); MiaAI dual numbers (second-hand); acceptance figures from code prompts as general (prose is 2.8).'
+  recommended_actions:
+  - 'Adopt the floor method: per-cycle byte ledger with measured distinct-expert union E(rows) (4->26.6, 8->47.3, 16->82.5 of 512 experts top-10) and divide by measured attainable BW; apply to our CPU Q38FN (446.8 GB/s read-sum) to bound MTP tok/s. [operator-review candidate; proposed disposition: adopt_patterns]'
+  - 'Use their sub-linear expert-union exponent (~0.83) to estimate expert bytes for our K=2..5 verify batches on EPYC before building more spec-dec. [operator-review candidate; proposed disposition: worth_investigating]'
+  - 'Note attainable/peak ratios: ~0.80-0.86 (220-234 of 273 GB/s) on GB10 versus our 446.8/537.6=0.83; same ratio class, so a 0.8 floor factor is a sound planning default. [operator-review candidate; proposed disposition: record_only]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Per-step byte-accounting method for GB10 with measured attainable bandwidth (~220 GB/s of 273) and floor-vs-measured ratios; the reference method for our own roofline ledger; no repo action before Stage 3.
+- id: intake-1952
+  arxiv_id: null
+  url: https://ai-muninn.com/en/blog/qwen38-flash-next-nvfp4-dgx-spark-vllm-recipe
+  source_type: blog
+  title: 'Qwen3.8-Flash-Next NVFP4 on a DGX Spark: 41.7 tok/s recipe (ai-muninn Part 45)'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - hardware_optimization
+  - inference_serving
+  - local_inference
+  - quantization
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1948
+  verdict: worth_investigating
+  key_claims:
+  - 'Single DGX Spark (GB10, TP1), NVIDIA''s NVFP4 checkpoint of Qwen3.8-Flash-Next, stock vLLM nightly plus 9 bind-mounted overlay files, MTP=3: author''s reproduction measures 41.7 tok/s median over a 40-prompt harness (first pass; a 500-prompt re-run weighted back gives 43.6), prose 27.4, code 42-45, 47.2 tok/s aggregate at 4 streams (26.1 each). Recipe author''s own: 43.9 median.'
+  - Same checkpoint WITHOUT MTP decodes 16.6-17.0 tok/s, prose and code alike. Author computes an effective 9.27 GiB read per token -> 154-158 GiB/s, about 60% of the 273 GB/s spec. So the no-MTP number is ordinary bandwidth-bound physics.
+  - MTP=3 yields 2.93 tokens per step on average across the harness; acceptance at the three draft positions is 93/78/67% on code vs 65/39/22% on prose. The prose/code gap (27.4 vs 42-45) is entirely acceptance; 17 -> 41.7 is ~2.45x, below the 2.93 tokens/step because step cost rises (draft head, verify of 4 positions).
+  - 'Design: the 51.2B-parameter PLE n-gram table (47.68 GiB FP8) stays on NVMe and is gathered by a preadv thread pool, 16 rows x 160 B = 2,560 B per token; resident weights 76.48 GiB. Decode is unaffected (~0.1 ms gather vs tens of ms step); prefill pays (each 160 B row touches a 4 KiB page, 25.6x read amplification; 32K prefill 1,666 tok/s).'
+  - 'Model anatomy per the post: ~180B params = 125B main body + 51.2B PLE + ~4B MTP head; 48 layers in groups of 3 Gated DeltaNet + 1 full-attention (only 12 layers store KV); 512 experts each 640 wide, 10 routed + 1 shared per token; routed experts touched per token = 2.36B (2.60B with shared).'
+  - The MTP draft head is restricted to the lowest 65,536 token ids (DRAFT_VOCAB=65536; BPE merge order as a frequency proxy), described as an FR-Spec idea credited to MiaAI-Lab; the author lists it, with CUDA graphs and FP8 KV, as part of the gap beyond a naive '17 x 1.35'. No isolated ablation of the vocab restriction is given.
+  - 'Concurrency: 6 streams (author) 21.7 each / 68.8 aggregate; 4 streams 26.1 / 47.2. Eager mode + MTP3 without CUDA graphs: 35.2 (author). llama.cpp UD-Q4_K_XL on the same box: 20.51 prose (Part 43), 23.38 fleet probe; llama.cpp with n-gram speculation on a repetitive edit reached 76.65.'
+  - 'Teaser in ''Read next'': a later post (2026-09-28) reports Q38FN on TWO Sparks at 51.9 -> 72.0 tok/s with a draft vocabulary built from the author''s own Chinese text (not read; URL not fetched).'
+  reported_results:
+  - 41.7 median (43.6 re-run) tok/s single Spark MTP3 NVFP4; 16.6-17.0 without MTP; 2.93 tok/step; 47.2 agg @4 streams; 68.8 agg @6 (author)
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: TL;DR / table
+    quote: On my GX10 it measures 41.7 tok/s median across 40 prompts, 27.4 on prose, 42–45 on code, and 47.2 aggregate across four concurrent streams
+    quote_sha256: 525bc9789a5c7fa13222c1e49cb029cd5018c9f1b9fe2efebc08dcead782cd0c
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Deep dive > 17 to 41.7
+    quote: the main body reads an effective 9.27 GiB per token, which at the measured speed works out to 154–158 GiB/s, about 60% of the 273 GB/s spec
+    quote_sha256: b7936307f3568528d25cb29cbe21a2d7e410e32e7c0cd341252f5df938acf314
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Deep dive > 17 to 41.7
+    quote: Summed over the whole harness, a step yields 2.93 tokens on average.
+    quote_sha256: 96fc962c99e13041b34e3cee947ae23190513e69a1da75a53e1529a90622506a
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Deep dive > Figure 4
+    quote: acceptance at the three positions is 93% / 78% / 67%; on prose it is 65% / 39% / 22%
+    quote_sha256: 80dd8820fa1a6454ee6764150a8ab6c14c6030eb38f33241fa38786764c898da
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Deep dive > RAM for traffic
+    quote: the n-gram table is read 16 rows per token, 2,560 bytes
+    quote_sha256: b06cfb0c3ece52c44d4ad1367abdb5e6a71442d1ac973e68d171a972ccb2254f
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: Deep dive > One token's path
+    quote: 512 experts, each only 640 wide; the router picks 10 per token plus one shared expert
+    quote_sha256: 527ce609626a0ca5afe97c9c9b5b6f76a4e42d826f19d782669d9fc9c668c459
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: page-and-quote
+    locator: Do it in this order
+    quote: DRAFT_VOCAB=65536 restricts the draft head to the lowest 65,536 token ids, using BPE merge order as a stand-in for frequency. It is an FR-Spec idea
+    quote_sha256: f888f97d88bc46922c1c3fba4073d85a4a7bc63e00f159ffe74e43085e3ad246
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Each stream slows down
+    quote: Four concurrent streams measure 26.1 each and 47.2 aggregate; the author's six streams measure 21.7 each and 68.8 aggregate.
+    quote_sha256: 517aadc650c686ec0fda57deef04275594c3dc5bd61cf786d229c1afa05f97bf
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: What you need
+    quote: Of its roughly 180B parameters (125B main model, 51B PLE, 4B MTP head)
+    quote_sha256: 12040a502510f71cc025866018174e4e35340f04f1eb6d9efc64cd0fc15a9caf
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: page-and-quote
+    locator: Read next
+    quote: Sixteen days after Part 46, the same 40 prompts go from 51.9 to 72.0 tok/s with no score loss.
+    quote_sha256: c85f1e958a1bd8d3d3ca93ddac28cae1cc1110680d5c34b311818f433fca9bc4
+    source_revision: retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Numbers appear as stated in the tables and FAQ; single-author reproduction of a recipe author. 41.7 is the first-pass median and the post itself says the more careful 500-prompt pass gives 43.6, so cite 41.7-43.6. Independent of recipe author but not of vendor ecosystem.
+  - claim_index: 1
+    effect: unaffected
+    note: '154-158 GiB/s from 9.27 GiB x 16.6-17.0 tok/s checks arithmetically (157.6 at 17.0). Note GiB vs GB: 273 GB/s spec = ~254 GiB/s so 60-62%. The 9.27 GiB/token figure is the author-derived number, not read from a profiler.'
+  - claim_index: 2
+    effect: unaffected
+    note: 2.93 tok/step and acceptance rates stated. Implied ceiling 17 x 2.93 = ~49.8; measured median 41.7-43.6 is 84-88% of that ceiling, prose far lower (27.4 = 1.6x of 17), consistent with mixed acceptance. Mean over harness not prose-specific.
+  - claim_index: 3
+    effect: unaffected
+    note: Numbers as stated in the Deep dive. The 0.1 ms gather is an estimate from the author-measured 131K rows/s, not a measured step breakdown.
+  - claim_index: 4
+    effect: unaffected
+    note: Derived from GGUF header per the author; matches the stack context (125B/~6B active-class, 10 of 512 experts). Note 2.60B is routed+shared expert params only, not total active (attention/GDN/dense/embeddings add to the 9.27 GiB effective read).
+  - claim_index: 5
+    effect: narrowed
+    note: Existence and size of the restricted draft vocab confirmed; its contribution is NOT isolated. Only combined attribution (CUDA graphs + small draft vocab + FP8 KV).
+  - claim_index: 6
+    effect: unaffected
+    note: Stated in tables. llama.cpp comparison is not paired (different quant, fleet probe 23.38 flagged by author as order-of-magnitude only).
+  - claim_index: 7
+    effect: narrowed
+    note: Only the teaser blurb is in this page; the 2-Spark post body was not read. Do not cite the 51.9/72.0 beyond the existence of the teaser.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth FULL; retrieved 2026-10-06, p.html sha256:2445a86b53fb; post dated 2026-09-06; recipe commit d83f10c (2026-09-05)). Headline 41.7 is single-Spark TP1, not a cluster; it already uses MTP=3 with 65,536-id draft vocab. Without MTP the Spark does ~17 tok/s, ~60% of 273 GB/s on a ~9.27 GiB/token effective read. Nothing here exceeds bandwidth physics once tokens/step (2.93) is counted. DECLINED surfaced source (stop-early): ai-muninn Part 46 baseline post - the two-Spark post (intake-1958) already carries the setup.'
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Whole page text read (232 lines incl. launch command and category table). Linked Part 43/46/47 posts and tonyd2wild repo not fetched.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1948
+    - intake-1949
+  credibility_score: 4
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: One Spark reaching ~42-44 tok/s on Q38FN is explained by MTP=3 (2.93 tok/step) over a ~17 tok/s bandwidth-bound base; it does not contradict physics. Do not carry 41.7 as a no-MTP or cluster number, do not carry the 17x1.35 straw-man, and do not attribute any specific gain to the 65K draft vocab (not isolated).
+  recommended_actions:
+  - 'Use the 17 tok/s no-MTP / 9.27 GiB-per-token figure as the Spark-side roofline anchor and compare against our CPU: 446.8 GB/s read-sum over a ~9.27 GiB(~9.95 GB) read bounds no-MTP decode near 45 tok/s at 100% efficiency; check our ~50-53 with MTP against our own measured tokens/step. [operator-review candidate; proposed disposition: analysis-only, no compute]'
+  - 'Measure per-position MTP acceptance (prose vs code) on our Q38FN serve to see whether we have the same 2.93 tok/step; the Spark post provides the comparison numbers. [operator-review candidate; proposed disposition: probe (cheap, from existing logs)]'
+  - 'Evaluate restricted-vocab draft head (FR-Spec style, 65,536 ids) for the MTP head on our CPU/GPU path; no ablation in source, so the isolated gain is unknown. [operator-review candidate; proposed disposition: worth_investigating (see intake-1955 for the paper)]'
+  - 'PLE table on slow storage is cheap in decode (2,560 B/token); relevant to our PLE n-gram table placement if RAM-pressure on CPU box. [operator-review candidate; proposed disposition: adopt_pattern if memory-bound]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Single-Spark MTP-off 16.6-17.0 tok/s reads ~9.27 GiB/token (author-stated, ~60% of 273 GB/s) and MTP yields 2.93 tokens/step: a bandwidth-bound anchor.'
+- id: intake-1953
+  arxiv_id: null
+  url: https://www.storagereview.com/review/nvidia-dgx-spark-cluster-review-distributed-inference-on-dell-gigabyte-and-hp
+  source_type: blog
+  title: 'StorageReview: DGX Spark 2-node cluster distributed inference (Dell, GIGABYTE, HP)'
+  categories:
+  - hardware_optimization
+  - inference_serving
+  - benchmark_methodology
+  - local_inference
+  novelty: low
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1943
+  verdict: worth_investigating
+  key_claims:
+  - 'Independent StorageReview benchmark of 2-node Spark clusters (Dell, GIGABYTE, HP) over a single direct 200 Gb ConnectX-7 link, reported as PP=2 (TP=1); models: GPT-OSS-120B/20B, Llama-3.1-8B (BF16/FP4/FP8), Mistral-Small-3.1-24B, Qwen3-Coder-30B-A3B (base and FP8). Batch sweeps 1..128 (per-model prose covers to 64).'
+  - Qwen3.8-Flash-Next / Q38FN is NOT tested anywhere in the article; no single-node baselines are reported, so 1-to-2-node scaling of tok/s cannot be computed from this source.
+  - 'TP vs PP on GPT-OSS-120B: TP=2 wins at batch 1 (39.55 vs 28.79 tok/s Equal; 37.97 vs 29.60 Prefill Heavy; 39.42 vs 30.28 Decode Heavy); PP=2 wins at larger batch, Equal batch 128: 554.69 (PP) vs 252.01 (TP) = 2.20x. Llama-3.1-8B BF16 reverses: TP leads to batch 32 (388.7 vs 349.3) and PP wins only at 64/128 (638.2 vs 524.8; 1,047.1 vs 679.2).'
+  - 'Reason given for PP: TP does two all-reduces per layer (''160 cross-box exchanges per token'' for an 80-layer model) over a 200 GbE link; PP hands off once per token. This is the author''s qualitative argument; no link bandwidth/latency/NCCL measurement is reported.'
+  - 'Network facts stated: ConnectX-7 sits behind a pair of PCIe Gen5 x4 links, ''platform tops out at 200 GB of usable bandwidth'' (text says GB; context is Gb), second QSFP56 cage is topology flexibility not extra throughput.'
+  - GPT-OSS-120B single-stream PP=2 start values ~65.8-67.1 tok/s (Equal) and ~41 tok/s Decode Heavy at batch 1 per OEM; per-OEM spread small. Qwen3-Coder-30B-A3B FP8 batch-1 Equal ~97-100 tok/s Dell/GIGABYTE/HP.
+  - The review states Spark is not for production serving, 4+ node configs have per-user throughput dropping to single digits for large models, and that clustering is mainly for fit/learning.
+  reported_results:
+  - GPT-OSS-120B PP=2 Equal BS128 554.69 vs TP=2 252.01 tok/s (2.20x)
+  - TP bs1 39.55 vs PP 28.79
+  - Peak output PP=2 BS64 GPT-OSS-120B 464-505 tok/s (table) vs 928-1010 (text)
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Performance Testing
+    quote: That is why every per-model number in the rest of this article is reported with TP=1 and PP=2
+    quote_sha256: 40f156d3cb359c742054596fd062d7d2a0c0c587467edf255e6aa8ee02e3ad02
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Why PP not TP
+    quote: TP=2 reaches 252.01 tok/s at a batch size of 128, while PP=2 climbs to 554.69 tok/s on the same hardware, a 2.20x advantage
+    quote_sha256: 73f2d3c2b4fcd064bdb5b9e8732da1737ffc71e0a5e9ece4e98a4e3872c2a4cd
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Why PP not TP
+    quote: 'TP delivers a small but real edge: 39.55 tok/s vs 28.79 tok/s in Equal'
+    quote_sha256: fe05e8338c7c4368d2faba0dc58f1f0d909fbee4f520c4ffba0ea94a70dc4ea4
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Why PP not TP
+    quote: TP’s all-reduce fires twice per transformer layer, so an 80-layer model running TP=2 generates 160 cross-box exchanges for every single token of output
+    quote_sha256: 2d0237141d03a80ef4e504919f4b0b65b3f220a327fd1d326a9f3151b0873844
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: The 200 GB Fabric
+    quote: the ConnectX-7 lives behind a pair of Gen5 x4 links, and the platform tops out at 200 GB of usable bandwidth
+    quote_sha256: c31557ac9d8770dc31358b64783e03a3783477b21e95ae8e82d7d579cab8a68a
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: page-and-quote
+    locator: GPT-OSS-120B
+    quote: Dell starts at 67.06 tok/s and scales up to 927.93 tok/s with a batch size of 64
+    quote_sha256: daa5183267f8e3cc1afa77db310bb67c7c2478fc93ab0ea43483358bc1c41b8f
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Why PP not TP (Llama BF16)
+    quote: TP=2 leads from batch size 1 (23.2 vs 13.4 tok/s) through batch size 32 (388.7 vs 349.3 tok/s)
+    quote_sha256: 1802294b18e9a3cb578fb1af97d83e1206a4302597e019a1044ca4f09545df51
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: page-and-quote
+    locator: Why Cluster Sparks
+    quote: the per-user throughput at the tail end of those configurations can drop into the single-digit tokens per second range
+    quote_sha256: b8d36913858ff92b2d8091ebbc3b7c0200fe57e5ca8fc88502c356cf84c3b2b4
+    source_revision: retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: As written. Hardware reviewer, no stated engine/version/quant detail per run (vLLM implied but not named in extracted text).
+  - claim_index: 1
+    effect: narrowed
+    note: No Qwen3.8 model, no 1-node vs 2-node comparison, no scaling ratio. The question asked (scaling tok/s from 1 to 2 nodes) is unanswerable from this source.
+  - claim_index: 2
+    effect: unaffected
+    note: 'Numbers verbatim in prose. Caution: the peak-summary table (GPT-OSS-120B Equal @BS64: 463.97/497.26/504.88) disagrees in magnitude with the text (927.93/994.53/1,009.75 @BS64); roughly 2x apart, likely output-only vs total token throughput. Internal inconsistency; unresolved in source.'
+  - claim_index: 3
+    effect: narrowed
+    note: 'Mechanism asserted, not measured: no ConnectX-7 bandwidth or latency measurement, no all-reduce time breakdown. Also the 80-layer example is hypothetical (GPT-OSS-120B has 36 layers).'
+  - claim_index: 4
+    effect: unaffected
+    note: Stated; "200 GB" is almost certainly Gb (200 Gb/s = 25 GB/s). Treat as typo risk.
+  - claim_index: 5
+    effect: unaffected
+    note: Values from per-model paragraphs.
+  - claim_index: 6
+    effect: unaffected
+    note: Stated opinion, no data given for 4-node.
+  dive_corrections: 2026-10-06 Stage-2b ingest-and-dive (read_depth FULL; retrieved 2026-10-06, p.html sha256:35f5fb66bf14; article dated 2026-05-11). This source cannot supply 1-to-2-node scaling for Q38FN or any model (no single-node baseline, no Qwen3.8). It contains no direct ConnectX-7 bandwidth/latency measurement. Two-node numbers are PP=2 aggregate batch throughput except where TP vs PP at batch 1 is shown.
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1943). Read notes: Whole article text read (hardware reviews linked at end not fetched). No tables of per-batch-size data beyond prose and peak summary.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1943
+  credibility_score: 3
+  contradicting_evidence:
+  - 'Internal inconsistency: peak-summary table values for GPT-OSS-120B are ~half the batch-64 values in the per-model prose.'
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Use only for the qualitative TP-vs-PP-over-200GbE lesson and the batch-1 vs batched regime split. Do not carry any scaling ratio, any Q38FN-related number, or any ConnectX-7 bandwidth/latency figure from it: none is measured here, and its summary table disagrees with its own text.'
+  recommended_actions:
+  - 'Treat any 2-Spark Q38FN single-stream number as PP vs TP dependent: at batch 1 PP=2 is ~25-30% slower than TP=2 on GPT-OSS-120B; at batch>=8 PP leads. When checking the 93-177 tok/s claims, ask whether it is single-stream or aggregate and which parallelism. [operator-review candidate; proposed disposition: checklist item for claim verification]'
+  - 'Note the text vs summary-table 2x discrepancy before citing any peak number from this review. [operator-review candidate; proposed disposition: caveat]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Covers PP=2 on other models, no Q38FN and no one-node baseline, no ConnectX-7 measurement; qualitative TP-vs-PP lesson only. Trigger: a decision to consider pipeline-parallel across hosts. Surfaced for operator review, not dismissed.'
+- id: intake-1954
+  arxiv_id: null
+  url: https://vllm.ai/blog/2026-06-01-vllm-dgx-spark
+  source_type: blog
+  title: 'vLLM on the DGX Spark: Architecture, Configuration, and Local Evaluation'
+  categories:
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  - moe_optimization
+  - quantization
+  novelty: low
+  relevance: low
+  discovered_via: expansion
+  expanded_from: intake-1943
+  verdict: worth_investigating
+  key_claims:
+  - 'vLLM (Inferact) blog on single-Spark serving of Nemotron-3-Super-120B-A12B-NVFP4: measured decode 22.7-23.7 tok/s across five scenarios (median of 3 runs after warm-up), prefill 140-1,884 tok/s, TTFT 0.42 s to 3.85 s.'
+  - The measured run had speculative decoding disabled, kv-cache-dtype unset (not FP8), CUDA graphs enabled; MTP is mentioned only as a throughput-run option to evaluate.
+  - 'Guidance: Spark is best for local single-user or small-batch inference; keep --max-num-seqs low (4) since ''above four concurrent decode streams the per-token bandwidth tax can outweigh continuous-batching gains''; fp8 KV ''can carry a noticeable performance cost on Spark for some workloads''.'
+  - 'Model-fit claim: NVFP4 MoE of roughly 10-15B active parameters is the sweet spot; decode speed is shaped by active parameter count and kernel path.'
+  - No memory bandwidth number (no 273 GB/s), no achieved-vs-peak bandwidth analysis, and no multi-node numbers appear in the post; multi-Spark is mentioned only as TP=2 over ConnectX-7 'for validated recipes'.
+  reported_results:
+  - 'Nemotron-3-Super-120B-A12B NVFP4, single Spark, no spec decode: 22.7-23.7 tok/s decode'
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Single-Spark evaluation results
+    quote: measured decode throughput stayed in the 22.7-23.7 tok/s range across the scenarios
+    quote_sha256: 2eb6fbfb1c9f76dd746241ff7d431369b6253607dd684186f65ec21b2756a5ca
+    source_revision: retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: Predictability
+    quote: For the measurements in this post, --kv-cache-dtype is unset, speculative decoding is disabled, and CUDA graphs remain enabled.
+    quote_sha256: 03b2a3c3e174f2e9217b1fbf7c021469ee6d21acbc181435ada83bf16f5428e3
+    source_revision: retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Flags > --max-num-seqs
+    quote: Above four concurrent decode streams the per-token bandwidth tax can outweigh continuous-batching gains
+    quote_sha256: d6bd42a5c872175c3a05b60cd280f82250d11a36225c93bd1fbb28afa25784c2
+    source_revision: retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: Architecture
+    quote: Mixture-of-experts models in NVFP4 with roughly 10-15 billion active parameters are a strong fit
+    quote_sha256: b9cdf6c8b907291942883e0d716dd417609e1c27577fccc640d86a69efaad834
+    source_revision: retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: Flags > fp8
+    quote: can carry a noticeable performance cost on Spark for some workloads
+    quote_sha256: 074a4a3c10c1d482d19563ea39684b2f7ecc6f2865217a0beab2c4c5341af40e
+    source_revision: retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Table 2 and text. Vendor-adjacent (vLLM team) single recipe; model is Nemotron not Q38FN.
+  - claim_index: 1
+    effect: unaffected
+    note: Stated in Predictability section.
+  - claim_index: 2
+    effect: unaffected
+    note: Qualitative guidance; the 4-stream threshold is asserted, not shown with data.
+  - claim_index: 3
+    effect: unaffected
+    note: Directional (Figure 3 described by authors as not a performance table).
+  - claim_index: 4
+    effect: narrowed
+    note: The requested memory-bandwidth statements and achieved-vs-peak figures are absent. Only the phrases "Spark's memory bandwidth" and "per-token bandwidth tax" appear, with no numbers.
+  dive_corrections: 2026-10-06 Stage-2b ingest-and-dive (read_depth FULL; retrieved 2026-10-06, p.html sha256:7ab4e6794bb3; post dated 2026-06-01). Source states no bandwidth numbers at all; it cannot be used to anchor achieved-vs-peak. Its only decode datum is a 12B-active model without MTP at ~23 tok/s.
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1943). Read notes: Whole page text read (207 lines; figures are images, not read).'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1943
+  credibility_score: 3
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Do not cite this post for Spark memory bandwidth, achieved/peak ratios, MTP gains or Q38FN. Carry only: Spark is a small-batch target, keep batch low, and one 12B-active NVFP4 MoE does ~23 tok/s without speculation.'
+  recommended_actions:
+  - 'Use 22.7-23.7 tok/s (12B active, NVFP4, no spec) as a cross-model sanity point next to ai-muninn 17 tok/s (Q38FN no MTP): active-size ordering is consistent. [operator-review candidate; proposed disposition: sanity point only]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: monitor
+  disposition_evidence:
+  - 'Only measurement is Nemotron-3-Super on one Spark (22.7-23.7 tok/s, no spec decode) with no bandwidth figure; guidance only. Trigger: revisit if vLLM publishes Spark bandwidth or Qwen3.8 numbers. Surfaced for operator review, not dismissed.'
+- id: intake-1955
+  arxiv_id: '2502.14856'
+  url: https://arxiv.org/abs/2502.14856
+  source_type: paper
+  title: 'FR-Spec: Accelerating Large-Vocabulary Language Models via Frequency-Ranked Speculative Sampling'
+  categories:
+  - speculative_decoding
+  - inference_serving
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1956
+  verdict: adopt_patterns
+  key_claims:
+  - 'FR-Spec restricts the draft model''s LM head to a frequency-ranked subset of the vocabulary (Llama-3-8B: 128k vocab; subsets 64k/32k/16k/8k) while verification still uses the full vocabulary; no retraining; frequency ranking from SlimPajama-627B (1B-token sample).'
+  - 'Profiling in their optimized C/CUDA EAGLE-2 implementation: LM head = 49% of draft-step time (62% with softmax), transformer layer 33%, on Llama-3-8B (128k vocab).'
+  - 'Claimed speedups: +1.12x over EAGLE-2 and +1.08x over Medusa (average, 32k subset); EAGLE-2 itself 2.03x vs vanilla, FR 32k 2.27x on Llama-3-8B (201.87 vs 180.99 tok/s mean); 11.8% average improvement over EAGLE-2; 24.2% on Llama-3.2-1B; 1.13x at temperature 1.'
+  - 'Acceptance cost: halving to 64k loses 2.3% (SlimPajama) / 3.1% (ShareGPT) of accept length; 32k keeps 93.3% (SlimPajama) of full-vocab accept length (3.63 of 3.89); 8k drops to ~80%. 32k was the best speed trade-off in their setup.'
+  - 'Losslessness: the claim is the output distribution is unchanged because only the drafting vocabulary is limited and verification is untouched; tested on HumanEval and GSM8K for greedy and sampled decoding.'
+  - 'Method caveat: tokens outside the subset (rare names, technical terms) cannot be drafted, so those regions get no acceleration.'
+  - 'Relation to Q38FN: the ai-muninn recipe uses a 65,536-id draft vocab on a ~250K-vocab model (lowest ids by BPE merge order as frequency proxy). This is FR-Spec in spirit but not the paper''s measured case (paper: 128k vocab, EAGLE-2-style one-layer draft, not an MTP block with its own experts). The paper''s 49% LM-head share does not transfer directly: Q38FN''s MTP head is ~4B with MoE layers, so the LM-head share of draft time is unknown.'
+  reported_results:
+  - EAGLE-2 +FR 32k 201.87 tok/s mean vs EAGLE-2 180.99 vs vanilla 89.11 (Llama-3-8B, own framework)
+  - LM head 49% of EAGLE-2 draft time at 128k vocab
+  - +1.12x EAGLE-2, +1.08x Medusa
+  claim_anchors:
+  - claim_index: 0
+    kind: page-and-quote
+    locator: Abstract
+    quote: we reduce the computational overhead of the language modeling (LM) Head by 75%
+    quote_sha256: e40d8591b9e1ab2fae07fc3143c4796d2c9e8176b05b99b848408bb271eea03d
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: page-and-quote
+    locator: '3.1'
+    quote: the LM Head component accounts for a substantial 49% of the total computational time in the drafting process
+    quote_sha256: bf8fdd168a7d4e26ed6387a4d5c5145a5845c03caf194ea6bced0792257bbd6c
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: 1 Introduction
+    quote: Our approach achieves an extra 1.12 × \times speedup when integrated with the current state-of-the-art method EAGLE-2 and 1.08 × \times speedup when integrated with Medusa.
+    quote_sha256: 0582cc9fcb9e0ddf17ba04aa02a91ca7d2e4905f5f3b18b855322550ac05e7ba
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: page-and-quote
+    locator: '4.3'
+    quote: this configuration achieves an average speedup improvement of 11.8% over EAGLE-2
+    quote_sha256: 3120f287dc28d2895b11b8d9cd56c732868202693faa668b06319f29c966aeb7
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: page-and-quote
+    locator: '4.2'
+    quote: when the vocabulary size of the draft model was halved from 128k to 64k, the average acceptance length only decreased slightly (2.3% for SlimPajama and 3.1% for ShareGPT)
+    quote_sha256: 28479767b3160707d6d5680528e81797350981b1767658e2a4c660a84a207f65
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: page-and-quote
+    locator: 1 Introduction
+    quote: Importantly, FR-Spec preserves the mathematical equivalence of the verification process, ensuring that the final output distribution remains unaltered compared with the original sampling methods.
+    quote_sha256: f67378754735e20632aa154416d30ccf481be3a07afcbd5eaa665fc4e84fbc29
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: page-and-quote
+    locator: '3.2'
+    quote: those regions requiring low-frequency tokens (e.g., rare named entities or technical terms) inherently bypass acceleration
+    quote_sha256: 7e361459f9bad75cc47fac05639bb69fa253561a5308f2e81aee66ef7d2938de
+    source_revision: arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Sec 3.2.
+  - claim_index: 1
+    effect: unaffected
+    note: Sec 3.1, Figure 6 text. Specific to EAGLE-2 one-layer draft at 128k vocab; the share for a 250K vocab or an MTP head with MoE layers is not in the paper.
+  - claim_index: 2
+    effect: unaffected
+    note: Abstract/intro say 1.12x EAGLE-2 and 1.08x Medusa; Table 2 and Sec 4.3 give 11.8%. Authors own implementation on Llama-3-8B; independent replication not examined. GPU hardware per paper not recorded here (section not read in detail).
+  - claim_index: 3
+    effect: unaffected
+    note: Table 1 and Sec 4.2.
+  - claim_index: 4
+    effect: narrowed
+    note: Distribution-preserving by construction of the verify step (author statement); empirical checks are only HumanEval/GSM8K parity. Fine for greedy; for sampling the claim rests on the verify procedure being standard.
+  - claim_index: 5
+    effect: unaffected
+    note: Sec 3.2 explicit.
+  - claim_index: 6
+    effect: narrowed
+    note: Our inference from two sources; the vocab-size and draft-architecture mismatch is a fact, the transfer of gain is untested.
+  dive_corrections: 2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; arXiv 2502.14856v2 (11 Mar 2025; v1 20 Feb 2025), html retrieved 2026-10-06, p.html sha256:6680d21f93f5). The headline 1.12x is an average over 7 tasks for a 128k-vocab dense Llama-3-8B with a 1-layer EAGLE-2 draft. Do not carry it, or the 49% LM-head share, as expected numbers for a 250K-vocab MTP head.
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1956). Read notes: Read abstract, intro, Sec 3 (bottleneck and method), Sec 4.2-4.3 and tables 1-2 by text search and targeted reading; Sec 4.4 quality tables, Sec 4.5 Medusa table, related work and appendix only skimmed via grep. Hardware used for timings not recorded.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1950
+    - intake-1956
+  credibility_score: 5
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'FR-Spec is a sound, lossless-by-verification way to cut draft LM-head cost, supporting the ai-muninn 65K draft vocab in principle. Do not claim a specific Q38FN gain from it: the paper measured only 128k-vocab Llama/Qwen2 with an EAGLE-2 draft, and the lowest-id BPE proxy used by the recipe was not evaluated in the paper.'
+  recommended_actions:
+  - 'Profile the MTP draft step on Q38FN (CPU and GPU paths) to get the LM-head share of draft time at full vocab; only if it is large does a 65,536-id restriction pay. [operator-review candidate; proposed disposition: probe]'
+  - 'If pursued, derive the subset from corpus token frequency (as in the paper) rather than lowest-id BPE order, and measure acceptance loss per position. [operator-review candidate; proposed disposition: worth_investigating]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Establishes that the LM-head is ~49% of EAGLE-2 draft time at 128k vocab (paper setting) and that a 32k frequency-ranked subset keeps 93.3% accept length; the Q38FN-specific gain must be profiled first; the in-index llama.cpp issue entry already tracks the trimming lever.
+- id: intake-1956
+  arxiv_id: null
+  url: https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark
+  source_type: repo
+  title: Qwen3.8-Flash-Next on ONE DGX Spark (TP=1, vLLM, reduced-vocab MTP)
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - kv_cache
+  - quantization
+  - inference_serving
+  - hardware_optimization
+  - local_inference
+  novelty: high
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1948
+  verdict: adopt_patterns
+  key_claims:
+  - 'Single Spark TP=1, Mia-AiLab 99 GiB checkpoint (PLE table offloaded, mmap), vLLM, MTP3, fp8 KV, prose 600 tok, 3 repeats, bench/sweep.py, 2026-09-06: x1 48.7 tok/s (61.5 ms/step, 3.00 tok/step), x2 74.6, x4 113.7, x8 162.9 aggregate (131.0 ms/step, 2.81 tok/step).'
+  - '2026-09-05 prose with 65,536-id draft vocab: x1 46.3 vs 36.9 before (+25.5%), x2 73.0, x4 108.1. Mechanism stated: drafter reads own 1.18 GiB bf16 lm_head each draft step; 65,536 rows saves 2.61 GiB/step (3 of 4 lm_head reads in an MTP3 step).'
+  - 'Shipped default now 47,172-id (README) / 47,149 (CHANGELOG) code-tuned vocab; live A/B 2026-09-09 MAX_NUM_SEQS=8: prose x1 40.9 -> 46.8 (+14.4%), code x1 50.6 -> 61.5 (+21.5%), x8 prose 149.4 -> 162.0 (+8.4%), code x8 231.7 -> 252.6 (+9.0%); mean +13.1%. Gain is all step time (code 75.8 -> 62.5 ms, prose 72.8 -> 60.6 ms); tokens/step unchanged (code 3.86, prose ~2.8) i.e. acceptance preserved. Server log: 2.88 GiB saved/step.'
+  - 'Author''s byte-model claim: measured step time = 1.37x byte floor at 1 stream, 1.09x at 4, 1.04x at 5, 160.8 ms vs 165 ms floor at 8 (the floor model and its assumed GB/s are in docs/fable51-max.md, not in this repo). Reduced-vocab predicted -18.0% / -6.2% step time at 1/8 streams, measured -16.9% / -6.1%.'
+  - 'Acceptance depends strongly on content: prose per-position 0.80/0.59/0.41, 2.80 of 4 tokens/step (2026-09-06, BF16 SSM state, FULL graphs); earlier figures 0.65/0.33/0.14 (2.1/step, ~41 tok/s best case) were under PIECEWISE graphs with full vocab and are superseded.'
+  - 'Structured counting-stream decode (not comparable to prose): x1 65.2 agg (67.7 per stream), x8 313.6 aggregate; the author warns this is MTP''s best case, ~35% above prose.'
+  - 'Speculative depth sweep K=0/1/2/3: K=3 best at every concurrency, K=2 ties, K=1 loses 8-14%, K=0 loses 32-46% (so MTP-off floor is 32-46% below MTP3 at graph-complete config, much less than 2x here).'
+  - BF16 recurrent state worth +8.5% at 8 streams (151.6 -> 164.5 tok/s, 141.4 -> 130.4 ms).
+  - 'Prefill 8k-256k: ~1.9-2.3k tok/s (2,314 peak at 32k); KV pool ~0.99M tokens fp8 at GMU 0.78.'
+  reported_results:
+  - setup: 1x Spark TP1 prose MTP3 fp8KV dv65k, 2026-09-06
+    metric: aggregate tok/s x1/x2/x4/x8
+    value: 48.7/74.6/113.7/162.9
+    ms_per_step: 61.5/74.3/96.2/131.0
+    tok_per_step: 3.00/2.83/2.84/2.81
+  - setup: 47k-vocab A/B code x1
+    baseline: 50.6
+    tuned: 61.5
+    step_ms: 75.8->62.5
+  - setup: 47k-vocab A/B prose x1
+    baseline: 40.9
+    tuned: 46.8
+    step_ms: 72.8->60.6
+  - setup: MTP off (K=0)
+    value: 32-46% below K=3 (no absolute number read)
+  - setup: acceptance prose
+    value: 0.80/0.59/0.41 per position, 2.80 tok/step
+  - setup: achieved GB/s or bytes/step
+    value: bytes saved/step stated (2.61-2.88 GiB); absolute bytes/step and achieved GB/s NOT stated in this repo; floor in absent docs/fable51-max.md
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: 'README.md #### 2026-09-06 @ b7c5da1'
+    quote: '| 1 | 61.5 | 3.00 | **48.7 tok/s** | 48.7 tok/s |'
+    quote_sha256: afb555470deef7d51dfd3b681ee43f14cb1d095ddc99ed4509a806af8a164340
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: 'README.md #### 2026-09-06 @ b7c5da1'
+    quote: '| 8 | 131.0 | 2.81 | **162.9 tok/s** | 20.4 tok/s |'
+    quote_sha256: 4000acc6b2142d4820120ae0fb843f0b5a5f7d696e397ad4faeaa3a4b66eacb7
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: 'README.md #### 2026-09-05 @ b7c5da1'
+    quote: 'slicing it to 65,536 rows saves 2.61 GiB per
+
+      step'
+    quote_sha256: 361a57abc27f79507e642968cd2f981ed30e10c63a5f9df5828c9a114af0d810
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: CHANGELOG.md 2026-09-09 @ b7c5da1
+    quote: '**+13.1% mean across the eight cells.**'
+    quote_sha256: 3f62b903fda64a8d263fba82ecdd131bbaac4c7333c25cf7d41753799e1e78f4
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: CHANGELOG.md 2026-09-09 @ b7c5da1
+    quote: 2.88 GiB saved per step
+    quote_sha256: 9f8dd13e68d727e3ffa9281fb70bf15080bcf78dee3de432373c1e0e39458ea8
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: CHANGELOG.md decode-wall entry @ b7c5da1
+    quote: "Measured step time against the byte model in `docs/fable51-max.md`: 1.37x the\n  floor at one stream, 1.09x at four, 1.04x at five, and 160.8 ms against a\n  165 ms floor at eight."
+    quote_sha256: 38fff19c1887901330d2ffb8419808d2d9ff0d1f7d3f7850a5ca65002f952301
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: README.md decode content-dependent @ b7c5da1
+    quote: '**2.80 tokens of a possible 4 per engine step**'
+    quote_sha256: f4ca13245cb1657aebf38461a1b560e78f1cd1fb91f8c63e75db012d3bf0a0cc
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: README.md 2026-09-11 @ b7c5da1
+    quote: 'near-deterministic continuation
+
+      is MTP''s best case'
+    quote_sha256: 6a32887296d043a796e17d1ed358aa28924c5199bb77252aa56174bf8a69b6e9
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: line-range
+    locator: README.md depth sweep @ b7c5da1
+    quote: 'K=3 wins at every concurrency,
+
+      K=2 ties it, K=1 loses 8–14% and K=0 loses 32–46%.'
+    quote_sha256: 3e08b1eb4bcab944b4cbc2253962d838e44c9ee1b2b3a06ecd356b5456411bbb
+    source_revision: b7c5da1a9e7448a14b480deee66eda3799b1eb43
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: Table as quoted in README; author numbers; ms/step and tok/step are vLLM counters.
+  - claim_index: 1
+    effect: unaffected
+    note: 'Recomputed: (1.18-0.31)*3 = 2.61 GiB; 65536*2560*2 B = 0.3125 GiB. Arithmetic holds.'
+  - claim_index: 2
+    effect: unaffected
+    note: 'CHANGELOG table; 47149 rows -> 0.225 GiB, (1.18-0.225)*3 = 2.87 matches 2.88 logged. Note README says 47,172 ids, CHANGELOG 47,149: minor internal inconsistency.'
+  - claim_index: 3
+    effect: narrowed
+    note: The ratio claims are in CHANGELOG but the byte model/floor GB/s (docs/fable51-max.md) is not in the repo, so floor and implied achieved bandwidth cannot be recomputed. No achieved GB/s is stated anywhere in this repo.
+  - claim_index: 4
+    effect: unaffected
+    note: README text; author notes earlier numbers were an artifact of PIECEWISE graphs.
+  - claim_index: 5
+    effect: unaffected
+    note: README table and explicit not-comparable warning.
+  - claim_index: 6
+    effect: narrowed
+    note: README text; full table lives in CHANGELOG, not read.
+  - claim_index: 7
+    effect: unaffected
+    note: README text, matched-pair claim.
+  - claim_index: 8
+    effect: unaffected
+    note: README tables.
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; b7c5da1a9e7448a14b480deee66eda3799b1eb43). Reduced-vocab gain is bounded by how many bytes the draft head is of the whole step: on one Spark it is 3x1.18 = 3.5 GiB of a step that the byte model puts near the wall; gain at x1 is +14-21%, +8-9% at x8 (shrinks with batching), not a multiplicative speedup. Acceptance is preserved only because vocab ranked by frequency; 65k-balanced and non-English vocab variants showed acceptance loss (see 1950). DECLINED surfaced source (stop-early): MiaAI-Lab single-Spark TensorFold-line repos beyond intake-1959.'
+  notes: 'Stage-2b wave 2 (dive-surfaced from intake-1948). Read notes: Read README.md lines 1-262 and 320-335 plus greps; CHANGELOG 2026-09-09 entry (lines 455-500) and decode-wall entry (~1015-1030); grep of docs/*. Not read: rest of README (config, FP8 KV, vision, Spanish), most of CHANGELOG, overnight docs body, scripts, patches. docs/fable51-max.md (byte model) is referenced but absent from the repo. No raw result JSON in repo (logs/sweep-*.jsonl referenced, not present). README now carries a banner pointing to a newer TensorFold recipe.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1950
+    - intake-1955
+  credibility_score: 4
+  contradicting_evidence:
+  - None. README itself corrects its own earlier numbers (2.1 tok/step, ~41 tok/s) as artifacts of PIECEWISE graphs.
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Single Spark Q38FN is ~46-49 tok/s prose x1 (61.5 ms/step x ~3 tok/step), 163 aggregate at x8; reduced-vocab draft head gives +14-21% x1 by removing ~2.6-2.9 GiB/step. Do not carry the counting-stream 65-314 tok/s as typical, nor any achieved-GB/s figure: the byte model is not in this repo.'
+  recommended_actions:
+  - 'Compute our own Q38FN MTP draft-head bytes per draft step (head vocab x hidden x bytes) versus total active bytes per step, to estimate the upper bound of a reduced-vocab draft head on CPU (here 2.88 GiB of the step on a ~165 ms/step wall at x8). [operator-review candidate; proposed disposition: worth_investigating, analysis only]'
+  - 'Adopt the step-time vs byte-floor ratio (1.37x at x1, 1.04x at x5) as the check for whether a serving config is bandwidth-bound before attributing tok/s to hardware. [operator-review candidate; proposed disposition: adopt_patterns]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Measured reduced-vocab MTP draft head gains (+13% mean, code x1 +21.5%) with the head read 3x per step; evidence the draft-head byte term is a real lever; knowledge pending operator decision on a llama.cpp probe.
+- id: intake-1957
+  arxiv_id: null
+  url: https://ai-muninn.com/en/blog/dgx-spark-bandwidth-ceiling-85-percent
+  source_type: repo
+  title: 'DGX Spark 85% bandwidth ceiling: Qwen3.8-27B NVFP4 decode + DFlash2'
+  categories:
+  - hardware_optimization
+  - speculative_decoding
+  - quantization
+  - benchmark_methodology
+  - local_inference
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1952
+  verdict: adopt_patterns
+  key_claims:
+  - GB10 spec bandwidth 273 GB/s is used as given (NVIDIA spec); NO attainable-bandwidth microbenchmark (STREAM/copy kernel) is run. The '85%' is end-to-end decode tok/s divided by spec/bytes.
+  - 'Qwen3.8-27B NVFP4 (dense) language backbone 18.77 GB (safetensors headers summed; excludes 0.86 GB vision, 0.79 GB MTP) -> ceiling 14.54 tok/s; measured 12.32 (median of 10, spread 0.67%, SGLang, 520 tokens, no prefix cache) = 85% of spec ceiling. Implied effective BW ~231 GB/s (derived by me: 12.32*18.77).'
+  - 'Draft budget 8->12->16 DFlash2 coding: 53.89 -> 65.02 (10 runs, 56.6-69.3, 19.5% spread; earlier 5-run median 68.57) -> 69.21; 5.28x baseline; acceptance length 6.12/7.48/8.13.'
+  - 'Spec decode is workload dependent: draft16 on short chat -11.8%; prose 28 tok/s, chat 26; MTP-only EAGLE 41.57.'
+  - Two attempts to recover the 15% (big-core pinning, cutedsl backend) gave nothing (+0.029% vs 0.751% drift; backend unsupported on SM121).
+  reported_results:
+  - no-spec 12.32 tok/s (85% of 14.54 spec ceiling)
+  - DFlash2 b12 coding 65.02 median/10 (5.28x)
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 'Measured: 12.32 tok/s, or 85% of the ceiling'
+    quote: Median of 10
+    quote_sha256: 1f6e8706e6e545332d1fc7430eb5501204879032c5010e9677b52f3a59dae15d
+    source_revision: retrieved 2026-10-06 sha256[:12]=c42f20a8a5b9
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: 273 ÷ 18.77 = 14.54
+    quote: 273 ÷ 18.77 = 14.54 tok/s . That's the wall for this model on this box without speculation.
+    quote_sha256: a18b1a7d8e41e78c7a9b334136f66f7ec7064da04eec36f951e5daef3b9a4776
+    source_revision: retrieved 2026-10-06 sha256[:12]=c42f20a8a5b9
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Where 65 tok/s came from
+    quote: I tested all three speculative decoders. DFlash2 won. But my first number was 53.89, not 65 — and the whole gap sits in one flag.
+    quote_sha256: ba2c2c50667433674b7132159e8a45f7efc236f590c0e332deca79a7ef15c9b4
+    source_revision: retrieved 2026-10-06 sha256[:12]=c42f20a8a5b9
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: TL;DR
+    quote: 'Speculative decoding is the only real lever: DFlash2 with a draft budget of 12 gives a median of 65.02 tok/s on coding (10 runs, 56.6–69.3), 5.28x the baseline.'
+    quote_sha256: a110d3bed01ee0e42127fbc2c627f76f3ced39c3b50799f68c9427f3eb7404ce
+    source_revision: retrieved 2026-10-06 sha256[:12]=c42f20a8a5b9
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: 'Absence is the finding: no kernel/BW test; effective BW is inferred from decode only, so 85% is of spec, not of an attainable ceiling.'
+  - claim_index: 1
+    effect: unaffected
+    note: Internal arithmetic checks (273/18.77=14.54; 12.32/14.54=0.847). Single source.
+  - claim_index: 2
+    effect: unaffected
+    note: Numbers match tables; author self-corrected 68.57 to 65.02.
+  - claim_index: 3
+    effect: unaffected
+    note: per tables
+  - claim_index: 4
+    effect: unaffected
+    note: per text
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth FULL; retrieved 2026-10-06 sha256[:12]=c42f20a8a5b9). Brief asked for measured attainable GB10 bandwidth vs 273 spec: the page does not measure it. 85% is decode-vs-spec on a dense 27B, not a bandwidth test. Companion source intake-1958 gives kernel-level figures (219-237 GB/s = 80-87% of 273 on GDN QKVZ and lm_head).'
+  notes: 'Stage-2b wave 3 (dive-surfaced from intake-1952). Read notes: Whole page read from disk (p.txt). Single-author blog, no independent corroboration.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1952
+    - intake-1951
+  credibility_score: 3
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: Do not cite this as a measured GB10 attainable bandwidth (it is 85% of the 273 spec inferred from decode of a dense 27B, single author, no microbenchmark). Do not carry the 65 tok/s as a general figure (coding-only, 19.5% spread; prose 28, chat 26). Dense 27B, not Q38FN.
+  recommended_actions:
+  - 'Use the bandwidth back-calculation (bytes/token from safetensors headers excluding unread towers, vs measured tok/s) as a sanity gate on our Q38FN CPU numbers; our ceiling uses measured 446.8 GB/s not spec. [operator-review candidate; proposed disposition: adopt_patterns]'
+  - 'Report saturation = acceptance length / draft budget alongside acceptance rate in spec-decode sweeps; require >=10 runs when spread >15%. [operator-review candidate; proposed disposition: adopt_patterns]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - 'Method: back-calculate bytes per token from measured decode and discard hypotheses exceeding spec bandwidth (27B dense NVFP4 18.77 GB -> ~231 GB/s effective, inferred not measured); no STREAM measurement exists on the page.'
+- id: intake-1958
+  arxiv_id: null
+  url: https://ai-muninn.com/en/blog/qwen38-flash-next-two-sparks-checkpoint
+  source_type: repo
+  title: 'Qwen3.8-Flash-Next on two DGX Sparks: 51.9 to 72.0 tok/s'
+  categories:
+  - speculative_decoding
+  - moe_optimization
+  - hardware_optimization
+  - inference_serving
+  - ssm_hybrid
+  - kv_cache
+  novelty: medium
+  relevance: high
+  discovered_via: expansion
+  expanded_from: intake-1952
+  verdict: worth_investigating
+  key_claims:
+  - 'Setup: Qwen3.8-Flash-Next NVFP4, 2x DGX Spark (GB10), vLLM TP=2 plus expert parallel, MiaAI dual-Spark vLLM derivative overlay (unmerged PR #45), ConnectX-7 link (185 Gb/s measured in Part 46; standalone 64 MB all-reduce 83 Gb/s). Median of 3 runs, 40-prompt harness, thinking OFF, concurrency 1, temperature 0 for probes.'
+  - 51.9 -> 72.0 tok/s (+38.7%) is median of 3 harness runs (51.7/51.9/56.6 then 71.2/72.0/77.9; ~9% run-to-run). Code 61.8->86.8, English 37.9->45.0, Chinese 33.2->45.9. Peak runs 56.6 and 77.9 are not the headline.
+  - 'What changed between numbers (5 changes, 16 days, bundled, not individually attributed in the headline): switch to MiaAI build; adaptive MTP K=4 draft slots with 47,149-token draft vocab; gpu-mem-util 0.835->0.68; prefix-cache alignment fix + GDN weights runtime FP8; +5,606 Chinese tokens in draft vocab (52,755). FP8 GDN gives 5-7% and changes numerics; Chinese vocab +23 to +60% on Chinese only; English/code flat.'
+  - 'Decode per MTP step 51 ms, GPU busy 95-96%; per-kernel effective BW: GDN QKVZ 219 GB/s (80%), lm_head 237 GB/s (87%) of 273 spec (weight bytes / kernel time per GPU at TP=2). +15% GPU clock gave no decode change (81.3 vs 82.0).'
+  - 'Accepted tokens per step: code 3.154 (97.4% first-slot), English 1.226 (59.4%), Chinese 0.114. Costs: KV pool -69% (2.13M->666k tokens), 2.54 requests at 262K ctx. Not disclosed: total/active params, MTP K sweep, concurrency>1, thinking on, per-prompt content of the 40 prompts (from Part 46).'
+  reported_results:
+  - harness median decode 51.9 -> 72.0 tok/s (3 runs, thinking off, conc 1)
+  - code probe 86.82 tok/s
+  - kernel effective BW 219-237 GB/s of 273
+  claim_anchors:
+  - claim_index: 0
+    kind: heading-and-hash
+    locator: 51.9 → 72.0 tok/s on the same 40 prompts
+    quote: The individual harness runs were 56.6 / 51.7 / 51.9 in Part 46 and 77.9 / 71.2 / 72.0 now.
+    quote_sha256: 40889d100ea8cdda12f029004895e9e78fa78ed3650f41d21e12d3fda88bf816
+    source_revision: retrieved 2026-10-06 sha256[:12]=7731938d4101
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: heading-and-hash
+    locator: setup
+    quote: 'The setup: Qwen3.8-Flash-Next NVFP4 on two NVIDIA DGX Spark (GB10) boxes, vLLM with tensor parallel TP=2 plus expert parallel, using the MiaAI dual-Spark derivative vLLM image. Every number is a median of 3 runs.'
+    quote_sha256: 5010e40daefc6fdeba1a252c6b3da3ac0ae0dd57756f80bc32f2bdafa6cb8271
+    source_revision: retrieved 2026-10-06 sha256[:12]=7731938d4101
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: heading-and-hash
+    locator: Five changes
+    quote: 'Sep 22: adaptive MTP with 4 draft slots and a 47,149-token draft vocabulary.'
+    quote_sha256: ceda16cdbd4102dd4ab2279535a80c24894e97aaa235731db53f065516b58231
+    source_revision: retrieved 2026-10-06 sha256[:12]=7731938d4101
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: heading-and-hash
+    locator: Decode runs at 80–87% of memory bandwidth
+    quote: lm_head
+    quote_sha256: 42c412e896506d3b3e0dcdc41d38801d4528bebfd5b5c4d440d8680c08353049
+    source_revision: retrieved 2026-10-06 sha256[:12]=7731938d4101
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: heading-and-hash
+    locator: Harness
+    quote: 'Harness (same 40 prompts as Part 46, thinking off, concurrency 1, run on the GX10 because coding prompts execute code):'
+    quote_sha256: 451f31d05a5f0114c2d9ee6ab6f639f6ddd9d7b8eec7bcbc4687a081ee9244aa
+    source_revision: retrieved 2026-10-06 sha256[:12]=7731938d4101
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: as stated; exact checkpoint repo/quant details NOT-FOUND-IN-SOURCE beyond NVFP4
+  - claim_index: 1
+    effect: narrowed
+    note: 72.0 is the median of 3, honest; but 3 runs with 9% spread, headline includes content mix, thinking off, concurrency 1.
+  - claim_index: 2
+    effect: unaffected
+    note: Gain is a bundle; most Chinese gain is draft-vocab, code gain from MTP K4/adaptive; not from interconnect.
+  - claim_index: 3
+    effect: unaffected
+    note: kernel-level 80-87% of spec
+  - claim_index: 4
+    effect: unaffected
+    note: per tables
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth FULL; retrieved 2026-10-06 sha256[:12]=7731938d4101). Headline is median of 3 (peak 77.9). The 51.9->72.0 delta is a 5-change bundle, not one technique; it is TP=2+EP across two nodes at ~50 ms/step, concurrency 1. Page says nothing about MTP K sweep beyond K=4 or about concurrency. DECLINED surfaced sources (stop-early): MiaAI-Lab PR #45 draft-vocab tool (README-level evidence already read in intake-1950/1956).'
+  notes: 'Stage-2b wave 3 (dive-surfaced from intake-1952). Read notes: Whole page read from disk. Single author, vendor-neutral hobbyist; Part 46 baseline (51.9) not independently fetched. Model path/size of the checkpoint beyond "NVIDIA NVFP4 checkpoint, Qwen3.8-Flash-Next NVFP4" not given on this page.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1949
+    - intake-1950
+    - intake-1952
+  credibility_score: 3
+  contradicting_evidence: null
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: FULL
+  reader_should_conclude: 'Do not treat 72.0 as peak or as a physics-defying figure: median of 3, code-heavy categories 83-87, prose 45-49, conc 1, thinking off, TP=2+EP on two nodes. Do not attribute the delta to any single change or to the interconnect. Do not carry Chinese-vocab gains to non-Chinese workloads (English/code flat).'
+  recommended_actions:
+  - 'Check our Q38FN MTP draft-vocab coverage against our actual traffic language/code mix (any restricted draft vocab silently zeroes acceptance on uncovered tokens). [operator-review candidate; proposed disposition: worth_investigating]'
+  - 'For hybrid GDN/Mamba prefix cache, verify chunk stops align to the state-save block (848 tokens here) so turn-2 TTFT hits. [operator-review candidate; proposed disposition: worth_investigating]'
+  - 'Physics reconciliation: GB10 kernels hit 80-87% of 273 GB/s; Q38FN at 10/512 experts with MTP accepting ~3 tokens/step on code explains >single-stream-ceiling rates without contradicting bandwidth; compare per-weight-read tokens, not tok/s. [operator-review candidate; proposed disposition: adopt_patterns]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Two-Spark Q38FN NVFP4 TP2+EP median 51.9 -> 72.0 tok/s at c=1, thinking off, bundled changes; per-kernel 80-87% of 273 GB/s and 51 ms/step; interconnect 185 Gb/s measured; physics-consistent.
+- id: intake-1959
+  arxiv_id: null
+  url: https://github.com/MiaAI-Lab/Qwen3.8-Flash-Next-Single-DGX-Spark-TensorFold
+  source_type: repo
+  title: Qwen3.8 Flash Next on one DGX Spark (TensorFold recipe)
+  categories:
+  - inference_serving
+  - speculative_decoding
+  - local_inference
+  - moe_optimization
+  novelty: medium
+  relevance: medium
+  discovered_via: expansion
+  expanded_from: intake-1956
+  verdict: worth_investigating
+  key_claims:
+  - 'README (recipe defaults: 5 streams x 262144, int8 KV, PLE tables on SSD, MTP 6 drafts/0.60 confidence, vision on, thinking on, T=1.0/top_p .95/top_k 20) reports single-request decode 63.6 tok/s prose and 96.9 tok/s code; 4 concurrent: 114.5 prose / 166.4 code aggregate (29.7 / 44.8 per request).'
+  - 'Same recipe in its own docs/v061.md measures lower: 1-stream chat sampled 52.0 tok/s, code greedy 63.7 tok/s, 5-stream suite aggregate 94.4 tok/s. So README headline (63.6 prose, 96.9 code) is ~22% (prose vs 52.0) to ~52% (code vs 63.7) above the same author''s other same-version table; prompts/workload differ (README tables use bench.py suite; undocumented which).'
+  - 'MTP speculation is the mechanism: serial draft:false = 35.4 tok/s vs 56.0 greedy drafted, yield (tokens per verify step) 2.05-2.23, accept 0.64. With MTP depth 0 at C=5: 76.4 agg vs ~93-95 with MTP.  Serial 35.4 tok/s on a 273 GB/s box implies ~28 ms/step, i.e. ~7.7 GB moved per step if bandwidth-bound -- DERIVED by me, not stated by the source.'
+  - 'Draft vocabulary is reduced: MTP draft head restricted to 79,591 tokens (English+code) vs full vocab (language image 101,679 ids). Larger list slows each draft step; every token still verified against full vocab. No tok/s gain isolated for the reduction itself (only the language-list delta: zh +29/+32%, ja +19/+7%).'
+  - 'Per-step byte budget is NOT given. Only static facts: weights 75.2 GiB resident (4-bit MLX, group 32) + 29.8 GiB PLE n-gram tables on SSD (1,600 logical bytes/token read, 100 B/row, 16 rows/token), vision 0.84 GiB, KV int8 4.49 GiB/stream. No lm_head-pass count, expert-union bytes, or state bytes per step.'
+  - No measured achieved GB/s anywhere; the only bandwidth statement is that 273 GB/s is a ceiling not a predictor (astra.md:183). No "byte floor", "fable51-max" or step-time-vs-floor ratio exists in this repo.
+  - '"TensorFold" is the upstream CUDA inference engine (ashhart/TensorFold v0.6.1, 17c73e1); the recipe repo is a patch set over it (video input, copy/prompt-lookup drafts, SSD read-ahead, first-token-before-draft). It is not a tensor-folding technique doc; measured gain of TensorFold itself vs another engine is not in this repo. Recipe patches vs unpatched TF v0.3.6.2: prefill ~1,350-1,490 -> ~2,340-2,480 tok/s, single-request decode +~4%, byte-identical output.'
+  - 'Single-stream graph engine: PARALLEL=1 vision-off 56.4 vs 53.7 tok/s on 5-stream text server (one sample) -- decode eager/launch overhead is small (~5%).'
+  reported_results:
+  - C=1 prose 63.6, code 96.9 tok/s (README); C=4 agg 114.5/166.4
+  - 'v061 doc: 52.0 chat, 63.7 code greedy, 94.4 5-stream agg'
+  - serial 35.4 vs drafted 56.0 greedy; yield 2.05-2.23; accept 0.643
+  - prefill 2,421 tok/s @8k, 2,180 @128k
+  claim_anchors:
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L32 @ 4c0dea8
+    quote: '| 1 | 63.6 tok/s | 63.6 tok/s | 66 ms |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 545511d16d287d901d0e199841b8951f5c46224c713a86967816d299313fd2f2
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L40 @ 4c0dea8
+    quote: '| 1 | 96.9 tok/s | 96.9 tok/s | 206 ms |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: f81f0984b681b89e5f0665361eb00f94bf558a8d18cfbae81b97bd4a7720b2f2
+    verified_by: research-intake/stage2b
+  - claim_index: 0
+    kind: line-range
+    locator: README.md:L25-L26 @ 4c0dea8
+    quote: One DGX Spark, the recipe's defaults on TensorFold v0.6.1 (5 streams x 262,144, int8 KV cache, n-gram tables read
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 40671af0d5a20b71a92dedb7e61a977bd086823d9cef3497e372f4e965e3dd0c
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: docs/v061.md:L35-L37 @ 4c0dea8
+    quote: '| Decode, chat sampled (1 stream) | 52.3 tok/s | 52.0 tok/s |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 66bd44fb0b147aa8fbe265ff268d87ec74c5418c2890ac4823ed9ed1e36324ae
+    verified_by: research-intake/stage2b
+  - claim_index: 1
+    kind: line-range
+    locator: docs/v061.md:L37 @ 4c0dea8
+    quote: '| Suite, 5 streams aggregate | 95.0 tok/s | 94.4 tok/s |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 33b87a4d4dc6dd27ac0c5057d360e89146afb8607166ca3632932eb8881f3a7f
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: docs/astra-overnight.md:L22 @ 4c0dea8
+    quote: '`draft:false` on the same prompts (`draft-false.jsonl`): 35.4 tok/s, yield 1.000.'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: ad91e0ed639def2ab6bef63f4509290230d1a13e8ef5b1b85a8612ac27e4cacb
+    verified_by: research-intake/stage2b
+  - claim_index: 2
+    kind: line-range
+    locator: docs/astra-overnight.md:L15 @ 4c0dea8
+    quote: '| 1 | 54.7 | 50.5 | 217 / 411 ms | 0.643 | 2.047 |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 55357a64b7d7c63486144eca9f0d7f702da31a70b97957662950a6baebbab060
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: README.md:L141-L142 @ 4c0dea8
+    quote: MTP drafts may only propose tokens from a list, and TensorFold's list (79,591 tokens) is English and code
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 25edafa32b32ba7c384368e12510af8419760dc454d09fded591a66d7573a079
+    verified_by: research-intake/stage2b
+  - claim_index: 3
+    kind: line-range
+    locator: docs/v061.md:L66 @ 4c0dea8
+    quote: '**Language image** (`DRAFT_LANGUAGE=zh`, drafts over 101,679 token ids)'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 0f2cad493685641ca0cbebb15da52f9130ea892e01ea57ffece5f31c41bf77bc
+    verified_by: research-intake/stage2b
+  - claim_index: 4
+    kind: line-range
+    locator: docs/astra.md:L159 @ 4c0dea8
+    quote: 1,600 logical table bytes per processed token before deduplication
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 0747b80409e391e33e46b5628eef6ecaecba21b21140e678c75cc00749091e2c
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: README.md:L233 @ 4c0dea8
+    quote: '| Model weights (the 29.8 GiB of n-gram tables stay on the SSD with `PLE_ON_SSD=1`) | 75.2 |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 353056462f9e706123109cdf8d50ef10bbfd3e7f27b138a16c9f9f60db88f429
+    verified_by: research-intake/stage2b
+  - claim_index: 5
+    kind: line-range
+    locator: docs/astra.md:L183 @ 4c0dea8
+    quote: NVIDIA specifies up to 273 GB/s memory bandwidth for this system; that is a hardware ceiling, not a measured available bandwidth or a direct token/s predictor.
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 7db7972f1f6933551e8ff0e6c11e939472bfd921079f6eed765482a5683e74e3
+    verified_by: research-intake/stage2b
+  - claim_index: 6
+    kind: line-range
+    locator: README.md:L12-L14 @ 4c0dea8
+    quote: TensorFold](https://github.com/ashhart/TensorFold) v0.6.1 (`17c73e1`) in NVIDIA's PyTorch container, plus
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: b0d9c100e5d7b2c91e91bc00dfa1a034d459b116b2a7e2be13e3d508932eda26
+    verified_by: research-intake/stage2b
+  - claim_index: 7
+    kind: line-range
+    locator: docs/astra-overnight.md:L59 @ 4c0dea8
+    quote: '| vision off, `PARALLEL=1`, rows 2048 | graph engine, text only | C=1 56.4 vs 53.7 on the matching 5-stream text server |'
+    source_revision: 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362
+    quote_sha256: 3c10314b755c0b51710408eec56be2226037fc5a82625b27eca7f613bb4fcc53
+    verified_by: research-intake/stage2b
+  claim_corrections:
+  - claim_index: 0
+    effect: unaffected
+    note: numbers present as quoted; author self-measured, no independent corroboration; sampling T=1.0 thinking on
+  - claim_index: 1
+    effect: narrowed
+    note: docs/v061.md figures are lower than README for the same pin; README numbers are best-case; cite range 52-64 (1 stream prose/chat) and 64-97 (code)
+  - claim_index: 2
+    effect: unaffected
+    note: yield/accept from astra-overnight; ms/step and GB/step are my derivation only
+  - claim_index: 3
+    effect: unaffected
+    note: 79,591 draft list stated; gain of reduction unmeasured
+  - claim_index: 4
+    effect: narrowed
+    note: no per-step byte budget
+  - claim_index: 5
+    effect: narrowed
+    note: no byte-floor model, no achieved GB/s, no fable51-max doc
+  - claim_index: 6
+    effect: unaffected
+    note: TensorFold = upstream engine; gain not isolated
+  - claim_index: 7
+    effect: unaffected
+    note: single sample
+  dive_corrections: '2026-10-06 Stage-2b ingest-and-dive (read_depth PARTIAL; 4c0dea8ebe93a1d445d6a716b5a38995ff6e9362 (git clone --depth 1, 2026-10-06); sha12 README 25770B, CHANGELOG, docs/v061.md, docs/astra-overnight.md read from disk). Brief expected byte-floor / fable51-max model docs and TensorFold-as-technique: neither exists in this recipe repo. Headline 63.6/96.9 is a best-case README table; the same repo''s v0.6.1 doc has 52.0/63.7. Any floor-ratio must be computed by us, not cited. DECLINED surfaced source (stop-early): github.com/ashhart/TensorFold upstream engine - no byte-floor docs expected; engine, not a technique.'
+  notes: 'Stage-2b wave 3 (dive-surfaced from intake-1956). Read notes: FULL: README.md, CHANGELOG.md, docs/v061.md, docs/astra-overnight.md. docs/astra.md (55KB) read via head + targeted greps (not every paragraph). NOT read: patches/*.patch bodies, scripts/, tools/, CREDITS beyond grep. Upstream TensorFold repo (ashhart/TensorFold, where any "byte floor"/fable51 docs would live) NOT cloned; this repo contains zero occurrences of floor/fable/roofline/GB-s-achieved.'
+  cross_references:
+    chapters: []
+    handoffs:
+    - cpu-decode-roofline-program.md
+    - qwen38-flash-next-fp8-evaluation.md
+    experiments: []
+    intake_entries:
+    - intake-1956
+    - intake-1950
+  credibility_score: 3
+  contradicting_evidence:
+  - README headline vs docs/v061.md same-pin measurements differ by 22-52%; v0.6.0 C=1 49.4 vs v0.5.0 54.7 also shows version/run noise.
+  ingested_date: '2026-10-06'
+  verification: dive-verified
+  read_depth: PARTIAL
+  reader_should_conclude: 'Treat 63.6/96.9 tok/s as author-reported best-case single-stream numbers (range 52-97 depending on workload), explained by MTP yield ~2 not by bandwidth beyond 273 GB/s. Do NOT attribute any byte-floor ratio, achieved GB/s, per-step byte budget or a TensorFold-specific gain to this source: none is present; do not quote the 7.7 GB/step figure as sourced (it is our derivation).'
+  recommended_actions:
+  - 'For the physics question: single Spark 273 GB/s with MTP yield ~2.05 and serial 35.4 tok/s gives 63.6 tok/s = 1.8x serial; consistent with speculative-decode amortisation (tokens/step ~2) on a 4-bit ~6B-active model, no physics violation. Compute our own byte floor for Q38FN 4-bit from checkpoint config. [operator-review candidate; proposed disposition: fold into Q38FN ceiling program as a derived row; label derivation]'
+  - 'Code-vs-prose spread (96.9 vs 63.6) = accept-rate/yield workload effect; our MTP bench should report per-workload yield alongside tok/s. [operator-review candidate; proposed disposition: note only]'
+  - 'Reduced draft vocab (79,591 tokens) as cheap draft-head lever: test on our MTP head, measure alpha loss vs step time. [operator-review candidate; proposed disposition: trigger-gated probe, CPU first]'
+  handoffs_updated: []
+  handoffs_created: []
+  integration_disposition: knowledge_only
+  disposition_evidence:
+  - Newest single-Spark claims (63.6 prose / 96.9 code) contradicted by the same repo docs (52.0 / 63.7); speedup is speculative decode (serial 35.4 vs 56.0 drafted); no byte-floor model found.
