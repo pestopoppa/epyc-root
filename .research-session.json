@@ -1,9 +1,9 @@
 {
  "session_id": "intake-ctxext-ec-20261006",
  "started_at": "2026-10-06T02:41:21Z",
- "last_checkpoint": "2026-10-06T02:41:21Z",
- "stage": "stage1-complete",
- "phase": 5,
+ "last_checkpoint": "2026-10-06T02:48:59Z",
+ "stage": "stage2-closeout",
+ "phase": "stage2",
  "lane": "/mnt/raid0/llm/worktrees/ec-intake-ctxext-1006",
  "branch": "lane/ec-intake-ctxext-1006",
  "topic": "training-free context extension exact/near-lossless inside native window (Qwen3.x on llama.cpp)",
@@ -25,10 +25,15 @@
   "intake-1914",
   "intake-1915",
   "intake-1916",
-  "intake-1917"
+  "intake-1917",
+  "intake-1918",
+  "intake-1919",
+  "intake-1920",
+  "intake-1921",
+  "intake-1922"
  ],
  "entries_remaining": [],
- "next_intake_id": 1918,
+ "next_intake_id": 1923,
  "expansion_cap": 10,
  "expansion_count": 7,
  "expansion_entries": [
@@ -52,7 +57,29 @@
   "arXiv 2308.16137 LM-Infinite (already referenced in index)"
  ],
  "expansion_refused": [],
- "steering_ledger": [],
+ "steering_ledger": [
+  {
+   "seq": 1,
+   "stage": 2,
+   "verbatim": "All recommended. Perform no more than four stage 2 ingest/dive waves",
+   "disposition": "planned",
+   "plan_ref": null
+  },
+  {
+   "seq": 2,
+   "stage": 2,
+   "verbatim": "I never said to limit the agent to the top three sources! I said ALL recommended",
+   "disposition": "planned",
+   "plan_ref": null
+  },
+  {
+   "seq": 3,
+   "stage": 2,
+   "verbatim": "To keep it reasonable, set the cap to 10",
+   "disposition": "planned",
+   "plan_ref": null
+  }
+ ],
  "prior_sessions": [
   {
    "session_id": "intake-monty-clef-looped-multiharness-20261003",
@@ -4855,5 +4882,36 @@
   }
  ],
  "source_fetch_note": "All arXiv reads were WebFetch digests of abs pages (plus HTML v4 of 2607.07740 and v2 of 2502.02659); not full source reads. Every entry stage1-unverified.",
- "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md"
+ "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE1.md",
+ "stage2": {
+  "wave1_dives": [
+   "intake-1900",
+   "intake-1906+1907",
+   "intake-1911"
+  ],
+  "wave2_ingest_dive": [
+   "intake-1918",
+   "intake-1919",
+   "intake-1920",
+   "intake-1921",
+   "intake-1922"
+  ],
+  "waves_used": 2,
+  "wave_limit": 4,
+  "stage2b_cap_per_wave": 10,
+  "stopped_early": "wave 2 surfaced no source worth a wave 3 (AnchorContext code and PJ-RoPE declined)",
+  "not_selected_left_unverified": [
+   "intake-1901..1905",
+   "intake-1908",
+   "intake-1909",
+   "intake-1910",
+   "intake-1912..1917"
+  ],
+  "declines": [
+   "arXiv 2606.05345 PJ-RoPE",
+   "chunkqwen/flash_decoding patch files",
+   "alphaxiv/HF pages for 2607.07740"
+  ],
+  "report": "/mnt/raid0/llm/tmp/yarn-inert-design-20261006/INTAKE_STAGE2.md"
+ }
 }
