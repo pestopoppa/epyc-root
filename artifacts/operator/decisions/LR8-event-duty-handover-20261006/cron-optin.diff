@@ -1,0 +1,7 @@
+--- accepted-OP73-host-crontab-selected-line
++++ proposed-LR8-selected-line
+ */2 * * * * docker exec -u node -e EPYC_ROOT=/mnt/raid0/llm/epyc-root -e HUB_CANONICAL_ROOT=/mnt/raid0/llm/epyc-root -e HUB_LAUNCH_MANIFEST=/mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml epyc-root /mnt/raid0/llm/ops/hub-supervisor/00e1820bcd957e905797b3a1b9e4d9dc53a550b0/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1 # epyc-op9-hub-supervisor
+-*/2 * * * * docker exec -u node -e EPYC_ROOT=/mnt/raid0/llm/epyc-root -e HUB_CANONICAL_ROOT=/mnt/raid0/llm/epyc-root -e HUB_LAUNCH_MANIFEST=/mnt/raid0/llm/epyc-orchestrator/orchestration/launch_manifest.yaml -e HYGIENE_OPENCODE_EVENTS=1 epyc-root /mnt/raid0/llm/ops/hub-supervisor/00e1820bcd957e905797b3a1b9e4d9dc53a550b0/scripts/dashboard/hub_supervisor.sh once >>/mnt/raid0/llm/epyc-root/logs/cron_supervision.log 2>&1 # epyc-op9-hub-supervisor
+
+The fleet-watch marker line is unchanged. Preserve the currently existing PIN00e path; this
+does not install or rebuild the pinned supervisor closure.

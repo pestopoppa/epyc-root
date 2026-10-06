@@ -1,0 +1,55 @@
+INERT REVIEW PLAN — DO NOT RUN DURING PREPARATION
+
+Owner/session preflight (inside the current epyc-root container, read-only):
+
+  docker exec -u node epyc-root sha256sum \
+    /mnt/raid0/llm/epyc-root/scripts/system/opencode_event_reaper.sh \
+    /mnt/raid0/llm/epyc-root/scripts/coordination/observer_registry.json
+  docker exec -u node epyc-root cat /mnt/raid0/llm/tmp/opencode-reaper.pid
+  docker exec -u node epyc-root cat /mnt/raid0/llm/tmp/opencode-reaper.pid.provenance.json
+
+The owner then captures the PID value into a fresh session-local variable, validates its exact
+`/proc/<pid>/cmdline` identity (`.../scripts/system/opencode_event_reaper.sh`, final arg `run`),
+captures `/proc/<pid>/stat` start-time and cmdline, opens a pidfd, then rereads both and requires
+an exact match before signaling (the pidfd pins process identity but cannot recheck argv). It sends
+SIGTERM only through that pidfd, waits for pidfd exit, and verifies the captured process is dead. If it survives, report that exact PID to its owner; any
+SIGKILL escalation is through the same pidfd after revalidation. No name-pattern search or kill.
+The source tick's `_event_daemon_copies` read-only check must then return zero; unreadable proc or
+multiple matches means abort.
+
+Preflight immutable pin without changing it:
+
+  docker exec -u node epyc-root sha256sum -c \
+    /mnt/raid0/llm/ops/hub-supervisor/00e1820bcd957e905797b3a1b9e4d9dc53a550b0/SHA256SUMS
+
+Verify that the actual launch manifest still selects `/mnt/raid0/llm/views/epyc-root-main` and
+that the view's tick hashes to `9d5771245e6ab16ef495a7053321f380dcb403a45b3d38d6930746f05104d6ff`.
+The actual live host crontab must be captured privately immediately before change; never copy its
+unrelated lines into this review package. Require the hub marker line to equal the accepted PIN00e
+line before applying `cron-optin.diff`; if it differs, stop and re-review.
+
+Apply order, only after separate owner authorization:
+
+  1. Capture exclusive preimage backups for canonical reaper, canonical registry, and actual
+     crontab; record owner/mode/inode and hashes. Do not mutate yet if any baseline differs from
+     this package.
+  2. Stage canonical reaper bytes from the immutable published source; verify SHA, mode/owner,
+     and atomic-replace preconditions. Install and rehash.
+  3. Build the full registry candidate from accepted `8dfdab...` bytes using
+     `registry-runtime.patch`; review the whole candidate and digest, then atomically replace and
+     rehash.
+  4. Last, edit only the pinned hub cron line in `cron-optin.diff`; install, then reread only the
+     selected lines for validation while retaining full crontab privately.
+
+Observe only the natural host cadence. Do not run `host_hygiene_tick.py tick --force-heavy`,
+`opencode_event_reaper.sh once-status`, or any direct prune/VACUUM command. Wait for the ordinary
+CPU gate and scheduler. Accept from event result + event log + `scheduled_current` census, not the
+generic hygiene heartbeat alone.
+
+Rollback order is the inverse safety order: first remove only the opt-in env from the marker-owned
+hub cron line using a new exclusive backup; let any in-flight tick finish; restore the exact
+reaper and registry preimages after current-file identity checks. The restored keeper can relaunch
+the daemon on a later ordinary tick. Do not manually launch a second process.
+
+
+MAIN review 2026-10-06: full candidate independently reopens exact native registry preimage and changes only one runtime object. Current tick source includes the accepted optional native-heartbeat callback (81 hosted controls); event-duty conformance is the separate accepted88-case receipt. No extra combined run or operational deployment claim. Current PID/crontab ownership must be acquired at the actual owner boundary; historical IDs are not instructions to stop a process.

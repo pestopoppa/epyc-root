@@ -1,0 +1,12 @@
+{
+  "source_pin": "3316e09035e161f229e2de9261d408a75f3e1c08",
+  "tick_sha256": "9d5771245e6ab16ef495a7053321f380dcb403a45b3d38d6930746f05104d6ff",
+  "registry_before_sha256": "8dfdabfc383585eb840cf2b6212cf15c739cd3cdf8553763ec123c5e78f1c35b",
+  "registry_candidate_sha256": "0f5ccab4a138e032b2b2ece3795cc9d4b8ed4e51d3c8d60006d947adfdd2aade",
+  "native_preimage_matched": true,
+  "changed_object": "opencode_event_reaper.runtime",
+  "all_other_json_equal": true,
+  "applied": false,
+  "live_pid_captured": false,
+  "live_crontab_captured": false
+}

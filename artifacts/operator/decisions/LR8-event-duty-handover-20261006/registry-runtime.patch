@@ -1,0 +1,27 @@
+--- accepted-OP73-projection
++++ proposed-LR8-runtime-row
+@@ opencode_event_reaper.runtime (only this object changes)
+       "runtime": {
+-        "pidfile": "/mnt/raid0/llm/tmp/opencode-reaper.pid",
+-        "expected_path": "scripts/system/opencode_event_reaper.sh",
+-        "provenance": "/mnt/raid0/llm/tmp/opencode-reaper.pid.provenance.json",
+-        "restart_on_stale": true,
+-        "start_argv": [
+-          "/bin/bash",
+-          "{canonical_root}/scripts/system/opencode_event_reaper.sh",
+-          "run"
+-        ],
+-        "log": "/mnt/raid0/llm/tmp/opencode-reaper.log",
+-        "relaunch_if_down": true,
+-        "_relaunch_note": "2026-10-04: host_hygiene_tick.py's keeper relaunches this row from start_argv when the census verdict is not_running (the reaper died with the 2026-09-21 and 2026-10-03 reboots and nothing brought it back). Never a kill: stale/off-canon copies only raise daemon-stale-<id>."
++        "mode": "scheduled",
++        "scheduler": "host_hygiene_tick",
++        "restart_on_stale": false,
++        "relaunch_if_down": false,
++        "log": "/mnt/raid0/llm/epyc-root/logs/hygiene/opencode_event_reaper.log",
++        "max_age_s": 3600
+       }
+
+Precondition: the actual canonical registry bytes equal the accepted OP-73 projection SHA-256
+8dfdabfc383585eb840cf2b6212cf15c739cd3cdf8553763ec123c5e78f1c35b. Build and hash the whole
+candidate before apply; do not infer a post-handover SHA from this row fragment.

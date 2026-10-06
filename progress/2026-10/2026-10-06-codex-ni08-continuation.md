@@ -39,3 +39,8 @@ MAIN accepted corrected HIL1..5 proposal cbd4f65d after verifying SafetyGate.che
 ## Admission and granularity design boundary
 
 MAIN reviewed cheap proposal against both original papers and actual APP tier/archive/gate/skill APIs; corrected live axis from legacy “speed” to corrected questions/eval-wall-hour, distinguished retry cases and removed unsupported universal bias-correction language. AP51/EV10d/EV10f close (3 flips),14 scopedNI08 completions/13 existingflips+1 addedaudit. Durable source comparison and EV10a caveat filed; no tests/inference/admission changes. ETVT2 report-only implementation preparation continues.
+
+
+## LR8 operational decision package
+
+MAIN refreshed latestpublishedtick hash and independently verified exactnative8dfdab registry preimage/full0f5cca candidate differs onlyopencode_event_reaper.runtime. PublishedA/Bcontext/tradeoffs/recommendationB/exactcronoptin/ownerPIDfdstop/rollback. Inertpackage; no currentPID/hostcrontabcustody/activation/cleanup. ParentLR8remainsopen and no extra scopedcompletioncount. EarlierOP73installationnotreopened.

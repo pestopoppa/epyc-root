@@ -675,3 +675,8 @@ Current selected queue: **35/35 completed** bounded slices, including NI06’s t
 - [x] **NI07-31 — recognize staged ED25519 private-key headers.** ✅ 2026-10-06 — bounded staged-blob regex strengthening; OPENSSH/RSA preserved, synthetic RSA/OPENSSH/ED25519 + metadata/token/partial-stage/all-excluded controls. Native run 37474797195 TRUE9/9; one outer observation, no real credentials or allowlist change. Source/recipe promoted ROOT main eb870f0fe697f02f887bedecaeaccaf24df2d531. Structural fixture evidence only; parent TOC-RD-1a global whole-file exception choice remains open.
 
 - [x] **NI07-32 — honor KEEP markers on declared scratch roots.** ✅ 2026-10-06 — [Contract](../../docs/reference/declared-scratch-root-keep.md); original run37482120866 TRUE27/27, MAIN1932Git+2contexts/all1942member source-first review. ROOT main a5cf51d7e984dc7fdc5a25cb64bae2fd5d7c6060 preserves declared root/descendant/marker/ancestor protection, overlaps and late plan/apply marker controls; unmarked siblings retain existing gates. Synthetic source/fixture conformance only; no host cleanup or atomic race guarantee.
+
+
+### LR-8 runtime decision boundary (2026-10-06)
+
+MAIN published [the concrete A/B package](../../artifacts/operator/decisions/LR8-event-duty-handover-20261006/README.md): reviewed full one-object registry candidate, exact selected-cron opt-in, current source hashes, identity-bound owner stop and rollback. LR-8 remains unchecked until actual handover and natural-cadence acceptance; 88/88 source fixtures do not authorize it. Choice B is recommended; the owning session must acquire current PID/cron custody at its boundary. No daemon, registry, cron, database or current inference was changed.
